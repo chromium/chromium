@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
@@ -239,39 +240,34 @@ HRESULT AppCommandRunner::Run(const std::vector<std::wstring>& substitutions,
 }
 
 HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
-                                       const std::wstring& command_line,
+                                       const std::wstring& parameters,
                                        base::Process& process) {
-  VLOG(2) << __func__ << ": " << executable << ": " << command_line;
+  VLOG(2) << __func__ << ": " << executable << ": " << parameters;
 
   if (executable.empty() || process.IsValid()) {
     return E_UNEXPECTED;
   }
 
+  // `executable` needs to be a full path to prevent `::CreateProcess` (which
+  // `base::LaunchProcess` uses internally) from using the search path for path
+  // resolution.
   if (!executable.IsAbsolute()) {
     LOG(ERROR) << __func__ << "!executable.IsAbsolute(): " << executable;
     return E_INVALIDARG;
   }
 
-  STARTUPINFOW si = {sizeof(si)};
-  PROCESS_INFORMATION pi = {0};
-  std::wstring parameters = command_line;
+  base::LaunchOptions options = {};
+  options.feedback_cursor_off = true;
+  options.start_hidden = true;
 
-  // In contrast to the following call to `::CreateProcess`,
-  // `base::Process::LaunchProcess` passes the `executable` in the
-  // `lpCommandLine` parameter to `::CreateProcess`, which uses the search path
-  // for path resolution of `executable`.
-  if (!::CreateProcess(executable.value().c_str(), &parameters[0], nullptr,
-                       nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si,
-                       &pi)) {
+  process = base::LaunchProcess(
+      base::StrCat({L"\"", executable.value(), L"\" ", parameters}), options);
+  if (!process.IsValid()) {
     const HRESULT hr = HRESULTFromLastError();
-    LOG(ERROR) << __func__ << "::CreateProcess failed: " << hr;
+    LOG(ERROR) << __func__ << "base::LaunchProcess failed: " << hr;
     return hr;
   }
 
-  ::CloseHandle(pi.hThread);
-
-  process = base::Process(pi.hProcess);
-  CHECK(process.IsValid());
   VLOG(2) << __func__ << "Started process with PID: " << process.Pid();
   return S_OK;
 }
@@ -337,14 +333,14 @@ HRESULT AppCommandRunner::ExecuteAppCommand(
           << base::JoinString(parameters, L",")
           << base::JoinString(substitutions, L",");
 
-  const absl::optional<std::wstring> command_line =
+  const absl::optional<std::wstring> command_line_parameters =
       FormatAppCommandLine(parameters, substitutions);
-  if (!command_line) {
-    LOG(ERROR) << __func__ << "!command_line";
+  if (!command_line_parameters) {
+    LOG(ERROR) << __func__ << "!command_line_parameters";
     return E_INVALIDARG;
   }
 
-  return StartProcess(executable, command_line.value(), process);
+  return StartProcess(executable, command_line_parameters.value(), process);
 }
 
 }  // namespace updater

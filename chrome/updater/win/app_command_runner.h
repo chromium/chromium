@@ -54,10 +54,10 @@ class AppCommandRunner {
               base::Process& process) const;
 
  private:
-  // Starts a process with separate `executable` and `command_line` components.
+  // Starts a process with separate `executable` and `parameters` components.
   // `executable` needs to be an absolute path.
   static HRESULT StartProcess(const base::FilePath& executable,
-                              const std::wstring& command_line,
+                              const std::wstring& parameters,
                               base::Process& process);
 
   // Separates a command line in `command_format` into an `executable` and
