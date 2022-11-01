@@ -76,4 +76,26 @@ suite('TextToSpeechPageTests', function() {
               `${selector} should be focused`);
         });
   });
+
+  test('only allowed subpages are available in kiosk mode', function() {
+    loadTimeData.overrideValues({
+      isKioskModeActive: true,
+      showTabletModeShelfNavigationButtonsSettings: true,
+    });
+    initPage();
+    flush();
+
+    const allowed_subpages = [
+      'chromeVoxSubpageButton',
+      'selectToSpeakSubpageButton',
+      'ttsSubpageButton',
+    ];
+
+    const subpages = page.root.querySelectorAll('cr-link-row');
+    subpages.forEach(function(subpage) {
+      if (isVisible(subpage)) {
+        assertTrue(allowed_subpages.includes(subpage.id));
+      }
+    });
+  });
 });
