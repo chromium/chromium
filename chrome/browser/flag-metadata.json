@@ -676,12 +676,12 @@
   {
     "name": "binding-manager-connection-limit",
     "owners": ["ckitagawa", "yfriedman"],
-    "expiry_milestone": 109
+    "expiry_milestone": 111
   },
   {
     "name": "binding-manager-use-not-perceptible-binding",
     "owners": ["ckitagawa", "yfriedman"],
-    "expiry_milestone": 109
+    "expiry_milestone": 111
   },
   {
     "name": "biometric-authentication-for-filling",
@@ -5473,7 +5473,7 @@
   {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa", "fredmello", "chrome-fdt@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 111
   },
   {
     "name": "paint-preview-startup",
