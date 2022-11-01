@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/paint/largest_contentful_paint_calculator.h"
@@ -100,6 +101,7 @@ void TextPaintTimingDetector::OnPaintFinished() {
 void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
     const LayoutObject& object) {
   recorded_set_.erase(&object);
+  rewalkable_set_.erase(&object);
   texts_queued_for_paint_time_.erase(&object);
 }
 
@@ -144,6 +146,9 @@ bool TextPaintTimingDetector::ShouldWalkObject(
     return true;
   }
 
+  if (rewalkable_set_.Contains(&object))
+    return true;
+
   // This metric defines the size of a text block by its first size, so we
   // should not walk the object if it has been recorded.
   return !recorded_set_.Contains(&object);
@@ -173,6 +178,15 @@ void TextPaintTimingDetector::RecordAggregatedText(
                                                   mapped_visual_rect);
     }
     return;
+  }
+
+  // Web font styled node should be rewalkable so that resizing during swap
+  // would make the node eligible to be LCP candidate again.
+  if (RuntimeEnabledFeatures::WebFontResizeLCPEnabled()) {
+    if (aggregator.GetNode()->GetComputedStyle() &&
+        aggregator.GetNode()->GetComputedStyle()->GetFont().HasCustomFont()) {
+      rewalkable_set_.insert(&aggregator);
+    }
   }
 
   recorded_set_.insert(&aggregator);
@@ -214,6 +228,8 @@ void TextPaintTimingDetector::ReportLargestIgnoredText() {
 void TextPaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(callback_manager_);
   visitor->Trace(frame_view_);
+  visitor->Trace(text_element_timing_);
+  visitor->Trace(rewalkable_set_);
   visitor->Trace(recorded_set_);
   visitor->Trace(text_element_timing_);
   visitor->Trace(texts_queued_for_paint_time_);

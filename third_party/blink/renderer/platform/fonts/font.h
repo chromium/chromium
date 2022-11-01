@@ -246,6 +246,12 @@ class PLATFORM_EXPORT Font {
     return EnsureFontFallbackList()->ShouldSkipDrawing();
   }
 
+  bool HasCustomFont() const {
+    if (!font_fallback_list_)
+      return false;
+    return EnsureFontFallbackList()->HasCustomFont();
+  }
+
  private:
   // TODO(xiaochengh): The function not only initializes null FontFallbackList,
   // but also syncs invalid FontFallbackList. Rename it for better readability.
