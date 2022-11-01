@@ -1361,10 +1361,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
     registry.ForWebUI<ash::FaceMLAppUI>()
         .Add<ash::mojom::face_ml_app::PageHandlerFactory>();
   }
-  if (base::FeatureList::IsEnabled(ash::features::kJelly)) {
-    registry.ForWebUI<ash::ColorInternalsUI>()
-        .Add<color_change_listener::mojom::PageHandler>();
-  }
+  registry.ForWebUI<ash::ColorInternalsUI>()
+      .Add<color_change_listener::mojom::PageHandler>();
   registry.ForWebUI<ash::FilesInternalsUI>()
       .Add<ash::mojom::files_internals::PageHandler>();
   registry.ForWebUI<ash::file_manager::FileManagerUI>()
