@@ -186,15 +186,6 @@ bool ShouldThemifyFaviconForEntry(content::NavigationEntry* entry) {
            actual_url.host_piece() == chrome::kChromeUINewTabHost;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Themify menu favicon for CrOS Terminal home page.
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kTerminalMultiProfile) &&
-      actual_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-    return actual_url.host_piece() == chrome::kChromeUIUntrustedTerminalHost;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   return false;
 }
 

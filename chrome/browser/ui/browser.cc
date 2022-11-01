@@ -1076,15 +1076,6 @@ bool Browser::CanSaveContents(content::WebContents* web_contents) const {
 }
 
 bool Browser::ShouldDisplayFavicon(content::WebContents* web_contents) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Display favicons for the Terminal app.
-  if (base::FeatureList::IsEnabled(chromeos::features::kTerminalMultiProfile) &&
-      app_controller_ && app_controller_->system_app() &&
-      app_controller_->app_id() == guest_os::kTerminalSystemAppId) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Remove for all other tabbed web apps.
   if (app_controller_ && app_controller_->has_tab_strip())
     return false;
