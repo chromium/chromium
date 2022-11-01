@@ -307,11 +307,16 @@ BOOL canProcessCrossOriginIframes() {
     return;
   }
 
+  // Casting is safe, as this code is run on iOS Chrome & WebView only.
+  auto* driver = static_cast<IOSPasswordManagerDriver*>(
+      [_driverHelper PasswordManagerDriver:web_frame]);
+  if (driver)
+    driver->ProcessFrameDeletion();
+
   auto fieldDataManager =
       UniqueIDDataTabHelper::FromWebState(_webState)->GetFieldDataManager();
-  _passwordManager->OnIframeDetach(
-      web_frame->GetFrameId(), [_driverHelper PasswordManagerDriver:web_frame],
-      *fieldDataManager);
+  _passwordManager->OnIframeDetach(web_frame->GetFrameId(), driver,
+                                   *fieldDataManager);
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
