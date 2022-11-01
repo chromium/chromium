@@ -73,6 +73,9 @@ class SideSearchTabContentsHelper
       content::WebContents* source,
       const content::OpenURLParams& params) override;
   content::WebContents* GetTabWebContents() override;
+  void CarryOverSideSearchStateToNewTab(
+      const GURL& search_url,
+      content::WebContents* new_web_contents) override;
 
   // content::WebContentsObserver:
   void DidOpenRequestedURL(content::WebContents* new_contents,

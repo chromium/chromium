@@ -42,6 +42,9 @@ class MockSideContentsDelegate : public SideSearchSideContentsHelper::Delegate {
   }
   void SidePanelProcessGone() override {}
   content::WebContents* GetTabWebContents() override { return nullptr; }
+  void CarryOverSideSearchStateToNewTab(
+      const GURL& search_url,
+      content::WebContents* new_web_contents) override {}
 
   const GURL& tab_contents_url() const { return tab_contents_url_; }
 

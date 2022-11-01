@@ -61,6 +61,20 @@ class SideSearchContentsThrottle : public content::NavigationThrottle {
 
 }  // namespace
 
+void SideSearchSideContentsHelper::DidOpenRequestedURL(
+    content::WebContents* new_contents,
+    content::RenderFrameHost* source_render_frame_host,
+    const GURL& url,
+    const content::Referrer& referrer,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool started_from_context_menu,
+    bool renderer_initiated) {
+  DCHECK(delegate_);
+  delegate_->CarryOverSideSearchStateToNewTab(web_contents()->GetVisibleURL(),
+                                              new_contents);
+}
+
 bool SideSearchSideContentsHelper::Delegate::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {

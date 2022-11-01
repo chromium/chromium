@@ -69,6 +69,24 @@ content::WebContents* SideSearchTabContentsHelper::GetTabWebContents() {
   return web_contents();
 }
 
+void SideSearchTabContentsHelper::CarryOverSideSearchStateToNewTab(
+    const GURL& search_url,
+    content::WebContents* new_web_contents) {
+  DCHECK(new_web_contents);
+
+  // Ensure this function is called on a search result page.
+  if (GetConfig()->ShouldNavigateInSidePanel(search_url)) {
+    auto* new_helper =
+        SideSearchTabContentsHelper::FromWebContents(new_web_contents);
+
+    // "Open link in incognito window" yields a null new_helper.
+    if (new_helper) {
+      new_helper->last_search_url_ = search_url;
+      new_helper->GetConfig()->set_is_side_panel_srp_available(true);
+    }
+  }
+}
+
 content::WebContents* SideSearchTabContentsHelper::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params) {
@@ -84,21 +102,8 @@ void SideSearchTabContentsHelper::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  DCHECK(new_contents);
-  DCHECK_NE(new_contents, GetTabWebContents());
   const GURL& current_url = GetTabWebContents()->GetLastCommittedURL();
-
-  // Ensure current_url is a search URL.
-  if (GetConfig()->ShouldNavigateInSidePanel(current_url)) {
-    auto* new_helper =
-        SideSearchTabContentsHelper::FromWebContents(new_contents);
-
-    // "Open link in incognito window" yields a null new_helper.
-    if (new_helper) {
-      new_helper->last_search_url_ = current_url;
-      new_helper->GetConfig()->set_is_side_panel_srp_available(true);
-    }
-  }
+  CarryOverSideSearchStateToNewTab(current_url, new_contents);
 }
 
 void SideSearchTabContentsHelper::DidStartNavigation(

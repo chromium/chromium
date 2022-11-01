@@ -52,6 +52,12 @@ class SideSearchSideContentsHelper
 
     // Get the WebContents of the associated tab.
     virtual content::WebContents* GetTabWebContents() = 0;
+
+    // When a new tab/window is opened from SRP or side search panel,
+    // this function carries over the side search state to the new tab.
+    virtual void CarryOverSideSearchStateToNewTab(
+        const GURL& search_url,
+        content::WebContents* new_web_contents) = 0;
   };
 
   // Will call MaybeRecordMetricsPerJourney().
@@ -62,6 +68,14 @@ class SideSearchSideContentsHelper
       content::NavigationHandle* handle);
 
   // content::WebContentsObserver:
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override;
   void PrimaryPageChanged(content::Page& page) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;

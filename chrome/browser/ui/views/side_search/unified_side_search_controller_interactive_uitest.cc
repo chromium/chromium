@@ -50,6 +50,146 @@ class SideSearchV2Test : public SideSearchBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       CarryOverSideSearchToNewTabFromSideSearchPanel) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  // Set up srp tab.
+  const GURL srp_tab_url(GetMatchingSearchUrl());
+
+  // Set up a mock search result on side search panel.
+  const GURL new_tab_url(GetNonMatchingUrl());
+
+  NavigateActiveTab(browser(), srp_tab_url);
+
+  // Navigate current tab to a random non-srp page.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+
+  // Toggle the side panel.
+  NotifyButtonClick(browser());
+  ASSERT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  content::WebContents* active_side_contents =
+      GetActiveSidePanelWebContents(browser());
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.link_url = new_tab_url;
+
+  // Select "Open Link in New Tab" and wait for the new tab to be added.
+  TestRenderViewContextMenu menu(*active_side_contents->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  // Verify that the new tab is correct.
+  ASSERT_EQ(new_tab_url, new_tab->GetLastCommittedURL());
+
+  // Verify that new tab has page action icon displayed.
+  ActivateTabAt(browser(), 1);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+
+  // Verify new_tab_helper has correct last_search_url_.
+  auto* new_tab_helper = SideSearchTabContentsHelper::FromWebContents(new_tab);
+  ASSERT_TRUE(new_tab_helper);
+  EXPECT_EQ(new_tab_helper->last_search_url(), srp_tab_url);
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       CarryOverSideSearchToNewWindowFromSideSearchPanel) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  // Set up srp tab.
+  const GURL srp_tab_url(GetMatchingSearchUrl());
+
+  // Set up a mock search result on side search panel.
+  const GURL new_tab_url(GetNonMatchingUrl());
+
+  NavigateActiveTab(browser(), srp_tab_url);
+
+  // Navigate current tab to a random non-srp page.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+
+  // Toggle the side panel.
+  NotifyButtonClick(browser());
+  ASSERT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  content::WebContents* active_side_contents =
+      GetActiveSidePanelWebContents(browser());
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.link_url = new_tab_url;
+
+  // Select "Open Link in New Tab" and wait for the new tab to be added.
+  TestRenderViewContextMenu menu(*active_side_contents->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW, 0);
+
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  // Verify that the new tab is correct.
+  ASSERT_EQ(new_tab_url, new_tab->GetLastCommittedURL());
+
+  // Verify that new window has page action icon displayed.
+  EXPECT_TRUE(GetSidePanelButtonFor(chrome::FindBrowserWithWebContents(new_tab))
+                  ->GetVisible());
+
+  // Verify new_tab_helper has correct last_search_url_.
+  auto* new_tab_helper = SideSearchTabContentsHelper::FromWebContents(new_tab);
+  ASSERT_TRUE(new_tab_helper);
+  EXPECT_EQ(new_tab_helper->last_search_url(), srp_tab_url);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SideSearchV2Test,
+    SideSearchNotCarriedOverToIncognitoWindowFromSideSearchPanel) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  // Set up srp tab.
+  const GURL srp_tab_url(GetMatchingSearchUrl());
+
+  // Set up a mock search result on side search panel.
+  const GURL new_tab_url(GetNonMatchingUrl());
+
+  NavigateActiveTab(browser(), srp_tab_url);
+
+  // Navigate current tab to a random non-srp page.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+
+  // Toggle the side panel.
+  NotifyButtonClick(browser());
+  ASSERT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  content::WebContents* active_side_contents =
+      GetActiveSidePanelWebContents(browser());
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.link_url = new_tab_url;
+
+  // Select "Open Link in New Tab" and wait for the new tab to be added.
+  TestRenderViewContextMenu menu(*active_side_contents->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  // Verify that the new tab is correct.
+  ASSERT_EQ(new_tab_url, new_tab->GetLastCommittedURL());
+
+  // Verify that new window has page action icon displayed.
+  EXPECT_FALSE(
+      GetSidePanelButtonFor(chrome::FindBrowserWithWebContents(new_tab)));
+}
+
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, DisplayPageActionIconInNewTab) {
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
