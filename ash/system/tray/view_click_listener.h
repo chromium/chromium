@@ -15,6 +15,7 @@ namespace ash {
 
 class ASH_EXPORT ViewClickListener {
  public:
+  // Called when `sender` is clicked. `sender` is non-null.
   virtual void OnViewClicked(views::View* sender) = 0;
 
  protected:

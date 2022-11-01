@@ -118,12 +118,24 @@ speech::LanguageCode fr_fr() {
   return speech::LanguageCode::kFrFr;
 }
 
+// Returns true if `view` is marked checked for accessibility.
+bool IsChecked(views::View* view) {
+  ui::AXNodeData node_data;
+  view->GetAccessibleNodeData(&node_data);
+  return node_data.GetCheckedState() == ax::mojom::CheckedState::kTrue;
+}
+
 }  // namespace
 
 class AccessibilityDetailedViewTest : public AshTestBase,
                                       public AccessibilityObserver {
  public:
-  AccessibilityDetailedViewTest() = default;
+  AccessibilityDetailedViewTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
+         ash::features::kOnDeviceSpeechRecognition},
+        {});
+  }
   AccessibilityDetailedViewTest(const AccessibilityDetailedViewTest&) = delete;
   AccessibilityDetailedViewTest& operator=(
       const AccessibilityDetailedViewTest&) = delete;
@@ -131,10 +143,6 @@ class AccessibilityDetailedViewTest : public AshTestBase,
 
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-         ash::features::kOnDeviceSpeechRecognition},
-        {});
     AshTestBase::SetUp();
     controller_ = Shell::Get()->accessibility_controller();
     controller_->AddObserver(this);
@@ -310,11 +318,8 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   // enabled. Check that the checked state and detailed_menu_'s local state are
   // the same.
   bool IsEnabledOnDetailMenu(bool enabled_state, views::View* view) const {
-    ui::AXNodeData node_data;
-    view->GetAccessibleNodeData(&node_data);
-    bool checked_for_accessibility =
-        node_data.GetCheckedState() == ax::mojom::CheckedState::kTrue;
-    DCHECK(enabled_state == checked_for_accessibility);
+    bool checked_for_accessibility = IsChecked(view);
+    DCHECK_EQ(enabled_state, checked_for_accessibility);
     return enabled_state && checked_for_accessibility;
   }
 
@@ -410,6 +415,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     return detailed_menu_->GetClassName();
   }
 
+  AccessibilityControllerImpl* controller() { return controller_; }
   AccessibilityDetailedView* detailed_menu() { return detailed_menu_.get(); }
 
   // Accessors for list item views.
@@ -462,6 +468,56 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     return detailed_menu_->switch_access_view_;
   }
 
+  // Accessors for the top views listing enabled items.
+  HoverHighlightView* spoken_feedback_top_view() const {
+    return detailed_menu_->spoken_feedback_top_view_;
+  }
+  HoverHighlightView* select_to_speak_top_view() const {
+    return detailed_menu_->select_to_speak_top_view_;
+  }
+  HoverHighlightView* dictation_top_view() const {
+    return detailed_menu_->dictation_top_view_;
+  }
+  HoverHighlightView* high_contrast_top_view() const {
+    return detailed_menu_->high_contrast_top_view_;
+  }
+  HoverHighlightView* screen_magnifier_top_view() const {
+    return detailed_menu_->screen_magnifier_top_view_;
+  }
+  HoverHighlightView* docked_magnifier_top_view() const {
+    return detailed_menu_->docked_magnifier_top_view_;
+  }
+  HoverHighlightView* large_cursor_top_view() const {
+    return detailed_menu_->large_cursor_top_view_;
+  }
+  HoverHighlightView* live_caption_top_view() const {
+    return detailed_menu_->live_caption_top_view_;
+  }
+  HoverHighlightView* autoclick_top_view() const {
+    return detailed_menu_->autoclick_top_view_;
+  }
+  HoverHighlightView* virtual_keyboard_top_view() const {
+    return detailed_menu_->virtual_keyboard_top_view_;
+  }
+  HoverHighlightView* mono_audio_top_view() const {
+    return detailed_menu_->mono_audio_top_view_;
+  }
+  HoverHighlightView* caret_highlight_top_view() const {
+    return detailed_menu_->caret_highlight_top_view_;
+  }
+  HoverHighlightView* highlight_mouse_cursor_top_view() const {
+    return detailed_menu_->highlight_mouse_cursor_top_view_;
+  }
+  HoverHighlightView* highlight_keyboard_focus_top_view() const {
+    return detailed_menu_->highlight_keyboard_focus_top_view_;
+  }
+  HoverHighlightView* sticky_keys_top_view() const {
+    return detailed_menu_->sticky_keys_top_view_;
+  }
+  HoverHighlightView* switch_access_top_view() const {
+    return detailed_menu_->switch_access_top_view_;
+  }
+
  private:
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override {
@@ -478,9 +534,18 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AccessibilityDetailedViewTest, ListItemsAreInRoundedContainer) {
-  base::test::ScopedFeatureList feature_list{features::kQsRevamp};
+class AccessibilityDetailedViewQsRevampTest
+    : public AccessibilityDetailedViewTest {
+ public:
+  AccessibilityDetailedViewQsRevampTest() {
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, ListItemsAreInRoundedContainer) {
   CreateDetailedMenu();
   auto has_rounded_container_parent = [](views::View* view) -> bool {
     return views::IsViewClass<RoundedContainer>(view->parent());
@@ -502,6 +567,214 @@ TEST_F(AccessibilityDetailedViewTest, ListItemsAreInRoundedContainer) {
   EXPECT_TRUE(has_rounded_container_parent(sticky_keys_view()));
   EXPECT_TRUE(has_rounded_container_parent(switch_access_view()));
   CloseDetailMenu();
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest,
+       TopsViewsAreEmptyWithNoFeaturesEnabled) {
+  CreateDetailedMenu();
+
+  // By default none of the accessibility features are enabled, so none of the
+  // top-views are created.
+  EXPECT_FALSE(spoken_feedback_top_view());
+  EXPECT_FALSE(select_to_speak_top_view());
+  EXPECT_FALSE(dictation_top_view());
+  EXPECT_FALSE(high_contrast_top_view());
+  EXPECT_FALSE(screen_magnifier_top_view());
+  EXPECT_FALSE(docked_magnifier_top_view());
+  EXPECT_FALSE(large_cursor_top_view());
+  EXPECT_FALSE(live_caption_top_view());
+  EXPECT_FALSE(autoclick_top_view());
+  EXPECT_FALSE(virtual_keyboard_top_view());
+  EXPECT_FALSE(mono_audio_top_view());
+  EXPECT_FALSE(caret_highlight_top_view());
+  EXPECT_FALSE(highlight_mouse_cursor_top_view());
+  EXPECT_FALSE(highlight_keyboard_focus_top_view());
+  EXPECT_FALSE(sticky_keys_top_view());
+  EXPECT_FALSE(switch_access_top_view());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, SpokenFeedbackTopView) {
+  EnableSpokenFeedback(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(spoken_feedback_top_view());
+  EXPECT_TRUE(IsChecked(spoken_feedback_top_view()));
+
+  ClickView(spoken_feedback_top_view());
+  EXPECT_FALSE(IsChecked(spoken_feedback_top_view()));
+  EXPECT_FALSE(controller()->spoken_feedback().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, SelectToSpeakTopView) {
+  EnableSelectToSpeak(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(select_to_speak_top_view());
+  EXPECT_TRUE(IsChecked(select_to_speak_top_view()));
+
+  ClickView(select_to_speak_top_view());
+  EXPECT_FALSE(IsChecked(select_to_speak_top_view()));
+  EXPECT_FALSE(controller()->select_to_speak().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, DictationTopView) {
+  EnableDictation(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(dictation_top_view());
+  EXPECT_TRUE(IsChecked(dictation_top_view()));
+
+  ClickView(dictation_top_view());
+  EXPECT_FALSE(IsChecked(dictation_top_view()));
+  EXPECT_FALSE(controller()->dictation().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, HighContrastTopView) {
+  EnableHighContrast(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(high_contrast_top_view());
+  EXPECT_TRUE(IsChecked(high_contrast_top_view()));
+
+  ClickView(high_contrast_top_view());
+  EXPECT_FALSE(IsChecked(high_contrast_top_view()));
+  EXPECT_FALSE(controller()->high_contrast().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, ScreenMagnifierTopView) {
+  Shell::Get()->accessibility_delegate()->SetMagnifierEnabled(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(screen_magnifier_top_view());
+  EXPECT_TRUE(IsChecked(screen_magnifier_top_view()));
+
+  ClickView(screen_magnifier_top_view());
+  // The test accessibility delegate doesn't notify observers of changes, so do
+  // it manually.
+  controller()->NotifyAccessibilityStatusChanged();
+
+  EXPECT_FALSE(IsChecked(screen_magnifier_top_view()));
+  EXPECT_FALSE(Shell::Get()->accessibility_delegate()->IsMagnifierEnabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, DockedMagnifierTopView) {
+  SetDockedMagnifierEnabled(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(docked_magnifier_top_view());
+  EXPECT_TRUE(IsChecked(docked_magnifier_top_view()));
+
+  ClickView(docked_magnifier_top_view());
+  EXPECT_FALSE(IsChecked(docked_magnifier_top_view()));
+  EXPECT_FALSE(Shell::Get()->docked_magnifier_controller()->GetEnabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, LargeCursorTopView) {
+  EnableLargeCursor(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(large_cursor_top_view());
+  EXPECT_TRUE(IsChecked(large_cursor_top_view()));
+
+  ClickView(large_cursor_top_view());
+  EXPECT_FALSE(IsChecked(large_cursor_top_view()));
+  EXPECT_FALSE(controller()->large_cursor().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, LiveCaptionTopView) {
+  EnableLiveCaption(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(live_caption_top_view());
+  EXPECT_TRUE(IsChecked(live_caption_top_view()));
+
+  ClickView(live_caption_top_view());
+  EXPECT_FALSE(IsChecked(live_caption_top_view()));
+  EXPECT_FALSE(controller()->live_caption().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, AutoClickTopView) {
+  EnableAutoclick(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(autoclick_top_view());
+  EXPECT_TRUE(IsChecked(autoclick_top_view()));
+
+  ClickView(autoclick_top_view());
+  EXPECT_FALSE(IsChecked(autoclick_top_view()));
+  EXPECT_FALSE(controller()->autoclick().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, VirtualKeyboardTopView) {
+  EnableVirtualKeyboard(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(virtual_keyboard_top_view());
+  EXPECT_TRUE(IsChecked(virtual_keyboard_top_view()));
+
+  ClickView(virtual_keyboard_top_view());
+  EXPECT_FALSE(IsChecked(virtual_keyboard_top_view()));
+  EXPECT_FALSE(controller()->virtual_keyboard().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, MonoAudioTopView) {
+  EnableMonoAudio(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(mono_audio_top_view());
+  EXPECT_TRUE(IsChecked(mono_audio_top_view()));
+
+  ClickView(mono_audio_top_view());
+  EXPECT_FALSE(IsChecked(mono_audio_top_view()));
+  EXPECT_FALSE(controller()->mono_audio().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, CaretHighlightTopView) {
+  SetCaretHighlightEnabled(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(caret_highlight_top_view());
+  EXPECT_TRUE(IsChecked(caret_highlight_top_view()));
+
+  ClickView(caret_highlight_top_view());
+  EXPECT_FALSE(IsChecked(caret_highlight_top_view()));
+  EXPECT_FALSE(controller()->caret_highlight().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, HighlightMouseCursorTopView) {
+  SetCursorHighlightEnabled(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(highlight_mouse_cursor_top_view());
+  EXPECT_TRUE(IsChecked(highlight_mouse_cursor_top_view()));
+
+  ClickView(highlight_mouse_cursor_top_view());
+  EXPECT_FALSE(IsChecked(highlight_mouse_cursor_top_view()));
+  EXPECT_FALSE(controller()->cursor_highlight().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, HighlightKeyboardFocusTopView) {
+  SetFocusHighlightEnabled(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(highlight_keyboard_focus_top_view());
+  EXPECT_TRUE(IsChecked(highlight_keyboard_focus_top_view()));
+
+  ClickView(highlight_keyboard_focus_top_view());
+  EXPECT_FALSE(IsChecked(highlight_keyboard_focus_top_view()));
+  EXPECT_FALSE(controller()->focus_highlight().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, StickyKeysTopView) {
+  EnableStickyKeys(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(sticky_keys_top_view());
+  EXPECT_TRUE(IsChecked(sticky_keys_top_view()));
+
+  ClickView(sticky_keys_top_view());
+  EXPECT_FALSE(IsChecked(sticky_keys_top_view()));
+  EXPECT_FALSE(controller()->sticky_keys().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, SwitchAccessTopView) {
+  // Don't show the confirmation dialog when disabling switch access, so the
+  // feature will be disabled immediately.
+  controller()->DisableSwitchAccessDisableConfirmationDialogTesting();
+
+  EnableSwitchAccess(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(switch_access_top_view());
+  EXPECT_TRUE(IsChecked(switch_access_top_view()));
+
+  ClickView(switch_access_top_view());
+  EXPECT_FALSE(IsChecked(switch_access_top_view()));
+  EXPECT_FALSE(controller()->switch_access().enabled());
 }
 
 TEST_F(AccessibilityDetailedViewTest, CheckMenuVisibilityOnDetailMenu) {

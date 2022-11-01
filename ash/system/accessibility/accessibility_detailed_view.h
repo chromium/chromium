@@ -128,6 +128,26 @@ class ASH_EXPORT AccessibilityDetailedView
   HoverHighlightView* highlight_keyboard_focus_view_ = nullptr;
   HoverHighlightView* sticky_keys_view_ = nullptr;
 
+  // Views that appear in the top section listing enabled items. Created if the
+  // feature is enabled, otherwise nullptr. Owned by views hierarchy.
+  // Only used with QsRevamp.
+  HoverHighlightView* spoken_feedback_top_view_ = nullptr;
+  HoverHighlightView* select_to_speak_top_view_ = nullptr;
+  HoverHighlightView* dictation_top_view_ = nullptr;
+  HoverHighlightView* high_contrast_top_view_ = nullptr;
+  HoverHighlightView* screen_magnifier_top_view_ = nullptr;
+  HoverHighlightView* docked_magnifier_top_view_ = nullptr;
+  HoverHighlightView* large_cursor_top_view_ = nullptr;
+  HoverHighlightView* autoclick_top_view_ = nullptr;
+  HoverHighlightView* virtual_keyboard_top_view_ = nullptr;
+  HoverHighlightView* switch_access_top_view_ = nullptr;
+  HoverHighlightView* live_caption_top_view_ = nullptr;
+  HoverHighlightView* mono_audio_top_view_ = nullptr;
+  HoverHighlightView* caret_highlight_top_view_ = nullptr;
+  HoverHighlightView* highlight_mouse_cursor_top_view_ = nullptr;
+  HoverHighlightView* highlight_keyboard_focus_top_view_ = nullptr;
+  HoverHighlightView* sticky_keys_top_view_ = nullptr;
+
   views::Button* help_view_ = nullptr;
   views::Button* settings_view_ = nullptr;
 
