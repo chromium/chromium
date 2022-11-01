@@ -1194,44 +1194,40 @@ TEST_F(TrialComparisonCertVerifierTest,
                                         std::move(intermediates));
   ASSERT_TRUE(different_chain);
 
-  CertVerifyResult different_chain_result;
-  different_chain_result.verified_cert = different_chain;
+  CertVerifyResult different_chain_result_no_known_root;
+  different_chain_result_no_known_root.verified_cert = different_chain;
 
-  CertVerifyResult nonev_chain_result;
-  nonev_chain_result.verified_cert = cert_chain;
+  CertVerifyResult different_chain_result_known_root;
+  different_chain_result_known_root.verified_cert = different_chain;
+  different_chain_result_known_root.is_issued_by_known_root = true;
 
-  CertVerifyResult ev_chain_result;
-  ev_chain_result.verified_cert = cert_chain;
-  ev_chain_result.cert_status =
-      CERT_STATUS_IS_EV | CERT_STATUS_REV_CHECKING_ENABLED;
+  CertVerifyResult chain_result;
+  chain_result.verified_cert = cert_chain;
+  chain_result.is_issued_by_known_root = true;
 
   SHA256HashValue root_fingerprint;
   crypto::SHA256HashString(x509_util::CryptoBufferAsStringPiece(
                                cert_chain->intermediate_buffers().back().get()),
                            root_fingerprint.data,
                            sizeof(root_fingerprint.data));
-  // Both policies in the target are EV policies, but only 1.2.6.7 is valid for
-  // the root in cert_chain.
-  ScopedTestEVPolicy scoped_ev_policy_1(EVRootCAMetadata::GetInstance(),
-                                        root_fingerprint, "1.2.6.7");
-  ScopedTestEVPolicy scoped_ev_policy_2(EVRootCAMetadata::GetInstance(),
-                                        SHA256HashValue(), "1.2.3.4");
 
   scoped_refptr<MockCertVerifyProc> verify_proc1 =
       base::MakeRefCounted<MockCertVerifyProc>();
   // Primary verifier returns ok status and different_chain if verifying leaf
-  // alone.
+  // alone, but not is_known_root.
   EXPECT_CALL(*verify_proc1, VerifyInternal(leaf.get(), _, _, _, _, _, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<7>(different_chain_result), Return(OK)));
-  // Primary verifier returns ok status and nonev_chain_result if verifying
-  // cert_chain.
+      .WillOnce(DoAll(SetArgPointee<7>(different_chain_result_no_known_root),
+                      Return(OK)));
+  // Primary verifier returns ok status and different_chain if verifying
+  // cert_chain and with is_known_root..
   EXPECT_CALL(*verify_proc1,
               VerifyInternal(cert_chain.get(), _, _, _, _, _, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<7>(nonev_chain_result), Return(OK)));
+      .WillOnce(DoAll(SetArgPointee<7>(different_chain_result_known_root),
+                      Return(OK)));
 
-  // Trial verifier returns ok status and ev_chain_result.
+  // Trial verifier returns ok status and chain_result.
   scoped_refptr<FakeCertVerifyProc> verify_proc2 =
-      base::MakeRefCounted<FakeCertVerifyProc>(OK, ev_chain_result);
+      base::MakeRefCounted<FakeCertVerifyProc>(OK, chain_result);
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
@@ -1260,7 +1256,8 @@ TEST_F(TrialComparisonCertVerifierTest,
   EXPECT_TRUE(reports.empty());
 
   // Primary verifier should be used twice, the second time with the chain
-  // from the trial verifier.
+  // from the trial verifier. Even so, it only should be counted once in
+  // metrics.
   testing::Mock::VerifyAndClear(verify_proc1.get());
   EXPECT_EQ(1, verify_proc2->num_verifications());
   histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 1);
@@ -1772,6 +1769,7 @@ TEST_F(TrialComparisonCertVerifierTest, PrimaryRevokedSecondaryOk) {
   EXPECT_EQ(1U, reports.size());
 }
 
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 TEST_F(TrialComparisonCertVerifierTest, MultipleEVPolicies) {
   base::FilePath certs_dir =
       GetTestNetDataDirectory()
@@ -1977,6 +1975,7 @@ TEST_F(TrialComparisonCertVerifierTest, MultiplePoliciesOnlyOneIsEV) {
       "Net.CertVerifier_TrialComparisonResult",
       TrialComparisonResult::kBothValidDifferentDetails, 1);
 }
+#endif
 
 TEST_F(TrialComparisonCertVerifierTest, LocallyTrustedLeaf) {
   // Platform verifier verifies the leaf directly.
