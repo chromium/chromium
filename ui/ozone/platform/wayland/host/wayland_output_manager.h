@@ -59,15 +59,7 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
 
  private:
   // WaylandOutput::Delegate:
-  void OnOutputHandleMetrics(WaylandOutput::Id output_id,
-                             const gfx::Point& origin,
-                             const gfx::Size& logical_size,
-                             const gfx::Size& physical_size,
-                             const gfx::Insets& insets,
-                             float scale_factor,
-                             int32_t panel_transform,
-                             int32_t logical_transform,
-                             const std::string& description) override;
+  void OnOutputHandleMetrics(const WaylandOutput::Metrics& metrics) override;
 
   OutputList output_list_;
 

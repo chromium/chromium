@@ -42,17 +42,39 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
                           const std::string& interface,
                           uint32_t version);
 
+  // All parameters are in DIP screen coordinates/units except |physical_size|,
+  // which is in physical pixels.
+  struct Metrics {
+    // TODO(aluh): Remove explicit constructors/destructor to enable aggregate
+    // initialization if chromium-style check for complex struct is removed.
+    // See:
+    // https://groups.google.com/a/google.com/g/chromeos-chatty-eng/c/nM1_QC6qcuA
+    Metrics();
+    Metrics(Id output_id,
+            gfx::Point origin,
+            gfx::Size logical_size,
+            gfx::Size physical_size,
+            gfx::Insets insets,
+            float scale_factor,
+            int32_t panel_transform,
+            int32_t logical_transform,
+            const std::string& description);
+    ~Metrics();
+
+    Id output_id = 0;
+    gfx::Point origin;
+    gfx::Size logical_size;
+    gfx::Size physical_size;
+    gfx::Insets insets;
+    float scale_factor = 0.0;
+    int32_t panel_transform = 0;
+    int32_t logical_transform = 0;
+    std::string description;
+  };
+
   class Delegate {
    public:
-    virtual void OnOutputHandleMetrics(Id output_id,
-                                       const gfx::Point& origin,
-                                       const gfx::Size& logical_size,
-                                       const gfx::Size& physical_size,
-                                       const gfx::Insets& insets,
-                                       float scale_factor,
-                                       int32_t panel_transform,
-                                       int32_t logical_transform,
-                                       const std::string& description) = 0;
+    virtual void OnOutputHandleMetrics(const Metrics& metrics) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -71,6 +93,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   void InitializeColorManagementOutput(WaylandZcrColorManager* manager);
   float GetUIScaleFactor() const;
 
+  Metrics GetMetrics() const;
   Id output_id() const { return output_id_; }
   bool has_output(wl_output* output) const { return output_.get() == output; }
   float scale_factor() const { return scale_factor_; }

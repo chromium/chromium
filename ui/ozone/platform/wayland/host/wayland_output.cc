@@ -61,6 +61,27 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
   connection->wayland_output_manager_->AddWaylandOutput(name, output.release());
 }
 
+WaylandOutput::Metrics::Metrics() = default;
+WaylandOutput::Metrics::Metrics(Id output_id,
+                                gfx::Point origin,
+                                gfx::Size logical_size,
+                                gfx::Size physical_size,
+                                gfx::Insets insets,
+                                float scale_factor,
+                                int32_t panel_transform,
+                                int32_t logical_transform,
+                                const std::string& description)
+    : output_id(output_id),
+      origin(origin),
+      logical_size(logical_size),
+      physical_size(physical_size),
+      insets(insets),
+      scale_factor(scale_factor),
+      panel_transform(panel_transform),
+      logical_transform(logical_transform),
+      description(description) {}
+WaylandOutput::Metrics::~Metrics() = default;
+
 WaylandOutput::WaylandOutput(Id output_id,
                              wl_output* output,
                              WaylandConnection* connection)
@@ -116,6 +137,13 @@ float WaylandOutput::GetUIScaleFactor() const {
              : scale_factor();
 }
 
+WaylandOutput::Metrics WaylandOutput::GetMetrics() const {
+  // TODO(aluh): Change to designated initializers once C++20 is supported.
+  return {output_id(),  origin(),       logical_size(),    physical_size(),
+          insets(),     scale_factor(), panel_transform(), logical_transform(),
+          description()};
+}
+
 int32_t WaylandOutput::logical_transform() const {
   if (aura_output_ && aura_output_->logical_transform()) {
     return *aura_output_->logical_transform();
@@ -168,9 +196,7 @@ void WaylandOutput::TriggerDelegateNotifications() {
       scale_factor_ = max_physical_side / max_logical_side;
     }
   }
-  delegate_->OnOutputHandleMetrics(
-      output_id_, origin(), logical_size(), physical_size_, insets(),
-      scale_factor_, panel_transform_, logical_transform(), description());
+  delegate_->OnOutputHandleMetrics(GetMetrics());
 }
 
 // static
