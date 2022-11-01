@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "post_restore_app_agent_unittest.mm",
     "safe_mode_app_state_agent_unittest.mm",
     "tab_opener_unittest.mm",
+    "variations_app_state_agent_unittest.mm",
   ]
   deps = [
     ":app",
@@ -73,6 +74,7 @@ source_set("unit_tests") {
     ":app_metrics_app_state_agent",
     ":post_restore_app_agent",
     ":safe_mode_app_state_agent",
+    ":variations_app_state_agent",
     "//base",
     "//base/test:test_support",
     "//components/metrics",
@@ -80,6 +82,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
+    "//components/variations",
     "//ios/chrome/app:enterprise_app_agent",
     "//ios/chrome/app/application_delegate",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
