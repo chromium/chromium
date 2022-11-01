@@ -331,6 +331,9 @@ TEST_F(PhoneHubTrayTest, StartMultideviceFeatureSetUpFlow) {
   GetMultideviceFeatureAccessManager()->SetCameraRollAccessStatusInternal(
       AccessStatus::kAccessGranted);
 
+  // Bubble has been dismissed, opening again.
+  ClickTrayButton();
+
   // This view should be dismissed.
   EXPECT_FALSE(multidevice_feature_opt_in_view()->GetVisible());
 

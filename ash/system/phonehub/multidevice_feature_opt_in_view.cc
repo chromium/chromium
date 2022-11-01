@@ -11,10 +11,14 @@
 #include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
+#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
+#include "ash/system/status_area_widget.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -151,6 +155,7 @@ void MultideviceFeatureOptInView::SetUpButtonPressed() {
   NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+  ClosePhoneHubBubble();
 }
 
 void MultideviceFeatureOptInView::DismissButtonPressed() {
@@ -186,6 +191,24 @@ void MultideviceFeatureOptInView::UpdateVisibility(bool was_visible) {
     LogPermissionOnboardingPromoShown(setup_mode_);
   }
   PreferredSizeChanged();
+}
+
+void MultideviceFeatureOptInView::ClosePhoneHubBubble() {
+  // Close Phone Hub bubble in current display.
+  views::Widget* const widget = GetWidget();
+  // |widget| is null when this function is called before the view is added to a
+  // widget (in unit tests).
+  if (!widget) {
+    return;
+  }
+  int64_t current_display_id =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(widget->GetNativeWindow())
+          .id();
+  Shell::GetRootWindowControllerWithDisplayId(current_display_id)
+      ->GetStatusAreaWidget()
+      ->phone_hub_tray()
+      ->CloseBubble();
 }
 
 BEGIN_METADATA(MultideviceFeatureOptInView, views::View)
