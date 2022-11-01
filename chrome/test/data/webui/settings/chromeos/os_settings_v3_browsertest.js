@@ -338,6 +338,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
  ['AppManagementUninstallButton', 'app_management/uninstall_button_test.js'],
+ [
+   'AudioAndCaptionsPage',
+   'audio_and_captions_page_tests.js',
+   {enabled: ['features::kAccessibilityOSSettingsVisibility']},
+ ],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.js'],
