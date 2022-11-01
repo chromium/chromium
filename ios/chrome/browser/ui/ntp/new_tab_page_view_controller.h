@@ -131,6 +131,10 @@
 // Updates the scroll position to account for the feed promo being removed.
 - (void)updateScrollPositionForFeedTopSectionClosed;
 
+// Forces the elements that stick to the top when scrolling (eg. omnibox, feed
+// header) to update for the current scroll position.
+- (void)updateStickyElements;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_VIEW_CONTROLLER_H_
