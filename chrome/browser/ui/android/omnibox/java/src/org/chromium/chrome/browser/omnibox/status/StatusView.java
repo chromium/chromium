@@ -182,7 +182,12 @@ public class StatusView extends LinearLayout {
                     .setDuration(mAnimationsEnabled ? getIconAnimationDuration() : 0)
                     .alpha(0.0f)
                     .withEndAction(() -> {
+                        // We need to set the icon and the icon's background to be GONE saparately,
+                        // not their parent FrameView, because if we set their parent FrameView to
+                        // be GONE, later on even we set the icon to be VISIBLE, the icon won't show
+                        // up since its parent is GONE.
                         mIconView.setVisibility(View.GONE);
+                        mIconBackground.setVisibility(View.GONE);
                         mIconView.setAlpha(1f);
                         mAnimatingStatusIconHide = false;
                         allowBrowserControlsHide();

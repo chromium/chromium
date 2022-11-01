@@ -12,5 +12,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
     android:visibility="gone"
+    android:paddingStart="@dimen/incognito_badge_lateral_padding"
+    android:paddingEnd="@dimen/incognito_badge_lateral_padding"
     android:contentDescription="@string/accessibility_incognito_badge"
     app:srcCompat="@drawable/location_bar_incognito_badge" />
