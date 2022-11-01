@@ -10,17 +10,6 @@
       "use_remoteexec": true
     }
   },
-  "Linux ASan LSan Low Symbols FYI Builder": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_asan": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_lsan": true,
-      "symbol_level": 0,
-      "use_remoteexec": true
-    }
-  },
   "Linux CFI": {
     "gn_args": {
       "dcheck_always_on": true,

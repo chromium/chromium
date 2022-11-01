@@ -623,8 +623,7 @@
     },
 
     'chromium.memory': {
-      'Linux ASan LSan Builder': 'asan_lsan_release_trybot_minimum_symbols_reclient',
-      'Linux ASan LSan Low Symbols FYI Builder': 'asan_lsan_release_trybot_reclient',
+      'Linux ASan LSan Builder': 'asan_lsan_release_trybot_reclient',
       'Linux CFI': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'Linux Chromium OS ASan LSan Builder': 'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient',
       'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot_reclient',
@@ -1181,7 +1180,7 @@
       'linux-x64-castos-audio': 'cast_audio_release_trybot',
       'linux-x64-castos-dbg': 'cast_debug_bot',
       'linux_chromium_archive_rel_ng': 'release_bot_reclient',
-      'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot_minimum_symbols_reclient',
+      'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot_reclient',
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_bot_dcheck_always_on',
       'linux_chromium_chromeos_msan_focal': 'chromeos_msan_release_bot',
@@ -1923,12 +1922,8 @@
       'asan', 'lsan', 'release_bot_blink_reclient',
     ],
 
-    'asan_lsan_release_trybot_minimum_symbols_reclient': [
-      'asan', 'lsan', 'release_trybot_minimal_symbols_reclient',
-    ],
-
     'asan_lsan_release_trybot_reclient': [
-      'asan', 'lsan', 'release_trybot_reclient',
+      'asan', 'lsan', 'release_trybot_minimal_symbols_reclient',
     ],
 
     'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on_reclient': [
