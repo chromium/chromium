@@ -4784,7 +4784,20 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled (Fullscreen)",
+                    "params": {
+                        "ios-new-post-restore-experience": "false"
+                    },
+                    "enable_features": [
+                        "FullscreenPromosManager",
+                        "IOSNewPostRestoreExperience"
+                    ]
+                },
+                {
+                    "name": "Enabled (Alert)",
+                    "params": {
+                        "ios-new-post-restore-experience": "true"
+                    },
                     "enable_features": [
                         "FullscreenPromosManager",
                         "IOSNewPostRestoreExperience"
