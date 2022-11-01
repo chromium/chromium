@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import {LensErrorType, LensFormElement, LensSubmitType} from 'chrome://new-tab-page/lazy_load.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('LensFormTest', () => {
   let lensForm: LensFormElement;
@@ -146,6 +146,22 @@ suite('LensFormTest', () => {
     assertEquals('1001', st);
   });
 
+  test(
+      'submit url should set client data param to a non-empty value',
+      async () => {
+        // Arrange.
+        const file = new File([], 'file-name.png', {type: 'image/png'});
+
+        // Act.
+        dispatchFileInputChange(file);
+
+        // Assert.
+        const action = new URL(lensForm.$.fileForm.action);
+        const cd = action.searchParams.get('cd');
+        assertGT(cd?.length ?? 0, 0);
+      });
+
+
   test('submit url with valid http should submit', async () => {
     // Arrange.
     const url = 'http://www.example.com/dog.jpg';
@@ -260,6 +276,17 @@ suite('LensFormTest', () => {
     // Assert.
     assertEquals('1001', input.value);
   });
+
+  test(
+      'submit url should set client data param to a non-empty value',
+      async () => {
+        // Arrange.
+        const input =
+            lensForm.$.urlForm.children.namedItem('cd') as HTMLInputElement;
+
+        // Assert.
+        assertGT(input.value.length, 0);
+      });
 
   function dispatchFileInputChangeWithDataTransfer(dataTransfer: DataTransfer) {
     lensForm.$.fileInput.files = dataTransfer.files;

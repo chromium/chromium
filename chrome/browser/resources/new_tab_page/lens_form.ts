@@ -4,6 +4,7 @@
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from './i18n_setup.js';
 import {getTemplate} from './lens_form.html.js';
 
 /** Lens service endpoint for the Upload by File action. */
@@ -98,7 +99,11 @@ export class LensFormElement extends PolymerElement {
         readOnly: true,
         value: window.navigator.language,
       },
-      startTime_: String,
+      clientData_: {
+        type: String,
+        readOnly: true,
+        value: loadTimeData.getString('realboxLensVariations'),
+      },
     };
   }
 
@@ -106,6 +111,7 @@ export class LensFormElement extends PolymerElement {
   private uploadFileAction_: string = UPLOAD_FILE_ACTION;
   private uploadUrl_: string = '';
   private startTime_: string|null = null;
+  private clientData_: string;
 
   openSystemFilePicker() {
     this.$.fileInput.click();
@@ -153,6 +159,7 @@ export class LensFormElement extends PolymerElement {
     action.searchParams.set('ep', UPLOAD_FILE_ENTRYPOINT);
     action.searchParams.set('hl', this.language_);
     action.searchParams.set('st', this.startTime_.toString());
+    action.searchParams.set('cd', this.clientData_);
     this.uploadFileAction_ = action.toString();
 
     this.dispatchLoading_(LensSubmitType.FILE);

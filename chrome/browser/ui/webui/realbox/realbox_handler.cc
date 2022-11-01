@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/realbox/realbox_handler.h"
 
+#include "base/base64.h"
+#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
@@ -53,9 +55,11 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/variations/variations_client.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/cookies/cookie_util.h"
+#include "realbox_handler.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/resource_path.h"
@@ -284,6 +288,30 @@ realbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
       CreateAutocompleteMatches(result, bookmark_model));
 }
 
+std::string GetBase64UrlVariations(Profile* profile) {
+  variations::VariationsClient* provider = profile->GetVariationsClient();
+
+  variations::mojom::VariationsHeadersPtr headers =
+      provider->GetVariationsHeaders();
+  if (headers.is_null()) {
+    return std::string();
+  }
+  const std::string variations_base64 = headers->headers_map.at(
+      variations::mojom::GoogleWebVisibility::FIRST_PARTY);
+
+  // Variations headers are base64 encoded, however, we're attaching the value
+  // to a URL query parameter so they need to be base64url encoded.
+  std::string variations_decoded;
+  base::Base64Decode(variations_base64, &variations_decoded);
+
+  std::string variations_base64url;
+  base::Base64UrlEncode(variations_decoded,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &variations_base64url);
+
+  return variations_base64url;
+}
+
 }  // namespace
 
 // static
@@ -323,6 +351,7 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "realboxLensSearch",
       base::FeatureList::IsEnabled(ntp_features::kNtpRealboxLensSearch) &&
           profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
+  source->AddString("realboxLensVariations", GetBase64UrlVariations(profile));
 }
 
 // static
