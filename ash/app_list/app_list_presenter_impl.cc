@@ -40,6 +40,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -118,20 +119,28 @@ bool IsShelfBackgroundTypeWithRoundedCorners(
 
 // Invokes `complete_callback_` at the end of animation.
 class FullscreenLauncherAnimationObserver
-    : public ui::ImplicitAnimationObserver {
+    : public ui::ImplicitAnimationObserver,
+      public ui::LayerObserver {
  public:
   // Invoked with `true` if animation was aborted.
   using AnimationCompleteCallback = base::OnceCallback<void(bool)>;
 
-  explicit FullscreenLauncherAnimationObserver(
+  FullscreenLauncherAnimationObserver(
+      ui::Layer* layer,
       AnimationCompleteCallback complete_callback)
-      : complete_callback_(std::move(complete_callback)) {}
+      : layer_(layer), complete_callback_(std::move(complete_callback)) {
+    DCHECK(layer_);
+    layer_->AddObserver(this);
+  }
+
   FullscreenLauncherAnimationObserver(
       const FullscreenLauncherAnimationObserver& other) = delete;
   FullscreenLauncherAnimationObserver& operator=(
       const FullscreenLauncherAnimationObserver& other) = delete;
+
   ~FullscreenLauncherAnimationObserver() override {
     StopObservingImplicitAnimations();
+    layer_->RemoveObserver(this);
   }
 
   // ui::ImplicitAnimationObserver:
@@ -145,7 +154,17 @@ class FullscreenLauncherAnimationObserver
     delete this;
   }
 
+  // ui::LayerObserver overrides:
+  void LayerDestroyed(ui::Layer* layer) override {
+    // Old `AppListView`'s layer can be cloned and then destroyed by
+    // `ScreenRotationAnimator`. In this case run `complete_callback_` and
+    // destroy `this`.
+    std::move(complete_callback_).Run(false);
+    delete this;
+  }
+
  private:
+  ui::Layer* const layer_;
   AnimationCompleteCallback complete_callback_;
 };
 
@@ -315,7 +334,7 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
             &AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone,
             weak_ptr_factory_.GetWeakPtr(), /*target_visibility=*/true);
     auto* animation_observer = new FullscreenLauncherAnimationObserver(
-        std::move(animation_complete_callback));
+        layer, std::move(animation_complete_callback));
     UpdateScaleAndOpacityForHomeLauncher(
         1.0f, 1.0f, absl::nullopt,
         base::BindRepeating(&UpdateTabletModeTransitionAnimationSettings,
@@ -398,20 +417,17 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
   last_open_time_.reset();
 
   if (!view_->GetWidget()->GetNativeWindow()->is_destroying()) {
+    auto* const layer = view_->GetWidget()->GetNativeWindow()->layer();
     if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
       FullscreenLauncherAnimationObserver::AnimationCompleteCallback
           animation_complete_callback = base::BindOnce(
               &AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone,
               weak_ptr_factory_.GetWeakPtr(), /*target_visibility=*/false);
       auto* animation_observer = new FullscreenLauncherAnimationObserver(
-          std::move(animation_complete_callback));
+          layer, std::move(animation_complete_callback));
       // Aborts show animation (if it's running, noop otherwise). This helps to
       // run dismiss animation smoothly from the aborted scale/opacity points.
-      view_->GetWidget()
-          ->GetNativeWindow()
-          ->layer()
-          ->GetAnimator()
-          ->AbortAllAnimations();
+      layer->GetAnimator()->AbortAllAnimations();
       UpdateScaleAndOpacityForHomeLauncher(
           kFullscreenLauncherFadeAnimationScale, 0.0f, absl::nullopt,
           base::BindRepeating(&UpdateTabletModeTransitionAnimationSettings,
