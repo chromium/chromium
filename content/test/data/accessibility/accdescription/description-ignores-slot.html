@@ -1,0 +1,29 @@
+<!--
+@BLINK-ALLOW:description=*
+@BLINK-ALLOW:descriptionFrom=*
+-->
+<!-- AccName calculation should ignore slot element -->
+<template id="template">
+  <slot id="slot" aria-label="label on slot" name="my-slot">default content</slot>
+  <button aria-describedby="slot" id="test">foobar</button>
+</template>
+
+<my-element>
+  <b slot="my-slot">description</b>
+</my-element>
+
+<script>
+customElements.define(
+    'my-element',
+    class extends HTMLElement {
+        constructor() {
+            super();
+            let template = document.getElementById('template');
+            let templateContent = template.content;
+
+            const shadowRoot = this.attachShadow({mode: 'open'})
+                  .appendChild(templateContent.cloneNode(true));
+        }
+    }
+);
+</script>
