@@ -1047,15 +1047,22 @@ class AXPosition {
         // '\n' character in a <br> element unless multiple consecutive <br>
         // elements are present and so empty paragraphs have been created.
         //
-        // Note that `!AtStartOfAnchor()` implies that `MaxTextOffset()` > 0 and
-        // `text_offset()` > 0. Therefore,
-        // `text_position->GetText().at(text_position->text_offset_ - 1)` will
-        // always be valid.
+        // Note that, in theory, `!AtStartOfAnchor()` implies that
+        // `MaxTextOffset()` > 0 and `text_offset()` > 0. Therefore,
+        // `text_position->GetText().at(text_position->text_offset_ - 1)` should
+        // always be valid. However, as reported by https://crbug.com/1379716,
+        // this logic appears to have flaws.
+        //
+        // TODO(accessibility): Investigate what are these edge cases that lead
+        // to have a `text_offset_` greater than or equal to the `text` length.
         if (!text_position->AtStartOfAnchor()) {
-          if (!text_position->IsPointingToLineBreak() &&
-              text_position->GetText().at(text_position->text_offset_ - 1) ==
-                  '\n') {
-            return true;
+          if (!text_position->IsPointingToLineBreak()) {
+            const std::u16string text = text_position->GetText();
+            if (static_cast<size_t>(text_position->text_offset_) <
+                    text.length() &&
+                text.at(text_position->text_offset_) == '\n') {
+              return true;
+            }
           }
           return false;
         }
@@ -1116,16 +1123,23 @@ class AXPosition {
         // character in a <br> element unless multiple consecutive <br> elements
         // are present and so empty paragraphs have been created.
         //
-        // Note that `!AtEndOfAnchor()` implies `AtStartOfAnchor()` !=
-        // `AtEndOfAnchor()` which in turn implies that `MaxTextOffset()` > 0
-        // and `text_offset()` < `MaxTextOffset()`. Therefore,
-        // `text_position->GetText().at(text_position->text_offset_)` will
-        // always be valid.
+        // Note that, in theory, `!AtEndOfAnchor()` implies
+        // `AtStartOfAnchor()` != `AtEndOfAnchor()` which in turn implies that
+        // `MaxTextOffset()` > 0 and `text_offset()` < `MaxTextOffset()`.
+        // Therefore, `text_position->GetText().at(text_position->text_offset_)`
+        // should always be valid. However, as reported by
+        // https://crbug.com/1379716, this logic appears to have flaws.
+        //
+        // TODO(accessibility): Investigate what are these edge cases that lead
+        // to have a `text_offset_` greater than or equal to the `text` length.
         if (!text_position->AtEndOfAnchor()) {
-          if (!text_position->IsPointingToLineBreak() &&
-              text_position->GetText().at(text_position->text_offset_) ==
-                  '\n') {
-            return true;
+          if (!text_position->IsPointingToLineBreak()) {
+            const std::u16string text = text_position->GetText();
+            if (static_cast<size_t>(text_position->text_offset_) <
+                    text.length() &&
+                text.at(text_position->text_offset_) == '\n') {
+              return true;
+            }
           }
           return false;
         }
