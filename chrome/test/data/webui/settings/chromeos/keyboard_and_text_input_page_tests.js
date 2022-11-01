@@ -172,6 +172,39 @@ suite('KeyboardAndTextInputPageTests', function() {
         page.computeDictationLocaleSubtitle_());
   });
 
+  test('some parts are hidden in kiosk mode', function() {
+    loadTimeData.overrideValues({
+      isKioskModeActive: true,
+      showTabletModeShelfNavigationButtonsSettings: true,
+    });
+    initPage();
+    flush();
+
+    const subpageLinks = page.root.querySelectorAll('cr-link-row');
+    subpageLinks.forEach(subpageLink => assertFalse(isVisible(subpageLink)));
+  });
+
+  test('Deep link to switch access', async () => {
+    loadTimeData.overrideValues({
+      isKioskModeActive: false,
+    });
+    initPage();
+
+    const params = new URLSearchParams();
+    params.append('settingId', '1522');
+    Router.getInstance().navigateTo(
+        routes.A11Y_KEYBOARD_AND_TEXT_INPUT, params);
+
+    flush();
+
+    const deepLinkElement = page.shadowRoot.querySelector('#enableSwitchAccess')
+                                .shadowRoot.querySelector('cr-toggle');
+    await waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Switch access toggle should be focused for settingId=1522.');
+  });
+
   const selectorRouteList = [
     {selector: '#keyboardSubpageButton', route: routes.KEYBOARD},
   ];
