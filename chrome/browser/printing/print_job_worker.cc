@@ -145,6 +145,14 @@ void PrintJobWorker::SetPrintJob(PrintJob* print_job) {
   print_job_ = print_job;
 }
 
+std::unique_ptr<PrintSettings> PrintJobWorker::GetPdfSettings() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_EQ(page_number_, PageNumber::npos());
+
+  printing_context_->UsePdfSettings();
+  return printing_context_->TakeAndResetSettings();
+}
+
 void PrintJobWorker::GetDefaultSettings(SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(page_number_, PageNumber::npos());

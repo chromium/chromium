@@ -52,7 +52,9 @@ class PrinterQuery {
   // Initializes the printing context. It is fine to call this function multiple
   // times to reinitialize the settings.
   // Caller has to ensure that `this` is alive until `callback` is run.
-  void GetDefaultSettings(base::OnceClosure callback, bool is_modifiable);
+  void GetDefaultSettings(base::OnceClosure callback,
+                          bool is_modifiable,
+                          bool want_pdf_settings);
   void GetSettingsFromUser(uint32_t expected_page_count,
                            bool has_selection,
                            mojom::MarginType margin_type,

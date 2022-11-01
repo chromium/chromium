@@ -114,13 +114,24 @@ int PrinterQuery::cookie() const {
 }
 
 void PrinterQuery::GetDefaultSettings(base::OnceClosure callback,
-                                      bool is_modifiable) {
+                                      bool is_modifiable,
+                                      bool want_pdf_settings) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   StartWorker();
 
-  // Real work is done in PrintJobWorker::GetDefaultSettings().
+  // Real work is done in `PrintJobWorker`.
   is_print_dialog_box_shown_ = false;
+
+  if (want_pdf_settings) {
+    // `PrintJobWorker::GetPdfSettings()` is always guaranteed to succeed.
+    std::unique_ptr<PrintSettings> pdf_settings = worker_->GetPdfSettings();
+    DCHECK(pdf_settings);
+    PostSettingsDone(std::move(callback), is_modifiable,
+                     std::move(pdf_settings), mojom::ResultCode::kSuccess);
+    return;
+  }
+
   // `this` is owned by `callback`, so `base::Unretained()` is safe.
   worker_->GetDefaultSettings(
       base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
