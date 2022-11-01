@@ -759,6 +759,14 @@ MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
       return bad_message::
           MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED;
     }
+
+    if (controls.hotword_enabled) {
+      return bad_message::MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED;
+    }
+
+    if (controls.disable_local_echo) {
+      return bad_message::MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED;
+    }
   }
 
   return absl::nullopt;

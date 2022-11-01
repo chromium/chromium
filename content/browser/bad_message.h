@@ -314,6 +314,8 @@ enum BadMessageReason {
   MSDH_INCONSISTENT_AUDIO_TYPE_AND_REQUESTED_FIELDS = 287,
   MSDH_INCONSISTENT_VIDEO_TYPE_AND_REQUESTED_FIELDS = 288,
   MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED = 289,
+  MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED = 290,
+  MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED = 291,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

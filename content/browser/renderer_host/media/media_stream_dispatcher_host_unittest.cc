@@ -717,6 +717,48 @@ TEST_F(MediaStreamDispatcherHostTest,
   host_->OnGenerateStreams(kPageRequestId, controls);
 }
 
+TEST_F(MediaStreamDispatcherHostTest,
+       BadMessageIfAudioNotRequestedAndHotwordEnabled) {
+  using blink::mojom::MediaStreamType;
+
+  blink::StreamControls controls;
+  controls.audio.requested = false;
+  controls.audio.stream_type = MediaStreamType::NO_SERVICE;
+  controls.video.requested = true;
+  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  controls.hotword_enabled = true;
+
+  SetupFakeUI(true);
+
+  EXPECT_CALL(*this,
+              MockOnBadMessage(
+                  kProcessId,
+                  bad_message::MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED))
+      .Times(1);
+  host_->OnGenerateStreams(kPageRequestId, controls);
+}
+
+TEST_F(MediaStreamDispatcherHostTest,
+       BadMessageIfAudioNotRequestedAndDisableLocalEcho) {
+  using blink::mojom::MediaStreamType;
+
+  blink::StreamControls controls;
+  controls.audio.requested = false;
+  controls.audio.stream_type = MediaStreamType::NO_SERVICE;
+  controls.video.requested = true;
+  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  controls.disable_local_echo = true;
+
+  SetupFakeUI(true);
+
+  EXPECT_CALL(*this,
+              MockOnBadMessage(
+                  kProcessId,
+                  bad_message::MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED))
+      .Times(1);
+  host_->OnGenerateStreams(kPageRequestId, controls);
+}
+
 // This test simulates a shutdown scenario: we don't setup a fake UI proxy for
 // MediaStreamManager, so it will create an ordinary one which will not find
 // a RenderFrameHostDelegate. This normally should only be the case at shutdown.
