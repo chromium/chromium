@@ -23,7 +23,6 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -105,8 +104,8 @@ SavedDesks Group(const std::vector<const DeskTemplate*>& saved_desks) {
       case DeskTemplateType::kSaveAndRecall:
         grouped.save_and_recall.push_back(saved_desk);
         break;
+      // Do nothing in the case of an unknown template.
       case DeskTemplateType::kUnknown:
-        NOTREACHED();
         break;
     }
   }

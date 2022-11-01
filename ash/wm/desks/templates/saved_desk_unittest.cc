@@ -4513,4 +4513,34 @@ TEST_F(SavedDeskTest, SpamClickSaveDeskButtons) {
   EXPECT_EQ(2u, GetItemViewsFromDeskLibrary(overview_grid2).size());
 }
 
+// This tests that unknown desk types added into the desk model do not affect
+// the UI.  This is done by adding a template in the normal way and then
+// injecting an unknown type template into the storage model.  The result should
+// be that the saved desk library only shows the normal template.
+TEST_F(SavedDeskTest, UiIgnoresUnknownDeskTypes) {
+  // Add a window.
+  auto test_window = CreateAppWindow();
+
+  // Enter overview.
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+
+  // Save a normal template here.
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  SavedDeskSaveDeskButton* save_template_button =
+      GetSaveDeskAsTemplateButtonForRoot(root);
+  ASSERT_TRUE(save_template_button);
+  ClickOnView(save_template_button);
+  WaitForDesksTemplatesUI();
+  WaitForLibraryUI();
+
+  // Add unknown type into model.
+  AddEntry(base::GUID::GenerateRandomV4(), "Unknown desk type name\n",
+           base::Time::Now(), DeskTemplateType::kUnknown);
+
+  // Ensure only the normal template appears in the overview grid.
+  OverviewGrid* overview_grid = GetOverviewGridList().front().get();
+  EXPECT_EQ(1u, GetItemViewsFromDeskLibrary(overview_grid).size());
+}
+
 }  // namespace ash

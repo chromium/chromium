@@ -991,7 +991,6 @@ std::string SerializeDeskTypeAsString(ash::DeskTemplateType desk_type) {
     case ash::DeskTemplateType::kSaveAndRecall:
       return kDeskTypeSaveAndRecall;
     case ash::DeskTemplateType::kUnknown:
-      NOTREACHED();
       return kDeskTypeUnknown;
   }
 }
@@ -1850,8 +1849,8 @@ void FillDeskType(const DeskTemplate* desk_template,
       out_entry_proto->set_desk_type(
           SyncDeskType::WorkspaceDeskSpecifics_DeskType_SAVE_AND_RECALL);
       return;
+    // Do nothing if type is unknown.
     case DeskTemplateType::kUnknown:
-      NOTREACHED();
       return;
   }
 }
