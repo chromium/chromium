@@ -148,6 +148,12 @@ class SettingsDisplayAndMagnificationElement extends
     this.route_ = routes.A11Y_DISPLAY_AND_MAGNIFICATION;
   }
 
+  override ready() {
+    super.ready();
+
+    this.addFocusConfig(routes.DISPLAY, '#displaySubpageButton');
+  }
+
   /**
    * Note: Overrides RouteOriginBehavior implementation
    */

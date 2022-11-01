@@ -1,0 +1,77 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+suite('DisplayAndMagnificationPageTests', function() {
+  let page = null;
+
+  function initPage() {
+    page = document.createElement('settings-display-and-magnification-page');
+    document.body.appendChild(page);
+  }
+
+  setup(function() {
+    PolymerTest.clearBody();
+    loadTimeData.overrideValues(
+        {isAccessibilityOSSettingsVisibilityEnabled: true});
+    Router.getInstance().navigateTo(routes.A11Y_DISPLAY_AND_MAGNIFICATION);
+  });
+
+  teardown(function() {
+    if (page) {
+      page.remove();
+    }
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test(
+      'should focus displaySubpageButton button when returning from Display subpage',
+      async () => {
+        const selector = '#displaySubpageButton';
+        const route = routes.DISPLAY;
+        initPage();
+        flush();
+        const router = Router.getInstance();
+
+        const subpageButton = page.shadowRoot.querySelector(selector);
+        assertTrue(!!subpageButton);
+
+        subpageButton.click();
+        assertEquals(route, router.getCurrentRoute());
+        assertNotEquals(
+            subpageButton, page.shadowRoot.activeElement,
+            `${selector} should not be focused`);
+
+        const popStateEventPromise = eventToPromise('popstate', window);
+        router.navigateToPreviousRoute();
+        await popStateEventPromise;
+        await waitBeforeNextRender(page);
+
+        assertEquals(
+            routes.A11Y_DISPLAY_AND_MAGNIFICATION, router.getCurrentRoute());
+        assertEquals(
+            subpageButton, page.shadowRoot.activeElement,
+            `${selector} should be focused`);
+      });
+
+  test('no subpages are available in kiosk mode', function() {
+    loadTimeData.overrideValues({
+      isKioskModeActive: true,
+      showTabletModeShelfNavigationButtonsSettings: true,
+    });
+    initPage();
+    flush();
+
+    const subpageLinks = page.root.querySelectorAll('cr-link-row');
+    subpageLinks.forEach(subpageLink => assertFalse(isVisible(subpageLink)));
+  });
+});
