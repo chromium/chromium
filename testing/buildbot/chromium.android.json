@@ -36047,7 +36047,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--use-persistent-shell"
         ],
         "ci_only": true,
         "merge": {
