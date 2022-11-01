@@ -25,7 +25,7 @@ from compatible_utils import running_unattended
 class EmuTarget(target.Target):
   LOCAL_ADDRESS = 'localhost'
 
-  def __init__(self, out_dir, target_cpu, logs_dir):
+  def __init__(self, out_dir, target_cpu, logs_dir, image):
     """out_dir: The directory which will contain the files that are
                    generated to support the emulator deployment.
     target_cpu: The emulated target CPU architecture.
@@ -36,6 +36,29 @@ class EmuTarget(target.Target):
     self._pkg_repo = None
     self._target_context = None
     self._ffx_target = None
+
+    self._pb_path = self._GetPbPath(image)
+    metadata = self._GetEmuMetadata()
+    self._disk_image = metadata['disk_images'][0]
+    self._kernel = metadata['kernel']
+    self._ramdisk = metadata['initial_ramdisk']
+
+  def _GetPbPath(self, image):
+    if not image:
+      image = 'terminal.qemu-%s' % self._target_cpu
+    if not os.path.exists(common.PRODUCT_BUNDLE_SIGNATURE_FILE):
+      raise FileNotFoundError('There are no product bundles downloaded. Add '
+                              'the images and run "gclient sync" again.')
+    with open(common.PRODUCT_BUNDLE_SIGNATURE_FILE, 'r') as f:
+      signature = json.load(f)
+    if image not in signature['images']:
+      raise FileNotFoundError(f'Product bundle {image} is not downloaded. Add '
+                              'the image and run "gclient sync" again.')
+    return os.path.join(common.IMAGES_ROOT, signature['path'], image, 'images')
+
+  def _GetEmuMetadata(self):
+    with open(os.path.join(self._pb_path, 'product_bundle.json')) as f:
+      return json.load(f)['data']['manifests']['emu']
 
   def __enter__(self):
     return self

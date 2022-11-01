@@ -48,11 +48,7 @@ group("deployment_resources") {
   ]
 
   if (fuchsia_additional_boot_images == []) {
-    data += [
-      "${boot_image_root}/qemu/qemu-kernel.kernel",
-      "${boot_image_root}/qemu/storage-full.blk",
-      "${boot_image_root}/qemu/zircon-a.zbi",
-    ]
+    data += [ "${boot_image_root}" ]
   }
 
   foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {

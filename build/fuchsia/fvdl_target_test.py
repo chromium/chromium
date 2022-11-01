@@ -16,6 +16,12 @@ from argparse import Namespace
 from ffx_session import FfxRunner
 from fvdl_target import FvdlTarget, _SSH_KEY_DIR
 
+_EMU_METADATA = {
+    "disk_images": ["fuchsia.blk"],
+    "initial_ramdisk": "fuchsia.zbi",
+    "kernel": "fuchsia.bin"
+}
+
 
 @mock.patch.object(FfxRunner, 'daemon_stop')
 class TestBuildCommandFvdlTarget(unittest.TestCase):
@@ -33,6 +39,8 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
                           cpu_cores=10)
     common.EnsurePathExists = mock.MagicMock(return_value='image')
     boot_data.ProvisionSSH = mock.MagicMock()
+    FvdlTarget._GetPbPath = mock.MagicMock(return_value='path')
+    FvdlTarget._GetEmuMetadata = mock.MagicMock(return_value=_EMU_METADATA)
     FvdlTarget._Shutdown = mock.MagicMock()
 
   def testBasicEmuCommand(self, mock_daemon_stop):

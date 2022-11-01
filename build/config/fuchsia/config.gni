@@ -5,4 +5,4 @@
 assert(is_fuchsia)
 
 # Compute the path to the arch-specific boot image directory.
-boot_image_root = "//third_party/fuchsia-sdk/images/${target_cpu}"
+boot_image_root = "//third_party/fuchsia-sdk/images/"

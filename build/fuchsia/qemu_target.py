@@ -17,8 +17,8 @@ import subprocess
 import sys
 import tempfile
 
-from common import GetHostArchFromPlatform, GetEmuRootForPlatform
-from common import EnsurePathExists
+from common import EnsurePathExists, GetHostArchFromPlatform, \
+                   GetEmuRootForPlatform
 from qemu_image import ExecQemuImgWithRetry
 from target import FuchsiaTargetException
 
@@ -40,7 +40,7 @@ class QemuTarget(emu_target.EmuTarget):
 
   def __init__(self, out_dir, target_cpu, cpu_cores, require_kvm, ram_size_mb,
                logs_dir):
-    super(QemuTarget, self).__init__(out_dir, target_cpu, logs_dir)
+    super(QemuTarget, self).__init__(out_dir, target_cpu, logs_dir, None)
     self._cpu_cores=cpu_cores
     self._require_kvm=require_kvm
     self._ram_size_mb=ram_size_mb
@@ -76,18 +76,15 @@ class QemuTarget(emu_target.EmuTarget):
       return False
 
   def _BuildQemuConfig(self):
-    boot_data.AssertBootImagesExist(self._GetTargetSdkArch(), 'qemu')
+    boot_data.AssertBootImagesExist(self._pb_path)
 
     emu_command = [
         '-kernel',
-        EnsurePathExists(
-            boot_data.GetTargetFile('qemu-kernel.kernel',
-                                    self._GetTargetSdkArch(),
-                                    boot_data.TARGET_TYPE_QEMU)),
+        EnsurePathExists(boot_data.GetTargetFile(self._kernel, self._pb_path)),
         '-initrd',
         EnsurePathExists(
-            boot_data.GetBootImage(self._out_dir, self._GetTargetSdkArch(),
-                                   boot_data.TARGET_TYPE_QEMU)),
+            boot_data.GetBootImage(self._out_dir, self._pb_path,
+                                   self._ramdisk)),
         '-m',
         str(self._ram_size_mb),
         '-smp',
@@ -98,8 +95,8 @@ class QemuTarget(emu_target.EmuTarget):
         '-snapshot',
         '-drive',
         'file=%s,format=qcow2,if=none,id=blobstore,snapshot=on,cache=unsafe' %
-        _EnsureBlobstoreQcowAndReturnPath(self._out_dir,
-                                          self._GetTargetSdkArch()),
+        _EnsureBlobstoreQcowAndReturnPath(self._out_dir, self._disk_image,
+                                          self._pb_path),
         '-object',
         'iothread,id=iothread0',
         '-device',
@@ -228,15 +225,14 @@ def _ComputeFileHash(filename):
   return hasher.hexdigest()
 
 
-def _EnsureBlobstoreQcowAndReturnPath(out_dir, target_arch):
+def _EnsureBlobstoreQcowAndReturnPath(out_dir, kernel, image_path):
   """Returns a file containing the Fuchsia blobstore in a QCOW format,
   with extra buffer space added for growth."""
 
   qimg_tool = os.path.join(common.GetEmuRootForPlatform('qemu'),
                            'bin', 'qemu-img')
   fvm_tool = common.GetHostToolPathFromPlatform('fvm')
-  blobstore_path = boot_data.GetTargetFile('storage-full.blk', target_arch,
-                                           'qemu')
+  blobstore_path = boot_data.GetTargetFile(kernel, image_path)
   qcow_path = os.path.join(out_dir, 'gen', 'blobstore.qcow')
 
   # Check a hash of the blobstore to determine if we can re-use an existing

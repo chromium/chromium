@@ -3268,7 +3268,7 @@
     ],
 
     'official_goma_fuchsia_x64_perf': [
-      'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_chromebook_image', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator', 'fuchsia_cfv2_script'
+      'official', 'goma', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator', 'fuchsia_cfv2_script'
     ],
 
     'official_goma_linux_perf': [
@@ -3487,8 +3487,7 @@
     ],
 
     'release_bot_fuchsia_workstation_reclient': [
-      'release_bot_reclient', 'fuchsia', 'fuchsia_include_workstation_image',
-      'fuchsia_chrome'
+      'release_bot_reclient', 'fuchsia', 'fuchsia_chrome'
     ],
 
     'release_bot_mac_strip_minimal_symbols': [
@@ -3632,8 +3631,7 @@
     ],
 
     'release_trybot_fuchsia_workstation': [
-      'release_trybot', 'fuchsia', 'fuchsia_include_workstation_image',
-      'fuchsia_chrome'
+      'release_trybot', 'fuchsia', 'fuchsia_chrome'
     ],
 
     'release_trybot_minimal_symbols_reclient': [
@@ -4228,16 +4226,8 @@
       'gn_args': 'fuchsia_code_coverage=true',
     },
 
-    'fuchsia_include_chromebook_image': {
-      'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images/chromebook-x64-release/"]',
-    },
-
     'fuchsia_include_sd_images': {
       'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images-internal/astro-release/","//third_party/fuchsia-sdk/images-internal/sherlock-release/"]',
-    },
-
-    'fuchsia_include_workstation_image': {
-      'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images/qemu-x64-release/"]',
     },
 
     'full_symbols': {

@@ -59,24 +59,24 @@ def ProvisionSSH():
     raise Exception('Failed to provision ssh keys')
 
 
-def GetTargetFile(filename, target_arch, target_type):
+def GetTargetFile(filename, image_path):
   """Computes a path to |filename| in the Fuchsia boot image directory specific
-  to |target_type| and |target_arch|."""
+  to |image_path|."""
 
-  return os.path.join(common.IMAGES_ROOT, target_arch, target_type, filename)
+  return os.path.join(common.IMAGES_ROOT, image_path, filename)
 
 
 def GetSSHConfigPath():
   return os.path.join(_SSH_CONFIG_DIR, 'sshconfig')
 
 
-def GetBootImage(output_dir, target_arch, target_type):
+def GetBootImage(output_dir, image_path, image_name):
   """"Gets a path to the Zircon boot image, with the SSH client public key
   added."""
   ProvisionSSH()
   authkeys_path = _GetAuthorizedKeysPath()
   zbi_tool = common.GetHostToolPathFromPlatform('zbi')
-  image_source_path = GetTargetFile('zircon-a.zbi', target_arch, target_type)
+  image_source_path = GetTargetFile(image_name, image_path)
   image_dest_path = os.path.join(output_dir, 'gen', 'fuchsia-with-keys.zbi')
 
   cmd = [
@@ -97,11 +97,11 @@ def GetKernelArgs():
   ]
 
 
-def AssertBootImagesExist(arch, platform):
-  assert os.path.exists(GetTargetFile('zircon-a.zbi', arch, platform)), \
+def AssertBootImagesExist(image_path):
+  assert os.path.exists(GetTargetFile('fuchsia.zbi', image_path)), \
       'This checkout is missing the files necessary for\n' \
       'booting this configuration of Fuchsia.\n' \
       'To check out the files, add this entry to the "custom_vars"\n' \
       'section of your .gclient file:\n\n' \
-      '    "checkout_fuchsia_boot_images": "%s.%s"\n\n' % \
-           (platform, arch)
+      '    "checkout_fuchsia_boot_images": "%s"\n\n' % \
+           image_path
