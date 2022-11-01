@@ -34,6 +34,9 @@ const std::vector<uint8_t> kFilter3{0xB8, 0x2A, 0x41, 0xE2, 0x21};
 const std::vector<uint8_t> kSalt3{0x6C, 0xE5};
 const std::vector<uint8_t> kBatteryData3{0x33, 0xE4, 0xE4, 0x4C};
 
+// Values for SASS enabled Pixel Buds Pro that failed to subsequent pair prior
+// to ccrev.com/3953062 landing.
+// Value source: b/243855406#comment24.
 const std::vector<uint8_t> kAccountKey4{0x04, 0x3F, 0xC1, 0x8C, 0x63, 0xDC,
                                         0x75, 0x1A, 0xE8, 0x1A, 0xCF, 0x65,
                                         0x10, 0x15, 0x1D, 0xB0};
@@ -46,24 +49,24 @@ class AccountKeyFilterTest : public testing::Test {};
 
 TEST_F(AccountKeyFilterTest, EmptyFilter) {
   AccountKeyFilter filter({}, {});
-  EXPECT_FALSE(filter.Test(kAccountKey1));
-  EXPECT_FALSE(filter.Test(kAccountKey2));
+  EXPECT_FALSE(filter.IsAccountKeyInFilter(kAccountKey1));
+  EXPECT_FALSE(filter.IsAccountKeyInFilter(kAccountKey2));
 }
 
 TEST_F(AccountKeyFilterTest, EmptyVectorTest) {
   EXPECT_FALSE(
-      AccountKeyFilter(kFilterBytes1, {salt}).Test(std::vector<uint8_t>(0)));
+      AccountKeyFilter(kFilterBytes1, {salt}).IsAccountKeyInFilter(std::vector<uint8_t>(0)));
 }
 
 TEST_F(AccountKeyFilterTest, SingleAccountKey_AsBytes) {
-  EXPECT_TRUE(AccountKeyFilter(kFilterBytes1, {salt}).Test(kAccountKey1));
+  EXPECT_TRUE(AccountKeyFilter(kFilterBytes1, {salt}).IsAccountKeyInFilter(kAccountKey1));
 }
 
 TEST_F(AccountKeyFilterTest, TwoAccountKeys_AsBytes) {
   AccountKeyFilter filter(kFilterBytes1And2, {salt});
 
-  EXPECT_TRUE(filter.Test(kAccountKey1));
-  EXPECT_TRUE(filter.Test(kAccountKey2));
+  EXPECT_TRUE(filter.IsAccountKeyInFilter(kAccountKey1));
+  EXPECT_TRUE(filter.IsAccountKeyInFilter(kAccountKey2));
 }
 
 TEST_F(AccountKeyFilterTest, MissingAccountKey) {
@@ -71,8 +74,8 @@ TEST_F(AccountKeyFilterTest, MissingAccountKey) {
                                          0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
                                          0xCC, 0xDD, 0xEE, 0xFF};
 
-  EXPECT_FALSE(AccountKeyFilter(kFilterBytes1, {salt}).Test(account_key));
-  EXPECT_FALSE(AccountKeyFilter(kFilterBytes1And2, {salt}).Test(account_key));
+  EXPECT_FALSE(AccountKeyFilter(kFilterBytes1, {salt}).IsAccountKeyInFilter(account_key));
+  EXPECT_FALSE(AccountKeyFilter(kFilterBytes1And2, {salt}).IsAccountKeyInFilter(account_key));
 }
 
 TEST_F(AccountKeyFilterTest, WithBatteryData) {
@@ -81,7 +84,7 @@ TEST_F(AccountKeyFilterTest, WithBatteryData) {
     salt_values.push_back(byte);
 
   EXPECT_TRUE(
-      AccountKeyFilter(kFilterWithBattery, salt_values).Test(kAccountKey1));
+      AccountKeyFilter(kFilterWithBattery, salt_values).IsAccountKeyInFilter(kAccountKey1));
 }
 
 TEST_F(AccountKeyFilterTest, TwoSaltBytes) {
@@ -92,17 +95,19 @@ TEST_F(AccountKeyFilterTest, TwoSaltBytes) {
   salt_values.insert(salt_values.end(), kBatteryData3.begin(),
                      kBatteryData3.end());
 
-  EXPECT_TRUE(AccountKeyFilter(kFilter3, salt_values).Test(kAccountKey3));
+  EXPECT_TRUE(AccountKeyFilter(kFilter3, salt_values).IsAccountKeyInFilter(kAccountKey3));
 }
 
+// Regression test for b/243855406.
 TEST_F(AccountKeyFilterTest, SassEnabledPeripheral) {
-  // Devices with battery data create account filters by concatenating data to
-  // end of salt bytes
+  // Account Key, Salt, and Battery Data values used are specific to an observed
+  // SASS device failure explained at the variable declaration for
+  // |kAccountKey4|, |kSalt4|, and |kBatteryData4|.
   std::vector<uint8_t> salt_values{};
   salt_values.insert(salt_values.end(), kSalt4.begin(), kSalt4.end());
   salt_values.insert(salt_values.end(), kBatteryData4.begin(),
                      kBatteryData4.end());
-  EXPECT_TRUE(AccountKeyFilter(kFilter4, salt_values).Test(kAccountKey4));
+  EXPECT_TRUE(AccountKeyFilter(kFilter4, salt_values).IsAccountKeyInFilter(kAccountKey4));
 }
 
 }  // namespace quick_pair

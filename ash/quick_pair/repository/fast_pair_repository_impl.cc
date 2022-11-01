@@ -238,7 +238,7 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
       const std::string& string_key = info.device().account_key();
       const std::vector<uint8_t> binary_key(string_key.begin(),
                                             string_key.end());
-      if (account_key_filter.Test(binary_key)) {
+      if (account_key_filter.IsAccountKeyInFilter(binary_key)) {
         nearby::fastpair::StoredDiscoveryItem device;
         if (device.ParseFromString(info.device().discovery_item_bytes())) {
           QP_LOG(INFO) << "Account key matched with a paired device: "

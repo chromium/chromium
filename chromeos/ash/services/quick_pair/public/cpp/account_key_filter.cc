@@ -16,9 +16,44 @@
 namespace ash {
 namespace quick_pair {
 
+namespace {
+
 constexpr int kBitsInByte = 8;
+
+// SASS enabled peripherals create their Bloom filters by changing the first
+// byte of either the account key in use or the most recently used account key
+// according to this spec:
+// https://developers.google.com/nearby/fast-pair/early-access/specifications/extensions/sass#SassInUseAccountKey
 constexpr uint8_t kRecentlyUsedByte = 0x05;
 constexpr uint8_t kInUseByte = 0x06;
+
+// Helper to AccountKeyFilter::IsAccountKeyInFilter().
+// Performs the test to see if |data| is in |bit_sets|, a Bloom filter.
+bool AccountKeyFilterTest(const std::vector<uint8_t>& data,
+                          const std::vector<uint8_t>& bit_sets) {
+  std::array<uint8_t, 32> hashed = crypto::SHA256Hash(data);
+
+  // Iterate over the hashed input in 4 byte increments, combine those 4
+  // bytes into an unsigned int and use it as the index into our
+  // |bit_sets|.
+  for (size_t i = 0; i < hashed.size(); i += 4) {
+    uint32_t hash = uint32_t{hashed[i]} << 24 | uint32_t{hashed[i + 1]} << 16 |
+                    uint32_t{hashed[i + 2]} << 8 | hashed[i + 3];
+
+    size_t num_bits = bit_sets.size() * kBitsInByte;
+    size_t n = hash % num_bits;
+    size_t byte_index = floor(n / kBitsInByte);
+    size_t bit_index = n % kBitsInByte;
+    bool is_set = (bit_sets[byte_index] >> bit_index) & 0x01;
+
+    if (!is_set)
+      return false;
+  }
+
+  return true;
+}
+
+}  // namespace
 
 AccountKeyFilter::AccountKeyFilter(
     const NotDiscoverableAdvertisement& advertisement)
@@ -54,30 +89,7 @@ AccountKeyFilter::AccountKeyFilter(const AccountKeyFilter&) = default;
 AccountKeyFilter& AccountKeyFilter::operator=(AccountKeyFilter&&) = default;
 AccountKeyFilter::~AccountKeyFilter() = default;
 
-bool AccountKeyFilter::IsAccountKeyInFilter(std::vector<uint8_t> data) const {
-  std::array<uint8_t, 32> hashed = crypto::SHA256Hash(data);
-
-  // Iterate over the hashed input in 4 byte increments, combine those 4
-  // bytes into an unsigned int and use it as the index into our
-  // |bit_sets_|.
-  for (size_t i = 0; i < hashed.size(); i += 4) {
-    uint32_t hash = uint32_t{hashed[i]} << 24 | uint32_t{hashed[i + 1]} << 16 |
-                    uint32_t{hashed[i + 2]} << 8 | hashed[i + 3];
-
-    size_t num_bits = bit_sets_.size() * kBitsInByte;
-    size_t n = hash % num_bits;
-    size_t byte_index = floor(n / kBitsInByte);
-    size_t bit_index = n % kBitsInByte;
-    bool is_set = (bit_sets_[byte_index] >> bit_index) & 0x01;
-
-    if (!is_set)
-      return false;
-  }
-
-  return true;
-}
-
-bool AccountKeyFilter::Test(
+bool AccountKeyFilter::IsAccountKeyInFilter(
     const std::vector<uint8_t>& account_key_bytes) const {
   if (bit_sets_.empty())
     return false;
@@ -97,9 +109,9 @@ bool AccountKeyFilter::Test(
   std::vector<uint8_t> in_use_account_key(default_account_key);
   in_use_account_key[0] = kInUseByte;
 
-  return IsAccountKeyInFilter(default_account_key) ||
-         IsAccountKeyInFilter(in_use_account_key) ||
-         IsAccountKeyInFilter(recently_used_account_key);
+  return AccountKeyFilterTest(default_account_key, bit_sets_) ||
+         AccountKeyFilterTest(in_use_account_key, bit_sets_) ||
+         AccountKeyFilterTest(recently_used_account_key, bit_sets_);
 }
 
 }  // namespace quick_pair
