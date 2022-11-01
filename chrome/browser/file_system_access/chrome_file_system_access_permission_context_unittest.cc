@@ -12,7 +12,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -856,15 +855,11 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 
   // Permission should be auto-granted here via the persisted permission.
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kGrantedByPersistentPermission,
-                  outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kGrantedByPersistentPermission,
+            future.Get());
   ExpectUmaEntryPersistedPermissionAge(base::Seconds(0), 1);
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
 }
@@ -1052,14 +1047,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto dir_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, dir_grant->GetStatus());
-  base::RunLoop loop;
-  dir_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  dir_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                               future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
   EXPECT_EQ(PermissionStatus::GRANTED, dir_grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
@@ -1081,14 +1072,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto dir_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, dir_grant->GetStatus());
-  base::RunLoop loop;
-  dir_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  dir_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                               future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
   EXPECT_EQ(PermissionStatus::GRANTED, dir_grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
@@ -1110,14 +1097,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto dir_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, dir_grant->GetStatus());
-  base::RunLoop loop;
-  dir_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  dir_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                               future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
   EXPECT_EQ(PermissionStatus::GRANTED, dir_grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
@@ -1140,14 +1123,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto dir_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, dir_grant->GetStatus());
-  base::RunLoop loop;
-  dir_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  dir_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                               future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
   EXPECT_EQ(PermissionStatus::GRANTED, dir_grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
@@ -1161,16 +1140,11 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto file_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
   EXPECT_EQ(PermissionStatus::ASK, file_grant->GetStatus());
-  base::RunLoop loop2;
-  file_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(
-            PermissionRequestOutcome::kGrantedByAncestorPersistentPermission,
-            outcome);
-        loop2.Quit();
-      }));
-  loop2.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future2;
+  file_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                                future2.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kGrantedByAncestorPersistentPermission,
+            future2.Get());
   // Age should not be recorded if granted via an ancestor's permission.
   ExpectUmaEntryPersistedPermissionAge(base::Seconds(0), 0);
   EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
@@ -1186,14 +1160,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto dir_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, dir_grant->GetStatus());
-  base::RunLoop loop;
-  dir_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  dir_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                               future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
   EXPECT_EQ(PermissionStatus::GRANTED, dir_grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
@@ -1207,16 +1177,11 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto file_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
   EXPECT_EQ(PermissionStatus::ASK, file_grant->GetStatus());
-  base::RunLoop loop2;
-  file_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(
-            PermissionRequestOutcome::kGrantedByAncestorPersistentPermission,
-            outcome);
-        loop2.Quit();
-      }));
-  loop2.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future2;
+  file_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                                future2.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kGrantedByAncestorPersistentPermission,
+            future2.Get());
   // Age should not be recorded if granted via an ancestor's permission.
   ExpectUmaEntryPersistedPermissionAge(base::Seconds(0), 0);
   EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
@@ -1232,14 +1197,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto dir_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, dir_grant->GetStatus());
-  base::RunLoop loop;
-  dir_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  dir_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                               future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
   EXPECT_EQ(PermissionStatus::GRANTED, dir_grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
@@ -1253,14 +1214,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto file_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
   EXPECT_EQ(PermissionStatus::ASK, file_grant->GetStatus());
-  base::RunLoop loop2;
-  file_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
-        loop2.Quit();
-      }));
-  loop2.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future2;
+  file_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                                future2.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future2.Get());
   EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, file_path, HandleType::kFile, GrantType::kWrite));
@@ -1287,14 +1244,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 
   // Once a permission grant has expired, it should not auto-grant
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserDismissed, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserDismissed, future.Get());
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -1485,15 +1438,11 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   grant2 = permission_context()->GetWritePermissionGrant(
       kTestOrigin2, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, grant2->GetStatus());
-  base::RunLoop loop;
-  grant2->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kGrantedByPersistentPermission,
-                  outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant2->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                            future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kGrantedByPersistentPermission,
+            future.Get());
   ExpectUmaEntryPersistedPermissionAge(Now() - initial_time, 1);
   EXPECT_EQ(PermissionStatus::GRANTED, grant2->GetStatus());
 
@@ -1557,14 +1506,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   // Auto-grant because active permissions exist. This should update the
   // timestamp of the persisted permission for |grant2|.
-  base::RunLoop loop;
-  grant2->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant2->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                            future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, future.Get());
 
   // Only |grant2|'s timestamp should have been updated.
   auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
@@ -1650,14 +1595,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   // Auto-grant because active permissions exist. This should update the
   // timestamp of the persisted permission for |write_grant|.
-  base::RunLoop loop;
-  write_grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  write_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                                 future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, future.Get());
 
   // Though only |write_grant| was accessed, we should not lose read access.
   Advance(ChromeFileSystemAccessPermissionContext::
@@ -1679,14 +1620,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
 
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserDismissed, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserDismissed, future.Get());
   // Dismissed, so status should not change.
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
@@ -1702,14 +1639,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Granted) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
 
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -1724,14 +1657,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Denied) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
 
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserDenied, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserDenied, future.Get());
   EXPECT_EQ(PermissionStatus::DENIED, grant->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -1745,14 +1674,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
 
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kNoUserActivation, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kNoUserActivation, future.Get());
   // No user activation, so status should not change.
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
@@ -1767,14 +1692,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
 
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kNotRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kUserGranted, future.Get());
   // No user activation, so status should not change.
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
@@ -1789,14 +1710,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
 
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, future.Get());
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -1813,14 +1730,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
 
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future1;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future1.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, future1.Get());
   EXPECT_EQ(PermissionStatus::DENIED, grant->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -1828,14 +1741,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto grant2 = permission_context()->GetWritePermissionGrant(
       kTestOrigin2, kTestPath, HandleType::kFile, UserAction::kOpen);
 
-  base::RunLoop loop2;
-  grant2->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, outcome);
-        loop2.Quit();
-      }));
-  loop2.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future2;
+  grant2->RequestPermission(frame_id(), UserActivationState::kRequired,
+                            future2.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, future2.Get());
   EXPECT_EQ(PermissionStatus::DENIED, grant2->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin2, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -1848,14 +1757,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   grant2 = permission_context()->GetWritePermissionGrant(
       kTestOrigin2, kTestPath, HandleType::kFile, UserAction::kOpen);
 
-  base::RunLoop loop3;
-  grant2->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kNoUserActivation, outcome);
-        loop3.Quit();
-      }));
-  loop3.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future3;
+  grant2->RequestPermission(frame_id(), UserActivationState::kRequired,
+                            future3.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kNoUserActivation, future3.Get());
   EXPECT_EQ(PermissionStatus::ASK, grant2->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin2, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -1874,26 +1779,18 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
 
-  base::RunLoop loop;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kBlockedByContentSetting, outcome);
-        loop.Quit();
-      }));
-  loop.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future1;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future1.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kBlockedByContentSetting, future1.Get());
   EXPECT_EQ(PermissionStatus::DENIED, grant->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 
-  base::RunLoop loop2;
-  grant2->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kBlockedByContentSetting, outcome);
-        loop2.Quit();
-      }));
-  loop2.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future2;
+  grant2->RequestPermission(frame_id(), UserActivationState::kRequired,
+                            future2.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kBlockedByContentSetting, future2.Get());
   EXPECT_EQ(PermissionStatus::DENIED, grant2->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin2, kTestPath, HandleType::kFile, GrantType::kWrite));
@@ -1909,26 +1806,18 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   grant2 = permission_context()->GetWritePermissionGrant(
       kTestOrigin2, kTestPath, HandleType::kFile, UserAction::kOpen);
 
-  base::RunLoop loop3;
-  grant->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kNoUserActivation, outcome);
-        loop3.Quit();
-      }));
-  loop3.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future3;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future3.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kNoUserActivation, future3.Get());
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 
-  base::RunLoop loop4;
-  grant2->RequestPermission(
-      frame_id(), UserActivationState::kRequired,
-      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, outcome);
-        loop4.Quit();
-      }));
-  loop4.Run();
+  base::test::TestFuture<PermissionRequestOutcome> future4;
+  grant2->RequestPermission(frame_id(), UserActivationState::kRequired,
+                            future4.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kRequestAborted, future4.Get());
   EXPECT_EQ(PermissionStatus::DENIED, grant2->GetStatus());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin2, kTestPath, HandleType::kFile, GrantType::kWrite));
