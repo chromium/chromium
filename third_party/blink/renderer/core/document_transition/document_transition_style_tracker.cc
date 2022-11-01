@@ -102,6 +102,7 @@ PhysicalRect ComputeVisualOverflowRect(LayoutBoxModelObject& box) {
     // opposed to the intersection between the clip-path and the border box
     // bounds. This seems suboptimal, but that's the rect that we use further
     // down the pipeline to generate the texture.
+    // TODO(khushalsagar): This doesn't account for CSS clip property.
     return PhysicalRect::EnclosingRect(*clip_path_bounds);
   }
 
@@ -117,7 +118,8 @@ PhysicalRect ComputeVisualOverflowRect(LayoutBoxModelObject& box) {
   if (auto* layout_box = DynamicTo<LayoutBox>(&box)) {
     // Clip self painting descendant overflow by the overflow clip rect, then
     // add in the visual overflow from the own painting layer.
-    result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
+    if (layout_box->ShouldClipOverflowAlongEitherAxis())
+      result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
     result.Unite(layout_box->PhysicalVisualOverflowRectIncludingFilters());
   } else {
     // In this case we cannot clip children so just take the visual overflow
