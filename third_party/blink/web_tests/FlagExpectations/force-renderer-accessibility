@@ -25,6 +25,7 @@ external/wpt/inert/dynamic-inert-on-focused-element.html [ Crash ]
 svg/text/select-x-list-4.svg [ Crash ]
 # Unknown cause:
 crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ Crash ]
+crbug.com/1380449 external/wpt/css/css-contain/content-visibility/content-visibility-063.html [ Crash ]
 
 # Failures
 # isUseCounted() difference:
