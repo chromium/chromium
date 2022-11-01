@@ -105,10 +105,10 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
 
   const NGTextDecorationOffset decoration_offset(style_, style_);
 
-  // Paint text decorations except line through
-  PaintDecorationsExceptLineThrough(
-      NGTextFragmentPaintInfo{}, decoration_offset, decoration_info,
-      ~TextDecorationLine::kNone, paint_info, text_style);
+  // Paint underline and overline text decorations
+  PaintUnderOrOverLineDecorations(NGTextFragmentPaintInfo{}, decoration_offset,
+                                  decoration_info, ~TextDecorationLine::kNone,
+                                  paint_info, text_style);
 
   // Paint line through if needed
   PaintDecorationsOnlyLineThrough(decoration_info, paint_info, text_style);

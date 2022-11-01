@@ -252,8 +252,11 @@ class PLATFORM_EXPORT Color {
   bool SetFromString(const String&);
   bool SetNamedColor(const String&);
 
-  // Return true if the color is not opaque.
+  // Returns true if the color is not opaque.
   bool HasAlpha() const { return Alpha() < 255; }
+
+  // Returns true if the color is transparent.
+  bool IsTransparent() const { return Alpha() == 0; }
 
   // Access the color as though it were created using rgba syntax. This will
   // clamp all colors to an 8-bit sRGB representation. All callers of these
