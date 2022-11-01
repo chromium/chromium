@@ -47,14 +47,34 @@ MetricsLogStore::MetricsLogStore(PrefService* local_state,
 MetricsLogStore::~MetricsLogStore() {}
 
 void MetricsLogStore::LoadPersistedUnsentLogs() {
-  initial_log_queue_.LoadPersistedUnsentLogs();
-  ongoing_log_queue_.LoadPersistedUnsentLogs();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  {
+    MetricsLogsEventManager::ScopedNotifyLogType scoped_log_type(
+        logs_event_manager_, MetricsLog::LogType::INITIAL_STABILITY_LOG);
+    initial_log_queue_.LoadPersistedUnsentLogs();
+  }
+
+  {
+    // Note that we assume that logs loaded from the persistent storage for
+    // |ongoing_log_queue_| are of type "ongoing". They could, however, be
+    // independent logs, but we unfortunately cannot determine this since we
+    // don't persist the type of log.
+    MetricsLogsEventManager::ScopedNotifyLogType scoped_log_type(
+        logs_event_manager_, MetricsLog::LogType::ONGOING_LOG);
+    ongoing_log_queue_.LoadPersistedUnsentLogs();
+  }
+
   unsent_logs_loaded_ = true;
 }
 
 void MetricsLogStore::StoreLog(const std::string& log_data,
                                MetricsLog::LogType log_type,
                                const LogMetadata& log_metadata) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  MetricsLogsEventManager::ScopedNotifyLogType scoped_log_type(
+      logs_event_manager_, log_type);
   switch (log_type) {
     case MetricsLog::INITIAL_STABILITY_LOG:
       initial_log_queue_.StoreLog(log_data, log_metadata);
@@ -70,10 +90,19 @@ void MetricsLogStore::StoreLog(const std::string& log_data,
 
 void MetricsLogStore::SetAlternateOngoingLogStore(
     std::unique_ptr<UnsentLogStore> log_store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DCHECK(!has_alternate_ongoing_log_store());
   DCHECK(unsent_logs_loaded_);
   alternate_ongoing_log_queue_ = std::move(log_store);
   alternate_ongoing_log_queue_->SetLogsEventManager(logs_event_manager_);
+
+  // Note that we assume that logs loaded from the persistent storage for
+  // |alternate_ongoing_log_queue_| are of type "ongoing". They could, however,
+  // be independent logs, but we unfortunately cannot determine this since we
+  // don't persist the type of log.
+  MetricsLogsEventManager::ScopedNotifyLogType scoped_log_type(
+      logs_event_manager_, MetricsLog::LogType::ONGOING_LOG);
   alternate_ongoing_log_queue_->LoadPersistedUnsentLogs();
 }
 

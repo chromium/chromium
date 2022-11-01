@@ -73,6 +73,10 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
 
     // A list of the events that occurred throughout the log's lifetime.
     std::vector<Event> events;
+
+    // The type of log (stability, ongoing, independent). This is only set if
+    // this log is a UMA log.
+    absl::optional<MetricsLog::LogType> type;
   };
 
   // |service_type| is the type of service this observer will be observing from.
@@ -90,6 +94,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
   void OnLogEvent(MetricsLogsEventManager::LogEvent event,
                   base::StringPiece log_hash,
                   base::StringPiece message) override;
+  void OnLogType(absl::optional<MetricsLog::LogType> log_type) override;
 
   // Exports |logs_| to a JSON string and writes it to |json_output|. If
   // |include_log_proto_data| is true, the protos of the logs will be included.
@@ -99,6 +104,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
   //   log_type: string, // e.g. "UMA" or "UKM"
   //   logs: [
   //     {
+  //       type?: string, // e.g. "Ongoing" (set only for UMA logs)
   //       hash: string,
   //       timestamp: string,
   //       data: string, // set if |include_log_proto_data| is true
@@ -141,6 +147,11 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
   // An overlay on |logs_| that allows for a log to be located based on its
   // hash.
   base::flat_map<base::StringPiece, Log*> indexed_logs_;
+
+  // Keeps track of the type of UMA logs (ongoing, stability, independent) that
+  // are being created. This should only be set for UMA logs, since the concept
+  // of log type only exists in UMA.
+  absl::optional<MetricsLog::LogType> uma_log_type_;
 };
 
 }  // namespace metrics

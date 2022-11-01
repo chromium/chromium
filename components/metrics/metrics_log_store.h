@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/metrics/histogram_base.h"
+#include "base/sequence_checker.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_logs_event_manager.h"
@@ -145,6 +146,8 @@ class MetricsLogStore : public LogStore {
   // been sent yet. If initialized, all logs of type ONGOING_LOG will be stored
   // here instead of |ongoing_log_queue_|.
   std::unique_ptr<UnsentLogStore> alternate_ongoing_log_queue_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace metrics

@@ -6,8 +6,27 @@
 
 namespace metrics {
 
-MetricsLogsEventManager::MetricsLogsEventManager() = default;
+// static
+bool MetricsLogsEventManager::ScopedNotifyLogType::instance_exists_ = false;
 
+MetricsLogsEventManager::ScopedNotifyLogType::ScopedNotifyLogType(
+    MetricsLogsEventManager* logs_event_manager,
+    MetricsLog::LogType log_type)
+    : logs_event_manager_(logs_event_manager) {
+  DCHECK(!instance_exists_);
+  instance_exists_ = true;
+  if (logs_event_manager_)
+    logs_event_manager_->NotifyLogType(log_type);
+}
+
+MetricsLogsEventManager::ScopedNotifyLogType::~ScopedNotifyLogType() {
+  DCHECK(instance_exists_);
+  if (logs_event_manager_)
+    logs_event_manager_->NotifyLogType(absl::nullopt);
+  instance_exists_ = false;
+}
+
+MetricsLogsEventManager::MetricsLogsEventManager() = default;
 MetricsLogsEventManager::~MetricsLogsEventManager() = default;
 
 void MetricsLogsEventManager::AddObserver(Observer* observer) {
@@ -31,6 +50,12 @@ void MetricsLogsEventManager::NotifyLogEvent(LogEvent event,
                                              base::StringPiece message) {
   for (Observer& observer : observers_)
     observer.OnLogEvent(event, log_hash, message);
+}
+
+void MetricsLogsEventManager::NotifyLogType(
+    absl::optional<MetricsLog::LogType> log_type) {
+  for (Observer& observer : observers_)
+    observer.OnLogType(log_type);
 }
 
 }  // namespace metrics

@@ -8,10 +8,13 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/metrics/metrics_log.h"
+#include "components/metrics/metrics_logs_event_manager.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
+#include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -296,6 +299,152 @@ TEST_F(MetricsServiceObserverTest, TrimLongLogList) {
   service.RemoveLogsObserver(&logs_observer);
 }
 
+// Verifies that logs created through MetricsLogStore, which is used by UMA, are
+// annotated with a type (ongoing, independent, or stability).
+TEST_F(MetricsServiceObserverTest, UmaLogType) {
+  // Verify that logs created through MetricsLogStore::StoreLog() will be
+  // annotated with a type.
+  {
+    MetricsLogsEventManager logs_event_manager;
+    TestMetricsServiceClient client;
+    MetricsLogStore test_log_store(local_state(), client.GetStorageLimits(),
+                                   client.GetUploadSigningKey(),
+                                   &logs_event_manager);
+
+    // Create a MetricsServiceObserver that will observe UMA logs from
+    // |test_log_store|, which notifies through |logs_event_manager|.
+    MetricsServiceObserver logs_observer(
+        MetricsServiceObserver::MetricsServiceType::UMA);
+    logs_event_manager.AddObserver(&logs_observer);
+
+    // Load logs from persistent storage, which is needed to internally
+    // initialize |test_log_store|. There should be no logs loaded.
+    test_log_store.LoadPersistedUnsentLogs();
+    std::vector<std::unique_ptr<MetricsServiceObserver::Log>>* logs =
+        logs_observer.logs_for_testing();
+    EXPECT_EQ(logs->size(), 0U);
+
+    test_log_store.StoreLog("Ongoing Log", MetricsLog::LogType::ONGOING_LOG,
+                            LogMetadata());
+    ASSERT_EQ(logs->size(), 1U);
+    ASSERT_TRUE(logs->back()->type.has_value());
+    EXPECT_EQ(logs->back()->type.value(), MetricsLog::LogType::ONGOING_LOG);
+    test_log_store.StoreLog(
+        "Independent Log", MetricsLog::LogType::INDEPENDENT_LOG, LogMetadata());
+    ASSERT_EQ(logs->size(), 2U);
+    ASSERT_TRUE(logs->back()->type.has_value());
+    EXPECT_EQ(logs->back()->type.value(), MetricsLog::LogType::INDEPENDENT_LOG);
+    test_log_store.StoreLog("Stability Log",
+                            MetricsLog::LogType::INITIAL_STABILITY_LOG,
+                            LogMetadata());
+    ASSERT_EQ(logs->size(), 3U);
+    ASSERT_TRUE(logs->back()->type.has_value());
+    EXPECT_EQ(logs->back()->type.value(),
+              MetricsLog::LogType::INITIAL_STABILITY_LOG);
+
+    // Store logs in persistent storage, in preparation for the next assertions.
+    test_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+
+    logs_event_manager.RemoveObserver(&logs_observer);
+  }
+
+  // Verify that logs loaded from persistent storage are annotated with a type.
+  {
+    MetricsLogsEventManager logs_event_manager;
+    TestMetricsServiceClient client;
+    MetricsLogStore test_log_store(local_state(), client.GetStorageLimits(),
+                                   client.GetUploadSigningKey(),
+                                   &logs_event_manager);
+
+    // Create a MetricsServiceObserver that will observe UMA logs from
+    // |test_log_store|, which notifies through |logs_event_manager|.
+    MetricsServiceObserver logs_observer(
+        MetricsServiceObserver::MetricsServiceType::UMA);
+    logs_event_manager.AddObserver(&logs_observer);
+
+    // Load logs from persistent storage, which were created previously.
+    std::vector<std::unique_ptr<MetricsServiceObserver::Log>>* logs =
+        logs_observer.logs_for_testing();
+    EXPECT_EQ(logs->size(), 0U);
+    test_log_store.LoadPersistedUnsentLogs();
+
+    // Verify that logs were observed by |logs_observer|, and that they were
+    // annotated with a type. There should be 3 logs. Note that the order in
+    // which the logs are loaded (stability first, then ongoing) is hardcoded in
+    // MetricsLogStore. Further, the "independent" log should have become an
+    // "ongoing" log (due to limitations on how logs are stored in persistent
+    // storage).
+    ASSERT_EQ(logs->size(), 3U);
+    ASSERT_TRUE(logs->at(0)->type.has_value());
+    EXPECT_EQ(logs->at(0)->type.value(),
+              MetricsLog::LogType::INITIAL_STABILITY_LOG);
+    ASSERT_TRUE(logs->at(1)->type.has_value());
+    EXPECT_EQ(logs->at(1)->type.value(), MetricsLog::LogType::ONGOING_LOG);
+    ASSERT_TRUE(logs->at(2)->type.has_value());
+    EXPECT_EQ(logs->at(2)->type.value(), MetricsLog::LogType::ONGOING_LOG);
+
+    logs_event_manager.RemoveObserver(&logs_observer);
+  }
+
+  // Verify that when loading logs from persistent storage after setting an
+  // "alternate ongoing log store", the logs are annotated with a type.
+  {
+    MetricsLogsEventManager logs_event_manager;
+    TestMetricsServiceClient client;
+    MetricsLogStore::StorageLimits storage_limits = client.GetStorageLimits();
+    MetricsLogStore test_log_store(local_state(), storage_limits,
+                                   client.GetUploadSigningKey(),
+                                   &logs_event_manager);
+
+    // Load logs from persistent storage, which is needed to internally
+    // initialize |test_log_store|. There should be 3 logs loaded (however, we
+    // do not care about them).
+    test_log_store.LoadPersistedUnsentLogs();
+
+    // Create a MetricsServiceObserver that will observe UMA logs from
+    // |test_log_store|, which notifies through |logs_event_manager|.
+    MetricsServiceObserver logs_observer(
+        MetricsServiceObserver::MetricsServiceType::UMA);
+    logs_event_manager.AddObserver(&logs_observer);
+
+    // Verify that |logs_observer| is not aware of any logs (since we started
+    // observing *after* logs from persistent storage were loaded).
+    std::vector<std::unique_ptr<MetricsServiceObserver::Log>>* logs =
+        logs_observer.logs_for_testing();
+    EXPECT_EQ(logs->size(), 0U);
+
+    // Create an UnsentLogStore, which will be used as the "alternate ongoing
+    // log store". This log store will read from the same persistent storage as
+    // a "normal" ongoing log queue.
+    auto alternate_ongoing_log_store = std::make_unique<UnsentLogStore>(
+        std::make_unique<UnsentLogStoreMetricsImpl>(), local_state(),
+        prefs::kMetricsOngoingLogs, prefs::kMetricsOngoingLogsMetadata,
+        storage_limits.min_ongoing_log_queue_count,
+        storage_limits.min_ongoing_log_queue_size,
+        storage_limits.max_ongoing_log_size, client.GetUploadSigningKey(),
+        // |logs_event_manager| will be set by |test_log_store| directly in
+        // MetricsLogStore::SetAlternateOngoingLogStore().
+        /*logs_event_manager=*/nullptr);
+
+    // Set the alternate ongoing log store of |test_log_store|. This should load
+    // logs from persistent storage.
+    test_log_store.SetAlternateOngoingLogStore(
+        std::move(alternate_ongoing_log_store));
+
+    // Verify that logs were observed by |logs_observer|, and that they were
+    // annotated with a type. There should be 2 logs. The "independent" log
+    // should have become an "ongoing" log (due to limitations on how logs are
+    // stored in persistent storage).
+    ASSERT_EQ(logs->size(), 2U);
+    ASSERT_TRUE(logs->at(0)->type.has_value());
+    EXPECT_EQ(logs->at(0)->type.value(), MetricsLog::LogType::ONGOING_LOG);
+    ASSERT_TRUE(logs->at(1)->type.has_value());
+    EXPECT_EQ(logs->at(1)->type.value(), MetricsLog::LogType::ONGOING_LOG);
+
+    logs_event_manager.RemoveObserver(&logs_observer);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(MetricsServiceObserverExportTests,
                          MetricsServiceObserverExportTest,
                          testing::Bool());
@@ -360,6 +509,11 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   base::Value& log_value = logs_list.front();
   ASSERT_TRUE(log_value.is_dict());
   base::Value::Dict& log_dict = log_value.GetDict();
+
+  base::Value* uma_log_type = log_dict.Find("type");
+  ASSERT_TRUE(uma_log_type);
+  ASSERT_TRUE(uma_log_type->is_string());
+  EXPECT_EQ(uma_log_type->GetString(), "Ongoing");
 
   base::Value* log_hash = log_dict.Find("hash");
   ASSERT_TRUE(log_hash);

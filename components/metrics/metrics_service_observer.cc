@@ -13,6 +13,18 @@
 namespace metrics {
 namespace {
 
+std::string LogTypeToString(MetricsLog::LogType log_type) {
+  switch (log_type) {
+    case MetricsLog::LogType::INDEPENDENT_LOG:
+      return "Independent";
+    case MetricsLog::LogType::INITIAL_STABILITY_LOG:
+      return "Stability";
+    case MetricsLog::LogType::ONGOING_LOG:
+      return "Ongoing";
+  }
+  NOTREACHED();
+}
+
 std::string EventToString(MetricsLogsEventManager::LogEvent event) {
   switch (event) {
     case MetricsLogsEventManager::LogEvent::kLogStaged:
@@ -56,6 +68,11 @@ void MetricsServiceObserver::OnLogCreated(base::StringPiece log_hash,
   log->hash = std::string(log_hash);
   log->timestamp = std::string(log_timestamp);
   log->data = std::string(log_data);
+  if (uma_log_type_.has_value()) {
+    DCHECK_EQ(service_type_, MetricsServiceType::UMA);
+    log->type = uma_log_type_;
+  }
+
   indexed_logs_.emplace(log->hash, log.get());
   logs_.push_back(std::move(log));
 }
@@ -79,6 +96,11 @@ void MetricsServiceObserver::OnLogEvent(MetricsLogsEventManager::LogEvent event,
   log->events.push_back(std::move(log_event));
 }
 
+void MetricsServiceObserver::OnLogType(
+    absl::optional<MetricsLog::LogType> log_type) {
+  uma_log_type_ = log_type;
+}
+
 bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
                                               std::string* json_output) {
   base::Value::List logs_list;
@@ -86,6 +108,10 @@ bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
   for (const std::unique_ptr<Log>& log : logs_) {
     base::Value::Dict log_dict;
 
+    if (log->type.has_value()) {
+      DCHECK_EQ(service_type_, MetricsServiceType::UMA);
+      log_dict.Set("type", LogTypeToString(log->type.value()));
+    }
     log_dict.Set("hash", base::HexEncode(log->hash.data(), log->hash.length()));
     log_dict.Set("timestamp", log->timestamp);
 
