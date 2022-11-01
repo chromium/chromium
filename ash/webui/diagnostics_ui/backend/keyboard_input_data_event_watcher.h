@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_for_ui.h"
 
 namespace ash::diagnostics {
@@ -18,8 +19,7 @@ namespace ash::diagnostics {
 // it has a lot of connections (ui::Cursor, full ui::DeviceEventDispatcherEvdev
 // interface) that take more room to stub out rather than just implementing
 // another evdev FdWatcher from scratch.
-class KeyboardInputDataEventWatcher : public InputDataEventWatcher,
-                                      base::MessagePumpForUI::FdWatcher {
+class KeyboardInputDataEventWatcher : public InputDataEventWatcher {
  public:
   // `KeyboardInputDataEventWatcher` calls dispatcher when a key event is ready.
   class Dispatcher {
@@ -38,14 +38,14 @@ class KeyboardInputDataEventWatcher : public InputDataEventWatcher,
   };
 
   KeyboardInputDataEventWatcher(
-      uint32_t id,
+      uint32_t evdev_id,
       base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher);
 
   // Constructor for unittests.
   KeyboardInputDataEventWatcher(
-      uint32_t id,
-      const base::FilePath& device_path,
-      const int fd,
+      uint32_t evdev_id,
+      const base::FilePath& path,
+      int fd,
       base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher);
 
   ~KeyboardInputDataEventWatcher() override;
@@ -53,43 +53,17 @@ class KeyboardInputDataEventWatcher : public InputDataEventWatcher,
   void ConvertKeyEvent(uint32_t key_code,
                        uint32_t key_state,
                        uint32_t scan_code);
-  void ProcessEvent(const input_event& input) override;
-  void Start();
-  void Stop();
 
-  void SetQuitClosureForTesting(base::OnceClosure quit_closure);
+  // InputDataEventWatcher:
+  void ProcessEvent(const input_event& input) override;
 
  protected:
-  // base::MessagePumpForUI::FdWatcher:
-  void OnFileCanReadWithoutBlocking(int fd) override;
-  void OnFileCanWriteWithoutBlocking(int fd) override;
-
-  // Device id
-  const uint32_t id_;
-
-  // Path to input device.
-  const base::FilePath path_;
-
-  // File descriptor to read.
-  const int fd_;
-
-  // Scoped auto-closer for FD.
-  const base::ScopedFD input_device_fd_;
-
-  // Whether we're polling for input on the device.
-  bool watching_ = false;
-
   // EV_ information pending for SYN_REPORT to dispatch.
   uint32_t pending_scan_code_ = 0;
   uint32_t pending_key_code_ = 0;
   uint32_t pending_key_state_ = 0;
 
-  base::OnceClosure quit_closure_;
-
   base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher_;
-
-  // Controller for watching the input fd.
-  base::MessagePumpForUI::FdWatchController controller_;
 };
 
 }  // namespace ash::diagnostics

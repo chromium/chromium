@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <linux/input-event-codes.h>
 #include <linux/input.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -28,8 +29,7 @@ namespace ash::diagnostics {
 
 namespace {
 
-constexpr char kFakeDevicePath[] = "/dev/input/test-device";
-constexpr uint32_t kFakeEvdevId{999};
+constexpr uint32_t kFakeEvdevId = 999;
 constexpr uint32_t kScanCodeKeyA = 0x1E;
 constexpr bool kKeyPressed = 1;
 constexpr bool kKeyReleased = 0;
@@ -114,6 +114,22 @@ class StubDispatcher : public KeyboardInputDataEventWatcher::Dispatcher {
   base::WeakPtrFactory<StubDispatcher> weak_factory_{this};
 };
 
+// FakeKeyboardInputDataEventWatcher to validate event processing.
+class FakeKeyboardInputDataEventWatcher : public KeyboardInputDataEventWatcher {
+ public:
+  FakeKeyboardInputDataEventWatcher(
+      uint32_t evdev_id,
+      base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher)
+      : KeyboardInputDataEventWatcher(evdev_id, dispatcher) {}
+
+  ~FakeKeyboardInputDataEventWatcher() override = default;
+
+  // Don't call the actual read functions.
+  void DoStart() override {}
+  void DoStop() override {}
+  void DoOnFileCanReadWithoutBlocking(int fd) override {}
+};
+
 class KeyboardInputDataEventWatcherTest : public testing::Test {
  public:
   KeyboardInputDataEventWatcherTest()
@@ -131,37 +147,17 @@ class KeyboardInputDataEventWatcherTest : public testing::Test {
 
   void TearDown() override { TearDownWatcher(); }
 
-  void WriteInputEvent(const input_event& input) {
-    int write_result = write(pipefds_[1], &input, sizeof(input));
-    if (write_result < 0)
-      PLOG(WARNING) << "write";
-    ASSERT_TRUE(write_result >= 0);
-  }
-
   StubDispatcher* dispatcher() { return &dispatcher_; }
 
   KeyboardInputDataEventWatcher* watcher() { return watcher_.get(); }
 
  protected:
   void SetupWatcher() {
-    int pipe_result = (pipe2(pipefds_, O_NONBLOCK));
-    if (pipe_result < 0)
-      PLOG(WARNING) << "pipe";
-    ASSERT_EQ(0, pipe_result);
-    watcher_ = std::make_unique<KeyboardInputDataEventWatcher>(
-        kFakeEvdevId, fake_device_path, pipefds_[0],
-        dispatcher()->GetWeakPtr());
+    watcher_ = std::make_unique<FakeKeyboardInputDataEventWatcher>(
+        kFakeEvdevId, dispatcher()->GetWeakPtr());
   }
 
-  void TearDownWatcher() {
-    watcher()->Stop();
-
-    // Only close the write endpoint. InputDataEventWatcher::Stop will close
-    // down the read endpoint. Calling close on the read will cause BADF.
-    if (IGNORE_EINTR(close(pipefds_[1])) < 0)
-      PLOG(WARNING) << "close";
-    watcher_.reset();
-  }
+  void TearDownWatcher() { watcher_.reset(); }
 
   // Helper for call assertions.
   void VerifyDispatcherCall(size_t index,
@@ -175,25 +171,16 @@ class KeyboardInputDataEventWatcherTest : public testing::Test {
 
  private:
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
-  base::FilePath fake_device_path{kFakeDevicePath};
   StubDispatcher dispatcher_;
-  int pipefds_[2];
-  std::unique_ptr<KeyboardInputDataEventWatcher> watcher_;
+  std::unique_ptr<FakeKeyboardInputDataEventWatcher> watcher_;
 };
 
 // Verifies that regular keydown and keyup are reported.
 TEST_F(KeyboardInputDataEventWatcherTest, StandardKeyPressDispatchesKeyEvent) {
   EXPECT_EQ(0ul, dispatcher()->CallCount());
-
-  watcher()->Start();
-  base::RunLoop run_loop;
-  watcher()->SetQuitClosureForTesting(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-
   for (const auto& input : kFakeKeyAPressAndRelease) {
-    WriteInputEvent(input);
+    watcher()->ProcessEvent(input);
   }
-  run_loop.Run();
 
   //  Two events dispatched.
   EXPECT_EQ(2ul, dispatcher()->CallCount());
@@ -209,14 +196,9 @@ TEST_F(KeyboardInputDataEventWatcherTest, StandardKeyPressDispatchesKeyEvent) {
 TEST_F(KeyboardInputDataEventWatcherTest, UnknownEvCodes) {
   EXPECT_EQ(0ul, dispatcher()->CallCount());
 
-  watcher()->Start();
   for (const auto& input : kUnhandledKeyboardEvdevEvents) {
-    WriteInputEvent(input);
+    watcher()->ProcessEvent(input);
   }
-  base::RunLoop run_loop;
-  watcher()->SetQuitClosureForTesting(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  run_loop.Run();
 
   // Two events dispatched.
   EXPECT_EQ(6ul, dispatcher()->CallCount());

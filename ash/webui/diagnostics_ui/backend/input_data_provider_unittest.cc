@@ -242,25 +242,33 @@ class FakeInputDataEventWatcher : public InputDataEventWatcher {
       uint32_t id,
       base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher,
       watchers_t& watchers)
-      : id_(id), dispatcher_(dispatcher), watchers_(watchers) {
-    EXPECT_EQ(0u, watchers_.count(id_));
-    watchers_[id_] = this;
+      : InputDataEventWatcher(id),
+        dispatcher_(dispatcher),
+        watchers_(watchers) {
+    EXPECT_EQ(0u, watchers_.count(this->evdev_id_));
+    watchers_[this->evdev_id_] = this;
   }
   ~FakeInputDataEventWatcher() override {
-    EXPECT_EQ(watchers_[id_], this);
-    watchers_.erase(id_);
+    EXPECT_EQ(watchers_[this->evdev_id_], this);
+    watchers_.erase(this->evdev_id_);
   }
 
   void PostKeyEvent(bool down, uint32_t evdev_code, uint32_t scan_code) {
     if (dispatcher_)
-      dispatcher_->SendInputKeyEvent(id_, evdev_code, scan_code, down);
+      dispatcher_->SendInputKeyEvent(this->evdev_id_, evdev_code, scan_code,
+                                     down);
   }
 
   // ProcessEvent will not be triggered by test code.
   void ProcessEvent(const input_event& event) override {}
 
+  // Only updating boolean instead of watching actual FD. FD watch tested in
+  // InputDataEventWatcher unit tests.
+  // See: ash/webui/diagnostics_ui/backend/input_data_event_watcher_unittest.cc
+  void DoStart() override { this->watching_ = true; }
+  void DoStop() override { this->watching_ = false; }
+
  private:
-  uint32_t id_;
   base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher_;
   watchers_t& watchers_;
 };
@@ -268,7 +276,7 @@ class FakeInputDataEventWatcher : public InputDataEventWatcher {
 // Utility to construct FakeInputDataEventWatcher for InputDataProvider.
 class FakeInputDataEventWatcherFactory : public EventWatcherFactory {
  public:
-  FakeInputDataEventWatcherFactory(watchers_t& watchers)
+  explicit FakeInputDataEventWatcherFactory(watchers_t& watchers)
       : watchers_(watchers) {}
   FakeInputDataEventWatcherFactory(const FakeInputDataEventWatcherFactory&) =
       delete;

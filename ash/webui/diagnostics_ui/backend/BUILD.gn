@@ -84,6 +84,7 @@ source_set("unit_tests") {
 
   sources = [
     "cpu_usage_data_unittest.cc",
+    "input_data_event_watcher_unittest.cc",
     "input_data_provider_keyboard_unittest.cc",
     "input_data_provider_touch_unittest.cc",
     "input_data_provider_unittest.cc",

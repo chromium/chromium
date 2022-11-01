@@ -8,19 +8,54 @@
 #include <linux/input.h>
 #include <cstdint>
 
+#include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/message_loop/message_pump_for_ui.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/current_thread.h"
+
 namespace ash::diagnostics {
 
 // Interfaces for watching and dispatching relevant events from evdev to the
 // input_data_provider.
-class InputDataEventWatcher {
+class InputDataEventWatcher : public base::MessagePumpForUI::FdWatcher {
  public:
-  virtual ~InputDataEventWatcher() = 0;
+  // Constructor for unittests.
+  InputDataEventWatcher(uint32_t evdev_id, const base::FilePath& path, int fd);
+  explicit InputDataEventWatcher(uint32_t evdev_id);
+  ~InputDataEventWatcher() override;
 
   // Interpret raw `input_event` components into logical events based on the
   // event protocols and connected device. Described by kernel input event-codes
   // api. See: https://www.kernel.org/doc/Documentation/input/event-codes.txt
   // for a list of valid codes.
   virtual void ProcessEvent(const input_event& event) = 0;
+
+  void Start();
+  void Stop();
+
+ protected:
+  // base::MessagePumpForUI::FdWatcher:
+  void OnFileCanReadWithoutBlocking(int fd) override;
+  void OnFileCanWriteWithoutBlocking(int fd) override;
+
+  // Start watching file descriptor on current UI thread.
+  virtual void DoStart();
+  // Stop watching file descriptor on current UI thread.
+  virtual void DoStop();
+  virtual void DoOnFileCanReadWithoutBlocking(int fd);
+  virtual void DoOnFileCanWriteWithoutBlocking(int fd) {}
+
+  const uint32_t evdev_id_;    // input device evdev id.
+  const base::FilePath path_;  // evdev path /dev/input/event{evdev_id_}.
+  const int fd_;               // File descriptor being watched.
+  const base::ScopedFD input_device_fd_;  // base::ScopedFD to ensure closed.
+  bool watching_ = false;  // Whether we're polling for input on the device.
+  base::MessagePumpForUI::FdWatchController controller_;
 };
 
 }  // namespace ash::diagnostics
