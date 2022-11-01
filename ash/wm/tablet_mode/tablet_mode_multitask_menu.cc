@@ -133,13 +133,13 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   views::View* clip_view =
       multitask_menu_widget_->SetContentsView(std::make_unique<views::View>());
   clip_view->SetBorder(views::CreateEmptyBorder(kWidgetOutsets.ToInsets()));
+  clip_view->SetUseDefaultFillLayout(true);
   clip_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   clip_view->layer()->SetFillsBoundsOpaquely(false);
   clip_view->layer()->SetMasksToBounds(true);
 
   multitask_menu_view_ = clip_view->AddChildView(
       std::make_unique<TabletModeMultitaskMenuView>(window_, callback));
-  multitask_menu_view_->SizeToPreferredSize();
 
   // TODO(sophiewen): Add shadows on `multitask_menu_view_`.
 
@@ -158,22 +158,16 @@ void TabletModeMultitaskMenu::AnimateShow() {
                                                    window_);
   multitask_menu_widget_->Show();
 
-  // Position the widget on the top center of the window and offset the view
-  // inside it.
-  const gfx::Size pref_size = multitask_menu_view_->GetPreferredSize();
-  gfx::Rect widget_bounds(
-      window_->bounds().CenterPoint().x() - pref_size.width() / 2,
-      window_->bounds().y() + kVerticalPosition, pref_size.width(),
-      pref_size.height());
-
-  views::View* clip_view = multitask_menu_widget_->GetContentsView();
-  clip_view->SetPreferredSize(pref_size);
-
-  multitask_menu_widget_->SetBounds(
-      gfx::Rect(widget_bounds.origin(), clip_view->GetPreferredSize()));
+  // Position the widget on the top center of the window.
+  const gfx::Size widget_size =
+      multitask_menu_widget_->GetContentsView()->GetPreferredSize();
+  const gfx::Point widget_origin(
+      window_->bounds().CenterPoint().x() - widget_size.width() / 2,
+      window_->bounds().y() + kVerticalPosition);
+  multitask_menu_widget_->SetBounds(gfx::Rect(widget_origin, widget_size));
 
   const gfx::Transform transform = gfx::Transform::MakeTranslation(
-      0, -pref_size.height() - kVerticalPosition);
+      0, -widget_size.height() - kVerticalPosition);
 
   ui::Layer* view_layer = multitask_menu_view_->layer();
   views::AnimationBuilder()
