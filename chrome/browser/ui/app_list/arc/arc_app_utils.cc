@@ -315,6 +315,9 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
   if (window_info)
     window_info->display_id = GetValidDisplayId(window_info->display_id);
 
+  // Activate ARC in case still not active.
+  ArcSessionManager::Get()->AllowActivation();
+
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(context);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
   absl::optional<std::string> launch_intent_to_send = launch_intent;
