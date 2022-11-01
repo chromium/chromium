@@ -5,9 +5,13 @@
 #ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_WIN_H_
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_WIN_H_
 
+#include <netlistmgr.h>
+#include <ocidl.h>
 #include <windows.h>
+#include <wrl.h>
+#include <wrl/client.h>
 
-#include <atomic>
+#include <memory>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -15,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "base/win/object_watcher.h"
 #include "net/base/net_export.h"
@@ -27,7 +30,7 @@ class SequencedTaskRunner;
 
 namespace net {
 
-class NetworkCostChangeNotifierWin;
+class NetworkCostManagerEventSink;
 
 // NetworkChangeNotifierWin uses a SequenceChecker, as all its internal
 // notification code must be called on the sequence it is created and destroyed
@@ -97,7 +100,25 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
 
   static NetworkChangeCalculatorParams NetworkChangeCalculatorParamsWin();
 
-  void OnCostChanged(NetworkChangeNotifier::ConnectionCost new_cost);
+  // Gets the current network connection cost (if possible) and caches it.
+  void InitializeConnectionCost();
+  // Does the work of initializing for thread safety.
+  bool InitializeConnectionCostOnce();
+  // Retrieves the current network connection cost from the OS's Cost Manager.
+  HRESULT UpdateConnectionCostFromCostManager();
+  // Converts the OS enum values to the enum values used in our code.
+  static ConnectionCost ConnectionCostFromNlmCost(NLM_CONNECTION_COST cost);
+  // Sets the cached network connection cost value.
+  void SetCurrentConnectionCost(ConnectionCost connection_cost);
+  // Callback method for the notification event sink.
+  void OnCostChanged();
+  // Tells this class that an observer was added and therefore this class needs
+  // to register for notifications.
+  void ConnectionCostObserverAdded() override;
+  // Since ConnectionCostObserverAdded() can be called on any thread and we
+  // don't want to do a bunch of work on an arbitrary thread, this method used
+  // to post task to do the work.
+  void OnConnectionCostObserverAdded();
 
   // All member variables may only be accessed on the sequence |this| was
   // created on.
@@ -120,19 +141,18 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   mutable base::Lock last_computed_connection_type_lock_;
   ConnectionType last_computed_connection_type_;
 
-  std::atomic<NetworkChangeNotifier::ConnectionCost>
-      last_computed_connection_cost_ =
-          NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNKNOWN;
-
-  // Provides the cost of the current connection.  Uses the Windows OS APIs to
-  // monitor and determine cost.
-  base::SequenceBound<NetworkCostChangeNotifierWin> cost_change_notifier_;
+  std::atomic<ConnectionCost> last_computed_connection_cost_ =
+      ConnectionCost::CONNECTION_COST_UNKNOWN;
 
   // Result of IsOffline() when NotifyObserversOfConnectionTypeChange()
   // was last called.
   bool last_announced_offline_;
   // Number of times polled to check if still offline.
   int offline_polls_;
+
+  Microsoft::WRL::ComPtr<INetworkCostManager> network_cost_manager_;
+  Microsoft::WRL::ComPtr<NetworkCostManagerEventSink>
+      network_cost_manager_event_sink_;
 
   // Used to ensure that all registration actions are properly sequenced on the
   // same thread regardless of which thread was used to call into the

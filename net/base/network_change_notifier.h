@@ -670,6 +670,13 @@ class NET_EXPORT NetworkChangeNotifier {
   // as early as possible in the destructor to prevent races.
   void ClearGlobalPointer();
 
+  // Called whenever a new ConnectionCostObserver is added. This method is
+  // needed so that the implementation class can be notified and
+  // potentially take action when an observer gets added. Since the act of
+  // adding an observer and the observer list itself are both static, the
+  // implementation class has no direct capability to watch for changes.
+  virtual void ConnectionCostObserverAdded() {}
+
   // Listening for notifications of this type is expensive as they happen
   // frequently. For this reason, we report {de}registration to the
   // implementation class, so that it can decide to only listen to this type of

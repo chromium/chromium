@@ -248,6 +248,11 @@ class NetworkChangeNotifier::ObserverList {
   const scoped_refptr<
       base::ObserverListThreadSafe<DefaultNetworkActiveObserver>>
       default_network_active_observer_list_;
+
+  // Indicates if connection cost observer was added before
+  // network_change_notifier was initialized, if so ConnectionCostObserverAdded
+  // is invoked from constructor.
+  std::atomic_bool connection_cost_observers_added_ = false;
 };
 
 class NetworkChangeNotifier::SystemDnsConfigObserver
@@ -682,8 +687,13 @@ void NetworkChangeNotifier::AddNetworkObserver(NetworkObserver* observer) {
 void NetworkChangeNotifier::AddConnectionCostObserver(
     ConnectionCostObserver* observer) {
   DCHECK(!observer->observer_list_);
+  GetObserverList().connection_cost_observers_added_ = true;
   observer->observer_list_ = GetObserverList().connection_cost_observer_list_;
   observer->observer_list_->AddObserver(observer);
+  base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
+  if (g_network_change_notifier) {
+    g_network_change_notifier->ConnectionCostObserverAdded();
+  }
 }
 
 void NetworkChangeNotifier::AddDefaultNetworkActiveObserver(
@@ -842,6 +852,9 @@ NetworkChangeNotifier::NetworkChangeNotifier(
     g_network_change_notifier = this;
 
     system_dns_config_notifier_->AddObserver(system_dns_config_observer_.get());
+    if (GetObserverList().connection_cost_observers_added_) {
+      g_network_change_notifier->ConnectionCostObserverAdded();
+    }
   }
   if (!omit_observers_in_constructor_for_testing) {
     network_change_calculator_ =

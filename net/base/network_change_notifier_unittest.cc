@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_interfaces.h"
-#include "net/test/test_connection_cost_observer.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -227,17 +226,37 @@ TEST_F(NetworkChangeNotifierMockedTest, TriggerNonSystemDnsChange) {
   NetworkChangeNotifier::RemoveDNSObserver(&observer);
 }
 
+class TestConnectionCostObserver
+    : public NetworkChangeNotifier::ConnectionCostObserver {
+ public:
+  void OnConnectionCostChanged(
+      NetworkChangeNotifier::ConnectionCost cost) override {
+    cost_changed_inputs_.push_back(cost);
+    ++cost_changed_calls_;
+  }
+
+  int cost_changed_calls() const { return cost_changed_calls_; }
+  std::vector<NetworkChangeNotifier::ConnectionCost> cost_changed_inputs()
+      const {
+    return cost_changed_inputs_;
+  }
+
+ private:
+  int cost_changed_calls_ = 0;
+  std::vector<NetworkChangeNotifier::ConnectionCost> cost_changed_inputs_;
+};
+
 TEST_F(NetworkChangeNotifierMockedTest, TriggerConnectionCostChange) {
   TestConnectionCostObserver observer;
   NetworkChangeNotifier::AddConnectionCostObserver(&observer);
 
-  ASSERT_EQ(0u, observer.cost_changed_calls());
+  ASSERT_EQ(0, observer.cost_changed_calls());
 
   NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeForTests(
       NetworkChangeNotifier::CONNECTION_COST_METERED);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1u, observer.cost_changed_calls());
+  EXPECT_EQ(1, observer.cost_changed_calls());
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_METERED,
             observer.cost_changed_inputs()[0]);
 
@@ -246,7 +265,7 @@ TEST_F(NetworkChangeNotifierMockedTest, TriggerConnectionCostChange) {
       NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1u, observer.cost_changed_calls());
+  EXPECT_EQ(1, observer.cost_changed_calls());
 }
 
 TEST_F(NetworkChangeNotifierMockedTest, ConnectionCostDefaultsToCellular) {
