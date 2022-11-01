@@ -411,14 +411,6 @@ try_.builder(
     goma_jobs = goma.jobs.J150,
 )
 
-try_.builder(
-    name = "android-pie-x86-fyi-rel-reviver",
-    mirrors = [
-        "ci/android-pie-x86-fyi-rel-reviver",
-    ],
-    goma_jobs = goma.jobs.J150,
-)
-
 # TODO(crbug/1182468) Remove when coverage is enabled on CQ.
 try_.builder(
     name = "android-pie-arm64-coverage-rel",
