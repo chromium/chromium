@@ -164,8 +164,8 @@ class CC_EXPORT GpuImageDecodeCache
   void DrawWithImageFinished(const DrawImage& image,
                              const DecodedDrawImage& decoded_image) override;
   void ReduceCacheUsage() override;
-  void SetShouldAggressivelyFreeResources(
-      bool aggressively_free_resources) override;
+  void SetShouldAggressivelyFreeResources(bool aggressively_free_resources,
+                                          bool context_lock_acquired) override;
   void ClearCache() override;
   size_t GetMaximumMemoryLimitBytes() const override;
   bool UseCacheForDrawImage(const DrawImage& image) const override;

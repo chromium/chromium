@@ -27,18 +27,14 @@ DirectLayerTreeFrameSink::DirectLayerTreeFrameSink(
     viz::FrameSinkManagerImpl* frame_sink_manager,
     viz::Display* display,
     scoped_refptr<viz::ContextProvider> context_provider,
-    scoped_refptr<viz::RasterContextProvider> worker_context_provider,
+    scoped_refptr<cc::RasterContextProviderWrapper>
+        worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager)
-    : LayerTreeFrameSink(
-          std::move(context_provider),
-          base::MakeRefCounted<cc::RasterContextProviderWrapper>(
-              std::move(worker_context_provider),
-              /*dark_mode_filter=*/nullptr,
-              cc::ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
-                  /*for_renderer=*/false)),
-          std::move(compositor_task_runner),
-          gpu_memory_buffer_manager),
+    : LayerTreeFrameSink(std::move(context_provider),
+                         std::move(worker_context_provider_wrapper),
+                         std::move(compositor_task_runner),
+                         gpu_memory_buffer_manager),
       frame_sink_id_(frame_sink_id),
       frame_sink_manager_(frame_sink_manager),
       display_(display) {

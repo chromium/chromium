@@ -615,10 +615,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return settings_.create_low_res_tiling && !use_gpu_rasterization_;
   }
   ResourcePool* resource_pool() { return resource_pool_.get(); }
-  ImageDecodeCache* image_decode_cache() { return image_decode_cache_.get(); }
   ImageAnimationController* image_animation_controller() {
     return &image_animation_controller_;
   }
+
+  ImageDecodeCache* GetImageDecodeCache() const;
 
   uint32_t next_frame_token() const { return *next_frame_token_; }
 
@@ -1013,6 +1014,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void NotifyLatencyInfoSwapPromiseMonitors();
 
  private:
+  // Holds image decode cache instance. It can either be a shared cache or
+  // a cache create by this instance. Which is used depends on the settings.
+  class ImageDecodeCacheHolder;
+
   void SetMemoryPolicyImpl(const ManagedMemoryPolicy& policy);
   void SetContextVisibility(bool is_visible);
 
@@ -1098,7 +1103,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<RasterBufferProvider> raster_buffer_provider_;
   std::unique_ptr<ResourcePool> resource_pool_;
   std::unique_ptr<RasterQueryQueue> pending_raster_queries_;
-  std::unique_ptr<ImageDecodeCache> image_decode_cache_;
+  std::unique_ptr<ImageDecodeCacheHolder> image_decode_cache_holder_;
 
   GlobalStateThatImpactsTilePriority global_tile_state_;
 

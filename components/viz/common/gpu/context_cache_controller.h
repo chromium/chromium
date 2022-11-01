@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -82,6 +83,10 @@ class VIZ_COMMON_EXPORT ContextCacheController {
   // pointers it owns via this function.
   void ClientBecameNotBusy(std::unique_ptr<ScopedBusy> scoped_busy);
 
+  // Notifies via the callback when visibility of all clients changes.
+  void SetNotifyAllClientsVisibilityChangedCb(
+      base::RepeatingCallback<void(bool)> on_clients_visibility_changed_cb);
+
  private:
   void OnIdle(uint32_t idle_generation);
   void PostIdleCallback(uint32_t current_idle_generation) const;
@@ -102,6 +107,10 @@ class VIZ_COMMON_EXPORT ContextCacheController {
   uint32_t num_clients_visible_ = 0;
   uint32_t num_clients_busy_ = 0;
   bool callback_pending_ = false;
+
+  // Invoked when clients' visibility changes - either there are no visible
+  // clients at all or there is at least one visible client.
+  base::RepeatingCallback<void(bool)> on_clients_visibility_changed_cb_;
 
   // |current_idle_generation_lock_| must be held when accessing
   // |current_idle_generation_|. |current_idle_generation_lock_| must never be

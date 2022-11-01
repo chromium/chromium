@@ -1842,7 +1842,7 @@ TileManager* LayerTreeImpl::tile_manager() const {
 }
 
 ImageDecodeCache* LayerTreeImpl::image_decode_cache() const {
-  return host_impl_->image_decode_cache();
+  return host_impl_->GetImageDecodeCache();
 }
 
 ImageAnimationController* LayerTreeImpl::image_animation_controller() const {

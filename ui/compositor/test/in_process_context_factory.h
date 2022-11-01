@@ -23,6 +23,10 @@
 #include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom.h"
 #include "ui/compositor/compositor.h"
 
+namespace cc {
+class RasterContextProviderWrapper;
+}
+
 namespace viz {
 class HostFrameSinkManager;
 }
@@ -82,7 +86,8 @@ class InProcessContextFactory : public ContextFactory {
   PerCompositorData* CreatePerCompositorData(Compositor* compositor);
 
   scoped_refptr<InProcessContextProvider> shared_main_thread_contexts_;
-  scoped_refptr<InProcessContextProvider> shared_worker_context_provider_;
+  scoped_refptr<cc::RasterContextProviderWrapper>
+      shared_worker_context_provider_wrapper_;
   viz::TestSharedBitmapManager shared_bitmap_manager_;
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   viz::TestImageFactory image_factory_;

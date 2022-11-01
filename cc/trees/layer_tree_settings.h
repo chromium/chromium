@@ -226,6 +226,10 @@ class CC_EXPORT LayerTreeSettings {
   // not be synchronized at the beginning of the frame because main frames were
   // being deferred.
   bool skip_commits_if_not_synchronizing_compositor_state = true;
+
+  // Enables shared image cache for gpu.
+  // TODO(crbug.com/1378251): not ready to be used by renderer cc instance yet.
+  bool enable_shared_image_cache_for_gpu = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

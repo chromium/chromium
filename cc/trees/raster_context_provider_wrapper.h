@@ -58,6 +58,8 @@ class CC_EXPORT RasterContextProviderWrapper
 
   void CheckValidThreadOrLockSupported() const;
 
+  void OnAllClientsVisibilityChanged(bool visible);
+
   // The worker context that this wrapper holds.
   const scoped_refptr<viz::RasterContextProvider> context_;
 

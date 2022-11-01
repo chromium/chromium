@@ -4,6 +4,7 @@
 
 #include "cc/trees/raster_context_provider_wrapper.h"
 
+#include "base/functional/bind.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 
@@ -55,6 +56,15 @@ RasterContextProviderWrapper::RasterContextProviderWrapper(
       max_working_set_bytes_(max_working_set_bytes),
       max_texture_size_(GetMaxTextureSize(context_)) {
   CheckValidThreadOrLockSupported();
+
+  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+      context.get());
+  // This callback can use a raw ptr for the cb as the wrapper outlive the cache
+  // controller.
+  context_->CacheController()->SetNotifyAllClientsVisibilityChangedCb(
+      base::BindRepeating(
+          &RasterContextProviderWrapper::OnAllClientsVisibilityChanged,
+          base::Unretained(this)));
 }
 
 RasterContextProviderWrapper::~RasterContextProviderWrapper() {
@@ -68,6 +78,32 @@ void RasterContextProviderWrapper::CheckValidThreadOrLockSupported() const {
     return;
   DCHECK_CALLED_ON_VALID_THREAD(bound_context_thread_checker_);
 #endif
+}
+
+void RasterContextProviderWrapper::OnAllClientsVisibilityChanged(bool visible) {
+  // Once all the clients are invisible, we should aggressively free resources
+  // from the image decode caches. This what ContextCacheController also does -
+  // it notifies the context support it must aggressively free resources if
+  // all clients that share the same context became invisible.
+  const bool should_aggressively_free_resources = !visible;
+
+  // The caller of
+  // ContextCacheController::ClientBecomeVisible/ClientBecomeNotVisible must
+  // acquire lock. Thus, we are called with lock acquired. Unfortunately, we
+  // have to either make ImageDecodeCache require acquiring lock or provide it
+  // with information that lock has been acquired. Otherwise, a deadlock
+  // happens.
+  //
+  // If lock is not supported, lock has not been acquired.
+  const bool context_lock_acquired = context_supports_locking_;
+  if (context_supports_locking_)
+    context_->GetLock()->AssertAcquired();
+
+  base::AutoLock scoped_lock(lock_);
+  for (const auto& item : gpu_image_decode_cache_map_) {
+    item.second->SetShouldAggressivelyFreeResources(
+        should_aggressively_free_resources, context_lock_acquired);
+  }
 }
 
 const scoped_refptr<viz::RasterContextProvider>&

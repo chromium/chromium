@@ -90,6 +90,7 @@
 #include "cc/trees/mobile_optimized_viewport_util.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
+#include "cc/trees/raster_context_provider_wrapper.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scroll_node.h"
@@ -279,6 +280,72 @@ const char* ClientNameForVerboseLog() {
   VLOG_IF(3, VerboseLogEnabled()) << ClientNameForVerboseLog() << ": "
 
 }  // namespace
+
+// Holds either a created ImageDecodeCache or a ptr to a shared
+// GpuImageDecodeCache.
+class LayerTreeHostImpl::ImageDecodeCacheHolder {
+ public:
+  ImageDecodeCacheHolder(bool enable_shared_image_cache_for_gpu,
+                         bool use_gpu_rasterization,
+                         bool gpu_compositing,
+                         scoped_refptr<RasterContextProviderWrapper>
+                             worker_context_provider_wrapper,
+                         viz::ResourceFormat tile_format,
+                         size_t decoded_image_working_set_budget_bytes,
+                         int max_texture_size,
+                         RasterDarkModeFilter* dark_mode_filter) {
+    if (use_gpu_rasterization) {
+      auto color_type = viz::ResourceFormatToClosestSkColorType(
+          /*gpu_compositing=*/true, tile_format);
+      if (enable_shared_image_cache_for_gpu) {
+        image_decode_cache_ptr_ =
+            &worker_context_provider_wrapper->GetGpuImageDecodeCache(
+                color_type);
+      } else {
+        image_decode_cache_ = std::make_unique<GpuImageDecodeCache>(
+            worker_context_provider_wrapper->GetContext().get(),
+            /*use_transfer_cache=*/true, color_type,
+            decoded_image_working_set_budget_bytes, max_texture_size,
+            dark_mode_filter);
+      }
+    } else {
+      image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
+          viz::ResourceFormatToClosestSkColorType(gpu_compositing, tile_format),
+          decoded_image_working_set_budget_bytes);
+    }
+
+    if (image_decode_cache_) {
+      image_decode_cache_ptr_ = image_decode_cache_.get();
+    } else {
+      DCHECK(image_decode_cache_ptr_);
+    }
+  }
+
+  void SetShouldAggressivelyFreeResources(bool aggressively_free_resources) {
+    // This must only be called if the decode cache is not shared aka is not
+    // created via RasterContextProviderWrapper as the cache created via that
+    // gets this calls from ContextCacheController, which notifies only after
+    // ALL clients are invisible or at least one is visible.
+    if (image_decode_cache_) {
+      image_decode_cache_->SetShouldAggressivelyFreeResources(
+          aggressively_free_resources, /*context_lock_acquired=*/false);
+    }
+  }
+
+  ImageDecodeCache* image_decode_cache() const {
+    DCHECK(image_decode_cache_ptr_);
+    return image_decode_cache_ptr_;
+  }
+
+  ImageDecodeCacheHolder(const ImageDecodeCacheHolder&) = delete;
+  ImageDecodeCacheHolder& operator=(const ImageDecodeCacheHolder&) = delete;
+
+  ~ImageDecodeCacheHolder() = default;
+
+ private:
+  raw_ptr<ImageDecodeCache> image_decode_cache_ptr_ = nullptr;
+  std::unique_ptr<ImageDecodeCache> image_decode_cache_;
+};
 
 void LayerTreeHostImpl::DidUpdateScrollAnimationCurve() {
   // Because we updated the animation target, notify the
@@ -516,7 +583,7 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   // all the resource and raster structures.
   DCHECK(!layer_tree_frame_sink_);
   DCHECK(!resource_pool_);
-  DCHECK(!image_decode_cache_);
+  DCHECK(!image_decode_cache_holder_);
   DCHECK(!single_thread_synchronous_task_graph_runner_);
 
   if (input_delegate_)
@@ -1809,8 +1876,8 @@ void LayerTreeHostImpl::UpdateTileManagerMemoryPolicy(
     // allow the image decode controller to retain resources. We handle the
     // equal to 0 case in NotifyAllTileTasksComplete to avoid interrupting
     // running work.
-    if (image_decode_cache_)
-      image_decode_cache_->SetShouldAggressivelyFreeResources(false);
+    if (image_decode_cache_holder_)
+      image_decode_cache_holder_->SetShouldAggressivelyFreeResources(false);
   } else {
     // When the memory policy is set to zero, its important to release any
     // decoded images cached by the tracker. But we can not re-checker any
@@ -2023,8 +2090,8 @@ void LayerTreeHostImpl::NotifyAllTileTasksCompleted() {
     // contexts of visibility change. This ensures that the imaged decode
     // controller has released all Skia refs at the time Skia's cleanup
     // executes (within worker context's cleanup).
-    if (image_decode_cache_)
-      image_decode_cache_->SetShouldAggressivelyFreeResources(true);
+    if (image_decode_cache_holder_)
+      image_decode_cache_holder_->SetShouldAggressivelyFreeResources(true);
     SetContextVisibility(false);
   }
 }
@@ -2938,6 +3005,12 @@ void LayerTreeHostImpl::UpdateTreeResourcesForGpuRasterizationIfNeeded() {
   SetRequiresHighResToDraw();
 }
 
+ImageDecodeCache* LayerTreeHostImpl::GetImageDecodeCache() const {
+  return image_decode_cache_holder_
+             ? image_decode_cache_holder_->image_decode_cache()
+             : nullptr;
+}
+
 void LayerTreeHostImpl::RegisterMainThreadPresentationTimeCallbackForTesting(
     uint32_t frame_token,
     PresentationTimeCallbackBuffer::MainCallback callback) {
@@ -3587,23 +3660,17 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
       settings_, layer_tree_frame_sink_->context_provider(),
       use_gpu_rasterization_);
 
-  if (use_gpu_rasterization_) {
-    image_decode_cache_ = std::make_unique<GpuImageDecodeCache>(
-        layer_tree_frame_sink_->worker_context_provider(),
-        /*use_transfer_cache=*/true,
-        viz::ResourceFormatToClosestSkColorType(/*gpu_compositing=*/true,
-                                                tile_format),
-        settings_.decoded_image_working_set_budget_bytes, max_texture_size_,
-        dark_mode_filter_);
+  const bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
+  image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
+      settings_.enable_shared_image_cache_for_gpu, use_gpu_rasterization_,
+      gpu_compositing,
+      layer_tree_frame_sink_->worker_context_provider_wrapper(), tile_format,
+      settings_.decoded_image_working_set_budget_bytes, max_texture_size_,
+      dark_mode_filter_);
 
+  if (use_gpu_rasterization_) {
     pending_raster_queries_ = std::make_unique<RasterQueryQueue>(
         layer_tree_frame_sink_->worker_context_provider());
-
-  } else {
-    bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
-    image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
-        viz::ResourceFormatToClosestSkColorType(gpu_compositing, tile_format),
-        settings_.decoded_image_working_set_budget_bytes);
   }
 
   raster_buffer_provider_ = CreateRasterBufferProvider();
@@ -3618,7 +3685,7 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
     task_graph_runner = single_thread_synchronous_task_graph_runner_.get();
   }
 
-  tile_manager_.SetResources(resource_pool_.get(), image_decode_cache_.get(),
+  tile_manager_.SetResources(resource_pool_.get(), GetImageDecodeCache(),
                              task_graph_runner, raster_buffer_provider_.get(),
                              use_gpu_rasterization_,
                              pending_raster_queries_.get());
@@ -3740,8 +3807,13 @@ void LayerTreeHostImpl::ClearCaches() {
   // comes with an invalidation and the image ids are never re-used.
   bool can_clear_decode_policy_tracking = true;
   tile_manager_.ClearCheckerImageTracking(can_clear_decode_policy_tracking);
-  if (image_decode_cache_)
-    image_decode_cache_->ClearCache();
+  // TODO(crbug.com/1378247): add tracking for which clients have used an image
+  // and remove entries used by only one client when the URL on that client
+  // changes. This should be fixed to correctly clear caches for web contents.
+  // This is only a problem when
+  // LayerTreeSettings::enable_shared_image_cache_for_gpu is true.
+  if (GetImageDecodeCache())
+    GetImageDecodeCache()->ClearCache();
   image_animation_controller_.set_did_navigate();
 }
 
@@ -3755,7 +3827,7 @@ void LayerTreeHostImpl::DidChangeScrollbarVisibility() {
 void LayerTreeHostImpl::CleanUpTileManagerResources() {
   tile_manager_.FinishTasksAndCleanUp();
   single_thread_synchronous_task_graph_runner_ = nullptr;
-  image_decode_cache_ = nullptr;
+  image_decode_cache_holder_ = nullptr;
   raster_buffer_provider_ = nullptr;
   pending_raster_queries_ = nullptr;
   // Any resources that were allocated previously should be considered not good
