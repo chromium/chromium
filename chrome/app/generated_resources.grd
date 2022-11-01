@@ -9955,6 +9955,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         desc="Used to indicate that the speech recognition service did not get permission to use the microphone.">
         Voice search has been turned off.
       </message>
+      <message name="IDS_NEW_TAB_VOICE_LEARN_MORE_ACCESSIBILITY_LABEL"
+        desc="Text read by screen readers for a link that links to a Help article about using a microphone.">
+        Learn more about using a microphone
+      </message>
       <message name="IDS_NEW_TAB_VOICE_READY"
         desc="Used to indicate that the speech recognition service has started and is waiting for user input.">
         Speak now

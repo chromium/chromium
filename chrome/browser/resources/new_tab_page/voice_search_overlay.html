@@ -210,11 +210,13 @@
             attr-for-selected="link" fallback-selection="none">
           <span link="none"></span>
           <a link="learn-more" target="_blank" href="[[helpUrl_]]"
-              on-click="onLearnMoreClick_" on-keydown="onLinkKeydown_"><!--
+              on-click="onLearnMoreClick_" on-keydown="onLinkKeydown_"
+              aria-label="$i18nPolymer{learnMoreA11yLabel}"><!--
             -->$i18n{learnMore}
           </a>
           <a link="details" target="_blank" href="[[helpUrl_]]"
-              on-keydown="onLinkKeydown_"><!--
+              on-keydown="onLinkKeydown_"
+              aria-label="$i18nPolymer{learnMoreA11yLabel}"><!--
             -->$i18n{details}
           </a>
           <a link="try-again" id="retryLink" href="#"

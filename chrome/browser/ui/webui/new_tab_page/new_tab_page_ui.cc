@@ -271,6 +271,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"details", IDS_NEW_TAB_VOICE_DETAILS},
       {"languageError", IDS_NEW_TAB_VOICE_LANGUAGE_ERROR},
       {"learnMore", IDS_LEARN_MORE},
+      {"learnMoreA11yLabel", IDS_NEW_TAB_VOICE_LEARN_MORE_ACCESSIBILITY_LABEL},
       {"listening", IDS_NEW_TAB_VOICE_LISTENING},
       {"networkError", IDS_NEW_TAB_VOICE_NETWORK_ERROR},
       {"noTranslation", IDS_NEW_TAB_VOICE_NO_TRANSLATION},
