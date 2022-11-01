@@ -37,8 +37,10 @@ namespace app_list {
 class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
  public:
   HelpAppSearchBrowserTestBase() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kHelpAppLauncherSearch);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ash::features::kProductivityLauncher, {{"enable_continue", "true"}}},
+         {{chromeos::features::kHelpAppLauncherSearch}, {}}},
+        {});
   }
 
   ~HelpAppSearchBrowserTestBase() override = default;
@@ -302,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
 
   ShowAppListAndWaitForZeroStateResults(
       {ash::AppListSearchResultType::kZeroStateHelpApp,
-       ash::AppListSearchResultType::kInstalledApp});
+       ash::AppListSearchResultType::kZeroStateApp});
 
   auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);
@@ -319,7 +321,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
 
   ShowAppListAndWaitForZeroStateResults(
       {ash::AppListSearchResultType::kZeroStateHelpApp,
-       ash::AppListSearchResultType::kInstalledApp});
+       ash::AppListSearchResultType::kZeroStateApp});
 
   auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);

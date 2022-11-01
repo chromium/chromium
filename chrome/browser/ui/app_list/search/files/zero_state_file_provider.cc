@@ -78,10 +78,6 @@ ash::AppListSearchResultType ZeroStateFileProvider::ResultType() const {
   return ash::AppListSearchResultType::kZeroStateFile;
 }
 
-bool ZeroStateFileProvider::ShouldBlockZeroState() const {
-  return true;
-}
-
 void ZeroStateFileProvider::StartZeroState() {
   query_start_time_ = base::TimeTicks::Now();
 

@@ -23,6 +23,7 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
     case AppListSearchResultType::kArcAppShortcut:
     case AppListSearchResultType::kInstantApp:
     case AppListSearchResultType::kGames:
+    case AppListSearchResultType::kZeroStateApp:
       return true;
     case AppListSearchResultType::kUnknown:
     case AppListSearchResultType::kOmnibox:
@@ -44,11 +45,12 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
   }
 }
 
-bool IsContinueSectionResultType(AppListSearchResultType result_type) {
+bool IsZeroStateResultType(AppListSearchResultType result_type) {
   switch (result_type) {
     case AppListSearchResultType::kZeroStateFile:
     case AppListSearchResultType::kZeroStateDrive:
     case AppListSearchResultType::kZeroStateHelpApp:
+    case AppListSearchResultType::kZeroStateApp:
       return true;
     case AppListSearchResultType::kUnknown:
     case AppListSearchResultType::kInstalledApp:
