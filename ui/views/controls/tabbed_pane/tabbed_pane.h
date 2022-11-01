@@ -47,7 +47,8 @@ class VIEWS_EXPORT TabbedPane : public View {
   };
 
   explicit TabbedPane(Orientation orientation = Orientation::kHorizontal,
-                      TabStripStyle style = TabStripStyle::kBorder);
+                      TabStripStyle style = TabStripStyle::kBorder,
+                      bool scrollable = false);
 
   TabbedPane(const TabbedPane&) = delete;
   TabbedPane& operator=(const TabbedPane&) = delete;
@@ -89,6 +90,9 @@ class VIEWS_EXPORT TabbedPane : public View {
 
   // Selects |tab| (the tabstrip view, not its content) if it is valid.
   void SelectTab(TabbedPaneTab* tab, bool animate = true);
+
+  // Gets the scroll view containing the tab strip, if it exists
+  ScrollView* GetScrollView();
 
   // Gets the orientation of the tab alignment.
   Orientation GetOrientation() const;
@@ -137,6 +141,10 @@ class VIEWS_EXPORT TabbedPane : public View {
   // correspond to match each TabbedPaneTab with its respective content View.
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   raw_ptr<View> contents_ = nullptr;
+
+  // The scroll view containing the tab strip, if |scrollable| is specified on
+  // creation.
+  raw_ptr<ScrollView> scroll_view_ = nullptr;
 };
 
 // The tab view shown in the tab strip.

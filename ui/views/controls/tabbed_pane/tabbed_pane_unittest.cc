@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -22,8 +23,7 @@
 
 using base::ASCIIToUTF16;
 
-namespace views {
-namespace test {
+namespace views::test {
 namespace {
 
 std::u16string DefaultTabTitle() {
@@ -72,6 +72,27 @@ TEST_F(TabbedPaneTest, TabStripHighlightStyle) {
       std::make_unique<TabbedPane>(TabbedPane::Orientation::kVertical,
                                    TabbedPane::TabStripStyle::kHighlight);
   EXPECT_EQ(tabbed_pane->GetStyle(), TabbedPane::TabStripStyle::kHighlight);
+}
+
+TEST_F(TabbedPaneTest, ScrollingDisabled) {
+  auto tabbed_pane = std::make_unique<TabbedPane>(
+      TabbedPane::Orientation::kVertical, TabbedPane::TabStripStyle::kBorder);
+  EXPECT_EQ(tabbed_pane->GetScrollView(), nullptr);
+}
+
+TEST_F(TabbedPaneTest, ScrollingEnabled) {
+  auto tabbed_pane_vertical =
+      std::make_unique<TabbedPane>(TabbedPane::Orientation::kVertical,
+                                   TabbedPane::TabStripStyle::kBorder, true);
+  ASSERT_NE(tabbed_pane_vertical->GetScrollView(), nullptr);
+  EXPECT_THAT(tabbed_pane_vertical->GetScrollView(), testing::A<ScrollView*>());
+
+  auto tabbed_pane_horizontal =
+      std::make_unique<TabbedPane>(TabbedPane::Orientation::kHorizontal,
+                                   TabbedPane::TabStripStyle::kBorder, true);
+  ASSERT_NE(tabbed_pane_horizontal->GetScrollView(), nullptr);
+  EXPECT_THAT(tabbed_pane_horizontal->GetScrollView(),
+              testing::A<ScrollView*>());
 }
 
 // Tests the preferred size and layout when tabs are aligned vertically..
@@ -368,5 +389,4 @@ TEST_F(TabbedPaneWithWidgetTest, AccessibleEvents) {
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged));
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

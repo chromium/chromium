@@ -30,6 +30,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -394,13 +395,13 @@ gfx::Size TabStrip::CalculatePreferredSize() const {
   // larger.
   if (GetOrientation() == TabbedPane::Orientation::kHorizontal) {
     return GetLayoutManager()->GetPreferredSize(this);
-  } else {
-    // In vertical mode, Tabstrips don't require any minimum space along their
-    // main axis, and can shrink all the way to zero size.  Only the cross axis
-    // thickness matters.
-    const gfx::Size size = GetLayoutManager()->GetPreferredSize(this);
-    return gfx::Size(size.width(), 0);
   }
+
+  // In vertical mode, Tabstrips don't require any minimum space along their
+  // main axis, and can shrink all the way to zero size.  Only the cross axis
+  // thickness matters.
+  const gfx::Size size = GetLayoutManager()->GetPreferredSize(this);
+  return gfx::Size(size.width(), 0);
 }
 
 void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
@@ -495,13 +496,24 @@ ADD_READONLY_PROPERTY_METADATA(TabbedPane::TabStripStyle, Style)
 END_METADATA
 
 TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
-                       TabbedPane::TabStripStyle style) {
+                       TabbedPane::TabStripStyle style,
+                       bool scrollable) {
   DCHECK(orientation != TabbedPane::Orientation::kHorizontal ||
          style != TabbedPane::TabStripStyle::kHighlight);
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   if (orientation == TabbedPane::Orientation::kHorizontal)
     layout->SetOrientation(views::LayoutOrientation::kVertical);
-  tab_strip_ = AddChildView(std::make_unique<TabStrip>(orientation, style));
+
+  auto tab_strip = std::make_unique<TabStrip>(orientation, style);
+  if (scrollable) {
+    scroll_view_ = AddChildView(
+        std::make_unique<ScrollView>(ScrollView::ScrollWithLayers::kEnabled));
+    tab_strip_ = tab_strip.get();
+    scroll_view_->SetContents(std::move(tab_strip));
+    scroll_view_->ClipHeightTo(0, 0);
+  } else {
+    tab_strip_ = AddChildView(std::move(tab_strip));
+  }
   contents_ = AddChildView(std::make_unique<View>());
   contents_->SetProperty(
       views::kFlexBehaviorKey,
@@ -581,6 +593,10 @@ void TabbedPane::SelectTabAt(size_t index, bool animate) {
   TabbedPaneTab* tab = tab_strip_->GetTabAtIndex(index);
   if (tab)
     SelectTab(tab, animate);
+}
+
+ScrollView* TabbedPane::GetScrollView() {
+  return scroll_view_;
 }
 
 TabbedPane::Orientation TabbedPane::GetOrientation() const {
