@@ -187,7 +187,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       notification_icons_controller_(
           features::IsQsRevampEnabled()
               ? nullptr
-              : std::make_unique<NotificationIconsController>(this)),
+              : std::make_unique<NotificationIconsController>(shelf,
+                                                              model_.get())),
       snooping_protection_view_(features::IsSnoopingProtectionEnabled()
                                     ? new SnoopingProtectionView(shelf)
                                     : nullptr),

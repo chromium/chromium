@@ -53,6 +53,9 @@ class ASH_EXPORT NotificationCenterTray
   views::Widget* GetBubbleWidget() const override;
 
  private:
+  friend class NotificationCounterViewTest;
+  friend class NotificationIconsControllerTest;
+
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;
   void OnNotificationDisplayed(

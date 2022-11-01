@@ -7,9 +7,11 @@
 #include <string>
 
 #include "ash/constants/tray_background_view_catalog.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "ash/system/tray/tray_container.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/message_center/message_center.h"
@@ -21,11 +23,24 @@ namespace ash {
 NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kNotificationCenter,
-                         RoundedCornerBehavior::kStartRounded) {
+                         RoundedCornerBehavior::kStartRounded),
+      notification_icons_controller_(
+          std::make_unique<NotificationIconsController>(shelf)) {
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   set_use_bounce_in_animation(false);
 
   message_center::MessageCenter::Get()->AddObserver(this);
+
+  tray_container()->SetMargin(
+      /*main_axis_margin=*/kUnifiedTrayContentPadding -
+          ShelfConfig::Get()->status_area_hit_region_padding(),
+      0);
+
+  // TODO(b/255986529): Rewrite the `NotificationIconsController` class so that
+  // we do not have to add icon views that are owned by the
+  // `NotificationCenterTray` from the controller. We should make sure views are
+  // only added by host views.
+  notification_icons_controller_->AddNotificationTrayItems(tray_container());
 }
 
 NotificationCenterTray::~NotificationCenterTray() {
@@ -97,6 +112,9 @@ void NotificationCenterTray::UpdateVisibility() {
     return;
 
   SetVisiblePreferred(new_visibility);
+
+  notification_icons_controller_->UpdateNotificationIcons();
+  notification_icons_controller_->UpdateNotificationIndicators();
 }
 
 BEGIN_METADATA(NotificationCenterTray, TrayBackgroundView)

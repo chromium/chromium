@@ -4,10 +4,14 @@
 
 #include "ash/system/unified/notification_counter_view.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/shelf/shelf.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/unified/notification_icons_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
@@ -36,7 +40,8 @@ void AddNotification(const std::string& notification_id,
 
 }  // namespace
 
-class NotificationCounterViewTest : public AshTestBase {
+class NotificationCounterViewTest : public AshTestBase,
+                                    public testing::WithParamInterface<bool> {
  public:
   NotificationCounterViewTest() = default;
   NotificationCounterViewTest(const NotificationCounterViewTest&) = delete;
@@ -44,121 +49,119 @@ class NotificationCounterViewTest : public AshTestBase {
       delete;
   ~NotificationCounterViewTest() override = default;
 
-  // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
+                                               IsQsRevampEnabled());
+
     AshTestBase::SetUp();
-
-    tray_ = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
-    notification_icons_controller_ =
-        std::make_unique<NotificationIconsController>(tray_.get());
-    notification_icons_controller_->AddNotificationTrayItems(
-        tray_->tray_container());
-    notification_counter_view_ =
-        notification_icons_controller_->notification_counter_view();
   }
 
-  void TearDown() override {
-    notification_icons_controller_.reset();
-    tray_.reset();
-    AshTestBase::TearDown();
-  }
+  bool IsQsRevampEnabled() { return GetParam(); }
 
  protected:
-  NotificationCounterView* notification_counter_view() {
-    return notification_counter_view_;
+  NotificationCounterView* GetNotificationCounterView() {
+    auto* status_area_widget = GetPrimaryShelf()->status_area_widget();
+    return IsQsRevampEnabled() ? status_area_widget->notification_center_tray()
+                                     ->notification_icons_controller_
+                                     ->notification_counter_view()
+                               : status_area_widget->unified_system_tray()
+                                     ->notification_icons_controller_
+                                     ->notification_counter_view();
   }
 
  private:
-  std::unique_ptr<UnifiedSystemTray> tray_;
-  std::unique_ptr<NotificationIconsController> notification_icons_controller_;
-  NotificationCounterView* notification_counter_view_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(NotificationCounterViewTest, CountForDisplay) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         NotificationCounterViewTest,
+                         testing::Bool() /* IsQsRevampEnabled() */);
+
+TEST_P(NotificationCounterViewTest, CountForDisplay) {
   // Not visible when count == 0.
-  notification_counter_view()->Update();
-  EXPECT_EQ(0, notification_counter_view()->count_for_display_for_testing());
-  EXPECT_FALSE(notification_counter_view()->GetVisible());
+  GetNotificationCounterView()->Update();
+  EXPECT_EQ(0, GetNotificationCounterView()->count_for_display_for_testing());
+  EXPECT_FALSE(GetNotificationCounterView()->GetVisible());
 
   // Count is visible and updates between 1..max+1.
   int max = static_cast<int>(kTrayNotificationMaxCount);
   for (int i = 1; i <= max + 1; i++) {
     AddNotification(base::NumberToString(i));
-    notification_counter_view()->Update();
-    EXPECT_EQ(i, notification_counter_view()->count_for_display_for_testing());
-    EXPECT_TRUE(notification_counter_view()->GetVisible());
+    GetNotificationCounterView()->Update();
+    EXPECT_EQ(i, GetNotificationCounterView()->count_for_display_for_testing());
+    EXPECT_TRUE(GetNotificationCounterView()->GetVisible());
   }
 
   // Count does not change after max+1.
   AddNotification(base::NumberToString(max + 2));
-  notification_counter_view()->Update();
+  GetNotificationCounterView()->Update();
   EXPECT_EQ(max + 1,
-            notification_counter_view()->count_for_display_for_testing());
-  EXPECT_TRUE(notification_counter_view()->GetVisible());
+            GetNotificationCounterView()->count_for_display_for_testing());
+  EXPECT_TRUE(GetNotificationCounterView()->GetVisible());
 }
 
-TEST_F(NotificationCounterViewTest, HiddenNotificationCount) {
+TEST_P(NotificationCounterViewTest, HiddenNotificationCount) {
   // Not visible when count == 0.
-  notification_counter_view()->Update();
-  EXPECT_EQ(0, notification_counter_view()->count_for_display_for_testing());
-  EXPECT_FALSE(notification_counter_view()->GetVisible());
+  GetNotificationCounterView()->Update();
+  EXPECT_EQ(0, GetNotificationCounterView()->count_for_display_for_testing());
+  EXPECT_FALSE(GetNotificationCounterView()->GetVisible());
 
-  // Added a pinned notification, counter should not be visible when the feature
-  // is enabled.
+  // Added a pinned notification, counter should not be visible.
   AddNotification("1", true /* is_pinned */);
-  notification_counter_view()->Update();
-  EXPECT_TRUE(!notification_counter_view()->GetVisible());
+  GetNotificationCounterView()->Update();
+  EXPECT_TRUE(!GetNotificationCounterView()->GetVisible());
 
   // Added a normal notification.
   AddNotification("2");
-  notification_counter_view()->Update();
-  EXPECT_TRUE(notification_counter_view()->GetVisible());
-  EXPECT_EQ(1, notification_counter_view()->count_for_display_for_testing());
+  GetNotificationCounterView()->Update();
+  EXPECT_TRUE(GetNotificationCounterView()->GetVisible());
+  EXPECT_EQ(1, GetNotificationCounterView()->count_for_display_for_testing());
 
   // Added another pinned.
   AddNotification("3", true /* is_pinned */);
-  notification_counter_view()->Update();
-  EXPECT_TRUE(notification_counter_view()->GetVisible());
-  EXPECT_EQ(1, notification_counter_view()->count_for_display_for_testing());
+  GetNotificationCounterView()->Update();
+  EXPECT_TRUE(GetNotificationCounterView()->GetVisible());
+  EXPECT_EQ(1, GetNotificationCounterView()->count_for_display_for_testing());
 
   message_center::MessageCenter::Get()->RemoveNotification("1",
                                                            false /* by_user */);
   message_center::MessageCenter::Get()->RemoveNotification("3",
                                                            false /* by_user */);
-  notification_counter_view()->Update();
-  EXPECT_EQ(1, notification_counter_view()->count_for_display_for_testing());
+  GetNotificationCounterView()->Update();
+  EXPECT_EQ(1, GetNotificationCounterView()->count_for_display_for_testing());
 }
 
-TEST_F(NotificationCounterViewTest, DisplayChanged) {
+TEST_P(NotificationCounterViewTest, DisplayChanged) {
   AddNotification("1", true /* is_pinned */);
-  notification_counter_view()->Update();
+  GetNotificationCounterView()->Update();
 
   // In medium size screen, the counter should not be displayed since pinned
   // notification icon is shown (if the feature is enabled).
   UpdateDisplay("800x700");
-  EXPECT_TRUE(!notification_counter_view()->GetVisible());
+  EXPECT_TRUE(!GetNotificationCounterView()->GetVisible());
 
   // The counter should not be shown when we remove the pinned notification.
   message_center::MessageCenter::Get()->RemoveNotification("1",
                                                            false /* by_user */);
-  notification_counter_view()->Update();
-  EXPECT_FALSE(notification_counter_view()->GetVisible());
+  GetNotificationCounterView()->Update();
+  EXPECT_FALSE(GetNotificationCounterView()->GetVisible());
 
   AddNotification("1", true /* is_pinned */);
-  notification_counter_view()->Update();
+  GetNotificationCounterView()->Update();
 
   // In small display, the counter show be shown with pinned notification.
   UpdateDisplay("600x500");
-  EXPECT_TRUE(notification_counter_view()->GetVisible());
+  EXPECT_TRUE(GetNotificationCounterView()->GetVisible());
 
   // In large screen size, expected the same behavior like medium screen size.
   UpdateDisplay("1680x800");
-  EXPECT_TRUE(!notification_counter_view()->GetVisible());
+  EXPECT_TRUE(!GetNotificationCounterView()->GetVisible());
 
   message_center::MessageCenter::Get()->RemoveNotification("1",
                                                            false /* by_user */);
-  notification_counter_view()->Update();
-  EXPECT_FALSE(notification_counter_view()->GetVisible());
+  GetNotificationCounterView()->Update();
+  EXPECT_FALSE(GetNotificationCounterView()->GetVisible());
 }
 
 }  // namespace ash

@@ -236,7 +236,9 @@ class ASH_EXPORT UnifiedSystemTray
  private:
   static const base::TimeDelta kNotificationCountUpdateDelay;
 
+  friend class NotificationCounterViewTest;
   friend class NotificationGroupingControllerTest;
+  friend class NotificationIconsControllerTest;
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayTest;
 

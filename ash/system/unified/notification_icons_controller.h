@@ -5,11 +5,14 @@
 #ifndef ASH_SYSTEM_UNIFIED_NOTIFICATION_ICONS_CONTROLLER_H_
 #define ASH_SYSTEM_UNIFIED_NOTIFICATION_ICONS_CONTROLLER_H_
 
+#include <cstdint>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/scoped_observation.h"
+#include "ui/display/display_observer.h"
 #include "ui/message_center/message_center_observer.h"
 
 namespace message_center {
@@ -18,13 +21,14 @@ class Notification;
 
 namespace ash {
 
-class UnifiedSystemTray;
-class TrayContainer;
-class TrayItemView;
+class NotificationCenterTray;
 class NotificationCounterView;
 class NotificationIconsController;
 class QuietModeView;
 class SeparatorTrayItemView;
+class TrayContainer;
+class TrayItemView;
+class UnifiedSystemTray;
 
 // Tray item view for notification icon shown in the tray.
 class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
@@ -60,15 +64,18 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   NotificationIconsController* const controller_;
 };
 
-// Controller for notification icons in UnifiedSystemTray button. The icons will
-// be displayed in medium or large screen size and only for important
+// Controller for notification icons in `UnifiedSystemTray` button. If the
+// QsRevamp feature is enabled, this is used in `NotificationCenterTray`. The
+// icons will be displayed in medium or large screen size and only for important
 // notifications.
 class ASH_EXPORT NotificationIconsController
     : public UnifiedSystemTrayModel::Observer,
+      public display::DisplayObserver,
       public message_center::MessageCenterObserver,
       public SessionObserver {
  public:
-  explicit NotificationIconsController(UnifiedSystemTray* tray);
+  explicit NotificationIconsController(Shelf* shelf,
+                                       UnifiedSystemTrayModel* model = nullptr);
   ~NotificationIconsController() override;
   NotificationIconsController(const NotificationIconsController&) = delete;
   NotificationIconsController& operator=(const NotificationIconsController&) =
@@ -92,6 +99,10 @@ class ASH_EXPORT NotificationIconsController
   // UnifiedSystemTrayModel::Observer:
   void OnSystemTrayButtonSizeChanged(
       UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;
@@ -137,7 +148,11 @@ class ASH_EXPORT NotificationIconsController
   // show the icon view in medium or large screen size.
   bool icons_view_visible_ = false;
 
-  UnifiedSystemTray* tray_;
+  // Owned by `RootWindowController`
+  Shelf* const shelf_;
+
+  // Owned by `UnifiedSystemTray`
+  UnifiedSystemTrayModel* const system_tray_model_;
 
   NotificationCounterView* notification_counter_view_ = nullptr;
   QuietModeView* quiet_mode_view_ = nullptr;
@@ -146,6 +161,8 @@ class ASH_EXPORT NotificationIconsController
   base::ScopedObservation<UnifiedSystemTrayModel,
                           UnifiedSystemTrayModel::Observer>
       system_tray_model_observation_{this};
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash
