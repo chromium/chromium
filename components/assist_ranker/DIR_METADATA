@@ -1,3 +1,3 @@
-monorail {
-  component: "UI>ML"
+buganizer: {
+  component_id: 1257105
 }
