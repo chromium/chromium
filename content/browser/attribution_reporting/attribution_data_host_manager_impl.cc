@@ -109,15 +109,13 @@ absl::optional<std::vector<AttributionAggregatableTriggerData>> FromMojo(
   aggregatable_trigger_data.reserve(mojo.size());
 
   for (auto& aggregatable_trigger : mojo) {
-    absl::optional<AttributionFilterData> filters =
-        AttributionFilterData::FromTriggerFilterValues(
-            std::move(aggregatable_trigger->filters->filter_values));
+    absl::optional<AttributionFilters> filters = AttributionFilters::Create(
+        std::move(aggregatable_trigger->filters->filter_values));
     if (!filters.has_value())
       return absl::nullopt;
 
-    absl::optional<AttributionFilterData> not_filters =
-        AttributionFilterData::FromTriggerFilterValues(
-            std::move(aggregatable_trigger->not_filters->filter_values));
+    absl::optional<AttributionFilters> not_filters = AttributionFilters::Create(
+        std::move(aggregatable_trigger->not_filters->filter_values));
     if (!not_filters.has_value())
       return absl::nullopt;
 
@@ -394,7 +392,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   // renderer. All of the validation here is also performed renderer-side.
 
   absl::optional<AttributionFilterData> filter_data =
-      AttributionFilterData::FromSourceFilterValues(
+      AttributionFilterData::Create(
           std::move(data->filter_data->filter_values));
   if (!filter_data.has_value()) {
     RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
@@ -460,18 +458,16 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     context.registration_type = RegistrationType::kTrigger;
   }
 
-  absl::optional<AttributionFilterData> filters =
-      AttributionFilterData::FromTriggerFilterValues(
-          std::move(data->filters->filter_values));
+  absl::optional<AttributionFilters> filters =
+      AttributionFilters::Create(std::move(data->filters->filter_values));
   if (!filters.has_value()) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
     mojo::ReportBadMessage("AttributionDataHost: Invalid top-level filters.");
     return;
   }
 
-  absl::optional<AttributionFilterData> not_filters =
-      AttributionFilterData::FromTriggerFilterValues(
-          std::move(data->not_filters->filter_values));
+  absl::optional<AttributionFilters> not_filters =
+      AttributionFilters::Create(std::move(data->not_filters->filter_values));
   if (!not_filters.has_value()) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
     mojo::ReportBadMessage(
@@ -489,8 +485,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   event_triggers.reserve(data->event_triggers.size());
 
   for (auto& event_trigger : data->event_triggers) {
-    absl::optional<AttributionFilterData> event_filters =
-        AttributionFilterData::FromTriggerFilterValues(
+    absl::optional<AttributionFilters> event_filters =
+        AttributionFilters::Create(
             std::move(event_trigger->filters->filter_values));
     if (!event_filters.has_value()) {
       RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
@@ -499,8 +495,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
       return;
     }
 
-    absl::optional<AttributionFilterData> not_event_filters =
-        AttributionFilterData::FromTriggerFilterValues(
+    absl::optional<AttributionFilters> not_event_filters =
+        AttributionFilters::Create(
             std::move(event_trigger->not_filters->filter_values));
     if (!not_event_filters.has_value()) {
       RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);

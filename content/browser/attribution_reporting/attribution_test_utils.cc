@@ -656,22 +656,22 @@ AttributionTrigger TriggerBuilder::Build(
   std::vector<AttributionTrigger::EventTriggerData> event_triggers;
 
   if (generate_event_trigger_data) {
-    event_triggers.emplace_back(trigger_data_, priority_, dedup_key_,
-                                /*filters=*/
-                                AttributionFilterData::ForSourceType(
-                                    AttributionSourceType::kNavigation),
-                                /*not_filters=*/AttributionFilterData());
+    event_triggers.emplace_back(
+        trigger_data_, priority_, dedup_key_,
+        /*filters=*/
+        AttributionFilters::ForSourceType(AttributionSourceType::kNavigation),
+        /*not_filters=*/AttributionFilters());
 
     event_triggers.emplace_back(
         event_source_trigger_data_, priority_, dedup_key_,
         /*filters=*/
-        AttributionFilterData::ForSourceType(AttributionSourceType::kEvent),
-        /*not_filters=*/AttributionFilterData());
+        AttributionFilters::ForSourceType(AttributionSourceType::kEvent),
+        /*not_filters=*/AttributionFilters());
   }
 
   return AttributionTrigger(destination_origin_, reporting_origin_,
-                            /*filters=*/AttributionFilterData(),
-                            /*not_filters=*/AttributionFilterData(), debug_key_,
+                            /*filters=*/AttributionFilters(),
+                            /*not_filters=*/AttributionFilters(), debug_key_,
                             aggregatable_dedup_key_, std::move(event_triggers),
                             aggregatable_trigger_data_, aggregatable_values_);
 }
@@ -784,6 +784,10 @@ bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
 
 bool operator==(const AttributionFilterData& a,
                 const AttributionFilterData& b) {
+  return a.filter_values() == b.filter_values();
+}
+
+bool operator==(const AttributionFilters& a, const AttributionFilters& b) {
   return a.filter_values() == b.filter_values();
 }
 
@@ -1096,12 +1100,15 @@ std::ostream& operator<<(std::ostream& out,
   return out << "}";
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionFilterData& filter_data) {
+namespace {
+
+std::ostream& WriteAttributionFilterValues(
+    std::ostream& out,
+    const AttributionFilterValues& filter_values) {
   out << "{";
 
   const char* outer_separator = "";
-  for (const auto& [filter, values] : filter_data.filter_values()) {
+  for (const auto& [filter, values] : filter_values) {
     out << outer_separator << filter << "=[";
 
     const char* inner_separator = "";
@@ -1115,6 +1122,17 @@ std::ostream& operator<<(std::ostream& out,
   }
 
   return out << "}";
+}
+
+}  // namespace
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionFilterData& filter_data) {
+  return WriteAttributionFilterValues(out, filter_data.filter_values());
+}
+
+std::ostream& operator<<(std::ostream& out, const AttributionFilters& filters) {
+  return WriteAttributionFilterValues(out, filters.filter_values());
 }
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
@@ -1348,8 +1366,8 @@ EventTriggerDataMatcherConfig::EventTriggerDataMatcherConfig(
     ::testing::Matcher<uint64_t> data,
     ::testing::Matcher<int64_t> priority,
     ::testing::Matcher<absl::optional<uint64_t>> dedup_key,
-    ::testing::Matcher<const AttributionFilterData&> filters,
-    ::testing::Matcher<const AttributionFilterData&> not_filters)
+    ::testing::Matcher<const AttributionFilters&> filters,
+    ::testing::Matcher<const AttributionFilters&> not_filters)
     : data(std::move(data)),
       priority(std::move(priority)),
       dedup_key(std::move(dedup_key)),
@@ -1375,7 +1393,7 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
 AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
     ::testing::Matcher<const url::Origin&> destination_origin,
     ::testing::Matcher<const url::Origin&> reporting_origin,
-    ::testing::Matcher<const AttributionFilterData&> filters,
+    ::testing::Matcher<const AttributionFilters&> filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
     ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
         event_triggers,
@@ -1458,8 +1476,8 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
         AttributionAggregatableTriggerData::CreateForTesting(
             absl::MakeUint128(/*high=*/i, /*low=*/0),
             /*source_keys=*/base::flat_set<std::string>{key_id},
-            /*filters=*/AttributionFilterData(),
-            /*not_filters=*/AttributionFilterData()));
+            /*filters=*/AttributionFilters(),
+            /*not_filters=*/AttributionFilters()));
     aggregatable_values.emplace(std::move(key_id), histogram_values[i]);
   }
 

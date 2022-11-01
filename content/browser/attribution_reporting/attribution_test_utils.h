@@ -623,6 +623,8 @@ bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
 
 bool operator==(const AttributionFilterData& a, const AttributionFilterData& b);
 
+bool operator==(const AttributionFilters& a, const AttributionFilters& b);
+
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
 
 bool operator==(const AttributionInfo& a, const AttributionInfo& b);
@@ -673,6 +675,8 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionFilterData& filter_data);
+
+std::ostream& operator<<(std::ostream& out, const AttributionFilters& filters);
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
 
@@ -900,17 +904,16 @@ struct EventTriggerDataMatcherConfig {
   ::testing::Matcher<uint64_t> data;
   ::testing::Matcher<int64_t> priority;
   ::testing::Matcher<absl::optional<uint64_t>> dedup_key;
-  ::testing::Matcher<const AttributionFilterData&> filters;
-  ::testing::Matcher<const AttributionFilterData&> not_filters;
+  ::testing::Matcher<const AttributionFilters&> filters;
+  ::testing::Matcher<const AttributionFilters&> not_filters;
 
   EventTriggerDataMatcherConfig() = delete;
   EventTriggerDataMatcherConfig(
       ::testing::Matcher<uint64_t> data = ::testing::_,
       ::testing::Matcher<int64_t> priority = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> dedup_key = ::testing::_,
-      ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_,
-      ::testing::Matcher<const AttributionFilterData&> not_filters =
-          ::testing::_);
+      ::testing::Matcher<const AttributionFilters&> filters = ::testing::_,
+      ::testing::Matcher<const AttributionFilters&> not_filters = ::testing::_);
   ~EventTriggerDataMatcherConfig();
 };
 
@@ -920,7 +923,7 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig&);
 struct AttributionTriggerMatcherConfig {
   ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_;
   ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_;
-  ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_;
+  ::testing::Matcher<const AttributionFilters&> filters = ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
   ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
       event_triggers = ::testing::_;
@@ -931,7 +934,7 @@ struct AttributionTriggerMatcherConfig {
   AttributionTriggerMatcherConfig(
       ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_,
       ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_,
-      ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_,
+      ::testing::Matcher<const AttributionFilters&> filters = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
       ::testing::Matcher<const std::vector<
           AttributionTrigger::EventTriggerData>&> event_triggers = ::testing::_,

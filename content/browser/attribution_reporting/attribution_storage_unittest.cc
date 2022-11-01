@@ -2494,8 +2494,7 @@ TEST_F(AttributionStorageTest, SourceFilterData_RoundTrips) {
                              .SetSourceType(AttributionSourceType::kNavigation)
                              .Build());
 
-  auto filter_data =
-      AttributionFilterData::FromSourceFilterValues({{"abc", {"x", "y"}}});
+  const auto filter_data = AttributionFilterData::Create({{"abc", {"x", "y"}}});
   ASSERT_TRUE(filter_data.has_value());
 
   storage()->StoreSource(SourceBuilder()
@@ -2503,12 +2502,9 @@ TEST_F(AttributionStorageTest, SourceFilterData_RoundTrips) {
                              .SetSourceType(AttributionSourceType::kEvent)
                              .Build());
 
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(SourceFilterDataIs(AttributionFilterData()),
-                  SourceFilterDataIs(AttributionFilterData::CreateForTesting({
-                      {"abc", {"x", "y"}},
-                  }))));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceFilterDataIs(AttributionFilterData()),
+                          SourceFilterDataIs(filter_data)));
 }
 
 TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
@@ -2520,23 +2516,23 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
                              .SetReportingOrigin(origin)
                              .Build());
 
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingConfigurations,
-            MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
-                origin, origin,
-                /*filters=*/AttributionFilterData(),
-                /*not_filters=*/AttributionFilterData(),
-                /*debug_key=*/absl::nullopt,
-                /*aggregatable_dedup_key=*/absl::nullopt,
-                {AttributionTrigger::EventTriggerData(
-                    /*data=*/11,
-                    /*priority=*/12,
-                    /*dedup_key=*/13,
-                    /*filters=*/
-                    AttributionFilterData::ForSourceType(
-                        AttributionSourceType::kEvent),
-                    /*not_filters=*/AttributionFilterData())},
-                /*aggregatable_trigger_data=*/{},
-                /*aggregatable_values=*/AttributionAggregatableValues())));
+  EXPECT_EQ(
+      AttributionTrigger::EventLevelResult::kNoMatchingConfigurations,
+      MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
+          origin, origin,
+          /*filters=*/AttributionFilters(),
+          /*not_filters=*/AttributionFilters(),
+          /*debug_key=*/absl::nullopt,
+          /*aggregatable_dedup_key=*/absl::nullopt,
+          {AttributionTrigger::EventTriggerData(
+              /*data=*/11,
+              /*priority=*/12,
+              /*dedup_key=*/13,
+              /*filters=*/
+              AttributionFilters::ForSourceType(AttributionSourceType::kEvent),
+              /*not_filters=*/AttributionFilters())},
+          /*aggregatable_trigger_data=*/{},
+          /*aggregatable_values=*/AttributionAggregatableValues())));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
@@ -2552,8 +2548,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           .SetSourceType(AttributionSourceType::kNavigation)
           .SetDestinationOrigin(origin)
           .SetReportingOrigin(origin)
-          .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
-              {{"abc", {"123"}}}))
+          .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
           .Build());
 
   const std::vector<AttributionTrigger::EventTriggerData> event_triggers = {
@@ -2563,10 +2558,10 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           /*priority=*/12,
           /*dedup_key=*/13,
           /*filters=*/
-          *AttributionFilterData::FromTriggerFilterValues({
+          *AttributionFilters::Create({
               {"abc", {"456"}},
           }),
-          /*not_filters=*/AttributionFilterData()),
+          /*not_filters=*/AttributionFilters()),
 
       // Filters match, but negated filters do not.
       AttributionTrigger::EventTriggerData(
@@ -2574,11 +2569,11 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           /*priority=*/22,
           /*dedup_key=*/23,
           /*filters=*/
-          *AttributionFilterData::FromTriggerFilterValues({
+          *AttributionFilters::Create({
               {"abc", {"123"}},
           }),
           /*not_filters=*/
-          *AttributionFilterData::FromTriggerFilterValues({
+          *AttributionFilters::Create({
               {"source_type", {"navigation"}},
           })),
 
@@ -2588,11 +2583,11 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           /*priority=*/32,
           /*dedup_key=*/33,
           /*filters=*/
-          *AttributionFilterData::FromTriggerFilterValues({
+          *AttributionFilters::Create({
               {"abc", {"123"}},
           }),
           /*not_filters=*/
-          *AttributionFilterData::FromTriggerFilterValues({
+          *AttributionFilters::Create({
               {"source_type", {"event"}},
           })),
 
@@ -2603,11 +2598,11 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           /*priority=*/42,
           /*dedup_key=*/43,
           /*filters=*/
-          *AttributionFilterData::FromTriggerFilterValues({
+          *AttributionFilters::Create({
               {"abc", {"123"}},
           }),
           /*not_filters=*/
-          *AttributionFilterData::FromTriggerFilterValues({
+          *AttributionFilters::Create({
               {"source_type", {"event"}},
           })),
   };
@@ -2615,8 +2610,8 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
                 origin, origin,
-                /*filters=*/AttributionFilterData(),
-                /*not_filters=*/AttributionFilterData(),
+                /*filters=*/AttributionFilters(),
+                /*not_filters=*/AttributionFilters(),
                 /*debug_key=*/absl::nullopt,
                 /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
                 /*aggregatable_trigger_data=*/{},
@@ -2637,8 +2632,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
       AttributionAggregatableTriggerData::CreateForTesting(
           absl::MakeUint128(/*high=*/1, /*low=*/0),
           /*source_keys=*/{"0"},
-          /*filters=*/AttributionFilterData(),
-          /*not_filters=*/AttributionFilterData())};
+          /*filters=*/AttributionFilters(),
+          /*not_filters=*/AttributionFilters())};
 
   auto aggregatable_values =
       AttributionAggregatableValues::CreateForTesting({{"0", 1}});
@@ -2647,17 +2642,16 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
       SourceBuilder()
           .SetDestinationOrigin(origin)
           .SetReportingOrigin(origin)
-          .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
-              {{"abc", {"123"}}}))
+          .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
           .SetAggregationKeys(*AttributionAggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
   AttributionTrigger trigger1(origin, origin,
                               /*filters=*/
-                              *AttributionFilterData::FromTriggerFilterValues({
+                              *AttributionFilters::Create({
                                   {"abc", {"456"}},
                               }),
-                              /*not_filters=*/AttributionFilterData(),
+                              /*not_filters=*/AttributionFilters(),
                               /*debug_key=*/absl::nullopt,
                               /*aggregatable_dedup_key=*/absl::nullopt,
                               /*event_triggers=*/{}, aggregatable_trigger_data,
@@ -2665,10 +2659,10 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
 
   AttributionTrigger trigger2(origin, origin,
                               /*filters=*/
-                              *AttributionFilterData::FromTriggerFilterValues({
+                              *AttributionFilters::Create({
                                   {"abc", {"123"}},
                               }),
-                              /*not_filters=*/AttributionFilterData(),
+                              /*not_filters=*/AttributionFilters(),
                               /*debug_key=*/absl::nullopt,
                               /*aggregatable_dedup_key=*/absl::nullopt,
                               /*event_triggers=*/{}, aggregatable_trigger_data,
@@ -2676,9 +2670,9 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
 
   AttributionTrigger trigger3(
       origin, origin,
-      /*filters=*/AttributionFilterData(),
+      /*filters=*/AttributionFilters(),
       /*not_filters=*/
-      AttributionFilterData::ForSourceType(AttributionSourceType::kNavigation),
+      AttributionFilters::ForSourceType(AttributionSourceType::kNavigation),
       /*debug_key=*/absl::nullopt,
       /*aggregatable_dedup_key=*/absl::nullopt,
       /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values);
@@ -2815,8 +2809,7 @@ TEST_F(
 TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
   storage()->StoreSource(
       SourceBuilder()
-          .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
-              {{"abc", {"123"}}}))
+          .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
           .SetAggregationKeys(*AttributionAggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
@@ -2827,8 +2820,8 @@ TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
                             absl::MakeUint128(/*high=*/1, /*low=*/0),
                             /*source_keys=*/{"0"},
                             /*filters=*/
-                            AttributionFilterData(),
-                            /*not_filters=*/AttributionFilterData())})
+                            AttributionFilters(),
+                            /*not_filters=*/AttributionFilters())})
                     .Build()),
             AttributionTrigger::AggregatableResult::kNoHistograms);
 }

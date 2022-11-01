@@ -271,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetPriority(std::numeric_limits<int64_t>::max())
                .SetDedupKeys({13, 17})
                .SetAggregatableBudgetConsumed(1300)
-               .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
-                   {{"a", {"b", "c"}}}))
+               .SetFilterData(
+                   *AttributionFilterData::Create({{"a", {"b", "c"}}}))
                .SetAggregationKeys(
                    *AttributionAggregationKeys::FromKeys({{"a", 1}}))
                .SetAggregatableDedupKeys({14, 18})
@@ -1011,8 +1011,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   const AttributionTrigger trigger(
       url::Origin::Create(GURL("https://d.test")),
       url::Origin::Create(GURL("https://r.test")),
-      /*filters=*/AttributionFilterData::CreateForTesting({{"a", {"b"}}}),
-      /*not_filters=*/AttributionFilterData::CreateForTesting({{"g", {"h"}}}),
+      /*filters=*/*AttributionFilters::Create({{"a", {"b"}}}),
+      /*not_filters=*/*AttributionFilters::Create({{"g", {"h"}}}),
       /*debug_key=*/1,
       /*aggregatable_dedup_key=*/18,
       {
@@ -1021,28 +1021,28 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               /*priority=*/3,
               /*dedup_key=*/absl::nullopt,
               /*filters=*/
-              AttributionFilterData::CreateForTesting({{"c", {"d"}}}),
-              /*not_filters=*/AttributionFilterData()),
+              *AttributionFilters::Create({{"c", {"d"}}}),
+              /*not_filters=*/AttributionFilters()),
           AttributionTrigger::EventTriggerData(
               /*data=*/4,
               /*priority=*/5,
               /*dedup_key=*/6,
-              /*filters=*/AttributionFilterData(),
+              /*filters=*/AttributionFilters(),
               /*not_filters=*/
-              AttributionFilterData::CreateForTesting({{"e", {"f"}}})),
+              *AttributionFilters::Create({{"e", {"f"}}})),
       },
       {AttributionAggregatableTriggerData::CreateForTesting(
            /*key_piece=*/345,
            /*source_keys=*/{"a"},
            /*filters=*/
-           AttributionFilterData::CreateForTesting({{"c", {"d"}}}),
-           /*not_filters=*/AttributionFilterData()),
+           *AttributionFilters::Create({{"c", {"d"}}}),
+           /*not_filters=*/AttributionFilters()),
        AttributionAggregatableTriggerData::CreateForTesting(
            /*key_piece=*/678,
            /*source_keys=*/{"b"},
-           /*filters=*/AttributionFilterData(),
+           /*filters=*/AttributionFilters(),
            /*not_filters=*/
-           AttributionFilterData::CreateForTesting({{"e", {"f"}}}))},
+           *AttributionFilters::Create({{"e", {"f"}}}))},
       /*aggregatable_values=*/
       AttributionAggregatableValues::CreateForTesting(
           {{"a", 123}, {"b", 456}}));

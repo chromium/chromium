@@ -86,17 +86,17 @@ class CONTENT_EXPORT AttributionTrigger {
 
     // The filters used to determine whether this `EventTriggerData'`s fields
     // are used.
-    AttributionFilterData filters;
+    AttributionFilters filters;
 
     // The negated filters used to determine whether this `EventTriggerData'`s
     // fields are used.
-    AttributionFilterData not_filters;
+    AttributionFilters not_filters;
 
     EventTriggerData(uint64_t data,
                      int64_t priority,
                      absl::optional<uint64_t> dedup_key,
-                     AttributionFilterData filters,
-                     AttributionFilterData not_filters);
+                     AttributionFilters filters,
+                     AttributionFilters not_filters);
   };
 
   // Should only be created with values that the browser process has already
@@ -105,8 +105,8 @@ class CONTENT_EXPORT AttributionTrigger {
   AttributionTrigger(
       url::Origin destination_origin,
       url::Origin reporting_origin,
-      AttributionFilterData filters,
-      AttributionFilterData not_filters,
+      AttributionFilters filters,
+      AttributionFilters not_filters,
       absl::optional<uint64_t> debug_key,
       absl::optional<uint64_t> aggregatable_dedup_key,
       std::vector<EventTriggerData> event_triggers,
@@ -123,9 +123,9 @@ class CONTENT_EXPORT AttributionTrigger {
 
   const url::Origin& reporting_origin() const { return reporting_origin_; }
 
-  const AttributionFilterData& filters() const { return filters_; }
+  const AttributionFilters& filters() const { return filters_; }
 
-  const AttributionFilterData& not_filters() const { return not_filters_; }
+  const AttributionFilters& not_filters() const { return not_filters_; }
 
   absl::optional<uint64_t> debug_key() const { return debug_key_; }
 
@@ -156,9 +156,9 @@ class CONTENT_EXPORT AttributionTrigger {
   // reports.
   url::Origin reporting_origin_;
 
-  AttributionFilterData filters_;
+  AttributionFilters filters_;
 
-  AttributionFilterData not_filters_;
+  AttributionFilters not_filters_;
 
   absl::optional<uint64_t> debug_key_;
 

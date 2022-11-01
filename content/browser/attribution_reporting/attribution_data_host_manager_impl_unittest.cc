@@ -487,21 +487,21 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
       mock_manager_,
       HandleTrigger(AttributionTriggerMatches(AttributionTriggerMatcherConfig(
           destination_origin, reporting_origin,
-          *AttributionFilterData::FromTriggerFilterValues({
+          *AttributionFilters::Create({
               {"a", {"b"}},
           }),
           Optional(789),
           ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
                           1, 2, Optional(3),
-                          *AttributionFilterData::FromTriggerFilterValues({
+                          *AttributionFilters::Create({
                               {"c", {"d"}},
                           }),
-                          *AttributionFilterData::FromTriggerFilterValues({
+                          *AttributionFilters::Create({
                               {"e", {"f"}},
                           }))),
                       EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-                          4, 5, Eq(absl::nullopt), AttributionFilterData(),
-                          AttributionFilterData()))),
+                          4, 5, Eq(absl::nullopt), AttributionFilters(),
+                          AttributionFilters()))),
           Optional(123)))));
 
   {
@@ -515,7 +515,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
     trigger_data->debug_key = 789;
 
     trigger_data->filters = blink::mojom::AttributionFilterData::New(
-        AttributionFilterData::FilterValues({{"a", {"b"}}}));
+        AttributionFilterValues({{"a", {"b"}}}));
     trigger_data->not_filters = blink::mojom::AttributionFilterData::New();
 
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
@@ -523,10 +523,10 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
         /*priority=*/2, /*dedup_key=*/3,
         /*filters=*/
         blink::mojom::AttributionFilterData::New(
-            AttributionFilterData::FilterValues({{"c", {"d"}}})),
+            AttributionFilterValues({{"c", {"d"}}})),
         /*not_filters=*/
         blink::mojom::AttributionFilterData::New(
-            AttributionFilterData::FilterValues({{"e", {"f"}}}))));
+            AttributionFilterValues({{"e", {"f"}}}))));
 
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
         /*data=*/4,

@@ -189,7 +189,7 @@ TEST(AttributionRegistrationParsingTest, ParseFilterData) {
             "c": ["e", "d"],
             "f": []
           })json"),
-          AttributionFilterData::CreateForTesting({
+          *AttributionFilterData::Create({
               {"a", {"b"}},
               {"c", {"e", "d"}},
               {"f", {}},
@@ -241,30 +241,30 @@ TEST(AttributionRegistrationParsingTest, ParseFilterData) {
   };
 
   for (auto& test_case : kTestCases) {
-    EXPECT_EQ(AttributionFilterData::FromSourceJSON(
-                  base::OptionalToPtr(test_case.json)),
-              test_case.expected)
+    EXPECT_EQ(
+        AttributionFilterData::FromJSON(base::OptionalToPtr(test_case.json)),
+        test_case.expected)
         << test_case.description;
   }
 
   {
     base::Value json = make_filter_data_with_keys(50);
-    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json).has_value());
+    EXPECT_TRUE(AttributionFilterData::FromJSON(&json).has_value());
   }
 
   {
     base::Value json = make_filter_data_with_key_length(25);
-    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json).has_value());
+    EXPECT_TRUE(AttributionFilterData::FromJSON(&json).has_value());
   }
 
   {
     base::Value json = make_filter_data_with_values(50);
-    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json).has_value());
+    EXPECT_TRUE(AttributionFilterData::FromJSON(&json).has_value());
   }
 
   {
     base::Value json = make_filter_data_with_value_length(25);
-    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json).has_value());
+    EXPECT_TRUE(AttributionFilterData::FromJSON(&json).has_value());
   }
 }
 
@@ -490,7 +490,7 @@ TEST(AttributionRegistrationParsingTest, ParseSourceRegistration) {
                   reporting_origin, source_time, default_expiry_time,
                   source_type,
                   /*priority=*/0,
-                  AttributionFilterData::CreateForTesting({{"a", {"b"}}}),
+                  *AttributionFilterData::Create({{"a", {"b"}}}),
                   /*debug_key=*/absl::nullopt, AttributionAggregationKeys()),
               /*is_within_fenced_frame=*/false,
               /*debug_reporting=*/false),

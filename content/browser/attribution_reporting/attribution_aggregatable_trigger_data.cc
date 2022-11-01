@@ -17,8 +17,8 @@ absl::optional<AttributionAggregatableTriggerData>
 AttributionAggregatableTriggerData::Create(
     absl::uint128 key_piece,
     base::flat_set<std::string> source_keys,
-    AttributionFilterData filters,
-    AttributionFilterData not_filters) {
+    AttributionFilters filters,
+    AttributionFilters not_filters) {
   if (source_keys.size() >
       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger) {
     return absl::nullopt;
@@ -40,8 +40,8 @@ AttributionAggregatableTriggerData
 AttributionAggregatableTriggerData::CreateForTesting(
     absl::uint128 key_piece,
     base::flat_set<std::string> source_keys,
-    AttributionFilterData filters_values,
-    AttributionFilterData not_filters_values) {
+    AttributionFilters filters_values,
+    AttributionFilters not_filters_values) {
   return AttributionAggregatableTriggerData(key_piece, std::move(source_keys),
                                             std::move(filters_values),
                                             std::move(not_filters_values));
@@ -50,8 +50,8 @@ AttributionAggregatableTriggerData::CreateForTesting(
 AttributionAggregatableTriggerData::AttributionAggregatableTriggerData(
     absl::uint128 key_piece,
     base::flat_set<std::string> source_keys,
-    AttributionFilterData filters,
-    AttributionFilterData not_filters)
+    AttributionFilters filters,
+    AttributionFilters not_filters)
     : key_piece_(key_piece),
       source_keys_(std::move(source_keys)),
       filters_(std::move(filters)),

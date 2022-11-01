@@ -216,11 +216,10 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetPriority(0)             // default
                   .SetDebugKey(absl::nullopt)  // default
                   .SetDebugReporting(false)    // default
-                  .SetFilterData(
-                      *AttributionFilterData::FromSourceFilterValues({
-                          {"a", {}},
-                          {"b", {"c", "d"}},
-                      }))
+                  .SetFilterData(*AttributionFilterData::Create({
+                      {"a", {}},
+                      {"b", {"c", "d"}},
+                  }))
                   .Build(),
               _),
           Pair(
@@ -355,12 +354,12 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       /*reporting_origin=*/
                       url::Origin::Create(GURL("https://a.r.test")),
                       /*filters=*/
-                      *AttributionFilterData::FromTriggerFilterValues({
+                      *AttributionFilters::Create({
                           {"a", {"b", "c"}},
                           {"d", {}},
                       }),
                       /*not_filters=*/
-                      *AttributionFilterData::FromTriggerFilterValues({
+                      *AttributionFilters::Create({
                           {"e", {"f"}},
                       }),
                       /*debug_key=*/14,
@@ -371,19 +370,19 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                               /*priority=*/-5,
                               /*dedup_key=*/123,
                               /*filters=*/
-                              *AttributionFilterData::FromTriggerFilterValues({
+                              *AttributionFilters::Create({
                                   {"x", {"y"}},
                               }),
                               /*not_filters=*/
-                              *AttributionFilterData::FromTriggerFilterValues({
+                              *AttributionFilters::Create({
                                   {"z", {}},
                               })),
                           AttributionTrigger::EventTriggerData(
                               /*data=*/0,
                               /*priority=*/0,
                               /*dedup_key=*/absl::nullopt,
-                              /*filters=*/AttributionFilterData(),
-                              /*not_filters=*/AttributionFilterData()),
+                              /*filters=*/AttributionFilters(),
+                              /*not_filters=*/AttributionFilters()),
                       },
                       /*aggregatable_trigger_data=*/{},
                       /*aggregatable_values=*/AttributionAggregatableValues()),
@@ -397,8 +396,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       url::Origin::Create(GURL("https://a.d2.test")),
                       /*reporting_origin=*/
                       url::Origin::Create(GURL("https://b.r.test")),
-                      /*filters=*/AttributionFilterData(),
-                      /*not_filters=*/AttributionFilterData(),
+                      /*filters=*/AttributionFilters(),
+                      /*not_filters=*/AttributionFilters(),
                       /*debug_key=*/absl::nullopt,
                       /*aggregatable_dedup_key=*/absl::nullopt,
                       /*event_triggers=*/{},
@@ -414,16 +413,16 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       url::Origin::Create(GURL("https://a.d2.test")),
                       /*reporting_origin=*/
                       url::Origin::Create(GURL("https://b.r.test")),
-                      /*filters=*/AttributionFilterData(),
-                      /*not_filters=*/AttributionFilterData(),
+                      /*filters=*/AttributionFilters(),
+                      /*not_filters=*/AttributionFilters(),
                       /*debug_key=*/absl::nullopt,
                       /*aggregatable_dedup_key=*/789,
                       /*event_triggers=*/{},
                       {AttributionAggregatableTriggerData::CreateForTesting(
                           absl::MakeUint128(/*high=*/0, /*low=*/1),
                           /*source_keys=*/{"a"},
-                          /*filters=*/AttributionFilterData(),
-                          /*not_filters=*/AttributionFilterData())},
+                          /*filters=*/AttributionFilters(),
+                          /*not_filters=*/AttributionFilters())},
                       /*aggregatable_values=*/
                       AttributionAggregatableValues::CreateForTesting(
                           {{"a", 1}})),

@@ -20,14 +20,14 @@ class CONTENT_EXPORT AttributionAggregatableTriggerData {
   static absl::optional<AttributionAggregatableTriggerData> Create(
       absl::uint128 key_piece,
       base::flat_set<std::string> source_keys,
-      AttributionFilterData filters,
-      AttributionFilterData not_filters);
+      AttributionFilters filters,
+      AttributionFilters not_filters);
 
   static AttributionAggregatableTriggerData CreateForTesting(
       absl::uint128 key_piece,
       base::flat_set<std::string> source_keys,
-      AttributionFilterData filters,
-      AttributionFilterData not_filters);
+      AttributionFilters filters,
+      AttributionFilters not_filters);
 
   ~AttributionAggregatableTriggerData();
 
@@ -45,20 +45,20 @@ class CONTENT_EXPORT AttributionAggregatableTriggerData {
     return source_keys_;
   }
 
-  const AttributionFilterData& filters() const { return filters_; }
+  const AttributionFilters& filters() const { return filters_; }
 
-  const AttributionFilterData& not_filters() const { return not_filters_; }
+  const AttributionFilters& not_filters() const { return not_filters_; }
 
  private:
   AttributionAggregatableTriggerData(absl::uint128 key_piece,
                                      base::flat_set<std::string> source_keys,
-                                     AttributionFilterData filters,
-                                     AttributionFilterData not_filters);
+                                     AttributionFilters filters,
+                                     AttributionFilters not_filters);
 
   absl::uint128 key_piece_;
   base::flat_set<std::string> source_keys_;
-  AttributionFilterData filters_;
-  AttributionFilterData not_filters_;
+  AttributionFilters filters_;
+  AttributionFilters not_filters_;
 };
 
 }  // namespace content

@@ -93,7 +93,7 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
 
   base::expected<AttributionFilterData, SourceRegistrationError> filter_data =
-      AttributionFilterData::FromSourceJSON(registration.Find("filter_data"));
+      AttributionFilterData::FromJSON(registration.Find("filter_data"));
   if (!filter_data.has_value())
     return base::unexpected(filter_data.error());
 

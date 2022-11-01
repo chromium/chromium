@@ -21,34 +21,23 @@ class Value;
 
 namespace content {
 
+using AttributionFilterValues =
+    base::flat_map<std::string, std::vector<std::string>>;
+
+// Set on sources.
 // Supports persistence to disk via serializaton to/from proto.
 class CONTENT_EXPORT AttributionFilterData {
  public:
   static constexpr char kSourceTypeFilterKey[] = "source_type";
 
-  using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
+  static absl::optional<AttributionFilterData> Deserialize(const std::string&);
 
-  // Deserializes `string`, if valid. Returns `absl::nullopt` if not.
-  static absl::optional<AttributionFilterData> DeserializeSourceFilterData(
-      const std::string& string);
-
-  // Source filter data is not allowed to contain a `source_type` filter.
-  static absl::optional<AttributionFilterData> FromSourceFilterValues(
-      FilterValues&& filter_values);
-
-  // Trigger filter data is allowed to contain a `source_type` filter.
-  static absl::optional<AttributionFilterData> FromTriggerFilterValues(
-      FilterValues&& filter_values);
+  // Filter data is not allowed to contain a `source_type` filter.
+  static absl::optional<AttributionFilterData> Create(AttributionFilterValues);
 
   static base::expected<AttributionFilterData,
                         attribution_reporting::mojom::SourceRegistrationError>
-  FromSourceJSON(base::Value* input_value);
-
-  // Returns filter data that matches only the given source type.
-  static AttributionFilterData ForSourceType(AttributionSourceType source_type);
-
-  // Creates without validation.
-  static AttributionFilterData CreateForTesting(FilterValues filter_values);
+  FromJSON(base::Value*);
 
   AttributionFilterData();
 
@@ -60,17 +49,45 @@ class CONTENT_EXPORT AttributionFilterData {
   AttributionFilterData& operator=(const AttributionFilterData&);
   AttributionFilterData& operator=(AttributionFilterData&&);
 
-  const FilterValues& filter_values() const { return filter_values_; }
+  const AttributionFilterValues& filter_values() const {
+    return filter_values_;
+  }
 
   std::string Serialize() const;
 
  private:
-  static absl::optional<AttributionFilterData> FromFilterValues(
-      FilterValues&& filter_values);
+  explicit AttributionFilterData(AttributionFilterValues);
 
-  explicit AttributionFilterData(FilterValues filter_values);
+  AttributionFilterValues filter_values_;
+};
 
-  FilterValues filter_values_;
+// Set on triggers.
+class CONTENT_EXPORT AttributionFilters {
+ public:
+  // Filters are allowed to contain a `source_type` filter.
+  static absl::optional<AttributionFilters> Create(AttributionFilterValues);
+
+  // Returns filters that match only the given source type.
+  static AttributionFilters ForSourceType(AttributionSourceType);
+
+  AttributionFilters();
+
+  ~AttributionFilters();
+
+  AttributionFilters(const AttributionFilters&);
+  AttributionFilters(AttributionFilters&&);
+
+  AttributionFilters& operator=(const AttributionFilters&);
+  AttributionFilters& operator=(AttributionFilters&&);
+
+  const AttributionFilterValues& filter_values() const {
+    return filter_values_;
+  }
+
+ private:
+  explicit AttributionFilters(AttributionFilterValues);
+
+  AttributionFilterValues filter_values_;
 };
 
 }  // namespace content

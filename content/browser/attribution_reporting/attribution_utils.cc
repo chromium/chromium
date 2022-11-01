@@ -127,7 +127,7 @@ std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
 
 bool AttributionFilterDataMatch(const AttributionFilterData& source,
                                 AttributionSourceType source_type,
-                                const AttributionFilterData& trigger,
+                                const AttributionFilters& trigger,
                                 bool negated) {
   // A filter is considered matched if the filter key is only present either on
   // the source or trigger, or the intersection of the filter values is
@@ -172,8 +172,8 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
 
 bool AttributionFiltersMatch(const AttributionFilterData& source_filter_data,
                              AttributionSourceType source_type,
-                             const AttributionFilterData& trigger_filters,
-                             const AttributionFilterData& trigger_not_filters) {
+                             const AttributionFilters& trigger_filters,
+                             const AttributionFilters& trigger_not_filters) {
   return AttributionFilterDataMatch(source_filter_data, source_type,
                                     trigger_filters) &&
          AttributionFilterDataMatch(source_filter_data, source_type,

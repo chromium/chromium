@@ -284,8 +284,8 @@ class AttributionSimulatorInputParser {
         ParseOrigin(trigger_dict, "destination_origin");
 
     absl::optional<uint64_t> debug_key;
-    AttributionFilterData filters;
-    AttributionFilterData not_filters;
+    AttributionFilters filters;
+    AttributionFilters not_filters;
     std::vector<AttributionTrigger::EventTriggerData> event_triggers;
     std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
     AttributionAggregatableValues aggregatable_values;
@@ -297,12 +297,8 @@ class AttributionSimulatorInputParser {
             base::BindLambdaForTesting(
                 [&](const base::Value::Dict& dict) {
                   debug_key = ParseOptionalUint64(dict, "debug_key");
-                  filters = ParseFilterData(
-                      dict, "filters",
-                      &AttributionFilterData::FromTriggerFilterValues);
-                  not_filters = ParseFilterData(
-                      dict, "not_filters",
-                      &AttributionFilterData::FromTriggerFilterValues);
+                  filters = ParseFilters(dict, "filters");
+                  not_filters = ParseFilters(dict, "not_filters");
                   event_triggers = ParseEventTriggers(dict);
 
                   aggregatable_trigger_data =
@@ -359,12 +355,9 @@ class AttributionSimulatorInputParser {
           absl::optional<uint64_t> dedup_key =
               ParseOptionalUint64(dict, "deduplication_key");
 
-          AttributionFilterData filters = ParseFilterData(
-              dict, "filters", &AttributionFilterData::FromTriggerFilterValues);
+          AttributionFilters filters = ParseFilters(dict, "filters");
 
-          AttributionFilterData not_filters =
-              ParseFilterData(dict, "not_filters",
-                              &AttributionFilterData::FromTriggerFilterValues);
+          AttributionFilters not_filters = ParseFilters(dict, "not_filters");
 
           if (has_error())
             return;
@@ -499,23 +492,18 @@ class AttributionSimulatorInputParser {
     return true;
   }
 
-  using FromFilterValuesFunc = absl::optional<AttributionFilterData>(
-      AttributionFilterData::FilterValues&&);
-
-  AttributionFilterData ParseFilterData(
-      const base::Value::Dict& dict,
-      base::StringPiece key,
-      FromFilterValuesFunc from_filter_values) {
+  AttributionFilters ParseFilters(const base::Value::Dict& dict,
+                                  base::StringPiece key) {
     auto context = PushContext(key);
 
     const base::Value* value = dict.Find(key);
     if (!value)
-      return AttributionFilterData();
+      return AttributionFilters();
 
     if (!EnsureDictionary(*value))
-      return AttributionFilterData();
+      return AttributionFilters();
 
-    AttributionFilterData::FilterValues::container_type container;
+    AttributionFilterValues::container_type container;
     for (auto [filter, values_list] : value->GetDict()) {
       auto filter_context = PushContext(filter);
       std::vector<std::string> values;
@@ -532,13 +520,13 @@ class AttributionSimulatorInputParser {
       container.emplace_back(filter, std::move(values));
     }
 
-    absl::optional<AttributionFilterData> filter_data =
-        from_filter_values(std::move(container));
+    absl::optional<AttributionFilters> filters =
+        AttributionFilters::Create(std::move(container));
     // TODO(apaseltiner): Provide more detailed information.
-    if (!filter_data)
+    if (!filters)
       *Error() << "invalid";
 
-    return std::move(filter_data).value_or(AttributionFilterData());
+    return std::move(filters).value_or(AttributionFilters());
   }
 
   absl::uint128 ParseAggregationKey(const base::Value& key_value) {
@@ -616,13 +604,11 @@ class AttributionSimulatorInputParser {
                 }
               }
 
-              AttributionFilterData filters = ParseFilterData(
-                  trigger_dict, "filters",
-                  &AttributionFilterData::FromTriggerFilterValues);
+              AttributionFilters filters =
+                  ParseFilters(trigger_dict, "filters");
 
-              AttributionFilterData not_filters = ParseFilterData(
-                  trigger_dict, "not_filters",
-                  &AttributionFilterData::FromTriggerFilterValues);
+              AttributionFilters not_filters =
+                  ParseFilters(trigger_dict, "not_filters");
 
               auto trigger_data = AttributionAggregatableTriggerData::Create(
                   key, std::move(source_keys), std::move(filters),

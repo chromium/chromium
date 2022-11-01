@@ -334,8 +334,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   }
 
   absl::optional<AttributionFilterData> filter_data =
-      AttributionFilterData::DeserializeSourceFilterData(
-          statement.ColumnString(col++));
+      AttributionFilterData::Deserialize(statement.ColumnString(col++));
   if (!filter_data)
     return absl::nullopt;
 
