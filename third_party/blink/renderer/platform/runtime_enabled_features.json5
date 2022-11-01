@@ -1231,7 +1231,6 @@
       name: "FedCmMultipleIdentityProviders",
       depends_on: ["FedCm"],
       public: true,
-      status: "test",
     },
     {
       name: "FencedFrames",
