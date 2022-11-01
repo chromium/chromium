@@ -58,6 +58,8 @@ blink_modules_sources("webaudio") {
     "audio_scheduled_source_handler.h",
     "audio_scheduled_source_node.cc",
     "audio_scheduled_source_node.h",
+    "audio_sink_info.cc",
+    "audio_sink_info.h",
     "audio_summing_junction.cc",
     "audio_summing_junction.h",
     "audio_worklet.cc",

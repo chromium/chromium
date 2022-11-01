@@ -398,6 +398,10 @@ interface AudioScheduledSourceNode : AudioNode
     method start
     method stop
     setter onended
+interface AudioSinkInfo
+    attribute @@toStringTag
+    getter type
+    method constructor
 interface AudioTrack
     attribute @@toStringTag
     getter enabled
