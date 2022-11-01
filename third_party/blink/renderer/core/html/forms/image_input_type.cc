@@ -276,9 +276,14 @@ void ImageInputType::CreateShadowSubtree() {
   HTMLImageFallbackHelper::CreateAltTextShadowTree(GetElement());
 }
 
-void ImageInputType::CustomStyleForLayoutObject(ComputedStyle& style) {
-  if (use_fallback_content_)
-    HTMLImageFallbackHelper::CustomStyleForAltText(GetElement(), style);
+scoped_refptr<ComputedStyle> ImageInputType::CustomStyleForLayoutObject(
+    scoped_refptr<ComputedStyle> original_style) {
+  if (!use_fallback_content_)
+    return original_style;
+
+  ComputedStyleBuilder builder(*original_style);
+  HTMLImageFallbackHelper::CustomStyleForAltText(GetElement(), builder);
+  return builder.TakeStyle();
 }
 
 }  // namespace blink

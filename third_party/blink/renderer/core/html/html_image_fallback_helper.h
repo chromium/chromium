@@ -10,14 +10,14 @@
 namespace blink {
 
 class Element;
-class ComputedStyle;
+class ComputedStyleBuilder;
 
 class HTMLImageFallbackHelper {
   STATIC_ONLY(HTMLImageFallbackHelper);
 
  public:
   static void CreateAltTextShadowTree(Element&);
-  static void CustomStyleForAltText(Element&, ComputedStyle& new_style);
+  static void CustomStyleForAltText(Element&, ComputedStyleBuilder&);
 };
 
 }  // namespace blink

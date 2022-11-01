@@ -582,7 +582,7 @@ scoped_refptr<ComputedStyle> DateTimeEditElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   // TODO(crbug.com/1181868): This is a kind of layout. We might want to
   // introduce new LayoutObject.
-  scoped_refptr<ComputedStyle> style =
+  scoped_refptr<const ComputedStyle> original_style =
       OriginalStyleForLayoutObject(style_recalc_context);
   float width = 0;
   for (Node* child = FieldsWrapperElement()->firstChild(); child;
@@ -594,17 +594,18 @@ scoped_refptr<ComputedStyle> DateTimeEditElement::CustomStyleForLayoutObject(
       // We need to pass the ComputedStyle of this element because child
       // elements can't resolve inherited style at this timing.
       width += static_cast<DateTimeFieldElement*>(child_element)
-                   ->MaximumWidth(*style);
+                   ->MaximumWidth(*original_style);
     } else {
       // ::-webkit-datetime-edit-text case. It has no
       // border/padding/margin in html.css.
       width += DateTimeFieldElement::ComputeTextWidth(
-          *style, child_element->textContent());
+          *original_style, child_element->textContent());
     }
   }
-  style->SetWidth(Length::Fixed(ceilf(width)));
-  style->SetCustomStyleCallbackDependsOnFont();
-  return style;
+  ComputedStyleBuilder builder(*original_style);
+  builder.SetWidth(Length::Fixed(ceilf(width)));
+  builder.SetCustomStyleCallbackDependsOnFont();
+  return builder.TakeStyle();
 }
 
 void DateTimeEditElement::DidBlurFromField(mojom::blink::FocusType focus_type) {

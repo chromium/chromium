@@ -2903,6 +2903,7 @@
       supports_incremental_style: true,
       valid_for_formatted_text: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "hyphenate-limit-chars",
@@ -5924,6 +5925,7 @@
       supports_incremental_style: true,
       valid_for_formatted_text: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "will-change",

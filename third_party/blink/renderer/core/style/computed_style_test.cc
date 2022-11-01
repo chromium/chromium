@@ -1500,11 +1500,14 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
 TEST_F(ComputedStyleTest, DebugDiffFields) {
   using DebugField = ComputedStyleBase::DebugField;
 
-  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
+  ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+  ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
 
-  style1->SetWidth(Length(100.0, Length::kFixed));
-  style2->SetWidth(Length(200.0, Length::kFixed));
+  builder1.SetWidth(Length(100.0, Length::kFixed));
+  builder2.SetWidth(Length(200.0, Length::kFixed));
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
 
   EXPECT_EQ(0u, style1->DebugDiffFields(*style1).size());
   EXPECT_EQ(0u, style2->DebugDiffFields(*style2).size());

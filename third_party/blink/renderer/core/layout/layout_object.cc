@@ -2507,15 +2507,15 @@ void LayoutObject::SetPseudoElementStyle(
   // avoid getting an inline with positioning or an invalid display.
   //
   if (IsImage() || IsQuote()) {
-    scoped_refptr<ComputedStyle> style =
-        GetDocument().GetStyleResolver().CreateComputedStyle();
-    style->InheritFrom(*pseudo_style);
+    ComputedStyleBuilder builder =
+        GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+    builder.MutableInternalStyle()->InheritFrom(*pseudo_style);
     if (match_parent_size) {
       DCHECK(IsImage());
-      style->SetWidth(Length::Percent(100));
-      style->SetHeight(Length::Percent(100));
+      builder.SetWidth(Length::Percent(100));
+      builder.SetHeight(Length::Percent(100));
     }
-    SetStyle(std::move(style));
+    SetStyle(builder.TakeStyle());
     return;
   }
 

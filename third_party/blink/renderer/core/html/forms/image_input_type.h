@@ -41,7 +41,8 @@ namespace blink {
 class ImageInputType final : public BaseButtonInputType {
  public:
   explicit ImageInputType(HTMLInputElement&);
-  void CustomStyleForLayoutObject(ComputedStyle& style) override;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      scoped_refptr<ComputedStyle> original_style) override;
 
  private:
   void CountUsage() override;

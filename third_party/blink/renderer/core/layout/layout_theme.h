@@ -145,7 +145,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual Color SystemColor(CSSValueID,
                             mojom::blink::ColorScheme color_scheme) const;
 
-  virtual void AdjustSliderThumbSize(ComputedStyle&) const;
+  virtual void AdjustSliderThumbSize(ComputedStyleBuilder&) const;
 
   virtual int PopupInternalPaddingStart(const ComputedStyle&) const {
     return 0;
@@ -222,8 +222,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual void AdjustSliderContainerStyle(const Element&,
                                           ComputedStyle&,
                                           ComputedStyleBuilder&) const;
-  virtual void AdjustSliderThumbStyle(ComputedStyle&) const;
-  virtual void AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const;
+  virtual void AdjustSliderThumbStyle(ComputedStyleBuilder&) const;
+  virtual void AdjustSearchFieldCancelButtonStyle(ComputedStyleBuilder&) const;
 
   bool HasCustomFocusRingColor() const;
   Color GetCustomFocusRingColor() const;

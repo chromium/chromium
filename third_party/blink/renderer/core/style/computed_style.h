@@ -1247,21 +1247,6 @@ class ComputedStyle : public ComputedStyleBase,
   const Length& LogicalHeight() const {
     return IsHorizontalWritingMode() ? Height() : Width();
   }
-  void SetLogicalWidth(const Length& v) {
-    if (IsHorizontalWritingMode()) {
-      SetWidth(v);
-    } else {
-      SetHeight(v);
-    }
-  }
-
-  void SetLogicalHeight(const Length& v) {
-    if (IsHorizontalWritingMode()) {
-      SetHeight(v);
-    } else {
-      SetWidth(v);
-    }
-  }
   const Length& LogicalMaxWidth() const {
     return IsHorizontalWritingMode() ? MaxWidth() : MaxHeight();
   }

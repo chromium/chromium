@@ -270,9 +270,9 @@ void LayoutTheme::AdjustStyle(const Element* element,
       return AdjustMenuListButtonStyle(builder);
     case kSliderThumbHorizontalPart:
     case kSliderThumbVerticalPart:
-      return AdjustSliderThumbStyle(style);
+      return AdjustSliderThumbStyle(builder);
     case kSearchFieldCancelButtonPart:
-      return AdjustSearchFieldCancelButtonStyle(style);
+      return AdjustSearchFieldCancelButtonStyle(builder);
     default:
       break;
   }
@@ -481,13 +481,14 @@ void LayoutTheme::AdjustSliderContainerStyle(
   style.SetEffectiveAppearance(kNoControlPart);
 }
 
-void LayoutTheme::AdjustSliderThumbStyle(ComputedStyle& style) const {
-  AdjustSliderThumbSize(style);
+void LayoutTheme::AdjustSliderThumbStyle(ComputedStyleBuilder& builder) const {
+  AdjustSliderThumbSize(builder);
 }
 
-void LayoutTheme::AdjustSliderThumbSize(ComputedStyle&) const {}
+void LayoutTheme::AdjustSliderThumbSize(ComputedStyleBuilder&) const {}
 
-void LayoutTheme::AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const {}
+void LayoutTheme::AdjustSearchFieldCancelButtonStyle(
+    ComputedStyleBuilder&) const {}
 
 void LayoutTheme::PlatformColorsDidChange() {
   UpdateForcedColorsState();

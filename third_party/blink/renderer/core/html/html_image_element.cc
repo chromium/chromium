@@ -927,10 +927,10 @@ scoped_refptr<ComputedStyle> HTMLImageElement::CustomStyleForLayoutObject(
     case LayoutDisposition::kCollapsed:
       return OriginalStyleForLayoutObject(style_recalc_context);
     case LayoutDisposition::kFallbackContent: {
-      scoped_refptr<ComputedStyle> style =
-          OriginalStyleForLayoutObject(style_recalc_context);
-      HTMLImageFallbackHelper::CustomStyleForAltText(*this, *style);
-      return style;
+      ComputedStyleBuilder builder(
+          *OriginalStyleForLayoutObject(style_recalc_context));
+      HTMLImageFallbackHelper::CustomStyleForAltText(*this, builder);
+      return builder.TakeStyle();
     }
     default:
       NOTREACHED();

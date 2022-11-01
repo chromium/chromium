@@ -290,21 +290,21 @@ scoped_refptr<ComputedStyle> SliderThumbElement::CustomStyleForLayoutObject(
   Element* host = OwnerShadowHost();
   DCHECK(host);
   const ComputedStyle& host_style = host->ComputedStyleRef();
-  scoped_refptr<ComputedStyle> style =
-      OriginalStyleForLayoutObject(style_recalc_context);
+  ComputedStyleBuilder builder(
+      *OriginalStyleForLayoutObject(style_recalc_context));
 
   if (host_style.EffectiveAppearance() == kSliderVerticalPart)
-    style->SetEffectiveAppearance(kSliderThumbVerticalPart);
+    builder.SetEffectiveAppearance(kSliderThumbVerticalPart);
   else if (host_style.EffectiveAppearance() == kSliderHorizontalPart)
-    style->SetEffectiveAppearance(kSliderThumbHorizontalPart);
+    builder.SetEffectiveAppearance(kSliderThumbHorizontalPart);
   else if (host_style.EffectiveAppearance() == kMediaSliderPart)
-    style->SetEffectiveAppearance(kMediaSliderThumbPart);
+    builder.SetEffectiveAppearance(kMediaSliderThumbPart);
   else if (host_style.EffectiveAppearance() == kMediaVolumeSliderPart)
-    style->SetEffectiveAppearance(kMediaVolumeSliderThumbPart);
-  if (style->HasEffectiveAppearance())
-    LayoutTheme::GetTheme().AdjustSliderThumbSize(*style);
+    builder.SetEffectiveAppearance(kMediaVolumeSliderThumbPart);
+  if (builder.InternalStyle()->HasEffectiveAppearance())
+    LayoutTheme::GetTheme().AdjustSliderThumbSize(builder);
 
-  return style;
+  return builder.TakeStyle();
 }
 
 // --------------------------------

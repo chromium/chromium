@@ -59,7 +59,7 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
 
   gfx::Size SliderTickSize() const override;
   int SliderTickOffsetFromTrackCenter() const override;
-  void AdjustSliderThumbSize(ComputedStyle&) const override;
+  void AdjustSliderThumbSize(ComputedStyleBuilder&) const override;
 
   void AdjustInnerSpinButtonStyle(ComputedStyleBuilder&) const override;
   void AdjustButtonStyle(ComputedStyleBuilder&) const override;
@@ -74,7 +74,7 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
                           Color inactive_foreground_color) override;
   Color PlatformFocusRingColor() const override;
 
-  void AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const override;
+  void AdjustSearchFieldCancelButtonStyle(ComputedStyleBuilder&) const override;
 
   // MenuList refers to an unstyled menulist (meaning a menulist without
   // background-color or border set) and MenuListButton refers to a styled

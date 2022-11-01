@@ -138,8 +138,9 @@ void HTMLImageFallbackHelper::CreateAltTextShadowTree(Element& element) {
   element.EnsureUserAgentShadowRoot().AppendChild(container);
 }
 
-void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
-                                                    ComputedStyle& new_style) {
+void HTMLImageFallbackHelper::CustomStyleForAltText(
+    Element& element,
+    ComputedStyleBuilder& builder) {
   // If we have an author shadow root or have not created the UA shadow root
   // yet, bail early. We can't use ensureUserAgentShadowRoot() here because that
   // would alter the DOM tree during style recalc.
@@ -165,20 +166,20 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
   if (element.GetDocument().InQuirksMode()) {
     // Mimic the behaviour of the image host by setting symmetric dimensions if
     // only one dimension is specified.
-    if (!new_style.Width().IsAuto() && new_style.Height().IsAuto())
-      new_style.SetHeight(new_style.Width());
-    else if (!new_style.Height().IsAuto() && new_style.Width().IsAuto())
-      new_style.SetWidth(new_style.Height());
+    if (!builder.Width().IsAuto() && builder.Height().IsAuto())
+      builder.SetHeight(builder.Width());
+    else if (!builder.Height().IsAuto() && builder.Width().IsAuto())
+      builder.SetWidth(builder.Height());
 
-    if (!new_style.Width().IsAuto() && !new_style.Height().IsAuto())
+    if (!builder.Width().IsAuto() && !builder.Height().IsAuto())
       fallback.AlignToBaseline();
   }
 
   bool has_intrinsic_dimensions =
-      !new_style.Width().IsAuto() && !new_style.Height().IsAuto();
+      !builder.Width().IsAuto() && !builder.Height().IsAuto();
   bool has_dimensions_from_ar =
-      !new_style.AspectRatio().IsAuto() &&
-      (!new_style.Width().IsAuto() || !new_style.Height().IsAuto());
+      !builder.AspectRatio().IsAuto() &&
+      (!builder.Width().IsAuto() || !builder.Height().IsAuto());
   bool has_no_alt_attribute =
       element.getAttribute(html_names::kAltAttr).empty();
   bool treat_as_replaced =
@@ -193,24 +194,23 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
     // attribute, or the Document is in quirks mode The user agent is expected
     // to treat the element as a replaced element whose content is the text that
     // the element represents, if any."
-    fallback.ShowAsReplaced(new_style.Width(), new_style.Height(),
-                            new_style.EffectiveZoom());
+    fallback.ShowAsReplaced(builder.Width(), builder.Height(),
+                            builder.EffectiveZoom());
 
     // 16px for the image and 2px for its top/left border/padding offset.
     int pixels_for_alt_image = 18;
-    if (ImageSmallerThanAltImage(pixels_for_alt_image, new_style.Width(),
-                                 new_style.Height())) {
+    if (ImageSmallerThanAltImage(pixels_for_alt_image, builder.Width(),
+                                 builder.Height())) {
       fallback.HideBrokenImageIcon();
     } else {
       fallback.ShowBorder();
-      fallback.ShowBrokenImageIcon(new_style.IsLeftToRightDirection());
+      fallback.ShowBrokenImageIcon(builder.Direction() == TextDirection::kLtr);
     }
   } else {
-    if (new_style.Display() == EDisplay::kInline) {
-      new_style.SetWidth(Length());
-      new_style.SetHeight(Length());
-      new_style.SetAspectRatio(
-          ComputedStyleInitialValues::InitialAspectRatio());
+    if (builder.Display() == EDisplay::kInline) {
+      builder.SetWidth(Length());
+      builder.SetHeight(Length());
+      builder.SetAspectRatio(ComputedStyleInitialValues::InitialAspectRatio());
     }
     if (ElementRepresentsNothing(element)) {
       // "If the element is an img element that represents nothing and the user
@@ -226,7 +226,7 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
       // the text, optionally with an icon indicating that an image is missing,
       // so that the user can request the image be displayed or investigate why
       // it is not rendering."
-      fallback.ShowBrokenImageIcon(new_style.IsLeftToRightDirection());
+      fallback.ShowBrokenImageIcon(builder.Direction() == TextDirection::kLtr);
     }
   }
 }

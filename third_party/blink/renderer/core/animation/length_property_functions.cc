@@ -342,7 +342,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       builder.SetFlexBasis(value);
       return true;
     case CSSPropertyID::kHeight:
-      style.SetHeight(value);
+      builder.SetHeight(value);
       return true;
     case CSSPropertyID::kLeft:
       builder.SetLeft(value);
@@ -408,7 +408,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       builder.SetTop(value);
       return true;
     case CSSPropertyID::kWidth:
-      style.SetWidth(value);
+      builder.SetWidth(value);
       return true;
     case CSSPropertyID::kWebkitPerspectiveOriginX:
       builder.SetPerspectiveOriginX(value);

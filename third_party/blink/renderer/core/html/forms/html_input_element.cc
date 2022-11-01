@@ -2184,10 +2184,10 @@ bool HTMLInputElement::IsInteractiveContent() const {
 
 scoped_refptr<ComputedStyle> HTMLInputElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
-  scoped_refptr<ComputedStyle> style =
+  scoped_refptr<ComputedStyle> original_style =
       OriginalStyleForLayoutObject(style_recalc_context);
-  input_type_view_->CustomStyleForLayoutObject(*style);
-  return style;
+  return input_type_view_->CustomStyleForLayoutObject(
+      std::move(original_style));
 }
 
 void HTMLInputElement::DidNotifySubtreeInsertionsToDocument() {
