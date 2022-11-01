@@ -257,6 +257,10 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 
   void SetShouldPropagateChildBreakValues(
       bool propagate_child_break_values = true) {
+    // Don't create rare data if `propagate_child_break_values` is already
+    // false.
+    if (!space_.HasRareData() && !propagate_child_break_values)
+      return;
     space_.EnsureRareData()->propagate_child_break_values =
         propagate_child_break_values;
   }
