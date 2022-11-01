@@ -53,17 +53,17 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       MakeComponentConfig<ash::CameraAppUIConfig, ash::CameraAppUI,
                           ChromeCameraAppUIDelegate>());
-  map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::AccountMigrationWelcomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AccountManagerErrorUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::BluetoothPairingDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::AccountMigrationWelcomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AddSupervisionUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::ParentAccessUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::BluetoothPairingDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CrostiniInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CrostiniUpgraderUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CryptohomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::DriveInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::ParentAccessUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
