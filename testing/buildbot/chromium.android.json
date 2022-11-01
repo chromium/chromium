@@ -23326,7 +23326,7 @@
       {
         "args": [
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter;../../testing/buildbot/testing/buildbot/filters/android.emulator.bf_cache_chrome_public_test_apk.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter;../../testing/buildbot/filters/android.emulator.bf_cache_chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
@@ -23526,7 +23526,7 @@
       {
         "args": [
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter;../../testing/buildbot/filters/testing/buildbot/filters/android.emulator.bf_cache_content_shell_test_apk.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter;../../testing/buildbot/filters/android.emulator.bf_cache_content_shell_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
