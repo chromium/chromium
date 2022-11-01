@@ -10,7 +10,6 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_client.h"
 
 namespace blink {
@@ -52,8 +51,8 @@ void NavigationPreloadRequest::OnReceiveResponse(
   response_ = std::make_unique<WebURLResponse>();
   // TODO(horo): Set report_security_info to true when DevTools is attached.
   const bool report_security_info = false;
-  WebURLLoader::PopulateURLResponse(url_, *response_head, response_.get(),
-                                    report_security_info, -1 /* request_id */);
+  *response_ = WebURLResponse::Create(
+      url_, *response_head, report_security_info, -1 /* request_id */);
   body_ = std::move(body);
   MaybeReportResponseToOwner();
 }
@@ -66,9 +65,9 @@ void NavigationPreloadRequest::OnReceiveRedirect(
       response_head->headers->response_code()));
 
   response_ = std::make_unique<WebURLResponse>();
-  WebURLLoader::PopulateURLResponse(url_, *response_head, response_.get(),
-                                    false /* report_security_info */,
-                                    -1 /* request_id */);
+  *response_ = WebURLResponse::Create(url_, *response_head,
+                                      false /* report_security_info */,
+                                      -1 /* request_id */);
   owner_->OnNavigationPreloadResponse(fetch_event_id_, std::move(response_),
                                       mojo::ScopedDataPipeConsumerHandle());
   // This will delete |this|.

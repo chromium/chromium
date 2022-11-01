@@ -293,7 +293,7 @@ void AuctionDownloader::OnResponseStarted(
         dict.Add("mimeType", response_head.mime_type);
         dict.Add("encodedDataLength", response_head.encoded_data_length);
 
-        // ref.  WebURLLoader::PopulateURLResponse
+        // ref.  WebURLResponse::Create
         dict.Add("fromCache",
                  (!response_head.load_timing.request_start_time.is_null() &&
                   response_head.response_time <

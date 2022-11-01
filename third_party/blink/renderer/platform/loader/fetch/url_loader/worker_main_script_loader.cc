@@ -12,7 +12,6 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -66,11 +65,10 @@ void WorkerMainScriptLoader::Start(
                        worker_main_script_load_params->redirect_responses);
   }
 
-  WebURLResponse response;
   auto response_head = std::move(worker_main_script_load_params->response_head);
-  WebURLLoader::PopulateURLResponse(
-      WebURL(last_request_url_), *response_head, &response,
-      response_head->ssl_info.has_value(), request_id_);
+  WebURLResponse response =
+      WebURLResponse::Create(WebURL(last_request_url_), *response_head,
+                             response_head->ssl_info.has_value(), request_id_);
   resource_response_ = response.ToResourceResponse();
   resource_load_info_notifier_wrapper_->NotifyResourceResponseReceived(
       std::move(response_head));
@@ -310,9 +308,8 @@ void WorkerMainScriptLoader::HandleRedirections(
             ReferrerUtils::NetToMojoReferrerPolicy(
                 redirect_info.new_referrer_policy),
             /*skip_service_worker=*/false);
-    WebURLResponse response;
-    WebURLLoader::PopulateURLResponse(
-        WebURL(last_request_url_), *redirect_response, &response,
+    WebURLResponse response = WebURLResponse::Create(
+        WebURL(last_request_url_), *redirect_response,
         redirect_response->ssl_info.has_value(), request_id_);
     resource_load_info_notifier_wrapper_->NotifyResourceRedirectReceived(
         redirect_info, std::move(redirect_response));

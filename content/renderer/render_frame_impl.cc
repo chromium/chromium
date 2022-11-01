@@ -190,7 +190,6 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/platform/web_url_response.h"
@@ -488,9 +487,8 @@ void FillNavigationParamsRequest(
         blink::WebNavigationParams::PrefetchedSignedExchange>>();
 
     for (const auto& exchange : commit_params.prefetched_signed_exchanges) {
-      blink::WebURLResponse web_response;
-      blink::WebURLLoader::PopulateURLResponse(
-          exchange->inner_url, *exchange->inner_response, &web_response,
+      blink::WebURLResponse web_response = blink::WebURLResponse::Create(
+          exchange->inner_url, *exchange->inner_response,
           false /* report_security_info*/, -1 /* request_id */);
       navigation_params->prefetched_signed_exchanges.emplace_back(
           std::make_unique<

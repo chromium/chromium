@@ -51,6 +51,7 @@ enum class AlternateProtocolUsage;
 enum class FetchResponseSource;
 enum class FetchResponseType : int32_t;
 enum class IPAddressSpace : int32_t;
+class URLResponseHead;
 class LoadTimingInfo;
 }  // namespace mojom
 }  // namespace network
@@ -74,6 +75,11 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
     kHTTPVersion_1_1,
     kHTTPVersion_2_0
   };
+
+  static WebURLResponse Create(const WebURL& url,
+                               const network::mojom::URLResponseHead& head,
+                               bool report_security_info,
+                               int request_id);
 
   ~WebURLResponse();
 

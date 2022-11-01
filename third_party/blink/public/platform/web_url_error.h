@@ -39,6 +39,10 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url.h"
 
+namespace network {
+struct URLLoaderCompletionStatus;
+}  // namespace network
+
 namespace blink {
 
 // TODO(yhirano): Change this to a class.
@@ -56,6 +60,9 @@ struct BLINK_PLATFORM_EXPORT WebURLError {
     kFalse,
     kTrue,
   };
+
+  static WebURLError Create(const network::URLLoaderCompletionStatus&,
+                            const WebURL&);
 
   WebURLError() = delete;
   // |reason| must not be 0.
