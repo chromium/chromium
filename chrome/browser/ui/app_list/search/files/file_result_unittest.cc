@@ -7,18 +7,20 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/skia_util.h"
 
 namespace app_list {
 
@@ -95,6 +97,54 @@ TEST_F(FileResultTest, PenalizeScore) {
         FileResult::CalculateRelevance(query, path, last_accessed);
     EXPECT_THAT(relevance, DoubleNear(expected_scores[i], 0.01));
   }
+}
+
+TEST_F(FileResultTest, Icons) {
+  const base::FilePath chipPath("/my/test/file.Pdf");
+  FileResult chipResult(
+      /*id=*/"zero_state_file://" + chipPath.value(), chipPath, u"some details",
+      ash::AppListSearchResultType::kZeroStateFile,
+      ash::SearchResultDisplayType::kChip, 0.2f, std::u16string(),
+      FileResult::Type::kFile, profile_.get());
+  EXPECT_FALSE(chipResult.chip_icon().isNull());
+  EXPECT_TRUE(chipResult.icon().icon.isNull());
+
+  const base::FilePath excelPath("/my/test/mySheet.xlsx");
+  FileResult fileResult(
+      /*id=*/"zero_state_file://" + excelPath.value(), excelPath,
+      u"some details", ash::AppListSearchResultType::kZeroStateFile,
+      ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
+      FileResult::Type::kFile, profile_.get());
+  EXPECT_TRUE(fileResult.chip_icon().isNull());
+  EXPECT_FALSE(fileResult.icon().icon.isNull());
+  EXPECT_EQ(fileResult.icon().dimension, kSystemIconDimension);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *fileResult.icon().icon.bitmap(),
+      *chromeos::GetIconForPath(excelPath, false).bitmap()));
+
+  const base::FilePath folderPath("my/Maps");
+  FileResult folderResult(
+      /*id=*/"zero_state_file://" + folderPath.value(), folderPath,
+      absl::nullopt, ash::AppListSearchResultType::kZeroStateFile,
+      ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
+      FileResult::Type::kDirectory, profile_.get());
+  EXPECT_TRUE(folderResult.chip_icon().isNull());
+  EXPECT_EQ(folderResult.icon().dimension, kSystemIconDimension);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *folderResult.icon().icon.bitmap(),
+      *chromeos::GetIconFromType("folder", false).bitmap()));
+
+  const base::FilePath sharedPath("my/Shared");
+  FileResult sharedResult(
+      /*id=*/"zero_state_file://" + sharedPath.value(), sharedPath,
+      absl::nullopt, ash::AppListSearchResultType::kZeroStateFile,
+      ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
+      FileResult::Type::kSharedDirectory, profile_.get());
+  EXPECT_TRUE(sharedResult.chip_icon().isNull());
+  EXPECT_EQ(sharedResult.icon().dimension, kSystemIconDimension);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *sharedResult.icon().icon.bitmap(),
+      *chromeos::GetIconFromType("shared", false).bitmap()));
 }
 
 }  // namespace app_list
