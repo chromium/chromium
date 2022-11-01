@@ -185,6 +185,9 @@
   E_CPONLY(kColorIcon) \
   E_CPONLY(kColorIconDisabled) \
   E_CPONLY(kColorIconSecondary) \
+  /* This is declared here so //components can access it, but we expect \
+   * this to be set in the embedder. */ \
+  E_CPONLY(kColorInfoBarIcon) \
   E_CPONLY(kColorLabelForeground) \
   E_CPONLY(kColorLabelForegroundDisabled) \
   E_CPONLY(kColorLabelForegroundSecondary) \

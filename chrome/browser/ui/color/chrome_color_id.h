@@ -111,6 +111,7 @@
   E_CPONLY(kColorInfoBarButtonIconDisabled) \
   E_CPONLY(kColorInfoBarContentAreaSeparator) \
   E_CPONLY(kColorInfoBarForeground) \
+  /* There is also a kColorInfoBarIcon in /ui/color/color_id.h */ \
   /* Intent Picker colors. */ \
   E_CPONLY(kColorIntentPickerItemBackgroundHovered) \
   E_CPONLY(kColorIntentPickerItemBackgroundSelected) \

@@ -69,6 +69,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorIcon] = {kColorSecondaryForeground};
   mixer[kColorIconDisabled] = SetAlpha(kColorIcon, gfx::kDisabledControlAlpha);
   mixer[kColorIconSecondary] = {gfx::kGoogleGrey600};
+  mixer[kColorInfoBarIcon] = {kColorAccent};
   mixer[kColorLabelForeground] = {kColorPrimaryForeground};
   mixer[kColorLabelForegroundDisabled] = {kColorDisabledForeground};
   mixer[kColorLabelForegroundSecondary] = {kColorSecondaryForeground};
