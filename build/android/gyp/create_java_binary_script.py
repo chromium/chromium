@@ -82,15 +82,17 @@ def main(argv):
       help='Name of the java class with the "main" entry point.')
   parser.add_option('--classpath', action='append', default=[],
       help='Classpath for running the jar.')
-  parser.add_option('--noverify', action='store_true',
-      help='JVM flag: noverify.')
+  parser.add_option('--max-heap-size', default='1G', help='Argument for -Xmx')
+  parser.add_option('--noverify',
+                    action='store_true',
+                    help='JVM flag: noverify.')
   parser.add_option('--tiered-stop-at-level-one',
                     action='store_true',
                     help='JVM flag: -XX:TieredStopAtLevel=1.')
 
   options, extra_program_args = parser.parse_args(argv)
 
-  extra_flags = []
+  extra_flags = [f'java_cmd.append("-Xmx{options.max_heap_size}")']
   if options.noverify:
     extra_flags.append('java_cmd.append("-noverify")')
   if options.tiered_stop_at_level_one:
