@@ -221,10 +221,19 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   EXPECT_EQ(client->result(), net::ERR_NAME_NOT_RESOLVED);
 }
 
+// TODO(crbug.com/1380163): Enable NetworkServiceResolvesOwnHostname on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_NetworkServiceResolvesOwnHostname \
+  DISABLED_NetworkServiceResolvesOwnHostname
+#else
+#define MAYBE_NetworkServiceResolvesOwnHostname \
+  NetworkServiceResolvesOwnHostname
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
 // Check if the system's own host name resolves, which is a slightly different
 // code path from normal resolution.
 IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
-                       NetworkServiceResolvesOwnHostname) {
+                       MAYBE_NetworkServiceResolvesOwnHostname) {
   base::RunLoop run_loop;
   net::AddressList addr_list;
   int os_error, net_error;
