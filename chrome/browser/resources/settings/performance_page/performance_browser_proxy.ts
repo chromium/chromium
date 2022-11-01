@@ -5,12 +5,17 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 export interface PerformanceBrowserProxy {
+  getDeviceHasBattery(): Promise<boolean>;
   openBatterySaverFeedbackDialog(): void;
   openHighEfficiencyFeedbackDialog(): void;
   validateTabDiscardExceptionRule(rule: string): Promise<boolean>;
 }
 
 export class PerformanceBrowserProxyImpl implements PerformanceBrowserProxy {
+  getDeviceHasBattery() {
+    return sendWithPromise('getDeviceHasBattery');
+  }
+
   openBatterySaverFeedbackDialog() {
     chrome.send('openBatterySaverFeedbackDialog');
   }

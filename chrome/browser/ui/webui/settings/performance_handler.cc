@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/settings/performance_handler.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "components/performance_manager/public/features.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_ui.h"
 
@@ -17,6 +19,10 @@ PerformanceHandler::PerformanceHandler() = default;
 PerformanceHandler::~PerformanceHandler() = default;
 
 void PerformanceHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "getDeviceHasBattery",
+      base::BindRepeating(&PerformanceHandler::HandleGetDeviceHasBattery,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "openBatterySaverFeedbackDialog",
       base::BindRepeating(
@@ -32,6 +38,35 @@ void PerformanceHandler::RegisterMessages() {
       base::BindRepeating(
           &PerformanceHandler::HandleValidateTabDiscardExceptionRule,
           base::Unretained(this)));
+}
+
+void PerformanceHandler::OnJavascriptAllowed() {
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kBatterySaverModeAvailable)) {
+    performance_handler_observer_.Observe(
+        performance_manager::user_tuning::UserPerformanceTuningManager::
+            GetInstance());
+  }
+}
+
+void PerformanceHandler::OnJavascriptDisallowed() {
+  performance_handler_observer_.Reset();
+}
+
+void PerformanceHandler::OnDeviceHasBatteryChanged(bool device_has_battery) {
+  DCHECK(IsJavascriptAllowed());
+  FireWebUIListener("device-has-battery-changed", device_has_battery);
+}
+
+void PerformanceHandler::HandleGetDeviceHasBattery(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+  ResolveJavascriptCallback(
+      callback_id, base::Value(performance_manager::user_tuning::
+                                   UserPerformanceTuningManager::GetInstance()
+                                       ->DeviceHasBattery()));
 }
 
 void PerformanceHandler::HandleOpenBatterySaverFeedbackDialog(
