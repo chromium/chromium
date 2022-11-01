@@ -95,6 +95,44 @@ class ScopedWindowTucker::TuckHandle : public views::Button {
     canvas->DrawImageInt(tuck_icon, 0, 0);
   }
 
+  void OnGestureEvent(ui::GestureEvent* event) override {
+    float detail_x = 0.0, detail_y = 0.0;
+    const ui::GestureEventDetails details = event->details();
+    switch (event->type()) {
+      case ui::ET_GESTURE_SWIPE:
+        // Since ET_GESTURE_SWIPE events don't have a numeric value, set
+        // `detail_x` as an arbitrary positive or negative value.
+        detail_x = details.swipe_right() ? 1.0 : -1.0;
+        break;
+      case ui::ET_SCROLL_FLING_START:
+        detail_x = details.velocity_x();
+        detail_y = details.velocity_y();
+        break;
+      case ui::ET_GESTURE_SCROLL_BEGIN:
+        detail_x = details.scroll_x_hint();
+        detail_y = details.scroll_y_hint();
+        break;
+      case ui::ET_GESTURE_SCROLL_UPDATE:
+        detail_x = details.scroll_x();
+        detail_y = details.scroll_y();
+        break;
+      default:
+        views::Button::OnGestureEvent(event);
+        return;
+    }
+
+    // Ignore vertical gestures.
+    if (std::fabs(detail_x) <= std::fabs(detail_y))
+      return;
+
+    // Handle like a normal button press for events on the tuck handle that are
+    // obvious inward gestures.
+    if ((left_ && detail_x > 0) || (!left_ && detail_x < 0)) {
+      NotifyClick(*event);
+      event->SetHandled();
+    }
+  }
+
  private:
   // Whether the tuck handle is on the left or right edge of the screen. A
   // left tuck handle will have the chevron arrow pointing right and vice
