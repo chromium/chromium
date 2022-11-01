@@ -71,6 +71,7 @@ class TextPosition;
 
 namespace blink {
 
+class ComputedStyleBuilder;
 class CounterStyle;
 class CounterStyleMap;
 class CSSFontSelector;
@@ -493,7 +494,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void VisionDeficiencyChanged();
   void ApplyVisionDeficiencyStyle(
-      scoped_refptr<ComputedStyle> layout_view_style);
+      ComputedStyleBuilder& layout_view_style_builder);
 
   void CollectMatchingUserRules(ElementRuleCollector&) const;
 

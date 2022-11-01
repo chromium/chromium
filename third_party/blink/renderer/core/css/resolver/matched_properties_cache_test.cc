@@ -83,7 +83,10 @@ using TestCache = MatchedPropertiesCacheTestCache;
 class MatchedPropertiesCacheTest : public PageTestBase {
  public:
   scoped_refptr<ComputedStyle> CreateStyle() {
-    return GetDocument().GetStyleResolver().InitialStyleForElement();
+    return GetDocument().GetStyleResolver().CreateComputedStyle();
+  }
+  ComputedStyleBuilder CreateStyleBuilder() {
+    return GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
   }
 };
 
@@ -203,12 +206,16 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTreeAndDisplayNone) {
 TEST_F(MatchedPropertiesCacheTest, WritingModeDependency) {
   TestCache cache(GetDocument());
 
-  auto parent_a = CreateStyle();
-  auto parent_b = CreateStyle();
+  auto parent_builder_a = CreateStyleBuilder();
+  parent_builder_a.SetWritingMode(WritingMode::kHorizontalTb);
+  auto parent_builder_b = CreateStyleBuilder();
+  parent_builder_b.SetWritingMode(WritingMode::kVerticalRl);
+
+  auto parent_a = parent_builder_a.TakeStyle();
+  auto parent_b = parent_builder_b.TakeStyle();
+
   auto style_a = CreateStyle();
   auto style_b = CreateStyle();
-  parent_a->SetWritingMode(WritingMode::kHorizontalTb);
-  parent_b->SetWritingMode(WritingMode::kVerticalRl);
 
   TestKey key("display:block", 1, GetDocument());
 
@@ -221,12 +228,16 @@ TEST_F(MatchedPropertiesCacheTest, WritingModeDependency) {
 TEST_F(MatchedPropertiesCacheTest, DirectionDependency) {
   TestCache cache(GetDocument());
 
-  auto parent_a = CreateStyle();
-  auto parent_b = CreateStyle();
+  auto parent_builder_a = CreateStyleBuilder();
+  parent_builder_a.SetDirection(TextDirection::kLtr);
+  auto parent_builder_b = CreateStyleBuilder();
+  parent_builder_b.SetDirection(TextDirection::kRtl);
+
+  auto parent_a = parent_builder_a.TakeStyle();
+  auto parent_b = parent_builder_b.TakeStyle();
+
   auto style_a = CreateStyle();
   auto style_b = CreateStyle();
-  parent_a->SetDirection(TextDirection::kLtr);
-  parent_b->SetDirection(TextDirection::kRtl);
 
   TestKey key("display:block", 1, GetDocument());
 

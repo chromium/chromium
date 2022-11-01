@@ -146,7 +146,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   // TODO(https://crbug.com/1101564): The custom inheritance done here means we
   // need to mark for style recalc inside style recalc. See the workaround in
   // LayoutTextControl::StyleDidChange.
-  text_block_style->SetDirection(start_style.Direction());
+  text_block_style_builder.SetDirection(start_style.Direction());
   text_block_style->SetUnicodeBidi(start_style.GetUnicodeBidi());
   text_block_style_builder.SetUserSelect(EUserSelect::kText);
   text_block_style->SetUserModify(

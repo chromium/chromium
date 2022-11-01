@@ -1206,26 +1206,8 @@ bool ComputedStyle::HasCSSPaintImagesUsingCustomProperty(
   return false;
 }
 
-void ComputedStyle::AddCursor(StyleImage* image,
-                              bool hot_spot_specified,
-                              const gfx::Point& hot_spot) {
-  if (!CursorDataInternal())
-    SetCursorDataInternal(MakeGarbageCollected<CursorList>());
-  MutableCursorDataInternal()->push_back(
-      CursorData(image, hot_spot_specified, hot_spot));
-}
-
-void ComputedStyle::SetCursorList(CursorList* other) {
-  SetCursorDataInternal(other);
-}
-
 bool ComputedStyle::QuotesDataEquivalent(const ComputedStyle& other) const {
   return base::ValuesEquivalent(Quotes(), other.Quotes());
-}
-
-void ComputedStyle::ClearCursorList() {
-  if (CursorDataInternal())
-    SetCursorDataInternal(nullptr);
 }
 
 static bool HasPropertyThatCreatesStackingContext(
@@ -1294,10 +1276,6 @@ void ComputedStyle::UpdateIsStackingContextWithoutContainment(
 void ComputedStyle::AddCallbackSelector(const String& selector) {
   if (!CallbackSelectors().Contains(selector))
     MutableCallbackSelectorsInternal().push_back(selector);
-}
-
-void ComputedStyle::SetContent(ContentData* content_data) {
-  SetContentInternal(content_data);
 }
 
 static bool IsWillChangeTransformHintProperty(CSSPropertyID property) {
@@ -1559,13 +1537,6 @@ void ComputedStyle::ApplyMotionPathTransform(
 
 bool ComputedStyle::TextShadowDataEquivalent(const ComputedStyle& other) const {
   return base::ValuesEquivalent(TextShadow(), other.TextShadow());
-}
-
-StyleImage* ComputedStyle::ListStyleImage() const {
-  return ListStyleImageInternal();
-}
-void ComputedStyle::SetListStyleImage(StyleImage* v) {
-  SetListStyleImageInternal(v);
 }
 
 bool ComputedStyle::SetEffectiveZoom(float f) {

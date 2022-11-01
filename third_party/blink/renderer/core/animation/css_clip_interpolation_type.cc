@@ -292,7 +292,7 @@ void CSSClipInterpolationType::ApplyStandardPropertyValue(
         .CreateLength(state.CssToLengthConversionData(),
                       Length::ValueRange::kAll);
   };
-  state.Style()->SetClip(
+  state.StyleBuilder().SetClip(
       LengthBox(convert_index(autos.is_top_auto, kClipTop),
                 convert_index(autos.is_right_auto, kClipRight),
                 convert_index(autos.is_bottom_auto, kClipBottom),

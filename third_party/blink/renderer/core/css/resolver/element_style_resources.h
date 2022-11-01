@@ -32,7 +32,7 @@
 namespace blink {
 
 class CSSValue;
-class ComputedStyle;
+class ComputedStyleBuilder;
 class Element;
 class PseudoElement;
 class SVGResource;
@@ -77,7 +77,7 @@ class ElementStyleResources {
   SVGResource* GetSVGResourceFromValue(CSSPropertyID,
                                        const cssvalue::CSSURIValue&);
 
-  void LoadPendingResources(ComputedStyle&);
+  void LoadPendingResources(ComputedStyleBuilder&);
 
   void UpdateLengthConversionData(const CSSToLengthConversionData*);
 
@@ -85,8 +85,8 @@ class ElementStyleResources {
   bool IsPending(const CSSValue&) const;
   StyleImage* CachedStyleImage(const CSSValue&) const;
 
-  void LoadPendingSVGResources(ComputedStyle&);
-  void LoadPendingImages(ComputedStyle&);
+  void LoadPendingSVGResources(ComputedStyleBuilder&);
+  void LoadPendingImages(ComputedStyleBuilder&);
 
   Element& element_;
   HashSet<CSSPropertyID> pending_image_properties_;

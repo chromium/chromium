@@ -276,16 +276,17 @@ static void LoadResourcesForFilter(
   }
 }
 
-void ElementStyleResources::LoadPendingSVGResources(ComputedStyle& style) {
+void ElementStyleResources::LoadPendingSVGResources(
+    ComputedStyleBuilder& builder) {
   Document& document = element_.GetDocument();
   for (CSSPropertyID property : pending_svg_resource_properties_) {
     switch (property) {
       case CSSPropertyID::kBackdropFilter:
-        LoadResourcesForFilter(style.MutableBackdropFilter().Operations(),
+        LoadResourcesForFilter(builder.MutableBackdropFilter().Operations(),
                                document);
         break;
       case CSSPropertyID::kFilter:
-        LoadResourcesForFilter(style.MutableFilter().Operations(), document);
+        LoadResourcesForFilter(builder.MutableFilter().Operations(), document);
         break;
       default:
         NOTREACHED();
@@ -299,7 +300,8 @@ static CSSValue* PendingCssValue(StyleImage* style_image) {
   return nullptr;
 }
 
-void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
+void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
+  ComputedStyle& style = *builder.MutableInternalStyle();
   // We must loop over the properties and then look at the style to see if
   // a pending image exists, and only load that image. For example:
   //
@@ -364,7 +366,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
       }
       case CSSPropertyID::kListStyleImage: {
         if (auto* pending_value = PendingCssValue(style.ListStyleImage()))
-          style.SetListStyleImage(loader.Load(*pending_value));
+          builder.SetListStyleImage(loader.Load(*pending_value));
         break;
       }
       case CSSPropertyID::kBorderImageSource: {
@@ -417,9 +419,9 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
 }
 
 void ElementStyleResources::LoadPendingResources(
-    ComputedStyle& computed_style) {
-  LoadPendingImages(computed_style);
-  LoadPendingSVGResources(computed_style);
+    ComputedStyleBuilder& builder) {
+  LoadPendingImages(builder);
+  LoadPendingSVGResources(builder);
 }
 
 void ElementStyleResources::UpdateLengthConversionData(

@@ -92,11 +92,11 @@ TEST_F(ComputedStyleTest, ClipPathEqual) {
       ShapeClipPathOperation::Create(shape);
   scoped_refptr<ShapeClipPathOperation> path2 =
       ShapeClipPathOperation::Create(shape);
-  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
-  style1->SetClipPath(path1);
-  style2->SetClipPath(path2);
-  EXPECT_EQ(*style1, *style2);
+  ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+  ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
+  builder1.SetClipPath(path1);
+  builder2.SetClipPath(path2);
+  EXPECT_EQ(*builder1.TakeStyle(), *builder2.TakeStyle());
 }
 
 TEST_F(ComputedStyleTest, SVGStackingContext) {
@@ -118,10 +118,14 @@ TEST_F(ComputedStyleTest, Preserve3dForceStackingContext) {
 }
 
 TEST_F(ComputedStyleTest, LayoutContainmentStackingContext) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
-  style->SetContain(kContainsLayout);
-  style->UpdateIsStackingContextWithoutContainment(false, false, false);
+
+  ComputedStyleBuilder builder(*style);
+  builder.SetContain(kContainsLayout);
+  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment(
+      false, false, false);
+  style = builder.TakeStyle();
   // Containment doesn't change IsStackingContextWithoutContainment
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
 }
@@ -287,11 +291,12 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsContainsPaint) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
   // This induces a flat used transform style.
-  other->SetContain(kContainsPaint);
+  builder.SetContain(kContainsPaint);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
+
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
@@ -332,9 +337,6 @@ TEST_F(ComputedStyleTest, BorderWidth) {
 }
 
 TEST_F(ComputedStyleTest, CursorList) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = CreateComputedStyle();
-
   auto* gradient = MakeGarbageCollected<cssvalue::CSSLinearGradientValue>(
       nullptr, nullptr, nullptr, nullptr, nullptr, cssvalue::kRepeating);
 
@@ -345,8 +347,13 @@ TEST_F(ComputedStyleTest, CursorList) {
 
   EXPECT_TRUE(base::ValuesEquivalent(image_value, other_image_value));
 
-  style->AddCursor(image_value, false);
-  other->AddCursor(other_image_value, false);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.AddCursor(image_value, false);
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+
+  builder = CreateComputedStyleBuilder();
+  builder.AddCursor(other_image_value, false);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
   EXPECT_EQ(*style, *other);
 }
 

@@ -2464,12 +2464,12 @@ void StyleEngine::VisionDeficiencyChanged() {
 }
 
 void StyleEngine::ApplyVisionDeficiencyStyle(
-    scoped_refptr<ComputedStyle> layout_view_style) {
+    ComputedStyleBuilder& layout_view_style_builder) {
   LoadVisionDeficiencyFilter();
   if (vision_deficiency_filter_) {
     FilterOperations ops;
     ops.Operations().push_back(vision_deficiency_filter_);
-    layout_view_style->SetFilter(ops);
+    layout_view_style_builder.SetFilter(ops);
   }
 }
 

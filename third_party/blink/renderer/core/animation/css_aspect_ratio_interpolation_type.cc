@@ -149,7 +149,7 @@ void CSSAspectRatioInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
   const auto& aspect_ratio = To<InterpolableAspectRatio>(interpolable_value);
-  state.Style()->SetAspectRatio(StyleAspectRatio(
+  state.StyleBuilder().SetAspectRatio(StyleAspectRatio(
       To<CSSAspectRatioNonInterpolableValue>(non_interpolable_value)
           ->GetAspectRatioType(),
       aspect_ratio.GetRatio()));

@@ -44,7 +44,7 @@ class CSSIntrinsicLengthInterpolationType : public CSSInterpolationType {
   absl::optional<StyleIntrinsicLength> GetIntrinsicDimension(
       const ComputedStyle&) const;
   void SetIntrinsicDimension(
-      ComputedStyle*,
+      ComputedStyleBuilder&,
       const absl::optional<StyleIntrinsicLength>& dimension) const;
 
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,

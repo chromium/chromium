@@ -466,10 +466,12 @@ TEST_F(NGInlineItemsBuilderTest, GenerateBreakOpportunityAfterLeadingSpaces) {
 TEST_F(NGInlineItemsBuilderTest, BidiBlockOverride) {
   HeapVector<NGInlineItem> items;
   NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
-  scoped_refptr<ComputedStyle> block_style(
-      GetDocument().GetStyleResolver().CreateComputedStyle());
-  block_style->SetUnicodeBidi(UnicodeBidi::kBidiOverride);
-  block_style->SetDirection(TextDirection::kRtl);
+  ComputedStyleBuilder block_style_builder(
+      *GetDocument().GetStyleResolver().CreateComputedStyle());
+  block_style_builder.SetUnicodeBidi(UnicodeBidi::kBidiOverride);
+  block_style_builder.SetDirection(TextDirection::kRtl);
+  scoped_refptr<const ComputedStyle> block_style =
+      block_style_builder.TakeStyle();
   builder.EnterBlock(block_style.get());
   AppendText("Hello", &builder);
   builder.ExitBlock();
@@ -484,12 +486,12 @@ TEST_F(NGInlineItemsBuilderTest, BidiBlockOverride) {
 
 static LayoutInline* CreateLayoutInline(
     Document* document,
-    void (*initialize_style)(ComputedStyle*)) {
-  scoped_refptr<ComputedStyle> style(
-      document->GetStyleResolver().CreateComputedStyle());
-  initialize_style(style.get());
+    void (*initialize_style)(ComputedStyleBuilder&)) {
+  ComputedStyleBuilder builder =
+      document->GetStyleResolver().CreateComputedStyleBuilder();
+  initialize_style(builder);
   LayoutInline* const node = LayoutInline::CreateAnonymous(document);
-  node->SetStyle(std::move(style), LayoutObject::ApplyStyleChanges::kNo);
+  node->SetStyle(builder.TakeStyle(), LayoutObject::ApplyStyleChanges::kNo);
   node->SetIsInLayoutNGInlineFormattingContext(true);
   return node;
 }
@@ -499,9 +501,9 @@ TEST_F(NGInlineItemsBuilderTest, BidiIsolate) {
   NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
   AppendText("Hello ", &builder);
   LayoutInline* const isolate_rtl =
-      CreateLayoutInline(&GetDocument(), [](ComputedStyle* style) {
-        style->SetUnicodeBidi(UnicodeBidi::kIsolate);
-        style->SetDirection(TextDirection::kRtl);
+      CreateLayoutInline(&GetDocument(), [](ComputedStyleBuilder& builder) {
+        builder.SetUnicodeBidi(UnicodeBidi::kIsolate);
+        builder.SetDirection(TextDirection::kRtl);
       });
   builder.EnterInline(isolate_rtl);
   AppendText(u"\u05E2\u05D1\u05E8\u05D9\u05EA", &builder);
@@ -524,9 +526,9 @@ TEST_F(NGInlineItemsBuilderTest, BidiIsolateOverride) {
   NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
   AppendText("Hello ", &builder);
   LayoutInline* const isolate_override_rtl =
-      CreateLayoutInline(&GetDocument(), [](ComputedStyle* style) {
-        style->SetUnicodeBidi(UnicodeBidi::kIsolateOverride);
-        style->SetDirection(TextDirection::kRtl);
+      CreateLayoutInline(&GetDocument(), [](ComputedStyleBuilder& builder) {
+        builder.SetUnicodeBidi(UnicodeBidi::kIsolateOverride);
+        builder.SetDirection(TextDirection::kRtl);
       });
   builder.EnterInline(isolate_override_rtl);
   AppendText(u"\u05E2\u05D1\u05E8\u05D9\u05EA", &builder);

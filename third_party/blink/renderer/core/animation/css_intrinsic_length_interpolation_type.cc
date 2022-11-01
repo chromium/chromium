@@ -121,12 +121,12 @@ CSSIntrinsicLengthInterpolationType::GetIntrinsicDimension(
 }
 
 void CSSIntrinsicLengthInterpolationType::SetIntrinsicDimension(
-    ComputedStyle* style,
+    ComputedStyleBuilder& builder,
     const absl::optional<StyleIntrinsicLength>& dimension) const {
   if (CssProperty().PropertyID() == CSSPropertyID::kContainIntrinsicWidth)
-    style->SetContainIntrinsicWidth(dimension);
+    builder.SetContainIntrinsicWidth(dimension);
   else
-    style->SetContainIntrinsicHeight(dimension);
+    builder.SetContainIntrinsicHeight(dimension);
 }
 
 InterpolationValue CSSIntrinsicLengthInterpolationType::MaybeConvertNeutral(
@@ -196,10 +196,10 @@ void CSSIntrinsicLengthInterpolationType::ApplyStandardPropertyValue(
   const auto* non_interpolable =
       To<CSSIntrinsicLengthNonInterpolableValue>(non_interpolable_value);
   if (non_interpolable->IsNone()) {
-    SetIntrinsicDimension(state.Style(), absl::nullopt);
+    SetIntrinsicDimension(state.StyleBuilder(), absl::nullopt);
   } else {
     SetIntrinsicDimension(
-        state.Style(),
+        state.StyleBuilder(),
         StyleIntrinsicLength(
             non_interpolable->HasAuto(),
             interpolable.CreateLength(state.CssToLengthConversionData(),

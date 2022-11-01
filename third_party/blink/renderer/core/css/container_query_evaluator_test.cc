@@ -64,10 +64,10 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
             double height,
             unsigned container_type,
             PhysicalAxes contained_axes) {
-    scoped_refptr<ComputedStyle> style =
-        GetDocument().GetStyleResolver().InitialStyleForElement();
-    style->SetContainerType(container_type);
-    ContainerElement().SetComputedStyle(style);
+    ComputedStyleBuilder builder(
+        *GetDocument().GetStyleResolver().InitialStyleForElement());
+    builder.SetContainerType(container_type);
+    ContainerElement().SetComputedStyle(builder.TakeStyle());
 
     ContainerQuery* container_query = ParseContainer(query);
     DCHECK(container_query);
@@ -113,10 +113,10 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
                               PhysicalSize size,
                               unsigned container_type,
                               PhysicalAxes axes) {
-    scoped_refptr<ComputedStyle> style =
-        GetDocument().GetStyleResolver().InitialStyleForElement();
-    style->SetContainerType(container_type);
-    ContainerElement().SetComputedStyle(style);
+    ComputedStyleBuilder builder(
+        *GetDocument().GetStyleResolver().InitialStyleForElement());
+    builder.SetContainerType(container_type);
+    ContainerElement().SetComputedStyle(builder.TakeStyle());
     return evaluator->SizeContainerChanged(GetDocument(), ContainerElement(),
                                            size, axes);
   }
@@ -285,9 +285,10 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   PhysicalSize size_100(LayoutUnit(100), LayoutUnit(100));
 
   Element& container_element = ContainerElement();
-  scoped_refptr<ComputedStyle> style =
-      GetDocument().GetStyleResolver().InitialStyleForElement();
-  style->SetContainerType(type_inline_size);
+  ComputedStyleBuilder builder(
+      *GetDocument().GetStyleResolver().InitialStyleForElement());
+  builder.SetContainerType(type_inline_size);
+  scoped_refptr<ComputedStyle> style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
 
   auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();

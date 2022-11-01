@@ -867,8 +867,7 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
   builder.SetOverflowX(EOverflow::kAuto);
   builder.SetOverflowY(EOverflow::kAuto);
 
-  GetDocument().GetStyleEngine().ApplyVisionDeficiencyStyle(
-      builder.MutableInternalStyle());
+  GetDocument().GetStyleEngine().ApplyVisionDeficiencyStyle(builder);
 
   return builder.TakeStyle();
 }
@@ -2399,7 +2398,7 @@ void StyleResolver::PropagateStyleToViewport() {
       new_viewport_style_builder.SetBackgroundColor(
           StyleColor(background_color));
       new_viewport_style->AccessBackgroundLayers() = background_layers;
-      new_viewport_style->SetImageRendering(image_rendering);
+      new_viewport_style_builder.SetImageRendering(image_rendering);
     }
   }
 

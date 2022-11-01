@@ -960,6 +960,7 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      readonly: true,
     },
     {
       name: "font-family",
@@ -1322,6 +1323,7 @@
       style_builder_custom_functions: ["value"],
       type_name: "short",
       typedom_types: ["Number"],
+      readonly: true,
     },
     {
       name: "text-orientation",
@@ -1337,6 +1339,7 @@
       priority: "High",
       computable: false,
       valid_for_formatted_text: true,
+      readonly: true,
     },
     {
       name: "-webkit-text-orientation",
@@ -1359,6 +1362,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
       valid_for_formatted_text: true,
+      readonly: true,
     },
     {
       name: "-webkit-writing-mode",
@@ -1390,6 +1394,7 @@
       // Setting zoom affects the _EffectiveZoom_, which in turns affects every px value
       // stored on ComputedStyle; see CSSToLengthConversionData::ZoomedComputedPixels.
       supports_incremental_style: false,
+      readonly: true,
     },
     {
       name: "accent-color",
@@ -1467,6 +1472,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSAnchorPositioning",
+      readonly: true,
     },
     {
       name: "anchor-scroll",
@@ -1479,6 +1485,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSAnchorPositioning",
+      readonly: true,
     },
     {
       name: "aspect-ratio",
@@ -1492,6 +1499,7 @@
       converter: "ConvertAspectRatio",
       include_paths: ["third_party/blink/renderer/core/style/style_aspect_ratio.h"],
       computable: false,
+      readonly: true,
     },
     {
       name: "backdrop-filter",
@@ -1508,6 +1516,7 @@
       style_builder_custom_functions: ["value"],
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "backface-visibility",
@@ -2175,6 +2184,7 @@
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
+      readonly: true,
     },
     {
       name: "box-sizing",
@@ -2184,6 +2194,7 @@
       keywords: ["content-box", "border-box"],
       typedom_types: ["Keyword"],
       default_value: "content-box",
+      readonly: true,
     },
     {
       name: "break-after",
@@ -2198,6 +2209,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       type_name: "EBreakBetween",
+      readonly: true,
     },
     {
       name: "break-before",
@@ -2212,6 +2224,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       type_name: "EBreakBetween",
+      readonly: true,
     },
     {
       name: "break-inside",
@@ -2222,6 +2235,7 @@
       keywords: ["auto", "avoid", "avoid-column", "avoid-page"],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      readonly: true,
     },
     {
       name: "buffered-rendering",
@@ -2241,6 +2255,7 @@
       keywords: ["top", "bottom"],
       typedom_types: ["Keyword"],
       default_value: "top",
+      readonly: true,
     },
     {
       name: "caret-color",
@@ -2267,6 +2282,7 @@
       keywords: ["none", "left", "right", "both", "inline-start", "inline-end"],
       typedom_types: ["Keyword"],
       default_value: "none",
+      readonly: true,
     },
     {
       name: "clip",
@@ -2282,6 +2298,7 @@
       converter: "ConvertClip",
       keywords: ["auto"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "clip-path",
@@ -2298,6 +2315,7 @@
       converter: "ConvertClipPath",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "clip-rule",
@@ -2373,6 +2391,7 @@
       getter: "GetColumnFill",
       typedom_types: ["Keyword"],
       computable: false,
+      readonly: true,
     },
     {
       name: "contain",
@@ -2387,6 +2406,7 @@
       keywords: ["none", "strict", "content", "size", "layout", "style", "paint", "inline-size", "block-size"],
       typedom_types: ["Keyword"],
       computable: false,
+      readonly: true,
     },
     {
       name: "contain-intrinsic-width",
@@ -2399,6 +2419,7 @@
       default_value: "absl::nullopt",
       type_name: "absl::optional<StyleIntrinsicLength>",
       converter: "ConvertIntrinsicDimension",
+      readonly: true,
     },
     {
       name: "contain-intrinsic-height",
@@ -2411,6 +2432,7 @@
       default_value: "absl::optional<StyleIntrinsicLength>()",
       type_name: "absl::optional<StyleIntrinsicLength>",
       converter: "ConvertIntrinsicDimension",
+      readonly: true,
     },
     {
       name: "container-name",
@@ -2423,6 +2445,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSContainerQueries",
+      readonly: true,
     },
     {
       name: "container-type",
@@ -2436,6 +2459,7 @@
       converter: "ConvertFlags<EContainerType, CSSValueID::kNormal>",
       typedom_types: ["Keyword"],
       runtime_flag: "CSSContainerQueries",
+      readonly: true,
     },
     {
       name: "content",
@@ -2447,11 +2471,12 @@
       default_value: "nullptr",
       separator: ",",
       type_name: "ContentData",
-      computed_style_custom_functions: ["getter", "setter"],
+      computed_style_custom_functions: ["getter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       valid_for_marker: true,
       tree_scoped_value: true,
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "counter-increment",
@@ -2504,6 +2529,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       typedom_types: ["Keyword"],
       valid_for_highlight_legacy: true,
+      readonly: true,
     },
     {
       name: "cx",
@@ -2561,6 +2587,7 @@
       // (e.g. OriginalDisplay is based on display, and setting float can cause blockification),
       // so we turn off incremental style for all them all.
       supports_incremental_style: false,
+      readonly: true,
     },
     {
       name: "dominant-baseline",
@@ -2583,6 +2610,7 @@
       keywords: ["show", "hide"],
       typedom_types: ["Keyword"],
       default_value: "show",
+      readonly: true,
     },
     {
       name: "fill",
@@ -2647,6 +2675,7 @@
       style_builder_custom_functions: ["value"],
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "flex-basis",
@@ -2715,6 +2744,7 @@
       valid_for_first_letter: true,
       // See comment on display.
       supports_incremental_style: false,
+      readonly: true,
     },
     {
       name: "flood-color",
@@ -2917,6 +2947,7 @@
       include_paths: ["third_party/blink/renderer/core/style/style_hyphenate_limit_chars.h"],
       converter: "ConvertHyphenateLimitChars",
       runtime_flag: "CSSHyphenateLimitChars",
+      readonly: true,
     },
     {
       name: "hyphens",
@@ -2929,6 +2960,7 @@
       type_name: "Hyphens",
       typedom_types: ["Keyword"],
       valid_for_marker: true,
+      readonly: true,
     },
     {
       name: "image-rendering",
@@ -2942,6 +2974,7 @@
       ],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      readonly: true,
     },
     {
       name: "image-orientation",
@@ -2953,6 +2986,7 @@
       name_for_methods: "RespectImageOrientation",
       type_name: "bool",
       converter: "ConvertImageOrientation",
+      readonly: true,
     },
     {
       name: "initial-letter",
@@ -2967,6 +3001,7 @@
       runtime_flag: "CSSInitialLetter",
       type_name: "StyleInitialLetter",
       valid_for_first_letter: true,
+      readonly: true,
     },
     {
       name: "isolation",
@@ -2976,6 +3011,7 @@
       keywords: ["auto", "isolate"],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      readonly: true,
     },
     {
       name: "justify-content",
@@ -3092,6 +3128,7 @@
       type_name: "uint8_t",
       converter: "ConvertComputedLength<uint8_t>",
       typedom_types: ["Length"],
+      readonly: true,
     },
     {
       name: "list-style-image",
@@ -3105,9 +3142,9 @@
       default_value: "nullptr",
       typedom_types: ["Keyword", "Image"],
       type_name: "StyleImage",
-      computed_style_custom_functions: ["getter", "setter"],
       style_builder_custom_functions: ["value"],
-      keywords: ["none"]
+      keywords: ["none"],
+      readonly: true,
     },
     {
       name: "list-style-position",
@@ -3118,6 +3155,7 @@
       keywords: ["outside", "inside"],
       typedom_types: ["Keyword"],
       default_value: "outside",
+      readonly: true,
     },
     {
       name: "list-style-type",
@@ -3133,8 +3171,9 @@
         "disc", "circle", "square", "disclosure-open", "disclosure-closed",
         "decimal", "none"
       ],
-      style_builder_custom_functions: ["initial", "inherit", "value"],
+      style_builder_custom_functions: ["value"],
       tree_scoped_value: true,
+      readonly: true,
     },
     {
       name: "margin-bottom",
@@ -3294,7 +3333,8 @@
       keywords: ["normal", "compact"],
       typedom_types: ["Keyword"],
       default_value: "normal",
-      runtime_flag: "CSSMathShift"
+      runtime_flag: "CSSMathShift",
+      readonly: true,
     },
     {
       name: "math-style",
@@ -3305,7 +3345,8 @@
       keywords: ["normal", "compact"],
       typedom_types: ["Keyword"],
       default_value: "normal",
-      runtime_flag: "CSSMathStyle"
+      runtime_flag: "CSSMathStyle",
+      readonly: true,
     },
     {
       name: "max-height",
@@ -3392,6 +3433,7 @@
       default_value: "normal",
       name_for_methods: "BlendMode",
       type_name: "BlendMode",
+      readonly: true,
     },
     {
       name: "object-fit",

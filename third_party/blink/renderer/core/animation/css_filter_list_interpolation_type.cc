@@ -35,14 +35,14 @@ const FilterOperations& GetFilterList(const CSSProperty& property,
 }
 
 void SetFilterList(const CSSProperty& property,
-                   ComputedStyle& style,
+                   ComputedStyleBuilder& builder,
                    const FilterOperations& filter_operations) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kBackdropFilter:
-      style.SetBackdropFilter(filter_operations);
+      builder.SetBackdropFilter(filter_operations);
       break;
     case CSSPropertyID::kFilter:
-      style.SetFilter(filter_operations);
+      builder.SetFilter(filter_operations);
       break;
     default:
       NOTREACHED();
@@ -264,7 +264,8 @@ void CSSFilterListInterpolationType::ApplyStandardPropertyValue(
         To<InterpolableFilter>(interpolable_list.Get(i))
             ->CreateFilterOperation(state));
   }
-  SetFilterList(CssProperty(), *state.Style(), std::move(filter_operations));
+  SetFilterList(CssProperty(), state.StyleBuilder(),
+                std::move(filter_operations));
 }
 
 InterpolationValue

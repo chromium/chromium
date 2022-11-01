@@ -462,10 +462,10 @@ LayoutUnit LayoutTableCell::CellBaselinePosition() const {
 void LayoutTableCell::UpdateStyleWritingModeFromRow(const LayoutObject* row) {
   NOT_DESTROYED();
   DCHECK_NE(StyleRef().GetWritingMode(), row->StyleRef().GetWritingMode());
-  scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(StyleRef());
-  new_style->SetWritingMode(row->StyleRef().GetWritingMode());
-  new_style->UpdateFontOrientation();
-  SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
+  ComputedStyleBuilder new_style_builder(StyleRef());
+  new_style_builder.SetWritingMode(row->StyleRef().GetWritingMode());
+  new_style_builder.MutableInternalStyle()->UpdateFontOrientation();
+  SetStyle(new_style_builder.TakeStyle(), LayoutObject::ApplyStyleChanges::kNo);
   SetHorizontalWritingMode(StyleRef().IsHorizontalWritingMode());
   UnmarkOrthogonalWritingModeRoot();
 

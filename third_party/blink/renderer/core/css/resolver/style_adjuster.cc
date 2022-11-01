@@ -330,8 +330,8 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
   const auto line_height = style.GetFontHeight().LineHeight();
   const auto size =
       LengthSize(Length::Fixed(line_height), Length::Fixed(one_em));
-  style.SetContainIntrinsicWidth(StyleIntrinsicLength(false, size.Width()));
-  style.SetContainIntrinsicHeight(StyleIntrinsicLength(false, size.Height()));
+  builder.SetContainIntrinsicWidth(StyleIntrinsicLength(false, size.Width()));
+  builder.SetContainIntrinsicHeight(StyleIntrinsicLength(false, size.Height()));
   builder.SetHeight(size.Height());
   builder.SetLineHeight(size.Height());
   builder.SetMaxHeight(size.Height());
@@ -352,7 +352,7 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
   style.SetVerticalAlign(EVerticalAlign ::kMiddle);
   style.SetWordBreak(EWordBreak::kKeepAll);
   style.SetWordSpacing(0.0f);
-  style.SetWritingMode(WritingMode::kHorizontalTb);
+  builder.SetWritingMode(WritingMode::kHorizontalTb);
 
   style.ClearAppliedTextDecorations();
   style.ResetTextIndent();
@@ -439,8 +439,8 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     // This is necessary to fix a crash where a site tries to position these
     // objects. They also never honor display nor floating.
     style.SetPosition(EPosition::kStatic);
-    style.SetDisplay(EDisplay::kBlock);
-    style.SetFloating(EFloat::kNone);
+    builder.SetDisplay(EDisplay::kBlock);
+    builder.SetFloating(EFloat::kNone);
     return;
   }
 
@@ -484,7 +484,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     // Ruby text does not support float or position. This might change with
     // evolution of the specification.
     style.SetPosition(EPosition::kStatic);
-    style.SetFloating(EFloat::kNone);
+    builder.SetFloating(EFloat::kNone);
     return;
   }
 
@@ -603,6 +603,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style,
 }
 
 static void AdjustStyleForDisplay(ComputedStyle& style,
+                                  ComputedStyleBuilder& builder,
                                   const ComputedStyle& layout_parent_style,
                                   const Element* element,
                                   Document* document) {
@@ -638,8 +639,8 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
       style.Display() == EDisplay::kTableHeaderGroup ||
       style.Display() == EDisplay::kTableRow ||
       style.Display() == EDisplay::kTableRowGroup) {
-    style.SetWritingMode(layout_parent_style.GetWritingMode());
-    style.SetTextOrientation(layout_parent_style.GetTextOrientation());
+    builder.SetWritingMode(layout_parent_style.GetWritingMode());
+    builder.SetTextOrientation(layout_parent_style.GetTextOrientation());
     style.UpdateFontOrientation();
   }
 }
@@ -898,7 +899,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForFirstLetter(style);
     AdjustStyleForMarker(style, builder, parent_style, state.GetElement());
 
-    AdjustStyleForDisplay(style, layout_parent_style, element,
+    AdjustStyleForDisplay(style, builder, layout_parent_style, element,
                           element ? &element->GetDocument() : nullptr);
 
     // If this is a child of a LayoutNGCustom, we need the name of the parent
@@ -912,7 +913,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // The root element of the main frame has no backdrop, so don't allow
     // it to have a backdrop filter either.
     if (is_document_element && is_in_main_frame && style.HasBackdropFilter())
-      style.MutableBackdropFilter().clear();
+      builder.MutableBackdropFilter().clear();
   } else {
     AdjustStyleForFirstLetter(style);
   }
@@ -1031,7 +1032,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     if (style.GetWritingMode() != WritingMode::kHorizontalTb) {
       // TODO(rbuis): this will not work with logical CSS properties.
       // Disable vertical writing-mode for now.
-      style.SetWritingMode(WritingMode::kHorizontalTb);
+      builder.SetWritingMode(WritingMode::kHorizontalTb);
       style.UpdateFontOrientation();
     }
   }

@@ -190,7 +190,7 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
           std::move(shape), CSSBoxType::kMissing));
       break;
     case CSSPropertyID::kClipPath:
-      state.Style()->SetClipPath(
+      state.StyleBuilder().SetClipPath(
           ShapeClipPathOperation::Create(std::move(shape)));
       break;
     case CSSPropertyID::kObjectViewBox:

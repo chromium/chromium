@@ -467,12 +467,12 @@ void LayoutTheme::AdjustSliderContainerStyle(
 
   if (style.EffectiveAppearance() == kSliderVerticalPart) {
     style.SetTouchAction(TouchAction::kPanX);
-    style.SetWritingMode(WritingMode::kVerticalRl);
+    builder.SetWritingMode(WritingMode::kVerticalRl);
     // It's always in RTL because the slider value increases up even in LTR.
-    style.SetDirection(TextDirection::kRtl);
+    builder.SetDirection(TextDirection::kRtl);
   } else {
     style.SetTouchAction(TouchAction::kPanY);
-    style.SetWritingMode(WritingMode::kHorizontalTb);
+    builder.SetWritingMode(WritingMode::kHorizontalTb);
     if (To<HTMLInputElement>(element.OwnerShadowHost())->list()) {
       builder.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
                                                   OverflowAlignment::kUnsafe));

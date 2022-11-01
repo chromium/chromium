@@ -274,7 +274,7 @@ void CSSImageInterpolationType::ApplyStandardPropertyValue(
       state.Style()->SetBorderImageSource(image);
       break;
     case CSSPropertyID::kListStyleImage:
-      state.Style()->SetListStyleImage(image);
+      state.StyleBuilder().SetListStyleImage(image);
       break;
     case CSSPropertyID::kWebkitMaskBoxImageSource:
       state.Style()->SetMaskBoxImageSource(image);

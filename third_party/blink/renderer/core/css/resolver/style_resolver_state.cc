@@ -175,7 +175,7 @@ void StyleResolverState::LoadPendingResources() {
     return;
   }
 
-  element_style_resources_.LoadPendingResources(StyleRef());
+  element_style_resources_.LoadPendingResources(StyleBuilder());
 }
 
 const FontDescription& StyleResolverState::ParentFontDescription() const {
@@ -187,7 +187,7 @@ void StyleResolverState::SetZoom(float f) {
                                     ? ParentStyle()->EffectiveZoom()
                                     : ComputedStyleInitialValues::InitialZoom();
 
-  StyleRef().SetZoom(f);
+  StyleBuilder().SetZoom(f);
 
   if (f != 1.f)
     GetDocument().CountUse(WebFeature::kCascadedCSSZoomNotEqualToOne);
@@ -202,17 +202,17 @@ void StyleResolverState::SetEffectiveZoom(float f) {
 }
 
 void StyleResolverState::SetWritingMode(WritingMode new_writing_mode) {
-  if (StyleRef().GetWritingMode() == new_writing_mode) {
+  if (StyleBuilder().GetWritingMode() == new_writing_mode) {
     return;
   }
-  StyleRef().SetWritingMode(new_writing_mode);
+  StyleBuilder().SetWritingMode(new_writing_mode);
   UpdateLengthConversionData();
   font_builder_.DidChangeWritingMode();
 }
 
 void StyleResolverState::SetTextOrientation(ETextOrientation text_orientation) {
-  if (StyleRef().GetTextOrientation() != text_orientation) {
-    StyleRef().SetTextOrientation(text_orientation);
+  if (StyleBuilder().GetTextOrientation() != text_orientation) {
+    StyleBuilder().SetTextOrientation(text_orientation);
     font_builder_.DidChangeTextOrientation();
   }
 }

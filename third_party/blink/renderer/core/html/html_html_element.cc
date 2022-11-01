@@ -75,11 +75,11 @@ bool NeedsLayoutStylePropagation(const ComputedStyle& layout_style,
 scoped_refptr<const ComputedStyle> CreateLayoutStyle(
     const ComputedStyle& style,
     const ComputedStyle& propagated_style) {
-  scoped_refptr<ComputedStyle> layout_style = ComputedStyle::Clone(style);
-  layout_style->SetDirection(propagated_style.Direction());
-  layout_style->SetWritingMode(propagated_style.GetWritingMode());
-  layout_style->UpdateFontOrientation();
-  return layout_style;
+  ComputedStyleBuilder builder(style);
+  builder.SetDirection(propagated_style.Direction());
+  builder.SetWritingMode(propagated_style.GetWritingMode());
+  builder.MutableInternalStyle()->UpdateFontOrientation();
+  return builder.TakeStyle();
 }
 
 }  // namespace
