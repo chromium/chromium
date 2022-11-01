@@ -25,16 +25,13 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -94,10 +91,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
  public:
   explicit ContinueSectionViewTestBase(bool tablet_mode)
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        tablet_mode_(tablet_mode) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kLauncherAppSort, features::kProductivityLauncher}, {});
-  }
+        tablet_mode_(tablet_mode) {}
   ~ContinueSectionViewTestBase() override = default;
 
   void TearDown() override {
@@ -304,7 +298,6 @@ class ContinueSectionViewTestBase : public AshTestBase {
 
   absl::optional<ui::ScopedAnimationDurationScaleMode> animation_duration_;
   std::unique_ptr<test::AppsGridViewTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ContinueSectionViewTest : public ContinueSectionViewTestBase,

@@ -19,14 +19,12 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -44,12 +42,7 @@ namespace {
 
 class AppListBubbleAppsPageTest : public AshTestBase {
  public:
-  AppListBubbleAppsPageTest() {
-    features_.InitWithFeatures(
-        {features::kProductivityLauncher,
-         features::kLauncherDismissButtonsOnSortNudgeAndToast},
-        {});
-  }
+  AppListBubbleAppsPageTest() = default;
 
   void OnReorderAnimationDone(base::OnceClosure closure,
                               bool expect_abort,
@@ -82,9 +75,6 @@ class AppListBubbleAppsPageTest : public AshTestBase {
             base::Unretained(this), run_loop.QuitClosure(), expect_abort));
     run_loop.Run();
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {

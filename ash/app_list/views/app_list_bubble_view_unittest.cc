@@ -28,7 +28,6 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/controls/gradient_layer_delegate.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -42,7 +41,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -105,9 +103,7 @@ bool IsAnimatingProperty(
 
 class AppListBubbleViewTest : public AshTestBase {
  public:
-  AppListBubbleViewTest() {
-    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
+  AppListBubbleViewTest() = default;
   ~AppListBubbleViewTest() override = default;
 
   // testing::Test:
@@ -190,7 +186,6 @@ class AppListBubbleViewTest : public AshTestBase {
     return view ? view->GetClassName() : "none";
   }
 
-  base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<AssistantTestApi> assistant_test_api_;

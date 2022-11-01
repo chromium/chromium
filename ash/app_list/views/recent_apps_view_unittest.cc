@@ -20,12 +20,10 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -51,9 +49,7 @@ aura::Window* FindMenuWindow(aura::Window* root) {
 class RecentAppsViewTest : public AshTestBase,
                            public testing::WithParamInterface<bool> {
  public:
-  RecentAppsViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
+  RecentAppsViewTest() = default;
   ~RecentAppsViewTest() override = default;
 
   // Whether we should run the test in tablet mode.
@@ -138,7 +134,6 @@ class RecentAppsViewTest : public AshTestBase,
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 INSTANTIATE_TEST_SUITE_P(All, RecentAppsViewTest, testing::Bool());
 
