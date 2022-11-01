@@ -591,7 +591,7 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_chromium_asan_rel_ng": {
@@ -614,7 +614,7 @@
       "use_cfi_cast": true,
       "use_cfi_diag": true,
       "use_cfi_icall": true,
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -684,7 +684,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_chromium_dbg_ng": {
@@ -694,7 +694,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_chromium_msan_focal": {
@@ -704,7 +704,7 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 2,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_chromium_msan_rel_ng": {
@@ -714,7 +714,7 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 2,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_chromium_tsan_rel_ng": {
@@ -735,7 +735,7 @@
       "is_debug": false,
       "is_ubsan_no_recover": true,
       "is_ubsan_vptr": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_layout_tests_layout_ng_disabled": {
@@ -774,8 +774,8 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true,
-      "use_ozone": true
+      "use_ozone": true,
+      "use_remoteexec": true
     }
   },
   "network_service_linux": {

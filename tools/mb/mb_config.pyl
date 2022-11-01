@@ -1181,34 +1181,34 @@
       'linux-x64-castos': 'cast_release_trybot',
       'linux-x64-castos-audio': 'cast_audio_release_trybot',
       'linux-x64-castos-dbg': 'cast_debug_bot',
-      'linux_chromium_archive_rel_ng': 'release_bot',
+      'linux_chromium_archive_rel_ng': 'release_bot_reclient',
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot_minimum_symbols_reclient',
-      'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma',
+      'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_bot_dcheck_always_on',
       'linux_chromium_chromeos_msan_focal': 'chromeos_msan_release_bot',
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot',
       'linux_chromium_clobber_deterministic': 'release_trybot',
       'linux_chromium_clobber_rel_ng': 'release_trybot',
       'linux_chromium_compile_dbg_ng': 'debug_bot_reclient',
-      'linux_chromium_compile_rel_ng': 'release_trybot',
-      'linux_chromium_dbg_ng': 'gpu_tests_debug_bot',
+      'linux_chromium_compile_rel_ng': 'release_trybot_reclient',
+      'linux_chromium_dbg_ng': 'gpu_tests_debug_bot_reclient',
 
       # This is intentionally a release_bot and not a release_trybot;
       # enabling DCHECKs seems to cause flaky failures that don't show up
       # on the continuous builder.
-      'linux_chromium_msan_focal': 'msan_release_bot',
-      'linux_chromium_msan_rel_ng': 'msan_release_bot',
+      'linux_chromium_msan_focal': 'msan_release_bot_reclient',
+      'linux_chromium_msan_rel_ng': 'msan_release_bot_reclient',
 
       'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot_reclient',
 
       # This is intentionally a release_bot and not a release_trybot to match
       # the CI configuration, where no debug builder exists.
-      'linux_chromium_ubsan_rel_ng': 'ubsan_vptr_release_bot',
+      'linux_chromium_ubsan_rel_ng': 'ubsan_vptr_release_bot_reclient',
 
       'linux_layout_tests_layout_ng_disabled': 'release_trybot_reclient',
       'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'linux_upload_clang': 'release_bot',
-      'linux_vr': 'vr_release_trybot',
+      'linux_vr': 'vr_release_trybot_reclient',
       'network_service_linux': 'release_trybot',
     },
 
@@ -1984,10 +1984,6 @@
 
     'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient': [
       'cfi_full', 'cfi_icall', 'cfi_diag', 'cfi_recover', 'thin_lto', 'release', 'static', 'reclient',
-    ],
-
-    'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma': [
-      'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'goma',
     ],
 
     'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient': [
@@ -3680,18 +3676,6 @@
       'ubsan', 'release_bot_reclient',
     ],
 
-    'ubsan_vptr_release_bot': [
-      'ubsan_vptr', 'release_bot',
-    ],
-
-    'ubsan_vptr_release_bot': [
-      'ubsan_vptr', 'ubsan_no_recover_hack', 'release_bot',
-    ],
-
-    'ubsan_vptr_release_bot_reclient': [
-      'ubsan_vptr', 'release_bot_reclient',
-    ],
-
     'ubsan_vptr_release_bot_reclient': [
       'ubsan_vptr', 'ubsan_no_recover_hack', 'release_bot_reclient',
     ],
@@ -3740,8 +3724,8 @@
       'vr', 'release_bot_reclient', 'ozone',
     ],
 
-    'vr_release_trybot': [
-      'vr', 'release_trybot', 'ozone',
+    'vr_release_trybot_reclient': [
+      'vr', 'release_trybot_reclient', 'ozone',
     ],
 
     'win32_arm64_release_bot_reclient': [

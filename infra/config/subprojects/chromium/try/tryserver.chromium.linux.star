@@ -339,6 +339,7 @@ try_.builder(
     mirrors = [
         "ci/linux-archive-rel",
     ],
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -375,6 +376,7 @@ try_.builder(
     cores = 32,
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
     execution_timeout = 7 * time.hour,
+    goma_backend = None,
 )
 
 try_.builder(
@@ -457,6 +459,7 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -478,6 +481,7 @@ try_.builder(
             "build/.*check_gn_headers.*",
         ],
     ),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -486,7 +490,7 @@ try_.builder(
         "ci/Linux MSan Focal",
     ],
     execution_timeout = 16 * time.hour,
-    goma_jobs = goma.jobs.J150,
+    goma_backend = None,
     os = os.LINUX_FOCAL,
 )
 
@@ -497,7 +501,7 @@ try_.builder(
         "ci/Linux MSan Tests",
     ],
     execution_timeout = 6 * time.hour,
-    goma_jobs = goma.jobs.J150,
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -531,6 +535,7 @@ try_.builder(
     mirrors = [
         "ci/linux-ubsan-vptr",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -601,6 +606,7 @@ try_.builder(
             "content/browser/xr/.+",
         ],
     ),
+    goma_backend = None,
 )
 
 try_.builder(
