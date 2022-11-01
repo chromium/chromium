@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <linux/input.h>
+#include "ash/webui/diagnostics_ui/backend/event_watcher_factory.h"
+
 #include <cstdint>
 #include <memory>
-
-#include "ash/webui/diagnostics_ui/backend/event_watcher_factory.h"
 
 #include "ash/webui/diagnostics_ui/backend/keyboard_input_data_event_watcher.h"
 #include "base/memory/weak_ptr.h"

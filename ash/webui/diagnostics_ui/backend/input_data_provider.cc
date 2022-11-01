@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <linux/input.h>
+
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"

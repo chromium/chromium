@@ -6,6 +6,7 @@
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_EVENT_WATCHER_H_
 
 #include <linux/input.h>
+
 #include <cstdint>
 
 #include "base/files/file_path.h"
