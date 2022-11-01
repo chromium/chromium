@@ -55,6 +55,8 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.check_layout_object_methods = true;
     } else if (args[i] == "raw-ref-template-as-trivial-member") {
       options_.raw_ref_template_as_trivial_member = true;
+    } else if (args[i] == "check-bad-raw-ptr-cast") {
+      options_.check_bad_raw_ptr_cast = true;
     } else {
       parsed = false;
       llvm::errs() << "Unknown clang plugin argument: " << args[i] << "\n";

@@ -71,7 +71,7 @@ ChromeClassTester::LocationType ChromeClassTester::ClassifyLocation(
   if (instance().getSourceManager().isInSystemHeader(loc))
     return LocationType::kThirdParty;
 
-  std::string filename = GetFilename(instance(), loc);
+  std::string filename = GetFilename(instance().getSourceManager(), loc);
   if (filename.empty()) {
     // If the filename cannot be determined, simply treat this as a banned
     // location, instead of going through the full lookup process.
@@ -139,7 +139,7 @@ bool ChromeClassTester::InImplementationFile(SourceLocation record_location) {
   // If |record_location| is a macro, check the whole chain of expansions.
   const SourceManager& source_manager = instance_.getSourceManager();
   while (true) {
-    filename = GetFilename(instance(), record_location);
+    filename = GetFilename(instance().getSourceManager(), record_location);
     if (ends_with(filename, ".cc") || ends_with(filename, ".cpp") ||
         ends_with(filename, ".mm")) {
       return true;
