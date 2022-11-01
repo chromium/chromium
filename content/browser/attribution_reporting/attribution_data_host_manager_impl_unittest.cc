@@ -157,7 +157,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
     source_data->destination = destination_origin;
     source_data->reporting_origin = reporting_origin;
     source_data->priority = 20;
-    source_data->debug_key = blink::mojom::AttributionDebugKey::New(789);
+    source_data->debug_key = 789;
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
     source_data->aggregation_keys = {
         {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},
@@ -512,7 +512,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
     trigger_data->reporting_origin = reporting_origin;
-    trigger_data->debug_key = blink::mojom::AttributionDebugKey::New(789);
+    trigger_data->debug_key = 789;
 
     trigger_data->filters = blink::mojom::AttributionFilterData::New(
         AttributionFilterData::FilterValues({{"a", {"b"}}}));
@@ -520,7 +520,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
         /*data=*/1,
-        /*priority=*/2, blink::mojom::AttributionTriggerDedupKey::New(3),
+        /*priority=*/2, /*dedup_key=*/3,
         /*filters=*/
         blink::mojom::AttributionFilterData::New(
             AttributionFilterData::FilterValues({{"c", {"d"}}})),
@@ -531,12 +531,11 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
         /*data=*/4,
         /*priority=*/5,
-        /*dedup_key=*/nullptr,
+        /*dedup_key=*/absl::nullopt,
         /*filters=*/blink::mojom::AttributionFilterData::New(),
         /*not_filters=*/blink::mojom::AttributionFilterData::New()));
 
-    trigger_data->aggregatable_dedup_key =
-        blink::mojom::AttributionTriggerDedupKey::New(123);
+    trigger_data->aggregatable_dedup_key = 123;
 
     data_host_remote.data_host->TriggerDataAvailable(std::move(trigger_data));
     data_host_remote.data_host.FlushForTesting();
@@ -682,7 +681,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
         /*data=*/0,
         /*priority=*/0,
-        /*dedup_key=*/nullptr,
+        /*dedup_key=*/absl::nullopt,
         /*filters=*/blink::mojom::AttributionFilterData::New(test_case.AsMap()),
         /*not_filters=*/blink::mojom::AttributionFilterData::New()));
 
@@ -730,7 +729,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
         /*data=*/0,
         /*priority=*/0,
-        /*dedup_key=*/nullptr,
+        /*dedup_key=*/absl::nullopt,
         /*filters=*/blink::mojom::AttributionFilterData::New(),
         /*not_filters=*/
         blink::mojom::AttributionFilterData::New(test_case.AsMap())));
@@ -785,7 +784,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           blink::mojom::EventTriggerData::New(
               /*data=*/0,
               /*priority=*/0,
-              /*dedup_key=*/nullptr,
+              /*dedup_key=*/absl::nullopt,
               /*filters=*/blink::mojom::AttributionFilterData::New(),
               /*not_filters=*/blink::mojom::AttributionFilterData::New()));
     }
@@ -1112,7 +1111,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->destination = destination_origin;
     source_data->reporting_origin = reporting_origin;
     source_data->priority = 20;
-    source_data->debug_key = blink::mojom::AttributionDebugKey::New(789);
+    source_data->debug_key = 789;
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
     source_data->aggregation_keys = {
         {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},

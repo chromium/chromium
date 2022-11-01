@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -42,10 +43,9 @@ CORE_EXPORT bool ParseAggregationKeys(
     const JSONValue* json,
     WTF::HashMap<String, absl::uint128>& aggregation_keys);
 
-// Parses a debug key, which is a 64-bit unsigned integer encoded as a base-10
-// string. Returns `nullptr` on failure.
-CORE_EXPORT mojom::blink::AttributionDebugKeyPtr ParseDebugKey(
-    const String& string);
+// Parses a 64-bit unsigned integer encoded as a base-10
+// string. Returns `absl::nullopt` on failure.
+CORE_EXPORT absl::optional<uint64_t> ParseUint64(const String& string);
 
 CORE_EXPORT bool ParseSourceRegistrationHeader(
     const String& json_string,

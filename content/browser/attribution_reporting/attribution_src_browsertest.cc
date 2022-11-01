@@ -524,8 +524,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
             url::Origin::Create(GURL("https://d.test")));
   EXPECT_EQ(source_data.front()->priority, 10);
   EXPECT_EQ(source_data.front()->expiry, base::Seconds(1000));
-  EXPECT_EQ(source_data.front()->debug_key,
-            blink::mojom::AttributionDebugKey::New(789));
+  EXPECT_EQ(source_data.front()->debug_key, 789u);
   EXPECT_THAT(source_data.front()->filter_data->filter_values,
               UnorderedElementsAre(Pair("a", IsEmpty()),
                                    Pair("b", ElementsAre("1", "2"))));
@@ -989,15 +988,14 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(
       trigger_data.front()->filters->filter_values,
       ElementsAre(Pair("w", IsEmpty()), Pair("x", ElementsAre("y", "z"))));
-  EXPECT_EQ(trigger_data.front()->debug_key,
-            blink::mojom::AttributionDebugKey::New(789));
+  EXPECT_EQ(trigger_data.front()->debug_key, 789u);
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 2u);
 
   // Verify first trigger.
   const auto& event_trigger_datas = trigger_data.front()->event_triggers;
   EXPECT_EQ(event_trigger_datas.front()->data, 1u);
   EXPECT_EQ(event_trigger_datas.front()->priority, 5);
-  EXPECT_EQ(event_trigger_datas.front()->dedup_key->value, 1024u);
+  EXPECT_EQ(event_trigger_datas.front()->dedup_key, 1024u);
   EXPECT_THAT(event_trigger_datas.front()->filters->filter_values,
               ElementsAre(Pair("a", ElementsAre("b"))));
   EXPECT_THAT(event_trigger_datas.front()->not_filters->filter_values,
@@ -1019,8 +1017,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_THAT(trigger_data.front()->aggregatable_values,
               ElementsAre(Pair("key", 123)));
-  EXPECT_EQ(trigger_data.front()->aggregatable_dedup_key,
-            blink::mojom::AttributionTriggerDedupKey::New(123));
+  EXPECT_EQ(trigger_data.front()->aggregatable_dedup_key, 123u);
 }
 
 IN_PROC_BROWSER_TEST_F(

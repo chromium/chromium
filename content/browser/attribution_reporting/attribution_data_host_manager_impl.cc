@@ -415,16 +415,14 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   context.num_data_registered++;
 
   StorableSource storable_source(
-      CommonSourceInfo(
-          data->source_event_id, context.context_origin,
-          std::move(data->destination), std::move(data->reporting_origin),
-          source_time,
-          CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
-                                          context.source_type),
-          context.source_type, data->priority, std::move(*filter_data),
-          data->debug_key ? absl::make_optional(data->debug_key->value)
-                          : absl::nullopt,
-          std::move(*aggregation_keys)),
+      CommonSourceInfo(data->source_event_id, context.context_origin,
+                       std::move(data->destination),
+                       std::move(data->reporting_origin), source_time,
+                       CommonSourceInfo::GetExpiryTime(
+                           data->expiry, source_time, context.source_type),
+                       context.source_type, data->priority,
+                       std::move(*filter_data), data->debug_key,
+                       std::move(*aggregation_keys)),
       context.is_within_fenced_frame, data->debug_reporting);
 
   attribution_manager_->HandleSource(std::move(storable_source));
@@ -512,10 +510,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     }
 
     event_triggers.emplace_back(
-        event_trigger->data, event_trigger->priority,
-        event_trigger->dedup_key
-            ? absl::make_optional(event_trigger->dedup_key->value)
-            : absl::nullopt,
+        event_trigger->data, event_trigger->priority, event_trigger->dedup_key,
         std::move(*event_filters), std::move(*not_event_filters));
   }
 
@@ -545,12 +540,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   AttributionTrigger trigger(
       /*destination_origin=*/context.context_origin,
       std::move(data->reporting_origin), std::move(*filters),
-      std::move(*not_filters),
-      data->debug_key ? absl::make_optional(data->debug_key->value)
-                      : absl::nullopt,
-      data->aggregatable_dedup_key
-          ? absl::make_optional(data->aggregatable_dedup_key->value)
-          : absl::nullopt,
+      std::move(*not_filters), data->debug_key, data->aggregatable_dedup_key,
       std::move(event_triggers), std::move(*aggregatable_trigger_data),
       std::move(*aggregatable_values));
 

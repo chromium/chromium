@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_ATTRIBUTION_REPORTING_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_ATTRIBUTION_REPORTING_MOJOM_TRAITS_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 
@@ -18,6 +20,30 @@
 #include "url/origin.h"
 
 namespace mojo {
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AttributionDebugKeyDataView, uint64_t> {
+  static uint64_t value(uint64_t debug_key) { return debug_key; }
+
+  static bool Read(blink::mojom::AttributionDebugKeyDataView data,
+                   uint64_t* out) {
+    *out = data.value();
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AttributionTriggerDedupKeyDataView, uint64_t> {
+  static uint64_t value(uint64_t debug_key) { return debug_key; }
+
+  static bool Read(blink::mojom::AttributionTriggerDedupKeyDataView data,
+                   uint64_t* out) {
+    *out = data.value();
+    return true;
+  }
+};
 
 template <>
 struct BLINK_COMMON_EXPORT

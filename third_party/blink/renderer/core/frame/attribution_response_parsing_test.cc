@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -573,8 +574,8 @@ TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
            /*not_filters=*/AttributionFilterDataBuilder().Build(),
            WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
            WTF::HashMap<String, uint32_t>(),
-           /*debug_key=*/nullptr,
-           /*aggregatable_dedup_key=*/nullptr)},
+           /*debug_key=*/absl::nullopt,
+           /*aggregatable_dedup_key=*/absl::nullopt)},
       {"valid_aggregatable_dedup_key",
        R"json({
         "aggregatable_deduplication_key": "3"
@@ -585,9 +586,8 @@ TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
            /*not_filters=*/AttributionFilterDataBuilder().Build(),
            WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
            WTF::HashMap<String, uint32_t>(),
-           /*debug_key=*/nullptr,
-           /*aggregatable_dedup_key=*/
-           mojom::blink::AttributionTriggerDedupKey::New(3))},
+           /*debug_key=*/absl::nullopt,
+           /*aggregatable_dedup_key=*/3)},
       {"aggregatable_dedup_key_not_string",
        R"json({
         "aggregatable_deduplication_key": 3
@@ -598,8 +598,8 @@ TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
            /*not_filters=*/AttributionFilterDataBuilder().Build(),
            WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
            WTF::HashMap<String, uint32_t>(),
-           /*debug_key=*/nullptr,
-           /*aggregatable_dedup_key=*/nullptr)},
+           /*debug_key=*/absl::nullopt,
+           /*aggregatable_dedup_key=*/absl::nullopt)},
       {"invalid_aggregatable_dedup_key",
        R"json({
         "aggregatable_deduplication_key": "abc"
@@ -610,8 +610,8 @@ TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
            /*not_filters=*/AttributionFilterDataBuilder().Build(),
            WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
            WTF::HashMap<String, uint32_t>(),
-           /*debug_key=*/nullptr,
-           /*aggregatable_dedup_key=*/nullptr)},
+           /*debug_key=*/absl::nullopt,
+           /*aggregatable_dedup_key=*/absl::nullopt)},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -666,7 +666,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -691,7 +691,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -709,7 +709,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -727,7 +727,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/1,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -759,7 +759,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/5,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -777,7 +777,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -795,7 +795,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -813,7 +813,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/base::Seconds(5),
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -831,7 +831,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -849,7 +849,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -867,7 +867,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/mojom::blink::AttributionDebugKey::New(5),
+              /*debug_key=*/5,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -885,7 +885,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/
               AttributionFilterDataBuilder()
                   .AddFilter("SOURCE_TYPE", {})
@@ -914,7 +914,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -932,7 +932,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/true),
@@ -950,7 +950,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
               /*priority=*/0,
-              /*debug_key=*/nullptr,
+              /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
               /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
               /*debug_reporting=*/false),
@@ -1000,16 +1000,15 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
   }
 }
 
-TEST(AttributionResponseParsingTest, ParseDebugKey) {
-  EXPECT_FALSE(ParseDebugKey(String()));  // null string
-  EXPECT_FALSE(ParseDebugKey(""));
-  EXPECT_FALSE(ParseDebugKey("-1"));
-  EXPECT_FALSE(ParseDebugKey("0x5"));
+TEST(AttributionResponseParsingTest, ParseUint64) {
+  EXPECT_FALSE(ParseUint64(String()));  // null string
+  EXPECT_FALSE(ParseUint64(""));
+  EXPECT_FALSE(ParseUint64("-1"));
+  EXPECT_FALSE(ParseUint64("0x5"));
 
-  EXPECT_EQ(ParseDebugKey("123"), mojom::blink::AttributionDebugKey::New(123));
-  EXPECT_EQ(ParseDebugKey("18446744073709551615"),
-            mojom::blink::AttributionDebugKey::New(
-                std::numeric_limits<uint64_t>::max()));
+  EXPECT_EQ(ParseUint64("123"), 123u);
+  EXPECT_EQ(ParseUint64("18446744073709551615"),
+            std::numeric_limits<uint64_t>::max());
 }
 
 TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
@@ -1057,7 +1056,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/0,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1070,7 +1069,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/0,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1083,7 +1082,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/0,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1096,7 +1095,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1113,19 +1112,19 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/3,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/4,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1141,7 +1140,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/3,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1157,7 +1156,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1173,7 +1172,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1189,8 +1188,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/0,
-                  /*dedup_key=*/
-                  mojom::blink::AttributionTriggerDedupKey::New(3),
+                  /*dedup_key=*/3,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1206,7 +1204,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1222,7 +1220,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/AttributionFilterDataBuilder().Build()))
               .Build(),
@@ -1238,7 +1236,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/
                   AttributionFilterDataBuilder()
                       .AddFilter("source_type", {"navigation"})
@@ -1266,7 +1264,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
               .Add(mojom::blink::EventTriggerData::New(
                   /*data=*/5,
                   /*priority=*/0,
-                  /*dedup_key=*/nullptr,
+                  /*dedup_key=*/absl::nullopt,
                   /*filters=*/AttributionFilterDataBuilder().Build(),
                   /*not_filters=*/
                   AttributionFilterDataBuilder()
