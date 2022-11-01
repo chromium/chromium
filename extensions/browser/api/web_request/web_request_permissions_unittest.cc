@@ -90,6 +90,11 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
       {"https://chrome.google.com/webstore", HIDE_ALL},
       {"https://chrome.google.com./webstore", HIDE_ALL},
       {"https://chrome.google.com./webstore/", HIDE_ALL},
+      {"https://webstore.google.com", HIDE_ALL},
+      {"https://webstore.google.com/", HIDE_ALL},
+      {"https://webstore.google.com./", HIDE_ALL},
+      {"https://webstore.google.com:80/", HIDE_ALL},
+      {"https://webstore.google.com/?query", HIDE_ALL},
       // Unsupported scheme.
       {"blob:https://chrome.google.com/fc3f440b-78ed-469f-8af8-7a1717ff39ae",
        HIDE_ALL},

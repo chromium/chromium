@@ -150,10 +150,17 @@ void WebRequestActionWithThreadsTest::CheckActionNeedsAllUrls(
 
   const std::string& webstore_url =
       ExtensionsClient::Get()->GetWebstoreBaseURL().spec();
+  const std::string& new_webstore_url =
+      ExtensionsClient::Get()->GetNewWebstoreBaseURL().spec();
   // The protected URLs should not be touched at all.
   EXPECT_FALSE(ActionWorksOnRequest(webstore_url.c_str(), extension_->id(),
                                     action_set.get(), stage));
   EXPECT_FALSE(ActionWorksOnRequest(webstore_url.c_str(),
+                                    extension_all_urls_->id(), action_set.get(),
+                                    stage));
+  EXPECT_FALSE(ActionWorksOnRequest(new_webstore_url.c_str(), extension_->id(),
+                                    action_set.get(), stage));
+  EXPECT_FALSE(ActionWorksOnRequest(new_webstore_url.c_str(),
                                     extension_all_urls_->id(), action_set.get(),
                                     stage));
 }
@@ -342,6 +349,13 @@ TEST_F(WebRequestActionWithThreadsTest, PermissionsToSendMessageToExtension) {
   EXPECT_FALSE(ActionWorksOnRequest(webstore_url.c_str(), extension_->id(),
                                     action_set.get(), ON_BEFORE_REQUEST));
   EXPECT_FALSE(ActionWorksOnRequest(webstore_url.c_str(),
+                                    extension_all_urls_->id(), action_set.get(),
+                                    ON_BEFORE_REQUEST));
+  const std::string& new_webstore_url =
+      ExtensionsClient::Get()->GetNewWebstoreBaseURL().spec();
+  EXPECT_FALSE(ActionWorksOnRequest(new_webstore_url.c_str(), extension_->id(),
+                                    action_set.get(), ON_BEFORE_REQUEST));
+  EXPECT_FALSE(ActionWorksOnRequest(new_webstore_url.c_str(),
                                     extension_all_urls_->id(), action_set.get(),
                                     ON_BEFORE_REQUEST));
 }
