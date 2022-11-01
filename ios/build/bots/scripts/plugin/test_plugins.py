@@ -124,7 +124,8 @@ class VideoRecorderPlugin(BasePlugin):
                                          attempt_count)
     file_dir = os.path.join(self.out_dir, file_name)
     cmd = [
-        'xcrun', 'simctl', 'io', self.device_id, 'recordVideo', '-f', file_dir
+        'xcrun', 'simctl', 'io', self.device_id, 'recordVideo', '--codec=h264',
+        '-f', file_dir
     ]
     process = self.start_proc(cmd)
     self.recording_process.process = process

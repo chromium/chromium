@@ -39,7 +39,8 @@ class VideoRecorderPluginTest(unittest.TestCase):
     file_name = video_recorder_plugin.get_video_file_name(TEST_CASE_NAME, 0)
     file_dir = os.path.join(OUT_DIR, file_name)
     cmd = [
-        'xcrun', 'simctl', 'io', TEST_DEVICE_ID, 'recordVideo', '-f', file_dir
+        'xcrun', 'simctl', 'io', TEST_DEVICE_ID, 'recordVideo', '--codec=h264',
+        '-f', file_dir
     ]
     mock_popen.assert_called_once_with(cmd)
     self.assertTrue(video_recorder_plugin.recording_process.test_case_name ==
@@ -70,7 +71,8 @@ class VideoRecorderPluginTest(unittest.TestCase):
     file_dir = os.path.join(OUT_DIR, file_name)
     mock_os_remove.assert_called_once_with(file_dir)
     cmd = [
-        'xcrun', 'simctl', 'io', TEST_DEVICE_ID, 'recordVideo', '-f', file_dir
+        'xcrun', 'simctl', 'io', TEST_DEVICE_ID, 'recordVideo', '--codec=h264',
+        '-f', file_dir
     ]
     mock_popen.assert_called_with(cmd)
 
