@@ -2214,6 +2214,33 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, HandleResetPrintPreviewModeMessage) {
 }
 
 TEST_F(PdfViewWebPluginPrintPreviewTest,
+       HandleResetPrintPreviewModeMessageForPdf) {
+  EXPECT_CALL(*client_ptr_, CreateEngine)
+      .WillOnce([](PDFEngine::Client* client,
+                   PDFiumFormFiller::ScriptOption script_option) {
+        EXPECT_EQ(PDFiumFormFiller::ScriptOption::kNoJavaScript, script_option);
+
+        return std::make_unique<NiceMock<TestPDFiumEngine>>(client);
+      });
+
+  // The UI ID of 1 in the URL is arbitrary.
+  // The page index value of -1, AKA `kCompletePDFIndex`, is required for PDFs.
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "resetPrintPreviewMode",
+    "url": "chrome-untrusted://print/1/-1/print.pdf",
+    "grayscale": false,
+    "pageCount": 0,
+  })"));
+
+  EXPECT_CALL(*client_ptr_, PostMessage).Times(AnyNumber());
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "printPreviewLoaded",
+  })")));
+  plugin_->DocumentLoadComplete();
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginPrintPreviewTest,
        HandleResetPrintPreviewModeMessageSetGrayscale) {
   EXPECT_CALL(*client_ptr_, CreateEngine)
       .WillOnce([](PDFEngine::Client* client,
