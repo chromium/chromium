@@ -3014,7 +3014,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.SandboxedPageLoad.IsWebAccessibleResource"
-    enum="BooleanVisible" expires_after="2022-11-01">
+    enum="BooleanVisible" expires_after="2023-11-01">
   <owner>solomonkinard@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
