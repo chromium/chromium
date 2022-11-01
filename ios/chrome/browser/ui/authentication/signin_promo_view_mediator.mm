@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -38,7 +39,6 @@ namespace {
 // Number of times the sign-in promo should be displayed until it is
 // automatically dismissed.
 constexpr int kAutomaticSigninPromoViewDismissCount = 20;
-constexpr int kAutomaticSigninPromoViewDismissCountTopOfFeed = 10;
 // User defaults key to get the last logged impression of the top-of-feed promo.
 NSString* const kLastSigninImpressionTopOfFeedKey =
     @"last_signin_impression_top_of_feed";
@@ -487,7 +487,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   const int maxDisplayedCount =
       accessPoint ==
               signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
-          ? kAutomaticSigninPromoViewDismissCountTopOfFeed
+          ? FeedSyncPromoAutodismissCount()
           : kAutomaticSigninPromoViewDismissCount;
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(accessPoint);

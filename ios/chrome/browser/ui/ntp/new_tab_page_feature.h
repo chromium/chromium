@@ -78,6 +78,9 @@ bool IsDiscoverFeedTopSyncPromoEnabled();
 // Whether the feed top sync promotion is compact or not.
 bool IsDiscoverFeedTopSyncPromoCompact();
 
+// Returns the number of impressions before autodismissing the feed sync promo.
+int FeedSyncPromoAutodismissCount();
+
 // Whether the Following feed default sort type experiment is enabled.
 bool IsFollowingFeedDefaultSortTypeEnabled();
 
