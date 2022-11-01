@@ -37,6 +37,8 @@
 -AccessCodeCastHandlerBrowserTest.ExpectNetworkErrorWhenNoNetwork
 -AccessCodeCastHandlerBrowserTest.ExpectProfileSynErrorWhenNoSync
 -AccessCodeCastHandlerBrowserTest.ReturnSuccessfulResponse
+-AmbientAuthenticationTestWithPolicy.GuestAndRegular
+-AmbientAuthenticationTestWithPolicy.RegularOnly
 -AttemptRestartTest.AttemptRestartWithOTRProfiles/1
 -AutomationApiTest.ForceLayout
 -AvatarMenuBrowserTest.EditProfile_SigninRequired
@@ -127,6 +129,7 @@
 -MseEncryptedMediaTest.Playback_VideoOnly_MP4_VP9Profile2/0
 -NativeMessagingLaunchApiTest.Error
 -NewTabPageRealboxTest.All
+-OptimizationGuideKeyedServiceBrowserTest.GuestProfileUniqueKeyedService
 -PasswordManagerUISideBarTest.All
 -PDFExtensionJSTest.ViewerThumbnailBar
 -PDFExtensionSaveTest.Save
