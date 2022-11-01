@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/metrics/structured/storage.pb.h"
@@ -195,6 +196,31 @@ TEST_F(ExternalMetricsTest, FilterBluetoothEvents) {
 
   CollectEvents();
   AssertEqualsTestingProto(proto_.value(), {1, 2, 3});
+}
+
+TEST_F(ExternalMetricsTest, FileNumberReadCappedAndDiscarded) {
+  // Setup feature.
+  base::test::ScopedFeatureList feature_list;
+  const int file_limit = 2;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kStructuredMetrics, {{"file_limit", base::NumberToString(file_limit)}});
+
+  Init();
+
+  // File limit is set to 2. Include third file to test that it is omitted and
+  // deleted.
+  WriteToDisk("first", MakeTestingProto({111}));
+  WriteToDisk("second", MakeTestingProto({222}));
+  WriteToDisk("third", MakeTestingProto({333}));
+
+  CollectEvents();
+
+  // Number of events should be capped to the file limit since above records one
+  // event per file.
+  ASSERT_EQ(proto_.value().uma_events().size(), file_limit);
+
+  // And the directory should be empty too.
+  ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
 }
 
 // TODO(crbug.com/1148168): Add a test for concurrent reading and writing here

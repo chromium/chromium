@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/storage.pb.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 
@@ -27,18 +28,18 @@ void MaybeFilterBluetoothEvents(
     google::protobuf::RepeatedPtrField<metrics::StructuredEventProto>* events) {
   // Event name hashes of all bluetooth events listed in
   // src/platform2/metrics/structured/structured.xml.
-  static constexpr auto kBluetoothEventHashes = base::MakeFixedFlatSet<uint64_t>({
-      // BluetoothAdapterStateChanged
-      UINT64_C(959829856916771459),
-      // BluetoothPairingStateChanged
-      UINT64_C(11839023048095184048),
-      // BluetoothAclConnectionStateChanged
-      UINT64_C(1880220404408566268),
-      // BluetoothProfileConnectionStateChanged
-      UINT64_C(7217682640379679663),
-      // BluetoothDeviceInfoReport
-      UINT64_C(1506471670382892394)
-  });
+  static constexpr auto kBluetoothEventHashes =
+      base::MakeFixedFlatSet<uint64_t>(
+          {// BluetoothAdapterStateChanged
+           UINT64_C(959829856916771459),
+           // BluetoothPairingStateChanged
+           UINT64_C(11839023048095184048),
+           // BluetoothAclConnectionStateChanged
+           UINT64_C(1880220404408566268),
+           // BluetoothProfileConnectionStateChanged
+           UINT64_C(7217682640379679663),
+           // BluetoothDeviceInfoReport
+           UINT64_C(1506471670382892394)});
 
   if (base::FeatureList::IsEnabled(kBluetoothSessionizedMetrics))
     return;
@@ -63,10 +64,38 @@ EventsProto ReadAndDeleteEvents(const base::FilePath& directory) {
 
   base::FileEnumerator enumerator(directory, false,
                                   base::FileEnumerator::FILES);
+  int file_counter = 0;
+
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     std::string proto_str;
+    int64_t file_size;
     EventsProto proto;
+
+    ++file_counter;
+
+    // There may be too many messages in the directory to hold in-memory. This
+    // could happen if the process in which Structured metrics resides is either
+    // crash-looping or taking too long to process externally recorded events.
+    //
+    // Events will be dropped in that case so that more recent events can be
+    // processed.
+    if (file_counter > GetFileLimitPerScan()) {
+      base::DeleteFile(path);
+      continue;
+    }
+
+    // If an event is abnormally large, ignore it to prevent OOM.
+    bool fs_ok = base::GetFileSize(path, &file_size);
+
+    // If file size get is successful, log the file size.
+    if (fs_ok)
+      LogEventFileSizeKB(static_cast<int>(file_size / 1024));
+
+    if (!fs_ok || file_size > GetFileSizeByteLimit()) {
+      base::DeleteFile(path);
+      continue;
+    }
 
     bool read_ok = base::ReadFileToString(path, &proto_str) &&
                    proto.ParseFromString(proto_str);
@@ -80,6 +109,8 @@ EventsProto ReadAndDeleteEvents(const base::FilePath& directory) {
     result.mutable_uma_events()->MergeFrom(proto.uma_events());
     result.mutable_non_uma_events()->MergeFrom(proto.non_uma_events());
   }
+
+  LogNumFilesPerExternalMetricsScan(file_counter);
 
   MaybeFilterBluetoothEvents(result.mutable_uma_events());
   MaybeFilterBluetoothEvents(result.mutable_non_uma_events());

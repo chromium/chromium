@@ -782,6 +782,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.StructuredMetrics.EventFileSize" units="KB"
+    expires_after="2023-04-25">
+  <owner>tby@chromium.org</owner>
+  <owner>jongahn@chromium.org</owner>
+  <summary>
+    File size of events recorded outside of Chrome. This metric is recorded for
+    every file processed by an external metrics scan, which reads the events
+    into memory to be appended to an UMA log. This external metrics scan happens
+    roughly every 45 minutes.
+  </summary>
+</histogram>
+
 <histogram name="UMA.StructuredMetrics.EventRecordingState"
     enum="StructuredMetricsEventRecordingState" expires_after="2023-03-19">
   <owner>tby@chromium.org</owner>
@@ -845,6 +857,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     How many events are provided when the structured metrics system is called on
     to provide its current session data.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StructuredMetrics.NumFilesPerExternalMetricsScan"
+    units="count" expires_after="2023-04-25">
+  <owner>tby@chromium.org</owner>
+  <owner>jongahn@chromium.org</owner>
+  <summary>
+    How many files in the external Structured metrics directory before an
+    external metrics scan is triggered. The external metrics scan will read the
+    events into memory and delete ALL files in the directory.
   </summary>
 </histogram>
 

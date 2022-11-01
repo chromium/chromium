@@ -73,6 +73,12 @@ void LogIsEventRecordedUsingMojo(bool used_mojo_api);
 // in memory.
 void LogNumEventsRecordedBeforeInit(int num_events);
 
+// Logs the number of files processed per external metrics scan.
+void LogNumFilesPerExternalMetricsScan(int num_files);
+
+// Logs the file size of an event.
+void LogEventFileSizeKB(int64_t file_size_kb);
+
 }  // namespace structured
 }  // namespace metrics
 

@@ -26,9 +26,22 @@ BASE_FEATURE(kDelayUploadUntilHwid,
              "DelayUploadUntilHwid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<int> kLimitFilesPerScanParam{&kStructuredMetrics,
+                                                          "file_limit", 50};
+constexpr base::FeatureParam<int> kFileSizeByteLimitParam{
+    &kStructuredMetrics, "file_byte_limit", 50000};
+
 bool IsIndependentMetricsUploadEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kStructuredMetrics, "enable_independent_metrics_upload", true);
+}
+
+int GetFileLimitPerScan() {
+  return kLimitFilesPerScanParam.Get();
+}
+
+int GetFileSizeByteLimit() {
+  return kFileSizeByteLimitParam.Get();
 }
 
 }  // namespace structured

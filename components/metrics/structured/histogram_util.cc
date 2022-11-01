@@ -4,6 +4,7 @@
 
 #include "components/metrics/structured/histogram_util.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace metrics {
@@ -34,6 +35,16 @@ void LogIsEventRecordedUsingMojo(bool used_mojo_api) {
 void LogNumEventsRecordedBeforeInit(int num_events) {
   UMA_HISTOGRAM_COUNTS_100("UMA.StructuredMetrics.EventsRecordedBeforeInit",
                            num_events);
+}
+
+void LogNumFilesPerExternalMetricsScan(int num_files) {
+  base::UmaHistogramCounts1000(
+      "UMA.StructuredMetrics.NumFilesPerExternalMetricsScan", num_files);
+}
+
+void LogEventFileSizeKB(int64_t file_size_kb) {
+  base::UmaHistogramMemoryKB("UMA.StructuredMetrics.EventFileSize",
+                             file_size_kb);
 }
 
 }  // namespace structured
