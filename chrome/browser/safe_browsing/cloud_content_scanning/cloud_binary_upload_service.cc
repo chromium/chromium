@@ -395,8 +395,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request* request,
   upload_request->set_access_token(request->access_token());
 
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->tab_url(), request->per_profile_request(),
-      request->content_analysis_request());
+      request->per_profile_request(), request->content_analysis_request());
 
   // |request| might have been deleted by the call to Start() in tests, so don't
   // dereference it afterwards.
@@ -490,8 +489,7 @@ void CloudBinaryUploadService::FinishRequest(
   // We add the request here in case we never actually uploaded anything, so it
   // wasn't added in OnGetRequestData
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->tab_url(), request->per_profile_request(),
-      request->content_analysis_request());
+      request->per_profile_request(), request->content_analysis_request());
   WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
       active_tokens_[request], ResultToString(result), response);
 

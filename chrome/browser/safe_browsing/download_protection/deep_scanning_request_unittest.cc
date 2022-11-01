@@ -476,6 +476,11 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
     EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
                   ->last_request()
                   .request_data()
+                  .tab_url(),
+              GURL("https://example.com"));
+    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .request_data()
                   .content_type(),
               "application/octet-stream");
   }
@@ -1834,6 +1839,11 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
                 .request_data()
                 .content_type(),
             "application/octet-stream");
+  EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                ->last_request()
+                .request_data()
+                .tab_url(),
+            GURL("https://example.com"));
 }
 
 }  // namespace safe_browsing

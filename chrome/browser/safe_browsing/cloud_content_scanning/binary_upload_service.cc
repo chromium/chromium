@@ -89,14 +89,6 @@ BinaryUploadService::Request::Request(
 
 BinaryUploadService::Request::~Request() = default;
 
-void BinaryUploadService::Request::set_tab_url(const GURL& tab_url) {
-  tab_url_ = tab_url;
-}
-
-const GURL& BinaryUploadService::Request::tab_url() const {
-  return tab_url_;
-}
-
 void BinaryUploadService::Request::set_per_profile_request(
     bool per_profile_request) {
   per_profile_request_ = per_profile_request;
@@ -185,6 +177,10 @@ void BinaryUploadService::Request::set_user_action_requests_count(
       user_action_requests_count);
 }
 
+void BinaryUploadService::Request::set_tab_url(const GURL& tab_url) {
+  content_analysis_request_.mutable_request_data()->set_tab_url(tab_url.spec());
+}
+
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
 
@@ -230,6 +226,12 @@ const std::string& BinaryUploadService::Request::user_action_id() const {
 
 uint64_t BinaryUploadService::Request::user_action_requests_count() const {
   return content_analysis_request_.user_action_requests_count();
+}
+
+GURL BinaryUploadService::Request::tab_url() const {
+  if (!content_analysis_request_.has_request_data())
+    return GURL();
+  return GURL(content_analysis_request_.request_data().tab_url());
 }
 
 void BinaryUploadService::Request::FinishRequest(

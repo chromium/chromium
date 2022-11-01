@@ -132,9 +132,6 @@ class BinaryUploadService : public KeyedService {
       return cloud_or_local_settings_;
     }
 
-    void set_tab_url(const GURL& tab_url);
-    const GURL& tab_url() const;
-
     void set_per_profile_request(bool per_profile_request);
     bool per_profile_request() const;
 
@@ -157,6 +154,7 @@ class BinaryUploadService : public KeyedService {
     void set_tab_title(const std::string& tab_title);
     void set_user_action_id(const std::string& user_action_id);
     void set_user_action_requests_count(uint64_t user_action_requests_count);
+    void set_tab_url(const GURL& tab_url);
 
     std::string SetRandomRequestToken();
 
@@ -170,6 +168,7 @@ class BinaryUploadService : public KeyedService {
     const std::string& content_type() const;
     const std::string& user_action_id() const;
     uint64_t user_action_requests_count() const;
+    GURL tab_url() const;
 
     // Finish the request, with the given `result` and `response` from the
     // server.
@@ -194,9 +193,6 @@ class BinaryUploadService : public KeyedService {
     // locally.
     enterprise_connectors::CloudOrLocalAnalysisSettings
         cloud_or_local_settings_;
-
-    // The URL of the page that initially triggered the scan.
-    GURL tab_url_;
 
     // Indicates if the request was triggered by a profile-level policy or not.
     bool per_profile_request_ = false;

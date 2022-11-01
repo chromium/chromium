@@ -55,6 +55,9 @@ message ContentMetaData {
 
   // Name of tab title.
   optional string tab_title = 9;
+
+  // URL of the tab. Only different from `url` for downloads.
+  optional string tab_url = 10;
 }
 
 message ClientMetadata {

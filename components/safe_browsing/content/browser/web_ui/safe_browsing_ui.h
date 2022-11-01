@@ -48,7 +48,6 @@ struct DeepScanDebugData {
 
   base::Time request_time;
   absl::optional<enterprise_connectors::ContentAnalysisRequest> request;
-  GURL tab_url;
   bool per_profile_request;
 
   base::Time response_time;
@@ -438,7 +437,6 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate,
   // identifier that can be used in |AddToDeepScanResponses| to correlate a ping
   // and response.
   void AddToDeepScanRequests(
-      const GURL& tab_url,
       bool per_profile_request,
       const enterprise_connectors::ContentAnalysisRequest& request);
 
