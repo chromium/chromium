@@ -87,7 +87,7 @@ export function fileAttachmentTestSuite() {
     // Verify the i18n string is added.
     assertTrue(page.i18nExists('addFileLabel'));
     // Verify the replace file label is in the page.
-    assertEquals('Replace', getElementContent('#replaceFileButton'));
+    assertEquals('Replace file', getElementContent('#replaceFileButton'));
     // The addFileContainer should be visible when no file is selected.
     assertTrue(isVisible(getElement('#addFileContainer')));
     // The replaceFileContainer should be invisible when no file is selected.
@@ -175,7 +175,7 @@ export function fileAttachmentTestSuite() {
     // The aria label of the replace file button is set.
     assertEquals('Replace file', getElement('#replaceFileButton').ariaLabel);
     // Verify the i18n string is added.
-    assertTrue(page.i18nExists('replaceFileArialLabel'));
+    assertTrue(page.i18nExists('replaceFileLabel'));
     // Verify the image container is not visible for non-image files.
     const selectedImageButton = getElement('#selectedImageButton');
     assertFalse(isVisible(selectedImageButton));

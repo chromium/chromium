@@ -3483,10 +3483,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL" desc="Label for adding a screenshot and/or a filename.">
         Attach files
       </message>
-      <message name="IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL" desc="Label for replacing a file.">
-        Replace
-      </message>
-      <message name="IDS_FEEDBACK_TOOL_REPLACE_FILE_ARIA_LABEL" desc="Aria Label of the replace file button">
+      <message name="IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL" desc="Label of the replace file button">
         Replace file
       </message>
       <message name="IDS_FEEDBACK_TOOL_ADD_FILE_LABEL" desc="Label for the field of adding a file">
