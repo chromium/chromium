@@ -34,7 +34,7 @@ public class IntentWithRequestMetadataHandlerTest {
     public void testCanUseRequestMetadataTokenOnlyOnce() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("content://abc"));
         IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
-                intent, new RequestMetadata(true, true, null));
+                intent, new RequestMetadata(true, true));
         Assert.assertTrue(
                 intent.hasExtra(IntentWithRequestMetadataHandler.EXTRA_REQUEST_METADATA_TOKEN));
         RequestMetadata metadata =
@@ -50,7 +50,7 @@ public class IntentWithRequestMetadataHandlerTest {
     public void testModifiedRequestMetadataToken() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("content://abc"));
         IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
-                intent, new RequestMetadata(true, true, null));
+                intent, new RequestMetadata(true, true));
         intent.setData(Uri.parse("content://xyz"));
         Assert.assertNull(
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent));
@@ -61,10 +61,10 @@ public class IntentWithRequestMetadataHandlerTest {
     public void testPreviousRequestMetadataToken() {
         Intent intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse("content://abc"));
         IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
-                intent1, new RequestMetadata(true, true, null));
+                intent1, new RequestMetadata(true, true));
         Intent intent2 = new Intent(Intent.ACTION_VIEW, Uri.parse("content://xyz"));
         IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
-                intent2, new RequestMetadata(true, false, null));
+                intent2, new RequestMetadata(true, false));
         Assert.assertNull(
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent1));
     }

@@ -267,6 +267,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackGestureRefactorAndroid,
     &kOmahaMinSdkVersionAndroid,
     &kOmniboxModernizeVisualUpdate,
+    &kOpaqueOriginForIncomingIntents,
     &kOptimizeGeolocationHeaderGeneration,
     &kOptimizeLayoutsForPullRefresh,
     &kPostTaskFocusTab,
@@ -861,6 +862,10 @@ BASE_FEATURE(kOmahaMinSdkVersionAndroid,
 BASE_FEATURE(kOmniboxModernizeVisualUpdate,
              "OmniboxModernizeVisualUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOpaqueOriginForIncomingIntents,
+             "OpaqueOriginForIncomingIntents",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptimizeGeolocationHeaderGeneration,
              "OptimizeGeolocationHeaderGeneration",

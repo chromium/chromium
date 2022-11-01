@@ -556,8 +556,8 @@ public class ExternalNavigationHandler {
             params.getRedirectHandler().setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
         }
         if (debug()) Log.i(TAG, "clobberCurrentTab called");
-        return clobberCurrentTab(browserFallbackUrl, params.getReferrerUrl(),
-                params.getInitiatorOrigin(), params.isRendererInitiated());
+        return clobberCurrentTab(
+                browserFallbackUrl, params.getReferrerUrl(), params.isRendererInitiated());
     }
 
     private void printDebugShouldOverrideUrlLoadingResultType(OverrideUrlLoadingResult result) {
@@ -755,8 +755,8 @@ public class ExternalNavigationHandler {
                                 new ExternalNavigationParams.AsyncActionTakenParams(
                                         false, true, params));
                     }
-                    clobberCurrentTab(params.getUrl(), params.getReferrerUrl(),
-                            params.getInitiatorOrigin(), params.isRendererInitiated());
+                    clobberCurrentTab(
+                            params.getUrl(), params.getReferrerUrl(), params.isRendererInitiated());
                 } else {
                     // TODO(tedchoc): Show an indication to the user that the navigation failed
                     //                instead of silently dropping it on the floor.
@@ -786,17 +786,20 @@ public class ExternalNavigationHandler {
      */
     @VisibleForTesting
     protected OverrideUrlLoadingResult clobberCurrentTab(
-            GURL url, GURL referrerUrl, Origin initiatorOrigin, boolean isRendererInitiated) {
+            GURL url, GURL referrerUrl, boolean isRendererInitiated) {
         int transitionType = PageTransition.LINK;
         final LoadUrlParams loadUrlParams = new LoadUrlParams(url, transitionType);
         if (!referrerUrl.isEmpty()) {
             Referrer referrer = new Referrer(referrerUrl.getSpec(), ReferrerPolicy.ALWAYS);
             loadUrlParams.setReferrer(referrer);
         }
-        // This URL came from the renderer, so it should be seen as part of the current redirect
-        // chain.
+        // Ideally this navigation would be part of the navigation chain that triggered it and get,
+        // the correct SameSite cookie behavior, but this is impractical as Tab clobbering is
+        // frequently async and would require complex changes that are probably not worth doing for
+        // fallback URLs. Instead, we treat the navigation as coming from an opaque Origin so that
+        // SameSite cookies aren't mistakenly sent.
         loadUrlParams.setIsRendererInitiated(isRendererInitiated);
-        loadUrlParams.setInitiatorOrigin(initiatorOrigin);
+        loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
 
         assert mDelegate.hasValidTab() : "clobberCurrentTab was called with an empty tab.";
         // Loading URL will start a new navigation which cancels the current one
@@ -1275,8 +1278,8 @@ public class ExternalNavigationHandler {
 
         if (params.isIncognito()) mDelegate.maybeSetPendingIncognitoUrl(targetIntent);
 
-        mDelegate.maybeSetRequestMetadata(targetIntent, params.hasUserGesture(),
-                params.isRendererInitiated(), params.getInitiatorOrigin());
+        mDelegate.maybeSetRequestMetadata(
+                targetIntent, params.hasUserGesture(), params.isRendererInitiated());
     }
 
     private OverrideUrlLoadingResult handleExternalIncognitoIntent(
@@ -2150,11 +2153,10 @@ public class ExternalNavigationHandler {
                             // matches what would have happened had the regular chooser dialog shown
                             // up and the user selected this app.
                             if (UrlUtilities.isAcceptedScheme(intentDataUrl)) {
-                                clobberCurrentTab(intentDataUrl, referrerUrl, initiatorOrigin,
-                                        isRendererInitiated);
+                                clobberCurrentTab(intentDataUrl, referrerUrl, isRendererInitiated);
                             } else if (!browserFallbackUrl.isEmpty()) {
-                                clobberCurrentTab(browserFallbackUrl, referrerUrl, initiatorOrigin,
-                                        isRendererInitiated);
+                                clobberCurrentTab(
+                                        browserFallbackUrl, referrerUrl, isRendererInitiated);
                             }
                             return;
                         }

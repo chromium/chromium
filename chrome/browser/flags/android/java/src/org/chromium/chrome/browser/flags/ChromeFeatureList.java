@@ -455,6 +455,8 @@ public abstract class ChromeFeatureList {
             "OmniboxRemoveSuggestionHeaderCapitalization";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
             "OmniboxUpdatedConnectionSecurityIndicators";
+    public static final String OPAQUE_ORIGIN_FOR_INCOMING_INTENTS =
+            "OpaqueOriginForIncomingIntents";
     public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =
             "OptimizationGuidePushNotifications";
     public static final String OPTIMIZE_GEOLOCATION_HEADER_GENERATION =

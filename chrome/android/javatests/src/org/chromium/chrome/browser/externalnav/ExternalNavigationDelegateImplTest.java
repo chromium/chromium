@@ -36,7 +36,6 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 /**
  * Instrumentation tests for {@link ExternalNavigationHandler}.
@@ -117,15 +116,12 @@ public class ExternalNavigationDelegateImplTest {
     }
 
     public void maybeSetAndGetRequestMetadata(ExternalNavigationDelegateImpl delegate,
-            Intent intent, boolean hasUserGesture, boolean isRendererInitiated,
-            Origin initiatorOrigin) {
-        delegate.maybeSetRequestMetadata(
-                intent, hasUserGesture, isRendererInitiated, initiatorOrigin);
+            Intent intent, boolean hasUserGesture, boolean isRendererInitiated) {
+        delegate.maybeSetRequestMetadata(intent, hasUserGesture, isRendererInitiated);
         IntentWithRequestMetadataHandler.RequestMetadata metadata =
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent);
         Assert.assertEquals(hasUserGesture, metadata.hasUserGesture());
         Assert.assertEquals(isRendererInitiated, metadata.isRendererInitiated());
-        Assert.assertEquals(initiatorOrigin, metadata.getInitiatorOrigin());
     }
 
     private ExternalNavigationDelegateImpl mExternalNavigationDelegateImpl;
@@ -169,15 +165,13 @@ public class ExternalNavigationDelegateImplTest {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
 
-        mExternalNavigationDelegateImpl.maybeSetRequestMetadata(intent, false, false, null);
+        mExternalNavigationDelegateImpl.maybeSetRequestMetadata(intent, false, false);
         Assert.assertNull(
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent));
 
-        maybeSetAndGetRequestMetadata(mExternalNavigationDelegateImpl, intent, true, true, null);
-        maybeSetAndGetRequestMetadata(mExternalNavigationDelegateImpl, intent, true, false, null);
-        maybeSetAndGetRequestMetadata(mExternalNavigationDelegateImpl, intent, false, true, null);
-        maybeSetAndGetRequestMetadata(
-                mExternalNavigationDelegateImpl, intent, false, false, Origin.createOpaqueOrigin());
+        maybeSetAndGetRequestMetadata(mExternalNavigationDelegateImpl, intent, true, true);
+        maybeSetAndGetRequestMetadata(mExternalNavigationDelegateImpl, intent, true, false);
+        maybeSetAndGetRequestMetadata(mExternalNavigationDelegateImpl, intent, false, true);
     }
 
     @Test

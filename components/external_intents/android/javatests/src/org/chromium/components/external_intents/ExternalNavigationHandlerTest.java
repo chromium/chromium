@@ -2787,7 +2787,7 @@ public class ExternalNavigationHandlerTest {
 
         @Override
         protected OverrideUrlLoadingResult clobberCurrentTab(
-                GURL url, GURL referrerUrl, Origin initiatorOrigin, boolean isRendererInitiated) {
+                GURL url, GURL referrerUrl, boolean isRendererInitiated) {
             mNewUrlAfterClobbering = url.getSpec();
             mReferrerUrlForClobbering = referrerUrl.getSpec();
             return OverrideUrlLoadingResult.forClobberingTab();
@@ -2949,8 +2949,8 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public void maybeSetRequestMetadata(Intent intent, boolean hasUserGesture,
-                boolean isRendererInitiated, Origin initiatorOrigin) {
+        public void maybeSetRequestMetadata(
+                Intent intent, boolean hasUserGesture, boolean isRendererInitiated) {
             maybeSetRequestMetadataCalled = true;
         }
 
