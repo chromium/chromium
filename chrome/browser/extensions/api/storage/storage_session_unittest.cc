@@ -49,7 +49,7 @@ class SessionStorageApiUnittest : public ExtensionServiceTestWithInstall {
 
   // Returns the session storage of the given extension with the associated
   // profile.
-  std::unique_ptr<base::Value> GetStorage(
+  absl::optional<base::Value> GetStorage(
       scoped_refptr<const Extension> extension);
 
   // ExtensionServiceTestBase:
@@ -71,7 +71,7 @@ void SessionStorageApiUnittest::RunFunction(
       profile()));
 }
 
-std::unique_ptr<base::Value> SessionStorageApiUnittest::GetStorage(
+absl::optional<base::Value> SessionStorageApiUnittest::GetStorage(
     scoped_refptr<const Extension> extension) {
   scoped_refptr<ExtensionFunction> function =
       base::MakeRefCounted<StorageStorageAreaGetFunction>();

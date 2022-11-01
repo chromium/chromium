@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ShowNativeTouchCalibration) {
 
   provider_->SetTouchCalibrationWillSucceed(true);
 
-  std::unique_ptr<base::Value> result(
+  absl::optional<base::Value> result(
       api_test_utils::RunFunctionAndReturnSingleResult(
           show_native_calibration.get(), "[\"" + id + "\"]",
           browser_context()));

@@ -63,8 +63,11 @@ std::unique_ptr<base::Value> ApiUnitTest::RunFunctionAndReturnValue(
   function->set_extension(extension());
   if (contents_)
     function->SetRenderFrameHost(contents_->GetPrimaryMainFrame());
-  return std::unique_ptr<base::Value>(utils::RunFunctionAndReturnSingleResult(
-      function, args, browser_context()));
+  absl::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+      function, args, browser_context());
+  if (result)
+    return std::make_unique<base::Value>(std::move(*result));
+  return nullptr;
 }
 
 std::unique_ptr<base::DictionaryValue>

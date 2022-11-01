@@ -75,7 +75,7 @@ base::Value::Dict GetDict(const base::Value::Dict& val, const std::string& key);
 // Run |function| with |args| and return the result. Adds an error to the
 // current test if |function| returns an error. Takes ownership of
 // |function|. The caller takes ownership of the result.
-std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
+absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     const std::string& args,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
@@ -85,20 +85,14 @@ absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     base::Value::List args,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
     RunFunctionFlags flags);
-// DEPRECATED. Use the version above.
-std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
-    scoped_refptr<ExtensionFunction> function,
-    std::unique_ptr<base::ListValue> args,
-    std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-    RunFunctionFlags flags);
 
 // RunFunctionWithDelegateAndReturnSingleResult, except with a NULL
 // implementation of the Delegate.
-std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
+absl::optional<base::Value> RunFunctionAndReturnSingleResult(
     ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context);
-std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
+absl::optional<base::Value> RunFunctionAndReturnSingleResult(
     ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context,

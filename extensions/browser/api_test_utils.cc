@@ -114,7 +114,7 @@ base::Value::Dict GetDict(const base::Value::Dict& dict,
   return value->Clone();
 }
 
-std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
+absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     const std::string& args,
     std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher,
@@ -124,7 +124,8 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
       << "Could not parse extension function arguments: " << args;
 
   return RunFunctionWithDelegateAndReturnSingleResult(
-      function, std::move(parsed_args), std::move(dispatcher), flags);
+      function, std::move(*parsed_args).TakeList(), std::move(dispatcher),
+      flags);
 }
 
 absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
@@ -156,14 +157,14 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
   return nullptr;
 }
 
-std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
+absl::optional<base::Value> RunFunctionAndReturnSingleResult(
     ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context) {
   return RunFunctionAndReturnSingleResult(function, args, context, NONE);
 }
 
-std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
+absl::optional<base::Value> RunFunctionAndReturnSingleResult(
     ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context,

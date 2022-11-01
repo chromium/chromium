@@ -150,7 +150,7 @@ class SupervisedUserExtensionTest : public ExtensionServiceTestWithInstall {
     auto function = base::MakeRefCounted<
         WebstorePrivateIsPendingCustodianApprovalFunction>();
 
-    std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
+    absl::optional<base::Value> result(RunFunctionAndReturnSingleResult(
         function.get(), "[\"" + extension_id + "\"]", browser_context()));
     return result->GetBool();
   }

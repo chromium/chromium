@@ -58,18 +58,21 @@ class ApiUnitTest : public ExtensionsTest {
   // See also the RunFunction* methods in extension_function_test_utils.h.
 
   // Return the function result as a base::Value.
+  // TODO(crbug.com/1187001): Return absl::optional<base::Value> instead.
   std::unique_ptr<base::Value> RunFunctionAndReturnValue(
       ExtensionFunction* function,
       const std::string& args);
 
   // Return the function result as a base::DictionaryValue, or NULL.
   // This will EXPECT-fail if the result is not a DictionaryValue.
+  // TODO(crbug.com/1187061): Return absl::optional<base::Value> instead.
   std::unique_ptr<base::DictionaryValue> RunFunctionAndReturnDictionary(
       ExtensionFunction* function,
       const std::string& args);
 
   // Return the function result as a base::Value, or NULL.
   // This will EXPECT-fail if the result Value is not a list.
+  // TODO(crbug.com/1187001): Return absl::optional<base::Value> instead.
   std::unique_ptr<base::Value> RunFunctionAndReturnList(
       ExtensionFunction* function,
       const std::string& args);

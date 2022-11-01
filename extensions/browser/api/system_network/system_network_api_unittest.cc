@@ -35,7 +35,7 @@ TEST_F(SystemNetworkApiUnitTest, MAYBE_GetNetworkInterfaces) {
   socket_function->set_extension(empty_extension.get());
   socket_function->set_has_callback(true);
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
+  absl::optional<base::Value> result(RunFunctionAndReturnSingleResult(
       socket_function.get(), "[]", browser_context()));
   ASSERT_TRUE(result->is_list());
 

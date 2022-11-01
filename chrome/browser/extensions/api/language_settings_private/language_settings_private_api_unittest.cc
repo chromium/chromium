@@ -175,10 +175,10 @@ TEST_F(LanguageSettingsPrivateApiTest, GetSpellcheckDictionaryStatusesTest) {
   auto function = base::MakeRefCounted<
       LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction>();
 
-  std::unique_ptr<base::Value> actual =
+  absl::optional<base::Value> actual =
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                        profile());
-  EXPECT_TRUE(actual) << function->GetError();
+  ASSERT_TRUE(actual) << function->GetError();
 
   base::Value::List expected;
   base::Value::Dict expected_status;
@@ -226,12 +226,12 @@ TEST_F(LanguageSettingsPrivateApiTest, GetAlwaysTranslateLanguagesListTest) {
   auto function = base::MakeRefCounted<
       LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction>();
 
-  std::unique_ptr<base::Value> result =
+  absl::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                        profile());
 
-  ASSERT_NE(nullptr, result) << function->GetError();
-  EXPECT_TRUE(result->is_list());
+  ASSERT_TRUE(result) << function->GetError();
+  ASSERT_TRUE(result->is_list());
 
   ASSERT_EQ(result->GetList().size(), always_translate_languages.size());
   for (size_t i = 0; i < result->GetList().size(); i++) {
@@ -258,7 +258,7 @@ TEST_F(LanguageSettingsPrivateApiTest, SetTranslateTargetLanguageTest) {
   auto function = base::MakeRefCounted<
       LanguageSettingsPrivateSetTranslateTargetLanguageFunction>();
 
-  std::unique_ptr<base::Value> result =
+  absl::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(),
                                                        "[\"af\"]", profile());
   ASSERT_EQ(translate_prefs_->GetRecentTargetLanguage(), "af");
@@ -280,12 +280,12 @@ TEST_F(LanguageSettingsPrivateApiTest, GetNeverTranslateLanguagesListTest) {
   auto function = base::MakeRefCounted<
       LanguageSettingsPrivateGetNeverTranslateLanguagesFunction>();
 
-  std::unique_ptr<base::Value> result =
+  absl::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                        profile());
 
-  ASSERT_NE(nullptr, result) << function->GetError();
-  EXPECT_TRUE(result->is_list());
+  ASSERT_TRUE(result) << function->GetError();
+  ASSERT_TRUE(result->is_list());
 
   ASSERT_EQ(result->GetList().size(), never_translate_languages.size());
   for (size_t i = 0; i < result->GetList().size(); i++) {
@@ -392,12 +392,12 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   auto function =
       base::MakeRefCounted<LanguageSettingsPrivateGetLanguageListFunction>();
 
-  std::unique_ptr<base::Value> result =
+  absl::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                        profile());
 
-  ASSERT_NE(nullptr, result) << function->GetError();
-  EXPECT_TRUE(result->is_list());
+  ASSERT_TRUE(result) << function->GetError();
+  ASSERT_TRUE(result->is_list());
 
   size_t languages_to_test_found_count = 0;
   for (auto& language_val : result->GetList()) {
@@ -546,12 +546,12 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
 
   auto function = base::MakeRefCounted<
       LanguageSettingsPrivateGetInputMethodListsFunction>();
-  std::unique_ptr<base::Value> result =
+  absl::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                        profile());
 
-  ASSERT_NE(nullptr, result) << function->GetError();
-  EXPECT_TRUE(result->is_dict());
+  ASSERT_TRUE(result) << function->GetError();
+  ASSERT_TRUE(result->is_dict());
 
   base::Value* input_methods = result->FindListKey("thirdPartyExtensionImes");
   ASSERT_NE(input_methods, nullptr);
