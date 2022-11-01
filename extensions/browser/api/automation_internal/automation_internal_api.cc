@@ -316,7 +316,6 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
   }
 
   AutomationWebContentsObserver::CreateForWebContents(contents);
-  contents->EnableWebContentsOnlyAccessibilityMode();
 
   ui::AXTreeID ax_tree_id = rfh->GetAXTreeID();
 
