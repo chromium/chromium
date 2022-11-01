@@ -980,6 +980,8 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   // the main thread.
   base::RepeatingCallback tracing_factory =
       base::BindRepeating(&CreateCoreUnwindersFactory);
+  tracing::TracingSamplerProfiler::UnwinderType unwinder_type =
+      tracing::TracingSamplerProfiler::UnwinderType::kCustomAndroid;
 #if BUILDFLAG(IS_ANDROID)
   // If we are the browser process (missing process type), then use the
   // experimental libunwindstack unwinder.
@@ -987,11 +989,13 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       chrome::android::IsJavaDrivenFeatureEnabled(
           chrome::android::kUseLibunwindstackNativeUnwinderAndroid)) {
     tracing_factory = base::BindRepeating(&CreateLibunwindstackUnwinderFactory);
+    unwinder_type = tracing::TracingSamplerProfiler::UnwinderType::
+        kLibunwindstackUnwinderAndroid;
   }
 #endif
   tracing_sampler_profiler_ =
       tracing::TracingSamplerProfiler::CreateOnMainThread(
-          std::move(tracing_factory));
+          std::move(tracing_factory), unwinder_type);
 
 #if BUILDFLAG(IS_WIN)
   v8_crashpad_support::SetUp();
