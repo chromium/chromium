@@ -50,7 +50,7 @@
       },
       'android-nougat-x86-rel': {
         'swarming': {
-          'shards': 3,
+          'shards': 9,
         },
       },
       'android-pie-arm64-rel': {
