@@ -579,7 +579,7 @@ bool SysmemBufferCollection::InitializeInternal(
       std::make_unique<base::MessagePumpForIO::ZxHandleWatchController>(
           FROM_HERE);
   bool watch_result = base::CurrentIOThread::Get()->WatchZxHandle(
-      handle_.get(), true /* persistent */, ZX_EVENTPAIR_PEER_CLOSED,
+      handle_.get(), /*persistent=*/false, ZX_EVENTPAIR_PEER_CLOSED,
       handle_watch_.get(), this);
 
   if (!watch_result) {
@@ -632,6 +632,7 @@ void SysmemBufferCollection::OnZxHandleSignalled(zx_handle_t handle,
   for (auto& callback : on_released_) {
     std::move(callback).Run();
   }
+  on_released_.clear();
 }
 
 }  // namespace ui
