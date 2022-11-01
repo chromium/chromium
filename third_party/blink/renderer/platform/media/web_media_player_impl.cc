@@ -2956,6 +2956,16 @@ absl::optional<media::DemuxerType> WebMediaPlayerImpl::GetDemuxerType() const {
   return absl::nullopt;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+std::unique_ptr<Demuxer> WebMediaPlayerImpl::CreateMediaUrlDemuxer(
+    bool expect_hls_content) {
+  return std::make_unique<media::MediaUrlDemuxer>(
+      media_task_runner_, loaded_url_, frame_->GetDocument().SiteForCookies(),
+      frame_->GetDocument().TopFrameOrigin(),
+      allow_media_player_renderer_credentials_, expect_hls_content);
+}
+#endif
+
 void WebMediaPlayerImpl::StartPipeline() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -2978,10 +2988,8 @@ void WebMediaPlayerImpl::StartPipeline() {
     // reporter.
     video_decode_stats_reporter_.reset();
 
-    SetDemuxer(std::make_unique<media::MediaUrlDemuxer>(
-        media_task_runner_, loaded_url_, frame_->GetDocument().SiteForCookies(),
-        frame_->GetDocument().TopFrameOrigin(),
-        allow_media_player_renderer_credentials_, demuxer_found_hls_));
+    SetDemuxer(CreateMediaUrlDemuxer(demuxer_found_hls_));
+
     pipeline_controller_->Start(media::Pipeline::StartType::kNormal,
                                 demuxer_.get(), this, false, false);
     return;

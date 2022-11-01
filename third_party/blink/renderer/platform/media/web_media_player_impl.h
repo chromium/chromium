@@ -677,6 +677,11 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   std::unique_ptr<media::Demuxer> CreateFFmpegDemuxer();
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<media::Demuxer> CreateMediaUrlDemuxer(
+      bool expect_hls_content);
+#endif
+
   absl::optional<media::DemuxerType> GetDemuxerType() const;
 
   WebLocalFrame* const frame_;
