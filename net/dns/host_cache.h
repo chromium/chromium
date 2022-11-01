@@ -47,6 +47,8 @@ class TickClock;
 
 namespace net {
 
+class HostResolverInternalResult;
+
 // Cache used by HostResolver to map hostnames to their resolved result.
 class NET_EXPORT HostCache {
  public:
@@ -131,7 +133,7 @@ class NET_EXPORT HostCache {
           absl::optional<base::TimeDelta> ttl)
         : error_(error),
           source_(source),
-          ttl_(ttl ? ttl.value() : base::Seconds(-1)) {
+          ttl_(ttl ? ttl.value() : kUnknownTtl) {
       DCHECK(!ttl || ttl.value() >= base::TimeDelta());
       SetResult(std::forward<T>(results));
     }
@@ -152,6 +154,12 @@ class NET_EXPORT HostCache {
     Entry(int error,
           Source source,
           absl::optional<base::TimeDelta> ttl = absl::nullopt);
+
+    // Adaptor to construct from HostResolverInternalResults. Only supports
+    // results extracted from a single DnsTransaction.
+    Entry(std::vector<std::unique_ptr<HostResolverInternalResult>> results,
+          base::Time now,
+          base::TimeTicks now_ticks);
 
     Entry(const Entry& entry);
     Entry(Entry&& entry);
@@ -267,6 +275,8 @@ class NET_EXPORT HostCache {
 
     friend class HostCache;
 
+    static constexpr base::TimeDelta kUnknownTtl = base::Seconds(-1);
+
     Entry(const Entry& entry,
           base::TimeTicks now,
           base::TimeDelta ttl,
@@ -349,7 +359,7 @@ class NET_EXPORT HostCache {
     absl::optional<std::set<std::string>> canonical_names_;
 
     // TTL obtained from the nameserver. Negative if unknown.
-    base::TimeDelta ttl_ = base::Seconds(-1);
+    base::TimeDelta ttl_ = kUnknownTtl;
 
     base::TimeTicks expires_;
     // Copied from the cache's network_changes_ when the entry is set; can

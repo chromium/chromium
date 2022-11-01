@@ -21,6 +21,15 @@ const char kTargetNameKey[] = "target_name";
 }  // namespace
 
 ConnectionEndpointMetadata::ConnectionEndpointMetadata() = default;
+
+ConnectionEndpointMetadata::ConnectionEndpointMetadata(
+    std::vector<std::string> supported_protocol_alpns,
+    EchConfigList ech_config_list,
+    std::string target_name)
+    : supported_protocol_alpns(std::move(supported_protocol_alpns)),
+      ech_config_list(std::move(ech_config_list)),
+      target_name(std::move(target_name)) {}
+
 ConnectionEndpointMetadata::~ConnectionEndpointMetadata() = default;
 ConnectionEndpointMetadata::ConnectionEndpointMetadata(
     const ConnectionEndpointMetadata&) = default;

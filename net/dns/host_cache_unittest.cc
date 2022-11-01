@@ -6,8 +6,10 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -23,9 +25,12 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
+#include "net/base/host_port_pair.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
+#include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_results_test_util.h"
 #include "net/dns/https_record_rdata.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -2483,6 +2488,205 @@ TEST(HostCacheTest, MergeEntries_BackCannonnameUsable) {
 
   ASSERT_TRUE(result.aliases());
   EXPECT_THAT(*result.aliases(), UnorderedElementsAre("name2"));
+}
+
+TEST(HostCacheTest, ConvertFromInternalAddressResult) {
+  const std::vector<IPEndPoint> kEndpoints{
+      IPEndPoint(IPAddress(2, 2, 2, 2), 46)};
+  constexpr base::TimeDelta kTtl1 = base::Minutes(45);
+  constexpr base::TimeDelta kTtl2 = base::Minutes(40);
+  constexpr base::TimeDelta kTtl3 = base::Minutes(55);
+
+  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
+  results.push_back(std::make_unique<HostResolverInternalDataResult>(
+      "endpoint.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl1,
+      base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
+      kEndpoints, std::vector<std::string>{}, std::vector<HostPortPair>{}));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl2,
+      base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
+      "domain2.test"));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain2.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl3,
+      base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+
+  HostCache::Entry converted(std::move(results), base::Time(),
+                             base::TimeTicks());
+
+  // Expect kTtl2 because it is the min TTL.
+  HostCache::Entry expected(
+      OK, kEndpoints,
+      /*aliases=*/{"domain1.test", "domain2.test", "endpoint.test"},
+      HostCache::Entry::SOURCE_DNS, kTtl2);
+  expected.set_canonical_names(std::set<std::string>{"endpoint.test"});
+
+  // Entries converted from HostResolverInternalDataResults do not differentiate
+  // between empty and no-data for the various data types, so need to set empty
+  // strings and hostname entries into `expected`.
+  expected.set_text_records(std::vector<std::string>());
+  expected.set_hostnames(std::vector<HostPortPair>());
+
+  EXPECT_EQ(converted, expected);
+}
+
+TEST(HostCacheTest, ConvertFromInternalMetadataResult) {
+  const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
+      kMetadatas{{1, ConnectionEndpointMetadata({"h2", "h3"},
+                                                /*ech_config_list=*/{},
+                                                "target.test")}};
+  constexpr base::TimeDelta kTtl1 = base::Minutes(45);
+  constexpr base::TimeDelta kTtl2 = base::Minutes(40);
+  constexpr base::TimeDelta kTtl3 = base::Minutes(55);
+
+  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
+  results.push_back(std::make_unique<HostResolverInternalMetadataResult>(
+      "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl1,
+      base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
+      kMetadatas));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl2,
+      base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
+      "domain2.test"));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain2.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl3,
+      base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+
+  HostCache::Entry converted(std::move(results), base::Time(),
+                             base::TimeTicks());
+
+  // Expect kTtl2 because it is the min TTL.
+  HostCache::Entry expected(OK, kMetadatas, HostCache::Entry::SOURCE_DNS,
+                            kTtl2);
+  expected.set_https_record_compatibility(std::vector<bool>{true});
+
+  EXPECT_EQ(converted, expected);
+}
+
+// Test the case of compatible HTTPS records but no metadata of use to Chrome.
+// Represented in internal result type as an empty metadata result. Represented
+// in HostCache::Entry as empty metadata with at least one true in
+// `https_record_compatibility_`.
+TEST(HostCacheTest, ConvertFromCompatibleOnlyInternalMetadataResult) {
+  const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
+      kMetadatas;
+  constexpr base::TimeDelta kTtl1 = base::Minutes(45);
+  constexpr base::TimeDelta kTtl2 = base::Minutes(40);
+  constexpr base::TimeDelta kTtl3 = base::Minutes(55);
+
+  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
+  results.push_back(std::make_unique<HostResolverInternalMetadataResult>(
+      "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl1,
+      base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
+      kMetadatas));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl2,
+      base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
+      "domain2.test"));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain2.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl3,
+      base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+
+  HostCache::Entry converted(std::move(results), base::Time(),
+                             base::TimeTicks());
+
+  // Expect kTtl2 because it is the min TTL.
+  HostCache::Entry expected(ERR_NAME_NOT_RESOLVED, kMetadatas,
+                            HostCache::Entry::SOURCE_DNS, kTtl2);
+  expected.set_https_record_compatibility(std::vector<bool>{true});
+
+  EXPECT_EQ(converted, expected);
+}
+
+TEST(HostCacheTest, ConvertFromInternalErrorResult) {
+  constexpr base::TimeDelta kTtl1 = base::Minutes(45);
+  constexpr base::TimeDelta kTtl2 = base::Minutes(40);
+  constexpr base::TimeDelta kTtl3 = base::Minutes(55);
+
+  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
+  results.push_back(std::make_unique<HostResolverInternalErrorResult>(
+      "endpoint.test", DnsQueryType::A, base::TimeTicks() + kTtl1,
+      base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
+      ERR_NAME_NOT_RESOLVED));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::A, base::TimeTicks() + kTtl2,
+      base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
+      "domain2.test"));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain2.test", DnsQueryType::A, base::TimeTicks() + kTtl3,
+      base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+
+  HostCache::Entry converted(std::move(results), base::Time(),
+                             base::TimeTicks());
+
+  // Expect kTtl2 because it is the min TTL.
+  HostCache::Entry expected(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS,
+                            kTtl2);
+
+  EXPECT_EQ(converted, expected);
+}
+
+TEST(HostCacheTest, ConvertFromNonCachableInternalErrorResult) {
+  constexpr base::TimeDelta kTtl1 = base::Minutes(45);
+  constexpr base::TimeDelta kTtl2 = base::Minutes(40);
+
+  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
+  results.push_back(std::make_unique<HostResolverInternalErrorResult>(
+      "endpoint.test", DnsQueryType::AAAA, /*expiration=*/absl::nullopt,
+      /*timed_expiration=*/absl::nullopt,
+      HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl1,
+      base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
+      "domain2.test"));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain2.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl2,
+      base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+
+  HostCache::Entry converted(std::move(results), base::Time(),
+                             base::TimeTicks());
+
+  // Expect no TTL because error is non-cachable (has no TTL itself).
+  HostCache::Entry expected(ERR_NAME_NOT_RESOLVED,
+                            HostCache::Entry::SOURCE_DNS);
+
+  EXPECT_EQ(converted, expected);
+}
+
+TEST(HostCacheTest, ConvertFromInternalAliasOnlyResult) {
+  constexpr base::TimeDelta kTtl1 = base::Minutes(45);
+  constexpr base::TimeDelta kTtl2 = base::Minutes(40);
+
+  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::A, base::TimeTicks() + kTtl1,
+      base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
+      "domain2.test"));
+  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+      "domain2.test", DnsQueryType::A, base::TimeTicks() + kTtl2,
+      base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+
+  HostCache::Entry converted(std::move(results), base::Time(),
+                             base::TimeTicks());
+
+  // Expect no TTL because alias-only results are not cacheable.
+  HostCache::Entry expected(ERR_NAME_NOT_RESOLVED,
+                            HostCache::Entry::SOURCE_DNS);
+
+  EXPECT_EQ(converted, expected);
+}
+
+TEST(HostCacheTest, ConvertFromEmptyInternalResult) {
+  HostCache::Entry converted({}, base::Time(), base::TimeTicks());
+  HostCache::Entry expected(ERR_NAME_NOT_RESOLVED,
+                            HostCache::Entry::SOURCE_UNKNOWN);
+
+  EXPECT_EQ(converted, expected);
 }
 
 }  // namespace net

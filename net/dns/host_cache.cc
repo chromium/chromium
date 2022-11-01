@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <type_traits>
@@ -29,6 +30,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/trace_constants.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/https_record_rdata.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/host_resolver_source.h"
@@ -261,7 +263,7 @@ HostCache::Key::~Key() = default;
 HostCache::Entry::Entry(int error,
                         Source source,
                         absl::optional<base::TimeDelta> ttl)
-    : error_(error), source_(source), ttl_(ttl.value_or(base::Seconds(-1))) {
+    : error_(error), source_(source), ttl_(ttl.value_or(kUnknownTtl)) {
   // If |ttl| has a value, must not be negative.
   DCHECK_GE(ttl.value_or(base::TimeDelta()), base::TimeDelta());
   DCHECK_NE(OK, error_);
@@ -273,6 +275,125 @@ HostCache::Entry::Entry(int error,
                              HostCache::Entry::HttpsRecordPriority>::value,
                 "`net::HttpsRecordPriority` and "
                 "`HostCache::Entry::HttpsRecordPriority` must be same type");
+}
+
+HostCache::Entry::Entry(
+    std::vector<std::unique_ptr<HostResolverInternalResult>> results,
+    base::Time now,
+    base::TimeTicks now_ticks) {
+  std::unique_ptr<HostResolverInternalResult> data_result;
+  std::unique_ptr<HostResolverInternalResult> metadata_result;
+  std::unique_ptr<HostResolverInternalResult> error_result;
+  std::vector<std::unique_ptr<HostResolverInternalResult>> alias_results;
+
+  absl::optional<base::TimeDelta> smallest_ttl;
+  absl::optional<Source> source;
+  for (auto& result : results) {
+    if (result->expiration().has_value()) {
+      smallest_ttl = std::min(smallest_ttl.value_or(base::TimeDelta::Max()),
+                              result->expiration().value() - now_ticks);
+    }
+    if (result->timed_expiration().has_value()) {
+      smallest_ttl = std::min(smallest_ttl.value_or(base::TimeDelta::Max()),
+                              result->timed_expiration().value() - now);
+    }
+
+    Source result_source;
+    switch (result->source()) {
+      case HostResolverInternalResult::Source::kDns:
+        result_source = SOURCE_DNS;
+        break;
+      case HostResolverInternalResult::Source::kHosts:
+        result_source = SOURCE_HOSTS;
+        break;
+      case HostResolverInternalResult::Source::kUnknown:
+        result_source = SOURCE_UNKNOWN;
+        break;
+    }
+
+    switch (result->type()) {
+      case HostResolverInternalResult::Type::kData:
+        DCHECK(!data_result);  // Expect at most one data result.
+        data_result = std::move(result);
+        break;
+      case HostResolverInternalResult::Type::kMetadata:
+        DCHECK(!metadata_result);  // Expect at most one metadata result.
+        metadata_result = std::move(result);
+        break;
+      case HostResolverInternalResult::Type::kError:
+        DCHECK(!error_result);  // Expect at most one error result.
+        error_result = std::move(result);
+        break;
+      case HostResolverInternalResult::Type::kAlias:
+        alias_results.push_back(std::move(result));
+        break;
+    }
+
+    // Expect all results to have the same source.
+    DCHECK(!source.has_value() || source.value() == result_source);
+    source = result_source;
+  }
+
+  ttl_ = smallest_ttl.value_or(kUnknownTtl);
+  source_ = source.value_or(SOURCE_UNKNOWN);
+
+  if (error_result) {
+    DCHECK(!data_result);
+    DCHECK(!metadata_result);
+
+    error_ = error_result->AsError().error();
+
+    // For error results, should not create entry with a TTL unless it is a
+    // cacheable error.
+    if (!error_result->expiration().has_value() &&
+        !error_result->timed_expiration().has_value()) {
+      ttl_ = kUnknownTtl;
+    }
+  } else if (!data_result && !metadata_result) {
+    // Only alias results (or completely empty results). Never cacheable due to
+    // being equivalent to an error result without TTL.
+    error_ = ERR_NAME_NOT_RESOLVED;
+    ttl_ = kUnknownTtl;
+  } else {
+    error_ = OK;
+  }
+
+  if (data_result) {
+    DCHECK(!error_result);
+    DCHECK(!data_result->AsData().endpoints().empty() ||
+           !data_result->AsData().strings().empty() ||
+           !data_result->AsData().hosts().empty());
+    // Data results should always be cacheable.
+    DCHECK(data_result->expiration().has_value() ||
+           data_result->timed_expiration().has_value());
+
+    ip_endpoints_ = data_result->AsData().endpoints();
+    text_records_ = data_result->AsData().strings();
+    hostnames_ = data_result->AsData().hosts();
+    canonical_names_ = {data_result->domain_name()};
+
+    aliases_.emplace();
+    for (const auto& alias_result : alias_results) {
+      aliases_.value().insert(alias_result->domain_name());
+      aliases_.value().insert(alias_result->AsAlias().alias_target());
+    }
+    aliases_.value().insert(data_result->domain_name());
+  }
+  if (metadata_result) {
+    DCHECK(!error_result);
+    // Metadata results should always be cacheable.
+    DCHECK(metadata_result->expiration().has_value() ||
+           metadata_result->timed_expiration().has_value());
+
+    endpoint_metadatas_ = metadata_result->AsMetadata().metadatas();
+
+    // Even if otherwise empty, having the metadata result object signifies
+    // receiving a compatible HTTPS record.
+    https_record_compatibility_ = {true};
+
+    if (endpoint_metadatas_.value().empty())
+      error_ = ERR_NAME_NOT_RESOLVED;
+  }
 }
 
 HostCache::Entry::Entry(const Entry& entry) = default;
@@ -412,7 +533,7 @@ HostCache::Entry::Entry(int error,
       ip_endpoints_(std::move(ip_endpoints)),
       aliases_(std::move(aliases)),
       source_(source),
-      ttl_(ttl ? ttl.value() : base::Seconds(-1)) {
+      ttl_(ttl ? ttl.value() : kUnknownTtl) {
   DCHECK(!ttl || ttl.value() >= base::TimeDelta());
 }
 
