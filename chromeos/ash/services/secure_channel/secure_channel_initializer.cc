@@ -10,6 +10,8 @@
 #include "chromeos/ash/services/secure_channel/secure_channel_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 namespace ash::secure_channel {
 
@@ -55,8 +57,15 @@ SecureChannelInitializer::ConnectionRequestArgs::~ConnectionRequestArgs() =
 
 SecureChannelInitializer::SecureChannelInitializer(
     scoped_refptr<base::TaskRunner> task_runner) {
+  bool is_initialized = false;
+  if (floss::features::IsFlossEnabled()) {
+    is_initialized = floss::FlossDBusManager::IsInitialized();
+  } else {
+    is_initialized = bluez::BluezDBusManager::IsInitialized();
+  }
+
   // May not be initialized in tests.
-  if (!bluez::BluezDBusManager::IsInitialized())
+  if (!is_initialized)
     return;
 
   PA_LOG(VERBOSE) << "SecureChannelInitializer::SecureChannelInitializer(): "
