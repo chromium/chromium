@@ -52,7 +52,7 @@ class ASH_EXPORT RecordingOverlayController {
   void Start();
   void Stop();
 
-  // Updates the z-order of the |overlay_widget_|'s native window.
+  // Updates the z-order of the `overlay_widget_`'s native window.
   void UpdateWidgetStacking();
 
   // The overlay widget and its contents view.

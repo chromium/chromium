@@ -4,16 +4,25 @@
 
 #include "ash/capture_mode/capture_mode_demo_tools_controller.h"
 
+#include <memory>
+
+#include "ash/capture_mode/key_combo_view.h"
+#include "ash/capture_mode/video_recording_watcher.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
+
+constexpr int kDistanceFromBottom = 30;
 
 int GetModifierFlagForKeyCode(ui::KeyboardCode key_code) {
   switch (key_code) {
@@ -49,9 +58,21 @@ bool ShouldConsiderKey(ui::KeyboardCode key_code) {
   return base::Contains(kNotNeedingModifierKeys, key_code);
 }
 
+views::Widget::InitParams CreateWidgetParams(
+    VideoRecordingWatcher* video_recording_watcher) {
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  params.parent =
+      video_recording_watcher->GetOnCaptureSurfaceWidgetParentWindow();
+  params.child = true;
+  params.name = "CaptureModeDemoToolsWidget";
+  return params;
+}
+
 }  // namespace
 
-CaptureModeDemoToolsController::CaptureModeDemoToolsController() = default;
+CaptureModeDemoToolsController::CaptureModeDemoToolsController(
+    VideoRecordingWatcher* video_recording_watcher)
+    : video_recording_watcher_(video_recording_watcher) {}
 
 CaptureModeDemoToolsController::~CaptureModeDemoToolsController() = default;
 
@@ -77,6 +98,10 @@ void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
 
 void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
   const ui::KeyboardCode key_code = event->key_code();
+  // Return directly if it is a repeated key event for non-modifier key.
+  if (key_code == last_non_modifier_key_)
+    return;
+
   const int modifier_flag = GetModifierFlagForKeyCode(key_code);
   modifiers_ |= modifier_flag;
 
@@ -87,8 +112,35 @@ void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
 }
 
 void CaptureModeDemoToolsController::RefreshKeyComboViewer() {
-  demo_tools_widget_ =
-      (modifiers_ != 0) || ShouldConsiderKey(last_non_modifier_key_);
+  if ((modifiers_ == 0) && !ShouldConsiderKey(last_non_modifier_key_)) {
+    demo_tools_widget_.reset();
+    key_combo_view_ = nullptr;
+    return;
+  }
+
+  if (!demo_tools_widget_) {
+    demo_tools_widget_ = std::make_unique<views::Widget>();
+    demo_tools_widget_->Init(CreateWidgetParams(video_recording_watcher_));
+    key_combo_view_ =
+        demo_tools_widget_->SetContentsView(std::make_unique<KeyComboView>());
+    ui::Layer* layer = demo_tools_widget_->GetLayer();
+    layer->SetFillsBoundsOpaquely(false);
+    layer->SetMasksToBounds(true);
+    demo_tools_widget_->Show();
+  }
+
+  key_combo_view_->RefreshView(modifiers_, last_non_modifier_key_);
+  demo_tools_widget_->SetBounds(CalculateBounds());
+}
+
+gfx::Rect CaptureModeDemoToolsController::CalculateBounds() const {
+  const gfx::Size preferred_size = key_combo_view_->GetPreferredSize();
+  auto bounds = video_recording_watcher_->GetCaptureSurfaceConfineBounds();
+  int demo_tools_y =
+      bounds.bottom() - kDistanceFromBottom - preferred_size.height();
+  bounds.ClampToCenteredSize(preferred_size);
+  bounds.set_y(demo_tools_y);
+  return bounds;
 }
 
 }  // namespace ash

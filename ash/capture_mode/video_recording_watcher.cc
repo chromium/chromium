@@ -247,7 +247,8 @@ VideoRecordingWatcher::VideoRecordingWatcher(
 
   if (features::AreCaptureModeDemoToolsEnabled() &&
       controller_->enable_demo_tools()) {
-    demo_tools_controller_ = std::make_unique<CaptureModeDemoToolsController>();
+    demo_tools_controller_ =
+        std::make_unique<CaptureModeDemoToolsController>(this);
   }
 
   if (features::IsProjectorEnabled()) {
