@@ -10,7 +10,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {DirectoryModel} from './directory_model.js';
 import {TaskController} from './task_controller.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
-import {SearchBox} from './ui/search_box.js';
+import {SearchBox, SearchBoxEventType} from './ui/search_box.js';
 
 /**
  * Controller for searching.
@@ -48,9 +48,9 @@ export class SearchController {
     this.a11y_ = a11y;
 
     searchBox.addEventListener(
-        SearchBox.EventType.TEXT_CHANGE, this.onTextChange_.bind(this));
+        SearchBoxEventType.TEXT_CHANGE, this.onTextChange_.bind(this));
     searchBox.addEventListener(
-        SearchBox.EventType.ITEM_SELECT, this.onItemSelect_.bind(this));
+        SearchBoxEventType.ITEM_SELECT, this.onItemSelect_.bind(this));
     directoryModel.addEventListener('directory-changed', this.clear.bind(this));
   }
 

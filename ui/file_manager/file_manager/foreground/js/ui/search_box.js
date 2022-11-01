@@ -30,10 +30,9 @@ export class SearchBox extends EventTarget {
 
     /**
      * Autocomplete List.
-     * @type {!SearchBox.AutocompleteList}
+     * @type {!SearchAutocompleteList}
      */
-    this.autocompleteList =
-        new SearchBox.AutocompleteList(element.ownerDocument);
+    this.autocompleteList = new SearchAutocompleteList(element.ownerDocument);
 
     /**
      * Root element of the search box.
@@ -94,7 +93,7 @@ export class SearchBox extends EventTarget {
     this.clearButton_.addEventListener(
         'click', this.onClearButtonClick_.bind(this));
     const dispatchItemSelect = () => {
-      dispatchSimpleEvent(this, SearchBox.EventType.ITEM_SELECT);
+      dispatchSimpleEvent(this, SearchBoxEventType.ITEM_SELECT);
     };
     this.autocompleteList.handleEnterKeydown = dispatchItemSelect;
     this.autocompleteList.addEventListener('mousedown', dispatchItemSelect);
@@ -188,7 +187,7 @@ export class SearchBox extends EventTarget {
    */
   onInput_() {
     this.updateStyles_();
-    dispatchSimpleEvent(this, SearchBox.EventType.TEXT_CHANGE);
+    dispatchSimpleEvent(this, SearchBoxEventType.TEXT_CHANGE);
   }
 
   /**
@@ -325,27 +324,25 @@ export class SearchBox extends EventTarget {
  * Event type.
  * @enum {string}
  */
-SearchBox.EventType = {
+export const SearchBoxEventType = {
   // Dispatched when the text in the search box is changed.
   TEXT_CHANGE: 'textchange',
   // Dispatched when the item in the auto complete list is selected.
   ITEM_SELECT: 'itemselect',
 };
 
-/**
- * Autocomplete list for search box.
- */
-SearchBox.AutocompleteList = class extends AutocompleteList {
+/** Autocomplete list for search box.  */
+class SearchAutocompleteList extends AutocompleteList {
   /**
    * @param {Document} document Document.
    */
   constructor(document) {
     super();
-    this.__proto__ = SearchBox.AutocompleteList.prototype;
+    this.__proto__ = SearchAutocompleteList.prototype;
     this.id = 'autocomplete-list';
     this.autoExpands = true;
-    this.itemConstructor = /** @type {function(new:ListItem, *)} */ (
-        SearchBox.AutocompleteListItem_.bind(null, document));
+    this.itemConstructor = /** @type {function(*): ListItem} */ (
+        SearchAutocompleteListItem.bind(null, document));
     this.addEventListener('mouseover', this.onMouseOver_.bind(this));
   }
 
@@ -374,13 +371,10 @@ SearchBox.AutocompleteList = class extends AutocompleteList {
       this.selectedItem = event.target.itemInfo;
     }
   }
-};
+}
 
-/**
- * ListItem element for autocomplete.
- * @private
- */
-SearchBox.AutocompleteListItem_ = class AutocompleteListItem_ extends ListItem {
+/** ListItem element for autocomplete. */
+class SearchAutocompleteListItem extends ListItem {
   /**
    * @param {Document} document Document.
    * @param {SearchItem|chrome.fileManagerPrivate.DriveMetadataSearchResult}
@@ -410,4 +404,4 @@ SearchBox.AutocompleteListItem_ = class AutocompleteListItem_ extends ListItem {
     this.appendChild(icon);
     this.appendChild(text);
   }
-};
+}
