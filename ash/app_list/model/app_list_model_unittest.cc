@@ -270,13 +270,8 @@ TEST_F(AppListModelFolderTest, MergeItemIntoFolder) {
   model_->MergeItems(item0->id(), folder->id());
 }
 
-// Same test as above, but for ProductivityLauncher config types.
-TEST_F(AppListModelFolderTest,
-       NonSharedConfigIconGenerationProductivityLauncher) {
-  // The configs tested here are only used by ProductivityLauncher.
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kProductivityLauncher);
-
+// Tests Icon generation configuration for folders on different grid types.
+TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
   // Ensure any configs set by previous tests are cleared.
   AppListConfigProvider::Get().ResetForTesting();
 
