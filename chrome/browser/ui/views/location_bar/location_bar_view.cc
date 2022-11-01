@@ -302,15 +302,15 @@ void LocationBarView::Init() {
     // first so that they appear on the left side of the icon container.
     // TODO(crbug.com/1318890): Improve the ordering heuristics for page action
     // icons and determine a way to handle simultaneous icon animations.
+    if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
+      params.types_enabled.push_back(PageActionIconType::kPriceTracking);
+    }
+
     if (side_search::IsDSESupportEnabled(profile_) &&
         side_search::IsEnabledForBrowser(browser_)) {
       params.types_enabled.push_back(PageActionIconType::kSideSearch);
     }
-    // TODO(crbug.com/1368796): We decided to show the icon only for now.
-    // Confirm the ordering for |kPriceTracking| and |kSideSearch| with UX.
-    if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
-      params.types_enabled.push_back(PageActionIconType::kPriceTracking);
-    }
+
     params.types_enabled.push_back(PageActionIconType::kSendTabToSelf);
     params.types_enabled.push_back(PageActionIconType::kClickToCall);
     params.types_enabled.push_back(PageActionIconType::kQRCodeGenerator);
