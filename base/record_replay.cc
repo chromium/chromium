@@ -34,6 +34,7 @@ extern "C" void V8RecordReplayOrderedLock(int lock);
 extern "C" void V8RecordReplayOrderedUnlock(int lock);
 extern "C" void V8RecordReplayNewCheckpoint();
 extern "C" uint64_t V8RecordReplayNewBookmark();
+extern "C" void V8RecordReplayOnAnnotation(const char* kind, const char* contents);
 extern "C" void V8RecordReplayOnNetworkRequest(const char* id, const char* kind, uint64_t bookmark);
 extern "C" void V8RecordReplayOnNetworkRequestEvent(const char* id);
 extern "C" void V8RecordReplayOnNetworkStreamStart(const char* id, const char* kind, const char* parentId);
@@ -126,6 +127,10 @@ void NewCheckpoint() {
 
 uint64_t NewBookmark() {
   return OP(V8RecordReplayNewBookmark());
+}
+
+void OnAnnotation(const char* kind, const char* contents) {
+  OP(V8RecordReplayOnAnnotation(kind, contents));
 }
 
 void OnNetworkRequest(const char* id, const char* kind, uint64_t bookmark) {

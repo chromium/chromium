@@ -46,6 +46,7 @@ void InvalidateRecording(const char* why);
 void NewCheckpoint();
 
 uint64_t NewBookmark();
+void OnAnnotation(const char* kind, const char* contents);
 void OnNetworkRequest(const char* id, const char* kind, uint64_t bookmark);
 void OnNetworkRequestEvent(const char* id);
 void OnNetworkStreamStart(const char* id, const char* kind, const char* parentId);
