@@ -172,6 +172,37 @@ bool ShouldSendDownloadReport(download::DownloadDangerType danger_type) {
       return false;
   }
 }
+
+void MaybeSendDownloadReport(const GURL& url,
+                             download::DownloadDangerType danger_type,
+                             bool did_proceed,
+                             Profile* profile,
+                             download::DownloadItem* download) {
+  // Dangerous download delete report is gated by the new trigger flag.
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger) &&
+      !did_proceed) {
+    return;
+  }
+  // Only sends dangerous download report if :
+  // 1. FULL_SAFE_BROWSING is enabled, and
+  // 2. Download verdict is one of the dangerous types, and
+  // 3. Download URL is not empty, and
+  // 4. User is not in incognito mode.
+  if (ShouldSendDownloadReport(danger_type) && !url.is_empty() &&
+      !profile->IsOffTheRecord()) {
+    safe_browsing::SafeBrowsingService* sb_service =
+        g_browser_process->safe_browsing_service();
+    if (sb_service) {
+      bool is_successful = sb_service->SendDownloadReport(
+          download,
+          safe_browsing::ClientSafeBrowsingReportRequest::
+              DANGEROUS_DOWNLOAD_WARNING,
+          did_proceed, /*show_download_in_folder=*/absl::nullopt);
+      DCHECK(is_successful);
+    }
+  }
+}
 #endif
 
 // Enum representing reasons why a download is not preferred to be opened in
@@ -828,33 +859,18 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
         break;
       }
       DCHECK(IsDangerous());
-// Only sends dangerous download accept report if :
-// 1. FULL_SAFE_BROWSING is enabled, and
-// 2. Download verdict is one of the dangerous types, and
-// 3. Download URL is not empty, and
-// 4. User is not in incognito mode.
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-      if (ShouldSendDownloadReport(GetDangerType()) && !GetURL().is_empty() &&
-          !profile()->IsOffTheRecord()) {
-        // The bypassed danger type can only be uncommon in the old UI, because
-        // the other danger types are not bypassable in the download shelf.
-        // However, it can be any dangerous danger type in the new UI.
-        DCHECK(GetDangerType() ==
-                   download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT ||
-               download::IsDownloadBubbleEnabled(profile()));
-        safe_browsing::SafeBrowsingService* sb_service =
-            g_browser_process->safe_browsing_service();
-        if (sb_service) {
-          bool is_successful = sb_service->SendDownloadReport(
-              download_,
-              safe_browsing::ClientSafeBrowsingReportRequest::
-                  DANGEROUS_DOWNLOAD_WARNING,
-              /*did_proceed=*/true, /*show_download_in_folder=*/absl::nullopt);
-          DCHECK(is_successful);
-        }
-      }
+      MaybeSendDownloadReport(GetURL(), GetDangerType(), /*did_proceed=*/true,
+                              profile(), download_);
 #endif
       download_->ValidateDangerousDownload();
+      break;
+    case DownloadCommands::DISCARD:
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+      MaybeSendDownloadReport(GetURL(), GetDangerType(), /*did_proceed=*/false,
+                              profile(), download_);
+#endif
+      DownloadUIModel::ExecuteCommand(download_commands, command);
       break;
     case DownloadCommands::LEARN_MORE_SCANNING: {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -878,7 +894,6 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       break;
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::CANCEL:
-    case DownloadCommands::DISCARD:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
     case DownloadCommands::PAUSE:

@@ -152,6 +152,10 @@ BASE_FEATURE(kRealTimeUrlLookupForEnterpriseAllowlistBypass,
              "SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger,
+             "SafeBrowsingCsbrrNewDownloadTrigger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafeBrowsingCsbrrWithToken,
              "SafeBrowsingCsbrrWithToken",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -242,6 +246,7 @@ constexpr struct {
       {&kNestedArchives, true},
       {&kOmitNonUserGesturesFromReferrerChain, true},
       {&kRealTimeUrlLookupForEnterpriseAllowlistBypass, true},
+      {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
       {&kSafeBrowsingCsbrrWithToken, true},
       {&kSafeBrowsingDisableConsumerCsdForEnterprise, true},
       {&kSafeBrowsingEnterpriseCsd, true},

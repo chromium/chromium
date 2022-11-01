@@ -139,6 +139,10 @@ BASE_DECLARE_FEATURE(kOmitNonUserGesturesFromReferrerChain);
 // Bypass RealTime URL Lookup allowlist for enterprise users.
 BASE_DECLARE_FEATURE(kRealTimeUrlLookupForEnterpriseAllowlistBypass);
 
+// Controls whether download Client Safe Browsing Reports are sent under the
+// new triggers
+BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger);
+
 // Controls whether Client Safe Browsing Reports are sent with a GAIA-tied token
 // for Enhanced Safe Browsing users
 BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrWithToken);
