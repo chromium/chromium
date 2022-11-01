@@ -69,7 +69,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   int32_t arrow_bitmap_height_vertical_scroll_bar_in_dips{0};
   int32_t arrow_bitmap_width_horizontal_scroll_bar_in_dips{0};
 #endif
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   bool selection_clipboard_buffer_available{false};
 #endif
   bool plugin_fullscreen_allowed{true};
