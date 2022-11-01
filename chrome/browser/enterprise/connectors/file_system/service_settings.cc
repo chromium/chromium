@@ -51,9 +51,9 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   URLMatchingID id(0);
   const base::Value* enable = settings_value.FindListKey(kKeyEnable);
-  if (enable && enable->is_list() && !enable->GetListDeprecated().empty()) {
+  if (enable && enable->is_list() && !enable->GetList().empty()) {
     filters_validated_ = true;
-    for (const base::Value& value : enable->GetListDeprecated()) {
+    for (const base::Value& value : enable->GetList()) {
       filters_validated_ &=
           AddUrlPatternSettings(value, /* enabled = */ true, &id);
     }
@@ -65,8 +65,8 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   }
 
   const base::Value* disable = settings_value.FindListKey(kKeyDisable);
-  if (disable && disable->is_list() && !disable->GetListDeprecated().empty()) {
-    for (const base::Value& value : disable->GetListDeprecated()) {
+  if (disable && disable->is_list() && !disable->GetList().empty()) {
+    for (const base::Value& value : disable->GetList()) {
       filters_validated_ &=
           AddUrlPatternSettings(value, /* enabled = */ false, &id);
     }
@@ -224,7 +224,7 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
 
   URLPatternSettings setting;
   bool has_wildcard = false;
-  for (const base::Value& mime_type : mime_types->GetListDeprecated()) {
+  for (const base::Value& mime_type : mime_types->GetList()) {
     if (mime_type.is_string()) {
       const std::string& m = mime_type.GetString();
       setting.mime_types.insert(m);

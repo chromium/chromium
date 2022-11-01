@@ -100,7 +100,7 @@ base::Value CreateSingleFieldDict(const std::string& key,
 bool VerifyChunkedUploadParts(const base::Value& parts) {
   DCHECK(parts.is_dict()) << parts;
   DCHECK(parts.FindPath("parts")->is_list()) << parts;
-  auto parts_list = parts.FindPath("parts")->GetListDeprecated();
+  const auto& parts_list = parts.FindPath("parts")->GetList();
   DCHECK(!parts_list.empty());
   for (auto p = parts_list.begin(); p != parts_list.end(); ++p) {
     DCHECK(p->is_dict()) << parts;
@@ -114,27 +114,24 @@ bool VerifyChunkedUploadParts(const base::Value& parts) {
 
 using Box = enterprise_connectors::BoxApiCallFlow;
 
-bool ExtractEntriesList(const Box::ParseResult& result,
-                        base::Value::ConstListView* list) {
+const base::Value::List* ExtractEntriesList(const Box::ParseResult& result) {
   if (!result.has_value()) {
-    return false;
+    return nullptr;
   }
 
   const base::Value* entries = result->GetDict().Find("entries");
   if (!entries || !entries->is_list()) {
-    return false;
+    return nullptr;
   }
 
-  CHECK(list);
-  *list = entries->GetListDeprecated();
-  return true;
+  return &entries->GetList();
 }
 
 std::string ExtractUploadedFileId(const Box::ParseResult& result) {
-  base::Value::ConstListView list;
+  const base::Value::List* list = ExtractEntriesList(result);
   std::string file_id;
-  if (ExtractEntriesList(result, &list) && !list.empty()) {
-    file_id = ExtractId(list.front());
+  if (list && !list->empty()) {
+    file_id = ExtractId(list->front());
   }
   LOG_PARSE_FAIL_IF(file_id.empty(), ERROR, "ExtractUploadedFileId", result);
   return file_id;
@@ -358,13 +355,13 @@ void BoxFindUpstreamFolderApiCallFlow::ProcessFailure(Response response) {
 }
 
 void BoxFindUpstreamFolderApiCallFlow::OnSuccessJsonParsed(ParseResult result) {
-  base::Value::ConstListView list;
+  const base::Value::List* list = ExtractEntriesList(result);
   std::string folder_id;
-  bool extracted = ExtractEntriesList(result, &list);
-  LOG_PARSE_FAIL_IF(!extracted, ERROR, "FindUpstreamFolder", result);
+  LOG_PARSE_FAIL_IF(!list, ERROR, "FindUpstreamFolder", result);
 
-  if (extracted && !list.empty()) {
-    folder_id = ExtractId(list.front());
+  bool extracted = list != nullptr;
+  if (list && !list->empty()) {
+    folder_id = ExtractId(list->front());
     extracted = !folder_id.empty();
   }
   std::move(callback_).Run(Response{extracted, net::HTTP_OK}, folder_id);
@@ -436,10 +433,8 @@ void BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed(
     base::Value* conflict_folders_list =
         result->FindListPath("context_info.conflicts");
     if (box_error_code && *box_error_code == "item_name_in_use" &&
-        conflict_folders_list &&
-        conflict_folders_list->GetListDeprecated().size() > 0) {
-      folder_info_dict = absl::make_optional<base::Value>(
-          conflict_folders_list->GetListDeprecated()[0].Clone());
+        conflict_folders_list && conflict_folders_list->GetList().size() > 0) {
+      folder_info_dict = conflict_folders_list->GetList()[0].Clone();
     }
   }
 

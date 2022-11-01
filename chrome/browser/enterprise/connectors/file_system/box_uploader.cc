@@ -648,8 +648,7 @@ void BoxChunkedUploader::OnPartFileUploadResponse(BoxApiCallResponse response,
     return;
   }
   uploaded_parts_.Append(std::move(part_info));
-  chunks_handler_->ContinueToReadChunk(
-      uploaded_parts_.GetListDeprecated().size() + 1);
+  chunks_handler_->ContinueToReadChunk(uploaded_parts_.GetList().size() + 1);
 }
 
 void BoxChunkedUploader::OnFileCompletelyUploaded(
