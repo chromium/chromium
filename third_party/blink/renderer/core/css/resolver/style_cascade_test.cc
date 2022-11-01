@@ -2012,6 +2012,17 @@ TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInStandardProperty) {
   EXPECT_EQ("15px", cascade.ComputedValue("width"));
 }
 
+TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInAnimationDelay) {
+  TestCascade cascade(GetDocument());
+  cascade.Add(AnimationTaintedSet("--x", "1s"));
+  cascade.Add("animation-delay-start", "var(--x)");
+  cascade.Add("animation-delay-end", "var(--x)");
+  cascade.Apply();
+  EXPECT_EQ("1s", cascade.ComputedValue("--x"));
+  EXPECT_EQ("0s", cascade.ComputedValue("animation-delay-start"));
+  EXPECT_EQ("0s", cascade.ComputedValue("animation-delay-end"));
+}
+
 TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInAnimationProperty) {
   TestCascade cascade(GetDocument());
   cascade.Add("--x", "20s");
