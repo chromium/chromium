@@ -271940,6 +271940,10 @@
       "e67b97276818d50adb0e47105fbecab3c91e52c7",
       []
      ],
+     "import-conditions-expected.txt": [
+      "e1615689ea83cfadf93534f90e8f41460ebe7ea0",
+      []
+     ],
      "important-prop-ref.html": [
       "004679da7309ccc08640fe8c92b6f069090a37b6",
       []
@@ -343370,6 +343374,10 @@
       "3c072829e6f8cd5c2b94f12a8feeb5d860abc6cd",
       []
      ],
+     "scroll-timeline-dynamic.tentative-expected.txt": [
+      "57145213b5c3390eab9a2a397931d4505cf590f5",
+      []
+     ],
      "scroll-timeline-frame-size-changed-ref.html": [
       "ea7628ac723f4dea27bf5c60467a5896904930a3",
       []
@@ -394630,6 +394638,13 @@
      ],
      "idlharness.html": [
       "9bde23b946ccf1537c92c6de2301005144bf12a6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "import-conditions.html": [
+      "d4a0918a5b245f12a28d6c96bd41a5b07bd29c09",
       [
        null,
        {}
@@ -548251,7 +548266,7 @@
       ]
      ],
      "scroll-timeline-dynamic.tentative.html": [
-      "b78f15c0b7f8b457ae1866e346b022708a9b3443",
+      "b0880a7cc5ac8f831fdb1fd29fd477935f3a3fe9",
       [
        null,
        {}

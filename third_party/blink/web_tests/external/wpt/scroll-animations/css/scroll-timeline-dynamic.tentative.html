@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timelines">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -172,7 +173,7 @@
 
     // ScrollTimeline -> none
     element.style.animationTimeline = 'none';
-    await assert_width(element, '0px');
+    await assert_width(element, '120px');
 
     // none -> ScrollTimeline
     element.style.animationTimeline = 'timeline';
