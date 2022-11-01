@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"

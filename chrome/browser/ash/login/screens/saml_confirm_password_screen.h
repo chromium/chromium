@@ -14,7 +14,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
-#include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
+#include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "components/login/base_screen_handler_utils.h"
 
 namespace ash {

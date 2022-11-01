@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/webui/ash/connectivity_diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"

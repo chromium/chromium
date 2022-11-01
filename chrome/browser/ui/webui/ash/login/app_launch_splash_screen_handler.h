@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

@@ -31,7 +31,7 @@
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #endif
 
 // Turn these tests off on Mac while we collect data on windows server crashes

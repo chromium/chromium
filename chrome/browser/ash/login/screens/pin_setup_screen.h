@@ -15,7 +15,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

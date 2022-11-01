@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/webui/ash/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "content/public/test/browser_test_utils.h"
 

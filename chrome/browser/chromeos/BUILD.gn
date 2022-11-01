@@ -2006,7 +2006,7 @@ source_set("unit_tests") {
     "../ui/webui/ash/login/l10n_util_test_util.h",
     "../ui/webui/ash/login/l10n_util_unittest.cc",
     "../ui/webui/ash/login/oobe_display_chooser_unittest.cc",
-    "../ui/webui/chromeos/login/signin_userlist_unittest.cc",
+    "../ui/webui/ash/login/signin_userlist_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
     "../ui/webui/settings/ash/bluetooth_handler_unittest.cc",
     "../ui/webui/settings/ash/calculator/size_calculator_test_api.h",

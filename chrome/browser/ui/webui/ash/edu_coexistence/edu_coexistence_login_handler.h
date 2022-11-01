@@ -9,7 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"

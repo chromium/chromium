@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/smart_privacy_protection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/smart_privacy_protection_screen_handler.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {

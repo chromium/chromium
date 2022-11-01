@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/smart_privacy_protection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/smart_privacy_protection_screen_handler.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

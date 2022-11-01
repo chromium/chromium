@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "components/prefs/pref_service.h"
 
 namespace base {

@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/screens/tpm_error_screen.h"
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {

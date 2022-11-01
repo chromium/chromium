@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"

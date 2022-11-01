@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "components/user_manager/remove_user_delegate.h"
 
 namespace base {

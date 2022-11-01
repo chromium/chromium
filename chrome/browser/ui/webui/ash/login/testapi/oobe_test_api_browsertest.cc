@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos {

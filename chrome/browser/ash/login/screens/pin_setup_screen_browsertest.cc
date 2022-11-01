@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"

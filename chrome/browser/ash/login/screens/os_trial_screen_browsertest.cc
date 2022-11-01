@@ -8,11 +8,11 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/os_trial_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {

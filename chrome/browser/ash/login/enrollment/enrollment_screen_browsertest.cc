@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
-#include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/test/chromeos_test_utils.h"

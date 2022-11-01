@@ -19,7 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/management_transition_screen_handler.h"
 
 namespace {
 

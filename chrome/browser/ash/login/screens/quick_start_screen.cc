@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {

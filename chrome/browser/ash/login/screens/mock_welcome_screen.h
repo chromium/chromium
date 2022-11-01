@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

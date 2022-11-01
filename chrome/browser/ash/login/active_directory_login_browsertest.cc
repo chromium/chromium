@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/network_service_instance.h"

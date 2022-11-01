@@ -24,7 +24,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace base {

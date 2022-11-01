@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

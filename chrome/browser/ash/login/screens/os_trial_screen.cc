@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/os_trial_screen.h"
 
-#include "chrome/browser/ui/webui/chromeos/login/os_trial_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
 
 namespace ash {
 

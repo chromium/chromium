@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "net/cookies/canonical_cookie.h"
 
 namespace chromeos {

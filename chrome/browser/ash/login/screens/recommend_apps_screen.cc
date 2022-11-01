@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
-#include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "components/user_manager/user_manager.h"
 

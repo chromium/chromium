@@ -10,7 +10,7 @@
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/theme_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "components/prefs/pref_service.h"
 #include "ui/native_theme/native_theme.h"
 

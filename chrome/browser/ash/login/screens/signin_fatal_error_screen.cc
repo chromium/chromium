@@ -6,7 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 
 namespace ash {
 namespace {
