@@ -2,25 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_AURALINUX_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_AURALINUX_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_AURALINUX_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_AURALINUX_H_
 
 #include <atk/atk.h>
 #include <atspi/atspi.h>
 
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
-#include "content/common/content_export.h"
+#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {
 
 class AXPlatformTreeManager;
-
-}  // namespace ui
-
-namespace content {
 
 // This class has two distinct event recording code paths. When we are
 // recording events in-process (typically this is used for
@@ -31,20 +27,16 @@ namespace content {
 // TODO(crbug.com/1133330) AT-SPI2 should be capable of intercepting events
 // in-process as well, thus it should be possible to remove the ATK code path
 // entirely.
-class CONTENT_EXPORT AccessibilityEventRecorderAuraLinux
-    : public ui::AXEventRecorder {
+class AX_EXPORT AXEventRecorderAuraLinux : public AXEventRecorder {
  public:
-  explicit AccessibilityEventRecorderAuraLinux(
-      ui::AXPlatformTreeManager* manager,
-      base::ProcessId pid,
-      const ui::AXTreeSelector& selector);
+  AXEventRecorderAuraLinux(AXPlatformTreeManager* manager,
+                           base::ProcessId pid,
+                           const AXTreeSelector& selector);
 
-  AccessibilityEventRecorderAuraLinux(
-      const AccessibilityEventRecorderAuraLinux&) = delete;
-  AccessibilityEventRecorderAuraLinux& operator=(
-      const AccessibilityEventRecorderAuraLinux&) = delete;
+  AXEventRecorderAuraLinux(const AXEventRecorderAuraLinux&) = delete;
+  AXEventRecorderAuraLinux& operator=(const AXEventRecorderAuraLinux&) = delete;
 
-  ~AccessibilityEventRecorderAuraLinux() override;
+  ~AXEventRecorderAuraLinux() override;
 
   void ProcessATKEvent(const char* event,
                        unsigned int n_params,
@@ -70,12 +62,12 @@ class CONTENT_EXPORT AccessibilityEventRecorderAuraLinux
 
   raw_ptr<AtspiEventListener> atspi_event_listener_ = nullptr;
   // TODO: should be either removed or converted to a weakptr.
-  const raw_ptr<ui::AXPlatformTreeManager> manager_;
+  const raw_ptr<AXPlatformTreeManager> manager_;
   base::ProcessId pid_;
-  ui::AXTreeSelector selector_;
-  static AccessibilityEventRecorderAuraLinux* instance_;
+  AXTreeSelector selector_;
+  static AXEventRecorderAuraLinux* instance_;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_AURALINUX_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_AURALINUX_H_

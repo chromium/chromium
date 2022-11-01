@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_event_recorder_auralinux.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder_auralinux.h"
 
 #include <atk/atk.h>
 #include <atk/atkutil.h>
@@ -10,22 +10,15 @@
 
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
-namespace content {
-
-using ui::AtkRoleToString;
-using ui::ATSPIRoleToString;
-using ui::ATSPIStateToString;
-using ui::FindAccessible;
+namespace ui {
 
 // static
-AccessibilityEventRecorderAuraLinux*
-    AccessibilityEventRecorderAuraLinux::instance_ = nullptr;
+AXEventRecorderAuraLinux* AXEventRecorderAuraLinux::instance_ = nullptr;
 
 // static
 std::vector<unsigned int>& GetATKListenerIds() {
@@ -34,7 +27,7 @@ std::vector<unsigned int>& GetATKListenerIds() {
 }
 
 // static
-gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
+gboolean AXEventRecorderAuraLinux::OnATKEventReceived(
     GSignalInvocationHint* hint,
     unsigned int n_params,
     const GValue* params,
@@ -55,14 +48,14 @@ gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
   return true;
 }
 
-bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
+bool AXEventRecorderAuraLinux::ShouldUseATSPI() {
   return pid_ != base::GetCurrentProcId() || !selector_.empty();
 }
 
-AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
-    ui::AXPlatformTreeManager* manager,
+AXEventRecorderAuraLinux::AXEventRecorderAuraLinux(
+    AXPlatformTreeManager* manager,
     base::ProcessId pid,
-    const ui::AXTreeSelector& selector)
+    const AXTreeSelector& selector)
     : manager_(manager), pid_(pid), selector_(selector) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
@@ -76,13 +69,12 @@ AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
   instance_ = this;
 }
 
-AccessibilityEventRecorderAuraLinux::~AccessibilityEventRecorderAuraLinux() {
+AXEventRecorderAuraLinux::~AXEventRecorderAuraLinux() {
   RemoveATSPIEventListeners();
   instance_ = nullptr;
 }
 
-void AccessibilityEventRecorderAuraLinux::AddATKEventListener(
-    const char* event_name) {
+void AXEventRecorderAuraLinux::AddATKEventListener(const char* event_name) {
   unsigned id = atk_add_global_event_listener(OnATKEventReceived, event_name);
   if (!id)
     LOG(FATAL) << "atk_add_global_event_listener failed for " << event_name;
@@ -91,7 +83,7 @@ void AccessibilityEventRecorderAuraLinux::AddATKEventListener(
   atk_listener_ids.push_back(id);
 }
 
-void AccessibilityEventRecorderAuraLinux::AddATKEventListeners() {
+void AXEventRecorderAuraLinux::AddATKEventListeners() {
   if (GetATKListenerIds().size() >= 1)
     return;
   GObject* gobject = G_OBJECT(g_object_new(G_TYPE_OBJECT, nullptr, nullptr));
@@ -113,7 +105,7 @@ void AccessibilityEventRecorderAuraLinux::AddATKEventListeners() {
   AddATKEventListener("ATK:AtkTable:row-reordered");
 }
 
-void AccessibilityEventRecorderAuraLinux::RemoveATKEventListeners() {
+void AXEventRecorderAuraLinux::RemoveATKEventListeners() {
   std::vector<unsigned int>& atk_listener_ids = GetATKListenerIds();
   for (const auto& id : atk_listener_ids)
     atk_remove_global_event_listener(id);
@@ -121,9 +113,8 @@ void AccessibilityEventRecorderAuraLinux::RemoveATKEventListeners() {
   atk_listener_ids.clear();
 }
 
-std::string AccessibilityEventRecorderAuraLinux::AtkObjectToString(
-    AtkObject* obj,
-    bool include_name) {
+std::string AXEventRecorderAuraLinux::AtkObjectToString(AtkObject* obj,
+                                                        bool include_name) {
   std::string role = AtkRoleToString(atk_object_get_role(obj));
   base::ReplaceChars(role, " ", "_", &role);
   std::string str =
@@ -135,10 +126,9 @@ std::string AccessibilityEventRecorderAuraLinux::AtkObjectToString(
   return str;
 }
 
-void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
-    const char* event,
-    unsigned int n_params,
-    const GValue* params) {
+void AXEventRecorderAuraLinux::ProcessATKEvent(const char* event,
+                                               unsigned int n_params,
+                                               const GValue* params) {
   // If we don't have a root object, it means the tree is being destroyed.
   if (!manager_->RootDelegate()) {
     RemoveATKEventListeners();
@@ -283,12 +273,11 @@ const char* const kEventNames[] = {
 };
 
 static void OnATSPIEventReceived(AtspiEvent* event, void* data) {
-  static_cast<AccessibilityEventRecorderAuraLinux*>(data)->ProcessATSPIEvent(
-      event);
+  static_cast<AXEventRecorderAuraLinux*>(data)->ProcessATSPIEvent(event);
   g_boxed_free(ATSPI_TYPE_EVENT, static_cast<void*>(event));
 }
 
-void AccessibilityEventRecorderAuraLinux::AddATSPIEventListeners() {
+void AXEventRecorderAuraLinux::AddATSPIEventListeners() {
   atspi_init();
   atspi_event_listener_ =
       atspi_event_listener_new(OnATSPIEventReceived, this, nullptr);
@@ -304,7 +293,7 @@ void AccessibilityEventRecorderAuraLinux::AddATSPIEventListeners() {
   }
 }
 
-void AccessibilityEventRecorderAuraLinux::RemoveATSPIEventListeners() {
+void AXEventRecorderAuraLinux::RemoveATSPIEventListeners() {
   if (!atspi_event_listener_)
     return;
 
@@ -323,8 +312,7 @@ void AccessibilityEventRecorderAuraLinux::RemoveATSPIEventListeners() {
   atspi_event_listener_ = nullptr;
 }
 
-void AccessibilityEventRecorderAuraLinux::ProcessATSPIEvent(
-    const AtspiEvent* event) {
+void AXEventRecorderAuraLinux::ProcessATSPIEvent(const AtspiEvent* event) {
   GError* error = nullptr;
 
   // Ignore irrelevant events, i.e. fired for other applications.
@@ -399,4 +387,4 @@ void AccessibilityEventRecorderAuraLinux::ProcessATSPIEvent(
   OnEvent(output.str());
 }
 
-}  // namespace content
+}  // namespace ui

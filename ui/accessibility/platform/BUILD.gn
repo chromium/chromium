@@ -248,6 +248,8 @@ source_set("platform") {
         "ax_platform_node_auralinux.h",
         "inspect/ax_call_statement_invoker_auralinux.cc",
         "inspect/ax_call_statement_invoker_auralinux.h",
+        "inspect/ax_event_recorder_auralinux.cc",
+        "inspect/ax_event_recorder_auralinux.h",
         "inspect/ax_inspect_utils_auralinux.cc",
         "inspect/ax_inspect_utils_auralinux.h",
         "inspect/ax_tree_formatter_auralinux.cc",
