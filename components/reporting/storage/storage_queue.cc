@@ -304,11 +304,31 @@ Status StorageQueue::SetGenerationId(const base::FilePath& full_name) {
   return Status::StatusOK();
 }
 
+StatusOr<int64_t> StorageQueue::GetFileSequenceIdFromPath(
+    const base::FilePath& file_name) {
+  const auto extension = file_name.FinalExtension();
+  if (extension.empty() || extension == FILE_PATH_LITERAL(".")) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"File has no extension: '",
+                                file_name.MaybeAsASCII(), "'"}));
+  }
+  int64_t file_sequence_id = 0;
+  const bool success =
+      base::StringToInt64(extension.substr(1), &file_sequence_id);
+  if (!success) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"File extension does not parse: '",
+                                file_name.MaybeAsASCII(), "'"}));
+  }
+
+  return file_sequence_id;
+}
+
 StatusOr<int64_t> StorageQueue::AddDataFile(
     const base::FilePath& full_name,
     const base::FileEnumerator::FileInfo& file_info) {
   ASSIGN_OR_RETURN(int64_t file_sequence_id,
-                   SingleFile::GetFileSequenceIdFromPath(full_name));
+                   GetFileSequenceIdFromPath(full_name));
   RETURN_IF_ERROR(SetGenerationId(full_name));
 
   auto file_or_status = SingleFile::Create(full_name, file_info.GetSize(),
@@ -723,7 +743,7 @@ Status StorageQueue::RestoreMetadata(
   for (auto full_name = dir_enum.Next(); !full_name.empty();
        full_name = dir_enum.Next()) {
     const auto file_sequence_id =
-        SingleFile::GetFileSequenceIdFromPath(dir_enum.GetInfo().GetName());
+        GetFileSequenceIdFromPath(dir_enum.GetInfo().GetName());
     if (!file_sequence_id.ok()) {
       continue;
     }
@@ -796,8 +816,7 @@ void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) const {
       dir_enum,
       base::BindRepeating(
           [](int64_t sequence_id_to_keep, const base::FilePath& full_name) {
-            const auto sequence_id =
-                SingleFile::GetFileSequenceIdFromPath(full_name);
+            const auto sequence_id = GetFileSequenceIdFromPath(full_name);
             if (!sequence_id.ok()) {
               return false;
             }
@@ -1985,26 +2004,6 @@ StorageQueue::SingleFile::Create(
   // Cannot use base::MakeRefCounted, since the constructor is private.
   return scoped_refptr<StorageQueue::SingleFile>(
       new SingleFile(filename, size, memory_resource, disk_space_resource));
-}
-
-StatusOr<int64_t> StorageQueue::SingleFile::GetFileSequenceIdFromPath(
-    const base::FilePath& file_name) {
-  const auto extension = file_name.FinalExtension();
-  if (extension.empty() || extension == FILE_PATH_LITERAL(".")) {
-    return Status(error::INTERNAL,
-                  base::StrCat({"File has no extension: '",
-                                file_name.MaybeAsASCII(), "'"}));
-  }
-  int64_t file_sequence_id = 0;
-  const bool success =
-      base::StringToInt64(extension.substr(1), &file_sequence_id);
-  if (!success) {
-    return Status(error::INTERNAL,
-                  base::StrCat({"File extension does not parse: '",
-                                file_name.MaybeAsASCII(), "'"}));
-  }
-
-  return file_sequence_id;
 }
 
 StorageQueue::SingleFile::SingleFile(
