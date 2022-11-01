@@ -244,6 +244,7 @@ struct MediaTrackConstraintSetPlatform {
   LongConstraint channel_count;
   StringConstraint device_id;
   BooleanConstraint disable_local_echo;
+  BooleanConstraint suppress_local_audio_playback;
   DoubleConstraint pan;
   DoubleConstraint tilt;
   DoubleConstraint zoom;

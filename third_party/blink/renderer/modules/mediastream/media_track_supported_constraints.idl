@@ -51,4 +51,7 @@ dictionary MediaTrackSupportedConstraints {
 
     // https://github.com/w3c/mediacapture-screen-share/pull/186/files
     [RuntimeEnabled=DisplaySurfaceConstraint] boolean displaySurface = true;
+
+    // https://w3c.github.io/mediacapture-screen-share/#dfn-suppresslocalaudioplayback
+    [RuntimeEnabled=SuppressLocalAudioPlayback] boolean suppressLocalAudioPlayback = true;
 };

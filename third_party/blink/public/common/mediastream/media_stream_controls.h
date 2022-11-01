@@ -27,6 +27,8 @@ struct BLINK_COMMON_EXPORT TrackControls {
   TrackControls(const TrackControls& other);
   ~TrackControls();
 
+  // TODO(crbug/1379802): Either remove completely, or make this into
+  // a getter based on comparing `stream_type` to `NO_SERVICE`.
   bool requested = false;
 
   // Represents the requested  stream type.
@@ -54,6 +56,7 @@ struct BLINK_COMMON_EXPORT StreamControls {
   // TODO(crbug.com/577627): this is now never set and needs to be removed.
   bool hotword_enabled = false;
   bool disable_local_echo = false;
+  bool suppress_local_audio_playback = false;
   bool exclude_system_audio = false;
   bool exclude_self_browser_surface = false;
   bool request_pan_tilt_zoom_permission = false;

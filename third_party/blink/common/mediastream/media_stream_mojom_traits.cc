@@ -62,12 +62,12 @@ bool StructTraits<blink::mojom::StreamControlsDataView, blink::StreamControls>::
     return false;
   if (!input.ReadVideo(&out->video))
     return false;
-#if DCHECK_IS_ON()
-  if (input.hotword_enabled() || input.disable_local_echo())
-    DCHECK(out->audio.requested);
-#endif
+  DCHECK(out->audio.requested ||
+         (!input.hotword_enabled() && !input.disable_local_echo() &&
+          !input.suppress_local_audio_playback()));
   out->hotword_enabled = input.hotword_enabled();
   out->disable_local_echo = input.disable_local_echo();
+  out->suppress_local_audio_playback = input.suppress_local_audio_playback();
   out->exclude_system_audio = input.exclude_system_audio();
   out->exclude_self_browser_surface = input.exclude_self_browser_surface();
   out->request_pan_tilt_zoom_permission =

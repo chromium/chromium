@@ -82,6 +82,13 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // audio being played out locally.
   bool disable_local_echo;
 
+  // Flag for desktop or tab share to indicate whether to prevent the captured
+  // audio being played out locally.
+  // This flag is distinct from |disable_local_echo|, because the former
+  // hooks into an old non-standard constraint that should be deprecated,
+  // whereas this flag hooks into a standardized option.
+  bool suppress_local_audio_playback = false;
+
   // If audio is requested, |exclude_system_audio| can indicate that
   // system-audio should nevertheless not be offered to the user.
   bool exclude_system_audio = false;

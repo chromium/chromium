@@ -321,6 +321,7 @@ TEST_P(MediaStreamCaptureIndicatorStreamTypeTest,
           /*request_pan_tilt_zoom_permission=*/false),
       source, content::DesktopMediaID(media_type, /*id=*/0),
       /*capture_audio=*/false, /*disable_local_echo=*/false,
+      /*suppress_local_audio_playback=*/false,
       /*display_notification=*/false, /*application_title=*/u"", devices);
   ASSERT_EQ(devices.video_device->type, video_stream_type);
 

@@ -688,6 +688,10 @@ void DesktopCaptureAccessHandler::AcceptRequest(
   std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
       pending_request->request, web_contents, media_id, capture_audio,
       pending_request->request.disable_local_echo,
+      // TODO(crbug.com/1378667): Support suppressLocalAudioPlayback for the
+      // extension API as well. If this happens as a result of merging
+      // DesktopCaptureAccessHandler and DisplayMediaAccessHandler, that's fine.
+      /*suppress_local_audio_playback=*/false,
       pending_request->should_display_notification,
       pending_request->application_title, stream_devices);
   DCHECK(stream_devices.audio_device.has_value() ||

@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
 
@@ -408,13 +409,14 @@ void MediaStreamDispatcherHost::GenerateStreams(
     GenerateStreamsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!AllowedStreamTypeCombination(controls.audio.stream_type,
-                                    controls.video.stream_type)) {
-    ReceivedBadMessage(render_process_id_,
-                       bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION);
+  const absl::optional<bad_message::BadMessageReason> bad_message =
+      ValidateControlsForGenerateStreams(controls);
+  if (bad_message.has_value()) {
+    ReceivedBadMessage(render_process_id_, bad_message.value());
     return;
   }
 
+  // TODO(crbug/1379794): Move into ValidateControlsForGenerateStreams().
   if (controls.video.stream_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET &&
       (!base::FeatureList::IsEnabled(features::kGetDisplayMediaSet) ||
@@ -730,6 +732,36 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
       base::BindRepeating(
           &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
           weak_factory_.GetWeakPtr()));
+}
+
+absl::optional<bad_message::BadMessageReason>
+MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
+    const blink::StreamControls& controls) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!AllowedStreamTypeCombination(controls.audio.stream_type,
+                                    controls.video.stream_type)) {
+    return bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION;
+  }
+
+  if (controls.audio.requested !=
+      blink::IsAudioInputMediaType(controls.audio.stream_type)) {
+    return bad_message::MSDH_INCONSISTENT_AUDIO_TYPE_AND_REQUESTED_FIELDS;
+  }
+
+  if (controls.video.requested !=
+      blink::IsVideoInputMediaType(controls.video.stream_type)) {
+    return bad_message::MSDH_INCONSISTENT_VIDEO_TYPE_AND_REQUESTED_FIELDS;
+  }
+
+  if (!controls.audio.requested) {
+    if (controls.suppress_local_audio_playback) {
+      return bad_message::
+          MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED;
+    }
+  }
+
+  return absl::nullopt;
 }
 
 void MediaStreamDispatcherHost::ReceivedBadMessage(

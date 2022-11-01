@@ -168,6 +168,11 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       std::unique_ptr<MediaStreamWebContentsObserver,
                       BrowserThread::DeleteOnUIThread> web_contents_observer);
 
+  // If valid, absl::nullopt is returned.
+  // If invalid, the relevant BadMessageReason is returned.
+  absl::optional<bad_message::BadMessageReason>
+  ValidateControlsForGenerateStreams(const blink::StreamControls& controls);
+
   void ReceivedBadMessage(int render_process_id,
                           bad_message::BadMessageReason reason);
 

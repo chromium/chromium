@@ -356,6 +356,8 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
   picker_params.exclude_system_audio =
       pending_request.request.exclude_system_audio;
+  picker_params.suppress_local_audio_playback =
+      pending_request.request.suppress_local_audio_playback;
   picker_params.restricted_by_policy =
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   picker_params.preferred_display_surface =
@@ -434,8 +436,8 @@ void DisplayMediaAccessHandler::AcceptRequest(
       *stream_devices_set.stream_devices[0];
   std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
       pending_request.request, web_contents, media_id, media_id.audio_share,
-      disable_local_echo, display_notification_,
-      GetApplicationTitle(web_contents), stream_devices);
+      disable_local_echo, pending_request.request.suppress_local_audio_playback,
+      display_notification_, GetApplicationTitle(web_contents), stream_devices);
   UpdateTarget(pending_request.request, media_id);
 
   std::move(pending_request.callback)

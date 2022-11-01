@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 57 tests; 54 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 58 tests; 55 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getDisplayMedia in navigator.mediaDevices
 FAIL getDisplayMedia() must require user activation assert_unreached: Should have rejected: getDisplayMedia should have returned an already-rejected promise. Reached unreachable code
 FAIL getDisplayMedia() must adhere to frameRate if set assert_greater_than_equal: expected a number greater than or equal to 2.5 but got NaN
@@ -57,5 +57,6 @@ PASS getDisplayMedia({"systemAudio":"exclude"}) must succeed
 PASS getDisplayMedia({"selfBrowserSurface":"invalid"}) must fail with TypeError
 PASS getDisplayMedia({"surfaceSwitching":"invalid"}) must fail with TypeError
 PASS getDisplayMedia({"systemAudio":"invalid"}) must fail with TypeError
+PASS suppressLocalAudioPlayback is supported
 Harness: the test ran to completion.
 

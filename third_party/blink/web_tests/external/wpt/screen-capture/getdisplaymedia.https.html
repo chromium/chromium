@@ -253,4 +253,10 @@ promise_test(async t => {
     'getDisplayMedia should have returned an already-rejected promise.');
 }, `getDisplayMedia(${j(constraints)}) must fail with TypeError`));
 
+test(() => {
+  const supportedConstraints =
+    navigator.mediaDevices.getSupportedConstraints();
+  assert_true(supportedConstraints.suppressLocalAudioPlayback);
+}, "suppressLocalAudioPlayback is supported");
+
 </script>

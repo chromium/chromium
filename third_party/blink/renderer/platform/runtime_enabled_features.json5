@@ -2605,6 +2605,14 @@
       status: "stable"
     },
     {
+      // Allow an application that's capturing a tab, to control whether
+      // the local audio playback of the captured tab is suppressed.
+      //
+      // https://w3c.github.io/mediacapture-screen-share/#dfn-suppresslocalaudioplayback
+      name: "SuppressLocalAudioPlayback",
+      status: "stable",
+    },
+    {
       // When a Web application calls getDisplayMedia() and asks for video,
       // allow a hint to be provided to offer the user an option to
       // dynamically switch the source display surface during the capture.

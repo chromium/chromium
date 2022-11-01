@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -192,15 +193,24 @@ void RecordUmaSelection(DialogType dialog_type,
 }
 
 std::u16string GetLabelForAudioCheckbox(DesktopMediaList::Type type,
-                                        bool local_audio_suppression) {
+                                        bool local_audio_suppression,
+                                        bool is_get_display_media_call) {
   switch (type) {
-    case DesktopMediaList::Type::kScreen:
+    case DesktopMediaList::Type::kScreen: {
+      bool show_warning = local_audio_suppression &&
+                          base::FeatureList::IsEnabled(
+                              kWarnUserOfSystemWideLocalAudioSuppression);
+      if (is_get_display_media_call &&
+          !base::FeatureList::IsEnabled(
+              ::kSuppressLocalAudioPlaybackForSystemAudio)) {
+        // Suppression blocked by killswitch, so no need to show a warning.
+        show_warning = false;
+      }
       return l10n_util::GetStringUTF16(
-          local_audio_suppression &&
-                  base::FeatureList::IsEnabled(
-                      kWarnUserOfSystemWideLocalAudioSuppression)
+          show_warning
               ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING
               : IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN);
+    }
     case DesktopMediaList::Type::kWindow:
       return l10n_util::GetStringUTF16(
           IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_WINDOW);
@@ -716,7 +726,8 @@ void DesktopMediaPickerDialogView::MaybeCreateAudioCheckboxForPane(
   // If we need the audio checkbox build and add it now.
   std::unique_ptr<views::Checkbox> audio_share_checkbox =
       std::make_unique<views::Checkbox>(GetLabelForAudioCheckbox(
-          category.type, suppress_local_audio_playback_));
+          category.type, suppress_local_audio_playback_,
+          is_get_display_media_call_));
   audio_share_checkbox->SetVisible(true);
   audio_share_checkbox->SetChecked(category.audio_checked);
   audio_share_checkbox->SetMultiLine(true);
@@ -819,10 +830,6 @@ bool DesktopMediaPickerDialogView::Accept() {
   source.audio_share = audio_share_checkbox_ &&
                        audio_share_checkbox_->GetVisible() &&
                        audio_share_checkbox_->GetChecked();
-  if (source.audio_share && dialog_type_ == DialogType::kPreferCurrentTab) {
-    source.web_contents_id.disable_local_echo = true;
-  }
-
   if (is_get_display_media_call_) {
     RecordUmaSelection(dialog_type_, capturer_global_id_, source,
                        GetSelectedSourceListType());

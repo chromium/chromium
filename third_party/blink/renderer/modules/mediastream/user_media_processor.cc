@@ -592,6 +592,9 @@ void UserMediaProcessor::SetupAudioInput() {
       current_request_info_->stream_controls();
   stream_controls->exclude_system_audio = request->exclude_system_audio();
 
+  stream_controls->suppress_local_audio_playback =
+      request->suppress_local_audio_playback();
+
   TrackControls& audio_controls = stream_controls->audio;
   InitializeAudioTrackControls(request, &audio_controls);
 

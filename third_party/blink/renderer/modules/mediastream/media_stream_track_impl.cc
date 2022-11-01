@@ -94,6 +94,9 @@ bool ConstraintSetHasImageCapture(
 
 bool ConstraintSetHasNonImageCapture(
     const MediaTrackConstraintSet* constraint_set) {
+  // TODO(crbug.com/1378667): Add hasSuppressLocalAudioPlayback() to this list
+  // and complete support for toggling suppressLocalAudioPlayback using
+  // the applyConstraints() API.
   return constraint_set->hasAspectRatio() ||
          constraint_set->hasChannelCount() || constraint_set->hasDeviceId() ||
          constraint_set->hasEchoCancellation() ||

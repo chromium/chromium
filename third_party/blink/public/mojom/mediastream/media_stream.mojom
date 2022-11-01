@@ -131,6 +131,7 @@ struct StreamControls {
   TrackControls video;
   bool hotword_enabled;
   bool disable_local_echo;
+  bool suppress_local_audio_playback;
   bool exclude_system_audio;
   bool exclude_self_browser_surface;
   bool request_pan_tilt_zoom_permission;

@@ -407,6 +407,7 @@ UserMediaRequest* UserMediaRequest::Create(
     return nullptr;
 
   std::string display_surface_constraint;
+  bool suppress_local_audio_playback = false;
 
   if (media_type == UserMediaRequestType::kUserMedia) {
     if (audio.IsNull() && video.IsNull()) {
@@ -474,6 +475,12 @@ UserMediaRequest* UserMediaRequest::Create(
       display_surface_constraint =
           video.Basic().display_surface.Ideal()[0].Utf8();
     }
+
+    if (!audio.IsNull() &&
+        audio.Basic().suppress_local_audio_playback.HasIdeal()) {
+      suppress_local_audio_playback =
+          audio.Basic().suppress_local_audio_playback.Ideal();
+    }
   }
 
   if (!audio.IsNull())
@@ -530,6 +537,8 @@ UserMediaRequest* UserMediaRequest::Create(
           V8SurfaceSwitchingPreferenceEnum::Enum::kInclude);
   if (media_type == UserMediaRequestType::kDisplayMedia)
     RecordSurfaceSwitchingConstraintUma(options);
+
+  result->set_suppress_local_audio_playback(suppress_local_audio_playback);
 
   return result;
 }

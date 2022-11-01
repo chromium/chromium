@@ -618,18 +618,22 @@ bool ValidateAndCopyConstraintSet(
     CopyLongConstraint(constraints_in->width(), naked_treatment,
                        constraint_buffer.width);
   }
+
   if (constraints_in->hasHeight()) {
     CopyLongConstraint(constraints_in->height(), naked_treatment,
                        constraint_buffer.height);
   }
+
   if (constraints_in->hasAspectRatio()) {
     CopyDoubleConstraint(constraints_in->aspectRatio(), naked_treatment,
                          constraint_buffer.aspect_ratio);
   }
+
   if (constraints_in->hasFrameRate()) {
     CopyDoubleConstraint(constraints_in->frameRate(), naked_treatment,
                          constraint_buffer.frame_rate);
   }
+
   if (constraints_in->hasFacingMode()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->facingMode(), naked_treatment,
@@ -638,6 +642,7 @@ bool ValidateAndCopyConstraintSet(
       return false;
     }
   }
+
   if (constraints_in->hasResizeMode()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->resizeMode(), naked_treatment,
@@ -646,34 +651,42 @@ bool ValidateAndCopyConstraintSet(
       return false;
     }
   }
+
   if (constraints_in->hasSampleRate()) {
     CopyLongConstraint(constraints_in->sampleRate(), naked_treatment,
                        constraint_buffer.sample_rate);
   }
+
   if (constraints_in->hasSampleSize()) {
     CopyLongConstraint(constraints_in->sampleSize(), naked_treatment,
                        constraint_buffer.sample_size);
   }
+
   if (constraints_in->hasEchoCancellation()) {
     CopyBooleanConstraint(constraints_in->echoCancellation(), naked_treatment,
                           constraint_buffer.echo_cancellation);
   }
+
   if (constraints_in->hasAutoGainControl()) {
     CopyBooleanConstraint(constraints_in->autoGainControl(), naked_treatment,
                           constraint_buffer.goog_auto_gain_control);
   }
+
   if (constraints_in->hasNoiseSuppression()) {
     CopyBooleanConstraint(constraints_in->noiseSuppression(), naked_treatment,
                           constraint_buffer.goog_noise_suppression);
   }
+
   if (constraints_in->hasLatency()) {
     CopyDoubleConstraint(constraints_in->latency(), naked_treatment,
                          constraint_buffer.latency);
   }
+
   if (constraints_in->hasChannelCount()) {
     CopyLongConstraint(constraints_in->channelCount(), naked_treatment,
                        constraint_buffer.channel_count);
   }
+
   if (constraints_in->hasDeviceId()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->deviceId(), naked_treatment,
@@ -682,6 +695,7 @@ bool ValidateAndCopyConstraintSet(
       return false;
     }
   }
+
   if (constraints_in->hasGroupId()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->groupId(), naked_treatment,
@@ -690,18 +704,22 @@ bool ValidateAndCopyConstraintSet(
       return false;
     }
   }
+
   if (constraints_in->hasPan()) {
     CopyBooleanOrDoubleConstraint(constraints_in->pan(), naked_treatment,
                                   constraint_buffer.pan);
   }
+
   if (constraints_in->hasTilt()) {
     CopyBooleanOrDoubleConstraint(constraints_in->tilt(), naked_treatment,
                                   constraint_buffer.tilt);
   }
+
   if (constraints_in->hasZoom()) {
     CopyBooleanOrDoubleConstraint(constraints_in->zoom(), naked_treatment,
                                   constraint_buffer.zoom);
   }
+
   if (constraints_in->hasDisplaySurface()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->displaySurface(), naked_treatment,
@@ -709,6 +727,12 @@ bool ValidateAndCopyConstraintSet(
       DCHECK(error_state.HadException());
       return false;
     }
+  }
+
+  if (constraints_in->hasSuppressLocalAudioPlayback()) {
+    CopyBooleanConstraint(constraints_in->suppressLocalAudioPlayback(),
+                          naked_treatment,
+                          constraint_buffer.suppress_local_audio_playback);
   }
   return true;
 }
@@ -983,6 +1007,10 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
     output->setTilt(ConvertBooleanOrDouble(input.tilt, naked_treatment));
   if (!input.zoom.IsUnconstrained())
     output->setZoom(ConvertBooleanOrDouble(input.zoom, naked_treatment));
+  if (!input.suppress_local_audio_playback.IsUnconstrained()) {
+    output->setSuppressLocalAudioPlayback(
+        ConvertBoolean(input.suppress_local_audio_playback, naked_treatment));
+  }
   // TODO(hta): Decide the future of the nonstandard constraints.
   // If they go forward, they need to be added here.
   // https://crbug.com/605673

@@ -597,6 +597,7 @@ class MediaStreamDispatcherHostStreamTypeCombinationTest
 TEST_P(MediaStreamDispatcherHostStreamTypeCombinationTest,
        GenerateStreamWithStreamTypeCombination) {
   using blink::mojom::MediaStreamType;
+
   std::set<std::tuple<MediaStreamType, MediaStreamType>> kValidCombinations = {
       {MediaStreamType::NO_SERVICE, MediaStreamType::NO_SERVICE},
       {MediaStreamType::NO_SERVICE, MediaStreamType::DEVICE_VIDEO_CAPTURE},
@@ -618,11 +619,18 @@ TEST_P(MediaStreamDispatcherHostStreamTypeCombinationTest,
        MediaStreamType::DISPLAY_VIDEO_CAPTURE},
       {MediaStreamType::DISPLAY_AUDIO_CAPTURE,
        MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB}};
+
   blink::StreamControls controls;
+
   controls.audio.stream_type =
       static_cast<MediaStreamType>(std::get<0>(GetParam()));
+  controls.audio.requested =
+      (controls.audio.stream_type != MediaStreamType::NO_SERVICE);
+
   controls.video.stream_type =
       static_cast<MediaStreamType>(std::get<1>(GetParam()));
+  controls.video.requested =
+      (controls.video.stream_type != MediaStreamType::NO_SERVICE);
 
   SetupFakeUI(true);
   EXPECT_CALL(
@@ -643,6 +651,71 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Range(
             static_cast<int>(blink::mojom::MediaStreamType::NO_SERVICE),
             static_cast<int>(blink::mojom::MediaStreamType::NUM_MEDIA_TYPES))));
+
+TEST_F(MediaStreamDispatcherHostTest,
+       BadMessageIfAudioRequestedButTypeIsNoService) {
+  using blink::mojom::MediaStreamType;
+
+  blink::StreamControls controls;
+  controls.audio.requested = true;
+  controls.audio.stream_type = MediaStreamType::NO_SERVICE;
+  controls.video.requested = true;
+  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+
+  SetupFakeUI(true);
+
+  EXPECT_CALL(
+      *this,
+      MockOnBadMessage(
+          kProcessId,
+          bad_message::MSDH_INCONSISTENT_AUDIO_TYPE_AND_REQUESTED_FIELDS))
+      .Times(1);
+  host_->OnGenerateStreams(kPageRequestId, controls);
+}
+
+TEST_F(MediaStreamDispatcherHostTest,
+       BadMessageIfVideoRequestedButTypeIsNoService) {
+  using blink::mojom::MediaStreamType;
+
+  blink::StreamControls controls;
+  controls.audio.requested = false;
+  controls.audio.stream_type = MediaStreamType::NO_SERVICE;
+  controls.video.requested = true;
+  controls.video.stream_type = MediaStreamType::NO_SERVICE;
+
+  SetupFakeUI(true);
+
+  EXPECT_CALL(
+      *this,
+      MockOnBadMessage(
+          kProcessId,
+          bad_message::MSDH_INCONSISTENT_VIDEO_TYPE_AND_REQUESTED_FIELDS))
+      .Times(1);
+  host_->OnGenerateStreams(kPageRequestId, controls);
+}
+
+TEST_F(MediaStreamDispatcherHostTest,
+       BadMessageIfAudioNotRequestedAndSuppressLocalAudioPlayback) {
+  using blink::mojom::MediaStreamType;
+
+  blink::StreamControls controls;
+  controls.audio.requested = false;
+  controls.audio.stream_type = MediaStreamType::NO_SERVICE;
+  controls.video.requested = true;
+  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  controls.suppress_local_audio_playback = true;
+
+  SetupFakeUI(true);
+
+  EXPECT_CALL(
+      *this,
+      MockOnBadMessage(
+          kProcessId,
+          bad_message::
+              MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED))
+      .Times(1);
+  host_->OnGenerateStreams(kPageRequestId, controls);
+}
 
 // This test simulates a shutdown scenario: we don't setup a fake UI proxy for
 // MediaStreamManager, so it will create an ordinary one which will not find

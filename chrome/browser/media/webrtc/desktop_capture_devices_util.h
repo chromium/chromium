@@ -7,12 +7,15 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+
+BASE_DECLARE_FEATURE(kSuppressLocalAudioPlaybackForSystemAudio);
 
 // Helper to get the list of media stream devices for desktop capture and store
 // them in |out_devices|. Registers to display notification if
@@ -24,6 +27,7 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     const content::DesktopMediaID& media_id,
     bool capture_audio,
     bool disable_local_echo,
+    bool suppress_local_audio_playback,
     bool display_notification,
     const std::u16string& application_title,
     blink::mojom::StreamDevices& out_devices);

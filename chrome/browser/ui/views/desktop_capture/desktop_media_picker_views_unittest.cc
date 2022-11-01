@@ -423,10 +423,6 @@ TEST_P(DesktopMediaPickerViewsTest, DoneWithAudioShare) {
   constexpr DesktopMediaID kOriginId(DesktopMediaID::TYPE_WEB_CONTENTS, 222);
 
   DesktopMediaID result_id(DesktopMediaID::TYPE_WEB_CONTENTS, 222, true);
-  if (PreferCurrentTab()) {
-    // Prefer-current-tab used, and therefore disable_local_echo=true.
-    result_id.web_contents_id.disable_local_echo = true;
-  }
 
   // This matches the real workflow that when a source is generated in
   // media_list, its |audio_share| bit is not set. The bit is set by the picker

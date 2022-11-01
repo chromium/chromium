@@ -802,6 +802,8 @@ class MediaStreamManager::DeviceRequest {
         requested_audio_device_id, requested_video_device_id, audio_type_,
         video_type_, controls.disable_local_echo,
         controls.request_pan_tilt_zoom_permission);
+    ui_request_->suppress_local_audio_playback =
+        controls.suppress_local_audio_playback;
     ui_request_->exclude_system_audio = controls.exclude_system_audio;
     ui_request_->exclude_self_browser_surface =
         controls.exclude_self_browser_surface;

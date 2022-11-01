@@ -104,6 +104,11 @@ struct BLINK_COMMON_EXPORT
     return controls.disable_local_echo;
   }
 
+  static bool suppress_local_audio_playback(
+      const blink::StreamControls& controls) {
+    return controls.suppress_local_audio_playback;
+  }
+
   static bool exclude_system_audio(const blink::StreamControls& controls) {
     return controls.exclude_system_audio;
   }
