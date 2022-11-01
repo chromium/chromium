@@ -3278,6 +3278,7 @@
       },
       'Win10 Tests x64': {
         'swarming': {
+          'shards': 3,
           'quickrun_shards': 3,
         },
       },
