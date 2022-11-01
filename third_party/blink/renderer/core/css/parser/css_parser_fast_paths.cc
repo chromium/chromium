@@ -147,6 +147,51 @@ static CSSValue* ParseSimpleLengthValue(CSSPropertyID property_id,
   return CSSNumericLiteralValue::Create(number, unit);
 }
 
+// Parses Opacity numeric values and in 'percent' form.
+static CSSValue* ParseOpacityValue(CSSPropertyID property_id,
+                                   const String& string) {
+  DCHECK(!string.empty());
+
+  if (property_id != CSSPropertyID::kOpacity) {
+    return nullptr;
+  }
+
+  double number;
+  const bool parsed_opacity =
+      WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+        bool is_percent = false;
+        if (length > 1 && chars[length - 1] == '%') {
+          --length;
+          is_percent = true;
+        }
+
+        // We rely on charactersToDouble for validation as well. The function
+        // will set "ok" to "false" if the entire passed-in character range does
+        // not represent a double.
+        bool ok;
+        number = CharactersToDouble(chars, length, &ok);
+        if (!ok) {
+          return false;
+        }
+
+        if (is_percent) {
+          number *= 0.01;
+        }
+
+        number = ClampTo<double>(number, -std::numeric_limits<float>::max(),
+                                 std::numeric_limits<float>::max());
+
+        return true;
+      });
+
+  if (!parsed_opacity) {
+    return nullptr;
+  }
+
+  return CSSNumericLiteralValue::Create(number,
+                                        CSSPrimitiveValue::UnitType::kNumber);
+}
+
 template <typename CharacterType>
 static inline bool ParseSimpleAngle(const CharacterType* characters,
                                     unsigned length,
@@ -1710,6 +1755,8 @@ CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
     return length;
   if (CSSValue* color = blink::ParseColor(property_id, string, parser_mode))
     return color;
+  if (CSSValue* opacity = ParseOpacityValue(property_id, string))
+    return opacity;
   if (CSSValue* keyword = ParseKeywordValue(property_id, string, parser_mode))
     return keyword;
   if (CSSValue* transform = ParseSimpleTransform(property_id, string))
