@@ -23,6 +23,10 @@
   padding-inline-start: 15px;
 }
 
+#subprocess_checkbox_container {
+  margin: 16px 0;
+}
+
 @media (prefers-color-scheme: dark) {
   .histogram-header {
     background-color: rgba(255, 255, 255, 0.1);

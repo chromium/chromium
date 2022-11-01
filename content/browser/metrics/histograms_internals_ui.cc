@@ -38,6 +38,7 @@ const char kHistogramsUIFetchDiff[] = "fetchDiff";
 struct JsParams {
   std::string callback_id;
   std::string query;
+  bool include_subprocesses;
 };
 
 WebUIDataSource* CreateHistogramsHTMLSource() {
@@ -72,6 +73,10 @@ class HistogramsMessageHandler : public WebUIMessageHandler {
   // Calls AllowJavascript() and unpacks the passed params.
   JsParams AllowJavascriptAndUnpackParams(const base::Value::List& args);
 
+  // Import histograms, and those from subprocesses if |include_subprocesses| is
+  // true.
+  void ImportHistograms(bool include_subprocesses);
+
   HistogramsMonitor histogram_monitor_;
 };
 
@@ -87,14 +92,21 @@ JsParams HistogramsMessageHandler::AllowJavascriptAndUnpackParams(
     params.callback_id = args_list[0].GetString();
   if (args_list.size() > 1u && args_list[1].is_string())
     params.query = args_list[1].GetString();
+  if (args_list.size() > 2u && args_list[2].is_bool())
+    params.include_subprocesses = args_list[2].GetBool();
   return params;
+}
+
+void HistogramsMessageHandler::ImportHistograms(bool include_subprocesses) {
+  base::StatisticsRecorder::ImportProvidedHistograms();
+  if (include_subprocesses)
+    HistogramSynchronizer::FetchHistograms();
 }
 
 void HistogramsMessageHandler::HandleRequestHistograms(
     const base::Value::List& args) {
-  base::StatisticsRecorder::ImportProvidedHistograms();
-  HistogramSynchronizer::FetchHistograms();
   JsParams params = AllowJavascriptAndUnpackParams(args);
+  ImportHistograms(params.include_subprocesses);
   base::Value::List histograms_list;
   for (base::HistogramBase* histogram :
        base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
@@ -110,6 +122,7 @@ void HistogramsMessageHandler::HandleRequestHistograms(
 void HistogramsMessageHandler::HandleStartMoninoring(
     const base::Value::List& args) {
   JsParams params = AllowJavascriptAndUnpackParams(args);
+  ImportHistograms(params.include_subprocesses);
   histogram_monitor_.StartMonitoring(params.query);
   ResolveJavascriptCallback(base::Value(params.callback_id),
                             base::Value("Success"));
@@ -117,6 +130,7 @@ void HistogramsMessageHandler::HandleStartMoninoring(
 
 void HistogramsMessageHandler::HandleFetchDiff(const base::Value::List& args) {
   JsParams params = AllowJavascriptAndUnpackParams(args);
+  ImportHistograms(params.include_subprocesses);
   base::Value::List histograms_list = histogram_monitor_.GetDiff();
   ResolveJavascriptCallback(base::Value(params.callback_id),
                             std::move(histograms_list));

@@ -36,41 +36,56 @@ HistogramsInternalsUIBrowserTest.prototype = {
   ],
 };
 
+/**
+ * @returns {Promise} a Promise that will resolve on the histograms tag
+ * receiving a 'histograms-updated-for-test' event.
+ */
+async function histogramsUpdated() {
+  return new Promise((resolve) => {
+    document.querySelector('#histograms')
+        .addEventListener('histograms-updated-for-test', resolve);
+  });
+}
+
+/**
+ * @returns {Promise} a Promise that will resolve when there is at least one
+ * histogram shown on the page.
+ */
+async function histogramsAreShown() {
+  return new Promise((resolve) => {
+    const checkHistograms = () => {
+      if (document.querySelector('#histograms').childElementCount > 0) {
+        resolve();
+      } else {
+        setTimeout(checkHistograms, 250);
+      }
+    };
+    checkHistograms();
+  });
+}
+
 TEST_F('HistogramsInternalsUIBrowserTest', 'RefreshHistograms', function() {
-  test(
-      'check refresh button replaces existing histograms', function() {
-        const whenRefreshed = new Promise((resolve, reject) => {
-          document.querySelector('#histograms')
-              .addEventListener('histograms-updated-for-test', resolve);
-        });
-        document.querySelector('#refresh').click();
-        return whenRefreshed.then(() => {
-          const histogramHeader = 'Histogram: HTMLOut recorded 5 samples';
-          assertEquals(
-              document.body.textContent.indexOf(histogramHeader),
-              document.body.textContent.lastIndexOf(histogramHeader),
-              'refresh should replace existing histograms');
-        });
-      });
+  test('check refresh button replaces existing histograms', async function() {
+    document.querySelector('#refresh').click();
+    await histogramsUpdated();
+    const histogramHeader = 'Histogram: HTMLOut recorded 5 samples';
+    assertEquals(
+        document.body.textContent.indexOf(histogramHeader),
+        document.body.textContent.lastIndexOf(histogramHeader),
+        'refresh should replace existing histograms');
+  });
 
   mocha.run();
 });
 
 TEST_F('HistogramsInternalsUIBrowserTest', 'NoDummyHistograms', function() {
-  test(
-      'check no dummy histogram is present', function() {
-        const whenRefreshed = new Promise((resolve, reject) => {
-          document.querySelector('#histograms')
-              .addEventListener('histograms-updated-for-test', resolve);
-        });
-        document.querySelector('#refresh').click();
-        return whenRefreshed.then(() => {
-          document.querySelectorAll('.histogram-header-text')
-              .forEach(header => {
-                assertNotEquals(header.textContent, '');
-              });
-        });
-      });
+  test('check no dummy histogram is present', async function() {
+    document.querySelector('#refresh').click();
+    await histogramsUpdated();
+    document.querySelectorAll('.histogram-header-text').forEach(header => {
+      assertNotEquals(header.textContent, '');
+    });
+  });
 
   mocha.run();
 });
@@ -99,22 +114,62 @@ TEST_F('HistogramsInternalsUIBrowserTest', 'DownloadHistograms', function() {
 
 TEST_F('HistogramsInternalsUIBrowserTest', 'StopMonitoring', function() {
   test('check page stops updating', async function() {
-    // Make sure page is loaded after switching to monitoring mode.
-    const loaded = new Promise((resolve, reject) => {
-      document.querySelector('#histograms')
-          .addEventListener('histograms-updated-for-test', resolve);
-    });
     document.querySelector('#enable_monitoring').click();
-    await loaded;
+    // Wait until histograms are updated in monitoring mode.
+    await histogramsUpdated();
+
     const stopButton = document.querySelector('#stop');
-    assertEquals(document.monitoringStopped(), false);
+    assertFalse(document.monitoringStopped());
     assertEquals(stopButton.textContent, 'Stop');
-    assertEquals(stopButton.disabled, false);
+    assertFalse(stopButton.disabled);
+
     stopButton.click();
-    assertEquals(document.monitoringStopped(), true);
+    assertTrue(document.monitoringStopped());
     assertEquals(stopButton.textContent, 'Stopped');
-    assertEquals(stopButton.disabled, true);
+    assertTrue(stopButton.disabled);
   });
 
   mocha.run();
 });
+
+TEST_F('HistogramsInternalsUIBrowserTest', 'SubprocessCheckbox', function() {
+  test('check refresh histograms from clicking on checkbox', async function() {
+    await histogramsAreShown();
+    const subprocessCheckbox = document.querySelector('#subprocess_checkbox');
+    assertFalse(subprocessCheckbox.disabled);
+    assertFalse(subprocessCheckbox.hasAttribute('title'));
+    subprocessCheckbox.click();
+    await histogramsUpdated();
+  });
+
+  mocha.run();
+});
+
+TEST_F(
+    'HistogramsInternalsUIBrowserTest', 'SubprocessCheckboxInMonitoringMode',
+    function() {
+      test(
+          'check refresh histograms from clicking on checkbox',
+          async function() {
+            // Enable monitoring mode.
+            document.querySelector('#enable_monitoring').click();
+            await histogramsAreShown();
+            const subprocessCheckbox =
+                document.querySelector('#subprocess_checkbox');
+            // Subprocess checkbox will be disabled when monitoring mode is on.
+            assertTrue(subprocessCheckbox.disabled);
+            assertTrue(subprocessCheckbox.hasAttribute('title'));
+
+            // Stop monitoring mode.
+            document.querySelector('#stop').click();
+            assertTrue(subprocessCheckbox.disabled);
+
+            // Exit monitoring mode.
+            document.querySelector('#disable_monitoring').click();
+            await histogramsAreShown();
+            // Subprocess checkbox should be enabled again.
+            assertFalse(subprocessCheckbox.disabled);
+          });
+
+      mocha.run();
+    });

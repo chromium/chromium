@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
-#include "content/browser/metrics/histogram_synchronizer.h"
 
 namespace content {
 
@@ -16,7 +15,6 @@ HistogramsMonitor::~HistogramsMonitor() = default;
 
 void HistogramsMonitor::StartMonitoring(const std::string& query) {
   query_ = query;
-  FetchHistograms();
   histograms_snapshot_.clear();
   // Save a snapshot of all current histograms that will be used as a baseline.
   for (const auto* const histogram : base::StatisticsRecorder::WithName(
@@ -27,16 +25,10 @@ void HistogramsMonitor::StartMonitoring(const std::string& query) {
 }
 
 base::Value::List HistogramsMonitor::GetDiff() {
-  FetchHistograms();
   base::StatisticsRecorder::Histograms histograms =
       base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
           base::StatisticsRecorder::GetHistograms(), query_));
   return GetDiffInternal(histograms);
-}
-
-void HistogramsMonitor::FetchHistograms() {
-  base::StatisticsRecorder::ImportProvidedHistograms();
-  HistogramSynchronizer::FetchHistograms();
 }
 
 base::Value::List HistogramsMonitor::GetDiffInternal(

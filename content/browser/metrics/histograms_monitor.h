@@ -16,6 +16,11 @@ namespace content {
 // This class handles the monitoring feature of chrome://histograms page,
 // which allows the page to be updated with histograms logged since
 // the monitoring started.
+//
+// Note that this class does not handle merging histograms from any
+// |HistogramProvider| instances. It also does not handle synchronizing
+// histograms from subprocesses. The caller has the responsibility for these
+// beforehand.
 class CONTENT_EXPORT HistogramsMonitor {
  public:
   HistogramsMonitor();
@@ -33,11 +38,6 @@ class CONTENT_EXPORT HistogramsMonitor {
   base::Value::List GetDiff();
 
  private:
-  // Imports histograms from the StatisticsRecorder.
-  // Also contacts all processes, and gets them to upload to the browser any/all
-  // changes to histograms.
-  void FetchHistograms();
-
   // Gets the difference between the histograms argument and the stored snapshot
   // recorded in StartMonitoring().
   base::Value::List GetDiffInternal(
