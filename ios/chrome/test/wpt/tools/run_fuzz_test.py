@@ -116,8 +116,8 @@ parser.add_argument('--port', default='9999',
     help='The port to listen on for WebDriver commands')
 parser.add_argument('--build-dir', default=GetDefaultBuildDir(),
     help='Chrome build directory')
-parser.add_argument('--os', default='15.5', help='iOS version')
-parser.add_argument('--device', default='iPhone 11 Pro', help='Device type')
+parser.add_argument('--os', required=True, help='iOS version')
+parser.add_argument('--device', required=True, help='Device type')
 parser.add_argument('filename', help='Input test file')
 args = parser.parse_args()
 
