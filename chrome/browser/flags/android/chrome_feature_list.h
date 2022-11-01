@@ -103,7 +103,6 @@ BASE_DECLARE_FEATURE(kImprovedA2HS);
 BASE_DECLARE_FEATURE(kInstanceSwitcher);
 BASE_DECLARE_FEATURE(kInstantStart);
 BASE_DECLARE_FEATURE(kIsVoiceSearchEnabledCache);
-BASE_DECLARE_FEATURE(kKitKatSupported);
 BASE_DECLARE_FEATURE(kLanguagesPreference);
 BASE_DECLARE_FEATURE(kLensCameraAssistedSearch);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);

@@ -255,7 +255,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInstanceSwitcher,
     &kInstantStart,
     &kIsVoiceSearchEnabledCache,
-    &kKitKatSupported,
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
     &kNewInstanceFromDraggedLink,
@@ -802,10 +801,6 @@ BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIsVoiceSearchEnabledCache,
              "IsVoiceSearchEnabledCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kKitKatSupported,
-             "KitKatSupported",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchEnginePromoExistingDevice,
              "SearchEnginePromo.ExistingDevice",
