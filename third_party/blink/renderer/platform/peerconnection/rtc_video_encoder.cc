@@ -164,6 +164,26 @@ class EncodedDataWrapper : public webrtc::EncodedImageBufferInterface {
   base::OnceClosure reuse_buffer_callback_;
 };
 
+struct FrameChunk {
+  FrameChunk(const webrtc::VideoFrame& input_image, bool force_keyframe)
+      : video_frame_buffer(input_image.video_frame_buffer()),
+        timestamp(input_image.timestamp()),
+        timestamp_us(input_image.timestamp_us()),
+        render_time_ms(input_image.render_time_ms()),
+        force_keyframe(force_keyframe) {
+    DCHECK(video_frame_buffer);
+  }
+
+  const rtc::scoped_refptr<webrtc::VideoFrameBuffer> video_frame_buffer;
+  // TODO(b/241349739): timestamp and timestamp_us should be unified as one
+  // base::TimeDelta.
+  const uint32_t timestamp;
+  const uint64_t timestamp_us;
+  const int64_t render_time_ms;
+
+  const bool force_keyframe;
+};
+
 bool ConvertKbpsToBps(uint32_t bitrate_kbps, uint32_t* bitrate_bps) {
   if (!base::IsValueInRangeForNumericType<uint32_t>(bitrate_kbps *
                                                     UINT64_C(1000))) {
@@ -188,6 +208,12 @@ struct CrossThreadCopier<
     std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>>
     : public CrossThreadCopierPassThrough<
           std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<FrameChunk>
+    : public CrossThreadCopierPassThrough<FrameChunk> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -504,9 +530,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // Enqueue a frame from WebRTC for encoding.
   // RTCVideoEncoder expects to be able to call this function synchronously from
   // its own thread, hence the |encode_event| argument.
-  void Enqueue(const webrtc::VideoFrame* input_frame,
-               bool force_keyframe,
-               SignaledValue encode_event);
+  void Enqueue(FrameChunk frame_chunk, SignaledValue encode_event);
 
   // RTCVideoEncoder is given a buffer to be passed to WebRTC through the
   // RTCVideoEncoder::ReturnEncodedImage() function.  When that is complete,
@@ -546,11 +570,11 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
                          media::VideoEncodeAccelerator::Error error);
 
   // Perform encoding on an input frame from the input queue.
-  void EncodeOneFrame();
+  void EncodeOneFrame(FrameChunk frame_chunk);
 
   // Perform encoding on an input frame from the input queue using VEA native
   // input mode.  The input frame must be backed with GpuMemoryBuffer buffers.
-  void EncodeOneFrameWithNativeInput();
+  void EncodeOneFrameWithNativeInput(FrameChunk frame_chunk);
 
   // Creates a GpuMemoryBuffer frame filled with black pixels. Returns true if
   // the frame is successfully created; false otherwise.
@@ -603,12 +627,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // matching.
   bool failed_timestamp_match_{false};
 
-  // Next input frame.  Since there is at most one next frame, a single-element
-  // queue is sufficient.
-  const webrtc::VideoFrame* input_next_frame_{nullptr};
-
-  // Whether to encode a keyframe next.
-  bool input_next_frame_keyframe_{false};
+  // Next input frame chunk. Since there is at most one next frame chunk, a
+  // single-element queue is sufficient.
+  absl::optional<FrameChunk> next_frame_chunk_;
 
   // Frame sizes.
   gfx::Size input_frame_coded_size_;
@@ -829,14 +850,13 @@ void RTCVideoEncoder::Impl::NotifyEncoderInfoChange(
   encoder_info_ = CopyToWebrtcEncoderInfo(info);
 }
 
-void RTCVideoEncoder::Impl::Enqueue(const webrtc::VideoFrame* input_frame,
-                                    bool force_keyframe,
+void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
                                     SignaledValue encode_event) {
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::Enqueue", "timestamp",
-               input_frame->timestamp());
+               frame_chunk.timestamp);
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!input_next_frame_);
+  DCHECK(!next_frame_chunk_);
 
   if (status_ != WEBRTC_VIDEO_CODEC_OK) {
     encode_event.Set(status_);
@@ -869,19 +889,21 @@ void RTCVideoEncoder::Impl::Enqueue(const webrtc::VideoFrame* input_frame,
     encode_event.Signal();
     return;
   }
-  input_next_frame_ = input_frame;
-  input_next_frame_keyframe_ = force_keyframe;
+  next_frame_chunk_.emplace(std::move(frame_chunk));
   async_encode_event_ = ScopedSignaledValue(std::move(encode_event));
 
   // If |use_native_input_| is true, then we always queue the frame to the
   // encoder since no intermediate buffer is needed in RTCVideoEncoder.
   if (use_native_input_) {
-    EncodeOneFrameWithNativeInput();
+    EncodeOneFrameWithNativeInput(std::move(*next_frame_chunk_));
+    next_frame_chunk_.reset();
     return;
   }
 
-  if (!input_buffers_free_.empty())
-    EncodeOneFrame();
+  if (!input_buffers_free_.empty()) {
+    EncodeOneFrame(std::move(*next_frame_chunk_));
+    next_frame_chunk_.reset();
+  }
 }
 
 void RTCVideoEncoder::Impl::UseOutputBitstreamBufferId(
@@ -1288,41 +1310,32 @@ void RTCVideoEncoder::Impl::LogAndNotifyError(
   NotifyError(error);
 }
 
-void RTCVideoEncoder::Impl::EncodeOneFrame() {
+void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   DVLOG(3) << "Impl::EncodeOneFrame()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(input_next_frame_);
   DCHECK(!input_buffers_free_.empty());
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::EncodeOneFrame", "timestamp",
-               input_next_frame_->timestamp());
+               frame_chunk.timestamp);
 
-  // EncodeOneFrame() may re-enter InputBufferReleased() if VEA::Encode() fails,
-  // we receive a VEA::NotifyError(), and the media::VideoFrame we pass to
-  // Encode() gets destroyed early.  Handle this by resetting our
-  // input_next_frame_* state before we hand off the VideoFrame to the VEA.
-  const webrtc::VideoFrame* next_frame = input_next_frame_;
-  const bool next_frame_keyframe = input_next_frame_keyframe_;
-  input_next_frame_ = nullptr;
-  input_next_frame_keyframe_ = false;
   if (!video_encoder_) {
     async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
     return;
   }
 
   const base::TimeDelta timestamp =
-      base::Microseconds(next_frame->timestamp_us());
+      base::Microseconds(frame_chunk.timestamp_us);
 
   scoped_refptr<media::VideoFrame> frame;
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
-      next_frame->video_frame_buffer();
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
+      frame_chunk.video_frame_buffer;
 
   // All non-native frames require a copy because we can't tell if non-copy
   // conditions are met.
   bool requires_copy_or_scale =
-      buffer->type() != webrtc::VideoFrameBuffer::Type::kNative;
+      frame_buffer->type() != webrtc::VideoFrameBuffer::Type::kNative;
   if (!requires_copy_or_scale) {
     const WebRtcVideoFrameAdapter* frame_adapter =
-        static_cast<WebRtcVideoFrameAdapter*>(buffer.get());
+        static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get());
     frame = frame_adapter->getMediaVideoFrame();
     frame->set_timestamp(timestamp);
     const media::VideoFrame::StorageType storage = frame->storage_type();
@@ -1348,7 +1361,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
     // frame that we pass to the encoder fits the input requirements.
     bool native_buffer_scaling =
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-        buffer->type() == webrtc::VideoFrameBuffer::Type::kNative &&
+        frame_buffer->type() == webrtc::VideoFrameBuffer::Type::kNative &&
         input_frame_coded_size_ == input_visible_size_;
 #else
         // TODO(https://crbug.com/1307206): Android (e.g. android-pie-arm64-rel)
@@ -1357,9 +1370,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
         false;
 #endif
     if (native_buffer_scaling) {
-      DCHECK_EQ(buffer->type(), webrtc::VideoFrameBuffer::Type::kNative);
-      auto scaled_buffer = buffer->Scale(input_visible_size_.width(),
-                                         input_visible_size_.height());
+      DCHECK_EQ(frame_buffer->type(), webrtc::VideoFrameBuffer::Type::kNative);
+      auto scaled_buffer = frame_buffer->Scale(input_visible_size_.width(),
+                                               input_visible_size_.height());
       auto mapped_buffer =
           scaled_buffer->GetMappedFrameBuffer(preferred_pixel_formats_);
       if (!mapped_buffer) {
@@ -1415,12 +1428,12 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
       // the input requirements for the encoder.
       // TODO(magjed): Downscale with an image pyramid instead.
       rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer =
-          next_frame->video_frame_buffer()->ToI420();
+          frame_buffer->ToI420();
       if (libyuv::I420Scale(
               i420_buffer->DataY(), i420_buffer->StrideY(),
               i420_buffer->DataU(), i420_buffer->StrideU(),
-              i420_buffer->DataV(), i420_buffer->StrideV(), next_frame->width(),
-              next_frame->height(),
+              i420_buffer->DataV(), i420_buffer->StrideV(),
+              i420_buffer->width(), i420_buffer->height(),
               frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
               frame->stride(media::VideoFrame::kYPlane),
               frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
@@ -1447,26 +1460,21 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   if (!failed_timestamp_match_) {
     DCHECK(!base::Contains(submitted_frames_, timestamp,
                            &FrameInfo::media_timestamp_));
-    submitted_frames_.emplace_back(timestamp, next_frame->timestamp(),
-                                   next_frame->render_time_ms(),
+    submitted_frames_.emplace_back(timestamp, frame_chunk.timestamp,
+                                   frame_chunk.render_time_ms,
                                    ActiveSpatialResolutions());
   }
-  video_encoder_->Encode(frame, next_frame_keyframe);
+  video_encoder_->Encode(frame, frame_chunk.force_keyframe);
   async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
 }
 
-void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
+void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
+    FrameChunk frame_chunk) {
   DVLOG(3) << "Impl::EncodeOneFrameWithNativeInput()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(input_buffers_.empty() && input_buffers_free_.empty());
-  DCHECK(input_next_frame_);
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput",
-               "timestamp", input_next_frame_->timestamp());
-
-  const webrtc::VideoFrame* next_frame = input_next_frame_;
-  const bool next_frame_keyframe = input_next_frame_keyframe_;
-  input_next_frame_ = nullptr;
-  input_next_frame_keyframe_ = false;
+               "timestamp", frame_chunk.timestamp);
 
   if (!video_encoder_) {
     async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
@@ -1474,12 +1482,13 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
   }
 
   scoped_refptr<media::VideoFrame> frame;
-  if (next_frame->video_frame_buffer()->type() !=
-      webrtc::VideoFrameBuffer::Type::kNative) {
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
+      frame_chunk.video_frame_buffer;
+  if (frame_buffer->type() != webrtc::VideoFrameBuffer::Type::kNative) {
     // If we get a non-native frame it's because the video track is disabled and
     // WebRTC VideoBroadcaster replaces the camera frame with a black YUV frame.
     if (!black_gmb_frame_) {
-      gfx::Size natural_size(next_frame->width(), next_frame->height());
+      gfx::Size natural_size(frame_buffer->width(), frame_buffer->height());
       if (!CreateBlackGpuMemoryBufferFrame(natural_size)) {
         DVLOG(2) << "Failed to allocate native buffer for black frame";
         async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
@@ -1490,11 +1499,10 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
         black_gmb_frame_, black_gmb_frame_->format(),
         black_gmb_frame_->visible_rect(), black_gmb_frame_->natural_size());
   } else {
-    frame = static_cast<WebRtcVideoFrameAdapter*>(
-                next_frame->video_frame_buffer().get())
+    frame = static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get())
                 ->getMediaVideoFrame();
   }
-  frame->set_timestamp(base::Microseconds(next_frame->timestamp_us()));
+  frame->set_timestamp(base::Microseconds(frame_chunk.timestamp_us));
 
   if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     LogAndNotifyError(FROM_HERE, "frame isn't GpuMemoryBuffer based VideoFrame",
@@ -1505,11 +1513,11 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
   if (!failed_timestamp_match_) {
     DCHECK(!base::Contains(submitted_frames_, frame->timestamp(),
                            &FrameInfo::media_timestamp_));
-    submitted_frames_.emplace_back(frame->timestamp(), next_frame->timestamp(),
-                                   next_frame->render_time_ms(),
+    submitted_frames_.emplace_back(frame->timestamp(), frame_chunk.timestamp,
+                                   frame_chunk.render_time_ms,
                                    ActiveSpatialResolutions());
   }
-  video_encoder_->Encode(frame, next_frame_keyframe);
+  video_encoder_->Encode(frame, frame_chunk.force_keyframe);
   async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
 }
 
@@ -1552,8 +1560,10 @@ void RTCVideoEncoder::Impl::InputBufferReleased(int index) {
   DCHECK_GE(index, 0);
   DCHECK_LT(index, static_cast<int>(input_buffers_.size()));
   input_buffers_free_.push_back(index);
-  if (input_next_frame_)
-    EncodeOneFrame();
+  if (next_frame_chunk_) {
+    EncodeOneFrame(std::move(*next_frame_chunk_));
+    next_frame_chunk_.reset();
+  }
 }
 
 bool RTCVideoEncoder::Impl::RequiresSizeChange(
@@ -1680,7 +1690,7 @@ int32_t RTCVideoEncoder::Encode(
   PostCrossThreadTask(
       *gpu_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(&RTCVideoEncoder::Impl::Enqueue, weak_impl_,
-                          CrossThreadUnretained(&input_image), want_key_frame,
+                          FrameChunk(input_image, want_key_frame),
                           SignaledValue(&encode_waiter, &encode_retval)));
 
   // webrtc::VideoEncoder expects this call to be synchronous.
