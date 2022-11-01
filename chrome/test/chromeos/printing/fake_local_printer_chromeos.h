@@ -42,6 +42,8 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
       mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,
       crosapi::mojom::PrintJobSource source,
       AddPrintJobObserverCallback callback) override;
+  void GetOAuthAccessToken(const std::string& printer_id,
+                           GetOAuthAccessTokenCallback callback) override;
 };
 
 #endif  // CHROME_TEST_CHROMEOS_PRINTING_FAKE_LOCAL_PRINTER_CHROMEOS_H_

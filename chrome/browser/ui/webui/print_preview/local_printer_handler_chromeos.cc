@@ -173,6 +173,7 @@ void LocalPrinterHandlerChromeos::StartGetCapability(
   local_printer_->GetCapability(
       device_name, base::BindOnce(CapabilityToValue).Then(std::move(callback)));
 }
+
 void LocalPrinterHandlerChromeos::StartPrint(
     const std::u16string& job_title,
     base::Value::Dict settings,
@@ -215,6 +216,48 @@ void LocalPrinterHandlerChromeos::OnProfileUsernameReady(
     settings.Set(kSettingUsername, *username);
     settings.Set(kSettingSendUserInfo, true);
   }
+
+  const std::string* const printer_id = settings.FindString(kSettingDeviceName);
+  crosapi::mojom::LocalPrinter::GetOAuthAccessTokenCallback cb =
+      base::BindOnce(&LocalPrinterHandlerChromeos::OnOAuthTokenReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(settings),
+                     std::move(print_data), std::move(callback));
+
+  if (!local_printer_) {
+    LOG(ERROR) << "Local printer not available";
+    std::move(cb).Run(crosapi::mojom::GetOAuthAccessTokenResult::NewError(
+        crosapi::mojom::OAuthError::New()));
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (local_printer_version_ <
+      int{crosapi::mojom::LocalPrinter::MethodMinVersions::
+              kGetOAuthAccessTokenMinVersion}) {
+    LOG(WARNING) << "Ash LocalPrinter version " << local_printer_version_
+                 << " does not support GetOAuthToken().";
+    std::move(cb).Run(crosapi::mojom::GetOAuthAccessTokenResult::NewNone(
+        crosapi::mojom::OAuthNotNeeded::New()));
+    return;
+  }
+#endif
+
+  local_printer_->GetOAuthAccessToken(printer_id ? *printer_id : "",
+                                      std::move(cb));
+}
+
+void LocalPrinterHandlerChromeos::OnOAuthTokenReady(
+    base::Value::Dict settings,
+    scoped_refptr<base::RefCountedMemory> print_data,
+    PrinterHandler::PrintCallback callback,
+    crosapi::mojom::GetOAuthAccessTokenResultPtr oauth_result) {
+  if (oauth_result->is_token()) {
+    settings.Set(kSettingChromeOSAccessOAuthToken,
+                 oauth_result->get_token()->token);
+  } else if (oauth_result->is_error()) {
+    LOG(ERROR) << "Error when obtaining an oauth token for a local printer";
+  }
+
   StartLocalPrint(std::move(settings), std::move(print_data),
                   preview_web_contents_, std::move(callback));
 }

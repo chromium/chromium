@@ -280,6 +280,12 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
       settings->set_username(*username);
   }
 
+  const std::string* oauth_token =
+      job_settings.FindString(kSettingChromeOSAccessOAuthToken);
+  if (oauth_token) {
+    settings->set_oauth_token(*oauth_token);
+  }
+
   const std::string* pin_value = job_settings.FindString(kSettingPinValue);
   if (pin_value)
     settings->set_pin_value(*pin_value);

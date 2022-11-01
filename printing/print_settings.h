@@ -237,6 +237,11 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   void set_username(const std::string& username) { username_ = username; }
   const std::string& username() const { return username_; }
 
+  void set_oauth_token(const std::string& oauth_token) {
+    oauth_token_ = oauth_token;
+  }
+  const std::string& oauth_token() const { return oauth_token_; }
+
   void set_pin_value(const std::string& pin_value) { pin_value_ = pin_value; }
   const std::string& pin_value() const { return pin_value_; }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -333,6 +338,9 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   // Username if it's required by the printer.
   std::string username_;
+
+  // OAuth access token if it's required by the printer.
+  std::string oauth_token_;
 
   // PIN code entered by the user.
   std::string pin_value_;

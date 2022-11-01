@@ -11,14 +11,20 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
+#include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
+#include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/ash/printing/test_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/test_printer_configurer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -42,6 +48,7 @@
 #include "printing/backend/test_print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/printing_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -80,6 +87,14 @@ void RecordGetCapability(
 
 void RecordGetEulaUrl(GURL& fetched_eula_url, const GURL& eula_url) {
   fetched_eula_url = eula_url;
+}
+
+void RecordOAuthAccessToken(
+    crosapi::mojom::GetOAuthAccessTokenResultPtr& out,
+    base::OnceClosure closure,
+    crosapi::mojom::GetOAuthAccessTokenResultPtr param) {
+  out = std::move(param);
+  std::move(closure).Run();
 }
 
 Printer CreateTestPrinter(const std::string& id,
@@ -996,6 +1011,171 @@ TEST(LocalPrinterAsh, StatusToMojom) {
             mojom->status_reasons[0]->reason);
   EXPECT_EQ(crosapi::mojom::StatusReason::Severity::kWarning,
             mojom->status_reasons[0]->severity);
+}
+
+// Base testing class for `LocalPrinterAsh` with enabled OAuth2 feature.
+class LocalPrinterAshWithOAuth2Test : public testing::Test {
+ public:
+  const std::vector<PrinterSemanticCapsAndDefaults::Paper> kPapers = {
+      {"bar", "vendor", {600, 600}}};
+
+  LocalPrinterAshWithOAuth2Test() = default;
+  LocalPrinterAshWithOAuth2Test(const LocalPrinterAshWithOAuth2Test&) = delete;
+  LocalPrinterAshWithOAuth2Test& operator=(
+      const LocalPrinterAshWithOAuth2Test&) = delete;
+  ~LocalPrinterAshWithOAuth2Test() override = default;
+
+  sync_preferences::TestingPrefServiceSyncable* GetPrefs() {
+    return profile_.GetTestingPrefService();
+  }
+
+  void SetUp() override {
+    ppd_provider_ = base::MakeRefCounted<FakePpdProvider>();
+    ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+        &profile_,
+        base::BindLambdaForTesting([this](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          auto printers_manager =
+              std::make_unique<ash::TestCupsPrintersManager>();
+          printers_manager_ = printers_manager.get();
+          return printers_manager;
+        }));
+    ash::printing::oauth2::AuthorizationZonesManagerFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            &profile_,
+            base::BindLambdaForTesting([this](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+              auto auth_manager = std::make_unique<testing::StrictMock<
+                  ash::printing::oauth2::MockAuthorizationZoneManager>>();
+              auth_manager_ = auth_manager.get();
+              return auth_manager;
+            }));
+    local_printer_ash_ =
+        std::make_unique<TestLocalPrinterAsh>(&profile_, ppd_provider_);
+  }
+
+ protected:
+  ash::TestCupsPrintersManager& printers_manager() {
+    DCHECK(printers_manager_);
+    return *printers_manager_;
+  }
+
+  ash::printing::oauth2::MockAuthorizationZoneManager& auth_manager() {
+    DCHECK(auth_manager_);
+    return *auth_manager_;
+  }
+
+  crosapi::LocalPrinterAsh* local_printer_ash() {
+    return local_printer_ash_.get();
+  }
+
+ private:
+  // Enables the OAuth2 feature.
+  base::test::ScopedFeatureList feature_list_ =
+      base::test::ScopedFeatureList(::ash::features::kEnableOAuthIpp);
+  // Must outlive `profile_`.
+  content::BrowserTaskEnvironment task_environment_;
+
+  // Must outlive `printers_manager_`.
+  TestingProfile profile_;
+  ash::TestCupsPrintersManager* printers_manager_ = nullptr;
+  testing::StrictMock<ash::printing::oauth2::MockAuthorizationZoneManager>*
+      auth_manager_ = nullptr;
+  scoped_refptr<FakePpdProvider> ppd_provider_;
+  std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
+};
+
+TEST_F(LocalPrinterAshWithOAuth2Test, GetOAuthAccessTokenUnknownPrinter) {
+  crosapi::mojom::GetOAuthAccessTokenResultPtr result;
+  base::RunLoop loop;
+  local_printer_ash()->GetOAuthAccessToken(
+      "printer_id", base::BindOnce(&RecordOAuthAccessToken, std::ref(result),
+                                   loop.QuitClosure()));
+  loop.Run();
+
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_error());
+}
+
+TEST_F(LocalPrinterAshWithOAuth2Test, GetOAuthAccessTokenNonOAuthPrinter) {
+  Printer saved_printer =
+      CreateTestPrinter("printer_id", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
+
+  chromeos::CupsPrinterStatus printer_status("printer_id");
+  printers_manager().SetPrinterStatus(printer_status);
+
+  crosapi::mojom::GetOAuthAccessTokenResultPtr result;
+  base::RunLoop loop;
+  local_printer_ash()->GetOAuthAccessToken(
+      "printer_id", base::BindOnce(&RecordOAuthAccessToken, std::ref(result),
+                                   loop.QuitClosure()));
+  loop.Run();
+
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_none());
+}
+
+TEST_F(LocalPrinterAshWithOAuth2Test, GetOAuthAccessTokenOAuthConnectionError) {
+  Printer saved_printer =
+      CreateTestPrinter("printer_id", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
+
+  chromeos::CupsPrinterStatus printer_status("printer_id");
+  printer_status.SetAuthenticationInfo({"https://server/url", "scope"});
+  printers_manager().SetPrinterStatus(printer_status);
+
+  EXPECT_CALL(auth_manager(), GetEndpointAccessToken(testing::_, testing::_,
+                                                     "scope", testing::_))
+      .WillOnce([](const GURL& auth_server, const chromeos::Uri& ipp_endpoint,
+                   const std::string& scope,
+                   ash::printing::oauth2::StatusCallback callback) {
+        EXPECT_EQ(auth_server.spec(), "https://server/url");
+        std::move(callback).Run(
+            ash::printing::oauth2::StatusCode::kConnectionError,
+            "error_message");
+      });
+
+  crosapi::mojom::GetOAuthAccessTokenResultPtr result;
+  base::RunLoop loop;
+  local_printer_ash()->GetOAuthAccessToken(
+      "printer_id", base::BindOnce(&RecordOAuthAccessToken, std::ref(result),
+                                   loop.QuitClosure()));
+  loop.Run();
+
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_error());
+}
+
+TEST_F(LocalPrinterAshWithOAuth2Test, GetOAuthAccessTokenSuccess) {
+  Printer saved_printer =
+      CreateTestPrinter("printer_id", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
+
+  chromeos::CupsPrinterStatus printer_status("printer_id");
+  printer_status.SetAuthenticationInfo({"https://server/url", "scope"});
+  printers_manager().SetPrinterStatus(printer_status);
+
+  EXPECT_CALL(auth_manager(), GetEndpointAccessToken(testing::_, testing::_,
+                                                     "scope", testing::_))
+      .WillOnce([](const GURL& auth_server, const chromeos::Uri& ipp_endpoint,
+                   const std::string& scope,
+                   ash::printing::oauth2::StatusCallback callback) {
+        EXPECT_EQ(auth_server.spec(), "https://server/url");
+        std::move(callback).Run(ash::printing::oauth2::StatusCode::kOK,
+                                "access_token");
+      });
+
+  crosapi::mojom::GetOAuthAccessTokenResultPtr result;
+  base::RunLoop loop;
+  local_printer_ash()->GetOAuthAccessToken(
+      "printer_id", base::BindOnce(&RecordOAuthAccessToken, std::ref(result),
+                                   loop.QuitClosure()));
+  loop.Run();
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_token());
+  EXPECT_EQ(result->get_token()->token, "access_token");
 }
 
 }  // namespace printing

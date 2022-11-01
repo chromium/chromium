@@ -84,6 +84,11 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
                               scoped_refptr<base::RefCountedMemory> print_data,
                               PrinterHandler::PrintCallback callback,
                               const absl::optional<std::string>& username);
+  void OnOAuthTokenReady(
+      base::Value::Dict settings,
+      scoped_refptr<base::RefCountedMemory> print_data,
+      PrinterHandler::PrintCallback callback,
+      crosapi::mojom::GetOAuthAccessTokenResultPtr oauth_result);
 
   const raw_ptr<content::WebContents> preview_web_contents_;
   raw_ptr<crosapi::mojom::LocalPrinter> local_printer_ = nullptr;

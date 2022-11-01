@@ -279,6 +279,7 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
 #if BUILDFLAG(IS_CHROMEOS)
   send_user_info_ = settings.send_user_info_;
   username_ = settings.username_;
+  oauth_token_ = settings.oauth_token_;
   pin_value_ = settings.pin_value_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return *this;
@@ -318,6 +319,7 @@ void PrintSettings::Clear() {
 #if BUILDFLAG(IS_CHROMEOS)
   send_user_info_ = false;
   username_.clear();
+  oauth_token_.clear();
   pin_value_.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

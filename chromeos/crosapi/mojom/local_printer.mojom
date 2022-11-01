@@ -272,6 +272,20 @@ enum PrintJobSource {
  kExtension,
 };
 
+// This union of structs represents the OAuth-related status of a printer.
+[Stable]
+struct OAuthNotNeeded {};
+[Stable]
+struct OAuthError {};
+[Stable]
+struct OAuthAccessToken { string token; };
+[Stable]
+union GetOAuthAccessTokenResult {
+  OAuthNotNeeded  none;
+  OAuthError error;
+  OAuthAccessToken token;
+};
+
 // This interface is used to query information about local printers
 // associated with the current Ash profile that can be used for
 // printing from Lacros.
@@ -339,4 +353,9 @@ interface LocalPrinter {
   AddPrintJobObserver@13(
     pending_remote<PrintJobObserver> observer,
     PrintJobSource source) => ();
+
+  // Checks if the printer requires an OAuth. If yes, returns the access token.
+  [MinVersion=4]
+  GetOAuthAccessToken@14(string printer_id)
+    => (GetOAuthAccessTokenResult oauth_result);
 };

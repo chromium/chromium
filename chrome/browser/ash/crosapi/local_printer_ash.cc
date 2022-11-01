@@ -123,6 +123,26 @@ void OnPrinterAuthenticated(
           .Then(std::move(callback)));
 }
 
+void OnOAuthAccessTokenObtained(
+    std::unique_ptr<ash::printing::PrinterAuthenticator> /* authenticator */,
+    mojom::LocalPrinter::GetOAuthAccessTokenCallback callback,
+    ash::printing::oauth2::StatusCode status,
+    std::string access_token) {
+  if (status != ash::printing::oauth2::StatusCode::kOK) {
+    // An error occurred.
+    std::move(callback).Run(
+        mojom::GetOAuthAccessTokenResult::NewError(mojom::OAuthError::New()));
+    return;
+  }
+  if (access_token.empty()) {
+    std::move(callback).Run(mojom::GetOAuthAccessTokenResult::NewNone(
+        mojom::OAuthNotNeeded::New()));
+  } else {
+    std::move(callback).Run(mojom::GetOAuthAccessTokenResult::NewToken(
+        mojom::OAuthAccessToken::New(std::move(access_token))));
+  }
+}
+
 }  // namespace
 
 LocalPrinterAsh::LocalPrinterAsh()
@@ -567,6 +587,39 @@ void LocalPrinterAsh::AddPrintJobObserver(
       break;
   }
   std::move(callback).Run();
+}
+
+void LocalPrinterAsh::GetOAuthAccessToken(
+    const std::string& printer_id,
+    GetOAuthAccessTokenCallback callback) {
+  if (!chromeos::features::IsOAuthIppEnabled()) {
+    std::move(callback).Run(mojom::GetOAuthAccessTokenResult::NewNone(
+        mojom::OAuthNotNeeded::New()));
+    return;
+  }
+  Profile* profile = GetProfile();
+  DCHECK(profile);
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  DCHECK(printers_manager);
+  absl::optional<chromeos::Printer> printer =
+      printers_manager->GetPrinter(printer_id);
+  if (!printer) {
+    // If the printer was removed, the lookup will fail.
+    std::move(callback).Run(
+        mojom::GetOAuthAccessTokenResult::NewError(mojom::OAuthError::New()));
+    return;
+  }
+  ash::printing::oauth2::AuthorizationZonesManager* auth_manager =
+      ash::printing::oauth2::AuthorizationZonesManagerFactory::
+          GetForBrowserContext(profile);
+  DCHECK(auth_manager);
+  auto authenticator = std::make_unique<ash::printing::PrinterAuthenticator>(
+      printers_manager, auth_manager, *printer);
+  ash::printing::PrinterAuthenticator* authenticator_ptr = authenticator.get();
+  authenticator_ptr->ObtainAccessTokenIfNeeded(
+      base::BindOnce(OnOAuthAccessTokenObtained, std::move(authenticator),
+                     std::move(callback)));
 }
 
 scoped_refptr<chromeos::PpdProvider> LocalPrinterAsh::CreatePpdProvider(

@@ -78,3 +78,9 @@ void FakeLocalPrinter::AddPrintJobObserver(
     AddPrintJobObserverCallback callback) {
   FAIL();
 }
+
+void FakeLocalPrinter::GetOAuthAccessToken(
+    const std::string& printer_id,
+    GetOAuthAccessTokenCallback callback) {
+  FAIL();
+}

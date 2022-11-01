@@ -45,6 +45,7 @@ const char kPrinterSettings[] = R"({
   "previewModifiable": true,
   "sendUserInfo": true,
   "username": "username@domain.net",
+  "chromeos-access-oauth-token": "this is an OAuth access token",
   "pinValue": "0000"
 })";
 
@@ -92,6 +93,7 @@ TEST(PrintSettingsConversionTest, Conversion) {
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(settings->send_user_info());
   EXPECT_EQ("username@domain.net", settings->username());
+  EXPECT_EQ("this is an OAuth access token", settings->oauth_token());
   EXPECT_EQ("0000", settings->pin_value());
 #endif
   EXPECT_EQ(settings->dpi_horizontal(), 300);

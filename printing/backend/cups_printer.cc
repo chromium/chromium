@@ -6,6 +6,7 @@
 
 #include <cups/cups.h>
 
+#include <cstring>
 #include <string>
 #include <utility>
 
@@ -15,6 +16,7 @@
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
+#include "printing/print_job_constants.h"
 
 namespace printing {
 
@@ -78,6 +80,12 @@ class CupsPrinterImpl : public CupsPrinter {
                             const char* value) const override {
     if (!EnsureDestInfo())
       return false;
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // OAuth token passed to CUPS as IPP attribute, see b/200086039.
+    if (name && strcmp(name, kSettingChromeOSAccessOAuthToken) == 0)
+      return true;
+#endif
 
     int supported = cupsCheckDestSupported(cups_http_, destination_.get(),
                                            dest_info_.get(), name, value);

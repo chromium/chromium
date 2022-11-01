@@ -183,6 +183,12 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
         ConstructOption(it.first, base::JoinString(it.second, ",")));
   }
 
+  // OAuth access token
+  if (!settings.oauth_token().empty()) {
+    options.push_back(ConstructOption(kSettingChromeOSAccessOAuthToken,
+                                      settings.oauth_token()));
+  }
+
   return options;
 }
 

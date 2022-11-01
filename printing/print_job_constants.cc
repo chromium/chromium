@@ -6,6 +6,8 @@
 
 #include <limits>
 
+#include "build/build_config.h"
+
 namespace printing {
 
 // True if this is the first preview request.
@@ -19,6 +21,12 @@ const char kPreviewUIID[] = "previewUIID";
 
 // Capabilities option. Contains the capabilities in CDD format.
 const char kSettingCapabilities[] = "capabilities";
+
+#if BUILDFLAG(IS_CHROMEOS)
+// If set, contains OAuth token that must be used during communication with the
+// printer.
+const char kSettingChromeOSAccessOAuthToken[] = "chromeos-access-oauth-token";
+#endif
 
 // Print job setting 'collate'.
 const char kSettingCollate[] = "collate";
