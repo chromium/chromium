@@ -17,8 +17,6 @@
 #include "base/time/time.h"
 #include "components/metrics/call_stack_profile_params.h"
 
-class ThreadProfiler;
-
 // PeriodicSamplingScheduler repeatedly schedules periodic sampling of the
 // thread through calls to GetTimeToNextCollection(). This class is exposed
 // to allow testing.
@@ -46,25 +44,6 @@ class PeriodicSamplingScheduler {
   const base::TimeDelta period_duration_;
   const base::TimeDelta sampling_duration_;
   base::TimeTicks period_start_time_;
-};
-
-// A helper class to allow safely calling functions on a child thread
-// `ThreadProfiler`.
-class ChildThreadProfilerProxy {
- public:
-  explicit ChildThreadProfilerProxy(base::WeakPtr<ThreadProfiler> profiler);
-  ~ChildThreadProfilerProxy();
-  ChildThreadProfilerProxy(ChildThreadProfilerProxy&& other);
-  ChildThreadProfilerProxy& operator=(ChildThreadProfilerProxy&& other);
-
-  // Please see `ThreadProfiler::SetAuxUnwinderFactory` for more details.
-  void SetAuxUnwinderFactory(
-      const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>&
-          factory);
-
- private:
-  base::WeakPtr<ThreadProfiler> profiler_;
-  THREAD_CHECKER(thread_checker_);
 };
 
 // ThreadProfiler performs startup and periodic profiling of Chrome
@@ -108,13 +87,6 @@ class ThreadProfiler {
   // should be called from a task posted on the child thread immediately after
   // thread start. The thread will be profiled until exit.
   static void StartOnChildThread(
-      metrics::CallStackProfileParams::Thread thread);
-
-  // Same as `StartOnChildThread` above, but returns a ChildThreadProfilerProxy,
-  // allowing the caller to safely call -- *only* on the same thread that called
-  // `StartOnChildThreadWithProxy` -- selected helper functions on the profiler
-  // created on the child thread.
-  static ChildThreadProfilerProxy StartOnChildThreadWithProxy(
       metrics::CallStackProfileParams::Thread thread);
 
   // Returns true if called within a child process that will collect profiles

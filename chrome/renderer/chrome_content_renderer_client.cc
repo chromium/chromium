@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -354,12 +353,6 @@ bool IsTerminalSystemWebAppNaClPage(GURL url) {
   return url == "chrome-untrusted://terminal/html/terminal_ssh.html";
 }
 #endif
-
-base::SequenceLocalStorageSlot<ChildThreadProfilerProxy>&
-GetServiceWorkerThreadProfilerProxySequenceLocalStorage() {
-  static base::SequenceLocalStorageSlot<ChildThreadProfilerProxy> slot;
-  return slot;
-}
 
 }  // namespace
 
@@ -1637,9 +1630,8 @@ bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(
 void ChromeContentRendererClient::
     WillInitializeServiceWorkerContextOnWorkerThread() {
   // This is called on the service worker thread.
-  GetServiceWorkerThreadProfilerProxySequenceLocalStorage().emplace(
-      ThreadProfiler::StartOnChildThreadWithProxy(
-          metrics::CallStackProfileParams::Thread::kServiceWorker));
+  ThreadProfiler::StartOnChildThread(
+      metrics::CallStackProfileParams::Thread::kServiceWorker);
 }
 
 void ChromeContentRendererClient::
@@ -1653,9 +1645,6 @@ void ChromeContentRendererClient::
       ->DidInitializeServiceWorkerContextOnWorkerThread(
           context_proxy, service_worker_scope, script_url);
 #endif
-  GetServiceWorkerThreadProfilerProxySequenceLocalStorage()
-      ->SetAuxUnwinderFactory(base::BindRepeating(
-          &CreateV8Unwinder, base::Unretained(v8::Isolate::GetCurrent())));
 }
 
 void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread(
