@@ -1,0 +1,55 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "base/containers/flat_map.h"
+#include "base/notreached.h"
+#include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
+
+namespace blink {
+
+class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
+ public:
+  // You probably don't want to instantiate this class directly, use
+  // RuntimeFeatureStateContext instead.
+  RuntimeFeatureStateReadContext() = default;
+
+  const base::flat_map<blink::mojom::RuntimeFeatureState, bool>&
+  GetFeatureOverrides() const {
+    return feature_overrides_;
+  }
+
+  {% for feature in browser_read_access_features %}
+  bool Is{{feature.name}}Enabled() {
+    return IsEnabled(
+        blink::mojom::RuntimeFeatureState::k{{feature.name}});
+  }
+  {% endfor %}
+
+ protected:
+  bool IsEnabled(blink::mojom::RuntimeFeatureState feature) const {
+    auto override_it = feature_overrides_.find(feature);
+    if (override_it != feature_overrides_.end())
+      return override_it->second;
+
+    auto initial_it = initial_values_.find(feature);
+    DCHECK(initial_it != initial_values_.end());
+    return initial_it->second;
+  }
+
+  // Sparse map of overrides collected during initial navigation. This map
+  // will be attached to the navigation on commit.
+  base::flat_map<blink::mojom::RuntimeFeatureState, bool> feature_overrides_;
+
+  // Values for all read/write features on context creation.
+  base::flat_map<blink::mojom::RuntimeFeatureState, bool> initial_values_;
+};
+
+}  // namespace blink
+
+#endif // {{header_guard}}

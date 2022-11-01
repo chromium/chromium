@@ -1,0 +1,26 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
+
+#include "base/containers/flat_map.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
+
+namespace blink {
+
+void RuntimeFeatureStateContext::PopulateInitialValues() {
+  // Write access implies read, so we are populating all inital values
+  initial_values_.reserve({{browser_read_access_features|length()}});
+
+  {% for feature in browser_read_access_features %}
+  // TODO(crbug.com/1377000): fetch current value.
+  initial_values_.insert(
+      {blink::mojom::RuntimeFeatureState::k{{feature.name}},
+        false});
+  {% endfor %}
+}
+
+}  // namespace blink

@@ -93,6 +93,26 @@ blink_python_runner("make_generated_origin_trials") {
   ]
 }
 
+blink_python_runner("make_runtime_feature_state_contexts_impl") {
+  script =
+      "../renderer/build/scripts/make_runtime_feature_state_contexts_impl.py"
+
+  inputs = scripts_for_json5_files + [
+             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/build/scripts/templates/runtime_feature_state_context.cc.tmpl",
+           ]
+
+  outputs = [ "$root_gen_dir/third_party/blink/common/runtime_feature_state/runtime_feature_state_context.cc" ]
+
+  args = [
+    rebase_path("../renderer/platform/runtime_enabled_features.json5",
+                root_build_dir),
+    "--output_dir",
+    rebase_path("$root_gen_dir/third_party/blink/common/runtime_feature_state/",
+                root_build_dir),
+  ]
+}
+
 config("blink_common_implementation") {
   defines = [ "BLINK_COMMON_IMPLEMENTATION=1" ]
 }
@@ -261,12 +281,14 @@ source_set("common") {
   sources += get_target_outputs(":make_generated_features")
   sources += get_target_outputs(":make_generated_origin_trials")
   sources += get_target_outputs(":make_generated_permissions_policy_features")
+  sources += get_target_outputs(":make_runtime_feature_state_contexts_impl")
 
   public_deps = [
     ":make_generated_document_policy_features",
     ":make_generated_features",
     ":make_generated_origin_trials",
     ":make_generated_permissions_policy_features",
+    ":make_runtime_feature_state_contexts_impl",
     "//third_party/blink/common/privacy_budget:privacy_budget",
     "//third_party/blink/public/common:common_export",
     "//third_party/blink/public/common:headers",

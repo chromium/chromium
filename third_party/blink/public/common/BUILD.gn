@@ -56,6 +56,30 @@ blink_python_runner("make_generated_permissions_policy_helper") {
   ]
 }
 
+blink_python_runner("make_runtime_feature_state_contexts_headers") {
+  script = "../../renderer/build/scripts/make_runtime_feature_state_contexts_headers.py"
+
+  inputs = scripts_for_json5_files + [
+             "../../renderer/platform/runtime_enabled_features.json5",
+             "../../renderer/build/scripts/templates/runtime_feature_state_context.h.tmpl",
+             "../../renderer/build/scripts/templates/runtime_feature_state_read_context.h.tmpl",
+           ]
+
+  outputs = [
+    "$root_gen_dir/third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h",
+    "$root_gen_dir/third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h",
+  ]
+
+  args = [
+    rebase_path("../../renderer/platform/runtime_enabled_features.json5",
+                root_build_dir),
+    "--output_dir",
+    rebase_path(
+        "$root_gen_dir/third_party/blink/public/common/runtime_feature_state/",
+        root_build_dir),
+  ]
+}
+
 # Public common API headers, mojom and libraries that can be linked and
 # referenced both by browser-side and renderer-side components.
 component("common") {
@@ -290,10 +314,12 @@ source_set("headers") {
 
   sources += get_target_outputs(":make_generated_origin_trial_feature")
   sources += get_target_outputs(":make_generated_permissions_policy_helper")
+  sources += get_target_outputs(":make_runtime_feature_state_contexts_headers")
 
   public_deps = [
     ":make_generated_origin_trial_feature",
     ":make_generated_permissions_policy_helper",
+    ":make_runtime_feature_state_contexts_headers",
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",

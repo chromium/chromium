@@ -1,0 +1,45 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "base/containers/flat_map.h"
+#include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
+
+namespace blink {
+
+class BLINK_COMMON_EXPORT RuntimeFeatureStateContext
+    : public RuntimeFeatureStateReadContext {
+ public:
+  explicit RuntimeFeatureStateContext() { PopulateInitialValues(); }
+
+  RuntimeFeatureStateReadContext GetRuntimeFeatureStateReadContext() const {
+    return static_cast<RuntimeFeatureStateReadContext>(*this);
+  }
+
+  // Note: The Is*Enabled() functions are defined in the parent class.
+
+  {% for feature in browser_write_access_features %}
+  void Set{{feature.name}}Enabled(bool enabled) {
+    return SetIsEnabled(
+        blink::mojom::RuntimeFeatureState::k{{feature.name}},
+        enabled);
+  }
+  {% endfor %}
+
+ private:
+  void PopulateInitialValues();
+
+  void SetIsEnabled(blink::mojom::RuntimeFeatureState feature, bool enabled) {
+    feature_overrides_[feature] = enabled;
+  }
+};
+
+}  // namespace blink
+
+#endif // {{header_guard}}
