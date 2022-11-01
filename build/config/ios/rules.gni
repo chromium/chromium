@@ -4,6 +4,7 @@
 
 import("//build/apple/apple_info_plist.gni")
 import("//build/config/apple/symbols.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
@@ -119,6 +120,10 @@ template("lipo_binary") {
         args += [ "-Wcrl,unstripped," +
                   rebase_path("$root_out_dir/.", root_build_dir) ]
       }
+    }
+    if (!is_debug && use_thin_lto && is_a_target_toolchain) {
+      args += [ "-Wcrl,clean_objects," +
+                string_join(",", rebase_path(inputs, root_build_dir)) ]
     }
   }
 }
