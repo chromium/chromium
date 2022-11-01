@@ -294,6 +294,8 @@ void BaseArena::PoisonUnmarkedObjects() {
 #endif
 
 Address BaseArena::LazySweep(size_t allocation_size, size_t gc_info_index) {
+  recordreplay::AutoDisallowEvents disallow;
+
   // If there are no pages to be swept, return immediately.
   if (SweepingAndFinalizationCompleted())
     return nullptr;
@@ -410,6 +412,8 @@ bool BaseArena::ConcurrentSweepOnePage() {
 }
 
 void BaseArena::CompleteSweep() {
+  recordreplay::AutoDisallowEvents disallow;
+
   CHECK(GetThreadState()->IsSweepingInProgress());
   DCHECK(GetThreadState()->SweepForbidden());
   DCHECK(ScriptForbiddenScope::IsScriptForbidden());

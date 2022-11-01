@@ -718,6 +718,8 @@ void ThreadState::AtomicPauseEpilogue() {
 }
 
 void ThreadState::CompleteSweep() {
+  recordreplay::AutoDisallowEvents disallow;
+
   DCHECK(CheckThread());
   // If we are not in a sweeping phase, there is nothing to do here.
   if (!IsSweepingInProgress())
