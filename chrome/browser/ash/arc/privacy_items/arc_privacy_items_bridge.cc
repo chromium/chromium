@@ -58,6 +58,9 @@ void ArcPrivacyItemsBridge::OnPrivacyItemsChanged(
     std::vector<arc::mojom::PrivacyItemPtr> privacy_items) {
   DVLOG(1) << "ArcPrivacyItemsBridge::OnPrivacyItemsChanged size="
            << privacy_items.size();
+
+  for (auto& observer : observer_list_)
+    observer.OnPrivacyItemsChanged(privacy_items);
 }
 
 void ArcPrivacyItemsBridge::OnMicCameraIndicatorRequirementChanged(bool flag) {
@@ -84,6 +87,14 @@ void ArcPrivacyItemsBridge::OnStaticPrivacyIndicatorBoundsChanged(
     return;
 
   instance->OnStaticPrivacyIndicatorBoundsChanged(display_id, bounds);
+}
+
+void ArcPrivacyItemsBridge::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void ArcPrivacyItemsBridge::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 }  // namespace arc

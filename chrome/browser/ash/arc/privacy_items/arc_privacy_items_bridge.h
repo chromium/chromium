@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/privacy_items.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -23,6 +24,13 @@ class ArcPrivacyItemsBridge
       public ConnectionObserver<mojom::PrivacyItemsInstance>,
       public mojom::PrivacyItemsHost {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when `privacy_items` were changed.
+    virtual void OnPrivacyItemsChanged(
+        const std::vector<arc::mojom::PrivacyItemPtr>& privacy_items) {}
+  };
+
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcPrivacyItemsBridge* GetForBrowserContext(
@@ -46,8 +54,12 @@ class ArcPrivacyItemsBridge
   void OnStaticPrivacyIndicatorBoundsChanged(int32_t display_id,
                                              std::vector<gfx::Rect> bounds);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   ArcBridgeService* const arc_bridge_service_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace arc

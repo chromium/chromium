@@ -660,6 +660,12 @@ void ArcApps::Initialize() {
         ash::ArcNotificationsHostInitializer::Get());
   }
 
+  auto* arc_bridge_service =
+      arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile_);
+  if (arc_bridge_service) {
+    arc_privacy_items_bridge_observation_.Observe(arc_bridge_service);
+  }
+
   auto* instance_registry = &proxy()->InstanceRegistry();
   if (instance_registry) {
     instance_registry_observation_.Observe(instance_registry);
@@ -717,6 +723,7 @@ void ArcApps::Shutdown() {
   }
 
   arc_intent_helper_observation_.Reset();
+  arc_privacy_items_bridge_observation_.Reset();
 }
 
 void ArcApps::LoadIcon(const std::string& app_id,
@@ -1726,7 +1733,7 @@ void ArcApps::OnArcNotificationManagerDestroyed(
 }
 
 void ArcApps::OnPrivacyItemsChanged(
-    std::vector<arc::mojom::PrivacyItemPtr> privacy_items) {
+    const std::vector<arc::mojom::PrivacyItemPtr>& privacy_items) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {
     return;
