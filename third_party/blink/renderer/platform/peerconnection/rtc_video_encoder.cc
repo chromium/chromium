@@ -1582,10 +1582,12 @@ RTCVideoEncoder::RTCVideoEncoder(
       is_constrained_h264_(is_constrained_h264),
       gpu_factories_(gpu_factories),
       gpu_task_runner_(gpu_factories->GetTaskRunner()) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(1) << "RTCVideoEncoder(): profile=" << GetProfileName(profile);
 }
 
 RTCVideoEncoder::~RTCVideoEncoder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(3) << __func__;
   Release();
   DCHECK(!impl_);
@@ -1594,6 +1596,7 @@ RTCVideoEncoder::~RTCVideoEncoder() {
 int32_t RTCVideoEncoder::InitEncode(
     const webrtc::VideoCodec* codec_settings,
     const webrtc::VideoEncoder::Settings& settings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(1) << __func__ << " codecType=" << codec_settings->codecType
            << ", width=" << codec_settings->width
            << ", height=" << codec_settings->height
@@ -1657,6 +1660,7 @@ int32_t RTCVideoEncoder::InitEncode(
 int32_t RTCVideoEncoder::Encode(
     const webrtc::VideoFrame& input_image,
     const std::vector<webrtc::VideoFrameType>* frame_types) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Encode", "timestamp",
                input_image.timestamp());
   DVLOG(3) << __func__;
@@ -1687,6 +1691,7 @@ int32_t RTCVideoEncoder::Encode(
 
 int32_t RTCVideoEncoder::RegisterEncodeCompleteCallback(
     webrtc::EncodedImageCallback* callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(3) << __func__;
   if (!impl_) {
     DVLOG(3) << "Encoder is not initialized";
@@ -1709,6 +1714,7 @@ int32_t RTCVideoEncoder::RegisterEncodeCompleteCallback(
 }
 
 int32_t RTCVideoEncoder::Release() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(3) << __func__;
   if (impl_)
     gpu_task_runner_->DeleteSoon(FROM_HERE, std::move(impl_));
@@ -1718,6 +1724,7 @@ int32_t RTCVideoEncoder::Release() {
 
 void RTCVideoEncoder::SetRates(
     const webrtc::VideoEncoder::RateControlParameters& parameters) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(3) << __func__ << " new_bit_rate=" << parameters.bitrate.ToString()
            << ", frame_rate=" << parameters.framerate_fps;
   if (!impl_) {
