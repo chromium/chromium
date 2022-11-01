@@ -2760,6 +2760,13 @@
        null,
        {}
       ]
+     ],
+     "spelling-error-005-crash.html": [
+      "b45fcc754653297e58cf079ff4c8274d1957862f",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-scroll-anchoring": {
@@ -73591,6 +73598,32 @@
        {}
       ]
      ],
+     "anchor-scroll-update-005.tentative.html": [
+      "5675507a47702ada4c4a738ca15cd57e432d151e",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/reference/anchor-scroll-update-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-scroll-update-006.tentative.html": [
+      "7a8e675baa1b8d5aa3f81c0f4b3c291f93ddb279",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/reference/anchor-scroll-update-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "anchor-scroll-vlr.tentative.html": [
       "82d167f48d9521348459b67b75e5877616672663",
       [
@@ -89409,6 +89442,32 @@
         {}
        ]
       ],
+      "overflow-scroll-row.html": [
+       "8ed379e5dd29681704c63e46b2702b1536f789b8",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "overflow-scroll-section.html": [
+       "62b3071ae960d0df21353565afb3c51fe3e837c7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "repeated-section": {
        "abspos-in-monolithic.tentative.html": [
         "6ec70d030d233a8183bbf281503235e2cb005b66",
@@ -94098,32 +94157,6 @@
        {}
       ]
      ],
-     "t422-rgba-onscreen-b.xht": [
-      "7d1f44203c5bb984bd91480a9c43455f6265c1b2",
-      [
-       null,
-       [
-        [
-         "/css/css-color/t422-rgba-onscreen-b-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "t422-rgba-onscreen-multiple-boxes-c.xht": [
-      "0ac780eea8e1803924d921c69c21ff6cc5f77b48",
-      [
-       null,
-       [
-        [
-         "/css/css-color/t422-rgba-onscreen-multiple-boxes-c-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "t422-rgba-values-meaning-b.xht": [
       "2149ef398eda4e8d06b404e220fda4b859e49309",
       [
@@ -94443,32 +94476,6 @@
        [
         [
          "/css/css-color/t425-hsla-h-rotating-b-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "t425-hsla-onscreen-b.xht": [
-      "b2dcf5fd89fa54ac86be8dea6ccad7d2312e4ec8",
-      [
-       null,
-       [
-        [
-         "/css/css-color/t422-rgba-onscreen-b-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "t425-hsla-onscreen-multiple-boxes-c.xht": [
-      "9d2eccd47cdab8cfe7aa9b5315660d50c46d56e5",
-      [
-       null,
-       [
-        [
-         "/css/css-color/t422-rgba-onscreen-multiple-boxes-c-ref.html",
          "=="
         ]
        ],
@@ -255483,7 +255490,7 @@
      ]
     },
     "web-identity": [
-     "9c21f7fbe55514676f8b0b2ceda421371784988a",
+     "425ccef3f7449816d45c1535aa50acf68d223518",
      []
     ]
    },
@@ -261379,7 +261386,19 @@
        []
       ],
       "client_metadata.py": [
-       "f08b285259ef2acc26a1a1ae330dcb2ff4c87481",
+       "d81cd96c67ae149e5e14497378a2b87f3ffd99b9",
+       []
+      ],
+      "client_metadata.py.headers": [
+       "7164e5f81827da39996b033972a508e5b371de11",
+       []
+      ],
+      "client_metadata_clear_count.py": [
+       "3c31bf5077d73ac258f4a96bb6b4f5e95802f184",
+       []
+      ],
+      "keys.py": [
+       "6b7d67e21e7eea7927a40ab094847b7224d49985",
        []
       ],
       "manifest-not-in-list.json": [
@@ -261390,13 +261409,25 @@
        "a125c2e391f26b25bfb50dd13132ae52dd4745c6",
        []
       ],
+      "manifest_redirect_accounts.json": [
+       "590704cfeb169d534199b95c6a582ef31526d5a2",
+       []
+      ],
+      "manifest_redirect_token.json": [
+       "190420736dfbd6aaaa468656c236209c25ed11f5",
+       []
+      ],
+      "select_manifest_in_root_manifest.py": [
+       "d4f1efff6a74c7636f60cba35b4eff010fccfd29",
+       []
+      ],
       "token.py": [
        "2f5e807b6e0d344a761ecca4784684047c2ec777",
        []
       ]
      },
      "fedcm-helper.sub.js": [
-      "b67cf72b3683c60802cd3618e16dcecd1cd84c79",
+      "77ba99d2a0f980eec13acdadbe2f637e92655583",
       []
      ],
      "fedcm-iframe-level2.html": [
@@ -269314,6 +269345,14 @@
        "7935f3823fdda80f0639bbfa7b179b6fc10e3303",
        []
       ],
+      "anchor-scroll-update-005-ref.html": [
+       "b0c3a820f8c73834d863bbc2c595ef66f2535924",
+       []
+      ],
+      "anchor-scroll-update-006-ref.html": [
+       "c7fbb57e762efeb16fa4b9cdd120fb8c2ca79073",
+       []
+      ],
       "anchor-scroll-vlr-ref.html": [
        "cbb249e150db12585c3175b281678a6761cd9295",
        []
@@ -272351,14 +272390,6 @@
      ],
      "t422-rgba-func-whitespace-b-ref.html": [
       "cdf2cc4d1cd31500a61f9696384eb790ed1b5dd7",
-      []
-     ],
-     "t422-rgba-onscreen-b-ref.html": [
-      "db97bb638a1975ee9049d463f064d98dd6b5e80e",
-      []
-     ],
-     "t422-rgba-onscreen-multiple-boxes-c-ref.html": [
-      "6de63c626461a64b9181d240def51e493cc0305c",
       []
      ],
      "t422-rgba-values-meaning-b-ref.html": [
@@ -390855,7 +390886,7 @@
      ]
     ],
     "fedcm-network-requests.https.html": [
-     "2bcf2941baace8785ce0588af0fd31a335d5db72",
+     "46065eb929ffea5d0a9386da1664d1ce1270e4d5",
      [
       null,
       {}
@@ -392494,7 +392525,7 @@
       ]
      ],
      "anchor-scroll-js-expose.tentative.html": [
-      "6dd6b263756ff3c14173f73dcba5ce47c6461024",
+      "f19d010d35931bba86d39988d3f0d4db385cbd8b",
       [
        null,
        {}
@@ -547809,6 +547840,16 @@
       null,
       {
        "testdriver": true
+      }
+     ]
+    ],
+    "hidden_document.html": [
+     "b78dbb62438b91f45e4298d5855735a10a71bd03",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
       }
      ]
     ],

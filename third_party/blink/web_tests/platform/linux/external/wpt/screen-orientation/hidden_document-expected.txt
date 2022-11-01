@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL hidden documents must reject went trying to call lock or unlock promise_test: Unhandled rejection with value: object "ReferenceError: window_state_context is not defined"
+FAIL hidden documents must reject went trying to call unlock promise_test: Unhandled rejection with value: object "ReferenceError: window_state_context is not defined"
+FAIL hidden documents must not unlock the screen orientation promise_test: Unhandled rejection with value: object "ReferenceError: window_state_context is not defined"
+FAIL Once maximized, a minimized window can lock or unlock the screen orientation again promise_test: Unhandled rejection with value: object "ReferenceError: window_state_context is not defined"
+Harness: the test ran to completion.
+

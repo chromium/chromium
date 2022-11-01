@@ -953,7 +953,6 @@ external/wpt/css/css-backgrounds/first-letter-space-not-selected.html [ Skip ]
 # so these may also be incorrect tests, but probably some real issues too.
 external/wpt/css/css-color/t32-opacity-offscreen-multiple-boxes-1-c.xht [ Skip ]
 external/wpt/css/css-color/t32-opacity-offscreen-multiple-boxes-2-c.xht [ Skip ]
-external/wpt/css/css-color/t422-rgba-onscreen-b.xht [ Skip ]
 
 # https://github.com/web-platform-tests/wpt/issues/8547
 external/wpt/css/mediaqueries/device-aspect-ratio-001.html [ Skip ]
