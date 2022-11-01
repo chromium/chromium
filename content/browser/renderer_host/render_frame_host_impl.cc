@@ -539,8 +539,8 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
       return true;
     }
 
-    DLOG(ERROR) << "Received message " << message->name() << " on interface "
-                << interface_name_ << " from frame in bfcache.";
+    BackForwardCacheImpl::VlogUnexpectedRendererToBrowserMessage(
+        interface_name_, message->name());
 
     TRACE_EVENT2(
         "content", "BackForwardCacheMessageFilter::WillDispatch bad_message",

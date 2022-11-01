@@ -200,6 +200,15 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Returns whether back/forward cache is enabled for screen reader users.
   static bool IsScreenReaderAllowed();
 
+  // Log an unexpected message from the renderer. Doing it here so that it is
+  // grouped with other back/forward cache vlogging and e.g. will show up in
+  // test logs. `message_name` varies in each build however when a test failure
+  // occurs, it should be possible to recreate the build and find which message
+  // corresponds to this the value.
+  static void VlogUnexpectedRendererToBrowserMessage(
+      const char* interface_name_,
+      uint32_t message_name);
+
   // Returns the reasons (if any) why this document and its children cannot
   // enter the back/forward cache. Depends on the |render_frame_host| and its
   // children's state. Should only be called after we've navigated away from
