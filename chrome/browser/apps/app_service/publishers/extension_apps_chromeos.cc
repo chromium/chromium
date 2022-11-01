@@ -229,12 +229,7 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
   if (extension->is_app() || is_quickoffice) {
     content::WebContents* web_contents = LaunchAppWithIntentImpl(
         app_id, event_flags, std::move(intent), launch_source,
-        std::move(window_info),
-        base::BindOnce(
-            [](LaunchCallback callback, bool success) {
-              std::move(callback).Run(ConvertBoolToLaunchResult(success));
-            },
-            std::move(callback)));
+        std::move(window_info), std::move(callback));
 
     if (launch_source == LaunchSource::kFromArc && web_contents) {
       // Add a flag to remember this web_contents originated in the ARC context.
@@ -245,14 +240,8 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
   } else {
     DCHECK(extension->is_extension());
     // TODO(petermarshall): Set Arc flag as above?
-    LaunchExtension(
-        app_id, event_flags, std::move(intent), launch_source,
-        std::move(window_info),
-        base::BindOnce(
-            [](LaunchCallback callback, bool success) {
-              std::move(callback).Run(ConvertBoolToLaunchResult(success));
-            },
-            std::move(callback)));
+    LaunchExtension(app_id, event_flags, std::move(intent), launch_source,
+                    std::move(window_info), std::move(callback));
   }
 }
 
@@ -311,48 +300,12 @@ void ExtensionAppsChromeOs::GetMenuModel(
   std::move(callback).Run(std::move(menu_items));
 }
 
-void ExtensionAppsChromeOs::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info,
-    LaunchAppWithIntentCallback callback) {
-  const auto* extension = MaybeGetExtension(app_id);
-  if (!extension) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-  bool is_quickoffice = extension_misc::IsQuickOfficeExtension(extension->id());
-  if (extension->is_app() || is_quickoffice) {
-    content::WebContents* web_contents = LaunchAppWithIntentImpl(
-        app_id, event_flags, ConvertMojomIntentToIntent(intent),
-        ConvertMojomLaunchSourceToLaunchSource(launch_source),
-        ConvertMojomWindowInfoToWindowInfo(window_info), std::move(callback));
-
-    if (launch_source == apps::mojom::LaunchSource::kFromArc && web_contents) {
-      // Add a flag to remember this web_contents originated in the ARC context.
-      web_contents->SetUserData(
-          &arc::ArcWebContentsData::kArcTransitionFlag,
-          std::make_unique<arc::ArcWebContentsData>(web_contents));
-    }
-  } else {
-    DCHECK(extension->is_extension());
-    // TODO(petermarshall): Set Arc flag as above?
-    LaunchExtension(app_id, event_flags, ConvertMojomIntentToIntent(intent),
-                    ConvertMojomLaunchSourceToLaunchSource(launch_source),
-                    ConvertMojomWindowInfoToWindowInfo(window_info),
-                    std::move(callback));
-  }
-}
-
-void ExtensionAppsChromeOs::LaunchExtension(
-    const std::string& app_id,
-    int32_t event_flags,
-    IntentPtr intent,
-    LaunchSource launch_source,
-    WindowInfoPtr window_info,
-    LaunchAppWithIntentCallback callback) {
+void ExtensionAppsChromeOs::LaunchExtension(const std::string& app_id,
+                                            int32_t event_flags,
+                                            IntentPtr intent,
+                                            LaunchSource launch_source,
+                                            WindowInfoPtr window_info,
+                                            LaunchCallback callback) {
   const auto* extension = MaybeGetExtension(app_id);
   DCHECK(extension);
 
@@ -373,13 +326,13 @@ void ExtensionAppsChromeOs::LaunchExtension(
   file_manager::file_browser_handlers::ExecuteFileBrowserHandler(
       profile(), extension, action_id, file_urls,
       base::BindOnce(
-          [](LaunchAppWithIntentCallback callback,
+          [](LaunchCallback callback,
              extensions::api::file_manager_private::TaskResult result,
              std::string error) {
             bool success =
                 result !=
                 extensions::api::file_manager_private::TASK_RESULT_FAILED;
-            std::move(callback).Run(success);
+            std::move(callback).Run(ConvertBoolToLaunchResult(success));
           },
           std::move(callback)));
 }

@@ -214,17 +214,10 @@ void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
                                          /*prefer_container=*/false);
   auto window_info = apps::MakeWindowInfo(params.display_id);
   if (params.intent) {
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
-                          params.launch_source,
-                          std::make_unique<WindowInfo>(params.display_id),
-                          base::DoNothing());
-    } else {
-      LaunchAppWithIntent(
-          params.app_id, event_flags, ConvertIntentToMojomIntent(params.intent),
-          ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
-          std::move(window_info), base::DoNothing());
-    }
+    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
+                        params.launch_source,
+                        std::make_unique<WindowInfo>(params.display_id),
+                        base::DoNothing());
   } else {
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
       Launch(params.app_id, event_flags, params.launch_source,
@@ -318,35 +311,6 @@ void CrostiniApps::Launch(const std::string& app_id,
   crostini::LaunchCrostiniApp(
       profile_, app_id,
       window_info ? window_info->display_id : display::kInvalidDisplayId);
-}
-
-void CrostiniApps::LaunchAppWithIntent(const std::string& app_id,
-                                       int32_t event_flags,
-                                       apps::mojom::IntentPtr intent,
-                                       apps::mojom::LaunchSource launch_source,
-                                       apps::mojom::WindowInfoPtr window_info,
-                                       LaunchAppWithIntentCallback callback) {
-  // Retrieve URLs from the files in the intent.
-  std::vector<crostini::LaunchArg> args;
-  if (intent && intent->files.has_value()) {
-    storage::FileSystemContext* file_system_context =
-        file_manager::util::GetFileManagerFileSystemContext(profile_);
-    args.reserve(intent->files.value().size());
-    for (auto& file : intent->files.value()) {
-      args.emplace_back(
-          file_system_context->CrackURLInFirstPartyContext(file->url));
-    }
-  }
-  crostini::LaunchCrostiniAppWithIntent(
-      profile_, app_id,
-      window_info ? window_info->display_id : display::kInvalidDisplayId,
-      ConvertMojomIntentToIntent(intent), args,
-      base::BindOnce(
-          [](LaunchAppWithIntentCallback callback, bool success,
-             const std::string& failure_reason) {
-            std::move(callback).Run(success);
-          },
-          std::move(callback)));
 }
 
 void CrostiniApps::GetMenuModel(const std::string& app_id,

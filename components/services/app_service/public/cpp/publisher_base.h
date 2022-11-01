@@ -58,12 +58,6 @@ class PublisherBase : public apps::mojom::Publisher {
   mojo::Receiver<apps::mojom::Publisher>& receiver() { return receiver_; }
 
  private:
-  void LaunchAppWithIntent(const std::string& app_id,
-                           int32_t event_flags,
-                           apps::mojom::IntentPtr intent,
-                           apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info,
-                           LaunchAppWithIntentCallback callback) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;

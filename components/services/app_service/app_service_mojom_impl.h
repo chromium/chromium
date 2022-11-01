@@ -54,13 +54,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info) override;
-  void LaunchAppWithIntent(apps::mojom::AppType app_type,
-                           const std::string& app_id,
-                           int32_t event_flags,
-                           apps::mojom::IntentPtr intent,
-                           apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info,
-                           LaunchAppWithIntentCallback callback) override;
   void PauseApp(apps::mojom::AppType app_type,
                 const std::string& app_id) override;
   void UnpauseApp(apps::mojom::AppType app_type,

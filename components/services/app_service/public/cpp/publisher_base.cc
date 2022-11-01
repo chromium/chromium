@@ -102,16 +102,6 @@ void PublisherBase::ModifyCapabilityAccess(
   }
 }
 
-void PublisherBase::LaunchAppWithIntent(const std::string& app_id,
-                                        int32_t event_flags,
-                                        apps::mojom::IntentPtr intent,
-                                        apps::mojom::LaunchSource launch_source,
-                                        apps::mojom::WindowInfoPtr window_info,
-                                        LaunchAppWithIntentCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(/*success=*/false);
-}
-
 void PublisherBase::PauseApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }

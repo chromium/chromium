@@ -409,17 +409,6 @@ void PluginVmApps::Launch(const std::string& app_id,
   }
 }
 
-void PluginVmApps::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info,
-    PluginVmApps::LaunchAppWithIntentCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(/*success=*/false);
-}
-
 void PluginVmApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,

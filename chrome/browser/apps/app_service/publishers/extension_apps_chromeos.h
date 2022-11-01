@@ -91,12 +91,6 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                     base::OnceCallback<void(MenuItems)> callback) override;
 
   // apps::mojom::Publisher overrides.
-  void LaunchAppWithIntent(const std::string& app_id,
-                           int32_t event_flags,
-                           apps::mojom::IntentPtr intent,
-                           apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info,
-                           LaunchAppWithIntentCallback callback) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
   void GetMenuModel(const std::string& app_id,
@@ -193,7 +187,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                        IntentPtr intent,
                        LaunchSource launch_source,
                        WindowInfoPtr window_info,
-                       LaunchAppWithIntentCallback callback);
+                       LaunchCallback callback);
 
   apps::InstanceRegistry* const instance_registry_;
   base::ScopedObservation<extensions::AppWindowRegistry,

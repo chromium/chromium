@@ -37,16 +37,6 @@ interface AppService {
       LaunchSource launch_source,
       WindowInfo? window_info);
 
-  // Launches an app with |app_id| and Chrome OS generic |intent| irrespective
-  // of app platform. Returns whether the app was successfully launched.
-  LaunchAppWithIntent(
-      AppType app_type,
-      string app_id,
-      int32 event_flags,
-      Intent intent,
-      LaunchSource launch_source,
-      WindowInfo? window_info) => (bool success);
-
   // Pauses an app to stop the current running app, and apply the icon effect.
   PauseApp(
       AppType app_type,
@@ -116,17 +106,6 @@ interface Publisher {
       int32 event_flags,
       LaunchSource launch_source,
       WindowInfo? window_info);
-
-  // Launches an app identified by |app_id|, with |intent| as a parameter.
-  // |event_flags| contains launch options (e.g. window disposition).
-  // |launch_source| contains the source of the launch.
-  // Returns whether the app was successfully launched.
-  LaunchAppWithIntent(
-    string app_id,
-    int32 event_flags,
-    Intent intent,
-    LaunchSource launch_source,
-    WindowInfo? window_info) => (bool success);
 
   // Requests that the app identified by |app_id| is marked as paused. Paused
   // apps cannot be launched. Implemented if the publisher supports the pausing

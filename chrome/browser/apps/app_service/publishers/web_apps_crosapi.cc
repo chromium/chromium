@@ -269,30 +269,6 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
       base::DoNothing());
 }
 
-void WebAppsCrosapi::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info,
-    LaunchAppWithIntentCallback callback) {
-  if (!LogIfNotConnected(FROM_HERE)) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  auto params = CreateCrosapiLaunchParamsWithEventFlags(
-      proxy_, app_id, event_flags,
-      ConvertMojomLaunchSourceToLaunchSource(launch_source),
-      window_info ? window_info->display_id : display::kInvalidDisplayId);
-
-  params->intent =
-      apps_util::ConvertAppServiceToCrosapiIntent(intent, proxy_->profile());
-  controller_->Launch(std::move(params), base::DoNothing());
-  // TODO(crbug/1261263): handle the case where launch fails.
-  std::move(callback).Run(/*success=*/true);
-}
-
 void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
                                   apps::mojom::MenuType menu_type,
                                   int64_t display_id,
