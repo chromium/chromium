@@ -118,7 +118,7 @@ class AshTtsApiTest : public AshRequiresLacrosExtensionApiTest,
 // TTS Engine tests.
 //
 
-IN_PROC_BROWSER_TEST_F(AshTtsApiTest, RegisterEngine) {
+IN_PROC_BROWSER_TEST_F(AshTtsApiTest, RegisterAshEngine) {
   if (!ash_starter_.HasLacrosArgument())
     return;
 
