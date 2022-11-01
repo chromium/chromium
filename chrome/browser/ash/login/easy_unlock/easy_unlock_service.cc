@@ -42,7 +42,6 @@
 #include "chromeos/ash/components/proximity_auth/proximity_auth_system.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -116,22 +115,6 @@ class EasyUnlockService::PowerMonitor
 
  private:
   // PowerManagerClient::Observer:
-  void ScreenIdleStateChanged(
-      const power_manager::ScreenIdleState& proto) override {
-    if (!base::FeatureList::IsEnabled(
-            ash::features::kSmartLockBluetoothScreenOffFix)) {
-      return;
-    }
-
-    if (proto.off()) {
-      service_->OnScreenOff();
-      return;
-    }
-
-    service_->OnScreenOffDone();
-    service_->UpdateAppState();
-  }
-
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override {
     service_->PrepareForSuspend();
   }
@@ -836,7 +819,7 @@ void EasyUnlockService::OnCryptohomeKeysFetchedForChecking(
   }
 }
 
-void EasyUnlockService::OnSuspendOrScreenOff() {
+void EasyUnlockService::PrepareForSuspend() {
   if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
     if (smart_lock_state_ && *smart_lock_state_ != SmartLockState::kInactive) {
       ShowInitialSmartLockState();
@@ -846,10 +829,6 @@ void EasyUnlockService::OnSuspendOrScreenOff() {
       UpdateSmartLockState(SmartLockState::kConnectingToPhone);
     }
   }
-}
-
-void EasyUnlockService::PrepareForSuspend() {
-  OnSuspendOrScreenOff();
 
   if (proximity_auth_system_)
     proximity_auth_system_->OnSuspend();
@@ -858,28 +837,6 @@ void EasyUnlockService::PrepareForSuspend() {
 void EasyUnlockService::OnSuspendDone() {
   if (proximity_auth_system_)
     proximity_auth_system_->OnSuspendDone();
-}
-
-void EasyUnlockService::OnScreenOff() {
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kSmartLockBluetoothScreenOffFix)) {
-    return;
-  }
-
-  OnSuspendOrScreenOff();
-
-  if (proximity_auth_system_)
-    proximity_auth_system_->OnScreenOff();
-}
-
-void EasyUnlockService::OnScreenOffDone() {
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kSmartLockBluetoothScreenOffFix)) {
-    return;
-  }
-
-  if (proximity_auth_system_)
-    proximity_auth_system_->OnScreenOffDone();
 }
 
 void EasyUnlockService::EnsureTpmKeyPresentIfNeeded() {

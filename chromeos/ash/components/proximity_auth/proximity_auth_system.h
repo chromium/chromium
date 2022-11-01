@@ -74,12 +74,6 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   // Called when the system wakes up from a suspended state.
   void OnSuspendDone();
 
-  // Called when the screen turns off.
-  void OnScreenOff();
-
-  // Called when the system resumes after the screen turns back on.
-  void OnScreenOffDone();
-
   // Called in order to disable attempts to get RemoteStatus from host devices.
   void CancelConnectionAttempt();
 
@@ -113,9 +107,6 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   void OnFocusedUserChanged(const AccountId& account_id) override;
 
  private:
-  // Called when there is a change in |suspended_| or |screen_off_|.
-  void OnSuspendOrScreenOffChange();
-
   // Lists of remote devices, keyed by user account id.
   std::map<AccountId, ash::multidevice::RemoteDeviceRefList>
       remote_devices_map_;
@@ -137,9 +128,6 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
 
   // True if the system is suspended.
   bool suspended_ = false;
-
-  // True if the screen is off.
-  bool screen_off_ = false;
 
   // True if the system is started_.
   bool started_ = false;

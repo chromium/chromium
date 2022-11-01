@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -196,12 +195,6 @@ class ProximityAuthSystemTest : public testing::Test {
   void SimulateSuspend() {
     proximity_auth_system_->OnSuspend();
     proximity_auth_system_->OnSuspendDone();
-    task_runner_->RunUntilIdle();
-  }
-
-  void SimulateScreenOff() {
-    proximity_auth_system_->OnScreenOff();
-    proximity_auth_system_->OnScreenOffDone();
     task_runner_->RunUntilIdle();
   }
 
@@ -436,41 +429,6 @@ TEST_F(ProximityAuthSystemTest, Suspend_RegisteredUserFocused) {
         .Times(AtLeast(1));
     EXPECT_CALL(*unlock_manager_, SetRemoteDeviceLifeCycle(NotNull()));
     SimulateSuspend();
-  }
-
-  EXPECT_EQ(kUser1, life_cycle()->GetRemoteDevice().user_email());
-
-  EXPECT_CALL(*unlock_manager_, SetRemoteDeviceLifeCycle(nullptr))
-      .Times(AtLeast(1));
-}
-
-TEST_F(ProximityAuthSystemTest, ScreenOff_ScreenUnlocked) {
-  base::test::ScopedFeatureList feature_list(
-      ash::features::kSmartLockBluetoothScreenOffFix);
-  UnlockScreen();
-  EXPECT_FALSE(life_cycle());
-  SimulateScreenOff();
-  EXPECT_FALSE(life_cycle());
-}
-
-TEST_F(ProximityAuthSystemTest, ScreenOff_UnregisteredUserFocused) {
-  base::test::ScopedFeatureList feature_list(
-      ash::features::kSmartLockBluetoothScreenOffFix);
-  SimulateScreenOff();
-  EXPECT_FALSE(life_cycle());
-}
-
-TEST_F(ProximityAuthSystemTest, ScreenOff_RegisteredUserFocused) {
-  base::test::ScopedFeatureList feature_list(
-      ash::features::kSmartLockBluetoothScreenOffFix);
-  FocusUser(kUser1);
-
-  {
-    InSequence sequence;
-    EXPECT_CALL(*unlock_manager_, SetRemoteDeviceLifeCycle(nullptr))
-        .Times(AtLeast(1));
-    EXPECT_CALL(*unlock_manager_, SetRemoteDeviceLifeCycle(NotNull()));
-    SimulateScreenOff();
   }
 
   EXPECT_EQ(kUser1, life_cycle()->GetRemoteDevice().user_email());

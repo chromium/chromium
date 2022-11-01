@@ -10379,21 +10379,6 @@
             ]
         }
     ],
-    "SmartLockBluetoothScreenOffFix": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SmartLockBluetoothScreenOffFix"
-                    ]
-                }
-            ]
-        }
-    ],
     "SnoozeIPH": [
         {
             "platforms": [

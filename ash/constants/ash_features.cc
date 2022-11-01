@@ -1839,11 +1839,6 @@ BASE_FEATURE(kSmartDimExperimentalComponent,
              "SmartDimExperimentalComponent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disconnects bluetooth connection when screen turns off.
-BASE_FEATURE(kSmartLockBluetoothScreenOffFix,
-             "SmartLockBluetoothScreenOffFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Deprecates Sign in with Smart Lock feature. Hides Smart Lock at the sign in
 // screen, removes the Smart Lock subpage in settings, and shows a one-time
 // notification for users who previously had this feature enabled.
