@@ -21,13 +21,13 @@ import {dismissErrorAction, setErrorAction} from '../personalization_actions.js'
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isSelectionEvent} from '../utils.js';
 
 import {DisplayableImage} from './constants.js';
 import {recordWallpaperGooglePhotosSourceUMA, WallpaperGooglePhotosSource} from './google_photos_metrics_logger.js';
 import {getTemplate} from './google_photos_photos_by_album_id_element.html.js';
 import {getLoadingPlaceholders, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from './utils.js';
 import {fetchGooglePhotosAlbum, selectWallpaper} from './wallpaper_controller.js';
+import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 const ERROR_ID = 'GooglePhotosByAlbumId';
@@ -278,21 +278,14 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     }
   }
 
-  /** Invoked on selection of a photo. */
-  private onPhotoSelected_(e: Event&{model: {photo: GooglePhotosPhoto}}) {
-    assert(e.model.photo);
-    if (!this.isPhotoPlaceholder_(e.model.photo) && isSelectionEvent(e)) {
+  /** Invoked on selection of a photo. `e.model.photo` is added by iron-list. */
+  private onPhotoSelected_(e: WallpaperGridItemSelectedEvent&
+                           {model: {photo: GooglePhotosPhoto}}) {
+    assert(e.model.photo, 'google photos album photo selected event has photo');
+    if (!this.isPhotoPlaceholder_(e.model.photo)) {
       selectWallpaper(e.model.photo, this.wallpaperProvider_, this.getStore());
       recordWallpaperGooglePhotosSourceUMA(WallpaperGooglePhotosSource.ALBUMS);
     }
-  }
-
-  /**
-   * Returns 'true' or 'false' depending on whether the specified |photo| is
-   * a placeholder.
-   */
-  private getPhotoAriaDisabled_(photo: GooglePhotosPhoto|null): string {
-    return this.isPhotoPlaceholder_(photo).toString();
   }
 
   /** Returns the aria label for the specified |photo|. */

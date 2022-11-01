@@ -266,4 +266,25 @@ suite('WallpaperGridItemTest', function() {
         'none', getComputedStyle(querySelector('iron-icon')!).display,
         'iron-icon is display none when aria selected is false');
   });
+
+  test('sets aria-disabled attribute', async () => {
+    wallpaperGridItemElement = initElement(WallpaperGridItem);
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertEquals(
+        'false', wallpaperGridItemElement.getAttribute('aria-disabled'),
+        'aria-disabled defaults to false');
+
+    wallpaperGridItemElement.disabled = true;
+    await waitAfterNextRender(wallpaperGridItemElement);
+    assertEquals(
+        'true', wallpaperGridItemElement.getAttribute('aria-disabled'),
+        'disabled sets aria-disabled attribute');
+
+    wallpaperGridItemElement.disabled = false;
+    await waitAfterNextRender(wallpaperGridItemElement);
+    assertEquals(
+        'false', wallpaperGridItemElement.getAttribute('aria-disabled'),
+        'disabled false sets aria-disabled attribute false');
+  });
 });

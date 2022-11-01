@@ -12,13 +12,12 @@
 <iron-list aria-setsize$="[[albums.length]]" as="album" grid id="grid"
     items="[[albums]]" role="listbox">
   <template>
-    <wallpaper-grid-item aria-label$="[[album.title]]"
+    <wallpaper-grid-item aria-label$="[[album.title]]" 
         aria-posinset$="[[getAriaIndex_(index)]]"
         class$="[[getAlbumItemClass_(album, albums)]]"
         index="[[index]]"
         is-google-photos="[[isGooglePhotos_(topicSource)]]"
-        on-click="onAlbumSelected_"
-        on-keypress="onAlbumSelected_"
+        on-wallpaper-grid-item-selected="onAlbumSelected_"
         primary-text="[[album.title]]"
         role="option"
         secondary-text="[[getSecondaryText_(album, topicSource)]]"

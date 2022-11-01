@@ -21,7 +21,7 @@ import {GooglePhotosAlbum, WallpaperProviderInterface} from '../personalization_
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCountText, isSelectionEvent} from '../utils.js';
+import {getCountText} from '../utils.js';
 
 import {getTemplate} from './google_photos_albums_element.html.js';
 import {getLoadingPlaceholders} from './utils.js';
@@ -126,7 +126,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   /** Invoked on selection of an album. */
   private onAlbumSelected_(e: Event&{model: {album: GooglePhotosAlbum}}) {
     assert(e.model.album);
-    if (!this.isAlbumPlaceholder_(e.model.album) && isSelectionEvent(e)) {
+    if (!this.isAlbumPlaceholder_(e.model.album)) {
       PersonalizationRouter.instance().selectGooglePhotosAlbum(e.model.album);
     }
   }

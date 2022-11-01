@@ -15,19 +15,20 @@ import '../../css/wallpaper.css.js';
 import '../../common/icons.html.js';
 import '../../css/common.css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CurrentWallpaper, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isImageDataUrl, isSelectionEvent} from '../utils.js';
+import {isImageDataUrl} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 import {getTemplate} from './local_images_element.html.js';
 import {getPathOrSymbol, isDefaultImage, isFilePath} from './utils.js';
 import {fetchLocalData, getDefaultImageThumbnail, selectWallpaper} from './wallpaper_controller.js';
+import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 
@@ -231,27 +232,13 @@ export class LocalImages extends WithPersonalizationStore {
     return isFilePath(image) ? image.path : image.toString();
   }
 
-  private onImageSelected_(event: Event) {
-    if (!isSelectionEvent(event)) {
-      return;
-    }
-    const dataId = (event.currentTarget as HTMLElement).dataset['id'];
+  private onImageSelected_(event: WallpaperGridItemSelectedEvent&
+                           {model: {item: FilePath | DefaultImageSymbol}}) {
     assert(
-        typeof dataId === 'string' && dataId.length > 0,
-        'image data id is required');
-    const image = this.images_!.find(image => {
-      if (isFilePath(image)) {
-        return dataId === image.path;
-      }
-      assert(
-          image === kDefaultImageSymbol, 'only one symbol should be present');
-      return dataId === image.toString();
-    });
-    if (!image) {
-      assertNotReached('Image with that path not found');
-      return;
-    }
-    selectWallpaper(image, this.wallpaperProvider_, this.getStore());
+        event.model.item === kDefaultImageSymbol ||
+            isFilePath(event.model.item),
+        'local image is a file path or default image');
+    selectWallpaper(event.model.item, this.wallpaperProvider_, this.getStore());
   }
 
   private getAriaIndex_(i: number): number {

@@ -14,7 +14,7 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCountText, isSelectionEvent} from '../utils.js';
+import {getCountText} from '../utils.js';
 
 import {getTemplate} from './album_list_element.html.js';
 import {isRecentHighlightsAlbum} from './utils.js';
@@ -61,12 +61,10 @@ export class AlbumList extends WithPersonalizationStore {
 
   /** Invoked on selection of an album. */
   private onAlbumSelected_(e: Event&{model: {album: AmbientModeAlbum}}) {
-    if (isSelectionEvent(e)) {
-      e.model.album.checked = !e.model.album.checked;
-      this.dispatchEvent(new CustomEvent(
-          'album_selected_changed',
-          {bubbles: true, composed: true, detail: {album: e.model.album}}));
-    }
+    e.model.album.checked = !e.model.album.checked;
+    this.dispatchEvent(new CustomEvent(
+        'album_selected_changed',
+        {bubbles: true, composed: true, detail: {album: e.model.album}}));
   }
 
   private isAlbumSelected_(

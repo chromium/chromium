@@ -13,6 +13,8 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isSelectionEvent} from '../utils.js';
+
 import {getLoadingPlaceholderAnimationDelay} from './utils.js';
 import {getTemplate} from './wallpaper_grid_item_element.html.js';
 
@@ -34,6 +36,27 @@ function shouldShowPlaceholder(imageStatus: ImageStatus[]): boolean {
   return imageStatus.length === 0 ||
       (imageStatus.includes(ImageStatus.LOADING) &&
        !imageStatus.includes(ImageStatus.ERROR));
+}
+
+const wallpaperGridItemSelectedEventName = 'wallpaper-grid-item-selected';
+
+export class WallpaperGridItemSelectedEvent extends CustomEvent<null> {
+  constructor() {
+    super(
+        wallpaperGridItemSelectedEventName,
+        {
+          bubbles: true,
+          composed: true,
+          detail: null,
+        },
+    );
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    [wallpaperGridItemSelectedEventName]: WallpaperGridItemSelectedEvent;
+  }
 }
 
 export class WallpaperGridItem extends PolymerElement {
@@ -64,6 +87,12 @@ export class WallpaperGridItem extends PolymerElement {
       selected: {
         type: Boolean,
         observer: 'onSelectedChanged_',
+      },
+
+      disabled: {
+        type: Boolean,
+        value: false,
+        observer: 'onDisabledChanged_',
       },
 
       imageStatus_: {
@@ -105,8 +134,35 @@ export class WallpaperGridItem extends PolymerElement {
    */
   selected: boolean|undefined;
 
+  /**
+   * Whether the grid item is currently disabled. Automatically sets the
+   * aria-disabled property.
+   * @default false
+   */
+  disabled: boolean;
+
   // Track if images are loaded, failed, or ready to display.
   private imageStatus_: ImageStatus[];
+
+  override ready() {
+    super.ready();
+    this.addEventListener('click', this.onUserSelection_);
+    this.addEventListener('keydown', this.onUserSelection_);
+  }
+
+  private onUserSelection_(event: MouseEvent|KeyboardEvent) {
+    // Ignore extraneous events and let them continue.
+    // Also ignore click and keydown events if this grid item is disabled.
+    // These events will continue to propagate up in case someone else is
+    // interested that this item was interacted with.
+    if (!isSelectionEvent(event) || this.disabled) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.dispatchEvent(new WallpaperGridItemSelectedEvent());
+  }
 
   // Invoked on changes to |imageSrc|.
   private onImageSrcChanged_(
@@ -130,6 +186,10 @@ export class WallpaperGridItem extends PolymerElement {
     } else {
       this.removeAttribute('aria-selected');
     }
+  }
+
+  private onDisabledChanged_(disabled: boolean) {
+    this.setAttribute('aria-disabled', disabled.toString());
   }
 
   private onImageStatusChanged_(imageStatus: ImageStatus[]) {

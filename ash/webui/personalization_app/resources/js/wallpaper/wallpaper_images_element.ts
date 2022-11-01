@@ -18,11 +18,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isNonEmptyArray, isSelectionEvent} from '../utils.js';
+import {isNonEmptyArray} from '../utils.js';
 
 import {ImageTile} from './constants.js';
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isWallpaperImage} from './utils.js';
 import {selectWallpaper} from './wallpaper_controller.js';
+import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element';
 import {getTemplate} from './wallpaper_images_element.html.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -307,18 +308,14 @@ export class WallpaperImages extends WithPersonalizationStore {
     }
   }
 
-  private onImageSelected_(e: Event) {
-    if (!isSelectionEvent(e)) {
-      return;
-    }
-    const imgElement = e.currentTarget as HTMLImageElement;
-    const assetId = imgElement.dataset['assetId'];
-    assert(assetId, 'assetId not found');
+  private onImageSelected_(e: WallpaperGridItemSelectedEvent&
+                           {model: {item: ImageTile}}) {
+    const assetId = e.model.item.assetId;
+    assert(assetId && typeof assetId === 'bigint', 'assetId not found');
     const images = this.images_[this.collectionId]!;
     assert(isNonEmptyArray(images));
-    const selectedImage =
-        images.find(choice => choice.assetId.toString() === assetId);
-    assert(selectedImage);
+    const selectedImage = images.find(choice => choice.assetId === assetId);
+    assert(selectedImage, 'could not find selected image');
     selectWallpaper(selectedImage, getWallpaperProvider(), this.getStore());
   }
 

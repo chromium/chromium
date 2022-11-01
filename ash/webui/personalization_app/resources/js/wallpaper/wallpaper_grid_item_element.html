@@ -50,6 +50,10 @@
     width: 100%;
   }
 
+  :host([aria-disabled='true']) .item {
+    cursor: default;
+  }
+
   :host(:focus-visible) .item {
     outline: 2px solid var(--cros-focus-ring-color);
   }

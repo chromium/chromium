@@ -9,14 +9,11 @@
         aria-setsize$="[[tiles_.length]]">
       <template>
         <wallpaper-grid-item
-            aria-disabled$="[[isLoadingTile_(item)]]"
             aria-label$="[[getAriaLabel_(item)]]"
             aria-posinset$="[[getAriaIndex_(index)]]"
-            data-asset-id$="[[item.assetId]]"
-            data-unit-id$="[[item.unitId]]"
+            disabled="[[isLoadingTile_(item)]]"
             index="[[index]]"
-            on-click="onImageSelected_"
-            on-keypress="onImageSelected_"
+            on-wallpaper-grid-item-selected="onImageSelected_"
             role="option"
             selected="[[isTileSelected_(item, selectedAssetId_, pendingSelectedAssetId_)]]"
             src="[[item.preview]]"

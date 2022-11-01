@@ -6,7 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {OnlineImageType, PersonalizationRouter, WallpaperGridItem, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
-import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -51,14 +51,15 @@ suite('WallpaperImagesTest', function() {
 
   test('sets aria-selected for current wallpaper asset id', async () => {
     wallpaperImagesElement = await createWithDefaultData();
-    const selectedElement: WallpaperGridItem =
-        wallpaperImagesElement.shadowRoot!.querySelector(
-            `${WallpaperGridItem.is}[aria-selected='true']`)!;
+    const selectedElements: WallpaperGridItem[] =
+        Array.from(wallpaperImagesElement.shadowRoot!.querySelectorAll(
+            `${WallpaperGridItem.is}[aria-selected='true']`));
 
-    assertEquals(
-        selectedElement!.dataset['assetId'],
-        personalizationStore.data.wallpaper.currentSelected.key,
-        'aria selected element has correct asset id');
+    assertEquals(selectedElements.length, 1, '1 item aria selected');
+    assertDeepEquals(
+        selectedElements[0]!.src,
+        [wallpaperProvider.images![2]!.url, wallpaperProvider.images![0]!.url],
+        `item has correct src`);
 
     const notSelectedElements: HTMLDivElement[] =
         Array.from(wallpaperImagesElement.shadowRoot!.querySelectorAll(
@@ -70,17 +71,6 @@ suite('WallpaperImagesTest', function() {
     assertEquals(
         uniqueUnitIds.size - 1, notSelectedElements.length,
         'correct number of non-selected elements');
-
-    for (const notSelected of notSelectedElements) {
-      assertTrue(
-          notSelected.dataset['assetId']!.length > 0,
-          'not selected elements have an assetId');
-
-      assertNotEquals(
-          wallpaperProvider.currentWallpaper.key,
-          notSelected.dataset['assetId'],
-          'not selected elements have a different assetId');
-    }
   });
 
   test('displays images for current collectionId', async () => {
@@ -127,25 +117,25 @@ suite('WallpaperImagesTest', function() {
     await waitAfterNextRender(wallpaperImagesElement);
 
     assertDeepEquals(
-        ['1', '2'],
+        ['Image 0-1', 'Image 0-2'],
         Array
             .from(wallpaperImagesElement.shadowRoot!
                       .querySelectorAll<WallpaperGridItem>(
                           `${WallpaperGridItem.is}:not([hidden])`))
-            .map(elem => elem.dataset['assetId']),
-        'expected asset ids are displayed for collectionId `id_0`');
+            .map(elem => elem.getAttribute('aria-label')),
+        'expected aria labels are displayed for collectionId `id_0`');
 
     wallpaperImagesElement.collectionId = 'id_1';
     await waitAfterNextRender(wallpaperImagesElement);
 
     assertDeepEquals(
-        ['10', '20'],
+        ['Image 1-10', 'Image 1-20'],
         Array
             .from(wallpaperImagesElement.shadowRoot!
                       .querySelectorAll<WallpaperGridItem>(
                           `${WallpaperGridItem.is}:not([hidden])`))
-            .map(elem => elem.dataset['assetId']),
-        'expected asset ids are displayed for collectionId `id_1`');
+            .map(elem => elem.getAttribute('aria-label')),
+        'expected aria labels are displayed for collectionId `id_1`');
   });
 
   test('displays dark light tile for images with same unitId', async () => {
@@ -179,9 +169,10 @@ suite('WallpaperImagesTest', function() {
 
   test('selects an image when clicked', async () => {
     wallpaperImagesElement = await createWithDefaultData();
+    // Click the first image that is not currently selected.
     wallpaperImagesElement.shadowRoot!
         .querySelector<WallpaperGridItem>(
-            `${WallpaperGridItem.is}[data-asset-id='2']`)!.click();
+            `${WallpaperGridItem.is}[aria-selected='false']`)!.click();
     const [assetId, previewMode] =
         await wallpaperProvider.whenCalled('selectWallpaper');
     assertEquals(2n, assetId, 'correct asset id is passed');

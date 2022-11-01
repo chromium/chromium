@@ -16,17 +16,16 @@
       role="listbox">
     <template>
       <wallpaper-grid-item
-          aria-disabled$="[[getPhotoAriaDisabled_(photo)]]"
           aria-label$="[[getPhotoAriaLabel_(photo)]]"
           aria-posinset$="[[getPhotoAriaIndex_(index)]]"
           class="photo"
-          src="[[photo.url]]"
+          disabled="[[isPhotoPlaceholder_(photo)]]"
           index="[[index]]"
           is-google-photos
-          on-click="onPhotoSelected_"
-          on-keypress="onPhotoSelected_"
+          on-wallpaper-grid-item-selected="onPhotoSelected_"
           role="option"
           selected="[[isPhotoSelected_(photo, currentSelected_, pendingSelected_)]]"
+          src="[[photo.url]]"
           tabindex$="[[tabIndex]]">
       </wallpaper-grid-item>
     </template>

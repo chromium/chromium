@@ -69,19 +69,18 @@
         <div class="photos">
           <template is="dom-repeat" items="[[row]]" as="photo">
             <wallpaper-grid-item
-                aria-disabled$="[[getPhotoAriaDisabled_(photo)]]"
                 aria-label$="[[getPhotoAriaLabel_(photo)]]"
                 aria-posinset$="[[getPhotoAriaIndex_(photo.index)]]"
                 class="photo"
                 colindex$="[[index]]"
-                src="[[photo.url]]"
+                disabled="[[isPhotoPlaceholder_(photo)]]"
                 index="[[photo.index]]"
                 is-google-photos
-                on-click="onPhotoSelected_"
-                on-keypress="onPhotoSelected_"
+                on-wallpaper-grid-item-selected="onPhotoSelected_"
                 photoindex$="[[photo.index]]"
                 role="option"
                 selected="[[isPhotoSelected_(photo, currentSelected_, pendingSelected_)]]"
+                src="[[photo.url]]"
                 tabindex="-1">
             </wallpaper-grid-item>
           </template>

@@ -23,14 +23,13 @@
           aria-label$="[[getAlbumAriaLabel_(album)]]"
           aria-posinset$="[[getAlbumAriaIndex_(index)]]"
           class="album"
-          src="[[album.preview]]"
           index="[[index]]"
           is-google-photos
-          on-click="onAlbumSelected_"
-          on-keypress="onAlbumSelected_"
+          on-wallpaper-grid-item-selected="onAlbumSelected_"
           primary-text="[[album.title]]"
           role="listitem"
           secondary-text="[[getSecondaryText_(album)]]"
+          src="[[album.preview]]"
           tabindex$="[[tabIndex]]">
       </wallpaper-grid-item>
     </template>
