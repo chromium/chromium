@@ -247,7 +247,7 @@ VolumeManagerCommon.Source = {
  * @param {VolumeManagerCommon.VolumeType} type
  * @return {boolean}
  */
-VolumeManagerCommon.VolumeType.isNative = type => {
+export function isNative(type) {
   return type === VolumeManagerCommon.VolumeType.DOWNLOADS ||
       type === VolumeManagerCommon.VolumeType.DRIVE ||
       type === VolumeManagerCommon.VolumeType.ANDROID_FILES ||
@@ -256,7 +256,7 @@ VolumeManagerCommon.VolumeType.isNative = type => {
       type === VolumeManagerCommon.VolumeType.REMOVABLE ||
       type === VolumeManagerCommon.VolumeType.ARCHIVE ||
       type === VolumeManagerCommon.VolumeType.SMB;
-};
+}
 
 Object.freeze(VolumeManagerCommon.VolumeType);
 

@@ -14,13 +14,6 @@ export function testRootTypeFromVolumeTypeBijection() {
     const volumeType = VolumeManagerCommon.VolumeType[key];
     assertTrue(volumeType !== undefined);
 
-    // The enum is decorated with an isNative() helper. Skip it for the purposes
-    // of this test, since it is not a valid enum value. (This helper breaks the
-    // ability to iterate over enum values, so should probably be removed).
-    if (volumeType === VolumeManagerCommon.VolumeType.isNative) {
-      return;
-    }
-
     // System Internal volumes do not have a corresponding root.
     if (volumeType == VolumeManagerCommon.VolumeType.SYSTEM_INTERNAL) {
       return;

@@ -14,7 +14,7 @@ import {ExternallyUnmountedEvent, VolumeManager} from '../../externs/volume_mana
 
 import {ArrayDataModel} from './array_data_model.js';
 import {util} from './util.js';
-import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
+import {AllowedPaths, isNative, VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * Implementation of VolumeInfoList for FilteredVolumeManager.
@@ -189,7 +189,7 @@ export class FilteredVolumeManager extends EventTarget {
       case AllowedPaths.ANY_PATH_OR_URL:
         return true;
       case AllowedPaths.NATIVE_PATH:
-        return VolumeManagerCommon.VolumeType.isNative(assert(volumeType));
+        return isNative(assert(volumeType));
     }
     return false;
   }
@@ -247,7 +247,7 @@ export class FilteredVolumeManager extends EventTarget {
       // SelectFileAsh requires native volumes. Note: DocumentsProvider and
       // FSPs return false here, until they are implemented in the fusebox.
       return this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType) ||
-          VolumeManagerCommon.VolumeType.isNative(volumeInfo.volumeType);
+          isNative(volumeInfo.volumeType);
     } else if (this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType)) {
       // Normal Files app: remove fusebox volumes.
       return false;

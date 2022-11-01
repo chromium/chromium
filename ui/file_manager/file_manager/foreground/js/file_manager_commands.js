@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
-import {DialogType} from '../../common/js/dialog_type.js';
+import {DialogType, isModal} from '../../common/js/dialog_type.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -215,7 +215,7 @@ CommandUtil.getElementVolumeInfo = (element, fileManager) => {
 CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly =
     (event, fileManager) => {
       const enabled = fileManager.directoryModel.isOnDrive() &&
-          !DialogType.isModal(fileManager.dialogType);
+          !isModal(fileManager.dialogType);
       event.canExecute = enabled;
       event.command.setHidden(!enabled);
     };
@@ -1767,7 +1767,7 @@ CommandHandler.COMMANDS_['volume-help'] = new (class extends FilesCommand {
     // besides that the help page is about the Files app as an app, not about
     // the dialog mode itself. It can also lead to hard-to-fix bug
     // crbug.com/339089.
-    const hideHelp = DialogType.isModal(fileManager.dialogType);
+    const hideHelp = isModal(fileManager.dialogType);
     event.canExecute = !hideHelp;
     event.command.setHidden(hideHelp);
   }

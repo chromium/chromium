@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {getDialogCaller, getDlpBlockedComponents, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
-import {DialogType} from '../../common/js/dialog_type.js';
+import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
@@ -1219,8 +1219,7 @@ export class FileManager extends EventTarget {
 
     directoryTree.dataModel = new NavigationListModel(
         assert(this.volumeManager_), assert(this.folderShortcutsModel_),
-        fakeEntriesVisible &&
-                !DialogType.isFolderDialog(this.launchParams_.type) ?
+        fakeEntriesVisible && !isFolderDialogType(this.launchParams_.type) ?
             new NavigationModelFakeItem(
                 str('RECENT_ROOT_LABEL'), NavigationModelItemType.RECENT,
                 assert(this.recentEntry_)) :
@@ -1594,7 +1593,7 @@ export class FileManager extends EventTarget {
     // non-native files. But it does not work for folders (e.g., dialog for
     // loading unpacked extensions).
     if (allowedPaths === AllowedPaths.NATIVE_PATH &&
-        !DialogType.isFolderDialog(this.launchParams_.type)) {
+        !isFolderDialogType(this.launchParams_.type)) {
       if (this.launchParams_.type == DialogType.SELECT_SAVEAS_FILE) {
         allowedPaths = AllowedPaths.NATIVE_PATH;
       } else {

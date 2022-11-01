@@ -10,7 +10,7 @@ import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {EntriesChangedEvent} from '../../externs/entries_changed_event.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -308,8 +308,7 @@ export class DirectoryModel extends EventTarget {
   isOnNative() {
     const rootType = this.getCurrentRootType();
     return rootType != null && !util.isRecentRootType(rootType) &&
-        VolumeManagerCommon.VolumeType.isNative(
-            VolumeManagerCommon.getVolumeTypeFromRootType(rootType));
+        isNative(VolumeManagerCommon.getVolumeTypeFromRootType(rootType));
   }
 
   /**

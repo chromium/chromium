@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {Command} from './ui/command.js';
 import {$} from 'chrome://resources/js/util.js';
 
-import {DialogType} from '../../common/js/dialog_type.js';
+import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, UserCanceledError, util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -18,6 +17,7 @@ import {FileSelectionHandler} from './file_selection.js';
 import {LaunchParam} from './launch_param.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {NamingController} from './naming_controller.js';
+import {Command} from './ui/command.js';
 import {DialogFooter} from './ui/dialog_footer.js';
 
 /**
@@ -162,8 +162,7 @@ export class DialogActionController {
     const selectedIndexes =
         this.directoryModel_.getFileListSelection().selectedIndexes;
 
-    if (DialogType.isFolderDialog(this.dialogType_) &&
-        selectedIndexes.length === 0) {
+    if (isFolderDialogType(this.dialogType_) && selectedIndexes.length === 0) {
       const url = this.directoryModel_.getCurrentDirEntry().toURL();
       const singleSelection = {
         urls: [url],
@@ -209,7 +208,7 @@ export class DialogActionController {
 
     const selectedEntry = dm.item(selectedIndexes[0]);
 
-    if (DialogType.isFolderDialog(this.dialogType_)) {
+    if (isFolderDialogType(this.dialogType_)) {
       if (!selectedEntry.isDirectory) {
         throw new Error('Selected entry is not a folder!');
       }
@@ -398,7 +397,7 @@ export class DialogActionController {
       return;
     }
 
-    if (DialogType.isFolderDialog(this.dialogType_)) {
+    if (isFolderDialogType(this.dialogType_)) {
       // In SELECT_FOLDER mode, we allow to select current directory
       // when nothing is selected.
       this.dialogFooter_.okButton.disabled =

@@ -4,7 +4,7 @@
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
-import {DialogType} from '../../common/js/dialog_type.js';
+import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {metrics} from '../../common/js/metrics.js';
 import {TrashEntry} from '../../common/js/trash.js';
@@ -457,7 +457,7 @@ export class MainWindowComponent {
       case 'Enter':  // Enter => Change directory or perform default action.
         const selection = this.selectionHandler_.selection;
         if (selection.totalCount === 1 && selection.entries[0].isDirectory &&
-            !DialogType.isFolderDialog(this.dialogType_) &&
+            !isFolderDialogType(this.dialogType_) &&
             !selection.entries.some(util.isTrashEntry)) {
           const item = this.ui_.listContainer.currentList.getListItemByIndex(
               selection.indexes[0]);
