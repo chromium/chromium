@@ -184,6 +184,10 @@ class WPTResultsProcessor(object):
             results = json.load(results_file)
 
         metadata = results.get('metadata') or {}
+        if 'num_failures_by_type' in results and 'PASS' in results[
+                'num_failures_by_type']:
+            num_passes = results['num_failures_by_type']['PASS']
+            results['num_passes'] = num_passes
         test_names = self._extract_artifacts(
             results['tests'],
             delim=results['path_delimiter'],
