@@ -2900,6 +2900,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BeaconAndBfCache) {
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
 
   EXPECT_TRUE(
       ExecJs(shell(), JsReplace(R"(navigator.sendBeacon($1, "");)", url_ping)));
@@ -2912,11 +2914,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BeaconAndBfCache) {
   keepalive.WaitForRequest();
   // Don't actually send the response.
 
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kKeepaliveRequest}, {}, {},
-      {}, FROM_HERE);
+  // Page A should be in the cache.
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 }
 
 class GeolocationBackForwardCacheBrowserTest

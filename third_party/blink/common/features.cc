@@ -108,10 +108,10 @@ BASE_FEATURE(kBackForwardCacheNotReachedOnJavaScriptExecution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows pages with keepalive requests to stay eligible for the back/forward
-// cache.
+// cache. See https://crbug.com/1347101 for more details.
 BASE_FEATURE(kBackForwardCacheWithKeepaliveRequest,
              "BackForwardCacheWithKeepaliveRequest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable intervention for download that was initiated from or occurred in an ad
 // frame without user activation.
