@@ -1552,7 +1552,7 @@
       },
       valid_for_first_letter: true,
       valid_for_first_line: true,
-      is_background: true,
+      is_background: false,
     },
     {
       name: "background-clip",

@@ -3142,10 +3142,10 @@ TEST_F(StyleCascadeTest, FilterTransformOrigin) {
 }
 
 TEST_F(StyleCascadeTest, HasAuthorBackground) {
-  Vector<String> properties = {"background-attachment", "background-blend-mode",
-                               "background-clip",       "background-image",
-                               "background-origin",     "background-position-x",
-                               "background-position-y", "background-size"};
+  Vector<String> properties = {"background-attachment", "background-clip",
+                               "background-image",      "background-origin",
+                               "background-position-x", "background-position-y",
+                               "background-size"};
 
   for (String property : properties) {
     TestCascade cascade(GetDocument());
