@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 260 tests; 226 PASS, 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 250 tests; 226 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -71,7 +71,7 @@ PASS inbound-rtp's id
 PASS outbound-rtp's mid
 PASS outbound-rtp's mediaSourceId
 PASS outbound-rtp's remoteId
-FAIL outbound-rtp's rid assert_true: Is rid present expected true got false
+NOTRUN outbound-rtp's rid outbound-rtp.rid marked as not testable.
 PASS outbound-rtp's headerBytesSent
 PASS outbound-rtp's retransmittedPacketsSent
 PASS outbound-rtp's retransmittedBytesSent
@@ -227,11 +227,11 @@ PASS local-candidate's port
 PASS local-candidate's protocol
 PASS local-candidate's candidateType
 PASS local-candidate's priority
-FAIL local-candidate's url assert_true: Is url present expected true got false
-FAIL local-candidate's relayProtocol assert_true: Is relayProtocol present expected true got false
+NOTRUN local-candidate's url local-candidate.url marked as not testable.
+NOTRUN local-candidate's relayProtocol local-candidate.relayProtocol marked as not testable.
 PASS local-candidate's foundation
-FAIL local-candidate's relatedAddress assert_true: Is relatedAddress present expected true got false
-FAIL local-candidate's relatedPort assert_true: Is relatedPort present expected true got false
+NOTRUN local-candidate's relatedAddress local-candidate.relatedAddress marked as not testable.
+NOTRUN local-candidate's relatedPort local-candidate.relatedPort marked as not testable.
 PASS local-candidate's usernameFragment
 PASS local-candidate's tcpType
 PASS local-candidate's timestamp
@@ -243,13 +243,13 @@ PASS remote-candidate's port
 PASS remote-candidate's protocol
 PASS remote-candidate's candidateType
 PASS remote-candidate's priority
-FAIL remote-candidate's url assert_true: Is url present expected true got false
-FAIL remote-candidate's relayProtocol assert_true: Is relayProtocol present expected true got false
+NOTRUN remote-candidate's url remote-candidate.url marked as not testable.
+NOTRUN remote-candidate's relayProtocol remote-candidate.relayProtocol marked as not testable.
 PASS remote-candidate's foundation
-FAIL remote-candidate's relatedAddress assert_true: Is relatedAddress present expected true got false
-FAIL remote-candidate's relatedPort assert_true: Is relatedPort present expected true got false
+NOTRUN remote-candidate's relatedAddress remote-candidate.relatedAddress marked as not testable.
+NOTRUN remote-candidate's relatedPort remote-candidate.relatedPort marked as not testable.
 PASS remote-candidate's usernameFragment
-FAIL remote-candidate's tcpType assert_true: Is tcpType present expected true got false
+NOTRUN remote-candidate's tcpType remote-candidate.tcpType marked as not testable.
 PASS remote-candidate's timestamp
 PASS remote-candidate's type
 PASS remote-candidate's id

@@ -46,6 +46,32 @@ const dictionaryNames = {
   "certificate": "RTCCertificateStats",
 };
 
+function isPropertyTestable(type, property) {
+  // List of properties which are not testable by this test.
+  // When adding something to this list, please explain why.
+  const untestablePropertiesByType = {
+    'local-candidate': [
+      'url', // requires a STUN/TURN server.
+      'relayProtocol', // requires a TURN server.
+      'relatedAddress', // requires a STUN/TURN server.
+      'relatedPort', // requires a STUN/TURN server.
+    ],
+    'remote-candidate': [
+      'url', // requires a STUN/TURN server.
+      'relayProtocol', // requires a TURN server.
+      'relatedAddress', // requires a STUN/TURN server.
+      'relatedPort', // requires a STUN/TURN server.
+      'tcpType', // requires ICE-TCP connection.
+    ],
+    'outbound-rtp': [
+      'rid', // requires simulcast.
+    ],
+  };
+  if (!untestablePropertiesByType[type]) {
+    return true;
+  }
+  return !untestablePropertiesByType[type].includes(property);
+}
 
 async function getAllStats(t, pc) {
   // Try to obtain as many stats as possible, waiting up to 20 seconds for
@@ -161,6 +187,8 @@ promise_test(async t => {
   for (const type in all) {
     for (const memberName of all[type]) {
       test(t => {
+        assert_implements_optional(isPropertyTestable(type, memberName),
+          `${type}.${memberName} marked as not testable.`);
         assert_true(!remaining[type].has(memberName),
                     `Is ${memberName} present`);
       }, `${type}'s ${memberName}`);
