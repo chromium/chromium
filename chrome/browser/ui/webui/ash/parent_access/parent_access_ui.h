@@ -9,12 +9,26 @@
 
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "url/gurl.h"
 
 namespace ash {
+
+class ParentAccessUI;
+
+// WebUIConfig for chrome://parent-access
+class ParentAccessUIConfig
+    : public content::DefaultWebUIConfig<ParentAccessUI> {
+ public:
+  ParentAccessUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIParentAccessHost) {}
+};
 
 // Controller for the ParentAccessUI, a WebUI which enables parent verification.
 // It is hosted at chrome://parent-access.

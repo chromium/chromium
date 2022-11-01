@@ -995,8 +995,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     }
     return &NewWebUI<ash::cloud_upload::CloudUploadUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIParentAccessHost)
-    return &NewWebUI<ash::ParentAccessUI>;
   if (url.host_piece() == chrome::kChromeUIAudioHost &&
       base::FeatureList::IsEnabled(chromeos::features::kAudioUrl)) {
     return &NewWebUI<ash::AudioUI>;
