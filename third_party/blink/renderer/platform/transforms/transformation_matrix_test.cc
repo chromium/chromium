@@ -187,10 +187,10 @@ TEST(TransformationMatrixTest, Multiplication) {
                                                            80, 108, 136, 164);
   // clang-format on
 
-  EXPECT_EQ(expected_a_times_b, a * b) << (a * b).ToString(true);
+  EXPECT_EQ(expected_a_times_b, a * b);
 
   a.PreConcat(b);
-  EXPECT_EQ(expected_a_times_b, a) << a.ToString(true);
+  EXPECT_EQ(expected_a_times_b, a);
 }
 
 TEST(TransformationMatrixTest, MultiplicationSelf) {
@@ -206,7 +206,7 @@ TEST(TransformationMatrixTest, MultiplicationSelf) {
   // clang-format on
 
   a.PreConcat(a);
-  EXPECT_EQ(expected_a_times_a, a) << a.ToString(true);
+  EXPECT_EQ(expected_a_times_a, a);
 }
 
 TEST(TransformationMatrixTest, ValidRangedMatrix) {
@@ -451,18 +451,17 @@ TEST(TransformationMatrixTest, ToString) {
   auto zeros = TransformationMatrix::ColMajor(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                               0, 0, 0, 0, 0);
   EXPECT_EQ("[0,0,0,0,\n0,0,0,0,\n0,0,0,0,\n0,0,0,0] (degenerate)",
-            zeros.ToString());
-  EXPECT_EQ("[0,0,0,0,\n0,0,0,0,\n0,0,0,0,\n0,0,0,0]", zeros.ToString(true));
+            zeros.ToDecomposedString());
+  EXPECT_EQ("[0,0,0,0,\n0,0,0,0,\n0,0,0,0,\n0,0,0,0]", zeros.ToString());
 
   TransformationMatrix identity;
-  EXPECT_EQ("identity", identity.ToString());
-  EXPECT_EQ("[1,0,0,0,\n0,1,0,0,\n0,0,1,0,\n0,0,0,1]", identity.ToString(true));
+  EXPECT_EQ("identity", identity.ToDecomposedString());
+  EXPECT_EQ("[1,0,0,0,\n0,1,0,0,\n0,0,1,0,\n0,0,0,1]", identity.ToString());
 
   TransformationMatrix translation;
   translation.Translate3d(3, 5, 7);
-  EXPECT_EQ("translation(3,5,7)", translation.ToString());
-  EXPECT_EQ("[1,0,0,3,\n0,1,0,5,\n0,0,1,7,\n0,0,0,1]",
-            translation.ToString(true));
+  EXPECT_EQ("translation(3,5,7)", translation.ToDecomposedString());
+  EXPECT_EQ("[1,0,0,3,\n0,1,0,5,\n0,0,1,7,\n0,0,0,1]", translation.ToString());
 
   auto column_major_constructor = TransformationMatrix::ColMajor(
       1, 1, 1, 6, 2, 2, 0, 7, 3, 3, 3, 8, 4, 4, 4, 9);
@@ -471,7 +470,7 @@ TEST(TransformationMatrixTest, ToString) {
   // [ 1 0 3 4 ]
   // [ 6 7 8 9 ]
   EXPECT_EQ("[1,2,3,4,\n1,2,3,4,\n1,0,3,4,\n6,7,8,9]",
-            column_major_constructor.ToString(true));
+            column_major_constructor.ToString());
 }
 
 TEST(TransformationMatrix, IsInvertible) {

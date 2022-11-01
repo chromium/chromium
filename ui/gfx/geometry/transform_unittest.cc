@@ -3334,6 +3334,39 @@ TEST(XFormTest, ClampOutput) {
   }
 }
 
+TEST(XFormTest, ToString) {
+  auto zeros =
+      Transform::ColMajor(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  EXPECT_EQ("[ 0 0 0 0\n  0 0 0 0\n  0 0 0 0\n  0 0 0 0 ]\n", zeros.ToString());
+  EXPECT_EQ("[ 0 0 0 0\n  0 0 0 0\n  0 0 0 0\n  0 0 0 0 ]\n(degenerate)",
+            zeros.ToDecomposedString());
+
+  Transform identity;
+  EXPECT_EQ("[ 1 0 0 0\n  0 1 0 0\n  0 0 1 0\n  0 0 0 1 ]\n",
+            identity.ToString());
+  EXPECT_EQ("identity", identity.ToDecomposedString());
+
+  Transform translation;
+  translation.Translate3d(3, 5, 7);
+  EXPECT_EQ("[ 1 0 0 3\n  0 1 0 5\n  0 0 1 7\n  0 0 0 1 ]\n",
+            translation.ToString());
+  EXPECT_EQ("translate: 3,5,7", translation.ToDecomposedString());
+
+  auto transform = Transform::ColMajor(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8,
+                                       1e20, 1e-20, 1.0 / 3.0, 0, 0, 0, 0, 1);
+  EXPECT_EQ(
+      "[ 1.1 5.5 1e+20 0\n  2.2 6.6 1e-20 0\n  3.3 7.7 0.333333 0\n"
+      "  4.4 8.8 0 1 ]\n",
+      transform.ToString());
+  EXPECT_EQ(
+      "translate: +0 +0 +0\n"
+      "scale: -4.11582 -2.88048 -4.08248e+19\n"
+      "skew: +3.87836 +0.654654 +2.13809\n"
+      "perspective: -6.66667e-21 -1 +2 +1\n"
+      "quaternion: -0.582925 +0.603592 +0.518949 +0.162997\n",
+      transform.ToDecomposedString());
+}
+
 }  // namespace
 
 }  // namespace gfx

@@ -411,9 +411,11 @@ class PLATFORM_EXPORT TransformationMatrix {
   // Performs same conversions as ToSkM44.
   gfx::Transform ToTransform() const;
 
-  // If |asMatrix|, return the matrix in row-major order. Otherwise, return
-  // the transform's decomposition which shows the translation, scale, etc.
-  String ToString(bool as_matrix = false) const;
+  // Returns a string in the format of "[ row0\n, row1\n, row2\n, row3 ]\n".
+  String ToString() const;
+
+  // Returns a string containing decomposed components.
+  String ToDecomposedString() const;
 
  private:
   // Used internally to construct TransformationMatrix with parameters in

@@ -486,7 +486,11 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   void EnsureFullMatrixForTesting() { EnsureFullMatrix(); }
 
+  // Returns a string in the format of "[ row0\n, row1\n, row2\n, row3 ]\n".
   std::string ToString() const;
+
+  // Returns a string containing decomposed components.
+  std::string ToDecomposedString() const;
 
  private:
   // Used internally to construct Transform with parameters in col-major order.

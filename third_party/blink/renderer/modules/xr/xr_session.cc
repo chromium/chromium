@@ -806,7 +806,7 @@ ScriptPromise XRSession::requestHitTestSource(
   auto entity_types = GetEntityTypesForHitTest(options_init);
 
   DVLOG(3) << __func__
-           << ": native_from_offset = " << native_from_offset.ToString(true);
+           << ": native_from_offset = " << native_from_offset.ToString();
 
   // Transformation from passed in pose to |space|.
 
@@ -816,11 +816,8 @@ ScriptPromise XRSession::requestHitTestSource(
   auto space_from_ray = offsetRay->RawMatrix();
   auto origin_from_ray = native_from_offset * space_from_ray;
 
-  DVLOG(3) << __func__
-           << ": space_from_ray = " << space_from_ray.ToString(true);
-
-  DVLOG(3) << __func__
-           << ": origin_from_ray = " << origin_from_ray.ToString(true);
+  DVLOG(3) << __func__ << ": space_from_ray = " << space_from_ray.ToString();
+  DVLOG(3) << __func__ << ": origin_from_ray = " << origin_from_ray.ToString();
 
   device::mojom::blink::XRRayPtr ray_mojo = device::mojom::blink::XRRay::New();
 

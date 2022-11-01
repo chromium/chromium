@@ -163,7 +163,10 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
     if (!Translation2D().IsZero())
       json->SetString("translation2d", String(Translation2D().ToString()));
   } else {
-    json->SetString("matrix", Matrix().ToString());
+    String matrix(Matrix().ToDecomposedString());
+    if (matrix.EndsWith("\n"))
+      matrix = matrix.Left(matrix.length() - 1);
+    json->SetString("matrix", matrix.Replace("\n", ", "));
     json->SetString("origin", String(Origin().ToString()));
   }
   if (!state_.flags.flattens_inherited_transform)
@@ -187,7 +190,7 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   }
   if (state_.compositor_element_id) {
     json->SetString("compositorElementId",
-                    state_.compositor_element_id.ToString().c_str());
+                    String(state_.compositor_element_id.ToString()));
   }
   if (state_.scroll)
     json->SetString("scroll", String::Format("%p", state_.scroll.get()));

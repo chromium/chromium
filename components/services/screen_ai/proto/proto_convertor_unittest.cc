@@ -280,11 +280,8 @@ TEST_F(ProtoConvertorTest,
 
     const std::string expected_update(
         "id=1 dialog (0, 0)-(800, 900) child_ids=2,3\n"
-        "  id=2 button offset_container_id=1 (0, 1)-(2, 3) transform=[ +0.0000 "
-        "-1.0000 +0.0000 +0.0000  \n"
-        "  +1.0000 +0.0000 +0.0000 +0.0000  \n"
-        "  +0.0000 +0.0000 +1.0000 +0.0000  \n"
-        "  +0.0000 +0.0000 +0.0000 +1.0000 ]\n"
+        "  id=2 button offset_container_id=1 (0, 1)-(2, 3)"
+        " transform=[ 0 -1 0 0\n  1 0 0 0\n  0 0 1 0\n  0 0 0 1 ]\n"
         "\n"
         "  id=3 genericContainer offset_container_id=1 (0, 0)-(5, 5) "
         "role_description=Signature\n");

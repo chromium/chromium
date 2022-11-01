@@ -1216,21 +1216,21 @@ gfx::Transform TransformationMatrix::ToTransform() const {
       ClampToFloat(matrix_[2][3]), ClampToFloat(matrix_[3][3]));
 }
 
-String TransformationMatrix::ToString(bool as_matrix) const {
-  if (as_matrix) {
-    // Return as a matrix in row-major order.
-    return String::Format(
-        "[%lg,%lg,%lg,%lg,\n%lg,%lg,%lg,%lg,\n%lg,%lg,%lg,%lg,\n%lg,%lg,%lg,%"
-        "lg]",
-        matrix_[0][0], matrix_[1][0], matrix_[2][0], matrix_[3][0],
-        matrix_[0][1], matrix_[1][1], matrix_[2][1], matrix_[3][1],
-        matrix_[0][2], matrix_[1][2], matrix_[2][2], matrix_[3][2],
-        matrix_[0][3], matrix_[1][3], matrix_[2][3], matrix_[3][3]);
-  }
+String TransformationMatrix::ToString() const {
+  // Return as a matrix in row-major order.
+  return String::Format(
+      "[%lg,%lg,%lg,%lg,\n%lg,%lg,%lg,%lg,\n"
+      "%lg,%lg,%lg,%lg,\n%lg,%lg,%lg,%lg]",
+      matrix_[0][0], matrix_[1][0], matrix_[2][0], matrix_[3][0],  //
+      matrix_[0][1], matrix_[1][1], matrix_[2][1], matrix_[3][1],  //
+      matrix_[0][2], matrix_[1][2], matrix_[2][2], matrix_[3][2],  //
+      matrix_[0][3], matrix_[1][3], matrix_[2][3], matrix_[3][3]);
+}
 
+String TransformationMatrix::ToDecomposedString() const {
   TransformationMatrix::DecomposedType decomposition;
   if (!Decompose(decomposition))
-    return ToString(true) + " (degenerate)";
+    return ToString() + " (degenerate)";
 
   if (IsIdentityOrTranslation()) {
     if (decomposition.translate_x == 0 && decomposition.translate_y == 0 &&
@@ -1255,7 +1255,7 @@ String TransformationMatrix::ToString(bool as_matrix) const {
 
 std::ostream& operator<<(std::ostream& ostream,
                          const TransformationMatrix& transform) {
-  return ostream << transform.ToString();
+  return ostream << transform.ToDecomposedString();
 }
 
 }  // namespace blink

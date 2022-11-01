@@ -12,11 +12,11 @@ namespace gfx {
 
 std::string DecomposedTransform::ToString() const {
   return base::StringPrintf(
-      "translate: %+0.4f %+0.4f %+0.4f\n"
-      "scale: %+0.4f %+0.4f %+0.4f\n"
-      "skew: %+0.4f %+0.4f %+0.4f\n"
-      "perspective: %+0.4f %+0.4f %+0.4f %+0.4f\n"
-      "quaternion: %+0.4f %+0.4f %+0.4f %+0.4f\n",
+      "translate: %+lg %+lg %+lg\n"
+      "scale: %+lg %+lg %+lg\n"
+      "skew: %+lg %+lg %+lg\n"
+      "perspective: %+lg %+lg %+lg %+lg\n"
+      "quaternion: %+lg %+lg %+lg %+lg\n",
       translate[0], translate[1], translate[2], scale[0], scale[1], scale[2],
       skew[0], skew[1], skew[2], perspective[0], perspective[1], perspective[2],
       perspective[3], quaternion.x(), quaternion.y(), quaternion.z(),

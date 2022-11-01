@@ -900,13 +900,29 @@ bool Transform::ApproximatelyEqual(const gfx::Transform& transform) const {
 
 std::string Transform::ToString() const {
   return base::StringPrintf(
-      "[ %+0.4f %+0.4f %+0.4f %+0.4f  \n"
-      "  %+0.4f %+0.4f %+0.4f %+0.4f  \n"
-      "  %+0.4f %+0.4f %+0.4f %+0.4f  \n"
-      "  %+0.4f %+0.4f %+0.4f %+0.4f ]\n",
+      "[ %lg %lg %lg %lg\n"
+      "  %lg %lg %lg %lg\n"
+      "  %lg %lg %lg %lg\n"
+      "  %lg %lg %lg %lg ]\n",
       rc(0, 0), rc(0, 1), rc(0, 2), rc(0, 3), rc(1, 0), rc(1, 1), rc(1, 2),
       rc(1, 3), rc(2, 0), rc(2, 1), rc(2, 2), rc(2, 3), rc(3, 0), rc(3, 1),
       rc(3, 2), rc(3, 3));
+}
+
+std::string Transform::ToDecomposedString() const {
+  absl::optional<gfx::DecomposedTransform> decomp = Decompose();
+  if (!decomp)
+    return ToString() + "(degenerate)";
+
+  if (IsIdentity())
+    return "identity";
+
+  if (IsIdentityOrTranslation()) {
+    return base::StringPrintf("translate: %lg,%lg,%lg", decomp->translate[0],
+                              decomp->translate[1], decomp->translate[2]);
+  }
+
+  return decomp->ToString();
 }
 
 }  // namespace gfx
