@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -199,6 +200,18 @@ void DidNavigateClient(
 
 base::TimeDelta GetUpdateDelay() {
   return base::Milliseconds(kUpdateDelayParam.Get());
+}
+
+const char* FetchHandlerTypeToSuffix(
+    ServiceWorkerVersion::FetchHandlerType type) {
+  switch (type) {
+    case ServiceWorkerVersion::FetchHandlerType::kNoHandler:
+      return "_NO_HANDLER";
+    case ServiceWorkerVersion::FetchHandlerType::kNotSkippable:
+      return "_NOT_SKIPPABLE";
+    case ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler:
+      return "_EMPTY_FETCH_HANDLER";
+  }
 }
 
 }  // namespace
@@ -1251,6 +1264,11 @@ void ServiceWorkerVersion::OnStarted(
           base::DoNothing());
       base::UmaHistogramEnumeration(
           "ServiceWorker.OnStarted.UpdatedFetchHandlerType",
+          fetch_handler_type);
+      base::UmaHistogramEnumeration(
+          base::StrCat(
+              {"ServiceWorker.OnStarted.UpdatedFetchHandlerTypeBySourceType",
+               FetchHandlerTypeToSuffix(*fetch_handler_type_)}),
           fetch_handler_type);
     }
     if (!fetch_handler_type_) {

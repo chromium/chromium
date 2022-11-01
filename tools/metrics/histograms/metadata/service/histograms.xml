@@ -789,7 +789,34 @@ chromium-metrics-reviews@google.com.
     updated when it is read from the database next time.
 
     This metrics records the name of the new fetch handler detected.
+    ServiceWorker.OnStarted.UpdatedFetchHandlerTypeBySourceType_* for the
+    breakdown by the source fetch handler type.
   </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.OnStarted.UpdatedFetchHandlerTypeBySourceType_{SourceType}"
+    enum="ServiceWorkerFetchHandlerType" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The type of the fetch handler type to be stored in the database for update
+    per the source fetch handler type {SourceType} (See
+    ServiceWorker.OnStarted.UpdatedFetchHandlerType for all attenpts).
+
+    During the start of ServiceWorker, the fetch handler type is decided, and
+    sent via OnStarted. If the fetch handler type is different from the fetch
+    handler type already recognized and stored before, it will eventually be
+    updated when it is read from the database next time.
+
+    This metrics records the name of the new fetch handler detected.
+  </summary>
+  <token key="SourceType">
+    <variant name="EMPTY_FETCH_HANDLER"
+        summary="skippable empty fetch handler"/>
+    <variant name="NO_HANDLER" summary="no fetch handler"/>
+    <variant name="NOT_SKIPPABLE" summary="not skippable fetch handler"/>
+  </token>
 </histogram>
 
 <histogram name="ServiceWorker.PaymentRequestEvent.Time" units="ms"
