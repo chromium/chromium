@@ -45,12 +45,12 @@ class CORE_EXPORT NGTextPainterBase : public TextPainterBase {
   ~NGTextPainterBase() = default;
 
  protected:
-  // We have two functions to paint text decorations, because we should paint
+  // We have two functions to paint text decoations, because we should paint
   // text and decorations in following order:
-  //   1. Paint underline or overline text decorations
+  //   1. Paint text decorations except line through
   //   2. Paint text
-  //   3. Paint line through text decoration
-  void PaintUnderOrOverLineDecorations(
+  //   3. Paint line through
+  void PaintDecorationsExceptLineThrough(
       const NGTextFragmentPaintInfo& fragment_paint_info,
       const TextDecorationOffsetBase& decoration_offset,
       TextDecorationInfo& decoration_info,
@@ -59,12 +59,6 @@ class CORE_EXPORT NGTextPainterBase : public TextPainterBase {
       const TextPaintStyle& text_style,
       const cc::PaintFlags* flags = nullptr);
 
-  virtual void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
-                                     float upper,
-                                     float stripe_width,
-                                     float dilation) = 0;
-
- private:
   void PaintDecorationUnderOrOverLine(
       const NGTextFragmentPaintInfo& fragment_paint_info,
       GraphicsContext& context,
@@ -72,22 +66,10 @@ class CORE_EXPORT NGTextPainterBase : public TextPainterBase {
       TextDecorationLine line,
       const cc::PaintFlags* flags = nullptr);
 
-  void PaintUnderOrOverLineDecorationShadows(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
-      const TextDecorationOffsetBase& decoration_offset,
-      TextDecorationInfo& decoration_info,
-      TextDecorationLine lines_to_paint,
-      const cc::PaintFlags* flags,
-      const TextPaintStyle& text_style,
-      GraphicsContext& context);
-
-  void PaintUnderOrOverLineDecorations(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
-      const TextDecorationOffsetBase& decoration_offset,
-      TextDecorationInfo& decoration_info,
-      TextDecorationLine lines_to_paint,
-      const cc::PaintFlags* flags,
-      GraphicsContext& context);
+  virtual void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
+                                     float upper,
+                                     float stripe_width,
+                                     float dilation) = 0;
 };
 
 }  // namespace blink
