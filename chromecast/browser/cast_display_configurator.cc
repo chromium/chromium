@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/browser/cast_touch_device_manager.h"
 #include "chromecast/chromecast_buildflags.h"
@@ -95,7 +96,7 @@ gfx::Rect GetScreenBounds(const gfx::Size& size_in_pixels,
 
 CastDisplayConfigurator::CastDisplayConfigurator(CastScreen* screen)
     : delegate_(
-#if defined(USE_OZONE) && !BUILDFLAG(IS_CAST_AUDIO_ONLY)
+#if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_CAST_AUDIO_ONLY)
           ui::OzonePlatform::GetInstance()->CreateNativeDisplayDelegate()
 #else
           nullptr
