@@ -147,7 +147,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   // need to mark for style recalc inside style recalc. See the workaround in
   // LayoutTextControl::StyleDidChange.
   text_block_style_builder.SetDirection(start_style.Direction());
-  text_block_style->SetUnicodeBidi(start_style.GetUnicodeBidi());
+  text_block_style_builder.SetUnicodeBidi(start_style.GetUnicodeBidi());
   text_block_style_builder.SetUserSelect(EUserSelect::kText);
   text_block_style->SetUserModify(
       To<HTMLFormControlElement>(host)->IsDisabledOrReadOnly()
@@ -158,7 +158,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   text_block_style->SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
   if (!IsA<HTMLTextAreaElement>(host)) {
-    text_block_style->SetWhiteSpace(EWhiteSpace::kPre);
+    text_block_style_builder.SetWhiteSpace(EWhiteSpace::kPre);
     text_block_style_builder.SetOverflowWrap(EOverflowWrap::kNormal);
     text_block_style_builder.SetTextOverflow(
         ToTextControl(host)->ValueForTextOverflow());
@@ -206,7 +206,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
 
   // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like
   // to apply only editing-related and alignment-related.
-  StyleAdjuster::AdjustStyleForEditing(*text_block_style);
+  StyleAdjuster::AdjustStyleForEditing(text_block_style_builder);
   if (!is_visible_)
     text_block_style_builder.SetOpacity(0);
 

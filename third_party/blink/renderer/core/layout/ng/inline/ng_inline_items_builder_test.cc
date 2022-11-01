@@ -47,16 +47,19 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
   LayoutBlockFlow* GetLayoutBlockFlow() const { return block_flow_; }
 
   void SetWhiteSpace(EWhiteSpace whitespace) {
-    style_->SetWhiteSpace(whitespace);
+    ComputedStyleBuilder builder(*style_);
+    builder.SetWhiteSpace(whitespace);
+    style_ = builder.TakeStyle();
+    block_flow_->SetStyle(style_, LayoutObject::ApplyStyleChanges::kNo);
   }
 
-  scoped_refptr<ComputedStyle> GetStyle(EWhiteSpace whitespace) {
+  scoped_refptr<const ComputedStyle> GetStyle(EWhiteSpace whitespace) {
     if (whitespace == EWhiteSpace::kNormal)
       return style_;
-    scoped_refptr<ComputedStyle> style(
-        GetDocument().GetStyleResolver().CreateComputedStyle());
-    style->SetWhiteSpace(whitespace);
-    return style;
+    ComputedStyleBuilder builder =
+        GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+    builder.SetWhiteSpace(whitespace);
+    return builder.TakeStyle();
   }
 
   bool HasRuby(const NGInlineItemsBuilder& builder) const {

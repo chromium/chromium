@@ -200,7 +200,7 @@ void CSSVisibilityInterpolationType::ApplyStandardPropertyValue(
   EVisibility visibility =
       To<CSSVisibilityNonInterpolableValue>(non_interpolable_value)
           ->Visibility(fraction);
-  state.Style()->SetVisibility(visibility);
+  state.StyleBuilder().SetVisibility(visibility);
 }
 
 }  // namespace blink

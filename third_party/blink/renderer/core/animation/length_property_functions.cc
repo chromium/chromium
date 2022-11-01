@@ -320,7 +320,6 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
 }
 
 bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
-                                        ComputedStyle& style,
                                         ComputedStyleBuilder& builder,
                                         const Length& value) {
   switch (property.PropertyID()) {
@@ -399,7 +398,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       builder.SetRight(value);
       return true;
     case CSSPropertyID::kShapeMargin:
-      style.SetShapeMargin(value);
+      builder.SetShapeMargin(value);
       return true;
     case CSSPropertyID::kStrokeDashoffset:
       builder.SetStrokeDashOffset(value);

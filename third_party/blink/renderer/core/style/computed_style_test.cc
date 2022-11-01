@@ -65,11 +65,11 @@ class ComputedStyleTest : public testing::Test {
 TEST_F(ComputedStyleTest, ShapeOutsideBoxEqual) {
   auto* shape1 = MakeGarbageCollected<ShapeValue>(CSSBoxType::kContent);
   auto* shape2 = MakeGarbageCollected<ShapeValue>(CSSBoxType::kContent);
-  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
-  style1->SetShapeOutside(shape1);
-  style2->SetShapeOutside(shape2);
-  EXPECT_EQ(*style1, *style2);
+  ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+  ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
+  builder1.SetShapeOutside(shape1);
+  builder2.SetShapeOutside(shape2);
+  EXPECT_EQ(*builder1.TakeStyle(), *builder2.TakeStyle());
 }
 
 TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
@@ -79,11 +79,11 @@ TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
                                                   CSSBoxType::kContent);
   auto* shape2 = MakeGarbageCollected<ShapeValue>(std::move(circle2),
                                                   CSSBoxType::kContent);
-  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
-  style1->SetShapeOutside(shape1);
-  style2->SetShapeOutside(shape2);
-  EXPECT_EQ(*style1, *style2);
+  ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+  ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
+  builder1.SetShapeOutside(shape1);
+  builder2.SetShapeOutside(shape2);
+  EXPECT_EQ(*builder1.TakeStyle(), *builder2.TakeStyle());
 }
 
 TEST_F(ComputedStyleTest, ClipPathEqual) {

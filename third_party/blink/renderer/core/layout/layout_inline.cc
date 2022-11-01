@@ -240,10 +240,9 @@ static void UpdateInFlowPositionOfAnonymousBlockContinuations(
         InFlowPositionedInlineAncestor(block_flow->InlineElementContinuation()))
       continue;
 
-    scoped_refptr<ComputedStyle> new_block_style =
-        ComputedStyle::Clone(block->StyleRef());
-    new_block_style->SetPosition(new_style.GetPosition());
-    block->SetStyle(new_block_style);
+    ComputedStyleBuilder new_block_style_builder(block->StyleRef());
+    new_block_style_builder.SetPosition(new_style.GetPosition());
+    block->SetStyle(new_block_style_builder.TakeStyle());
   }
 }
 

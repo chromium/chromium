@@ -32,7 +32,6 @@ class LengthPropertyFunctions {
                         const ComputedStyle&,
                         Length& result);
   static bool SetLength(const CSSProperty&,
-                        ComputedStyle&,
                         ComputedStyleBuilder&,
                         const Length&);
 };

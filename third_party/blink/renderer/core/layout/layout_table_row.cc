@@ -69,9 +69,9 @@ void LayoutTableRow::StyleDidChange(StyleDifference diff,
 
   // Legacy tables cannont handle relative/fixed rows.
   if (StyleRef().HasInFlowPosition()) {
-    scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(StyleRef());
-    new_style->SetPosition(EPosition::kStatic);
-    SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
+    ComputedStyleBuilder builder(StyleRef());
+    builder.SetPosition(EPosition::kStatic);
+    SetStyle(builder.TakeStyle(), LayoutObject::ApplyStyleChanges::kNo);
   }
 
   LayoutTableBoxComponent::StyleDidChange(diff, old_style);

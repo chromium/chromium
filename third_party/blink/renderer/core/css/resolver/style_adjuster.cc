@@ -120,18 +120,19 @@ bool HostIsInputFile(const Element* element) {
   return false;
 }
 
-void AdjustStyleForSvgElement(const SVGElement& element, ComputedStyle& style) {
+void AdjustStyleForSvgElement(const SVGElement& element,
+                              ComputedStyleBuilder& builder) {
   // Disable some of text decoration properties.
   //
   // Note that SetFooBar() is more efficient than ResetFooBar() if the current
   // value is same as the reset value.
-  style.SetTextDecorationSkipInk(ETextDecorationSkipInk::kAuto);
-  style.SetTextDecorationStyle(
+  builder.SetTextDecorationSkipInk(ETextDecorationSkipInk::kAuto);
+  builder.SetTextDecorationStyle(
       ETextDecorationStyle::kSolid);  // crbug.com/1246719
-  style.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
-  style.SetTextEmphasisMark(TextEmphasisMark::kNone);
-  style.SetTextUnderlineOffset(Length());  // crbug.com/1247912
-  style.SetTextUnderlinePosition(kTextUnderlinePositionAuto);
+  builder.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
+  builder.MutableInternalStyle()->SetTextEmphasisMark(TextEmphasisMark::kNone);
+  builder.SetTextUnderlineOffset(Length());  // crbug.com/1247912
+  builder.SetTextUnderlinePosition(kTextUnderlinePositionAuto);
 }
 
 // Adjust style for anchor() and anchor-size() queries.
@@ -308,16 +309,17 @@ static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
   return layout_parent_style.IsDisplayFlexibleOrGridBox();
 }
 
-void StyleAdjuster::AdjustStyleForEditing(ComputedStyle& style) {
+void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder) {
+  const ComputedStyle& style = *builder.InternalStyle();
   if (style.UserModify() != EUserModify::kReadWritePlaintextOnly)
     return;
   // Collapsing whitespace is harmful in plain-text editing.
-  if (style.WhiteSpace() == EWhiteSpace::kNormal)
-    style.SetWhiteSpace(EWhiteSpace::kPreWrap);
-  else if (style.WhiteSpace() == EWhiteSpace::kNowrap)
-    style.SetWhiteSpace(EWhiteSpace::kPre);
-  else if (style.WhiteSpace() == EWhiteSpace::kPreLine)
-    style.SetWhiteSpace(EWhiteSpace::kPreWrap);
+  if (builder.WhiteSpace() == EWhiteSpace::kNormal)
+    builder.SetWhiteSpace(EWhiteSpace::kPreWrap);
+  else if (builder.WhiteSpace() == EWhiteSpace::kNowrap)
+    builder.SetWhiteSpace(EWhiteSpace::kPre);
+  else if (builder.WhiteSpace() == EWhiteSpace::kPreLine)
+    builder.SetWhiteSpace(EWhiteSpace::kPreWrap);
 }
 
 void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
@@ -344,18 +346,18 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
 
 void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
   ComputedStyle& style = *builder.MutableInternalStyle();
-  style.ResetTextCombine();
+  builder.ResetTextCombine();
   style.SetLetterSpacing(0.0f);
-  style.SetTextAlign(ETextAlign::kCenter);
-  style.SetTextDecorationLine(TextDecorationLine::kNone);
+  builder.SetTextAlign(ETextAlign::kCenter);
+  builder.SetTextDecorationLine(TextDecorationLine::kNone);
   style.SetTextEmphasisMark(TextEmphasisMark::kNone);
   style.SetVerticalAlign(EVerticalAlign ::kMiddle);
-  style.SetWordBreak(EWordBreak::kKeepAll);
+  builder.SetWordBreak(EWordBreak::kKeepAll);
   style.SetWordSpacing(0.0f);
   builder.SetWritingMode(WritingMode::kHorizontalTb);
 
   style.ClearAppliedTextDecorations();
-  style.ResetTextIndent();
+  builder.ResetTextIndent();
   style.UpdateFontOrientation();
 
   DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),
@@ -400,7 +402,7 @@ static void AdjustStyleForMarker(ComputedStyle& style,
     style.SetDisplay(EDisplay::kInlineBlock);
 
     // Do not break inside the marker, and honor the trailing spaces.
-    style.SetWhiteSpace(EWhiteSpace::kPre);
+    builder.SetWhiteSpace(EWhiteSpace::kPre);
 
     // Compute margins for 'outside' during layout, because it requires the
     // layout size of the marker.
@@ -430,7 +432,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     if (style.GetTextAlign() == ETextAlign::kWebkitLeft ||
         style.GetTextAlign() == ETextAlign::kWebkitCenter ||
         style.GetTextAlign() == ETextAlign::kWebkitRight)
-      style.SetTextAlign(ETextAlign::kStart);
+      builder.SetTextAlign(ETextAlign::kStart);
     return;
   }
 
@@ -438,7 +440,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     // Frames and framesets never honor position:relative or position:absolute.
     // This is necessary to fix a crash where a site tries to position these
     // objects. They also never honor display nor floating.
-    style.SetPosition(EPosition::kStatic);
+    builder.SetPosition(EPosition::kStatic);
     builder.SetDisplay(EDisplay::kBlock);
     builder.SetFloating(EFloat::kNone);
     return;
@@ -483,7 +485,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   if (IsA<HTMLRTElement>(element)) {
     // Ruby text does not support float or position. This might change with
     // evolution of the specification.
-    style.SetPosition(EPosition::kStatic);
+    builder.SetPosition(EPosition::kStatic);
     builder.SetFloating(EFloat::kNone);
     return;
   }
@@ -854,7 +856,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   if (style.Display() != EDisplay::kNone) {
     if (svg_element)
-      AdjustStyleForSvgElement(*svg_element, style);
+      AdjustStyleForSvgElement(*svg_element, builder);
 
     bool is_document_element =
         element && element->GetDocument().documentElement() == element;
@@ -865,7 +867,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     if (IsInTopLayer(element, style) && !is_document_element) {
       if (style.GetPosition() == EPosition::kStatic ||
           style.GetPosition() == EPosition::kRelative) {
-        style.SetPosition(EPosition::kAbsolute);
+        builder.SetPosition(EPosition::kAbsolute);
       }
       if (style.Display() == EDisplay::kContents) {
         // See crbug.com/1240701 for more details.
@@ -975,7 +977,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   AdjustStyleForInert(style, element);
 
-  AdjustStyleForEditing(style);
+  AdjustStyleForEditing(builder);
 
   bool is_svg_root = false;
 
@@ -984,7 +986,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     if (!is_svg_root) {
       // Only the root <svg> element in an SVG document fragment tree honors css
       // position.
-      style.SetPosition(ComputedStyleInitialValues::InitialPosition());
+      builder.SetPosition(ComputedStyleInitialValues::InitialPosition());
     }
 
     if (style.Display() == EDisplay::kContents &&

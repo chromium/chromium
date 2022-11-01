@@ -145,10 +145,10 @@ void CSSTextIndentInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  ComputedStyle& style = *state.Style();
-  style.SetTextIndent(To<InterpolableLength>(interpolable_value)
-                          .CreateLength(state.CssToLengthConversionData(),
-                                        Length::ValueRange::kAll));
+  state.StyleBuilder().SetTextIndent(
+      To<InterpolableLength>(interpolable_value)
+          .CreateLength(state.CssToLengthConversionData(),
+                        Length::ValueRange::kAll));
 }
 
 }  // namespace blink

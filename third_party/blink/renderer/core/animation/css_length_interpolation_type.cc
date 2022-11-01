@@ -142,8 +142,7 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
       state.CssToLengthConversionData().CopyWithAdjustedZoom(zoom);
   Length length = To<InterpolableLength>(interpolable_value)
                       .CreateLength(conversion_data, value_range_);
-  if (LengthPropertyFunctions::SetLength(CssProperty(), style, builder,
-                                         length)) {
+  if (LengthPropertyFunctions::SetLength(CssProperty(), builder, length)) {
 #if DCHECK_IS_ON()
     scoped_refptr<const ComputedStyle> before_style = builder.ToStyle();
     // Assert that setting the length on ComputedStyle directly is identical to

@@ -783,7 +783,10 @@ TEST_F(LayoutObjectTest, VisualRect) {
   EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
   EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
 
-  style->SetVisibility(EVisibility::kHidden);
+  ComputedStyleBuilder builder(*style);
+  builder.SetVisibility(EVisibility::kHidden);
+  mock_object->SetStyle(builder.TakeStyle(),
+                        LayoutObject::ApplyStyleChanges::kNo);
   EXPECT_CALL(*mock_object, VisualRectRespectsVisibility())
       .WillOnce(Return(true));
   EXPECT_TRUE(mock_object->LocalVisualRect().IsEmpty());

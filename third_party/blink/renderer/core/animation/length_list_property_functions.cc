@@ -214,7 +214,7 @@ void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
       return;
 
     case CSSPropertyID::kObjectPosition:
-      style.SetObjectPosition(PointFromVector(length_list));
+      builder.SetObjectPosition(PointFromVector(length_list));
       return;
     case CSSPropertyID::kOffsetAnchor:
       builder.SetOffsetAnchor(PointFromVector(length_list));

@@ -5948,7 +5948,7 @@ const CSSValue* Position::CSSValueFromComputedStyleInternal(
 
 void Position::ApplyInherit(StyleResolverState& state) const {
   if (!state.ParentNode()->IsDocumentNode())
-    state.Style()->SetPosition(state.ParentStyle()->GetPosition());
+    state.StyleBuilder().SetPosition(state.ParentStyle()->GetPosition());
 }
 
 const CSSValue* PositionFallback::ParseSingleValue(
@@ -6044,7 +6044,7 @@ void Resize::ApplyValue(StyleResolverState& state,
   } else {
     r = identifier_value.ConvertTo<EResize>();
   }
-  state.Style()->SetResize(r);
+  state.StyleBuilder().SetResize(r);
 }
 
 const CSSValue* Right::ParseSingleValue(
@@ -7097,6 +7097,7 @@ const CSSValue* TextAlign::CSSValueFromComputedStyleInternal(
 
 void TextAlign::ApplyValue(StyleResolverState& state,
                            const CSSValue& value) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   const auto* ident_value = DynamicTo<CSSIdentifierValue>(value);
   if (ident_value &&
       ident_value->GetValueID() != CSSValueID::kWebkitMatchParent) {
@@ -7106,19 +7107,19 @@ void TextAlign::ApplyValue(StyleResolverState& state,
     if (ident_value->GetValueID() == CSSValueID::kInternalCenter &&
         state.ParentStyle()->GetTextAlign() !=
             ComputedStyleInitialValues::InitialTextAlign())
-      state.Style()->SetTextAlign(state.ParentStyle()->GetTextAlign());
+      builder.SetTextAlign(state.ParentStyle()->GetTextAlign());
     else
-      state.Style()->SetTextAlign(ident_value->ConvertTo<ETextAlign>());
+      builder.SetTextAlign(ident_value->ConvertTo<ETextAlign>());
   } else if (state.ParentStyle()->GetTextAlign() == ETextAlign::kStart) {
-    state.Style()->SetTextAlign(state.ParentStyle()->IsLeftToRightDirection()
-                                    ? ETextAlign::kLeft
-                                    : ETextAlign::kRight);
+    builder.SetTextAlign(state.ParentStyle()->IsLeftToRightDirection()
+                             ? ETextAlign::kLeft
+                             : ETextAlign::kRight);
   } else if (state.ParentStyle()->GetTextAlign() == ETextAlign::kEnd) {
-    state.Style()->SetTextAlign(state.ParentStyle()->IsLeftToRightDirection()
-                                    ? ETextAlign::kRight
-                                    : ETextAlign::kLeft);
+    builder.SetTextAlign(state.ParentStyle()->IsLeftToRightDirection()
+                             ? ETextAlign::kRight
+                             : ETextAlign::kLeft);
   } else {
-    state.Style()->SetTextAlign(state.ParentStyle()->GetTextAlign());
+    builder.SetTextAlign(state.ParentStyle()->GetTextAlign());
   }
 }
 
@@ -7264,14 +7265,6 @@ const CSSValue* TextIndent::CSSValueFromComputedStyleInternal(
   return list;
 }
 
-void TextIndent::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetTextIndent(ComputedStyleInitialValues::InitialTextIndent());
-}
-
-void TextIndent::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetTextIndent(state.ParentStyle()->TextIndent());
-}
-
 void TextIndent::ApplyValue(StyleResolverState& state,
                             const CSSValue& value) const {
   Length length_or_percentage_value;
@@ -7286,7 +7279,7 @@ void TextIndent::ApplyValue(StyleResolverState& state,
     }
   }
 
-  state.Style()->SetTextIndent(length_or_percentage_value);
+  state.StyleBuilder().SetTextIndent(length_or_percentage_value);
 }
 
 const CSSValue* TextOrientation::CSSValueFromComputedStyleInternal(
@@ -7987,10 +7980,10 @@ void AppRegion::ApplyInherit(StyleResolverState& state) const {}
 void AppRegion::ApplyValue(StyleResolverState& state,
                            const CSSValue& value) const {
   const auto& identifier_value = To<CSSIdentifierValue>(value);
-  state.Style()->SetDraggableRegionMode(identifier_value.GetValueID() ==
-                                                CSSValueID::kDrag
-                                            ? EDraggableRegionMode::kDrag
-                                            : EDraggableRegionMode::kNoDrag);
+  state.StyleBuilder().SetDraggableRegionMode(
+      identifier_value.GetValueID() == CSSValueID::kDrag
+          ? EDraggableRegionMode::kDrag
+          : EDraggableRegionMode::kNoDrag);
   state.GetDocument().SetHasAnnotatedRegions(true);
 }
 
