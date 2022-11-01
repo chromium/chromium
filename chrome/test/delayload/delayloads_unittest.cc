@@ -128,8 +128,8 @@ TEST_F(DelayloadsTest, ChromeDllDelayloadsCheck) {
   }
 }
 
-// Flaking on ASAN: https://crbug.com/1047723
-#if defined(ADDRESS_SANITIZER)
+// https://crbug.com/1047723
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_WIN)
 #define MAYBE_ChromeDllLoadSanityTest DISABLED_ChromeDllLoadSanityTest
 #else
 #define MAYBE_ChromeDllLoadSanityTest ChromeDllLoadSanityTest
