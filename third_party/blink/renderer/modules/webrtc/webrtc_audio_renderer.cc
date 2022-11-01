@@ -555,6 +555,11 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
     return;
   }
 
+  if (sink_ && output_device_id_ == String::FromUTF8(device_id)) {
+    std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_OK);
+    return;
+  }
+
   media::AudioSinkParameters sink_params(session_id_, device_id);
   scoped_refptr<media::AudioRendererSink> new_sink =
       Platform::Current()->NewAudioRendererSink(
@@ -865,6 +870,8 @@ void WebRtcAudioRenderer::PrepareSink() {
                        __func__, sample_rate));
     sample_rate = 48000;
   }
+  DVLOG(1) << "WebRtcAudioRenderer::PrepareSink sample_rate " << sample_rate;
+
   media::AudioSampleRate asr;
   if (media::ToAudioSampleRate(sample_rate, &asr)) {
     UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioOutputSampleRate", asr,

@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 
@@ -137,6 +138,9 @@ void PeerConnectionRemoteAudioSource::OnData(const void* audio_data,
   DCHECK(is_only_thread_here);
 #endif
 
+  TRACE_EVENT2("audio", "PeerConnectionRemoteAudioSource::OnData",
+               "sample_rate", sample_rate, "number_of_frames",
+               number_of_frames);
   // TODO(tommi): We should get the timestamp from WebRTC.
   base::TimeTicks playout_time(base::TimeTicks::Now());
 

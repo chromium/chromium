@@ -54,6 +54,8 @@ void WebRtcAudioDeviceImpl::RenderData(media::AudioBus* audio_bus,
                                        int sample_rate,
                                        base::TimeDelta audio_delay,
                                        base::TimeDelta* current_time) {
+  TRACE_EVENT2("audio", "WebRtcAudioDeviceImpl::RenderData", "sample_rate",
+               sample_rate, "audio_delay_ms", audio_delay.InMilliseconds());
   {
     base::AutoLock auto_lock(lock_);
 #if DCHECK_IS_ON()
