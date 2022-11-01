@@ -14,6 +14,8 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -51,7 +53,9 @@ TestWaylandServerThread::TestWaylandServerThread()
                     base::WaitableEvent::InitialState::NOT_SIGNALED),
       compositor_v4_(4),
       compositor_v3_(3),
-      controller_(FROM_HERE) {}
+      controller_(FROM_HERE) {
+  DETACH_FROM_THREAD(thread_checker_);
+}
 
 TestWaylandServerThread::~TestWaylandServerThread() {
   // Stop watching the descriptor here to guarantee that no new events
@@ -60,6 +64,10 @@ TestWaylandServerThread::~TestWaylandServerThread() {
 
   Resume();
   Stop();
+
+  if (protocol_logger_)
+    wl_protocol_logger_destroy(protocol_logger_);
+  protocol_logger_ = nullptr;
 
   // Check if the client has been destroyed after the thread is stopped. This
   // most probably will happen if the real client has closed its fd resulting
@@ -76,6 +84,16 @@ void TestWaylandServerThread::FlushClientForResource(wl_resource* resource) {
   DCHECK(resource);
   base::AutoLock scoped_lock(g_global_lock_);
   wl_client_flush(wl_resource_get_client(resource));
+}
+
+void TestWaylandServerThread::SetServerAsync() {
+  // Resume and Pause the server to ensure it's paused. Calling just Pause may
+  // result in a deadlock if the server has already been paused.
+  Resume();
+  Pause();
+  is_async_ = true;
+  // Now resume the server thread so that it runs and processed the events.
+  resume_event_.Signal();
 }
 
 bool TestWaylandServerThread::Start(const ServerConfig& config) {
@@ -148,6 +166,9 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
   client_destroy_listener_.listener.notify = handle_client_destroyed;
   wl_client_add_destroy_listener(client_, &client_destroy_listener_.listener);
 
+  protocol_logger_ = wl_display_add_protocol_logger(
+      display_.get(), TestWaylandServerThread::ProtocolLogger, this);
+
   base::Thread::Options options;
   options.message_pump_factory = base::BindRepeating(
       &TestWaylandServerThread::CreateMessagePump, base::Unretained(this));
@@ -161,6 +182,9 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
 }
 
 void TestWaylandServerThread::Pause() {
+  if (is_async_)
+    return;
+
   task_runner()->PostTask(FROM_HERE,
                           base::BindOnce(&TestWaylandServerThread::DoPause,
                                          base::Unretained(this)));
@@ -168,11 +192,31 @@ void TestWaylandServerThread::Pause() {
 }
 
 void TestWaylandServerThread::Resume() {
+  if (is_async_)
+    return;
+
   if (display_) {
     base::AutoLock scoped_lock(g_global_lock_);
     wl_display_flush_clients(display_.get());
   }
   resume_event_.Signal();
+}
+
+void TestWaylandServerThread::RunAndWait(
+    base::OnceCallback<void(TestWaylandServerThread*)> callback) {
+  base::OnceClosure closure =
+      base::BindOnce(std::move(callback), base::Unretained(this));
+  RunAndWait(std::move(closure));
+}
+
+void TestWaylandServerThread::RunAndWait(base::OnceClosure closure) {
+  base::RunLoop run_loop;
+  task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&TestWaylandServerThread::DoRun, base::Unretained(this),
+                     std::move(closure)),
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 MockWpPresentation* TestWaylandServerThread::EnsureWpPresentation() {
@@ -235,6 +279,8 @@ bool TestWaylandServerThread::SetupExplicitSynchronizationProtocol(
 }
 
 void TestWaylandServerThread::DoPause() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!is_async_);
   base::RunLoop().RunUntilIdle();
   pause_event_.Signal();
   resume_event_.Wait();
@@ -242,6 +288,7 @@ void TestWaylandServerThread::DoPause() {
 
 std::unique_ptr<base::MessagePump>
 TestWaylandServerThread::CreateMessagePump() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto pump = std::make_unique<base::MessagePumpLibevent>();
   pump->WatchFileDescriptor(wl_event_loop_get_fd(event_loop_), true,
                             base::MessagePumpLibevent::WATCH_READ, &controller_,
@@ -249,7 +296,15 @@ TestWaylandServerThread::CreateMessagePump() {
   return std::move(pump);
 }
 
+void TestWaylandServerThread::DoRun(base::OnceClosure closure) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::move(closure).Run();
+  base::AutoLock scoped_lock(g_global_lock_);
+  wl_display_flush_clients(display_.get());
+}
+
 void TestWaylandServerThread::OnFileCanReadWithoutBlocking(int fd) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   wl_event_loop_dispatch(event_loop_, 0);
   if (display_) {
     base::AutoLock scoped_lock(g_global_lock_);
@@ -258,5 +313,19 @@ void TestWaylandServerThread::OnFileCanReadWithoutBlocking(int fd) {
 }
 
 void TestWaylandServerThread::OnFileCanWriteWithoutBlocking(int fd) {}
+
+// static
+void TestWaylandServerThread::ProtocolLogger(
+    void* user_data,
+    enum wl_protocol_logger_type direction,
+    const struct wl_protocol_logger_message* message) {
+  auto* test_server = static_cast<TestWaylandServerThread*>(user_data);
+  DCHECK(test_server);
+  // When the server is running in asynchronous mode, all the protocol calls
+  // must be made on the correct thread.
+  if (test_server->is_async_) {
+    DCHECK_CALLED_ON_VALID_THREAD(test_server->thread_checker_);
+  }
+}
 
 }  // namespace wl

@@ -15,6 +15,7 @@
 #include "base/message_loop/message_pump_libevent.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_checker.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_shell.h"
@@ -89,6 +90,12 @@ class TestWaylandServerThread : public base::Thread,
   // TODO(1365887): This shouldn't really exist.
   static void FlushClientForResource(wl_resource* resource);
 
+  // Makes server to be asynchronous. In other words, Pause/Resume do nothing
+  // and the server thread is constantly running.
+  // TODO(crbug.com/1365887): this must be removed once all tests switch to
+  // asynchronous mode.
+  void SetServerAsync();
+
   // Starts the test Wayland server thread. If this succeeds, the WAYLAND_SOCKET
   // environment variable will be set to the string representation of a file
   // descriptor that a client can connect to. The caller is responsible for
@@ -103,6 +110,11 @@ class TestWaylandServerThread : public base::Thread,
 
   // Resumes the server thread after flushing client connections.
   void Resume();
+
+  // Runs 'callback' or 'closure' on the server thread; blocks until the
+  // callable is run and all pending Wayland requests and events are delivered.
+  void RunAndWait(base::OnceCallback<void(TestWaylandServerThread*)> callback);
+  void RunAndWait(base::OnceClosure closure);
 
   // Initializes and returns WpPresentation.
   MockWpPresentation* EnsureWpPresentation();
@@ -127,6 +139,7 @@ class TestWaylandServerThread : public base::Thread,
   TestDataDeviceManager* data_device_manager() { return &data_device_manager_; }
   TestSeat* seat() { return &seat_; }
   MockXdgShell* xdg_shell() { return &xdg_shell_; }
+  MockZxdgShellV6* zxdg_shell() { return &zxdg_shell_v6_; }
   MockZAuraShell* zaura_shell() { return &zaura_shell_; }
   TestOutput* output() { return &output_; }
   TestZcrTextInputExtensionV1* text_input_extension_v1() {
@@ -166,14 +179,28 @@ class TestWaylandServerThread : public base::Thread,
 
   std::unique_ptr<base::MessagePump> CreateMessagePump();
 
+  // Executes the closure and flushes the server event queue. Must be run on
+  // server's thread.
+  void DoRun(base::OnceClosure closure);
+
   // base::MessagePumpLibevent::FdWatcher
   void OnFileCanReadWithoutBlocking(int fd) override;
   void OnFileCanWriteWithoutBlocking(int fd) override;
+
+  // wl_protocol_logger. Whenever there is a call to a protocol from the server
+  // side, the logger is invoked. This is handy as we can use this to verify all
+  // the protocol calls happen only when the server thread is not running. This
+  // helps to avoid thread races as the client runs on a different from the
+  // server tread.
+  static void ProtocolLogger(void* user_data,
+                             enum wl_protocol_logger_type direction,
+                             const struct wl_protocol_logger_message* message);
 
   std::unique_ptr<wl_display, DisplayDeleter> display_;
   TestServerListener client_destroy_listener_;
   raw_ptr<wl_client> client_ = nullptr;
   raw_ptr<wl_event_loop> event_loop_ = nullptr;
+  raw_ptr<wl_protocol_logger> protocol_logger_ = nullptr;
 
   base::WaitableEvent pause_event_;
   base::WaitableEvent resume_event_;
@@ -210,6 +237,18 @@ class TestWaylandServerThread : public base::Thread,
   base::MessagePumpLibevent::FdWatchController controller_;
 
   raw_ptr<OutputDelegate> output_delegate_ = nullptr;
+
+  // Makes the server to run asynchronously - the server is resumed and
+  // processes events as soon as there is something to read from the event
+  // queue. The client is not required to call Resume/Pause anymore. This cannot
+  // be set in ctor as the WaylandTest needs the first operations to be done
+  // synchronously. Otherwise, it'll crash in WaylandTest::SetUp. And given this
+  // is used temporarily, it's fine to have it as it is now.
+  // TODO(crbug.com/1365887): this must be removed once all tests switch to
+  // asynchronous mode.
+  bool is_async_ = false;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 class TestWaylandServerThread::OutputDelegate {

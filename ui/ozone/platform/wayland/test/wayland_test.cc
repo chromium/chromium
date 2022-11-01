@@ -17,6 +17,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
+#include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -30,9 +31,10 @@ using ::testing::SaveArg;
 
 namespace ui {
 
-WaylandTest::WaylandTest()
+WaylandTest::WaylandTest(TestServerMode server_mode)
     : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
-                        base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+                        base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      server_mode_(server_mode) {
 #if BUILDFLAG(USE_XKBCOMMON)
   auto keyboard_layout_engine =
       std::make_unique<XkbKeyboardLayoutEngine>(xkb_evdev_code_converter_);
@@ -99,11 +101,21 @@ void WaylandTest::SetUp() {
   EXPECT_EQ(0u, DeviceDataManager::GetInstance()->GetTouchpadDevices().size());
 
   initialized_ = true;
+
+  // TODO(crbug.com/1365887): this must be removed once all tests switch to
+  // asynchronous mode.
+  if (server_mode_ == TestServerMode::kAsync)
+    server_.SetServerAsync();
 }
 
 void WaylandTest::TearDown() {
-  if (initialized_)
-    Sync();
+  if (initialized_) {
+    if (server_mode_ == TestServerMode::kAsync) {
+      FlushServer();
+    } else {
+      Sync();
+    }
+  }
 }
 
 void WaylandTest::Sync() {
@@ -116,6 +128,22 @@ void WaylandTest::Sync() {
   // Pause the server, after it has finished processing any follow-up requests
   // from the client.
   server_.Pause();
+}
+
+void WaylandTest::FlushServer() {
+  base::OnceClosure empty_callback = base::DoNothing();
+  // Running anything on the server results in a flushing the server's event
+  // queue.
+  server_.RunAndWait(std::move(empty_callback));
+}
+
+void WaylandTest::PostToServerAndWait(
+    base::OnceCallback<void(wl::TestWaylandServerThread* server)> callback) {
+  server_.RunAndWait(std::move(callback));
+}
+
+void WaylandTest::PostToServerAndWait(base::OnceClosure closure) {
+  server_.RunAndWait(std::move(closure));
 }
 
 void WaylandTest::SetPointerFocusedWindow(WaylandWindow* window) {

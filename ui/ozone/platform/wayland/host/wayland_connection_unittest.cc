@@ -2,43 +2,77 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <wayland-server-core.h>
-#include <xdg-shell-server-protocol.h>
-
+#include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "base/run_loop.h"
-#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/common/wayland.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/test/mock_xdg_shell.h"
 #include "ui/ozone/platform/wayland/test/test_compositor.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
+#include "ui/ozone/platform/wayland/test/wayland_test.h"
+
+using ::testing::Values;
 
 namespace ui {
 
-TEST(WaylandConnectionTest, Ping) {
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
-  wl::TestWaylandServerThread server;
-  constexpr uint32_t expected_compositor_version = 4;
-  ASSERT_TRUE(server.Start({.shell_version = wl::ShellVersion::kStable,
-                            .compositor_version = wl::CompositorVersion::kV4}));
-  WaylandConnection connection;
-  ASSERT_TRUE(connection.Initialize());
-  connection.event_source()->StartProcessingEvents();
+class WaylandConnectionTest : public WaylandTest {
+ public:
+  WaylandConnectionTest() : WaylandTest(TestServerMode::kAsync) {}
+  WaylandConnectionTest(const WaylandConnectionTest&) = delete;
+  WaylandConnectionTest& operator=(const WaylandConnectionTest&) = delete;
+  ~WaylandConnectionTest() override = default;
+};
 
-  base::RunLoop().RunUntilIdle();
-  server.Pause();
+TEST_P(WaylandConnectionTest, Ping) {
+  wl::ServerConfig config = GetParam();
+
+  PostToServerAndWait([config](wl::TestWaylandServerThread* server) {
+    constexpr uint32_t kSerial = 1234;
+    if (config.shell_version == wl::ShellVersion::kV6) {
+      zxdg_shell_v6_send_ping(server->zxdg_shell()->resource(), kSerial);
+      EXPECT_CALL(*server->zxdg_shell(), Pong(1234));
+    } else {
+      DCHECK_EQ(config.shell_version, wl::ShellVersion::kStable);
+      xdg_wm_base_send_ping(server->xdg_shell()->resource(), kSerial);
+      EXPECT_CALL(*server->xdg_shell(), Pong(1234));
+    }
+  });
+
+  // We should have received a request to ping and answered to that. Flush the
+  // server so that it has a chance to read the messages.
+  FlushServer();
+}
+
+TEST_P(WaylandConnectionTest, CompositorVersionTest) {
+  wl::ServerConfig config = GetParam();
+  uint32_t expected_compositor_version = 0;
+  switch (config.compositor_version) {
+    case wl::CompositorVersion::kV3:
+      expected_compositor_version = 3;
+      break;
+    case wl::CompositorVersion::kV4:
+      expected_compositor_version = 4;
+      break;
+  }
 
   EXPECT_EQ(expected_compositor_version,
-            wl::get_version_of_object(connection.compositor()));
-
-  xdg_wm_base_send_ping(server.xdg_shell()->resource(), 1234);
-  EXPECT_CALL(*server.xdg_shell(), Pong(1234));
-
-  server.Resume();
-  base::RunLoop().RunUntilIdle();
-  server.Pause();
+            wl::get_version_of_object(connection_->compositor()));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTest,
+    WaylandConnectionTest,
+    Values(wl::ServerConfig{.shell_version = wl::ShellVersion::kStable,
+                            .compositor_version = wl::CompositorVersion::kV3}));
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestCompositorV4,
+    WaylandConnectionTest,
+    Values(wl::ServerConfig{.shell_version = wl::ShellVersion::kStable,
+                            .compositor_version = wl::CompositorVersion::kV4}));
+
+INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
+                         WaylandConnectionTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
 
 }  // namespace ui

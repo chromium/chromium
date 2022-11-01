@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +40,19 @@ class WaylandScreen;
 // and allows easy synchronization between them.
 class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
  public:
-  WaylandTest();
+  // Specifies how the server should run.
+  // TODO(crbug.com/1365887): this must be removed once all tests switch to
+  // asynchronous mode.
+  enum class TestServerMode {
+    // The server will not be paused. The tests are expected to use
+    // PostToServerAndWait to access libwayland-server APIs.
+    kAsync = 0,
+    // The server will be paused. The tests directly access libwayland-server
+    // APIs.
+    kSync
+  };
+
+  explicit WaylandTest(TestServerMode server_mode = TestServerMode::kSync);
 
   WaylandTest(const WaylandTest&) = delete;
   WaylandTest& operator=(const WaylandTest&) = delete;
@@ -50,6 +63,25 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   void TearDown() override;
 
   void Sync();
+
+  void FlushServer();
+
+  // Posts 'callback' or 'closure' to run on the client thread; blocks till the
+  // callable is run and all pending Wayland requests and events are delivered.
+  void PostToServerAndWait(
+      base::OnceCallback<void(wl::TestWaylandServerThread* server)> callback);
+  void PostToServerAndWait(base::OnceClosure closure);
+
+  // Similar to the two methods above, but provides the convenience of using a
+  // capturing lambda directly.
+  template <
+      typename Lambda,
+      typename = std::enable_if_t<
+          std::is_invocable_r_v<void, Lambda, wl::TestWaylandServerThread*> ||
+          std::is_invocable_r_v<void, Lambda>>>
+  void PostToServerAndWait(Lambda&& lambda) {
+    PostToServerAndWait(base::BindLambdaForTesting(std::move(lambda)));
+  }
 
  protected:
   void SetPointerFocusedWindow(WaylandWindow* window);
@@ -95,6 +127,9 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
 
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
   base::test::ScopedFeatureList feature_list_;
+
+  // The server will be set to asynchronous mode once started.
+  const TestServerMode server_mode_;
 };
 
 }  // namespace ui
