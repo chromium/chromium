@@ -661,7 +661,7 @@
   {
     "name": "back-gesture-refactor-android",
     "owners": ["lazzzis@google.com", "jinsukkim", "twellington"],
-    "expiry_milestone": 109
+    "expiry_milestone": 115
   },
   {
     "name": "batch-fetch-requests",
