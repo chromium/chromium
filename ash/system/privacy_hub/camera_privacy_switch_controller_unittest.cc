@@ -111,6 +111,53 @@ TEST_F(PrivacyHubCameraControllerTests, UIAction) {
   }
 }
 
+TEST_F(PrivacyHubCameraControllerTests, OnCameraSoftwarePrivacySwitchChanged) {
+  // When |prefs::kUserCameraAllowed| is true and CrOS Camera Service
+  // communicates the SW privacy switch state as UNKNOWN or ON, the states
+  // mismatch and SetCameraSWPrivacySwitch(kEnabled) should be called to correct
+  // the mismatch.
+  EXPECT_CALL(*mock_switch_,
+              SetCameraSWPrivacySwitch(CameraSWPrivacySwitchSetting::kEnabled))
+      .Times(::testing::Exactly(3));
+  SetUserPref(true);
+  controller_->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::UNKNOWN);
+  controller_->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+
+  // When |prefs::kUserCameraAllowed| is false and CrOS Camera Service
+  // communicates the SW privacy switch state as UNKNOWN or OFF, the states
+  // mismatch and SetCameraSWPrivacySwitch(kDisabled) should be called to
+  // correct the mismatch.
+  EXPECT_CALL(*mock_switch_,
+              SetCameraSWPrivacySwitch(CameraSWPrivacySwitchSetting::kDisabled))
+      .Times(::testing::Exactly(3));
+  SetUserPref(false);
+  controller_->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::UNKNOWN);
+  controller_->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+
+  // When the SW privacy switch states match in Privacy Hub and CrOS Camera
+  // Service, SetCameraSWPrivacySwitch() should not be called.
+  EXPECT_CALL(*mock_switch_, SetCameraSWPrivacySwitch(_))
+      .Times(::testing::Exactly(2));
+
+  // When |prefs::kUserCameraAllowed| is true and CrOS Camera Service
+  // communicates the SW privacy switch state as OFF, the states match and
+  // SetCameraSWPrivacySwitch() should not be called.
+  SetUserPref(true);
+  controller_->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+
+  // When |prefs::kUserCameraAllowed| is false and CrOS Camera Service
+  // communicates the SW privacy switch state as ON, the states match and
+  // SetCameraSWPrivacySwitch() should not be called.
+  SetUserPref(false);
+  controller_->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+}
+
 TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
   EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
                                   cros::mojom::CameraPrivacySwitchState::OFF));

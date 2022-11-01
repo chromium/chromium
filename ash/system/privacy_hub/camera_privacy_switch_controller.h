@@ -58,9 +58,11 @@ class ASH_EXPORT CameraPrivacySwitchController
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
-  // media::CameraPrivacySwitchObserver
+  // media::CameraPrivacySwitchObserver:
   void OnCameraHWPrivacySwitchStateChanged(
       const std::string& device_id,
+      cros::mojom::CameraPrivacySwitchState state) override;
+  void OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
 
   // media::CameraActiveClientObserver:

@@ -151,6 +151,18 @@ void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStateChanged(
   }
 }
 
+void CameraPrivacySwitchController::OnCameraSWPrivacySwitchStateChanged(
+    cros::mojom::CameraPrivacySwitchState state) {
+  const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
+  cros::mojom::CameraPrivacySwitchState pref_state =
+      pref_val == CameraSWPrivacySwitchSetting::kEnabled
+          ? cros::mojom::CameraPrivacySwitchState::OFF
+          : cros::mojom::CameraPrivacySwitchState::ON;
+  if (state != pref_state) {
+    switch_api_->SetCameraSWPrivacySwitch(pref_val);
+  }
+}
+
 cros::mojom::CameraPrivacySwitchState
 CameraPrivacySwitchController::HWSwitchState() const {
   return camera_privacy_switch_state_;
