@@ -213,9 +213,8 @@ class HistoryClustersServiceTestBase : public testing::Test {
     std::vector<history::AnnotatedVisit> visits =
         test_clustering_backend_->LastClusteredVisits();
 
-    // Visits 2, 3, and 5 are 1-day-old; visit 3 is a synced visit and therefore
-    // excluded.
-    ASSERT_EQ(visits.size(), 2u);
+    // Visits 2, 3, and 5 are 1-day-old; visit 3 is a synced visit.
+    ASSERT_EQ(visits.size(), 3u);
 
     auto& visit = visits[0];
     EXPECT_EQ(visit.visit_row.visit_id, 5);
@@ -226,6 +225,14 @@ class HistoryClustersServiceTestBase : public testing::Test {
     EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
 
     visit = visits[1];
+    EXPECT_EQ(visit.visit_row.visit_id, 3);
+    EXPECT_EQ(visit.visit_row.visit_time,
+              GetHardcodedTestVisits()[2].visit_row.visit_time);
+    EXPECT_EQ(visit.visit_row.visit_duration, base::Seconds(20));
+    EXPECT_EQ(visit.url_row.url(), "https://synched-visit.com/");
+    EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
+
+    visit = visits[2];
     EXPECT_EQ(visit.visit_row.visit_id, 2);
     EXPECT_EQ(visit.visit_row.visit_time,
               GetHardcodedTestVisits()[1].visit_row.visit_time);
@@ -432,13 +439,13 @@ TEST_F(HistoryClustersServiceTest, QueryClusters_IncompleteAndPersistedVisits) {
   QueryClustersContinuationParams continuation_params = {};
   continuation_params.continuation_time = base::Time::Now();
 
-  // 1st query should return visits 2, 5, & 6, the good, 1-day-old visits.
-  // Visits 3, 0, and 10, also 1-day-old, are excluded since they're synced,
-  // missing history rows, and non-visible transition respectively.
+  // 1st query should return visits 2, 3, 5, & 6, the good, 1-day-old visits.
+  // Visit 0 is excluded because it's missing history rows. Visit 10 is excluded
+  // because it has a non-visible transition.
   {
     const auto [clusters, visits] = NextQueryClusters(continuation_params);
     EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
-    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 2, 6));
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 3, 2, 6));
     EXPECT_TRUE(continuation_params.is_continuation);
     EXPECT_FALSE(continuation_params.is_partial_day);
   }
@@ -695,16 +702,6 @@ TEST_F(HistoryClustersServiceTest, QueryVisits_OldestFirst) {
   // Create 5 persisted visits with visit times 2, 1, 1, 60, and 1 days ago.
   AddHardcodedTestDataToHistoryService();
 
-  // Add a sync visit on a day without other visits in order to verify a day
-  // with only sync visits doesn't interrupt `GetAnnotatedVisitsToCluster`'s
-  // intention of iterating until a visit is found.
-  history::AnnotatedVisit sync_visit;
-  sync_visit.url_row.set_id(1);
-  sync_visit.visit_row.visit_id = 10;
-  sync_visit.visit_row.visit_time = base::Time::Now() - base::Days(15);
-  sync_visit.source = history::VisitSource::SOURCE_SYNCED;
-  AddCompleteVisit(sync_visit);
-
   // Helper to repeatedly schedule a `GetAnnotatedVisitsToCluster`, with the
   // continuation time returned from the previous task, and return the visits
   // it returns.
@@ -731,10 +728,10 @@ TEST_F(HistoryClustersServiceTest, QueryVisits_OldestFirst) {
   }
   {
     // 3rd query should return the next oldest, 1-day-old visits. Visit 3 is
-    // excluded as it's from sync.
+    // is from sync, and is still included.
     const auto [clusters, visits] = NextVisits(continuation_params, false, 0);
     EXPECT_TRUE(clusters.empty());
-    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 2));
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 3, 2));
     EXPECT_TRUE(continuation_params.is_continuation);
     EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);
@@ -881,7 +878,7 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.NumClustersReturned", 2, 1);
   histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.NumVisitsToCluster", 2, 1);
+      "History.Clusters.Backend.NumVisitsToCluster", 3, 1);
   histogram_tester.ExpectTotalCount(
       "History.Clusters.Backend.GetMostRecentClusters."
       "ComputeClustersLatency",
