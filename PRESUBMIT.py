@@ -225,8 +225,8 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
       excluded_paths=(
-          r'Test[^a-z]',
-          r'^third_party/',
+          r'.*Test[^a-z]',
+          r'third_party/',
           'base/android/java/src/org/chromium/base/ContextUtils.java',
       ),
     ),
