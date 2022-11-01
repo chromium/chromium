@@ -84,6 +84,8 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
       // |bounding_layer| must be either null (for fixed-positioned |owner_|) or
       // an ancestor of |starting_layer|, so we'll never have a null layer here.
       DCHECK(layer);
+      if (!layer->GetScrollableArea()->HasOverflow())
+        continue;
       new_scroll_container_layers.push_back(layer);
       new_accumulated_scroll_offset +=
           layer->GetScrollableArea()->GetScrollOffset();

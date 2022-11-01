@@ -808,6 +808,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
                   .FirstFragment()
                   .PaintProperties()
                   ->ScrollTranslation();
+      DCHECK(inner_most_scroll_container);
       scoped_refptr<const TransformPaintPropertyNode>
           outer_most_scroll_container =
               anchor_scroll_data.ScrollContainerLayers()
@@ -816,6 +817,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
                   .FirstFragment()
                   .PaintProperties()
                   ->ScrollTranslation();
+      DCHECK(outer_most_scroll_container);
       state.anchor_scroll_containers_data = std::make_unique<
           TransformPaintPropertyNode::AnchorScrollContainersData>(
           std::move(inner_most_scroll_container),

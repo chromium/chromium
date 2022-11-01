@@ -47,10 +47,11 @@ TEST_F(AnchorScrollDataTest, HasDataAndTranslation) {
 
   SetBodyInnerHTML(R"HTML(
     <div style="position: relative">
-      <div style="overflow: scroll; height: 1px;">
+      <div style="overflow: scroll; height: 20px;">
         Lorem ipsum
         <span id="anchor" style="anchor-name: --a1">anchor</span>
         dolor sit amet
+        <div style="height: 100px"></div>
       </div>
       <div id="anchored" style="position: absolute; anchor-scroll: --a1">
         anchored
@@ -87,10 +88,11 @@ TEST_F(AnchorScrollDataTest, Detach) {
   SetBodyInnerHTML(R"HTML(
     <style>.anchored { position: absolute; anchor-scroll: --a1; }</style>
     <div style="position: relative>
-      <div style="overflow: scroll; height: 1px;">
+      <div style="overflow: scroll; height: 20px;">
         Lorem ipsum
         <span id="anchor" style="anchor-name: --a1">anchor</span>
         dolor sit amet
+        <div style="height: 100px"></div>
       </div>
 
       <div class="anchored" id="remove">Will be removed</div>
