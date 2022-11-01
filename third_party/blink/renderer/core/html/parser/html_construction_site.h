@@ -259,7 +259,7 @@ class HTMLConstructionSite final {
   void MergeAttributesFromTokenIntoElement(AtomicHTMLToken*, Element*);
 
   void ExecuteTask(HTMLConstructionSiteTask&);
-  void QueueTask(const HTMLConstructionSiteTask&);
+  void QueueTask(const HTMLConstructionSiteTask&, bool flush_pending_text);
 
   CustomElementDefinition* LookUpCustomElementDefinition(
       Document&,
@@ -303,19 +303,14 @@ class HTMLConstructionSite final {
       whitespace_mode = std::min(whitespace_mode, new_whitespace_mode);
     }
 
-    void Swap(PendingText& other) {
-      std::swap(whitespace_mode, other.whitespace_mode);
-      parent.Swap(other.parent);
-      next_child.Swap(other.next_child);
-      string_builder.Swap(other.string_builder);
-    }
-
     void Discard() {
       if (IsEmpty())
         return;
 
-      PendingText discarded_text;
-      Swap(discarded_text);
+      parent.Clear();
+      next_child.Clear();
+      string_builder.Clear();
+      whitespace_mode = kWhitespaceUnknown;
     }
 
     bool IsEmpty() {

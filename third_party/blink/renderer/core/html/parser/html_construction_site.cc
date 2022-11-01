@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 
 #include <limits>
+
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
@@ -278,12 +279,6 @@ void HTMLConstructionSite::FlushPendingText() {
   if (pending_text_.IsEmpty())
     return;
 
-  PendingText pending_text;
-  // Hold onto the current pending text on the stack so that queueTask doesn't
-  // recurse infinitely.
-  pending_text_.Swap(pending_text);
-  DCHECK(pending_text_.IsEmpty());
-
   // Splitting text nodes into smaller chunks contradicts HTML5 spec, but is
   // necessary for performance, see:
   // https://bugs.webkit.org/show_bug.cgi?id=55898
@@ -294,10 +289,10 @@ void HTMLConstructionSite::FlushPendingText() {
   absl::optional<unsigned> length_limit;
 
   unsigned current_position = 0;
-  const StringBuilder& string = pending_text.string_builder;
+  const StringBuilder& string = pending_text_.string_builder;
   while (current_position < string.length()) {
     unsigned proposed_break_index = NextTextBreakPositionForContainer(
-        *pending_text.parent, current_position, string.length(), length_limit);
+        *pending_text_.parent, current_position, string.length(), length_limit);
     unsigned break_index =
         FindBreakIndexBetween(string, current_position, proposed_break_index);
     DCHECK_LE(break_index, string.length());
@@ -310,8 +305,8 @@ void HTMLConstructionSite::FlushPendingText() {
         string.Substring(current_position, break_index - current_position);
     // Strings composed entirely of whitespace are likely to be repeated. Turn
     // them into AtomicString so we share a single string for each.
-    if (pending_text.whitespace_mode == kAllWhitespace ||
-        (pending_text.whitespace_mode == kWhitespaceUnknown &&
+    if (pending_text_.whitespace_mode == kAllWhitespace ||
+        (pending_text_.whitespace_mode == kWhitespaceUnknown &&
          IsAllWhitespace(substring))) {
       substring = AtomicString(substring).GetString();
     }
@@ -319,19 +314,21 @@ void HTMLConstructionSite::FlushPendingText() {
     DCHECK_GT(break_index, current_position);
     DCHECK_EQ(break_index - current_position, substring.length());
     HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kInsertText);
-    task.parent = pending_text.parent;
-    task.next_child = pending_text.next_child;
+    task.parent = pending_text_.parent;
+    task.next_child = pending_text_.next_child;
     task.child = Text::Create(task.parent->GetDocument(), std::move(substring));
-    QueueTask(task);
+    QueueTask(task, false);
     DCHECK_EQ(To<Text>(task.child.Get())->length(),
               break_index - current_position);
     current_position = break_index;
   }
+  pending_text_.Discard();
 }
 
-void HTMLConstructionSite::QueueTask(const HTMLConstructionSiteTask& task) {
-  FlushPendingText();
-  DCHECK(pending_text_.IsEmpty());
+void HTMLConstructionSite::QueueTask(const HTMLConstructionSiteTask& task,
+                                     bool flush_pending_text) {
+  if (flush_pending_text)
+    FlushPendingText();
   task_queue_.push_back(task);
 }
 
@@ -361,7 +358,7 @@ void HTMLConstructionSite::AttachLater(ContainerNode* parent,
     task.parent = task.parent->parentNode();
 
   DCHECK(task.parent);
-  QueueTask(task);
+  QueueTask(task, true);
 }
 
 void HTMLConstructionSite::ExecuteQueuedTasks() {
@@ -907,7 +904,7 @@ void HTMLConstructionSite::Reparent(HTMLElementStack::ElementRecord* new_parent,
   HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kReparent);
   task.parent = new_parent->GetNode();
   task.child = child->GetNode();
-  QueueTask(task);
+  QueueTask(task, true);
 }
 
 void HTMLConstructionSite::Reparent(HTMLElementStack::ElementRecord* new_parent,
@@ -915,7 +912,7 @@ void HTMLConstructionSite::Reparent(HTMLElementStack::ElementRecord* new_parent,
   HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kReparent);
   task.parent = new_parent->GetNode();
   task.child = child->GetNode();
-  QueueTask(task);
+  QueueTask(task, true);
 }
 
 void HTMLConstructionSite::InsertAlreadyParsedChild(
@@ -930,7 +927,7 @@ void HTMLConstructionSite::InsertAlreadyParsedChild(
       HTMLConstructionSiteTask::kInsertAlreadyParsedChild);
   task.parent = new_parent->GetNode();
   task.child = child->GetNode();
-  QueueTask(task);
+  QueueTask(task, true);
 }
 
 void HTMLConstructionSite::TakeAllChildren(
@@ -939,7 +936,7 @@ void HTMLConstructionSite::TakeAllChildren(
   HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kTakeAllChildren);
   task.parent = new_parent->GetNode();
   task.child = old_parent->GetNode();
-  QueueTask(task);
+  QueueTask(task, true);
 }
 
 CreateElementFlags HTMLConstructionSite::GetCreateElementFlags() const {
@@ -1246,7 +1243,7 @@ void HTMLConstructionSite::FosterParent(Node* node) {
   FindFosterSite(task);
   task.child = node;
   DCHECK(task.parent);
-  QueueTask(task);
+  QueueTask(task, true);
 }
 
 void HTMLConstructionSite::PendingText::Trace(Visitor* visitor) const {
