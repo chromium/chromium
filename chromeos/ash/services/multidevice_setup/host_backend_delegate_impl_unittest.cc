@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
@@ -15,6 +14,7 @@
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/fake_eligible_host_devices_provider.h"
 #include "chromeos/ash/services/multidevice_setup/fake_host_backend_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

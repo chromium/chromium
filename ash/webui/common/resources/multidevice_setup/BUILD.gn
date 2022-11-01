@@ -87,8 +87,8 @@ js_library("start_setup_page") {
     ":mojo_api",
     ":multidevice_setup_delegate",
     ":ui_page_container_behavior",
-    "//ash/services/device_sync/public/mojom:mojom_webui_js",
     "//ash/webui/common/resources:web_ui_listener_behavior",
+    "//chromeos/ash/services/device_sync/public/mojom:mojom_webui_js",
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
   ]
   externs_list =

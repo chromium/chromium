@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_CLIENT_APP_METADATA_PROVIDER_H_
-#define ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_CLIENT_APP_METADATA_PROVIDER_H_
+#ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_CLIENT_APP_METADATA_PROVIDER_H_
+#define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_CLIENT_APP_METADATA_PROVIDER_H_
 
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/services/device_sync/public/cpp/client_app_metadata_provider.h"
 #include "base/callback.h"
+#include "chromeos/ash/services/device_sync/public/cpp/client_app_metadata_provider.h"
 
 namespace ash {
 
@@ -65,4 +65,4 @@ namespace chromeos::device_sync {
 using ::ash::device_sync::FakeClientAppMetadataProvider;
 }
 
-#endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_CLIENT_APP_METADATA_PROVIDER_H_
+#endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_CLIENT_APP_METADATA_PROVIDER_H_

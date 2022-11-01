@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
 
 namespace ash {
 

@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 namespace ash {

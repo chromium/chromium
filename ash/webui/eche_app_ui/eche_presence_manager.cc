@@ -4,11 +4,11 @@
 
 #include "ash/webui/eche_app_ui/eche_presence_manager.h"
 
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 
 namespace ash {

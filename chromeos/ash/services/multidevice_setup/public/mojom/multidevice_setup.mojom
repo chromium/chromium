@@ -5,7 +5,7 @@
 module ash.multidevice_setup.mojom;
 
 import "chromeos/ash/components/multidevice/mojom/multidevice_types.mojom";
-import "ash/services/device_sync/public/mojom/device_sync.mojom";
+import "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom";
 
 // Enumeration of possible opt-in entry points for Phone Hub Camera Roll
 // feature. This enum is tied directly to a UMA enum defined in

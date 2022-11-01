@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/host_backend_delegate.h"
 #include "chromeos/ash/services/multidevice_setup/host_verifier.h"
 

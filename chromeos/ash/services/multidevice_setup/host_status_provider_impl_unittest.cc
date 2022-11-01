@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/fake_eligible_host_devices_provider.h"
 #include "chromeos/ash/services/multidevice_setup/fake_host_backend_delegate.h"
 #include "chromeos/ash/services/multidevice_setup/fake_host_status_provider.h"

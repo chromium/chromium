@@ -55,7 +55,7 @@ static_library("test_support") {
   public_deps = [ ":proto" ]
 
   deps = [
-    "//ash/services/device_sync/public/cpp:cpp",
     "//base",
+    "//chromeos/ash/services/device_sync/public/cpp:cpp",
   ]
 }

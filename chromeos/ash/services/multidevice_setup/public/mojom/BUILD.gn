@@ -10,7 +10,7 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 mojom("mojom") {
   sources = [ "multidevice_setup.mojom" ]
 
-  public_deps = [ "//ash/services/device_sync/public/mojom" ]
+  public_deps = [ "//chromeos/ash/services/device_sync/public/mojom" ]
 
   webui_module_path = "chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom"
 }

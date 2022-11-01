@@ -9,13 +9,13 @@
 #include <string>
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"

@@ -4,9 +4,9 @@
 
 #include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 
-#include "ash/services/device_sync/public/cpp/gcm_constants.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/services/device_sync/public/cpp/gcm_constants.h"
 
 namespace cryptauthv2 {
 

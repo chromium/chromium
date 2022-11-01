@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -21,6 +20,7 @@
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
 #include "chromeos/ash/components/tether/tether_session_completion_logger.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_disconnector_impl.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 

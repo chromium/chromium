@@ -22,10 +22,10 @@ source_set("cpp") {
   public_deps = [
     "//ash/constants",
     "//ash/services/device_sync:feature_status_change",
-    "//ash/services/device_sync/public/mojom",
     "//base",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/device_sync/public/mojom",
   ]
 
   deps = [ "//mojo/public/cpp/bindings" ]
@@ -40,10 +40,10 @@ source_set("prefs") {
   public_deps = [
     "//ash/constants",
     "//ash/services/device_sync:feature_status_change",
-    "//ash/services/device_sync/public/mojom",
     "//base",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/device_sync/public/mojom",
   ]
 
   deps = [

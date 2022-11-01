@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_CRYPTAUTH_GCM_DEVICE_INFO_PROVIDER_IMPL_H_
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
-#include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 #include "base/no_destructor.h"
+#include "chromeos/ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 
 namespace ash {
 

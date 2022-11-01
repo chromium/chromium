@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/device_sync/public/mojom/device_sync_mojom_traits.h"
+#include "chromeos/ash/services/device_sync/public/mojom/device_sync_mojom_traits.h"
 
 namespace mojo {
 

@@ -5,7 +5,6 @@
 #include "ash/webui/eche_app_ui/eche_presence_manager.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "ash/webui/eche_app_ui/fake_eche_connector.h"
 #include "ash/webui/eche_app_ui/fake_eche_message_receiver.h"
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
@@ -13,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "components/prefs/testing_pref_service.h"

@@ -2,13 +2,13 @@
 <grit-part>
   <!-- Mojo JS files. -->
   <include name="IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_LITE_JS"
-      file="${mojom_root}/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js"
-      resource_path="mojo/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js"
+      file="${mojom_root}/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js"
+      resource_path="mojo/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js"
       use_base_dir="false"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_WEBUI_JS"
-      file="${mojom_root}/mojom-webui/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js"
-      resource_path="mojo/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js"
+      file="${mojom_root}/mojom-webui/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js"
+      resource_path="mojo/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js"
       use_base_dir="false"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_LITE_JS"

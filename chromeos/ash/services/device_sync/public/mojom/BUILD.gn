@@ -16,7 +16,7 @@ mojom("mojom") {
   ]
 
   webui_module_path =
-      "chrome://resources/mojo/ash/services/device_sync/public/mojom"
+      "chrome://resources/mojo/chromeos/ash/services/device_sync/public/mojom"
 
   cpp_typemaps = [
     {

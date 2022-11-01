@@ -8,14 +8,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
-#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
+#include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

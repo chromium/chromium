@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/fake_feature_state_manager.h"
 #include "chromeos/ash/services/multidevice_setup/fake_global_state_feature_manager.h"
 #include "chromeos/ash/services/multidevice_setup/fake_host_status_provider.h"

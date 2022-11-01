@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 class PrefRegistrySimple;

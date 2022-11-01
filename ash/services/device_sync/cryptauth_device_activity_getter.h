@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/services/device_sync/network_request_error.h"
-#include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/callback.h"
+#include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 
 namespace ash {
 

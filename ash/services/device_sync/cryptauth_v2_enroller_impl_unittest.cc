@@ -24,12 +24,12 @@
 #include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
 #include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
-#include "ash/services/device_sync/public/cpp/gcm_constants.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/services/device_sync/public/cpp/gcm_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

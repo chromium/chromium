@@ -8,11 +8,11 @@
 #include <map>
 #include <vector>
 
-#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"

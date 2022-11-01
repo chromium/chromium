@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/device_sync/public/cpp/device_sync_client_impl.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client_impl.h"
 
 #include <algorithm>
 #include <string>
@@ -15,10 +15,6 @@
 #include "ash/services/device_sync/fake_device_sync.h"
 #include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "ash/services/device_sync/public/cpp/device_sync_prefs.h"
-#include "ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
-#include "ash/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
-#include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -29,6 +25,10 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_prefs.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
+#include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"

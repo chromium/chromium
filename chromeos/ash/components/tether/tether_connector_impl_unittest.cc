@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -29,6 +28,7 @@
 #include "chromeos/ash/components/tether/mock_host_connection_metrics_logger.h"
 #include "chromeos/ash/components/tether/mock_tether_host_response_recorder.h"
 #include "chromeos/ash/components/tether/tether_connector.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
