@@ -1211,6 +1211,11 @@ BASE_FEATURE(kLacrosSupport,
              "LacrosSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When this feature is enabled, wayland logging is enabled for Lacros.
+BASE_FEATURE(kLacrosWaylandLogging,
+             "LacrosWaylandLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Emergency switch to turn off profile migration.
 BASE_FEATURE(kLacrosProfileMigrationForceOff,
              "LacrosProfileMigrationForceOff",

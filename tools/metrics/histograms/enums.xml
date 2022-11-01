@@ -58867,6 +58867,7 @@ from previous Chrome versions.
   <int value="-1276579737" label="PictureInPictureAPI:disabled"/>
   <int value="-1275552094" label="SpectreVariant2Mitigation:disabled"/>
   <int value="-1274502866" label="AllowDisableMouseAcceleration:enabled"/>
+  <int value="-1274154806" label="LacrosWaylandLogging:disabled"/>
   <int value="-1273786900" label="SyncAndroidPromosWithTitle:disabled"/>
   <int value="-1272990935"
       label="SyncAndroidLimitNTPPromoImpressions:disabled"/>
@@ -62856,6 +62857,7 @@ from previous Chrome versions.
   <int value="1114629582" label="enable-floating-virtual-keyboard"/>
   <int value="1114794286" label="AutofillTypeSpecificPopupWidth:disabled"/>
   <int value="1115532551" label="EnableFrameSinkDesktopCapturerInCrd:enabled"/>
+  <int value="1115564918" label="LacrosWaylandLogging:enabled"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
   <int value="1116084116" label="BindingManagerConnectionLimit:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>

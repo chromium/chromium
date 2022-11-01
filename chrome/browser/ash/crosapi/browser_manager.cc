@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -788,6 +789,10 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
   options.environment["XDG_RUNTIME_DIR"] = GetXdgRuntimeDir();
   options.environment["CHROME_VERSION_EXTRA"] =
       version_info::GetChannelString(update_channel);
+
+  if (base::FeatureList::IsEnabled(ash::features::kLacrosWaylandLogging)) {
+    options.environment["WAYLAND_DEBUG"] = "1";
+  }
 
   std::string additional_env =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(

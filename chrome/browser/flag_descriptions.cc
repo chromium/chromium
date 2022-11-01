@@ -5638,6 +5638,11 @@ const char kLacrosSupportDescription[] =
     "first restart can take some time to setup lacros-chrome. Please DO NOT "
     "attempt to turn off the device during the restart.";
 
+const char kLacrosWaylandLoggingName[] = "Lacros wayland logging";
+const char kLacrosWaylandLoggingDescription[] =
+    "Enables wayland logging for Lacros. This generates a significant amount "
+    "of logs on disk. Logs are cleared after two restarts.";
+
 const char kLacrosProfileMigrationForAnyUserName[] =
     "Lacros profile migration for any user";
 const char kLacrosProfileMigrationForAnyUserDescription[] =
