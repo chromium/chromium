@@ -1728,6 +1728,24 @@
           'shards': 30,
         },
       },
+      'fuchsia-arm64-cast-receiver-rel': {
+        'swarming': {
+          'shards': 14,
+        },
+      },
+      'fuchsia-arm64-rel': {
+        'swarming': {
+          'shards': 14,
+        },
+      },
+      'fuchsia-x64-cast-receiver-rel': {
+        # Temporarily only run this on CI due to resource requirements.
+        # TODO(crbug.com/1374125): Remove this once resources are available.
+        'ci_only': True,
+        'swarming': {
+          'shards': 41,
+        },
+      },
       'linux-chromeos-code-coverage': {
         'swarming': {
           'shards': 12,
@@ -2612,7 +2630,7 @@
     },
   },
   'mediapipe_validating_tests': {
-    'modifications': { 
+    'modifications': {
       # TODO(crbug.com/1372213): Remove once tests are stable.
       'fuchsia-x64-chrome-rel': {
         'experiment_percentage': 100,

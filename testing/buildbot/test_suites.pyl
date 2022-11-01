@@ -2164,17 +2164,6 @@
           'shards': 40,
         },
       },
-      # TODO(crbug.com/1371630): Move to one of the fuchsia_common_gtests* sets.
-      'content_browsertests': {
-        'args': [
-          '--test-arg=--disable-gpu',
-          '--test-arg=--headless',
-          '--test-arg=--ozone-platform=headless',
-        ],
-        'swarming': {
-          'shards': 8,
-        },
-      },
       'unit_tests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter',
@@ -2220,6 +2209,16 @@
         },
       },
       'compositor_unittests': {},
+      'content_browsertests': {
+        'args': [
+          '--test-arg=--disable-gpu',
+          '--test-arg=--headless',
+          '--test-arg=--ozone-platform=headless',
+        ],
+        'swarming': {
+          'shards': 8,
+        },
+      },
       'content_unittests': {},
       'crypto_unittests': {},
       'events_unittests': {},
