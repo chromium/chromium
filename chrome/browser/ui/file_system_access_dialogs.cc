@@ -19,7 +19,6 @@ void ShowFileSystemAccessPermissionDialog(
 
 void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,
-    const base::FilePath& path,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>

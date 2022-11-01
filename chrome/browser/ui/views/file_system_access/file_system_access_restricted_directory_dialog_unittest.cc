@@ -24,7 +24,7 @@ class TestFileSystemAccessRestrictedDirectoryDialog {
   std::unique_ptr<ui::TestDialogModelHost> CreateDialogModelHost() {
     return std::make_unique<ui::TestDialogModelHost>(
         CreateFileSystemAccessRestrictedDirectoryDialogForTesting(
-            kTestOrigin, kTestPath, kTestHandleType,
+            kTestOrigin, kTestHandleType,
             base::BindLambdaForTesting(
                 [&](SensitiveEntryResult result) { result_ = result; })));
   }
@@ -38,8 +38,6 @@ class TestFileSystemAccessRestrictedDirectoryDialog {
  private:
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://example.com"));
-  const base::FilePath kTestPath =
-      base::FilePath(FILE_PATH_LITERAL("/Documents"));
   const HandleType kTestHandleType = HandleType::kDirectory;
 
   absl::optional<SensitiveEntryResult> result_ = absl::nullopt;

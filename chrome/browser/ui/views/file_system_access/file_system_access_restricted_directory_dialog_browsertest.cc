@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog.h"
 
-#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -16,7 +15,6 @@ class FileSystemAccessRestrictedDirectoryDialogTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     ShowFileSystemAccessRestrictedDirectoryDialog(
         url::Origin::Create(GURL("https://example.com")),
-        base::FilePath(FILE_PATH_LITERAL("/Documents")),
         content::FileSystemAccessPermissionContext::HandleType::kDirectory,
         base::DoNothing(),
         browser()->tab_strip_model()->GetActiveWebContents());

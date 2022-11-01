@@ -7,10 +7,6 @@
 
 #include "content/public/browser/file_system_access_permission_context.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -29,7 +25,6 @@ class Origin;
 // this no longer uses views code.
 void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,
-    const base::FilePath& path,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
@@ -39,7 +34,6 @@ void ShowFileSystemAccessRestrictedDirectoryDialog(
 std::unique_ptr<ui::DialogModel>
 CreateFileSystemAccessRestrictedDirectoryDialogForTesting(
     const url::Origin& origin,
-    const base::FilePath& path,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>

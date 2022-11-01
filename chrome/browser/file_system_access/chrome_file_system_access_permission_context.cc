@@ -119,7 +119,6 @@ const char kTimestampKey[] = "timestamp";
 void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
     const url::Origin& origin,
-    const base::FilePath& path,
     HandleType handle_type,
     base::OnceCallback<
         void(ChromeFileSystemAccessPermissionContext::SensitiveEntryResult)>
@@ -143,7 +142,7 @@ void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
   }
 
   ShowFileSystemAccessRestrictedDirectoryDialog(
-      origin, path, handle_type, std::move(callback), web_contents);
+      origin, handle_type, std::move(callback), web_contents);
 }
 
 void ShowFileSystemAccessDangerousFileDialogOnUIThread(
@@ -1263,7 +1262,7 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread,
-                       frame_id, origin, path, handle_type,
+                       frame_id, origin, handle_type,
                        std::move(result_callback)));
     return;
   }

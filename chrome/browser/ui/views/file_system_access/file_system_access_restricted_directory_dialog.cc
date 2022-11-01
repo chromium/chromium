@@ -23,7 +23,6 @@ std::unique_ptr<ui::DialogModel>
 CreateFileSystemAccessRestrictedDirectoryDialog(
     Browser* const browser,
     const url::Origin& origin,
-    const base::FilePath& path,
     HandleType handle_type,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -63,23 +62,21 @@ CreateFileSystemAccessRestrictedDirectoryDialog(
 
 void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,
-    const base::FilePath& path,
     HandleType handle_type,
     base::OnceCallback<void(SensitiveEntryResult)> callback,
     content::WebContents* web_contents) {
   auto* browser = chrome::FindBrowserWithWebContents(web_contents);
   constrained_window::ShowWebModal(
       CreateFileSystemAccessRestrictedDirectoryDialog(
-          browser, origin, path, handle_type, std::move(callback)),
+          browser, origin, handle_type, std::move(callback)),
       web_contents);
 }
 
 std::unique_ptr<ui::DialogModel>
 CreateFileSystemAccessRestrictedDirectoryDialogForTesting(  // IN-TEST
     const url::Origin& origin,
-    const base::FilePath& path,
     HandleType handle_type,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
   return CreateFileSystemAccessRestrictedDirectoryDialog(
-      /*browser=*/nullptr, origin, path, handle_type, std::move(callback));
+      /*browser=*/nullptr, origin, handle_type, std::move(callback));
 }
