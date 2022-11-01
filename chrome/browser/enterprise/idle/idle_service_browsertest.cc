@@ -15,6 +15,7 @@
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/idle/browser_closer.h"
 #include "chrome/browser/enterprise/idle/idle_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -93,7 +94,6 @@ class IdleServiceTest : public InProcessBrowserTest {
     scoped_idle_provider_ =
         std::make_unique<ui::test::ScopedIdleProviderForTest>(
             std::move(time_provider));
-    IdleService::SetDialogTimeoutForTesting(base::Milliseconds(0));
   }
 
   void TearDownOnMainThread() override {
@@ -145,14 +145,45 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
 
-  // 300s, threshold is reached. Close browsers, then show the Profile Picker.
+  // 300s, threshold is reached. This should show the dialog.
   EXPECT_CALL(provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(300)));
-  BrowserCloseWaiter waiter({browser()});
   task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(1, GetBrowserCount(profile));
+
+  EXPECT_CALL(provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(15)));
+  BrowserCloseWaiter waiter({browser()});
+  task_runner()->FastForwardBy(base::Seconds(30));
   waiter.Wait();
   EXPECT_EQ(0, GetBrowserCount(profile));
   EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
+  ON_CALL(provider(), CheckIdleStateIsLocked()).WillByDefault(Return(false));
+
+  // Set the IdleProfileCloseTimeout policy to 1 minute, which should round up
+  // to 5 minutes (the minimum).
+  EXPECT_CALL(provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(298)));
+  Profile* profile = browser()->profile();
+  profile->GetPrefs()->SetInteger("idle_profile_close_timeout", 1);
+
+  EXPECT_EQ(1, GetBrowserCount(profile));
+
+  // 300s, threshold is reached. The user dismisses the dialog though, so we do
+  // nothing.
+  EXPECT_CALL(provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(300)));
+  task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_CALL(provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(301)));
+  BrowserCloser::GetInstance()->DismissDialogForTesting();
+  task_runner()->FastForwardBy(base::Seconds(30));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetBrowserCount(profile));
+  EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
@@ -175,8 +206,13 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
   // 600s, threshold is reached. Close browsers, then show the Profile Picker.
   EXPECT_CALL(provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(600)));
-  BrowserCloseWaiter waiter({browser()});
   task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(1, GetBrowserCount(profile));
+
+  EXPECT_CALL(provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(301)));
+  BrowserCloseWaiter waiter({browser()});
+  task_runner()->FastForwardBy(base::Seconds(30));
   waiter.Wait();
   EXPECT_EQ(0, GetBrowserCount(profile));
   EXPECT_TRUE(ProfilePicker::IsOpen());
@@ -236,8 +272,12 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   // 300s, threshold is reached. Close browsers, then show the Profile Picker.
   EXPECT_CALL(provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(300)));
-  BrowserCloseWaiter waiter({browser(), browser2, browser3});
   task_runner()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_CALL(provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(315)));
+  BrowserCloseWaiter waiter({browser(), browser2, browser3});
+  task_runner()->FastForwardBy(base::Seconds(30));
   waiter.Wait();
   EXPECT_EQ(0, GetBrowserCount(profile));
   EXPECT_EQ(0, GetBrowserCount(profile2));
@@ -281,9 +321,12 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MultiProfileWithDifferentThresholds) {
   // Profile Picker.
   EXPECT_CALL(provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(300)));
+  task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_CALL(provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(315)));
   {
     BrowserCloseWaiter waiter({browser(), browser2});
-    task_runner()->FastForwardBy(base::Seconds(1));
+    task_runner()->FastForwardBy(base::Seconds(30));
     waiter.Wait();
   }
   EXPECT_EQ(0, GetBrowserCount(profile));
@@ -293,9 +336,12 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MultiProfileWithDifferentThresholds) {
   // 360s, threshold is reached for `profile2`. Close its browsers.
   EXPECT_CALL(provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(360)));
+  task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_CALL(provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(375)));
   {
     BrowserCloseWaiter waiter({browser3});
-    task_runner()->FastForwardBy(base::Seconds(1));
+    task_runner()->FastForwardBy(base::Seconds(30));
     waiter.Wait();
   }
   EXPECT_EQ(0, GetBrowserCount(profile));

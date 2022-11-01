@@ -6426,6 +6426,8 @@ static_library("browser") {
       "enterprise/connectors/device_trust/browser/browser_device_trust_connector_service.h",
       "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.cc",
       "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h",
+      "enterprise/idle/browser_closer.cc",
+      "enterprise/idle/browser_closer.h",
       "enterprise/idle/idle_service.cc",
       "enterprise/idle/idle_service.h",
       "enterprise/idle/idle_service_factory.cc",
