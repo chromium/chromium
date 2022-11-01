@@ -279,7 +279,7 @@ addNewScriptHandler((scriptId, sourceURL, relativeSourceMapURL) => {
     url: sourceMapURL,
     baseUrl: sourceMapBaseURL
   });
-});
+}, /* disallowEvents */ true);
 
 function Target_getSourceMapURL({ sourceId }) {
   return gSourceMapData.get(sourceId) || {};

@@ -244,6 +244,11 @@ static std::atomic<int> gNextAnyThreadId{1};
 
 int NewIdAnyThread(const char* name) {
   if (IsRecordingOrReplaying()) {
+    // IDs can be created when events are disallowed when gReplayScript
+    // creates URL objects. This would be nice to improve.
+    if (AreEventsDisallowed())
+      return 0;
+
     Assert("NewId %s", name);
     return RecordReplayValue("NewId", gNextAnyThreadId++);
   }
