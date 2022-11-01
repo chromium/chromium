@@ -41,6 +41,7 @@ class GlobalConfirmInfoBar::DelegateProxy : public ConfirmInfoBarDelegate {
   bool Accept() override;
   bool Cancel() override;
   bool IsCloseable() const override;
+  bool ShouldAnimate() const override;
 
   infobars::InfoBar* info_bar_ = nullptr;
   base::WeakPtr<GlobalConfirmInfoBar> global_info_bar_;
@@ -71,6 +72,11 @@ GURL GlobalConfirmInfoBar::DelegateProxy::GetLinkURL() const {
 bool GlobalConfirmInfoBar::DelegateProxy::IsCloseable() const {
   return global_info_bar_ ? global_info_bar_->delegate_->IsCloseable()
                           : ConfirmInfoBarDelegate::IsCloseable();
+}
+
+bool GlobalConfirmInfoBar::DelegateProxy::ShouldAnimate() const {
+  return global_info_bar_ ? global_info_bar_->delegate_->ShouldAnimate()
+                          : ConfirmInfoBarDelegate::ShouldAnimate();
 }
 
 bool GlobalConfirmInfoBar::DelegateProxy::LinkClicked(
