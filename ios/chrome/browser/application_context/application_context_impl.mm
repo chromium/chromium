@@ -121,12 +121,14 @@ void BindNetworkChangeManagerReceiver(
 ApplicationContextImpl::ApplicationContextImpl(
     base::SequencedTaskRunner* local_state_task_runner,
     const base::CommandLine& command_line,
-    const std::string& locale)
+    const std::string& locale,
+    const std::string& country)
     : local_state_task_runner_(local_state_task_runner) {
   DCHECK(!GetApplicationContext());
   SetApplicationContext(this);
 
   SetApplicationLocale(locale);
+  application_country_ = country;
 
   update_client::UpdateQueryParams::SetDelegate(
       IOSChromeUpdateQueryParamsDelegate::GetInstance());
@@ -322,6 +324,12 @@ const std::string& ApplicationContextImpl::GetApplicationLocale() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!application_locale_.empty());
   return application_locale_;
+}
+
+const std::string& ApplicationContextImpl::GetApplicationCountry() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!application_country_.empty());
+  return application_country_;
 }
 
 ios::ChromeBrowserStateManager*
