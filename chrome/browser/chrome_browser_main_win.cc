@@ -859,6 +859,10 @@ base::CommandLine ChromeBrowserMainPartsWin::GetRestartCommandLine(
   if (!command_line.HasSwitch(switches::kRestoreLastSession))
     restart_command.AppendSwitch(switches::kRestoreLastSession);
 
+  // This is used when recording launch mode metric.
+  if (!command_line.HasSwitch(switches::kRestart))
+    restart_command.AppendSwitch(switches::kRestart);
+
   // TODO(crbug.com/964541): Remove other unneeded switches, including
   // duplicates, perhaps harmonize with switches::RemoveSwitchesForAutostart.
   return restart_command;
