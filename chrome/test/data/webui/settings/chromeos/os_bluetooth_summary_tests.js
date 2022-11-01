@@ -14,6 +14,7 @@ import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertEquals, assertNotEquals, assertTrue} from '../../../chai_assert.js';
+import {assertFalse} from '../../chai_assert.js';
 
 suite('OsBluetoothSummaryTest', function() {
   /** @type {!FakeBluetoothConfig} */
@@ -146,6 +147,7 @@ suite('OsBluetoothSummaryTest', function() {
     bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
     await flushAsync();
     assertTrue(enableBluetoothToggle.disabled);
+    assertFalse(enableBluetoothToggle.checked);
   });
 
   test('UI states test', async function() {
@@ -158,13 +160,17 @@ suite('OsBluetoothSummaryTest', function() {
         bluetoothSummary.shadowRoot.querySelector('#arrowIconButton');
     const getBluetoothStatusIcon = () =>
         bluetoothSummary.shadowRoot.querySelector('#statusIcon');
+    const getSecondaryLabel = () => bluetoothSecondaryLabel.textContent.trim();
+    const getPairNewDeviceBtn = () =>
+        bluetoothSummary.shadowRoot.querySelector('#pairNewDeviceBtn');
 
     assertFalse(!!getBluetoothArrowIconBtn());
     assertTrue(!!getBluetoothStatusIcon());
+    assertFalse(!!getPairNewDeviceBtn());
     assertTrue(!!bluetoothSecondaryLabel);
-    let label = bluetoothSecondaryLabel.textContent.trim();
 
-    assertEquals(bluetoothSummary.i18n('bluetoothSummaryPageOff'), label);
+    assertEquals(
+        bluetoothSummary.i18n('bluetoothSummaryPageOff'), getSecondaryLabel());
     assertEquals(
         'os-settings:bluetooth-disabled', getBluetoothStatusIcon().icon);
 
@@ -172,6 +178,7 @@ suite('OsBluetoothSummaryTest', function() {
     await flushAsync();
 
     assertTrue(!!getBluetoothArrowIconBtn());
+    assertTrue(!!getPairNewDeviceBtn());
     // Bluetooth Icon should be default because no devices are connected.
     assertEquals('cr:bluetooth', getBluetoothStatusIcon().icon);
 
@@ -203,39 +210,46 @@ suite('OsBluetoothSummaryTest', function() {
 
     assertEquals(
         'os-settings:bluetooth-connected', getBluetoothStatusIcon().icon);
-
-    label = bluetoothSecondaryLabel.textContent.trim();
     assertEquals(
         bluetoothSummary.i18n(
             'bluetoothSummaryPageTwoOrMoreDevicesDescription', device1.nickname,
             mockPairedBluetoothDeviceProperties.length - 1),
-        label);
+        getSecondaryLabel());
 
     // Simulate 2 connected devices.
     bluetoothConfig.removePairedDevice(device3);
     await flushAsync();
 
-    label = bluetoothSecondaryLabel.textContent.trim();
     assertEquals(
         bluetoothSummary.i18n(
             'bluetoothSummaryPageTwoDevicesDescription', device1.nickname,
             mojoString16ToString(device2.deviceProperties.publicName)),
-        label);
+        getSecondaryLabel());
 
     // Simulate a single connected device.
     bluetoothConfig.removePairedDevice(device2);
     await flushAsync();
 
-    label = bluetoothSecondaryLabel.textContent.trim();
-    assertEquals(device1.nickname, label);
+    assertEquals(device1.nickname, getSecondaryLabel());
 
     /// Simulate no connected device.
     bluetoothConfig.removePairedDevice(device1);
     await flushAsync();
 
-    label = bluetoothSecondaryLabel.textContent.trim();
-    assertEquals(bluetoothSummary.i18n('bluetoothSummaryPageOn'), label);
+    assertEquals(
+        bluetoothSummary.i18n('bluetoothSummaryPageOn'), getSecondaryLabel());
     assertEquals('cr:bluetooth', getBluetoothStatusIcon().icon);
+    assertTrue(!!getPairNewDeviceBtn());
+
+    // Mock systemState becoming unavailable.
+    bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
+    await flushAsync();
+    assertFalse(!!getBluetoothArrowIconBtn());
+    assertFalse(!!getPairNewDeviceBtn());
+    assertEquals(
+        bluetoothSummary.i18n('bluetoothSummaryPageOff'), getSecondaryLabel());
+    assertEquals(
+        'os-settings:bluetooth-disabled', getBluetoothStatusIcon().icon);
   });
 
   test('start-pairing is fired on pairNewDeviceBtn click', async function() {

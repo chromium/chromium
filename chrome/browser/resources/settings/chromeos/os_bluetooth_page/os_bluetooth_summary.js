@@ -125,9 +125,6 @@ class SettingsBluetoothSummaryElement extends
 
   /** @private */
   onSystemPropertiesChanged_() {
-    if (this.isToggleDisabled_()) {
-      return;
-    }
     this.isBluetoothToggleOn_ =
         this.systemProperties.systemState === BluetoothSystemState.kEnabled ||
         this.systemProperties.systemState === BluetoothSystemState.kEnabling;
@@ -142,6 +139,12 @@ class SettingsBluetoothSummaryElement extends
    */
   onBluetoothToggleChanged_(newValue, oldValue) {
     if (oldValue === undefined) {
+      return;
+    }
+    // If the toggle value changed but the toggle is disabled, the change came
+    // from CrosBluetoothConfig, not the user. Don't attempt to update the
+    // enabled state.
+    if (this.isToggleDisabled_()) {
       return;
     }
     getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
