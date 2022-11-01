@@ -15,7 +15,9 @@
 #include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "net/http/http_response_headers.h"
@@ -58,6 +60,15 @@ absl::optional<std::string> CheckHeader(
 
   return absl::nullopt;
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DirectFromSellerSignalsRequestType {
+  kNetworkServiceFetch = 0,
+  kCache = 1,
+  kCoalesced = 2,
+  kMaxValue = kCoalesced,
+};
 
 }  // namespace
 
@@ -178,6 +189,9 @@ DirectFromSellerSignalsRequester::LoadSignals(
 
   if (cached_result_.signals_url() == signals_url) {
     // Request completed from cache -- done.
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.Auction.DirectFromSellerSignals.RequestType",
+        DirectFromSellerSignalsRequestType::kCache);
     request->RunCallbackAsync(cached_result_);
     return request;
   }
@@ -193,8 +207,15 @@ DirectFromSellerSignalsRequester::LoadSignals(
             AuctionDownloader::MimeType::kJson,
             base::BindOnce(
                 &DirectFromSellerSignalsRequester::OnSignalsDownloaded,
-                base::Unretained(this), signals_url))));
+                base::Unretained(this), signals_url, base::TimeTicks::Now()))));
     DCHECK(inserted);
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.Auction.DirectFromSellerSignals.RequestType",
+        DirectFromSellerSignalsRequestType::kNetworkServiceFetch);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.Auction.DirectFromSellerSignals.RequestType",
+        DirectFromSellerSignalsRequestType::kCoalesced);
   }
   // A download is running for `signals_url` -- register to receive the result,
   // and register the iterator with `request` so that the Request destructor can
@@ -223,9 +244,20 @@ DirectFromSellerSignalsRequester::CoalescedDownload::operator=(
 
 void DirectFromSellerSignalsRequester::OnSignalsDownloaded(
     GURL signals_url,
+    base::TimeTicks start_time,
     std::unique_ptr<std::string> response_body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     absl::optional<std::string> error) {
+  if (response_body) {
+    // The request size isn't very meaningful, since the request is served from
+    // a subresource bundle, so don't record the request size.
+    base::UmaHistogramCounts10M(
+        "Ads.InterestGroup.Net.ResponseSizeBytes.DirectFromSellerSignals",
+        response_body->size());
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Net.DownloadTime.DirectFromSellerSignals",
+        base::TimeTicks::Now() - start_time);
+  }
   Result result(signals_url, std::move(response_body), std::move(headers),
                 std::move(error));
   cached_result_ = result;
@@ -269,8 +301,5 @@ void DirectFromSellerSignalsRequester::OnRequestDestroyed(Request& request) {
   if (coalesced_download.requests.empty())
     coalesced_downloads_.erase(map_it);
 }
-
-// TODO(crbug.com/1320908): Add UMA for request and download size.
-// TODO(crbug.com/1320908): Add UMA for cache hit rate.
 
 }  // namespace auction_worklet

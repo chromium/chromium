@@ -116,6 +116,8 @@ chromium-metrics-reviews@google.com.
       summary="post-auction forDebuggingOnly.reportAdAuctionLoss() report"/>
   <variant name="DebugWinReport"
       summary="post-auction forDebuggingOnly.reportAdAuctionWin() report"/>
+  <variant name="DirectFromSellerSignals"
+      summary="auction directFromSellerSignals"/>
   <variant name="ScoringScriptJS" summary="seller JavaScript scoring script"/>
   <variant name="SendReportToReport"
       summary="post-auction sendReportTo() report (from either the winning
@@ -422,6 +424,25 @@ chromium-metrics-reviews@google.com.
     seller script rejecting all bidders. Not recoded when there are no bidders,
     or when an auction fails due to the seller worklet failing to load. Recorded
     on auction complete.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.DirectFromSellerSignals.RequestType"
+    enum="DirectFromSellerSignalsRequestType" expires_after="2023-07-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    For each request made for a DirectFromSellerSignals bundle subresource,
+    records whether the request was made to the network service, or whether the
+    request was elided due to either loading from the
+    DirectFromSellerSignalsRequester cache, or coalescing with an exiting
+    request for the same subresource URL.
+
+    Reported at each DirectFromSellerSignalsRequester request.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

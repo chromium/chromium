@@ -26829,6 +26829,12 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2" label="Bind and video processor blit"/>
 </enum>
 
+<enum name="DirectFromSellerSignalsRequestType">
+  <int value="0" label="Network service fetch"/>
+  <int value="1" label="Cache"/>
+  <int value="2" label="Coalesced"/>
+</enum>
+
 <enum name="DirectoryDatabaseRepairResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Failed"/>

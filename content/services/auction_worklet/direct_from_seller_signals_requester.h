@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -228,6 +229,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
   // Validates headers, caches the results, and calls all callbacks held in
   // Result objects in `coalesced_downloads_` that are waiting on the URL.
   void OnSignalsDownloaded(GURL signals_url,
+                           base::TimeTicks start_time,
                            std::unique_ptr<std::string> response_body,
                            scoped_refptr<net::HttpResponseHeaders> headers,
                            absl::optional<std::string> error);
