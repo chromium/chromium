@@ -1697,17 +1697,24 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // focus dependency is because doing it earlier can cause drawing bugs, e.g. crbug/673831.
         if (!mNativeInitialized || !hasWindowFocus()) return;
 
-        // The window background color is used as the resizing background color in Android N+
-        // multi-window mode. See crbug.com/602366.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             changeBackgroundColorForResizing();
         } else {
-            // Post the removeWindowBackground() call as a separate task, as doing it synchronously
-            // here can cause redrawing glitches. See crbug.com/686662 for an example problem.
+            // Post the background update call as a separate task, as doing it synchronously
+            // here can cause redrawing glitches. See crbug.com/686662 and crbug.com/1260127 for
+            // example problems.
             Handler handler = new Handler();
-            handler.post(() -> removeWindowBackground());
+            handler.post(() -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    // The window background color is used as the resizing background color in
+                    // Android N+ multi-window mode. See crbug.com/602366.
+                    changeBackgroundColorForResizing();
+                } else {
+                    removeWindowBackground();
+                }
+            });
         }
-
         mRemoveWindowBackgroundDone = true;
     }
 
