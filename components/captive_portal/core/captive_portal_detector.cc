@@ -62,8 +62,8 @@ void CaptivePortalDetector::DetectCaptivePortal(
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!FetchingURL());
-  CHECK(detection_callback_.is_null());
-  CHECK(!detection_callback.is_null());
+  DCHECK(detection_callback_.is_null());
+  DCHECK(!detection_callback.is_null());
 
   detection_callback_ = std::move(detection_callback);
 
