@@ -5,9 +5,23 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CERTIFICATE_MANAGER_DIALOG_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CERTIFICATE_MANAGER_DIALOG_UI_H_
 
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace ash {
+
+class CertificateManagerDialogUI;
+
+// WebUIConfig for chrome://certificate-manager
+class CertificateManagerDialogUIConfig
+    : public content::DefaultWebUIConfig<CertificateManagerDialogUI> {
+ public:
+  CertificateManagerDialogUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUICertificateManagerHost) {}
+};
 
 // A WebUI to host certificate manager UI.
 class CertificateManagerDialogUI : public ui::WebDialogUI {
