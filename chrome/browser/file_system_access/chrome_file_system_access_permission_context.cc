@@ -9,10 +9,6 @@
 #include <utility>
 
 #include "base/base_paths.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/command_line.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/values_util.h"
@@ -23,7 +19,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
@@ -33,9 +30,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
-#include "chrome/browser/installable/installable_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -45,7 +40,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -55,7 +49,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -325,22 +318,6 @@ bool ShouldBlockAccessToPath(const base::FilePath& check_path,
   VLOG(1) << "Blocking access to " << check_path << " because it is inside "
           << nearest_ancestor << " (" << nearest_ancestor_path_key << ")";
   return true;
-}
-
-// Returns a callback that calls the passed in |callback| by posting a task to
-// the current sequenced task runner.
-template <typename... ResultTypes>
-base::OnceCallback<void(ResultTypes... results)>
-BindResultCallbackToCurrentSequence(
-    base::OnceCallback<void(ResultTypes... results)> callback) {
-  return base::BindOnce(
-      [](scoped_refptr<base::TaskRunner> task_runner,
-         base::OnceCallback<void(ResultTypes... results)> callback,
-         ResultTypes... results) {
-        task_runner->PostTask(FROM_HERE,
-                              base::BindOnce(std::move(callback), results...));
-      },
-      base::SequencedTaskRunnerHandle::Get(), std::move(callback));
 }
 
 void DoSafeBrowsingCheckOnUIThread(
@@ -1243,7 +1220,8 @@ void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
                     base::BindOnce(std::move(callback),
                                    InterpretSafeBrowsingResult(result)));
               },
-              base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              std::move(callback))));
 }
 
 void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
@@ -1257,8 +1235,8 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (should_block) {
-    auto result_callback =
-        BindResultCallbackToCurrentSequence(std::move(callback));
+    auto result_callback = base::BindPostTask(
+        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread,
@@ -1272,8 +1250,8 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
   if (handle_type == HandleType::kFile && user_action == UserAction::kSave &&
       FileHasDangerousExtension(origin, path,
                                 Profile::FromBrowserContext(profile_))) {
-    auto result_callback =
-        BindResultCallbackToCurrentSequence(std::move(callback));
+    auto result_callback = base::BindPostTask(
+        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ShowFileSystemAccessDangerousFileDialogOnUIThread,
@@ -1910,7 +1888,7 @@ void ChromeFileSystemAccessPermissionContext::ScheduleUsageIconUpdate() {
   if (usage_icon_update_scheduled_)
     return;
   usage_icon_update_scheduled_ = true;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &ChromeFileSystemAccessPermissionContext::DoUsageIconUpdate,
