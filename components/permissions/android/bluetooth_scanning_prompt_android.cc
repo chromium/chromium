@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/permissions/android/bluetooth_scanning_prompt_android_delegate.h"
 #include "components/permissions/android/jni_headers/BluetoothScanningPermissionDialog_jni.h"
+#include "components/permissions/permission_util.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/android/window_android.h"
@@ -22,14 +23,28 @@ using base::android::ScopedJavaLocalRef;
 
 namespace permissions {
 
+namespace {
+
+BluetoothScanningPromptAndroid::CreateJavaDialogCallback
+GetCreateJavaBluetoothScanningPromptCallback() {
+  return base::BindOnce(&Java_BluetoothScanningPermissionDialog_create);
+}
+
+}  // namespace
+
 BluetoothScanningPromptAndroid::BluetoothScanningPromptAndroid(
     content::RenderFrameHost* frame,
     const content::BluetoothScanningPrompt::EventHandler& event_handler,
-    std::unique_ptr<BluetoothScanningPromptAndroidDelegate> delegate)
+    std::unique_ptr<BluetoothScanningPromptAndroidDelegate> delegate,
+    CreateJavaDialogCallback create_java_dialog_callback)
     : web_contents_(content::WebContents::FromRenderFrameHost(frame)),
       event_handler_(event_handler),
       delegate_(std::move(delegate)) {
-  const url::Origin origin = frame->GetLastCommittedOrigin();
+  // Permission delegation means the permission request should be attributed to
+  // the main frame.
+  const url::Origin origin = url::Origin::Create(
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          frame->GetMainFrame()));
   DCHECK(!origin.opaque());
 
   ScopedJavaLocalRef<jobject> window_android =
@@ -39,11 +54,22 @@ BluetoothScanningPromptAndroid::BluetoothScanningPromptAndroid(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> origin_string = ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(origin.GetURL()));
-  java_dialog_.Reset(Java_BluetoothScanningPermissionDialog_create(
-      env, window_android, origin_string,
-      delegate_->GetSecurityLevel(web_contents_), delegate_->GetJavaObject(),
-      reinterpret_cast<intptr_t>(this)));
+  java_dialog_.Reset(std::move(create_java_dialog_callback)
+                         .Run(env, window_android, origin_string,
+                              delegate_->GetSecurityLevel(web_contents_),
+                              delegate_->GetJavaObject(),
+                              reinterpret_cast<intptr_t>(this)));
 }
+
+BluetoothScanningPromptAndroid::BluetoothScanningPromptAndroid(
+    content::RenderFrameHost* frame,
+    const content::BluetoothScanningPrompt::EventHandler& event_handler,
+    std::unique_ptr<BluetoothScanningPromptAndroidDelegate> delegate)
+    : BluetoothScanningPromptAndroid(
+          frame,
+          event_handler,
+          std::move(delegate),
+          GetCreateJavaBluetoothScanningPromptCallback()) {}
 
 BluetoothScanningPromptAndroid::~BluetoothScanningPromptAndroid() {
   if (!java_dialog_.is_null()) {

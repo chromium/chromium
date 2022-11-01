@@ -7,7 +7,11 @@
 
 #include <memory>
 
+#include "base/android/jni_android.h"
+#include "base/android/jni_int_wrapper.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/web_contents.h"
@@ -20,6 +24,16 @@ class BluetoothChooserAndroidDelegate;
 // options.
 class BluetoothChooserAndroid : public content::BluetoothChooser {
  public:
+  // The callback type for creating the java dialog object.
+  using CreateJavaDialogCallback =
+      base::OnceCallback<base::android::ScopedJavaLocalRef<jobject>(
+          JNIEnv*,
+          const base::android::JavaRef<jobject>&,
+          const base::android::JavaRef<jstring>&,
+          JniIntWrapper,
+          const base::android::JavaRef<jobject>&,
+          jlong)>;
+
   // Both frame and event_handler must outlive the BluetoothChooserAndroid.
   BluetoothChooserAndroid(
       content::RenderFrameHost* frame,
@@ -52,8 +66,26 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
   void ShowBluetoothAdapterOffLink(JNIEnv* env);
   void ShowNeedLocationPermissionLink(JNIEnv* env);
 
+  static std::unique_ptr<BluetoothChooserAndroid> CreateForTesting(
+      content::RenderFrameHost* frame,
+      const EventHandler& event_handler,
+      std::unique_ptr<BluetoothChooserAndroidDelegate> delegate,
+      CreateJavaDialogCallback create_java_dialog_callback) {
+    // Using `new` to access a non-public constructor.
+    return base::WrapUnique(
+        new BluetoothChooserAndroid(frame, event_handler, std::move(delegate),
+                                    std::move(create_java_dialog_callback)));
+  }
+
  private:
+  BluetoothChooserAndroid(
+      content::RenderFrameHost* frame,
+      const EventHandler& event_handler,
+      std::unique_ptr<BluetoothChooserAndroidDelegate> delegate,
+      CreateJavaDialogCallback create_java_dialog_callback);
+
   void OpenURL(const char* url);
+
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
 
   raw_ptr<content::WebContents> web_contents_;

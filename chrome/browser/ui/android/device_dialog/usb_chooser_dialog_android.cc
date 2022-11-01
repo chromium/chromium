@@ -19,6 +19,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
+#include "components/permissions/permission_util.h"
 #include "components/security_state/core/security_state.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,11 +28,44 @@
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
 
+namespace {
+
+UsbChooserDialogAndroid::CreateJavaDialogCallback
+GetCreateJavaUsbChooserDialogCallback() {
+  return base::BindOnce(&Java_UsbChooserDialog_create);
+}
+
+}  // namespace
+
 // static
 std::unique_ptr<UsbChooserDialogAndroid> UsbChooserDialogAndroid::Create(
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<permissions::ChooserController> controller,
     base::OnceClosure on_close) {
+  return CreateInternal(render_frame_host, std::move(controller),
+                        std::move(on_close),
+                        GetCreateJavaUsbChooserDialogCallback());
+}
+
+// static
+std::unique_ptr<UsbChooserDialogAndroid>
+UsbChooserDialogAndroid::CreateForTesting(
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<permissions::ChooserController> controller,
+    base::OnceClosure on_close,
+    CreateJavaDialogCallback create_java_dialog_callback) {
+  return CreateInternal(render_frame_host, std::move(controller),
+                        std::move(on_close),
+                        std::move(create_java_dialog_callback));
+}
+
+// static
+std::unique_ptr<UsbChooserDialogAndroid>
+UsbChooserDialogAndroid::CreateInternal(
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<permissions::ChooserController> controller,
+    base::OnceClosure on_close,
+    CreateJavaDialogCallback create_java_dialog_callback) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
 
@@ -46,10 +80,14 @@ std::unique_ptr<UsbChooserDialogAndroid> UsbChooserDialogAndroid::Create(
   base::android::ScopedJavaLocalRef<jobject> window_android =
       web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject();
   JNIEnv* env = base::android::AttachCurrentThread();
+  // Permission delegation means the permission request should be
+  // attributed to the main frame.
+  const auto origin = url::Origin::Create(
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host->GetMainFrame()));
   base::android::ScopedJavaLocalRef<jstring> origin_string =
       base::android::ConvertUTF16ToJavaString(
-          env, url_formatter::FormatOriginForSecurityDisplay(
-                   render_frame_host->GetLastCommittedOrigin()));
+          env, url_formatter::FormatOriginForSecurityDisplay(origin));
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents);
   DCHECK(helper);
@@ -64,9 +102,11 @@ std::unique_ptr<UsbChooserDialogAndroid> UsbChooserDialogAndroid::Create(
 
   auto dialog = std::make_unique<UsbChooserDialogAndroid>(std::move(controller),
                                                           std::move(on_close));
-  dialog->java_dialog_.Reset(Java_UsbChooserDialog_create(
-      env, window_android, origin_string, helper->GetSecurityLevel(),
-      j_profile_android, reinterpret_cast<intptr_t>(dialog.get())));
+
+  dialog->java_dialog_.Reset(
+      std::move(create_java_dialog_callback)
+          .Run(env, window_android, origin_string, helper->GetSecurityLevel(),
+               j_profile_android, reinterpret_cast<intptr_t>(dialog.get())));
   if (dialog->java_dialog_.is_null())
     return nullptr;
 
