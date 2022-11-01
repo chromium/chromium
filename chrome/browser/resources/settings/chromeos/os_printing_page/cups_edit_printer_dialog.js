@@ -17,11 +17,12 @@ import './cups_add_printer_dialog.js';
 import './cups_printer_dialog_error.js';
 import './cups_printer_shared_css.js';
 
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {HTMLEscape} from 'chrome://resources/js/util.js';
 import {CrosNetworkConfigRemote, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -465,7 +466,8 @@ class SettingsCupsEditPrinterDialogElement extends
 
     const htmlText = '<!DOCTYPE html><html><body><h1>' +
         loadTimeData.getStringF('cupsPrintersPpdFor', ppdInfo.printerName) +
-        '</h1>' + eulaHtml + '<p><pre>' + ppdInfo.ppd + '</pre></p>';
+        '</h1>' + eulaHtml + '<p><pre>' + HTMLEscape(ppdInfo.ppd) +
+        '</pre></p>';
 
     const win = window.open('');
     win.document.title = ppdInfo.printerName;
