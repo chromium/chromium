@@ -23,6 +23,12 @@ display::ContentProtectionManager* manager() {
 
 void MaybeSetCaptureModeWindowProtection(aura::Window* window,
                                          uint32_t protection_mask) {
+  // `OutputProtectionDelegate` is not owned by ash. It is created by
+  // `OutputProtectionImpl` which exists in Chrome, and can invoke the delegate
+  // even after `Shell` has been destroyed. See b/256706119.
+  if (!Shell::HasInstance())
+    return;
+
   CaptureModeController::Get()->SetWindowProtectionMask(window,
                                                         protection_mask);
 }
