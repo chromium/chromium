@@ -1,4 +1,20 @@
+import importlib
+keys = importlib.import_module("credential-management.support.fedcm.keys")
+
 def main(request, response):
+  manifest_url = request.server.stash.take(keys.MANIFEST_URL_IN_MANIFEST_LIST_KEY)
+
+  if manifest_url is None or not len(manifest_url):
+    port = request.server.config.ports["https"][0]
+    hostname = request.url_parts.hostname
+    manifest_url = "https://{0}:{1}/credential-management/support/fedcm/manifest.py".format(
+        hostname, str(port))
+  else:
+    try:
+      manifest_url = manifest_url.decode()
+    except (UnicodeDecodeError, AttributeError):
+      pass
+
   if len(request.cookies) > 0:
     return (530, [], "Cookie should not be sent to manifest list endpoint")
   if request.headers.get(b"Accept") != b"application/json":
@@ -8,12 +24,10 @@ def main(request, response):
   if request.headers.get(b"Referer"):
     return (533, [], "Should not have Referer")
 
-  config = request.server.config
-  host = config.browser_host + ":" + str(config.ports["https"][0])
   return """
 {{
   "provider_urls": [
-    "https://{0}/credential-management/support/fedcm/manifest.py"
+    "{0}"
   ]
 }}
-""".format(host)
+""".format(manifest_url)

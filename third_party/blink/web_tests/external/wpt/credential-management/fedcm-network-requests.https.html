@@ -7,7 +7,10 @@
 <body>
 
 <script type="module">
-import {default_request_options, fedcm_test, set_fedcm_cookie} from './support/fedcm-helper.sub.js';
+import {default_request_options,
+        fedcm_test,
+        select_manifest,
+        set_fedcm_cookie} from './support/fedcm-helper.sub.js';
 
 fedcm_test(async t => {
   const cred = await navigator.credentials.get(default_request_options());
@@ -99,5 +102,54 @@ fedcm_test(async t => {
   const cred = navigator.credentials.get(test_options);
   return promise_rejects_dom(t, 'NetworkError', cred);
 }, 'Test that the promise is rejected if the manifest is not in the manifest list');
+
+fedcm_test(async t => {
+  let test_options = default_request_options("manifest_redirect_accounts.json");
+  await select_manifest(t, test_options);
+
+  const cred = navigator.credentials.get(test_options);
+  return promise_rejects_dom(t, 'NetworkError', cred);
+}, 'Test that promise is rejected if accounts endpoint redirects');
+// A malicious site might impersonate an IDP, redirecting the accounts endpoint to a
+// legitimate IDP in order to get the list of user accounts.
+
+fedcm_test(async t => {
+  let test_options = default_request_options("manifest_redirect_token.json");
+  await select_manifest(t, test_options);
+
+  const cred = navigator.credentials.get(test_options);
+  return promise_rejects_dom(t, 'NetworkError', cred);
+}, 'Test that token endpoint does not follow redirects');
+// The token endpoint should not follow redirects because the user has not consented
+// to share their identity with the redirect destination.
+
+fedcm_test(async t => {
+  // Reset the client_metadata fetch count.
+  const clear_metadata_count_path = `support/fedcm/client_metadata_clear_count.py`;
+  await fetch(clear_metadata_count_path);
+
+  const cred = await navigator.credentials.get(default_request_options());
+  assert_equals(cred.token, "token");
+
+  await new Promise(resolve => {
+    let popup_window = window.open('support/fedcm/client_metadata.py?skip_checks=1');
+    const popup_window_load_handler = (event) => {
+      popup_window.removeEventListener('load', popup_window_load_handler);
+      popup_window.close();
+      resolve();
+    };
+    popup_window.addEventListener('load', popup_window_load_handler);
+  });
+
+  const client_metadata_counter = await fetch(clear_metadata_count_path);
+  const client_metadata_counter_text = await client_metadata_counter.text()
+  assert_equals(client_metadata_counter_text, "2");
+}, 'Test client_metadata request');
+// Test:
+// - Headers sent to client metadata endpoint. (Counter is not incremented if the headers are
+//   wrong.)
+// - That the client metadata response is not cached. If the client metadata response were
+// cached, when the user visits the IDP as a first party, the IDP would be able to determine the
+// last RP the user visited regardless of whether the user granted consent via the FedCM prompt.
 
 </script>
