@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL supports(display:block) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+PASS supports(foo:bar) is not a valid import condition
+FAIL supports(display:block) (width >= 0px) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+PASS (width >= 0px) supports(foo:bar) is not a valid import condition
+PASS (width >= 0px) supports(display:block) is not a valid import condition
+Harness: the test ran to completion.
+
