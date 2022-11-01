@@ -16,7 +16,6 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/task_order.h"
-#include "base/task/sequence_manager/task_queue_selector_logic.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

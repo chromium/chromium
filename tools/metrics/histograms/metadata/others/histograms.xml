@@ -13887,27 +13887,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="TaskQueueManager.ActiveQueuesCount" units="units"
-    expires_after="M85">
-  <owner>altimin@chromium.org</owner>
-  <owner>farahcharab@chromium.org</owner>
-  <summary>
-    Used to track the number of active task queues in the task queue manager.
-    Reported every time a task is selected for execution.
-  </summary>
-</histogram>
-
-<histogram name="TaskQueueSelector.TaskServicedPerSelectorLogic"
-    enum="TaskQueueSelectorLogic" expires_after="M85">
-  <owner>altimin@chromium.org</owner>
-  <owner>farahcharab@chromium.org</owner>
-  <summary>
-    Used to track the number of tasks serviced due to starvation versus the
-    number of tasks serviced due to priroity. Incremented whenever a task queue
-    is selected to service.
-  </summary>
-</histogram>
-
 <histogram name="ThirdPartyModules.Certificates.Microsoft" units="certificates"
     expires_after="M85">
   <owner>chrisha@chromium.org</owner>

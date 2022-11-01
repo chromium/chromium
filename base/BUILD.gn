@@ -768,7 +768,6 @@ mixed_component("base") {
     "task/sequence_manager/task_queue_impl.h",
     "task/sequence_manager/task_queue_selector.cc",
     "task/sequence_manager/task_queue_selector.h",
-    "task/sequence_manager/task_queue_selector_logic.h",
     "task/sequence_manager/task_time_observer.h",
     "task/sequence_manager/tasks.cc",
     "task/sequence_manager/tasks.h",
