@@ -131,6 +131,33 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     return segment_info;
   }
 
+  proto::SegmentInfo* CreateSegmentInfoWithTriggers() {
+    test_segment_db()->AddUserActionFeature(kTestOptimizationTarget0, "action",
+                                            1, 1, proto::Aggregation::COUNT);
+
+    auto* segment_info = CreateSegment(kTestOptimizationTarget0);
+
+    // Add triggers.
+    auto* trigger = segment_info->mutable_model_metadata()
+                        ->mutable_training_outputs()
+                        ->mutable_trigger_config();
+    trigger->set_decision_type(
+        proto::TrainingOutputs_TriggerConfig_DecisionType_ONDEMAND);
+
+    // Add a time delay trigger of 1 second.
+    auto* delay_trigger = trigger->add_observation_trigger();
+    delay_trigger->set_delay_sec(5);
+    auto* uma_trigger = trigger->add_observation_trigger();
+
+    // Add a uma feature trigger based on |kHistogramName0|.
+    auto* uma_feature =
+        uma_trigger->mutable_uma_trigger()->mutable_uma_feature();
+    uma_feature->set_name(kHistogramName0);
+    uma_feature->set_name_hash(base::HashMetricName(kHistogramName0));
+
+    return segment_info;
+  }
+
   proto::SegmentInfo* CreateSegment(SegmentId segment_id) {
     auto* segment_info = test_segment_db()->FindOrCreateSegment(segment_id);
     auto* model_metadata = segment_info->mutable_model_metadata();
@@ -389,6 +416,43 @@ TEST_F(TrainingDataCollectorImplTest, NoDataCollectionIfUkmAllowedPrefNotSet) {
   collector()->ReportCollectedContinuousTrainingData();
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0u);
+}
+
+// Tests that if triggers are set, data collection only happens when triggers
+// are hit.
+TEST_F(TrainingDataCollectorImplTest, DataCollectionWithTrigger) {
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
+                                        std::vector<float>{2.f, 3.f}));
+
+  // Create a segment that contain a time delay trigger and a uma trigger.
+  CreateSegmentInfoWithTriggers();
+  Init();
+
+  // Wait for input collection to be done and cached in memory.
+  auto input_context = base::MakeRefCounted<InputContext>();
+  base::RunLoop run_loop;
+  test_recorder()->SetOnAddEntryCallback(
+      Segmentation_ModelExecution::kEntryName, run_loop.QuitClosure());
+  collector()->OnDecisionTime(
+      kTestOptimizationTarget0, input_context,
+      proto::TrainingOutputs_TriggerConfig_DecisionType_ONDEMAND);
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0u);
+
+  // Trigger output collection and ukm data recording.
+  collector()->OnHistogramSignalUpdated(kHistogramName0, kSample);
+  run_loop.Run();
+  ExpectUkmCount(1u);
+  ExpectUkm({Segmentation_ModelExecution::kOptimizationTargetName,
+             Segmentation_ModelExecution::kModelVersionName,
+             Segmentation_ModelExecution::kInput0Name,
+             Segmentation_ModelExecution::kActualResultName,
+             Segmentation_ModelExecution::kActualResult2Name},
+            {kTestOptimizationTarget0, kModelVersion,
+             SegmentationUkmHelper::FloatToInt64(1.f),
+             SegmentationUkmHelper::FloatToInt64(2.f),
+             SegmentationUkmHelper::FloatToInt64(3.f)});
 }
 
 }  // namespace

@@ -35,7 +35,16 @@ class TrainingDataCache {
       proto::SegmentId segment_id,
       RequestId request_id);
 
+  // Retrieves the first request ID given a segment ID. Returns nullopt when no
+  // request ID found. This is used when uma histogram triggering happens and
+  // only segment ID is available.
+  // Note: The earliest ID created by this cache will be returned first.
+  absl::optional<RequestId> GetRequestId(proto::SegmentId segment_id);
+
+  TrainingDataCache::RequestId GenerateNextId();
+
  private:
+  RequestId::Generator request_id_generator;
   base::flat_map<proto::SegmentId,
                  base::flat_map<RequestId, proto::TrainingData>>
       cache;

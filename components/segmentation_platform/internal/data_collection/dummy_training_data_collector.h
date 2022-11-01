@@ -20,6 +20,11 @@ class DummyTrainingDataCollector : public TrainingDataCollector {
   void OnModelMetadataUpdated() override;
   void OnServiceInitialized() override;
   void ReportCollectedContinuousTrainingData() override;
+  void OnDecisionTime(proto::SegmentId id,
+                      scoped_refptr<InputContext> input_context,
+                      DecisionType type) override;
+  void OnObservationTrigger(TrainingDataCache::RequestId request_id,
+                            const proto::SegmentInfo& segment_info) override;
 };
 
 }  // namespace segmentation_platform

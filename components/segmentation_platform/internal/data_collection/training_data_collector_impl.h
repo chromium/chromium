@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -43,6 +44,11 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   void OnModelMetadataUpdated() override;
   void OnServiceInitialized() override;
   void ReportCollectedContinuousTrainingData() override;
+  void OnDecisionTime(proto::SegmentId id,
+                      scoped_refptr<InputContext> input_context,
+                      DecisionType type) override;
+  void OnObservationTrigger(TrainingDataCache::RequestId request_id,
+                            const proto::SegmentInfo& segment_info) override;
 
   // HistogramSignalHandler::Observer implementation.
   void OnHistogramSignalUpdated(const std::string& histogram_name,
@@ -62,6 +68,29 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   void ReportForSegmentsInfoList(
       const absl::optional<ImmediaCollectionParam>& param,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments);
+
+  void OnHistogramUpdatedReportForSegmentInfo(
+      absl::optional<proto::SegmentInfo> segment);
+
+  void OnGetSegmentInfoAtDecisionTime(
+      TrainingDataCache::RequestId id,
+      DecisionType type,
+      absl::optional<proto::SegmentInfo> segment);
+
+  void OnGetTrainingTensorsAtDecisionTime(
+      TrainingDataCache::RequestId request_id,
+      const proto::SegmentInfo& segment_info,
+      bool has_error,
+      const std::vector<float>& input_tensors,
+      const std::vector<float>& output_tensors);
+
+  void onGetOutputsOnObservationTrigger(
+      TrainingDataCache::RequestId request_id,
+      const proto::SegmentInfo& segment_info,
+      const std::vector<float>& cached_input_tensors,
+      bool has_error,
+      const std::vector<float>& input_tensors,
+      const std::vector<float>& output_tensors);
 
   void OnGetTrainingTensors(const absl::optional<ImmediaCollectionParam>& param,
                             const proto::SegmentInfo& segment_info,
@@ -85,11 +114,18 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   // Helper class to read/write results to the prefs.
   std::unique_ptr<SegmentationResultPrefs> result_prefs_;
 
+  // Cache class to temporarily store training data in the observation period.
+  std::unique_ptr<TrainingDataCache> training_cache_;
+
   // Hash of histograms for immediate training data collection. When any
   // histogram hash contained in the map is recorded, a UKM message is reported
   // right away.
   base::flat_map<uint64_t, base::flat_set<proto::SegmentId>>
       immediate_collection_histograms_;
+
+  // Hash of histograms for trigger based training data collection.
+  base::flat_map<uint64_t, base::flat_set<proto::SegmentId>>
+      immediate_trigger_histograms_;
 
   // A list of segment IDs that needs to report metrics continuously.
   base::flat_set<SegmentId> continuous_collection_segments_;
