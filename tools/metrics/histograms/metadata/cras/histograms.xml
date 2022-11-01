@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Cras.A2dp100msFailureOverStream" units="units"
-    expires_after="2023-02-26">
+    expires_after="2023-04-30">
   <owner>hychao@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
