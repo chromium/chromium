@@ -26,7 +26,6 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
@@ -204,10 +203,6 @@ int main(int argc, char** argv) {
                              false);  // enable_tickcount
         LOG(ERROR) << "A test timeout has occured in "
                    << updater::test::GetTestName();
-#if BUILDFLAG(IS_WIN)
-        const base::FilePath updater_test = updater::test::GetUpdaterTestPath();
-        PLOG_IF(0, !base::PathExists(updater_test)) << ", " << updater_test;
-#endif
         updater::test::CreateIntegrationTestCommands()->PrintLog();
       }),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
