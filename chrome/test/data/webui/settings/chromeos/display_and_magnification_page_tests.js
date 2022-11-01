@@ -33,35 +33,37 @@ suite('DisplayAndMagnificationPageTests', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test(
-      'should focus displaySubpageButton button when returning from Display subpage',
-      async () => {
-        const selector = '#displaySubpageButton';
-        const route = routes.DISPLAY;
-        initPage();
-        flush();
-        const router = Router.getInstance();
+  [{selector: '#displaySubpageButton', route: routes.DISPLAY},
+  ].forEach(({selector, route}) => {
+    test(
+        `should focus ${selector} button when returning from ${
+            route.path} subpage`,
+        async () => {
+          initPage();
+          flush();
+          const router = Router.getInstance();
 
-        const subpageButton = page.shadowRoot.querySelector(selector);
-        assertTrue(!!subpageButton);
+          const subpageButton = page.shadowRoot.querySelector(selector);
+          assertTrue(!!subpageButton);
 
-        subpageButton.click();
-        assertEquals(route, router.getCurrentRoute());
-        assertNotEquals(
-            subpageButton, page.shadowRoot.activeElement,
-            `${selector} should not be focused`);
+          subpageButton.click();
+          assertEquals(route, router.getCurrentRoute());
+          assertNotEquals(
+              subpageButton, page.shadowRoot.activeElement,
+              `${selector} should not be focused`);
 
-        const popStateEventPromise = eventToPromise('popstate', window);
-        router.navigateToPreviousRoute();
-        await popStateEventPromise;
-        await waitBeforeNextRender(page);
+          const popStateEventPromise = eventToPromise('popstate', window);
+          router.navigateToPreviousRoute();
+          await popStateEventPromise;
+          await waitBeforeNextRender(page);
 
-        assertEquals(
-            routes.A11Y_DISPLAY_AND_MAGNIFICATION, router.getCurrentRoute());
-        assertEquals(
-            subpageButton, page.shadowRoot.activeElement,
-            `${selector} should be focused`);
-      });
+          assertEquals(
+              routes.A11Y_DISPLAY_AND_MAGNIFICATION, router.getCurrentRoute());
+          assertEquals(
+              subpageButton, page.shadowRoot.activeElement,
+              `${selector} should be focused`);
+        });
+  });
 
   test('no subpages are available in kiosk mode', function() {
     loadTimeData.overrideValues({
