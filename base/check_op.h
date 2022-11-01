@@ -45,7 +45,6 @@ BASE_EXPORT char* CheckOpValueStr(long long v);
 BASE_EXPORT char* CheckOpValueStr(unsigned long long v);
 BASE_EXPORT char* CheckOpValueStr(const void* v);
 BASE_EXPORT char* CheckOpValueStr(std::nullptr_t v);
-BASE_EXPORT char* CheckOpValueStr(float v);
 BASE_EXPORT char* CheckOpValueStr(double v);
 BASE_EXPORT char* CheckOpValueStr(const std::string& v);
 
@@ -159,92 +158,8 @@ class CheckOpResult {
 
 #if !CHECK_WILL_STREAM()
 
-// This implements optimized versions of CHECK_OP that crash without logging
-// streams, but still logs the parameter values for CHECK_EQ(param1, param2).
-// There are many specializations of CheckOpFailure because the code size
-// generated for the generic CheckOpFailureStr(CheckOpValueStr(v1),
-// CheckOpValueStr(v2)) is significantly larger than a single call to
-// CheckOpFailure<int,int>(v1, v2) for instance.
-//
-// These instantiations match the fundamental types provided by CheckOpValueStr.
-
-[[noreturn]] BASE_EXPORT void CheckOpFailureStr(char* v1_str, char* v2_str);
-
-template <typename T, typename U>
-[[noreturn]] void CheckOpFailure(T v1, U v2) {
-  CheckOpFailureStr(CheckOpValueStr(v1), CheckOpValueStr(v2));
-}
-
-template <>
-[[noreturn]] BASE_EXPORT void CheckOpFailure(int v1, int v2);
-
-template <>
-[[noreturn]] BASE_EXPORT void CheckOpFailure(unsigned v1, unsigned v2);
-
-template <>
-[[noreturn]] BASE_EXPORT void CheckOpFailure(long v1, long v2);
-
-template <>
-[[noreturn]] BASE_EXPORT void CheckOpFailure(unsigned long v1,
-                                             unsigned long v2);
-
-template <>
-[[noreturn]] BASE_EXPORT void CheckOpFailure(long long v1, long long v2);
-
-template <>
-[[noreturn]] BASE_EXPORT void CheckOpFailure(unsigned long long v1,
-                                             unsigned long long v2);
-
-template <>
-[[noreturn]] BASE_EXPORT void CheckOpFailure(float v1, float v2);
-
-template <>
-[[noreturn]] BASE_EXPORT void CheckOpFailure(double v1, double v2);
-
-// This optimized version of CHECK_OP() crashes inside CheapCheck##name##Impl if
-// the condition is false and optimizes out stream parameters regardless. See
-// CHECK_OP_FUNCTION_IMPL() for differences with the unoptimized version.
-#define CHECK_OP(name, op, val1, val2)                           \
-  switch (0)                                                     \
-  case 0:                                                        \
-  default:                                                       \
-    if (::logging::CheapCheck##name##Impl((val1), (val2)), true) \
-      ;                                                          \
-    else                                                         \
-      EAT_CHECK_STREAM_PARAMS()
-
-// The second overload avoids address-taking of static members for
-// fundamental types.
-#define DEFINE_CHEAP_CHECK_OP_IMPL(name, op)                                \
-  template <typename T, typename U,                                         \
-            std::enable_if_t<!std::is_fundamental<T>::value ||              \
-                                 !std::is_fundamental<U>::value,            \
-                             int> = 0>                                      \
-  constexpr ALWAYS_INLINE void CheapCheck##name##Impl(const T& v1,          \
-                                                      const U& v2) {        \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                     \
-      return;                                                               \
-    ::logging::CheckOpFailureStr(CheckOpValueStr(v1), CheckOpValueStr(v2)); \
-  }                                                                         \
-  template <typename T, typename U,                                         \
-            std::enable_if_t<std::is_fundamental<T>::value &&               \
-                                 std::is_fundamental<U>::value,             \
-                             int> = 0>                                      \
-  constexpr ALWAYS_INLINE void CheapCheck##name##Impl(T v1, U v2) {         \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                     \
-      return;                                                               \
-    ::logging::CheckOpFailure(v1, v2);                                      \
-  }
-
-// clang-format off
-DEFINE_CHEAP_CHECK_OP_IMPL(EQ, ==)
-DEFINE_CHEAP_CHECK_OP_IMPL(NE, !=)
-DEFINE_CHEAP_CHECK_OP_IMPL(LE, <=)
-DEFINE_CHEAP_CHECK_OP_IMPL(LT, < )
-DEFINE_CHEAP_CHECK_OP_IMPL(GE, >=)
-DEFINE_CHEAP_CHECK_OP_IMPL(GT, > )
-#undef DEFINE_CHEAP_CHECK_OP_IMPL
-// clang-format on
+// Discard log strings to reduce code bloat.
+#define CHECK_OP(name, op, val1, val2) CHECK((val1)op(val2))
 
 #else
 
