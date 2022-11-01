@@ -150,7 +150,7 @@ void LoadAndCheckInterstitialAt(Browser* browser, const GURL& url) {
             GetInterstitialType(web_contents));
   EXPECT_FALSE(IsUrlShowing(browser));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_TRUE(
       base::MatchPattern(console_observer.GetMessageAt(0u), kConsoleMessage));
 }
