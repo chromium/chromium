@@ -3283,6 +3283,9 @@
           '--use-weston',
           '--weston-use-gl',
         ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
       },
     },
 
@@ -3304,6 +3307,9 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
         ],
       },
     },

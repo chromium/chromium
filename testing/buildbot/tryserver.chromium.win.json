@@ -565,6 +565,10 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webcodecs_tests 10de:2184",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -597,6 +601,10 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webcodecs_tests 8086:5912 or 8086:3e92",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,

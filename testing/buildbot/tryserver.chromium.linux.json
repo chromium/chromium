@@ -486,6 +486,10 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webcodecs_tests GTX 1660",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -518,6 +522,10 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webcodecs_tests UHD 630",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
