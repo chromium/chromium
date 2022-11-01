@@ -833,16 +833,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.NoCachedPopulationReason"
-    enum="SafeBrowsingNoCachedPopulationReason" expires_after="2022-11-11">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Whenever Safe Browsing sends a request with no cached user population to
-    compare it to, we record the reason the cache is empty.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.PageLoadToken.ClearReason"
     enum="SafeBrowsingPageLoadTokenClearReason" expires_after="2023-03-05">
   <owner>xinghuilu@chromium.org</owner>
@@ -919,23 +909,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Chrome100" summary="chrome_100_percent.pak"/>
     <variant name="Chrome200" summary="chrome_200_percent.pak"/>
     <variant name="Resources" summary="resources.pak"/>
-  </token>
-</histogram>
-
-<histogram name="SafeBrowsing.PopulationMatchesCachedValue.{Field}"
-    enum="BooleanMatched" expires_after="2022-11-11">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Whenever the ChromeUserPopulation proto is created (almost every time Safe
-    Browsing is contacted), we compare it to a cached value. This histogram
-    records whether the cached value has the same value in {Field} as the newly
-    created value.
-  </summary>
-  <token key="Field">
-    <variant name="Mbb" summary="Make Browsing Better preference"/>
-    <variant name="Population" summary="Safe Browsing population"/>
-    <variant name="UserAgent" summary="User agent"/>
   </token>
 </histogram>
 

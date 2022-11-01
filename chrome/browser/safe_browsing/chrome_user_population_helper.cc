@@ -47,20 +47,8 @@ void ComparePopulationWithCache(Profile* profile,
   const absl::optional<ChromeUserPopulation>& cached_population =
       GetCachedUserPopulation(profile);
   if (!cached_population) {
-    base::UmaHistogramEnumeration("SafeBrowsing.NoCachedPopulationReason",
-                                  GetNoCachedPopulationReason(profile));
     return;
   }
-
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.PopulationMatchesCachedValue.Population",
-      cached_population->user_population() == population.user_population());
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.PopulationMatchesCachedValue.UserAgent",
-      cached_population->user_agent() == population.user_agent());
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.PopulationMatchesCachedValue.Mbb",
-      cached_population->is_mbb_enabled() == population.is_mbb_enabled());
 }
 
 }  // namespace
