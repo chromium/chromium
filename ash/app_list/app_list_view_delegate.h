@@ -143,19 +143,8 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   virtual void OnSearchResultVisibilityChanged(const std::string& id,
                                                bool visibility) = 0;
 
-  // If the |prefs::kSuggestedContentInfoShownInLauncher| value is in the range
-  // of allowed values, we will increment it.
-  virtual void MaybeIncreaseSuggestedContentInfoShownCount() = 0;
-
   // Returns true if the Assistant feature is allowed and enabled.
   virtual bool IsAssistantAllowedAndEnabled() const = 0;
-
-  // Returns true if the Suggested Content privacy info view should be shown.
-  virtual bool ShouldShowSuggestedContentInfo() const = 0;
-
-  // Called when close button in the Suggested Content privacy info view is
-  // pressed to indicate not to show the view any more.
-  virtual void MarkSuggestedContentInfoDismissed() = 0;
 
   // Gets the app list page currently shown in the fullscreen app list, as
   // reported from the app list view using `OnAppListPageChanged()`.

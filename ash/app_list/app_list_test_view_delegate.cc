@@ -88,11 +88,6 @@ void AppListTestViewDelegate::SetIsTabletModeEnabled(bool is_tablet_mode) {
   is_tablet_mode_ = is_tablet_mode;
 }
 
-void AppListTestViewDelegate::SetShouldShowSuggestedContentInfo(
-    bool should_show) {
-  should_show_suggested_content_info_ = should_show;
-}
-
 void AppListTestViewDelegate::ActivateItem(
     const std::string& id,
     int event_flags,
@@ -173,18 +168,8 @@ void AppListTestViewDelegate::OnSearchResultVisibilityChanged(
     const std::string& id,
     bool visibility) {}
 
-void AppListTestViewDelegate::MaybeIncreaseSuggestedContentInfoShownCount() {}
-
 bool AppListTestViewDelegate::IsAssistantAllowedAndEnabled() const {
   return false;
-}
-
-bool AppListTestViewDelegate::ShouldShowSuggestedContentInfo() const {
-  return should_show_suggested_content_info_;
-}
-
-void AppListTestViewDelegate::MarkSuggestedContentInfoDismissed() {
-  should_show_suggested_content_info_ = false;
 }
 
 void AppListTestViewDelegate::OnStateTransitionAnimationCompleted(

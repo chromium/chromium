@@ -432,10 +432,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kUsbPeripheralCableSpeedNotificationShown[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kSuggestedContentInfoShownInLauncher[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kSuggestedContentInfoDismissedInLauncher[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAppListReorderNudge[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -339,8 +339,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // in progress it will be interrupted.
   void StartAnimationForState(AppListViewState new_state);
 
-  void MaybeIncreasePrivacyInfoRowShownCounts(AppListViewState new_state);
-
   // Applies a bounds animation on this views layer.
   void ApplyBoundsAnimation(AppListViewState target_state,
                             base::TimeDelta duration_ms);

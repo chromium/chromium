@@ -737,20 +737,6 @@ void AppListView::SetChildViewsForStateTransition(
   }
 }
 
-void AppListView::MaybeIncreasePrivacyInfoRowShownCounts(
-    AppListViewState new_state) {
-  AppListStateTransitionSource transition =
-      GetAppListStateTransitionSource(new_state);
-  switch (transition) {
-    case kFullscreenAllAppsToFullscreenSearch:
-      if (app_list_main_view()->contents_view()->IsShowingSearchResults())
-        delegate_->MaybeIncreaseSuggestedContentInfoShownCount();
-      break;
-    default:
-      break;
-  }
-}
-
 void AppListView::RecordStateTransitionForUma(AppListViewState new_state) {
   AppListStateTransitionSource transition =
       GetAppListStateTransitionSource(new_state);
@@ -1005,7 +991,6 @@ void AppListView::SetState(AppListViewState new_state) {
   state_transition_notifier_->Reset(new_state);
 
   StartAnimationForState(new_state);
-  MaybeIncreasePrivacyInfoRowShownCounts(new_state);
   RecordStateTransitionForUma(new_state);
   app_list_state_ = new_state;
   if (delegate_)

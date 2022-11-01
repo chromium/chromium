@@ -3210,10 +3210,6 @@ TEST_F(AppListTabletTest,
   ResultSelectionController* result_selection_controller =
       GetResultSelectionController();
 
-  // Mark the suggested content info as dismissed so that it does not interfere
-  // with the layout for the selection traversal.
-  Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
-
   // Add search results to the search model.
   SearchModel* search_model = GetSearchModel();
   search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion1"));

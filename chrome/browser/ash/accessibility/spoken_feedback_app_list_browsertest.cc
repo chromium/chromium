@@ -312,8 +312,6 @@ class SpokenFeedbackAppListSearchTest
   void SetUpOnMainThread() override {
     SpokenFeedbackAppListBaseTest::SetUpOnMainThread();
 
-    Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
-
     AppListClientImpl* app_list_client = AppListClientImpl::GetInstance();
 
     // Reset default search controller, so the test has better control over the

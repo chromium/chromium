@@ -58,9 +58,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   // Set whether tablet mode is enabled.
   void SetIsTabletModeEnabled(bool is_tablet_mode);
 
-  // Set whether the suggested content info should be shown.
-  void SetShouldShowSuggestedContentInfo(bool should_show);
-
   // AppListViewDelegate overrides:
   bool KeyboardTraversalEngaged() override;
   void StartAssistant() override {}
@@ -97,10 +94,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   ash::AssistantViewDelegate* GetAssistantViewDelegate() override;
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override;
-  void MaybeIncreaseSuggestedContentInfoShownCount() override;
   bool IsAssistantAllowedAndEnabled() const override;
-  bool ShouldShowSuggestedContentInfo() const override;
-  void MarkSuggestedContentInfoDismissed() override;
   void OnStateTransitionAnimationCompleted(
       AppListViewState state,
       bool was_animation_interrupted) override;
@@ -145,7 +139,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   AppListState app_list_page_ = AppListState::kInvalidState;
   AppListViewState app_list_view_state_ = AppListViewState::kClosed;
   bool is_tablet_mode_ = false;
-  bool should_show_suggested_content_info_ = false;
   std::map<size_t, int> open_search_result_counts_;
   AppListModelProvider model_provider_;
   std::unique_ptr<AppListTestModel> model_;

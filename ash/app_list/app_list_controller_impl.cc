@@ -207,31 +207,6 @@ PrefService* GetLastActiveUserPrefService() {
   return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
 }
 
-int GetSuggestedContentInfoShownCount() {
-  PrefService* prefs = GetLastActiveUserPrefService();
-  return prefs->GetInteger(prefs::kSuggestedContentInfoShownInLauncher);
-}
-
-void SetSuggestedContentInfoShownCount(int count) {
-  PrefService* prefs = GetLastActiveUserPrefService();
-  prefs->SetInteger(prefs::kSuggestedContentInfoShownInLauncher, count);
-}
-
-bool IsSuggestedContentInfoDismissed() {
-  PrefService* prefs = GetLastActiveUserPrefService();
-  return prefs->GetBoolean(prefs::kSuggestedContentInfoDismissedInLauncher);
-}
-
-void SetSuggestedContentInfoDismissed() {
-  PrefService* prefs = GetLastActiveUserPrefService();
-  prefs->SetBoolean(prefs::kSuggestedContentInfoDismissedInLauncher, true);
-}
-
-bool IsSuggestedContentEnabled() {
-  PrefService* prefs = GetLastActiveUserPrefService();
-  return prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled);
-}
-
 // Gets the MRU window shown over the applist when in tablet mode.
 // Returns nullptr if no windows are shown over the applist.
 aura::Window* GetTopVisibleWindow() {
@@ -329,12 +304,6 @@ AppListControllerImpl::~AppListControllerImpl() {
 
 // static
 void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      prefs::kSuggestedContentInfoShownInLauncher, 0,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kSuggestedContentInfoDismissedInLauncher, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kLauncherFeedbackOnContinueSectionSent, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -1390,13 +1359,6 @@ void AppListControllerImpl::OnSearchResultVisibilityChanged(
     client_->OnSearchResultVisibilityChanged(id, visibility);
 }
 
-void AppListControllerImpl::MaybeIncreaseSuggestedContentInfoShownCount() {
-  if (ShouldShowSuggestedContentInfo()) {
-    const int count = GetSuggestedContentInfoShownCount();
-    SetSuggestedContentInfoShownCount(count + 1);
-  }
-}
-
 bool AppListControllerImpl::IsAssistantAllowedAndEnabled() const {
   if (!Shell::Get()->assistant_controller()->IsAssistantReady())
     return false;
@@ -1405,27 +1367,6 @@ bool AppListControllerImpl::IsAssistantAllowedAndEnabled() const {
   return state->settings_enabled().value_or(false) &&
          state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
          state->assistant_status() != assistant::AssistantStatus::NOT_READY;
-}
-
-bool AppListControllerImpl::ShouldShowSuggestedContentInfo() const {
-  if (!IsSuggestedContentEnabled()) {
-    // Don't show if user has interacted with the setting already.
-    SetSuggestedContentInfoDismissed();
-    return false;
-  }
-
-  if (IsSuggestedContentInfoDismissed()) {
-    return false;
-  }
-
-  const int count = GetSuggestedContentInfoShownCount();
-  constexpr int kThresholdToShow = 3;
-  return count >= 0 && count <= kThresholdToShow;
-}
-
-void AppListControllerImpl::MarkSuggestedContentInfoDismissed() {
-  // User dismissed the privacy info view. Will not show the view again.
-  SetSuggestedContentInfoDismissed();
 }
 
 void AppListControllerImpl::OnStateTransitionAnimationCompleted(

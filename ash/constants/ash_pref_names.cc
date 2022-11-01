@@ -966,14 +966,6 @@ const char kUsbPowerShareEnabled[] = "ash.power.usb_power_share_enabled";
 const char kUsbPeripheralCableSpeedNotificationShown[] =
     "ash.usb_peripheral_cable_speed_notification_shown";
 
-// An integer pref that specifies how many times the Suggested Content privacy
-// info has been shown in Launcher. This value will increment by one every time
-// when Launcher changes state from Peeking to Half or FullscreenSearch up to a
-// predefined threshold, e.g. six times. If the info has been shown for more
-// than the threshold, do not show the privacy info any more.
-const char kSuggestedContentInfoShownInLauncher[] =
-    "ash.launcher.suggested_content_info_shown";
-
 // A dictionary value that determines whether the reorder nudge in app list
 // should show to the users.
 const char kAppListReorderNudge[] = "ash.launcher.app_list_reorder_nudge";
@@ -982,14 +974,6 @@ const char kAppListReorderNudge[] = "ash.launcher.app_list_reorder_nudge";
 // the continue files section for the launcher.
 const char kLauncherFilesPrivacyNotice[] =
     "ash.launcher.continue_section_privacy_notice";
-
-// A boolean pref that indicates whether the Suggested Content privacy info may
-// be displayed to user. A false value indicates that the info can be displayed
-// if the value of |kSuggestedContentInfoShownInLauncher| is smaller than the
-// predefined threshold. A true value implies that the user has dismissed the
-// info view, and do not show the privacy info any more.
-const char kSuggestedContentInfoDismissedInLauncher[] =
-    "ash.launcher.suggested_content_info_dismissed";
 
 // A boolean pref that indicates whether lock screen media controls are enabled.
 // Controlled by user policy.

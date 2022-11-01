@@ -767,6 +767,14 @@ const char kPrivacySandboxFirstPartySetsDataAccessAllowed[] =
 // Deprecated 09/2022.
 const char kFirstPartySetsEnabled[] = "first_party_sets.enabled";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 10/2022.
+const char kSuggestedContentInfoShownInLauncher[] =
+    "ash.launcher.suggested_content_info_shown";
+const char kSuggestedContentInfoDismissedInLauncher[] =
+    "ash.launcher.suggested_content_info_dismissed";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1014,6 +1022,13 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 10/2022.
   registry->RegisterBooleanPref(kLoadCryptoTokenExtension, false);
 #endif
+
+// Deprecated 10/2022.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kSuggestedContentInfoShownInLauncher, 0);
+  registry->RegisterBooleanPref(kSuggestedContentInfoDismissedInLauncher,
+                                false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -2035,6 +2050,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   profile_prefs->ClearPref(kLoadCryptoTokenExtension);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 10/2022.
+  profile_prefs->ClearPref(kSuggestedContentInfoShownInLauncher);
+  profile_prefs->ClearPref(kSuggestedContentInfoDismissedInLauncher);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
