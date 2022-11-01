@@ -339,7 +339,7 @@ void WaylandEventSource::OnPointerButtonEventInternal(WaylandWindow* window,
     window_manager_->SetPointerFocusedWindow(window);
 
   if (type == ET_MOUSE_RELEASED)
-    last_pointer_stylus_tool_.reset();
+    last_pointer_stylus_data_.reset();
 }
 
 void WaylandEventSource::OnPointerMotionEvent(
@@ -691,37 +691,37 @@ void WaylandEventSource::OnPointerStylusToolChanged(
   // seems mis-specified in
   // //t_p/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml.
   if (pointer_type == ui::EventPointerType::kMouse) {
-    last_pointer_stylus_tool_.reset();
+    last_pointer_stylus_data_.reset();
     return;
   }
 
-  last_pointer_stylus_tool_ = {
+  last_pointer_stylus_data_ = {
       .type = pointer_type,
       .tilt = gfx::Vector2dF(),
       .force = std::numeric_limits<float>::quiet_NaN()};
 }
 
 void WaylandEventSource::OnPointerStylusForceChanged(float force) {
-  if (!last_pointer_stylus_tool_.has_value()) {
+  if (!last_pointer_stylus_data_.has_value()) {
     // This is a stray force event that the default tool cannot accept.
     LOG(WARNING) << "Cannot handle force for the default tool!  (the value is "
                  << force << ")";
     return;
   }
 
-  last_pointer_stylus_tool_->force = force;
+  last_pointer_stylus_data_->force = force;
 }
 
 void WaylandEventSource::OnPointerStylusTiltChanged(
     const gfx::Vector2dF& tilt) {
-  if (!last_pointer_stylus_tool_.has_value()) {
+  if (!last_pointer_stylus_data_.has_value()) {
     // This is a stray tilt event that the default tool cannot accept.
     LOG(WARNING) << "Cannot handle tilt for the default tool!  (the value is ["
                  << tilt.x() << "," << tilt.y() << "])";
     return;
   }
 
-  last_pointer_stylus_tool_->tilt = tilt;
+  last_pointer_stylus_data_->tilt = tilt;
 }
 
 const WaylandWindow* WaylandEventSource::GetPointerTarget() const {
@@ -795,15 +795,15 @@ gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
 }
 
 absl::optional<PointerDetails> WaylandEventSource::AmendStylusData() const {
-  if (!last_pointer_stylus_tool_)
+  if (!last_pointer_stylus_data_)
     return absl::nullopt;
 
-  DCHECK_NE(last_pointer_stylus_tool_->type, EventPointerType::kUnknown);
-  return PointerDetails(last_pointer_stylus_tool_->type, /*pointer_id=*/0,
+  DCHECK_NE(last_pointer_stylus_data_->type, EventPointerType::kUnknown);
+  return PointerDetails(last_pointer_stylus_data_->type, /*pointer_id=*/0,
                         /*radius_x=*/1.0f,
-                        /*radius_y=*/1.0f, last_pointer_stylus_tool_->force,
-                        /*twist=*/0.0f, last_pointer_stylus_tool_->tilt.x(),
-                        last_pointer_stylus_tool_->tilt.y());
+                        /*radius_y=*/1.0f, last_pointer_stylus_data_->force,
+                        /*twist=*/0.0f, last_pointer_stylus_data_->tilt.x(),
+                        last_pointer_stylus_data_->tilt.y());
 }
 
 absl::optional<PointerDetails> WaylandEventSource::AmendStylusData(

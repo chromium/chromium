@@ -262,10 +262,11 @@ class WaylandEventSource : public PlatformEventSource,
     float force = std::numeric_limits<float>::quiet_NaN();
   };
 
-  // Last known pointer stylus type (eg mouse, pen, eraser or touch).
-  absl::optional<StylusData> last_pointer_stylus_tool_;
+  // Last known pointer stylus data (eg {mouse, pen, eraser or touch}, tilt and
+  // force).
+  absl::optional<StylusData> last_pointer_stylus_data_;
 
-  // Last known touch stylus type (eg touch, pen or eraser).
+  // Last known touch stylus data (eg {touch, pen or eraser}, tilt and force).
   base::flat_map<PointerId, absl::optional<StylusData>> last_touch_stylus_data_;
 
   // Order set of touch events to be dispatching on the next
