@@ -174,7 +174,6 @@ source_set("web_applications") {
     "web_app_icon_manager.cc",
     "web_app_icon_manager.h",
     "web_app_id.h",
-    "web_app_id_constants.cc",
     "web_app_id_constants.h",
     "web_app_install_finalizer.cc",
     "web_app_install_finalizer.h",

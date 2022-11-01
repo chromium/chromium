@@ -179,6 +179,10 @@ bool IsFilesAppUrlOpener(const apps::IntentLaunchInfo& launch_entry) {
              ToSwaActionId(kActionIdWebDriveOfficePowerPoint);
 }
 
+bool IsSystemAppIdWithFileHandlers(base::StringPiece id) {
+  return id == web_app::kMediaAppId;
+}
+
 void FindAppServiceTasks(Profile* profile,
                          const std::vector<extensions::EntryInfo>& entries,
                          const std::vector<GURL>& file_urls,
@@ -251,7 +255,7 @@ void FindAppServiceTasks(Profile* profile,
       // Media app and other SWAs can handle "non-native" files, as can special
       // tasks which only access the file via URL.
       if (has_non_native_file &&
-          !(web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id) ||
+          !(IsSystemAppIdWithFileHandlers(launch_entry.app_id) ||
             IsFilesAppUrlOpener(launch_entry))) {
         continue;
       }
