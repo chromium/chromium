@@ -106,9 +106,6 @@ class FuchsiaCdm : public ContentDecryptionModule,
 
   void OnNewKey();
 
-  CdmPromiseAdapter promises_;
-  base::flat_map<std::string, std::unique_ptr<CdmSession>> session_map_;
-
   fuchsia::media::drm::ContentDecryptionModulePtr cdm_;
   ReadyCB ready_cb_;
   SessionCallbacks session_callbacks_;
@@ -118,6 +115,12 @@ class FuchsiaCdm : public ContentDecryptionModule,
   base::Lock new_key_callbacks_lock_;
   std::vector<base::RepeatingClosure> new_key_callbacks_
       GUARDED_BY(new_key_callbacks_lock_);
+
+  CdmPromiseAdapter promises_;
+
+  // CdmSession instances reference `session_callbacks_`, so they must be
+  // deleted before the callbacks.
+  base::flat_map<std::string, std::unique_ptr<CdmSession>> session_map_;
 
   CallbackRegistry<EventCB::RunType> event_callbacks_;
 };
