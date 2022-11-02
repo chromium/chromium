@@ -508,6 +508,14 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   if (base::FeatureList::IsEnabled(kGuestZram))
     request.set_guest_swappiness(kGuestZramSwappiness.Get());
 
+  if (base::FeatureList::IsEnabled(kMglruReclaim)) {
+    request.set_mglru_reclaim_interval(kMglruReclaimInterval.Get());
+    request.set_mglru_reclaim_swappiness(kMglruReclaimSwappiness.Get());
+  } else {
+    request.set_mglru_reclaim_interval(0);
+    request.set_mglru_reclaim_swappiness(0);
+  }
+
   request.set_enable_consumer_auto_update_toggle(base::FeatureList::IsEnabled(
       ash::features::kConsumerAutoUpdateToggleAllowed));
   if (base::FeatureList::IsEnabled(kVmMemoryPSIReports))
