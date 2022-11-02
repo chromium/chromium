@@ -9,36 +9,26 @@
 #include <utility>
 
 #include "ash/components/arc/app/arc_playstore_search_request_state.h"
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_result.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 
 namespace app_list {
 
 // Parameterized by feature ProductivityLauncher.
-class ArcPlayStoreSearchProviderTest
-    : public AppListTestBase,
-      public ::testing::WithParamInterface<bool> {
+class ArcPlayStoreSearchProviderTest : public AppListTestBase {
  public:
-  ArcPlayStoreSearchProviderTest() {
-    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
-                                       GetParam());
-  }
+  ArcPlayStoreSearchProviderTest() {}
 
   ArcPlayStoreSearchProviderTest(const ArcPlayStoreSearchProviderTest&) =
       delete;
@@ -89,18 +79,13 @@ class ArcPlayStoreSearchProviderTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<TestSearchController> search_controller_;
   ArcPlayStoreSearchProvider* provider_ = nullptr;
   ArcAppTest arc_test_;
 };
 
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         ArcPlayStoreSearchProviderTest,
-                         testing::Bool());
-
-TEST_P(ArcPlayStoreSearchProviderTest, Basic) {
+TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
   constexpr size_t kMaxResults = 12;
   constexpr char16_t kQuery[] = u"Play App";
 
@@ -137,7 +122,7 @@ TEST_P(ArcPlayStoreSearchProviderTest, Basic) {
 // non empty result list and PHONESKY_RESULT_INVALID_DATA status code (which can
 // happen if the Play Store returns a list of results that contains some invalid
 // items).
-TEST_P(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
+TEST_F(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
   constexpr size_t kMaxResults = 12;
 
   CreateSearch(kMaxResults);
@@ -177,7 +162,7 @@ TEST_P(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
 
 // Tests that the search provider can handle Play Store suggestions without
 // rating and formatted price.
-TEST_P(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
+TEST_F(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
   constexpr size_t kMaxResults = 12;
 
   CreateSearch(kMaxResults);
@@ -212,7 +197,7 @@ TEST_P(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
 }
 
 // Tests that results without icon are ignored.
-TEST_P(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
+TEST_F(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
   constexpr size_t kMaxResults = 12;
 
   CreateSearch(kMaxResults);
@@ -249,7 +234,7 @@ TEST_P(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
   }
 }
 
-TEST_P(ArcPlayStoreSearchProviderTest, FailedQuery) {
+TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
   constexpr size_t kMaxResults = 12;
   constexpr char16_t kQuery[] = u"Play App";
 
