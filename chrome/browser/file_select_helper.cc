@@ -240,7 +240,7 @@ void FileSelectHelper::StartNewEnumeration(const base::FilePath& path) {
   base_dir_ = path;
   auto entry = std::make_unique<ActiveDirectoryEnumeration>(path);
   entry->lister_ = base::WrapUnique(new net::DirectoryLister(
-      path, net::DirectoryLister::NO_SORT_RECURSIVE, this));
+      path, net::DirectoryLister::ALPHA_DIRS_FIRST, this));
   entry->lister_->Start();
   directory_enumeration_ = std::move(entry);
 }
