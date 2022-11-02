@@ -585,14 +585,14 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 
   std::string kOptions = "";
 
-  std::string registry_path = "SOFTWARE/Chromium/DeviceTrust/Test";
+  std::string registry_path = "SOFTWARE\\\\Chromium\\\\DeviceTrust\\\\Test";
   std::string valid_key = "test_key";
 
   kOptions = base::StringPrintf(
       R"(
     const test_hive = 'HKEY_LOCAL_MACHINE';
     const registry_path = '%s';
-    const invalid_path = 'SOFTWARE/Chromium/DeviceTrust/Invalid';
+    const invalid_path = 'SOFTWARE\\Chromium\\DeviceTrust\\Invalid';
     const valid_key = '%s';
     const invalid_key = 'invalid_key';
 
