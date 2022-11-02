@@ -304,6 +304,8 @@ const char kProfileMigrationCompletedForUserPref[] =
     "lacros.profile_migration_completed_for_user";
 const char kProfileMoveMigrationCompletedForUserPref[] =
     "lacros.profile_move_migration_completed_for_user";
+const char kProfileDataBackwardMigrationCompletedForUserPref[] =
+    "lacros.profile_data_backward_migration_completed_for_user";
 // This pref is to record whether the user clicks "Go to files" button
 // on error page of the data migration.
 const char kGotoFilesPref[] = "lacros.goto_files";
@@ -317,9 +319,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDataVerPref);
   registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref,
-                                   base::DictionaryValue());
+                                   base::Value::Dict());
   registry->RegisterDictionaryPref(kProfileMoveMigrationCompletedForUserPref,
-                                   base::DictionaryValue());
+                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(
+      kProfileDataBackwardMigrationCompletedForUserPref, base::Value::Dict());
   registry->RegisterListPref(kGotoFilesPref);
 }
 
@@ -989,6 +993,23 @@ void ClearProfileMigrationCompletedForUser(PrefService* local_state,
     base::Value::Dict& dict = update.Get();
     dict.Remove(user_id_hash);
   }
+}
+
+void SetProfileDataBackwardMigrationCompletedForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash) {
+  ScopedDictPrefUpdate update(
+      local_state, kProfileDataBackwardMigrationCompletedForUserPref);
+  update->Set(user_id_hash, true);
+}
+
+void ClearProfileDataBackwardMigrationCompletedForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash) {
+  ScopedDictPrefUpdate update(
+      local_state, kProfileDataBackwardMigrationCompletedForUserPref);
+  base::Value::Dict& dict = update.Get();
+  dict.Remove(user_id_hash);
 }
 
 void SetProfileMigrationCompletedForTest(bool is_completed) {

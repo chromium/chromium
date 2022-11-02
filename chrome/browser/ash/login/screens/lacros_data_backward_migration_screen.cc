@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_paths.h"
 
@@ -56,7 +57,8 @@ void LacrosDataBackwardMigrationScreen::ShowImpl() {
     const base::FilePath profile_data_dir =
         user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
 
-    migrator_ = std::make_unique<BrowserDataBackMigrator>(profile_data_dir);
+    migrator_ = std::make_unique<BrowserDataBackMigrator>(
+        profile_data_dir, user_id_hash, g_browser_process->local_state());
   }
 
   migrator_->Migrate(

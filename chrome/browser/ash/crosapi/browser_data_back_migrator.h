@@ -14,6 +14,8 @@
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class PrefService;
+
 namespace ash {
 
 namespace browser_data_back_migrator {
@@ -33,7 +35,9 @@ class BrowserDataBackMigrator {
       base::OnceCallback<void(BrowserDataBackMigrator::Result)>;
   using BackMigrationProgressCallback = base::RepeatingCallback<void(int)>;
 
-  explicit BrowserDataBackMigrator(const base::FilePath& ash_profile_dir);
+  explicit BrowserDataBackMigrator(const base::FilePath& ash_profile_dir,
+                                   const std::string& user_id_hash,
+                                   PrefService* local_state);
   BrowserDataBackMigrator(const BrowserDataBackMigrator&) = delete;
   BrowserDataBackMigrator& operator=(const BrowserDataBackMigrator&) = delete;
   ~BrowserDataBackMigrator();
@@ -98,7 +102,8 @@ class BrowserDataBackMigrator {
     kMoveMergedItemsBackToAsh = 5,
     kDeleteLacrosDir = 6,
     kDeleteTmpDir = 7,
-    kDone = 8,
+    kMarkMigrationComplete = 8,
+    kDone = 9,
     kMaxValue = kDone,
   };
 
@@ -160,11 +165,17 @@ class BrowserDataBackMigrator {
   // Called as a reply to `DeleteLacrosDir()`.
   void OnDeleteLacrosDir(TaskResult result);
 
-  // Deletes the temporary directory and completes the backward migration.
+  // Deletes the temporary directory.
   static TaskResult DeleteTmpDir(const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `DeleteTmpDir()`.
   void OnDeleteTmpDir(TaskResult result);
+
+  // Marks backward migration as complete.
+  TaskResult MarkMigrationComplete();
+
+  // Called as a reply to `MarkMigrationComplete()`.
+  void OnMarkMigrationComplete();
 
   // For `target_dir` copy subdirectories belonging to extensions that are in
   // both Chromes from `lacros_profile_dir` to `tmp_user_dir`.
@@ -241,6 +252,12 @@ class BrowserDataBackMigrator {
 
   // Path to the ash profile directory.
   const base::FilePath ash_profile_dir_;
+
+  // A hash string of the profile user ID.
+  const std::string user_id_hash_;
+
+  // Local state prefs, not owned.
+  PrefService* local_state_ = nullptr;
 
   base::WeakPtrFactory<BrowserDataBackMigrator> weak_factory_{this};
 };

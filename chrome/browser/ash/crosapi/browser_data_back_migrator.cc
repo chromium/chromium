@@ -44,8 +44,12 @@ const char kBrowserDataBackwardMigrationForceMigration[] = "force-migration";
 }  // namespace
 
 BrowserDataBackMigrator::BrowserDataBackMigrator(
-    const base::FilePath& ash_profile_dir)
-    : ash_profile_dir_(ash_profile_dir) {}
+    const base::FilePath& ash_profile_dir,
+    const std::string& user_id_hash,
+    PrefService* local_state)
+    : ash_profile_dir_(ash_profile_dir),
+      user_id_hash_(user_id_hash),
+      local_state_(local_state) {}
 
 BrowserDataBackMigrator::~BrowserDataBackMigrator() = default;
 
@@ -453,9 +457,30 @@ void BrowserDataBackMigrator::OnDeleteTmpDir(
     return;
   }
 
+  SetProgress(MigrationStep::kMarkMigrationComplete);
+  // MarkMigrationComplete needs to run on the UI thread first to update prefs.
+  MarkMigrationComplete();
+}
+
+// static
+BrowserDataBackMigrator::TaskResult
+BrowserDataBackMigrator::MarkMigrationComplete() {
+  LOG(WARNING) << "Running MarkMigrationComplete()";
+
+  crosapi::browser_util::SetProfileDataBackwardMigrationCompletedForUser(
+      local_state_, user_id_hash_);
+
+  local_state_->CommitPendingWrite(
+      base::BindOnce(&BrowserDataBackMigrator::OnMarkMigrationComplete,
+                     weak_factory_.GetWeakPtr()));
+
+  return {TaskStatus::kSucceeded};
+}
+
+void BrowserDataBackMigrator::OnMarkMigrationComplete() {
   LOG(WARNING) << "Backward migration completed successfully.";
   SetProgress(MigrationStep::kDone);
-  std::move(finished_callback_).Run(ToResult(result));
+  std::move(finished_callback_).Run(ToResult({TaskStatus::kSucceeded}));
 }
 
 // static

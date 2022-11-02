@@ -362,6 +362,18 @@ void SetProfileMigrationCompletedForUser(PrefService* local_state,
 void ClearProfileMigrationCompletedForUser(PrefService* local_state,
                                            const std::string& user_id_hash);
 
+// Sets the value of `kProfileDataBackwardMigrationCompletedForUserPref` for the
+// user identified by `user_id_hash`;
+void SetProfileDataBackwardMigrationCompletedForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash);
+
+// Clears the value of `kProfileDataBackwardMigrationCompletedForUserPref` for
+// the user identified by `user_id_hash`.
+void ClearProfileDataBackwardMigrationCompletedForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash);
+
 // Makes `IsProfileMigrationCompletedForUser()` return true without actually
 // updating Local State. It allows tests to avoid marking profile migration as
 // completed by getting user_id_hash of the logged in user and updating
