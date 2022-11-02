@@ -398,6 +398,10 @@ gpu_win_builder(
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-rel-32",
     pool = "luci.chromium.gpu.win10.nvidia.try",
+    mirrors = [
+        "ci/GPU FYI Win Builder",
+        "ci/Win10 FYI x86 Release (NVIDIA)",
+    ],
 )
 
 gpu_win_builder(
