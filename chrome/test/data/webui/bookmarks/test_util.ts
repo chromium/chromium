@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BookmarksFolderNodeElement, FolderOpenState, NodeMap, normalizeNodes} from 'chrome://bookmarks/bookmarks.js';
-import {isMac} from 'chrome://resources/js/cr.m.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 /**

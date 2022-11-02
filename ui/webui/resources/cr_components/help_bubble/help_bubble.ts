@@ -19,7 +19,7 @@ import './help_bubble_icons.html.js';
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
-import {isWindows} from '//resources/js/cr.m.js';
+import {isWindows} from '//resources/js/platform.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './help_bubble.html.js';

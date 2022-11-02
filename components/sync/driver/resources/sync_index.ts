@@ -17,15 +17,14 @@ import './strings.m.js';
 import './invalidations.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {isWindows} from 'chrome://resources/js/cr.m.js';
 
 // Allow platform specific CSS rules.
 //
 // TODO(akalin): BMM and options page does something similar, too.
 // Move this to util.js.
-if (isWindows) {
-  document.documentElement.setAttribute('os', 'win');
-}
+// <if expr="is_win">
+document.documentElement.setAttribute('os', 'win');
+// </if>
 
 const tabBox = document.querySelector('cr-tab-box');
 assert(tabBox);

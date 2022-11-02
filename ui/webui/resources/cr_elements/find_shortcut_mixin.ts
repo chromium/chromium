@@ -5,8 +5,8 @@
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert, assertNotReached} from '../js/assert.js';
-import {isMac} from '../js/cr.m.js';
 import {KeyboardShortcutList} from '../js/keyboard_shortcut_list.js';
+import {isMac} from '../js/platform.js';
 import {isTextInputElement} from '../js/util.js';
 
 /**

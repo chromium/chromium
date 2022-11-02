@@ -4,7 +4,6 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
-import {isMac} from 'chrome://resources/js/cr.m.js';
 import {toCssPx} from 'chrome://resources/js/cr/ui.js';
 import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -1012,9 +1011,9 @@ TilePage.prototype = {
     fadeDistance = Math.min(leftMargin, fadeDistance);
     // On Skia we don't use any fade because it works very poorly. See
     // http://crbug.com/99373
-    if (!isMac) {
-      fadeDistance = 1;
-    }
+    // <if expr="not is_macosx">
+    fadeDistance = 1;
+    // </if>
     const gradient = '-webkit-linear-gradient(left,' +
         'transparent, ' +
         'transparent ' + (leftMargin - fadeDistance) + 'px, ' +

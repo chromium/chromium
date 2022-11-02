@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {isWindows} from 'chrome://resources/js/platform.js';
 import {LanguageHelper, LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

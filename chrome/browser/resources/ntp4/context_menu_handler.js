@@ -11,7 +11,6 @@
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {isWindows, isLinux, isMac, isLacros} from 'chrome://resources/js/cr.m.js';
 import {dispatchPropertyChange} from 'chrome://resources/js/cr_deprecated.js';
 import {decorate} from 'chrome://resources/js/cr/ui.js';
 
@@ -112,7 +111,10 @@ class ContextMenuHandler extends EventTarget {
     // On windows we might hide the menu in a right mouse button up and if
     // that is the case we wait some short period before we allow the menu
     // to be shown again.
-    this.hideTimestamp_ = isWindows ? Date.now() : 0;
+    this.hideTimestamp_ = 0;
+    // <if expr="is_win">
+    this.hideTimestamp_ = Date.now();
+    // </if>
 
     const ev = new Event('hide');
     ev.element = originalContextElement;
@@ -177,13 +179,14 @@ class ContextMenuHandler extends EventTarget {
       case 'mousedown':
         if (!this.menu.contains(e.target)) {
           this.hideMenu();
-          if (e.button === 0 /* Left button */ &&
-              (isLinux || isMac || isLacros)) {
+          // <if expr="is_linux or is_macosx or chromeos_lacros">
+          if (e.button === 0 /* Left button */) {
             // Emulate Mac and Linux, which swallow native 'mousedown' events
             // that close menus.
             e.preventDefault();
             e.stopPropagation();
           }
+          // </if>
         } else {
           e.preventDefault();
         }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '../../js/assert_ts.js';
-import {isMac} from '../../js/cr.m.js';
+import {isMac} from '../../js/platform.js';
 
 import {getTemplate} from './cr_tree.html.js';
 import {CrTreeBaseElement} from './cr_tree_base.js';

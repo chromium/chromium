@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isAndroid, isIOS} from './cr.m.js';
+import {isAndroid, isIOS} from './platform.js';
 
 /**
  * @return The scale factors supported by this platform for webui resources.

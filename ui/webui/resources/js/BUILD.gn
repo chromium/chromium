@@ -51,6 +51,7 @@ preprocess_if_expr("preprocess_src_ts") {
     "icon.ts",
     "keyboard_shortcut_list.ts",
     "parse_html_subset.ts",
+    "platform.ts",
     "plural_string_proxy.ts",
     "search_highlight_utils.ts",
     "static_types.ts",

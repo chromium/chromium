@@ -185,6 +185,7 @@ ts_library("library") {
                "js/icon.ts",
                "js/keyboard_shortcut_list.ts",
                "js/parse_html_subset.ts",
+               "js/platform.ts",
                "js/plural_string_proxy.ts",
                "js/static_types.ts",
                "js/store_ts.ts",

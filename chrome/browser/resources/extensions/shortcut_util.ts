@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {isChromeOS, isMac} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isMac} from 'chrome://resources/js/platform.js';
 
 
 export enum Key {

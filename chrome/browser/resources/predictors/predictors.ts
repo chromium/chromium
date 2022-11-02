@@ -6,7 +6,7 @@ import './autocomplete_action_predictor.js';
 import './resource_prefetch_predictor.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {isWindows} from 'chrome://resources/js/platform.js';
 
 if (isWindows) {
   document.documentElement.setAttribute('os', 'win');

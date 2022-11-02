@@ -5,8 +5,9 @@
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener, isChromeOS, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {$} from 'chrome://resources/js/util.js';
 
 declare global {

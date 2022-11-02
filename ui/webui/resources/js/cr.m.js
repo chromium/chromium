@@ -140,36 +140,3 @@ assert(!window.cr.webUIResponse);
 assert(!window.cr.webUIListenerCallback);
 window.cr.webUIResponse = webUIResponse;
 window.cr.webUIListenerCallback = webUIListenerCallback;
-
-/** Whether we are using a Mac or not. */
-export const isMac = /Mac/.test(navigator.platform);
-
-/** Whether this is on the Windows platform or not. */
-export const isWindows = /Win/.test(navigator.platform);
-
-/** Whether this is the ChromeOS/ash web browser. */
-export const isChromeOS = (() => {
-  let returnValue = false;
-  // <if expr="chromeos_ash">
-  returnValue = true;
-  // </if>
-  return returnValue;
-})();
-
-/** Whether this is the ChromeOS/Lacros web browser. */
-export const isLacros = (() => {
-  let returnValue = false;
-  // <if expr="chromeos_lacros">
-  returnValue = true;
-  // </if>
-  return returnValue;
-})();
-
-/** Whether this is on vanilla Linux (not chromeOS). */
-export const isLinux = /Linux/.test(navigator.userAgent);
-
-/** Whether this is on Android. */
-export const isAndroid = /Android/.test(navigator.userAgent);
-
-/** Whether this is on iOS. */
-export const isIOS = /CriOS/.test(navigator.userAgent);

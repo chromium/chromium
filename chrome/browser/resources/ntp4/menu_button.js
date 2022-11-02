@@ -8,7 +8,7 @@
 // patterns. Use Web Components in any new code.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {isWindows} from 'chrome://resources/js/platform.js';
 import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
