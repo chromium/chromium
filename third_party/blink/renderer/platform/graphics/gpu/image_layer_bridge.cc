@@ -220,8 +220,14 @@ bool ImageLayerBridge::PrepareTransferableResource(
     // Always convert to N32 format.  This is a constraint of the software
     // compositor.
     constexpr SkColorType dst_color_type = kN32_SkColorType;
-    viz::ResourceFormat resource_format =
-        viz::SkColorTypeToResourceFormat(dst_color_type);
+    // TODO(vasilyt): this used to be
+    // viz::SkColorTypeToResourceFormat(dst_color_type), but on some
+    // platforms (including Mac), kN32_SkColorType is BGRA8888 which
+    // is disallowed as a bitmap format. Deeper refactorings are
+    // needed to fix this properly; in the meantime, force the use of
+    // viz::RGBA_8888 as the resource format. This addresses assertion
+    // failures when serializing these bitmaps to the GPU process.
+    viz::ResourceFormat resource_format = viz::RGBA_8888;
     RegisteredBitmap registered =
         CreateOrRecycleBitmap(size, resource_format, bitmap_registrar);
 
