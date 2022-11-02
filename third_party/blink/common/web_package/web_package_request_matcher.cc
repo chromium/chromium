@@ -235,8 +235,7 @@ class AcceptLanguageNegotiation final : public ContentNegotiationAlgorithm {
                               const std::string& preferred_lang,
                               std::vector<std::string>* output) {
     if (preferred_lang == "*") {
-      std::copy(available_values.begin(), available_values.end(),
-                std::back_inserter(*output));
+      base::ranges::copy(available_values, std::back_inserter(*output));
       return;
     }
 

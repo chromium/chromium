@@ -20,8 +20,6 @@
 
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -45,8 +43,7 @@ namespace blink {
 media::VideoCaptureFormats ToVideoCaptureFormats(
     const Vector<media::VideoCaptureFormat>& format_vector) {
   media::VideoCaptureFormats formats;
-  std::copy(format_vector.begin(), format_vector.end(),
-            std::back_inserter(formats));
+  base::ranges::copy(format_vector, std::back_inserter(formats));
   return formats;
 }
 

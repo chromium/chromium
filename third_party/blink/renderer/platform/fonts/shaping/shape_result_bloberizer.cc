@@ -196,16 +196,15 @@ void ShapeResultBloberizer::CommitPendingRun() {
     DVLOG(4) << "  CommitPendingRun indexes: "
              << base::make_span(pending_utf8_character_indexes_);
     DCHECK_EQ(pending_utf8_character_indexes_.size(), run_size);
-    std::copy(pending_utf8_character_indexes_.begin(),
-              pending_utf8_character_indexes_.end(), buffer.clusters);
-    std::copy(pending_utf8_.begin(), pending_utf8_.end(), buffer.utf8text);
+    base::ranges::copy(pending_utf8_character_indexes_, buffer.clusters);
+    base::ranges::copy(pending_utf8_, buffer.utf8text);
 
     pending_utf8_.Shrink(0);
     pending_utf8_character_indexes_.Shrink(0);
   }
 
-  std::copy(pending_glyphs_.begin(), pending_glyphs_.end(), buffer.glyphs);
-  std::copy(pending_offsets_.begin(), pending_offsets_.end(), buffer.pos);
+  base::ranges::copy(pending_glyphs_, buffer.glyphs);
+  base::ranges::copy(pending_offsets_, buffer.pos);
   pending_glyphs_.Shrink(0);
   pending_offsets_.Shrink(0);
 }

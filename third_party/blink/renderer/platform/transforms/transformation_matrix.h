@@ -28,6 +28,7 @@
 
 #include <string.h>  // for memcpy
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>

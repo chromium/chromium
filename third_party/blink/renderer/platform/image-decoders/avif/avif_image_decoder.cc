@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -1124,8 +1125,7 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image,
         premultiply_alpha, media::PaintCanvasVideoRenderer::kFilterBilinear);
 
     if (save_top_row) {
-      std::copy(previous_last_decoded_row_.begin(),
-                previous_last_decoded_row_.end(), rgba_8888);
+      base::ranges::copy(previous_last_decoded_row_, rgba_8888);
     }
     return true;
   }

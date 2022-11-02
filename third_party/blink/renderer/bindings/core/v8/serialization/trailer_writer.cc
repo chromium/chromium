@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_writer.h"
 
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
@@ -32,9 +33,8 @@ Vector<uint8_t> TrailerWriter::MakeTrailerData() const {
     trailer.Grow(start + 1 + sizeof(uint32_t) + num_exposed);
     trailer[start] = kTrailerRequiresInterfacesTag;
     memcpy(&trailer[start + 1], &num_exposed_enc, sizeof(uint32_t));
-    std::copy(requires_exposed_interfaces_.begin(),
-              requires_exposed_interfaces_.end(),
-              &trailer[start + 1 + sizeof(uint32_t)]);
+    base::ranges::copy(requires_exposed_interfaces_,
+                       &trailer[start + 1 + sizeof(uint32_t)]);
   }
   return trailer;
 }

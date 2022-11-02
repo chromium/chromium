@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 
 #include <memory>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -225,7 +227,7 @@ void CanvasRenderingContext2DState::UpdateLineDash() const {
     stroke_flags_.setPathEffect(nullptr);
   } else {
     Vector<float> line_dash(line_dash_.size());
-    std::copy(line_dash_.begin(), line_dash_.end(), line_dash.begin());
+    base::ranges::copy(line_dash_, line_dash.begin());
     stroke_flags_.setPathEffect(SkDashPathEffect::Make(
         line_dash.data(), line_dash.size(), line_dash_offset_));
   }

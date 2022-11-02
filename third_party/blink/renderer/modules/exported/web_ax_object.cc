@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_ax_object.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -622,8 +623,7 @@ WebVector<WebAXObject> WebAXObject::RadioButtonsInGroup() const {
 
   AXObject::AXObjectVector radio_buttons = private_->RadioButtonsInGroup();
   WebVector<WebAXObject> web_radio_buttons(radio_buttons.size());
-  std::copy(radio_buttons.begin(), radio_buttons.end(),
-            web_radio_buttons.begin());
+  base::ranges::copy(radio_buttons, web_radio_buttons.begin());
   return web_radio_buttons;
 }
 
@@ -806,7 +806,7 @@ WebString WebAXObject::GetName(ax::mojom::NameFrom& out_name_from,
 
   out_name_objects.reserve(name_objects.size());
   out_name_objects.resize(name_objects.size());
-  std::copy(name_objects.begin(), name_objects.end(), out_name_objects.begin());
+  base::ranges::copy(name_objects, out_name_objects.begin());
 
   return result;
 }
@@ -835,8 +835,7 @@ WebString WebAXObject::Description(
 
   out_description_objects.reserve(description_objects.size());
   out_description_objects.resize(description_objects.size());
-  std::copy(description_objects.begin(), description_objects.end(),
-            out_description_objects.begin());
+  base::ranges::copy(description_objects, out_description_objects.begin());
 
   return result;
 }
@@ -989,7 +988,7 @@ void WebAXObject::RowHeaders(
   private_->RowHeaders(headers);
   row_header_elements.reserve(headers.size());
   row_header_elements.resize(headers.size());
-  std::copy(headers.begin(), headers.end(), row_header_elements.begin());
+  base::ranges::copy(headers, row_header_elements.begin());
 }
 
 unsigned WebAXObject::ColumnIndex() const {
@@ -1024,7 +1023,7 @@ void WebAXObject::ColumnHeaders(
   private_->ColumnHeaders(headers);
   column_header_elements.reserve(headers.size());
   column_header_elements.resize(headers.size());
-  std::copy(headers.begin(), headers.end(), column_header_elements.begin());
+  base::ranges::copy(headers, column_header_elements.begin());
 }
 
 unsigned WebAXObject::CellColumnIndex() const {

@@ -34,6 +34,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
 #include "third_party/blink/public/web/web_serialized_script_value_version.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -215,7 +216,7 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
     return Create();
 
   DataBufferPtr data_buffer = AllocateBuffer(data.size());
-  std::copy(data.begin(), data.end(), data_buffer.get());
+  base::ranges::copy(data, data_buffer.get());
   SwapWiredDataIfNeeded(data_buffer.get(), data.size());
 
   return base::AdoptRef(
@@ -230,8 +231,7 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
   DataBufferPtr data_buffer = AllocateBuffer(buffer->size());
   size_t offset = 0;
   for (const auto& span : *buffer) {
-    std::copy(span.data(), span.data() + span.size(),
-              data_buffer.get() + offset);
+    base::ranges::copy(span, data_buffer.get() + offset);
     offset += span.size();
   }
   SwapWiredDataIfNeeded(data_buffer.get(), buffer->size());

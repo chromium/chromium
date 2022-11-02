@@ -401,7 +401,7 @@ TEST_F(VectorMathTest, Vsma) {
       expected_dest[i] = dest_source[i] + scale * source[i];
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      std::copy(dest_source.begin(), dest_source.end(), dest.begin());
+      base::ranges::copy(dest_source, dest.begin());
       Vsma(source.p(), source.stride(), &scale, dest.p(), dest.stride(),
            source.size());
       // Different optimizations may use different precisions for intermediate

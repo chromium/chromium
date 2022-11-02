@@ -33,6 +33,7 @@
 #include <fstream>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/text/bidi_test_harness.h"
 #include "third_party/blink/renderer/platform/text/text_run_iterator.h"
@@ -161,11 +162,9 @@ std::string DiffString(const Vector<int>& actual, const Vector<int>& expected) {
   std::ostringstream diff;
   diff << "actual: ";
   // This is the magical way to print a vector to a stream, clear, right?
-  std::copy(actual.begin(), actual.end(),
-            std::ostream_iterator<int>(diff, " "));
+  base::ranges::copy(actual, std::ostream_iterator<int>(diff, " "));
   diff << " expected: ";
-  std::copy(expected.begin(), expected.end(),
-            std::ostream_iterator<int>(diff, " "));
+  base::ranges::copy(expected, std::ostream_iterator<int>(diff, " "));
   return diff.str();
 }
 

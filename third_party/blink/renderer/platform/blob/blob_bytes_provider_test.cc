@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -223,8 +223,7 @@ TEST_P(RequestAsFile, OffsetInNonEmptyFile) {
                   expected_data.size()));
   }
 
-  std::copy(sliced_data_.begin(), sliced_data_.end(),
-            expected_data.begin() + file_offset);
+  base::ranges::copy(sliced_data_, expected_data.begin() + file_offset);
 
   test_provider_->RequestAsFile(
       test.offset, test.size,

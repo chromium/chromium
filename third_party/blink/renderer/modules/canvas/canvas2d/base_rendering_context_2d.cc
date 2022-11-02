@@ -1290,8 +1290,7 @@ bool BaseRenderingContext2D::IsPointInStrokeInternal(const Path& path,
   stroke_data.SetLineJoin(GetState().GetLineJoin());
   stroke_data.SetMiterLimit(GetState().MiterLimit());
   Vector<float> line_dash(GetState().LineDash().size());
-  std::copy(GetState().LineDash().begin(), GetState().LineDash().end(),
-            line_dash.begin());
+  base::ranges::copy(GetState().LineDash(), line_dash.begin());
   stroke_data.SetLineDash(line_dash, GetState().LineDashOffset());
   return path.StrokeContains(transformed_point, stroke_data, ctm);
 }

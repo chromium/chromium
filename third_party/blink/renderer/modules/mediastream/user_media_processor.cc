@@ -252,8 +252,7 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
 template <typename T>
 std::vector<T> ToStdVector(const Vector<T>& format_vector) {
   std::vector<T> formats;
-  std::copy(format_vector.begin(), format_vector.end(),
-            std::back_inserter(formats));
+  base::ranges::copy(format_vector, std::back_inserter(formats));
   return formats;
 }
 

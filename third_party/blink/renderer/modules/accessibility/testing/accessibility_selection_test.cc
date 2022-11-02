@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_selection_test.h"
 
-#include <algorithm>
 #include <iterator>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -405,10 +405,9 @@ void AccessibilitySelectionTest::RunSelectionTest(
 
   const String test_file = test_path + String::FromUTF8(kTestFileSuffix);
   scoped_refptr<SharedBuffer> test_file_buffer = test::ReadFromFile(test_file);
-  auto test_file_chars = test_file_buffer->CopyAs<Vector<char>>();
   std::string test_file_contents;
-  std::copy(test_file_chars.begin(), test_file_chars.end(),
-            std::back_inserter(test_file_contents));
+  base::ranges::copy(test_file_buffer->CopyAs<Vector<char>>(),
+                     std::back_inserter(test_file_contents));
   ASSERT_FALSE(test_file_contents.empty())
       << "Test file cannot be empty.\n"
       << test_file.Utf8()
@@ -418,10 +417,9 @@ void AccessibilitySelectionTest::RunSelectionTest(
       test_path +
       String::FromUTF8(suffix.empty() ? kAXTestExpectationSuffix : suffix);
   scoped_refptr<SharedBuffer> ax_file_buffer = test::ReadFromFile(ax_file);
-  auto ax_file_chars = ax_file_buffer->CopyAs<Vector<char>>();
   std::string ax_file_contents;
-  std::copy(ax_file_chars.begin(), ax_file_chars.end(),
-            std::back_inserter(ax_file_contents));
+  base::ranges::copy(ax_file_buffer->CopyAs<Vector<char>>(),
+                     std::back_inserter(ax_file_contents));
   ASSERT_FALSE(ax_file_contents.empty())
       << "Expectations file cannot be empty.\n"
       << ax_file.Utf8()
