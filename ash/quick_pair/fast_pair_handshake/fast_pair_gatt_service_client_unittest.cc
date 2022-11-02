@@ -57,7 +57,7 @@ const char kWriteAccountKeyCharacteristicGattError[] =
 const char kWriteAccountKeyTimeMetric[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime";
 
-constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(5);
+constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(15);
 
 // Below constants are used to construct MockBluetoothDevice for testing.
 constexpr char kTestBleDeviceAddress[] = "11:12:13:14:15:16";
