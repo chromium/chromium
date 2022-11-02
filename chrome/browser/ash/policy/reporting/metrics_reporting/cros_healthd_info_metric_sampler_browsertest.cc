@@ -41,7 +41,8 @@ using ::reporting::Priority;
 using ::reporting::Record;
 using ::testing::Eq;
 
-// Is the given record about info metric?
+// Is the given record about info metric? If yes, return the underlying
+// MetricData object.
 absl::optional<MetricData> IsRecordInfo(const Record& record) {
   if (record.destination() != Destination::INFO_METRIC) {
     return absl::nullopt;
@@ -53,7 +54,88 @@ absl::optional<MetricData> IsRecordInfo(const Record& record) {
   return record_data;
 }
 
+// Assert info in a record and returns the underlying MetricData object.
+MetricData AssertInfo(Priority priority, const Record& record) {
+  EXPECT_THAT(priority, Eq(Priority::SLOW_BATCH));
+  EXPECT_THAT(record.destination(), Eq(Destination::INFO_METRIC));
+  MetricData record_data;
+  EXPECT_TRUE(record_data.ParseFromString(record.data()));
+  EXPECT_TRUE(record_data.has_timestamp_ms());
+  EXPECT_TRUE(record_data.has_info_data());
+  return record_data;
+}
+
 }  // namespace
+
+// ---- CPU ----
+
+class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
+ public:
+  CpuInfoSamplerBrowserTest(const CpuInfoSamplerBrowserTest&) = delete;
+  CpuInfoSamplerBrowserTest& operator=(const CpuInfoSamplerBrowserTest&) =
+      delete;
+
+ protected:
+  CpuInfoSamplerBrowserTest() = default;
+  ~CpuInfoSamplerBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        kReportDeviceCpuInfo, true);
+  }
+
+  // Is the given record about memory info metric?
+  static bool IsRecordCpuInfo(const Record& record) {
+    auto record_data = IsRecordInfo(record);
+    return record_data.has_value() &&
+           record_data.value().info_data().has_cpu_info();
+  }
+
+  // Gets next enqueued memory info record. This is useful in excluding
+  // other types of records from being examined.
+  static std::tuple<Priority, Record> GetNextEnqueuedCpuInfoRecord(
+      MissiveClientTestObserver* observer) {
+    Priority priority;
+    Record record;
+    do {
+      // If no record is enqueued, this line would time out when the loop
+      // is entered for the first time.
+      std::tie(priority, record) = observer->GetNextEnqueuedRecord();
+    } while (!IsRecordCpuInfo(record));
+
+    return std::make_tuple(priority, record);
+  }
+
+ private:
+  CrosHealthdInfoMetricsHelper cros_healthd_info_metrics_helper_;
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+};
+
+IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerUnsupported) {
+  auto cpu_result = ::reporting::test::CreateCpuResult(nullptr);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(cpu_result);
+  MissiveClientTestObserver observer(Destination::INFO_METRIC);
+  auto [priority, record] = GetNextEnqueuedCpuInfoRecord(&observer);
+  auto info_data = AssertInfo(priority, record).info_data();
+  ASSERT_TRUE(info_data.cpu_info().has_keylocker_info());
+  EXPECT_FALSE(info_data.cpu_info().keylocker_info().configured());
+  EXPECT_FALSE(info_data.cpu_info().keylocker_info().supported());
+}
+
+IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerConfigured) {
+  auto cpu_result = ::reporting::test::CreateCpuResult(
+      ::reporting::test::CreateKeylockerInfo(true));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(cpu_result);
+  MissiveClientTestObserver observer(Destination::INFO_METRIC);
+  auto [priority, record] = GetNextEnqueuedCpuInfoRecord(&observer);
+  auto info_data = AssertInfo(priority, record).info_data();
+  ASSERT_TRUE(info_data.cpu_info().has_keylocker_info());
+  EXPECT_TRUE(info_data.cpu_info().keylocker_info().configured());
+  EXPECT_TRUE(info_data.cpu_info().keylocker_info().supported());
+}
 
 // ---- Memory ----
 
@@ -104,11 +186,7 @@ class MemoryInfoSamplerBrowserTest
 
   static void AssertMemoryInfo(MissiveClientTestObserver* observer) {
     auto [priority, record] = GetNextEnqueuedMemoryInfoRecord(observer);
-    EXPECT_THAT(priority, Eq(Priority::SLOW_BATCH));
-    EXPECT_THAT(record.destination(), Eq(Destination::INFO_METRIC));
-    MetricData record_data;
-    ASSERT_TRUE(record_data.ParseFromString(record.data()));
-    EXPECT_TRUE(record_data.has_timestamp_ms());
+    MetricData record_data = AssertInfo(priority, record);
     ::reporting::test::AssertMemoryInfo(record_data, GetParam());
   }
 

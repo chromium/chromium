@@ -8,6 +8,27 @@
 
 namespace reporting::test {
 
+// ------- CPU -------
+
+cros_healthd::KeylockerInfoPtr CreateKeylockerInfo(bool configured) {
+  return cros_healthd::KeylockerInfo::New(configured);
+}
+
+cros_healthd::TelemetryInfoPtr CreateCpuResult(
+    cros_healthd::KeylockerInfoPtr keylocker_info) {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->cpu_result =
+      cros_healthd::CpuResult::NewCpuInfo(cros_healthd::CpuInfo::New(
+          /*num_total_threads=*/0,
+          /*architecture=*/cros_healthd::CpuArchitectureEnum::kX86_64,
+          /*physical_cpus=*/std::vector<cros_healthd::PhysicalCpuInfoPtr>(),
+          /*temperature_channels=*/
+          std::vector<cros_healthd::CpuTemperatureChannelPtr>(),
+          /*keylocker_info=*/std::move(keylocker_info)));
+
+  return telemetry_info;
+}
+
 // ------- memory --------
 
 cros_healthd::MemoryEncryptionInfoPtr CreateMemoryEncryptionInfo(

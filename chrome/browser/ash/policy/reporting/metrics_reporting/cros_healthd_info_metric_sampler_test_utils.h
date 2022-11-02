@@ -15,6 +15,11 @@ namespace reporting::test {
 
 namespace cros_healthd = ::ash::cros_healthd::mojom;
 
+// ------- CPU --------
+cros_healthd::KeylockerInfoPtr CreateKeylockerInfo(bool configured);
+cros_healthd::TelemetryInfoPtr CreateCpuResult(
+    cros_healthd::KeylockerInfoPtr keylocker_info);
+
 // ------- memory --------
 
 struct MemoryInfoTestCase {
