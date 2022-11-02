@@ -366,6 +366,34 @@ float Color::HueInterpolation(float value1,
 }
 
 // static
+Color::ColorSpace Color::ColorInterpolationSpaceToColorSpace(
+    Color::ColorInterpolationSpace color_interpolation_space) {
+  switch (color_interpolation_space) {
+    case (ColorInterpolationSpace::kXYZD65):
+      return ColorSpace::kXYZD65;
+    case (ColorInterpolationSpace::kXYZD50):
+      return ColorSpace::kXYZD50;
+    case (ColorInterpolationSpace::kSRGBLinear):
+      return ColorSpace::kSRGBLinear;
+    case (ColorInterpolationSpace::kLab):
+      return ColorSpace::kLab;
+    case (ColorInterpolationSpace::kOklab):
+      return ColorSpace::kOklab;
+    case (ColorInterpolationSpace::kLch):
+      return ColorSpace::kLch;
+    case (ColorInterpolationSpace::kOklch):
+      return ColorSpace::kOklch;
+    case (ColorInterpolationSpace::kHSL):
+      return ColorSpace::kHSL;
+    case (ColorInterpolationSpace::kHWB):
+      return ColorSpace::kHWB;
+    case (ColorInterpolationSpace::kSRGB):
+    case (ColorInterpolationSpace::kNone):
+      return ColorSpace::kSRGB;
+  }
+}
+
+// static
 Color Color::InterpolateColors(
     Color::ColorInterpolationSpace interpolation_space,
     absl::optional<HueInterpolationMethod> hue_method,
@@ -440,8 +468,41 @@ Color Color::InterpolateColors(
                                     alpha2.value(), color2.alpha_is_none_)
           : blink::Blend(alpha2.value(), alpha1.value(), percentage);
 
-  Color result =
-      FromColorFunction(ColorSpace::kSRGB, param0, param1, param2, alpha);
+  Color result;
+  ColorSpace result_color_space =
+      ColorInterpolationSpaceToColorSpace(interpolation_space);
+  // TODO: Write a FromColorSpace function that accounts for all these options.
+  if (ValidColorSpaceForFromColorFunction(result_color_space)) {
+    result =
+        FromColorFunction(result_color_space, param0, param1, param2, alpha);
+  } else {
+    switch (result_color_space) {
+      case ColorSpace::kLab:
+        result = FromLab(param0, param1, param2, alpha);
+        break;
+      case ColorSpace::kOklab:
+        result = FromOklab(param0, param1, param2, alpha);
+        break;
+      case ColorSpace::kLch:
+        result = FromLch(param0, param1, param2, alpha);
+        break;
+      case ColorSpace::kOklch:
+        result = FromOklch(param0, param1, param2, alpha);
+        break;
+      case ColorSpace::kHSL:
+        // TODO: Accept optionals
+        result = FromHSLA(param0.value(), param1.value(), param2.value(),
+                          alpha.value());
+        break;
+      case ColorSpace::kHWB:
+        // TODO: Accept optionals
+        result = FromHWBA(param0.value(), param1.value(), param2.value(),
+                          alpha.value());
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
 
   result.UnpremultiplyColor();
 

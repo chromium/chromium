@@ -322,6 +322,10 @@ class PLATFORM_EXPORT Color {
       Color::HueInterpolationMethod hue_interpolation_method =
           Color::HueInterpolationMethod::kShorter);
 
+  ColorSpace GetColorSpace() const { return color_space_; }
+  static ColorSpace ColorInterpolationSpaceToColorSpace(
+      Color::ColorInterpolationSpace color_interpolation_space);
+
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorMixNone);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorInterpolation);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, HueInterpolation);

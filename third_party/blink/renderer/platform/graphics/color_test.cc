@@ -89,6 +89,9 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
         color_mix_test.mix_space, color_mix_test.hue_method,
         color_mix_test.color_left, color_mix_test.color_right,
         color_mix_test.percentage_left, color_mix_test.alpha_multiplier);
+    EXPECT_EQ(
+        result.GetColorSpace(),
+        Color::ColorInterpolationSpaceToColorSpace(color_mix_test.mix_space));
     SkColor4f resultSkColor = result.toSkColor4f();
     SkColor4f expectedSkColor = color_mix_test.color_expected.toSkColor4f();
     EXPECT_NEAR(resultSkColor.fR, expectedSkColor.fR, 0.001f)
@@ -178,6 +181,7 @@ TEST(BlinkColor, ColorInterpolation) {
   };
 
   // Tests extracted from the CSS Color 4 spec.
+  // https://csswg.sesse.net/css-color-4/#interpolation-alpha
   ColorsTest colors_test[] = {
       {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
                                 0.4f),
@@ -198,7 +202,9 @@ TEST(BlinkColor, ColorInterpolation) {
                                 0.72f, 0.6f),
        Color::ColorInterpolationSpace::kLch,
        Color::HueInterpolationMethod::kShorter, 0.5f,
-       Color::FromLch(58.873f, 81.126f, 63.64f, 0.5f)}};
+       // There is an issue with the spec where the hue is un-premultiplied even
+       // though it shouldn't be.
+       Color::FromLch(58.873f, 81.126f, 31.82f, 0.5f)}};
 
   for (auto& color_test : colors_test) {
     Color result = Color::InterpolateColors(
