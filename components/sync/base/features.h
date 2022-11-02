@@ -145,6 +145,12 @@ BASE_DECLARE_FEATURE(kSyncTrustedVaultUseMD5HashedFile);
 // SyncSendInterestedDataTypes must be enabled for this to take effect.
 BASE_DECLARE_FEATURE(kUseSyncInvalidations);
 
+// If enabled, all incoming invalidations will be stored in ModelTypeState
+// proto message.
+// TODO(crbug/1365292): Add more information about this feature after
+// upload/download invalidations support from ModelTypeState msg will be added.
+BASE_DECLARE_FEATURE(kSyncPersistInvalidations);
+
 // If enabled, types related to Wallet and Offer will be included in interested
 // data types, and the device will listen to new invalidations for those types
 // (if they are enabled).

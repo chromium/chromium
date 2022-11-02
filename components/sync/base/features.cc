@@ -119,6 +119,10 @@ BASE_FEATURE(kUseSyncInvalidations,
              "UseSyncInvalidations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncPersistInvalidations,
+             "SyncPersistInvalidations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseSyncInvalidationsForWalletAndOffer,
              "UseSyncInvalidationsForWalletAndOffer",
              base::FEATURE_DISABLED_BY_DEFAULT);

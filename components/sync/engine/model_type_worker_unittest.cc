@@ -2677,6 +2677,46 @@ TEST_F(ModelTypeWorkerTest, HintCoalescing) {
   }
 }
 
+// Verifies the management of pending invalidations and ModelTypeState.
+TEST_F(ModelTypeWorkerTest, ModelTypeStateAfterApplyUpdates) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(kSyncPersistInvalidations);
+
+  NormalInitialize();
+
+  worker()->RecordRemoteInvalidation(BuildInvalidation(1, "bm_hint_1"));
+  worker()->RecordRemoteInvalidation(BuildInvalidation(2, "bm_hint_2"));
+  worker()->RecordRemoteInvalidation(BuildInvalidation(3, "bm_hint_3"));
+
+  sync_pb::GetUpdateTriggers gu_trigger;
+  // A GetUpdates request is started (but doesn't finish yet). This causes
+  // the existing invalidations to get marked as "processed".
+  worker()->PrepareGetUpdates(&gu_trigger);
+  ASSERT_EQ(3, gu_trigger.notification_hint_size());
+  EXPECT_EQ("bm_hint_1", gu_trigger.notification_hint(0));
+  EXPECT_EQ("bm_hint_2", gu_trigger.notification_hint(1));
+  EXPECT_EQ("bm_hint_3", gu_trigger.notification_hint(2));
+  EXPECT_FALSE(gu_trigger.client_dropped_hints());
+
+  // While the GetUpdates request is still ongoing, more invalidations come
+  // in. These are marked as "unprocessed".
+  worker()->RecordRemoteInvalidation(
+      BuildInvalidation(4, "unprocessed_hint_4"));
+  worker()->RecordRemoteInvalidation(
+      BuildInvalidation(5, "unprocessed_hint_5"));
+
+  // The GetUpdates request finishes. This should delete the processed
+  // invalidations.
+  worker()->ApplyUpdates(status_controller());
+
+  // Unprocessed invalidations after ApplyUpdates are in ModelTypeState.
+  EXPECT_EQ(2, processor()->GetNthUpdateState(0).invalidations_size());
+  EXPECT_EQ("unprocessed_hint_4",
+            processor()->GetNthUpdateState(0).invalidations(0).hint());
+  EXPECT_EQ("unprocessed_hint_5",
+            processor()->GetNthUpdateState(0).invalidations(1).hint());
+}
+
 // Test the dropping of invalidation hints.  Receives invalidations one by one.
 // Pending invalidation vector buffer size is 10.
 TEST_F(ModelTypeWorkerTest, DropHintsLocally_OneAtATime) {

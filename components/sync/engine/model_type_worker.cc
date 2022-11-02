@@ -572,6 +572,19 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status) {
       ++it;
     }
   }
+  if (base::FeatureList::IsEnabled(kSyncPersistInvalidations)) {
+    // Store invalidations to |model_type_state_|.
+    model_type_state_.clear_invalidations();
+    for (const auto& inv : pending_invalidations_) {
+      SyncInvalidation* invalidation = inv.pending_invalidation.get();
+      sync_pb::ModelTypeState_Invalidation* invalidation_to_store =
+          model_type_state_.add_invalidations();
+      invalidation_to_store->set_hint(invalidation->GetPayload());
+      if (!invalidation->IsUnknownVersion()) {
+        invalidation_to_store->set_version(invalidation->GetVersion());
+      }
+    }
+  }
 
   has_dropped_invalidation_ = false;
 
