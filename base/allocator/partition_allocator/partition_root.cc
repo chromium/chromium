@@ -726,6 +726,43 @@ void PartitionRoot<thread_safe>::EnableMac11MallocSizeHackForTesting() {
 }
 #endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
 
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    !defined(PA_HAS_64_BITS_POINTERS)
+namespace {
+std::atomic<bool> g_reserve_brp_guard_region_called;
+// An address constructed by repeating `kQuarantinedByte` shouldn't never point
+// to valid memory. Preemptively reserve a memory region around that address and
+// make it inaccessible. Not needed for 64-bit platforms where the address is
+// guaranteed to be non-canonical. Safe to call multiple times.
+void ReserveBackupRefPtrGuardRegionIfNeeded() {
+  bool expected = false;
+  // No need to block execution for potential concurrent initialization, merely
+  // want to make sure this is only called once.
+  if (!g_reserve_brp_guard_region_called.compare_exchange_strong(expected,
+                                                                 true))
+    return;
+
+  size_t alignment = internal::PageAllocationGranularity();
+  uintptr_t requested_address;
+  memset(&requested_address, internal::kQuarantinedByte,
+         sizeof(requested_address));
+  requested_address = RoundDownToPageAllocationGranularity(requested_address);
+
+  // Request several pages so that even unreasonably large C++ objects stay
+  // within the inaccessible region. If some of the pages can't be reserved,
+  // it's still preferable to try and reserve the rest.
+  for (size_t i = 0; i < 4; ++i) {
+    [[maybe_unused]] uintptr_t allocated_address =
+        AllocPages(requested_address, alignment, alignment,
+                   PageAccessibilityConfiguration::kInaccessible,
+                   PageTag::kPartitionAlloc);
+    requested_address += alignment;
+  }
+}
+}  // namespace
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
+        // !defined(PA_HAS_64_BITS_POINTERS)
+
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   {
@@ -755,6 +792,11 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 #if defined(PA_HAS_64_BITS_POINTERS)
     // Reserve address space for partition alloc.
     internal::PartitionAddressSpace::Init();
+#endif
+
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    !defined(PA_HAS_64_BITS_POINTERS)
+    ReserveBackupRefPtrGuardRegionIfNeeded();
 #endif
 
     flags.allow_aligned_alloc =
