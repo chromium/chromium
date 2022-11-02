@@ -84,7 +84,7 @@ class WebFragmentDelegate extends IWebFragmentDelegate.Stub {
         mSurfaceControlViewHost =
                 new SurfaceControlViewHost(mContext, window.getDefaultDisplay(), hostToken);
 
-        mEventHandler.getBrowser().setSurfaceControlViewHost(mSurfaceControlViewHost);
+        mEventHandler.setSurfaceControlViewHost(mSurfaceControlViewHost);
         try {
             mClient.onSurfacePackageReady(mSurfaceControlViewHost.getSurfacePackage());
         } catch (RemoteException e) {
@@ -96,7 +96,7 @@ class WebFragmentDelegate extends IWebFragmentDelegate.Stub {
         mHandler.post(() -> {
             try {
                 mClient.onContentViewRenderViewReady(
-                        ObjectWrapper.wrap(mEventHandler.getBrowser().getContentViewRenderView()));
+                        ObjectWrapper.wrap(mEventHandler.getContentViewRenderView()));
             } catch (RemoteException e) {
             }
         });

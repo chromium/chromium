@@ -8,9 +8,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.SurfaceControlViewHost;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
@@ -26,67 +30,74 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
     protected RemoteFragmentImpl() {}
 
     @Deprecated
-    public final View onCreateView() {
+    protected final View onCreateView() {
         return onCreateView(/*container=*/null, /*savedInstanceState=*/null);
     }
 
-    public View onCreateView(ViewGroup container, Bundle savedInstanceState) {
+    protected View onCreateView(ViewGroup container, Bundle savedInstanceState) {
         return null;
     }
 
-    public final Activity getActivity() {
+    protected final Activity getActivity() {
         return null;
     }
 
-    public final View getView() {
+    protected final View getView() {
         return null;
     }
 
-    public void onCreate(Bundle savedInstanceState) {}
+    protected void onCreate(Bundle savedInstanceState) {}
 
-    public void onAttach(Context context) {}
+    protected void onAttach(Context context) {}
 
-    public void onActivityCreated(Bundle savedInstanceState) {}
+    protected void onActivityCreated(Bundle savedInstanceState) {}
 
-    public void onStart() {}
+    protected void onStart() {}
 
-    public void onDestroy() {}
+    protected void onDestroy() {}
 
-    public void onDetach() {}
+    protected void onDetach() {}
 
-    public void onResume() {}
+    protected void onResume() {}
 
-    public void onDestroyView() {}
+    protected void onDestroyView() {}
 
-    public void onStop() {}
+    protected void onStop() {}
 
-    public void onPause() {}
+    protected void onPause() {}
 
-    public void onSaveInstanceState(Bundle outState) {}
+    protected void onSaveInstanceState(Bundle outState) {}
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {}
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {}
 
-    public void requestPermissions(String[] permissions, int requestCode) {}
+    protected void requestPermissions(String[] permissions, int requestCode) {}
 
-    public void onRequestPermissionsResult(
+    protected void onRequestPermissionsResult(
             int requestCode, String[] permissions, int[] grantResults) {}
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    protected void setSurfaceControlViewHost(SurfaceControlViewHost host) {}
+
+    protected View getContentViewRenderView() {
+        return null;
+    }
 
     // TODO(crbug/1378606): Either remove below methods together with callers or provide a client
     // implementation on weblayer side.
-    public boolean startActivityForResult(Intent intent, int requestCode, Bundle options) {
+    protected boolean startActivityForResult(Intent intent, int requestCode, Bundle options) {
         return false;
     }
 
-    public boolean startIntentSenderForResult(IntentSender intent, int requestCode,
+    protected boolean startIntentSenderForResult(IntentSender intent, int requestCode,
             Intent fillInIntent, int flagsMask, int flagsValues, int extraFlags, Bundle options) {
         return false;
     }
 
-    public boolean shouldShowRequestPermissionRationale(String permission) {
+    protected boolean shouldShowRequestPermissionRationale(String permission) {
         return false;
     }
 
-    public void removeFragmentFromFragmentManager() {}
+    protected void removeFragmentFromFragmentManager() {}
 
     // IRemoteFragment implementation below.
 
@@ -175,5 +186,18 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
             int requestCode, String[] permissions, int[] grantResults) {
         StrictModeWorkaround.apply();
         onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    @Override
+    public final void handleSetSurfaceControlViewHost(IObjectWrapper host) {
+        StrictModeWorkaround.apply();
+        setSurfaceControlViewHost(ObjectWrapper.unwrap(host, SurfaceControlViewHost.class));
+    }
+
+    @Override
+    public final IObjectWrapper handleGetContentViewRenderView() {
+        StrictModeWorkaround.apply();
+        return ObjectWrapper.wrap(getContentViewRenderView());
     }
 }

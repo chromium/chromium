@@ -7,6 +7,8 @@ package org.chromium.weblayer;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.view.SurfaceControlViewHost;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -133,6 +135,27 @@ abstract class RemoteFragmentEventHandler {
         ThreadCheck.ensureOnUiThread();
         try {
             mRemoteFragment.handleOnDetach();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    @CallSuper
+    protected View getContentViewRenderView() {
+        ThreadCheck.ensureOnUiThread();
+        try {
+            return ObjectWrapper.unwrap(
+                    mRemoteFragment.handleGetContentViewRenderView(), View.class);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    @CallSuper
+    protected void setSurfaceControlViewHost(SurfaceControlViewHost host) {
+        ThreadCheck.ensureOnUiThread();
+        try {
+            mRemoteFragment.handleSetSurfaceControlViewHost(ObjectWrapper.wrap(host));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

@@ -7,17 +7,14 @@ package org.chromium.weblayer_private;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.view.SurfaceControlViewHost;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.ObserverList;
@@ -722,20 +719,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         for (Object tab : getTabs()) {
             ((TabImpl) tab).updateFromBrowser();
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    @Override
-    public void setSurfaceControlViewHost(IObjectWrapper wrappedHost) {
-        // TODO(rayankans): Handle fallback for older devices.
-        SurfaceControlViewHost host =
-                ObjectWrapper.unwrap(wrappedHost, SurfaceControlViewHost.class);
-        host.setView(mViewController.getView(), 0, 0);
-    }
-
-    @Override
-    public IObjectWrapper getContentViewRenderView() {
-        return ObjectWrapper.wrap(mViewController.getView());
     }
 
     @NativeMethods

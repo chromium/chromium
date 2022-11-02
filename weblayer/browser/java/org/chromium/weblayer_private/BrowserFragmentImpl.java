@@ -7,13 +7,16 @@ package org.chromium.weblayer_private;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.ContextThemeWrapper;
+import android.view.SurfaceControlViewHost;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
@@ -54,7 +57,7 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     }
 
     @Override
-    public void onAttach(Context context) {
+    protected void onAttach(Context context) {
         StrictModeWorkaround.apply();
         super.onAttach(context);
         mEmbedderActivityContext = context;
@@ -65,7 +68,7 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         StrictModeWorkaround.apply();
         super.onCreate(savedInstanceState);
         // onCreate() is only called once
@@ -79,26 +82,26 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     }
 
     @Override
-    public View onCreateView(ViewGroup container, Bundle savedInstanceState) {
+    protected View onCreateView(ViewGroup container, Bundle savedInstanceState) {
         StrictModeWorkaround.apply();
         return mBrowser.getFragmentView();
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         StrictModeWorkaround.apply();
         mBrowser.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
-    public void onRequestPermissionsResult(
+    protected void onRequestPermissionsResult(
             int requestCode, String[] permissions, int[] grantResults) {
         StrictModeWorkaround.apply();
         mBrowser.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         StrictModeWorkaround.apply();
         super.onDestroy();
         mBrowser.destroy();
@@ -106,7 +109,7 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     }
 
     @Override
-    public void onDetach() {
+    protected void onDetach() {
         StrictModeWorkaround.apply();
         super.onDetach();
         // mBrowser != null if fragment is retained, otherwise onDestroy is called first.
@@ -116,27 +119,27 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState) {
         StrictModeWorkaround.apply();
         mBrowser.onSaveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
         mBrowser.onFragmentStart();
     }
 
     @Override
-    public void onStop() {
+    protected void onStop() {
         super.onStop();
         Activity activity = getActivity();
         mBrowser.onFragmentStop(activity != null && activity.getChangingConfigurations() != 0);
     }
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
         sResumedCount++;
         if (sResumedCount == 1) sSessionStartTimeMs = SystemClock.uptimeMillis();
@@ -144,7 +147,7 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         super.onPause();
         sResumedCount--;
         if (sResumedCount == 0) {
@@ -152,6 +155,18 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
             RecordHistogram.recordLongTimesHistogram("Session.TotalDuration", deltaMs);
         }
         mBrowser.onFragmentPause();
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    @Override
+    protected void setSurfaceControlViewHost(SurfaceControlViewHost host) {
+        // TODO(rayankans): Handle fallback for older devices.
+        host.setView(mBrowser.getViewController().getView(), 0, 0);
+    }
+
+    @Override
+    protected View getContentViewRenderView() {
+        return mBrowser.getViewController().getView();
     }
 
     @Nullable

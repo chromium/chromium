@@ -5,7 +5,6 @@
 package org.chromium.weblayer;
 
 import android.os.RemoteException;
-import android.view.SurfaceControlViewHost;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -564,33 +563,6 @@ class Browser {
         throwIfDestroyed();
         try {
             mImpl.setChangeVisibilityOnNextDetach(changeVisibility);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
-     * Attaches the top-level view to the SurfaceControlViewHost.
-     * @param host The SurfaceControlViewHost created from the host app's SurfaceView.
-     *
-     * @since 105
-     */
-    void setSurfaceControlViewHost(SurfaceControlViewHost host) {
-        ThreadCheck.ensureOnUiThread();
-
-        if (WebLayer.getSupportedMajorVersionInternal() < 105) {
-            throw new UnsupportedOperationException();
-        }
-        try {
-            mImpl.setSurfaceControlViewHost(ObjectWrapper.wrap(host));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    View getContentViewRenderView() {
-        try {
-            return ObjectWrapper.unwrap(mImpl.getContentViewRenderView(), View.class);
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

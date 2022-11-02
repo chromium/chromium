@@ -29,4 +29,6 @@ interface IRemoteFragment {
                                         in int[] grantResults) = 13;
   IObjectWrapper /* View */ handleOnCreateView(in IObjectWrapper /* ViewGroup */ container,
                                                in IObjectWrapper /* Bundle */ savedInstanceState) = 14;
+  void handleSetSurfaceControlViewHost(in IObjectWrapper /* SurfaceControlViewHost */ host) = 15;
+  IObjectWrapper /* View */ handleGetContentViewRenderView() = 16;
 }
