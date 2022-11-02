@@ -2569,10 +2569,10 @@ class GuestOsShareCommand extends FilesCommand {
     if (!info) {
       return;
     }
-    function share(vmName) {
+    const share = () => {
       // Always persist shares via right-click > Share with Linux.
       chrome.fileManagerPrivate.sharePathsWithCrostini(
-          vmName, [dir], true /* persist */, () => {
+          this.vmName_, [dir], true /* persist */, () => {
             if (chrome.runtime.lastError) {
               console.warn(
                   'Error sharing with guest: ' +
@@ -2589,7 +2589,7 @@ class GuestOsShareCommand extends FilesCommand {
               CommandHandler.recordMenuItemSelected(this.manageUma_);
             },
           });
-    }
+    };
     // Show a confirmation dialog if we are sharing the root of a volume.
     // Non-Drive volume roots are always '/'.
     if (dir.fullPath == '/') {
@@ -2614,7 +2614,7 @@ class GuestOsShareCommand extends FilesCommand {
           () => {});
     } else {
       // This is not a root, share it without confirmation dialog.
-      share(this.vmName_);
+      share();
     }
     CommandHandler.recordMenuItemSelected(this.shareUma_);
   }
