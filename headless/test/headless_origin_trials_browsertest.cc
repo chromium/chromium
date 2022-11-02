@@ -75,10 +75,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
   // enable the WebComponents V0 origin trial.
   // TODO(crbug.com/1050190): Implement a permanent, sample trial so this test
   // doesn't rely on WebComponents V0, which will eventually go away.
-  EXPECT_FALSE(ResultBool(
+  EXPECT_THAT(
       EvaluateScript(web_contents,
                      "'createShadowRoot' in document.createElement('div')"),
-      "result.value"));
+      DictHasValue("result.result.value", false));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,

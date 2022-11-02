@@ -17,11 +17,8 @@
 #include "content/public/test/browser_test.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "headless/public/devtools/domains/runtime.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_browser_context.h"
-#include "headless/public/headless_devtools_client.h"
-#include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
@@ -101,28 +98,22 @@ class HeadlessBrowserContextIsolationTest
 
   void OnSecondLoadEventFired(const base::Value::Dict&) {
     // Set cookies on both pages.
-    EXPECT_EQ(
-        kMainPageCookie,
-        ResultString(EvaluateScript(web_contents_,
-                                    base::StringPrintf("document.cookie = '%s'",
-                                                       kMainPageCookie)),
-                     "result.value"));
+    EXPECT_THAT(EvaluateScript(web_contents_,
+                               base::StringPrintf("document.cookie = '%s'",
+                                                  kMainPageCookie)),
+                DictHasValue("result.result.value", kMainPageCookie));
 
-    EXPECT_EQ(
-        kIsolatedPageCookie,
-        ResultString(EvaluateScript(web_contents2_,
-                                    base::StringPrintf("document.cookie = '%s'",
-                                                       kIsolatedPageCookie)),
-                     "result.value"));
+    EXPECT_THAT(EvaluateScript(web_contents2_,
+                               base::StringPrintf("document.cookie = '%s'",
+                                                  kIsolatedPageCookie)),
+                DictHasValue("result.result.value", kIsolatedPageCookie));
 
     // Get cookies from both pages and verify.
-    EXPECT_EQ(kMainPageCookie,
-              ResultString(EvaluateScript(web_contents_, "document.cookie"),
-                           "result.value"));
+    EXPECT_THAT(EvaluateScript(web_contents_, "document.cookie"),
+                DictHasValue("result.result.value", kMainPageCookie));
 
-    EXPECT_EQ(kIsolatedPageCookie,
-              ResultString(EvaluateScript(web_contents2_, "document.cookie"),
-                           "result.value"));
+    EXPECT_THAT(EvaluateScript(web_contents2_, "document.cookie"),
+                DictHasValue("result.result.value", kIsolatedPageCookie));
 
     web_contents2_->RemoveObserver(this);
     web_contents2_->Close();

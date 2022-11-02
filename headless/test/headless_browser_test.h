@@ -6,21 +6,16 @@
 #define HEADLESS_TEST_HEADLESS_BROWSER_TEST_H_
 
 #include <memory>
-#include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_test_base.h"
 #include "headless/public/headless_browser.h"
-#include "headless/public/headless_web_contents.h"
-#include "headless/test/test_network_interceptor.h"
 
 namespace base {
 class RunLoop;
 }
 
 namespace headless {
-class HeadlessDevToolsClient;
 
 // Base class for tests which require a full instance of the headless browser.
 class HeadlessBrowserTest : public content::BrowserTestBase {
@@ -62,69 +57,6 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-};
-
-// TODO(eseckler): Make macro more sheriff-friendly.
-#define HEADLESS_ASYNC_DEVTOOLED_TEST_F(TEST_FIXTURE_NAME)               \
-  IN_PROC_BROWSER_TEST_F(TEST_FIXTURE_NAME, RunAsyncTest) { RunTest(); } \
-  class AsyncHeadlessBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
-
-#define HEADLESS_ASYNC_DEVTOOLED_TEST_P(TEST_FIXTURE_NAME)               \
-  IN_PROC_BROWSER_TEST_P(TEST_FIXTURE_NAME, RunAsyncTest) { RunTest(); } \
-  class AsyncHeadlessBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
-
-#define DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(TEST_FIXTURE_NAME)  \
-  IN_PROC_BROWSER_TEST_F(TEST_FIXTURE_NAME, DISABLED_RunAsyncTest) { \
-    RunTest();                                                       \
-  }                                                                  \
-  class AsyncHeadlessBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
-
-#define DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_P(TEST_FIXTURE_NAME)  \
-  IN_PROC_BROWSER_TEST_P(TEST_FIXTURE_NAME, DISABLED_RunAsyncTest) { \
-    RunTest();                                                       \
-  }                                                                  \
-  class AsyncHeadlessBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
-
-// Base class for tests that require access to a DevToolsClient. Subclasses
-// should override the RunDevTooledTest() method, which is called asynchronously
-// when the DevToolsClient is ready.
-class HeadlessAsyncDevTooledBrowserTest : public HeadlessBrowserTest,
-                                          public HeadlessWebContents::Observer {
- public:
-  HeadlessAsyncDevTooledBrowserTest();
-  ~HeadlessAsyncDevTooledBrowserTest() override;
-
-  // HeadlessWebContentsObserver implementation:
-  void DevToolsTargetReady() override;
-  void RenderProcessExited(base::TerminationStatus status,
-                           int exit_code) override;
-
-  // Implemented by tests and used to send request(s) to DevTools. Subclasses
-  // need to ensure that FinishAsynchronousTest() is called after response(s)
-  // are processed (e.g. in a callback).
-  virtual void RunDevTooledTest() = 0;
-
-  // Whether to enable BeginFrameControl when creating |web_contents_|.
-  virtual bool GetEnableBeginFrameControl();
-
-  // Allows the HeadlessBrowserContext used in testing to be customized.
-  virtual void CustomizeHeadlessBrowserContext(
-      HeadlessBrowserContext::Builder& builder);
-
-  // Allows the HeadlessWebContents used in testing to be customized.
-  virtual void CustomizeHeadlessWebContents(
-      HeadlessWebContents::Builder& builder);
-
- protected:
-  void RunTest();
-
-  raw_ptr<HeadlessBrowserContext, DanglingUntriaged>
-      browser_context_;  // Not owned.
-  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_;
-  std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
-  std::unique_ptr<HeadlessDevToolsClient> browser_devtools_client_;
-  bool render_process_exited_;
-  std::unique_ptr<TestNetworkInterceptor> interceptor_;
 };
 
 }  // namespace headless

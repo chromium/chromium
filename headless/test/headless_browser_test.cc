@@ -21,9 +21,6 @@
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/headless_content_main_delegate.h"
-#include "headless/public/devtools/domains/emulation.h"
-#include "headless/public/headless_devtools_client.h"
-#include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -125,91 +122,5 @@ void HeadlessBrowserTest::RunAsynchronousTest() {
 void HeadlessBrowserTest::FinishAsynchronousTest() {
   run_loop_->Quit();
 }
-
-HeadlessAsyncDevTooledBrowserTest::HeadlessAsyncDevTooledBrowserTest()
-    : browser_context_(nullptr),
-      web_contents_(nullptr),
-      render_process_exited_(false) {}
-
-HeadlessAsyncDevTooledBrowserTest::~HeadlessAsyncDevTooledBrowserTest() =
-    default;
-
-void HeadlessAsyncDevTooledBrowserTest::DevToolsTargetReady() {
-  EXPECT_TRUE(web_contents_->GetDevToolsTarget());
-  web_contents_->GetDevToolsTarget()->AttachClient(devtools_client_.get());
-#if BUILDFLAG(IS_MAC)
-  devtools_client_->GetEmulation()->SetDeviceMetricsOverride(
-      emulation::SetDeviceMetricsOverrideParams::Builder()
-          .SetWidth(0)
-          .SetHeight(0)
-          .SetDeviceScaleFactor(1)
-          .SetMobile(false)
-          .Build(),
-      base::BindOnce(
-          [](HeadlessAsyncDevTooledBrowserTest* self) {
-            self->RunDevTooledTest();
-          },
-          base::Unretained(this)));
-#else
-  RunDevTooledTest();
-#endif
-}
-
-void HeadlessAsyncDevTooledBrowserTest::RenderProcessExited(
-    base::TerminationStatus status,
-    int exit_code) {
-  if (status == base::TERMINATION_STATUS_NORMAL_TERMINATION)
-    return;
-
-  FinishAsynchronousTest();
-  render_process_exited_ = true;
-  FAIL() << "Abnormal renderer termination "
-         << "(status=" << status << ", exit_code=" << exit_code << ")";
-}
-
-void HeadlessAsyncDevTooledBrowserTest::RunTest() {
-  devtools_client_ = HeadlessDevToolsClient::Create();
-  browser_devtools_client_ = HeadlessDevToolsClient::Create();
-  interceptor_ = std::make_unique<TestNetworkInterceptor>();
-  HeadlessBrowserContext::Builder builder =
-      browser()->CreateBrowserContextBuilder();
-  CustomizeHeadlessBrowserContext(builder);
-  browser_context_ = builder.Build();
-
-  browser()->SetDefaultBrowserContext(browser_context_);
-  browser()->GetDevToolsTarget()->AttachClient(browser_devtools_client_.get());
-
-  HeadlessWebContents::Builder web_contents_builder =
-      browser_context_->CreateWebContentsBuilder();
-  web_contents_builder.SetEnableBeginFrameControl(GetEnableBeginFrameControl());
-  CustomizeHeadlessWebContents(web_contents_builder);
-  web_contents_ = web_contents_builder.Build();
-
-  web_contents_->AddObserver(this);
-
-  RunAsynchronousTest();
-  interceptor_.reset();
-  if (!render_process_exited_)
-    web_contents_->GetDevToolsTarget()->DetachClient(devtools_client_.get());
-  web_contents_->RemoveObserver(this);
-  web_contents_->Close();
-  web_contents_ = nullptr;
-  browser()->GetDevToolsTarget()->DetachClient(browser_devtools_client_.get());
-  browser_context_->Close();
-  browser_context_ = nullptr;
-  // Let the tasks that might have beein scheduled during web contents
-  // being closed run (see https://crbug.com/1036627 for details).
-  base::RunLoop().RunUntilIdle();
-}
-
-bool HeadlessAsyncDevTooledBrowserTest::GetEnableBeginFrameControl() {
-  return false;
-}
-
-void HeadlessAsyncDevTooledBrowserTest::CustomizeHeadlessBrowserContext(
-    HeadlessBrowserContext::Builder& builder) {}
-
-void HeadlessAsyncDevTooledBrowserTest::CustomizeHeadlessWebContents(
-    HeadlessWebContents::Builder& builder) {}
 
 }  // namespace headless

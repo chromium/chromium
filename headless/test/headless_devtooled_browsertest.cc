@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/headless_browser_context.h"
-#include "headless/public/headless_devtools_target.h"
 
 namespace headless {
 

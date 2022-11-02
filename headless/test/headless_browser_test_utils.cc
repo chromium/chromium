@@ -5,15 +5,16 @@
 #include "headless/test/headless_browser_test_utils.h"
 
 #include "base/bind.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/headless_web_contents.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
@@ -88,94 +89,131 @@ void WaitForLoadAndGainFocus(HeadlessWebContents* web_contents) {
   focus_observer.Wait();
 }
 
-namespace {
+///////////////////////////////////////////////////////////////////////
+// base::Value::Dict helpers.
 
-std::string GetString(const base::Value::Dict& dict,
-                      base::StringPiece root,
-                      base::StringPiece key) {
-  const std::string path = base::StrCat({root, key});
-  const std::string* return_string = dict.FindStringByDottedPath(path);
-  CHECK(return_string) << "Missing value for '" << path << "' in:\n"
-                       << dict.DebugString();
-  return *return_string;
+std::string DictString(const base::Value::Dict& dict, base::StringPiece path) {
+  const std::string* result = dict.FindStringByDottedPath(path);
+  CHECK(result) << "Missing value for '" << path << "' in:\n"
+                << dict.DebugString();
+  return *result;
 }
 
-int GetInt(const base::Value::Dict& dict,
-           base::StringPiece root,
-           base::StringPiece key) {
-  const std::string path = base::StrCat({root, key});
-  absl::optional<int> return_int = dict.FindIntByDottedPath(path);
-  CHECK(return_int) << "Missing value for '" << path << "' in:\n"
-                    << dict.DebugString();
-  return *return_int;
+int DictInt(const base::Value::Dict& dict, base::StringPiece path) {
+  absl::optional<int> result = dict.FindIntByDottedPath(path);
+  CHECK(result) << "Missing value for '" << path << "' in:\n"
+                << dict.DebugString();
+  return *result;
 }
 
-bool GetBool(const base::Value::Dict& dict,
-             base::StringPiece root,
-             base::StringPiece key) {
-  const std::string path = base::StrCat({root, key});
-  absl::optional<bool> return_bool = dict.FindBoolByDottedPath(path);
-  CHECK(return_bool) << "Missing value for '" << path << "' in:\n"
-                     << dict.DebugString();
-  return *return_bool;
+bool DictBool(const base::Value::Dict& dict, base::StringPiece path) {
+  absl::optional<bool> result = dict.FindBoolByDottedPath(path);
+  CHECK(result) << "Missing value for '" << path << "' in:\n"
+                << dict.DebugString();
+  return *result;
 }
 
-bool Has(const base::Value::Dict& dict,
-         base::StringPiece root,
-         base::StringPiece key) {
-  const std::string path = base::StrCat({root, key});
+bool DictHas(const base::Value::Dict& dict, base::StringPiece path) {
   return dict.FindByDottedPath(path) != nullptr;
 }
 
+///////////////////////////////////////////////////////////////////////
+// GMock matchers
+
+namespace {
+// Cannot use Value::DebugString here due to newlines.
+std::string ToJSON(const base::ValueView& value) {
+  std::string json;
+  base::JSONWriter::Write(value, &json);
+  return json;
+}
+
+class DictHasPathValueMatcher
+    : public testing::MatcherInterface<const base::Value::Dict&> {
+ public:
+  DictHasPathValueMatcher(const std::string& path, base::Value expected_value)
+      : path_(path), expected_value_(std::move(expected_value)) {}
+
+  DictHasPathValueMatcher& operator=(const DictHasPathValueMatcher& other) =
+      delete;
+
+  ~DictHasPathValueMatcher() override = default;
+
+  bool MatchAndExplain(const base::Value::Dict& dict,
+                       testing::MatchResultListener* listener) const override {
+    const base::Value* dict_value = dict.FindByDottedPath(path_);
+    if (!dict_value) {
+      *listener << "Dictionary '" << ToJSON(dict) << "' does not have path '"
+                << path_ << "'";
+      return false;
+    }
+    if (*dict_value != expected_value_) {
+      *listener << "Dictionary path value '" << path_ << "' is '"
+                << ToJSON(*dict_value) << "', expected '"
+                << ToJSON(expected_value_) << "'";
+      return false;
+    }
+    return true;
+  }
+
+  void DescribeTo(std::ostream* os) const override {
+    *os << "has path '" << path_ << "' with value '" << ToJSON(expected_value_)
+        << "'";
+  }
+
+  void DescribeNegationTo(std::ostream* os) const override {
+    *os << "does not have path '" << path_ << "' with value '"
+        << ToJSON(expected_value_) << "'";
+  }
+
+ private:
+  const std::string path_;
+  const base::Value expected_value_;
+};
+
+class DictHasKeyMatcher
+    : public testing::MatcherInterface<const base::Value::Dict&> {
+ public:
+  explicit DictHasKeyMatcher(const std::string& key) : key_(key) {}
+
+  DictHasKeyMatcher& operator=(const DictHasKeyMatcher& other) = delete;
+
+  ~DictHasKeyMatcher() override = default;
+
+  bool MatchAndExplain(const base::Value::Dict& dict,
+                       testing::MatchResultListener* listener) const override {
+    const base::Value* dict_value = dict.Find(key_);
+    if (!dict_value) {
+      *listener << "Dictionary '" << ToJSON(dict) << "' does not have key '"
+                << key_ << "'";
+      return false;
+    }
+    return true;
+  }
+
+  void DescribeTo(std::ostream* os) const override {
+    *os << "has key '" << key_ << "'";
+  }
+
+  void DescribeNegationTo(std::ostream* os) const override {
+    *os << "does not have key '" << key_ << "'";
+  }
+
+ private:
+  const std::string key_;
+};
+
 }  // namespace
 
-bool ResultError(const base::Value::Dict& result,
-                 int* code,
-                 std::string* message) {
-  absl::optional<int> error_code = result.FindIntByDottedPath("error.code");
-  if (code && error_code)
-    *code = *error_code;
-
-  const std::string* error_message =
-      result.FindStringByDottedPath("error.message");
-  if (message && error_message)
-    *message = *error_message;
-
-  return error_code || error_message;
+testing::Matcher<const base::Value::Dict&> DictHasPathValue(
+    const std::string& path,
+    base::Value expected_value) {
+  return testing::MakeMatcher(
+      new DictHasPathValueMatcher(path, std::move(expected_value)));
 }
 
-std::string ResultString(const base::Value::Dict& result,
-                         base::StringPiece key) {
-  return GetString(result, "result.", key);
-}
-
-int ResultInt(const base::Value::Dict& result, base::StringPiece key) {
-  return GetInt(result, "result.", key);
-}
-
-bool ResultBool(const base::Value::Dict& result, base::StringPiece key) {
-  return GetBool(result, "result.", key);
-}
-
-bool ResultHas(const base::Value::Dict& result, base::StringPiece key) {
-  return Has(result, "result.", key);
-}
-
-std::string ParamsString(const base::Value::Dict& params,
-                         base::StringPiece key) {
-  return GetString(params, "params.", key);
-}
-
-int ParamsInt(const base::Value::Dict& params, base::StringPiece key) {
-  return GetInt(params, "params.", key);
-}
-
-bool ParamsBool(const base::Value::Dict& params, base::StringPiece key) {
-  return GetBool(params, "params.", key);
-}
-
-bool ParamHas(const base::Value::Dict& result, base::StringPiece key) {
-  return Has(result, "params.", key);
+testing::Matcher<const base::Value::Dict&> DictHasKey(const std::string& key) {
+  return testing::MakeMatcher(new DictHasKeyMatcher(key));
 }
 
 }  // namespace headless

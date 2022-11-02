@@ -96,7 +96,7 @@ void HeadlessProtocolBrowserTest::RunDevTooledTest() {
 
 void HeadlessProtocolBrowserTest::OnLoadEventFired(
     const base::Value::Dict& params) {
-  DCHECK_EQ(*params.FindString("method"), "Page.loadEventFired");
+  ASSERT_THAT(params, DictHasValue("method", "Page.loadEventFired"));
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath src_dir;
@@ -146,9 +146,7 @@ void HeadlessProtocolBrowserTest::OnEvaluateResult(base::Value::Dict params) {
     LOG(ERROR) << "Test result: " << json_params;
   }
 
-  const std::string* output =
-      params.FindStringByDottedPath("result.result.value");
-  ProcessTestResult(output ? *output : std::string());
+  ProcessTestResult(DictString(params, "result.result.value"));
 
   FinishTest();
 }
@@ -182,7 +180,7 @@ void HeadlessProtocolBrowserTest::ProcessTestResult(
 
 void HeadlessProtocolBrowserTest::OnConsoleAPICalled(
     const base::Value::Dict& params) {
-  DCHECK_EQ(*params.FindString("method"), "Runtime.consoleAPICalled");
+  ASSERT_THAT(params, DictHasValue("method", "Runtime.consoleAPICalled"));
 
   const base::Value::List* args = params.FindListByDottedPath("params.args");
   if (!args || args->empty())

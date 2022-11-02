@@ -18,6 +18,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller_delegate.h"
@@ -32,13 +33,7 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_select_file_dialog_factory.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "headless/public/devtools/domains/inspector.h"
-#include "headless/public/devtools/domains/network.h"
-#include "headless/public/devtools/domains/page.h"
-#include "headless/public/devtools/domains/tracing.h"
 #include "headless/public/headless_browser.h"
-#include "headless/public/headless_devtools_client.h"
-#include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
@@ -63,6 +58,8 @@
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"  // nogncheck
 #endif
+
+using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 
 using testing::UnorderedElementsAre;
 
@@ -270,11 +267,11 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WebGLSupported) {
   HeadlessWebContents* web_contents =
       browser_context->CreateWebContentsBuilder().Build();
 
-  EXPECT_TRUE(ResultBool(
+  EXPECT_THAT(
       EvaluateScript(web_contents,
                      "(document.createElement('canvas').getContext('webgl')"
                      "    instanceof WebGLRenderingContext)"),
-      "result.value"));
+      DictHasValue("result.result.value", true));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
@@ -310,63 +307,20 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
 #if !BUILDFLAG(IS_MAC)
   // On Mac headless does not override the screen dimensions, so they are
   // left with the actual screen values.
-  EXPECT_EQ(
-      kDefaultOptions.window_size.width(),
-      ResultInt(EvaluateScript(web_contents, "screen.width"), "result.value"));
-  EXPECT_EQ(
-      kDefaultOptions.window_size.height(),
-      ResultInt(EvaluateScript(web_contents, "screen.height"), "result.value"));
+  EXPECT_THAT(
+      EvaluateScript(web_contents, "screen.width"),
+      DictHasValue("result.result.value", kDefaultOptions.window_size.width()));
+  EXPECT_THAT(EvaluateScript(web_contents, "screen.height"),
+              DictHasValue("result.result.value",
+                           kDefaultOptions.window_size.height()));
 #endif  // !BUILDFLAG(IS_MAC)
-  EXPECT_EQ(kDefaultOptions.window_size.width(),
-            ResultInt(EvaluateScript(web_contents, "window.innerWidth"),
-                      "result.value"));
-  EXPECT_EQ(kDefaultOptions.window_size.height(),
-            ResultInt(EvaluateScript(web_contents, "window.innerHeight"),
-                      "result.value"));
+  EXPECT_THAT(
+      EvaluateScript(web_contents, "window.innerWidth"),
+      DictHasValue("result.result.value", kDefaultOptions.window_size.width()));
+  EXPECT_THAT(EvaluateScript(web_contents, "window.innerHeight"),
+              DictHasValue("result.result.value",
+                           kDefaultOptions.window_size.height()));
 }
-
-namespace {
-
-class CookieSetter {
- public:
-  CookieSetter(HeadlessBrowserTest* browser_test,
-               HeadlessWebContents* web_contents,
-               std::unique_ptr<network::SetCookieParams> set_cookie_params)
-      : browser_test_(browser_test),
-        web_contents_(web_contents),
-        devtools_client_(HeadlessDevToolsClient::Create()) {
-    web_contents_->GetDevToolsTarget()->AttachClient(devtools_client_.get());
-    devtools_client_->GetNetwork()->GetExperimental()->SetCookie(
-        std::move(set_cookie_params),
-        base::BindOnce(&CookieSetter::OnSetCookieResult,
-                       base::Unretained(this)));
-  }
-
-  CookieSetter(const CookieSetter&) = delete;
-  CookieSetter& operator=(const CookieSetter&) = delete;
-
-  ~CookieSetter() {
-    web_contents_->GetDevToolsTarget()->DetachClient(devtools_client_.get());
-  }
-
-  void OnSetCookieResult(std::unique_ptr<network::SetCookieResult> result) {
-    result_ = std::move(result);
-    browser_test_->FinishAsynchronousTest();
-  }
-
-  std::unique_ptr<network::SetCookieResult> TakeResult() {
-    return std::move(result_);
-  }
-
- private:
-  raw_ptr<HeadlessBrowserTest, DanglingUntriaged> browser_test_;  // Not owned.
-  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_;  // Not owned.
-  std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
-
-  std::unique_ptr<network::SetCookieResult> result_;
-};
-
-}  // namespace
 
 // TODO(skyostil): This test currently relies on being able to run a shell
 // script.
@@ -433,8 +387,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserRendererCommandPrefixTest, Prefix) {
 #endif  // BUILDFLAG(IS_POSIX)
 
 class CrashReporterTest : public HeadlessBrowserTest,
-                          public HeadlessWebContents::Observer,
-                          inspector::ExperimentalObserver {
+                          public HeadlessWebContents::Observer {
  public:
   CrashReporterTest() {}
   ~CrashReporterTest() override = default;
@@ -454,21 +407,21 @@ class CrashReporterTest : public HeadlessBrowserTest,
 
   // HeadlessWebContents::Observer implementation:
   void DevToolsTargetReady() override {
-    EXPECT_TRUE(web_contents_->GetDevToolsTarget());
-    devtools_client_ = HeadlessDevToolsClient::Create();
-    web_contents_->GetDevToolsTarget()->AttachClient(devtools_client_.get());
-    devtools_client_->GetInspector()->GetExperimental()->AddObserver(this);
+    devtools_client_.AttachToWebContents(
+        HeadlessWebContentsImpl::From(web_contents_)->web_contents());
+
+    devtools_client_.AddEventHandler(
+        "Inspector.targetCrashed",
+        base::BindRepeating(&CrashReporterTest::OnTargetCrashed,
+                            base::Unretained(this)));
   }
 
-  // inspector::ExperimentalObserver implementation:
-  void OnTargetCrashed(const inspector::TargetCrashedParams&) override {
-    FinishAsynchronousTest();
-  }
+  void OnTargetCrashed(const base::Value::Dict&) { FinishAsynchronousTest(); }
 
  protected:
   raw_ptr<HeadlessBrowserContext, DanglingUntriaged> browser_context_ = nullptr;
   raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_ = nullptr;
-  std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
+  SimpleDevToolsProtocolClient devtools_client_;
   base::FilePath crash_dumps_dir_;
 };
 
@@ -537,84 +490,67 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, PermissionManagerAlwaysASK) {
                 blink::PermissionType::NOTIFICATIONS, url, url));
 }
 
-namespace {
-
-class TraceHelper : public tracing::ExperimentalObserver {
+class BrowserTargetTracingTest : public HeadlessBrowserTest {
  public:
-  TraceHelper(HeadlessBrowserTest* browser_test, HeadlessDevToolsTarget* target)
-      : browser_test_(browser_test),
-        target_(target),
-        client_(HeadlessDevToolsClient::Create()),
-        tracing_data_(std::make_unique<base::ListValue>()) {
-    EXPECT_FALSE(target_->IsAttached());
-    target_->AttachClient(client_.get());
-    EXPECT_TRUE(target_->IsAttached());
+  BrowserTargetTracingTest() = default;
 
-    client_->GetTracing()->GetExperimental()->AddObserver(this);
+ protected:
+  void RunTest() {
+    browser_devtools_client_.AttachToBrowser();
 
-    client_->GetTracing()->GetExperimental()->Start(
-        tracing::StartParams::Builder().Build(),
-        base::BindOnce(&TraceHelper::OnTracingStarted, base::Unretained(this)));
-  }
+    browser_devtools_client_.AddEventHandler(
+        "Tracing.dataCollected",
+        base::BindRepeating(&BrowserTargetTracingTest::OnDataCollected,
+                            base::Unretained(this)));
 
-  TraceHelper(const TraceHelper&) = delete;
-  TraceHelper& operator=(const TraceHelper&) = delete;
+    browser_devtools_client_.AddEventHandler(
+        "Tracing.tracingComplete",
+        base::BindRepeating(&BrowserTargetTracingTest::OnTracingComplete,
+                            base::Unretained(this)));
 
-  ~TraceHelper() override {
-    target_->DetachClient(client_.get());
-    EXPECT_FALSE(target_->IsAttached());
-  }
+    browser_devtools_client_.SendCommand(
+        "Tracing.start",
+        base::BindOnce(&BrowserTargetTracingTest::OnTracingStarted,
+                       base::Unretained(this)));
 
-  std::unique_ptr<base::ListValue> TakeTracingData() {
-    return std::move(tracing_data_);
+    RunAsynchronousTest();
+
+    browser_devtools_client_.DetachClient();
   }
 
  private:
-  void OnTracingStarted(std::unique_ptr<tracing::StartResult>) {
-    // We don't need the callback from End, but the OnTracingComplete event.
-    client_->GetTracing()->GetExperimental()->End(
-        tracing::EndParams::Builder().Build());
+  void OnTracingStarted(base::Value::Dict) {
+    browser_devtools_client_.SendCommand("Tracing.end");
   }
 
-  // tracing::ExperimentalObserver implementation:
-  void OnDataCollected(const tracing::DataCollectedParams& params) override {
-    for (const auto& value : *params.GetValue()) {
-      tracing_data_->Append(value->Clone());
+  void OnDataCollected(const base::Value::Dict& params) {
+    const base::Value::List* value_list =
+        params.FindListByDottedPath("params.value");
+    ASSERT_NE(value_list, nullptr);
+    for (const auto& value : *value_list) {
+      tracing_data_.Append(value.Clone());
     }
   }
 
-  void OnTracingComplete(
-      const tracing::TracingCompleteParams& params) override {
-    browser_test_->FinishAsynchronousTest();
+  void OnTracingComplete(const base::Value::Dict&) {
+    EXPECT_LT(0u, tracing_data_.size());
+
+    FinishAsynchronousTest();
   }
 
-  raw_ptr<HeadlessBrowserTest> browser_test_;  // Not owned.
-  raw_ptr<HeadlessDevToolsTarget> target_;     // Not owned.
-  std::unique_ptr<HeadlessDevToolsClient> client_;
+  SimpleDevToolsProtocolClient browser_devtools_client_;
 
-  std::unique_ptr<base::ListValue> tracing_data_;
+  base::Value::List tracing_data_;
 };
-
-}  // namespace
 
 // Flaky, http://crbug.com/1269261.
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_TraceUsingBrowserDevToolsTarget \
-  DISABLED_TraceUsingBrowserDevToolsTarget
+#define MAYBE_BrowserTargetTracing DISABLED_BrowserTargetTracing
 #else
-#define MAYBE_TraceUsingBrowserDevToolsTarget TraceUsingBrowserDevToolsTarget
+#define MAYBE_BrowserTargetTracing BrowserTargetTracing
 #endif  // BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest,
-                       MAYBE_TraceUsingBrowserDevToolsTarget) {
-  HeadlessDevToolsTarget* target = browser()->GetDevToolsTarget();
-  EXPECT_NE(nullptr, target);
-
-  TraceHelper helper(this, target);
-  RunAsynchronousTest();
-
-  std::unique_ptr<base::ListValue> tracing_data = helper.TakeTracingData();
-  EXPECT_TRUE(tracing_data);
-  EXPECT_LT(0u, tracing_data->GetListDeprecated().size());
+IN_PROC_BROWSER_TEST_F(BrowserTargetTracingTest, MAYBE_BrowserTargetTracing) {
+  RunTest();
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WindowPrint) {
@@ -628,8 +564,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WindowPrint) {
           .SetInitialURL(embedded_test_server()->GetURL("/hello.html"))
           .Build();
   EXPECT_TRUE(WaitForLoad(web_contents));
-  EXPECT_FALSE(ResultHas(EvaluateScript(web_contents, "window.print()"),
-                         "exceptionDetails"));
+  EXPECT_THAT(EvaluateScript(web_contents, "window.print()"),
+              Not(DictHasKey("exceptionDetails")));
 }
 
 class HeadlessBrowserAllowInsecureLocalhostTest : public HeadlessBrowserTest {

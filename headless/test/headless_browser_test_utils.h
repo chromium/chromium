@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 
 namespace simple_devtools_protocol_client {
 class SimpleDevToolsProtocolClient;
@@ -52,24 +53,28 @@ base::Value::Dict Param(base::StringPiece key, T&& value) {
   return param;
 }
 
-// Convenience functions to retrieve values from a |result| Dict.
-bool ResultError(const base::Value::Dict& result,
-                 int* code = nullptr,
-                 std::string* message = nullptr);
-std::string ResultString(const base::Value::Dict& result,
-                         base::StringPiece key);
-int ResultInt(const base::Value::Dict& result, base::StringPiece key);
-bool ResultBool(const base::Value::Dict& result, base::StringPiece key);
+// Convenience functions to retrieve values from a base::Value::Dict and
+// CHECK fail if the specified path is not found.
+std::string DictString(const base::Value::Dict& dict, base::StringPiece path);
+int DictInt(const base::Value::Dict& dict, base::StringPiece path);
+bool DictBool(const base::Value::Dict& dict, base::StringPiece path);
+bool DictHas(const base::Value::Dict& dict, base::StringPiece path);
 
-bool ResultHas(const base::Value::Dict& result, base::StringPiece key);
+// A custom GMock matcher which matches if a base::Value::Dict has
+// a path |path| that is equal to |value|.
+testing::Matcher<const base::Value::Dict&> DictHasPathValue(
+    const std::string& path,
+    base::Value expected_value);
 
-// Convenience functions to retrieve values from a |params| Dict.
-std::string ParamsString(const base::Value::Dict& params,
-                         base::StringPiece key);
-int ParamsInt(const base::Value::Dict& params, base::StringPiece key);
-bool ParamsBool(const base::Value::Dict& params, base::StringPiece key);
+template <typename T>
+testing::Matcher<const base::Value::Dict&> DictHasValue(const std::string& path,
+                                                        T expected_value) {
+  return DictHasPathValue(path, base::Value(expected_value));
+}
 
-bool ParamHas(const base::Value::Dict& params, base::StringPiece key);
+// A custom GMock matcher which matches if a base::Value::Dict has
+// the key |key|.
+testing::Matcher<const base::Value::Dict&> DictHasKey(const std::string& key);
 
 }  // namespace headless
 

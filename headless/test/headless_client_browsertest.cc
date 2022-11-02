@@ -29,7 +29,7 @@ class HeadlessClientBrowserTest : public HeadlessDevTooledBrowserTest {
 
   void AttachToTarget(base::Value::Dict result) {
     base::Value::Dict params;
-    params.Set("targetId", ResultString(result, "targetId"));
+    params.Set("targetId", DictString(result, "result.targetId"));
     params.Set("flatten", true);
     browser_devtools_client_.SendCommand(
         "Target.attachToTarget", std::move(params),
@@ -39,7 +39,7 @@ class HeadlessClientBrowserTest : public HeadlessDevTooledBrowserTest {
 
   void CreateSession(base::Value::Dict result) {
     session_client_ = browser_devtools_client_.CreateSession(
-        ResultString(result, "sessionId"));
+        DictString(result, "result.sessionId"));
 
     session_client_->SendCommand(
         "Runtime.evaluate", Param("expression", "window.location.href"),
@@ -48,7 +48,7 @@ class HeadlessClientBrowserTest : public HeadlessDevTooledBrowserTest {
   }
 
   void FinishTest(base::Value::Dict result) {
-    EXPECT_EQ("about:blank", ResultString(result, "result.value"));
+    EXPECT_THAT(result, DictHasValue("result.result.value", "about:blank"));
     session_client_.reset();
     FinishAsynchronousTest();
   }
