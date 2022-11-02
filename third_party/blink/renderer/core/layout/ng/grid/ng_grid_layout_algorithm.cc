@@ -21,40 +21,25 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 
-  // At various stages of this algorithm we need to know if the grid
-  // available-size. If it is initially indefinite, we need to know the min/max
-  // sizes as well. Initialize all these to the same value.
+  const auto& node = Node();
+  const auto& style = Style();
+  const auto& constraint_space = ConstraintSpace();
+
+  // At various stages of the algorithm we need to know the grid available-size.
+  // If it's initially indefinite, we need to know the min/max sizes as well.
+  // Initialize all these to the same value.
   grid_available_size_ = grid_min_available_size_ = grid_max_available_size_ =
       ChildAvailableSize();
 
-  // Firstly if block-size containment applies compute the block-size ignoring
-  // children (just based on the row definitions).
-  if (grid_available_size_.block_size == kIndefiniteSize &&
-      Node().ShouldApplyBlockSizeContainment()) {
-    // We always need a definite min block-size in order to run the track
-    // sizing algorithm.
-    grid_min_available_size_.block_size = BorderScrollbarPadding().BlockSum();
-    contain_intrinsic_block_size_ = ComputeIntrinsicBlockSizeIgnoringChildren();
-
-    // Resolve the block-size, and set the available sizes.
-    const LayoutUnit block_size = ComputeBlockSizeForFragment(
-        ConstraintSpace(), Style(), BorderPadding(),
-        *contain_intrinsic_block_size_, container_builder_.InlineSize());
-
-    grid_available_size_.block_size = grid_min_available_size_.block_size =
-        grid_max_available_size_.block_size =
-            (block_size - BorderScrollbarPadding().BlockSum())
-                .ClampNegativeToZero();
-  }
-
-  // Next if our inline-size is indefinite, compute the min/max inline-sizes.
+  // If our inline-size is indefinite, compute the min/max inline-sizes.
   if (grid_available_size_.inline_size == kIndefiniteSize) {
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().InlineSum();
+
     const MinMaxSizes sizes = ComputeMinMaxInlineSizes(
-        ConstraintSpace(), Node(), container_builder_.BorderPadding(),
+        constraint_space, node, container_builder_.BorderPadding(),
         [&border_scrollbar_padding](MinMaxSizesType) -> MinMaxSizesResult {
-          // If we've reached here we are inside the ComputeMinMaxSizes pass,
+          // If we've reached here we are inside the |ComputeMinMaxSizes| pass,
           // and also have something like "min-width: min-content". This is
           // cyclic. Just return the border/scrollbar/padding as our
           // "intrinsic" size.
@@ -76,7 +61,7 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().BlockSum();
     const MinMaxSizes sizes = ComputeMinMaxBlockSizes(
-        ConstraintSpace(), Style(), container_builder_.BorderPadding());
+        constraint_space, style, container_builder_.BorderPadding());
 
     grid_min_available_size_.block_size =
         (sizes.min_size - border_scrollbar_padding).ClampNegativeToZero();
@@ -84,6 +69,22 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
         (sizes.max_size == LayoutUnit::Max())
             ? sizes.max_size
             : (sizes.max_size - border_scrollbar_padding).ClampNegativeToZero();
+
+    // If block-size containment applies compute the block-size ignoring
+    // children (just based on the row definitions).
+    if (node.ShouldApplyBlockSizeContainment()) {
+      contain_intrinsic_block_size_ =
+          ComputeIntrinsicBlockSizeIgnoringChildren();
+
+      // Resolve the block-size, and set the available sizes.
+      const LayoutUnit block_size = ComputeBlockSizeForFragment(
+          constraint_space, style, BorderPadding(),
+          *contain_intrinsic_block_size_, container_builder_.InlineSize());
+
+      grid_available_size_.block_size = grid_min_available_size_.block_size =
+          grid_max_available_size_.block_size =
+              (block_size - border_scrollbar_padding).ClampNegativeToZero();
+    }
   }
 }
 
