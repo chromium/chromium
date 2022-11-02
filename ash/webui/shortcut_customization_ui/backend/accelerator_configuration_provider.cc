@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -73,25 +74,14 @@ void AcceleratorConfigurationProvider::IsMutable(
 
 void AcceleratorConfigurationProvider::GetAccelerators(
     GetAcceleratorsCallback callback) {
-  AcceleratorConfigurationMap accelerator_config;
+  std::move(callback).Run(CreateConfigurationMap());
+}
 
-  base::flat_map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
-      accelerators_mojom;
-  // TODO(jimmyxgong): Currently only handling Ash case, need to also include
-  // other accelerator sources.
-  for (const auto& [action_id, accelerators] : id_to_accelerator_info_) {
-    std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
-    infos_mojom.reserve(accelerators.size());
-    for (const auto& accelerator : accelerators) {
-      infos_mojom.push_back(AcceleratorInfoToMojom(accelerator));
-    }
-    accelerators_mojom.emplace(action_id, std::move(infos_mojom));
-  }
-
-  accelerator_config.emplace(mojom::AcceleratorSource::kAsh,
-                             std::move(accelerators_mojom));
-
-  std::move(callback).Run(std::move(accelerator_config));
+void AcceleratorConfigurationProvider::AddObserver(
+    mojo::PendingRemote<
+        shortcut_customization::mojom::AcceleratorsUpdatedObserver> observer) {
+  accelerators_updated_observers_.reset();
+  accelerators_updated_observers_.Bind(std::move(observer));
 }
 
 void AcceleratorConfigurationProvider::OnInputDeviceConfigurationChanged(
@@ -124,6 +114,7 @@ void AcceleratorConfigurationProvider::UpdateKeyboards() {
   DCHECK(device_data_manager);
 
   connected_keyboards_ = device_data_manager->GetKeyboardDevices();
+  NotifyAcceleratorsUpdated();
 }
 
 void AcceleratorConfigurationProvider::OnAcceleratorsUpdated(
@@ -148,6 +139,37 @@ void AcceleratorConfigurationProvider::OnAcceleratorsUpdated(
       id_to_accelerator_info_[action_id].push_back(info);
     }
   }
+  NotifyAcceleratorsUpdated();
+}
+
+void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
+  if (accelerators_updated_observers_.is_bound()) {
+    accelerators_updated_observers_->OnAcceleratorsUpdated(
+        CreateConfigurationMap());
+  }
+}
+
+AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+AcceleratorConfigurationProvider::CreateConfigurationMap() {
+  AcceleratorConfigurationMap accelerator_config;
+
+  base::flat_map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
+      accelerators_mojom;
+  // TODO(jimmyxgong): Currently only handling Ash case, need to also include
+  // other accelerator sources.
+  for (const auto& [action_id, accelerators] : id_to_accelerator_info_) {
+    std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
+    infos_mojom.reserve(accelerators.size());
+    for (const auto& accelerator : accelerators) {
+      infos_mojom.push_back(AcceleratorInfoToMojom(accelerator));
+    }
+    accelerators_mojom.emplace(action_id, std::move(infos_mojom));
+  }
+
+  accelerator_config.emplace(mojom::AcceleratorSource::kAsh,
+                             std::move(accelerators_mojom));
+
+  return accelerator_config;
 }
 
 }  // namespace shortcut_ui

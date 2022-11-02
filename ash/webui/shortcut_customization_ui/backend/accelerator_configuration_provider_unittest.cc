@@ -21,6 +21,8 @@
 #include "base/test/bind.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -29,6 +31,37 @@
 namespace ash {
 
 namespace {
+
+class FakeAcceleratorsUpdatedObserver
+    : public shortcut_customization::mojom::AcceleratorsUpdatedObserver {
+ public:
+  void OnAcceleratorsUpdated(
+      shortcut_ui::AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+          config) override {
+    config_ = std::move(config);
+    ++num_times_notified_;
+  }
+
+  mojo::PendingRemote<
+      shortcut_customization::mojom::AcceleratorsUpdatedObserver>
+  pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  int num_times_notified() { return num_times_notified_; }
+
+  shortcut_ui::AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+  config() {
+    return mojo::Clone(config_);
+  }
+
+ private:
+  mojo::Receiver<shortcut_customization::mojom::AcceleratorsUpdatedObserver>
+      receiver_{this};
+  shortcut_ui::AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+      config_;
+  int num_times_notified_ = 0;
+};
 
 bool CompareAccelerators(const ash::AcceleratorData& expected_data,
                          const ash::AcceleratorInfo& actual_info) {
@@ -141,6 +174,11 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     return provider_->connected_keyboards_;
   }
 
+  void SetUpObserver(FakeAcceleratorsUpdatedObserver* observer) {
+    provider_->AddObserver(observer->pending_remote());
+    base::RunLoop().RunUntilIdle();
+  }
+
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
 };
 
@@ -178,6 +216,10 @@ TEST_F(AcceleratorConfigurationProviderTest, AshIsMutable) {
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
+  FakeAcceleratorsUpdatedObserver observer;
+  SetUpObserver(&observer);
+  EXPECT_EQ(0, observer.num_times_notified());
+
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
        CYCLE_FORWARD_MRU},
@@ -189,6 +231,11 @@ TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
   base::RunLoop().RunUntilIdle();
   ExpectAllAcceleratorsEqual(test_data, GetAshAcceleratorInfos());
+  // Notified once after instantiating the accelerators.
+  EXPECT_EQ(1, observer.num_times_notified());
+  // Verify observer received the correct accelerators.
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
+                               observer.config());
 
   // Initialize with a new set of accelerators.
   const AcceleratorData updated_test_data[] = {
@@ -202,6 +249,11 @@ TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(updated_test_data);
   base::RunLoop().RunUntilIdle();
   ExpectAllAcceleratorsEqual(updated_test_data, GetAshAcceleratorInfos());
+  // Observers are notified again after a new set of accelerators are provided.
+  EXPECT_EQ(2, observer.num_times_notified());
+  // Verify observer has been updated with the new set of accelerators.
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
+                               updated_test_data, observer.config());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, GetAcceleratorConfigAsh) {
@@ -221,10 +273,13 @@ TEST_F(AcceleratorConfigurationProviderTest, GetAcceleratorConfigAsh) {
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(jimmyxgong): Update test to check accelerators sent via Mojo.
 TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
+  FakeAcceleratorsUpdatedObserver observer;
+  SetUpObserver(&observer);
+
   const std::vector<ui::InputDevice>& devices = GetConnectedKeyboards();
   EXPECT_TRUE(devices.empty());
+  EXPECT_EQ(0, observer.num_times_notified());
 
   ui::InputDevice expected_test_keyboard(
       1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "Keyboard");
@@ -237,6 +292,10 @@ TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
   const std::vector<ui::InputDevice>& actual_devices = GetConnectedKeyboards();
   EXPECT_EQ(1u, actual_devices.size());
   CompareInputDevices(expected_test_keyboard, actual_devices[0]);
+
+  base::RunLoop().RunUntilIdle();
+  // Adding a new keyboard should trigger the UpdatedAccelerators observer.
+  EXPECT_EQ(1, observer.num_times_notified());
 }
 
 }  // namespace shortcut_ui

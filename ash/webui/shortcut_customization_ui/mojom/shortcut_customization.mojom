@@ -6,6 +6,21 @@ module ash.shortcut_customization.mojom;
 
 import "ash/public/mojom/accelerator_info.mojom";
 
+// Observer interface, to be implemented by the Shortcut Customization SWA to
+// receive updated accelerators.
+interface AcceleratorsUpdatedObserver {
+  // Called whenever there is an observable change with accelerators. This
+  // includes any modifications to accelerators, change of accelerator-related
+  // prefs (i.e. TreatTopRowAsFKey), or keyboard device connected/disconnected.
+  // `config` encapsulates the entire accelerator mapping that has been updated
+  // It is formatted as:
+  // AcceleratorSource -> map<AcceleratorActionId, Array<AcceleratorInfo>>.
+  // Where AcceleratorActionId represents the unique ID of a shortcut.
+  OnAcceleratorsUpdated(
+      map<ash.mojom.AcceleratorSource,
+      map<uint32, array<ash.mojom.AcceleratorInfo>>> config);
+};
+
 // Provides methods to allow the Shortcut Customization SWA to call on the
 // shortcut provider implementor. Interface is implemented by C++ accelerator
 // source configurators, e.g. BrowserAcceleratorConfiguration,
@@ -22,4 +37,8 @@ interface AcceleratorConfigurationProvider {
   GetAccelerators() =>
       (map<ash.mojom.AcceleratorSource,
        map<uint32, array<ash.mojom.AcceleratorInfo>>> config);
+
+  // Registers an observer that will be notified whenever there is an update
+  // to either the accelerator mapping or on keyboard device connected event.
+  AddObserver(pending_remote<AcceleratorsUpdatedObserver> observer);
 };
