@@ -37,7 +37,7 @@ import java.util.Collection;
  * Test suite for Java Geolocation.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.N, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 public class LocationProviderTest {
     public static enum LocationProviderType { MOCK, ANDROID, GMS_CORE }
 

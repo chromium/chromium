@@ -28,7 +28,7 @@ import java.util.Collection;
  * Parametrized unit tests for the AutofillContact class.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.N, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 public class AutofillContactTest {
     @Parameters
     public static Collection<Object[]> data() {

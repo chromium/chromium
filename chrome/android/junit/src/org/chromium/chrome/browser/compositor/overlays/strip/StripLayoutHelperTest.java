@@ -67,7 +67,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_IMPROVEMENTS,
         ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.N, qualifiers = "sw600dp")
+@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.M, qualifiers = "sw600dp")
 public class StripLayoutHelperTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();

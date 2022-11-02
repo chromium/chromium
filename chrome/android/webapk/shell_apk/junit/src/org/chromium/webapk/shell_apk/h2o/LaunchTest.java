@@ -87,6 +87,32 @@ public final class LaunchTest {
     }
 
     /**
+     * Test launching via a deep link on pre-N Android.
+     * Check:
+     * 1) That the host browser was launched.
+     * 2) That no activities have been enabled/disabled.
+     */
+    @Test
+    @Config(sdk = Build.VERSION_CODES.M)
+    public void testDeepLinkPreN() {
+        registerWebApk(true /* isNewStyleWebApk */);
+
+        final String deepLinkUrl = "https://pwa.rocks/deep.html";
+
+        Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(deepLinkUrl));
+        launchIntent.setPackage(sWebApkPackageName);
+
+        ArrayList<Intent> launchedIntents =
+                launchAndCheckBrowserLaunched(false /* opaqueMainActivityInitiallyEnabled */,
+                        launchIntent, H2OTransparentLauncherActivity.class,
+                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+        Assert.assertEquals(1, launchedIntents.size());
+        assertIntentIsForBrowserLaunch(launchedIntents.get(0), deepLinkUrl);
+
+        assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
+    }
+
+    /**
      * Test launching via a deep link on Android N+.
      * Check:
      * 1) That the host browser was launched.
@@ -397,6 +423,40 @@ public final class LaunchTest {
      * Test {@link H2OOpaqueMainActivity#checkComponentEnabled()} when:
      * - Component enabled setting is default
      * AND
+     * - Android API level < N
+     */
+    @Test
+    @Config(sdk = Build.VERSION_CODES.M)
+    public void testCheckH2OOpaqueMainActivityEnabledPreN() {
+        changeWebApkActivityEnabledSetting(mPackageManager, H2OOpaqueMainActivity.class,
+                PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
+        Assert.assertFalse(H2OOpaqueMainActivity.checkComponentEnabled(
+                RuntimeEnvironment.application, false /* isNewStyleWebApk */));
+        Assert.assertFalse(H2OOpaqueMainActivity.checkComponentEnabled(
+                RuntimeEnvironment.application, true /* isNewStyleWebApk */));
+    }
+
+    /**
+     * Test {@link H2OMainActivity#checkComponentEnabled()} when:
+     * - Component enabled setting is default
+     * AND
+     * - Android API level < N
+     */
+    @Test
+    @Config(sdk = Build.VERSION_CODES.M)
+    public void testCheckH2oMainActivityEnabledPreN() {
+        changeWebApkActivityEnabledSetting(mPackageManager, H2OMainActivity.class,
+                PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
+        Assert.assertTrue(H2OMainActivity.checkComponentEnabled(
+                RuntimeEnvironment.application, false /* isNewStyleWebApk */));
+        Assert.assertTrue(H2OMainActivity.checkComponentEnabled(
+                RuntimeEnvironment.application, true /* isNewStyleWebApk */));
+    }
+
+    /**
+     * Test {@link H2OOpaqueMainActivity#checkComponentEnabled()} when:
+     * - Component enabled setting is default
+     * AND
      * - Android API level >= N
      */
     @Test
@@ -486,6 +546,22 @@ public final class LaunchTest {
 
         ShortcutManager shortcutManager = mAppContext.getSystemService(ShortcutManager.class);
         assertFalse(containsSiteSettingsDynamicShortcut(shortcutManager));
+    }
+
+    /** Tests that we do not attempt to add a shortcut on Android versions lower than N. */
+    @Test
+    @Config(sdk = Build.VERSION_CODES.M)
+    public void testDoesNotAddSiteSettingsWhenSdkLow() {
+        registerApkForSiteSettings(true /*enableInMetadata*/, true /*addCategory*/);
+
+        Intent launchIntent = new Intent(Intent.ACTION_MAIN);
+        launchIntent.setPackage(sWebApkPackageName);
+
+        launchAndCheckBrowserLaunched(false /* opaqueMainActivityInitiallyEnabled */, launchIntent,
+                H2OMainActivity.class, SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
+
+        // There is no shortcut manager in Android L. Therefore if
+        // this test passes, then we did not attempt to add the shortcut.
     }
 
     private static boolean containsSiteSettingsDynamicShortcut(ShortcutManager shortcutManager) {

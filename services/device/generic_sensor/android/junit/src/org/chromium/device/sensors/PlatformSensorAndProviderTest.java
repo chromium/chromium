@@ -51,7 +51,7 @@ import java.util.List;
  * Unit tests for PlatformSensor and PlatformSensorProvider.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.N, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 @SuppressWarnings("GuardedBy") // verify(sensor, times(1)).sensorError() cannot resolve |mLock|.
 public class PlatformSensorAndProviderTest {
     @Mock

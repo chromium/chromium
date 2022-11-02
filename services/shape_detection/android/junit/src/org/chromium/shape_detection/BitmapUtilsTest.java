@@ -25,7 +25,7 @@ import org.chromium.skia.mojom.BitmapN32ImageInfo;
  * Test suite for conversion-to-Frame utils.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.N, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 public class BitmapUtilsTest {
     private static final int VALID_WIDTH = 1;
     private static final int VALID_HEIGHT = 1;

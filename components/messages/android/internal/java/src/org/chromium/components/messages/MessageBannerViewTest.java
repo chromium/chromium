@@ -156,7 +156,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testSecondaryActionMenuInvokesPopupMenuEventHandlers() {
-        PopupMenuShownListener listener = Mockito.mock(PopupMenuShownListener.class);
+        PopupMenuShownListener listener = Mockito.spy(PopupMenuShownListener.class);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PropertyModel propertyModel =
                     new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
