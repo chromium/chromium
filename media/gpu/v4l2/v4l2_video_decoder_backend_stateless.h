@@ -53,8 +53,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   void OnOutputBufferDequeued(V4L2ReadableBufferRef buffer) override;
   void OnStreamStopped(bool stop_input_queue) override;
   bool ApplyResolution(const gfx::Size& pic_size,
-                       const gfx::Rect& visible_rect,
-                       const size_t num_output_frames) override;
+                       const gfx::Rect& visible_rect) override;
   void OnChangeResolutionDone(CroStatus status) override;
   void ClearPendingRequests(DecoderStatus status) override;
   bool StopInputQueueOnResChange() const override;
