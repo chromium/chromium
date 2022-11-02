@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -14,6 +15,7 @@
 #include "base/process/process_handle.h"
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymaster_client.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -129,8 +131,18 @@ void ArcKeymasterBridge::BootstrapMojoConnection(
 
   mojo::OutgoingInvitation invitation;
   mojo::PlatformChannel channel;
-  mojo::ScopedMessagePipeHandle server_pipe =
-      invitation.AttachMessagePipe("arc-keymaster-pipe");
+  mojo::ScopedMessagePipeHandle server_pipe;
+  if (mojo::core::IsMojoIpczEnabled()) {
+    constexpr uint64_t kKeymasterPipeAttachment = 0;
+    server_pipe = invitation.AttachMessagePipe(kKeymasterPipeAttachment);
+  } else {
+    server_pipe = invitation.AttachMessagePipe("arc-keymaster-pipe");
+  }
+  if (!server_pipe.is_valid()) {
+    LOG(ERROR) << "ArcKeymasterBridge could not bind to invitation";
+    std::move(callback).Run(false);
+    return;
+  }
 
   // Bootstrap cert_store channel attached to the same invitation.
   cert_store_bridge_->BindToInvitation(&invitation);
