@@ -276,7 +276,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
              {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}});
   storage_.RemoveEvents(delete_begin, delete_end,
                         base::RepeatingCallback<bool(const GURL&)>(),
-                        DIPSEventRemovalType::kInteraction);
+                        DIPSEventRemovalType::kHistory);
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times().first,
@@ -286,6 +286,77 @@ TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
   EXPECT_EQ(state1.user_interaction_times().first,
             absl::make_optional(delete_end));  // adjusted
   EXPECT_EQ(state1.user_interaction_times().last,
+            absl::make_optional(base::Time::FromDoubleT(8)));  // no change
+
+  DIPSState state2 = storage_.Read(url2);
+  EXPECT_FALSE(state2.was_loaded());  // removed
+}
+
+TEST_F(DIPSStorageTest, RemoveByTimeStatefulOnly) {
+  GURL url1("https://example1.com");
+  GURL url2("https://example2.com");
+  base::Time delete_begin = base::Time::FromDoubleT(2);
+  base::Time delete_end = base::Time::FromDoubleT(6);
+
+  storage_.WriteForTesting(
+      url1, {{absl::nullopt, absl::nullopt},
+             {absl::nullopt, absl::nullopt},
+             {base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)},
+             {base::Time::FromDoubleT(5), base::Time::FromDoubleT(8)}});
+  storage_.WriteForTesting(
+      url2, {{absl::nullopt, absl::nullopt},
+             {absl::nullopt, absl::nullopt},
+             {absl::nullopt, absl::nullopt},
+             {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}});
+  storage_.RemoveEvents(delete_begin, delete_end,
+                        base::RepeatingCallback<bool(const GURL&)>(),
+                        DIPSEventRemovalType::kStorage);
+
+  DIPSState state1 = storage_.Read(url1);
+  EXPECT_EQ(state1.stateful_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+  EXPECT_EQ(state1.stateful_bounce_times().last,
+            absl::make_optional(delete_begin));  // adjusted
+  EXPECT_EQ(state1.stateless_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(5)));  // no change
+  EXPECT_EQ(state1.stateless_bounce_times().last,
+            absl::make_optional(base::Time::FromDoubleT(8)));  // no change
+
+  DIPSState state2 = storage_.Read(url2);
+  EXPECT_EQ(state2.stateless_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+  EXPECT_EQ(state2.stateless_bounce_times().last,
+            absl::make_optional(base::Time::FromDoubleT(5)));  // no change
+}
+
+TEST_F(DIPSStorageTest, RemoveByTimeStatelessOnly) {
+  GURL url1("https://example1.com");
+  GURL url2("https://example2.com");
+  base::Time delete_begin = base::Time::FromDoubleT(2);
+  base::Time delete_end = base::Time::FromDoubleT(6);
+
+  storage_.WriteForTesting(
+      url1, {{absl::nullopt, absl::nullopt},
+             {absl::nullopt, absl::nullopt},
+             {base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)},
+             {base::Time::FromDoubleT(5), base::Time::FromDoubleT(8)}});
+  storage_.WriteForTesting(
+      url2, {{absl::nullopt, absl::nullopt},
+             {absl::nullopt, absl::nullopt},
+             {absl::nullopt, absl::nullopt},
+             {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}});
+  storage_.RemoveEvents(delete_begin, delete_end,
+                        base::RepeatingCallback<bool(const GURL&)>(),
+                        DIPSEventRemovalType::kHistory);
+
+  DIPSState state1 = storage_.Read(url1);
+  EXPECT_EQ(state1.stateful_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+  EXPECT_EQ(state1.stateful_bounce_times().last,
+            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+  EXPECT_EQ(state1.stateless_bounce_times().first,
+            absl::make_optional(delete_end));  // adjusted
+  EXPECT_EQ(state1.stateless_bounce_times().last,
             absl::make_optional(base::Time::FromDoubleT(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);

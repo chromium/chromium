@@ -339,19 +339,51 @@ bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
 
   if (type == DIPSEventRemovalType::kAll) {
     static constexpr char kAllTypesSql[] =  // clang-format off
-      "DELETE FROM bounces "
-          "WHERE (first_user_interaction_time>=?1 AND "
-                 "last_user_interaction_time<=?2 AND "
-                 "first_site_storage_time>=?1 AND "
-                 "last_site_storage_time<=?2) OR "
-                 "(first_user_interaction_time=0 AND "
-                 "last_user_interaction_time=0 AND "
-                 "first_site_storage_time>=?1 AND "
-                 "last_site_storage_time<=?2) OR "
-                 "(first_user_interaction_time>=?1 AND "
-                 "last_user_interaction_time<=?2 AND "
-                 "first_site_storage_time=0 AND "
-                 "last_site_storage_time=0)";
+        "DELETE FROM bounces "
+            "WHERE (first_site_storage_time>=?1 AND "
+                   "last_site_storage_time<=?2 AND "
+                   "first_user_interaction_time>=?1 AND "
+                   "last_user_interaction_time<=?2 AND "
+                   "first_stateful_bounce_time>=?1 AND "
+                   "last_stateful_bounce_time<=?2 AND "
+                   "first_stateless_bounce_time>=?1 AND "
+                   "last_stateless_bounce_time<=?2) OR "
+
+                   "(first_site_storage_time>=?1 AND "
+                   "last_site_storage_time<=?2 AND "
+                   "first_user_interaction_time=0 AND "
+                   "last_user_interaction_time=0 AND "
+                   "first_stateful_bounce_time=0 AND "
+                   "last_stateful_bounce_time=0 AND "
+                   "first_stateless_bounce_time=0 AND "
+                   "last_stateless_bounce_time=0) OR "
+
+                   "(first_site_storage_time=0 AND "
+                   "last_site_storage_time=0 AND "
+                   "first_user_interaction_time>=?1 AND "
+                   "last_user_interaction_time<=?2 AND "
+                   "first_stateful_bounce_time=0 AND "
+                   "last_stateful_bounce_time=0 AND "
+                   "first_stateless_bounce_time=0 AND "
+                   "last_stateless_bounce_time=0) OR "
+
+                   "(first_site_storage_time=0 AND "
+                   "last_site_storage_time=0 AND "
+                   "first_user_interaction_time=0 AND "
+                   "last_user_interaction_time=0 AND "
+                   "first_stateful_bounce_time>=?1 AND "
+                   "last_stateful_bounce_time<=?2 AND "
+                   "first_stateless_bounce_time=0 AND "
+                   "last_stateless_bounce_time=0) OR "
+
+                   "(first_site_storage_time=0 AND "
+                   "last_site_storage_time=0 AND "
+                   "first_user_interaction_time=0 AND "
+                   "last_user_interaction_time=0 AND "
+                   "first_stateful_bounce_time=0 AND "
+                   "last_stateful_bounce_time=0 AND "
+                   "first_stateless_bounce_time>=?1 AND "
+                   "last_stateless_bounce_time<=?2)";
     // clang-format on
     DCHECK(db_->IsSQLValid(kAllTypesSql));
 
@@ -363,8 +395,8 @@ bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
       return false;
   }
 
-  if ((type & DIPSEventRemovalType::kInteraction) ==
-      DIPSEventRemovalType::kInteraction) {
+  if ((type & DIPSEventRemovalType::kHistory) ==
+      DIPSEventRemovalType::kHistory) {
     static constexpr char kClearInteractionSql[] =  // clang-format off
         "UPDATE bounces SET "
             "first_user_interaction_time=0,"
@@ -380,6 +412,23 @@ bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
     s_clear_interaction.BindTime(1, delete_end);
 
     if (!s_clear_interaction.Run())
+      return false;
+
+    static constexpr char kClearStatelessSql[] =  // clang-format off
+        "UPDATE bounces SET "
+            "first_stateless_bounce_time=0,"
+            "last_stateless_bounce_time=0 "
+            "WHERE first_stateless_bounce_time>=? AND "
+                  "last_stateless_bounce_time<=?";
+    // clang-format on
+    DCHECK(db_->IsSQLValid(kClearStatelessSql));
+
+    sql::Statement s_clear_stateless(
+        db_->GetCachedStatement(SQL_FROM_HERE, kClearStatelessSql));
+    s_clear_stateless.BindTime(0, delete_begin);
+    s_clear_stateless.BindTime(1, delete_end);
+
+    if (!s_clear_stateless.Run())
       return false;
   }
 
@@ -401,6 +450,23 @@ bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
 
     if (!s_clear_storage.Run())
       return false;
+
+    static constexpr char kClearStatefulSql[] =  // clang-format off
+        "UPDATE bounces SET "
+            "first_stateful_bounce_time=0,"
+            "last_stateful_bounce_time=0 "
+            "WHERE first_stateful_bounce_time>=? AND "
+                  "last_stateful_bounce_time<=?";
+    // clang-format on
+    DCHECK(db_->IsSQLValid(kClearStatefulSql));
+
+    sql::Statement s_clear_stateful(
+        db_->GetCachedStatement(SQL_FROM_HERE, kClearStatefulSql));
+    s_clear_stateful.BindTime(0, delete_begin);
+    s_clear_stateful.BindTime(1, delete_end);
+
+    if (!s_clear_stateful.Run())
+      return false;
   }
 
   static constexpr char kCleanUpSql[] =  // clang-format off
@@ -408,7 +474,11 @@ bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
           "WHERE first_site_storage_time=0 AND "
                 "last_site_storage_time=0 AND "
                 "first_user_interaction_time=0 AND "
-                "last_user_interaction_time=0";
+                "last_user_interaction_time=0 AND "
+                "first_stateful_bounce_time=0 AND "
+                "last_stateful_bounce_time=0 AND "
+                "first_stateless_bounce_time=0 AND "
+                "last_stateless_bounce_time=0";
   // clang-format on
   DCHECK(db_->IsSQLValid(kCleanUpSql));
 
@@ -422,8 +492,8 @@ bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
                                          const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if ((type & DIPSEventRemovalType::kInteraction) ==
-      DIPSEventRemovalType::kInteraction) {
+  if ((type & DIPSEventRemovalType::kHistory) ==
+      DIPSEventRemovalType::kHistory) {
     static constexpr char kUpdateFirstInteractionSql[] =  // clang-format off
         "UPDATE bounces SET first_user_interaction_time=?1 "
             "WHERE first_user_interaction_time>=?2 AND "
@@ -437,6 +507,21 @@ bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
     s_first_interaction.BindTime(1, delete_begin);
 
     if (!s_first_interaction.Run())
+      return false;
+
+    static constexpr char kUpdateFirstStatelessSql[] =  // clang-format off
+        "UPDATE bounces SET first_stateless_bounce_time=?1 "
+            "WHERE first_stateless_bounce_time>=?2 AND "
+                  "first_stateless_bounce_time<?1";
+    // clang-format on
+    DCHECK(db_->IsSQLValid(kUpdateFirstStatelessSql));
+
+    sql::Statement s_first_stateless(
+        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstStatelessSql));
+    s_first_stateless.BindTime(0, delete_end);
+    s_first_stateless.BindTime(1, delete_begin);
+
+    if (!s_first_stateless.Run())
       return false;
   }
 
@@ -456,6 +541,21 @@ bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
 
     if (!s_first_storage.Run())
       return false;
+
+    static constexpr char kUpdateFirstStatefulSql[] =  // clang-format off
+        "UPDATE bounces SET first_stateful_bounce_time=?1 "
+            "WHERE first_stateful_bounce_time>=?2 AND "
+                  "first_stateful_bounce_time<?1";
+    // clang-format on
+    DCHECK(db_->IsSQLValid(kUpdateFirstStatefulSql));
+
+    sql::Statement s_first_stateful(
+        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstStatefulSql));
+    s_first_stateful.BindTime(0, delete_end);
+    s_first_stateful.BindTime(1, delete_begin);
+
+    if (!s_first_stateful.Run())
+      return false;
   }
 
   return true;
@@ -466,8 +566,8 @@ bool DIPSDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
                                         const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if ((type & DIPSEventRemovalType::kInteraction) ==
-      DIPSEventRemovalType::kInteraction) {
+  if ((type & DIPSEventRemovalType::kHistory) ==
+      DIPSEventRemovalType::kHistory) {
     static constexpr char kUpdateLastInteractionSql[] =  // clang-format off
         "UPDATE bounces SET last_user_interaction_time=?1 "
             "WHERE last_user_interaction_time>?1 AND "
@@ -481,6 +581,21 @@ bool DIPSDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
     s_last_interaction.BindTime(1, delete_end);
 
     if (!s_last_interaction.Run())
+      return false;
+
+    static constexpr char kUpdateLastStatelessSql[] =  // clang-format off
+        "UPDATE bounces SET last_stateless_bounce_time=?1 "
+            "WHERE last_stateless_bounce_time>?1 AND "
+                  "last_stateless_bounce_time<=?2";
+    // clang-format on
+    DCHECK(db_->IsSQLValid(kUpdateLastStatelessSql));
+
+    sql::Statement s_last_stateless(
+        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateLastStatelessSql));
+    s_last_stateless.BindTime(0, delete_begin);
+    s_last_stateless.BindTime(1, delete_end);
+
+    if (!s_last_stateless.Run())
       return false;
   }
 
@@ -499,6 +614,21 @@ bool DIPSDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
     s_last_storage.BindTime(1, delete_end);
 
     if (!s_last_storage.Run())
+      return false;
+
+    static constexpr char kUpdateLastStatefulSql[] =  // clang-format off
+        "UPDATE bounces SET last_stateful_bounce_time=?1 "
+            "WHERE last_stateful_bounce_time>?1 AND "
+                  "last_stateful_bounce_time<=?2";
+    // clang-format on
+    DCHECK(db_->IsSQLValid(kUpdateLastStatefulSql));
+
+    sql::Statement s_last_stateful(
+        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateLastStatefulSql));
+    s_last_stateful.BindTime(0, delete_begin);
+    s_last_stateful.BindTime(1, delete_end);
+
+    if (!s_last_stateful.Run())
       return false;
   }
 

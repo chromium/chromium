@@ -57,7 +57,7 @@ std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode);
 // NOTE: We use this type as a bitfield don't change the values.
 enum class DIPSEventRemovalType {
   kNone = 0,
-  kInteraction = 1,
+  kHistory = 1,
   kStorage = 2,
   kAll = 3
 };
