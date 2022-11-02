@@ -11,7 +11,7 @@ assert(enable_dice_support)
 # Test files that do not require preprocessing. If adding // <if expr> to any
 # file below, create a processed_files list and add it to it
 non_preprocessed_files = [
-  "dice_app_test.ts",
+  "sign_in_promo_test.ts",
   "test_intro_browser_proxy.ts",
 ]
 

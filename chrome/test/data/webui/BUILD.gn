@@ -181,7 +181,7 @@ if (include_js_tests) {
 
     if (enable_dice_support) {
       sources += [
-        "intro/intro_browsertest.js",
+        "intro/sign_in_promo_browsertest.js",
         "welcome/a11y_tests.js",
         "welcome/welcome_browsertest.js",
       ]

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://intro/dice_app.js';
+import 'chrome://intro/sign_in_promo.js';
 
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
-import {IntroAppElement} from 'chrome://intro/dice_app.js';
+import {SignInPromoElement} from 'chrome://intro/sign_in_promo.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestIntroBrowserProxy} from './test_intro_browser_proxy.js';
 
-suite('DiceAppTest', function() {
-  let testElement: IntroAppElement;
+suite('SignInPromoTest', function() {
+  let testElement: SignInPromoElement;
   let testBrowserProxy: TestIntroBrowserProxy;
 
   setup(function() {
@@ -20,7 +20,7 @@ suite('DiceAppTest', function() {
     IntroBrowserProxyImpl.setInstance(testBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = document.createElement('intro-app');
+    testElement = document.createElement('sign-in-promo');
     document.body.appendChild(testElement);
     return waitBeforeNextRender(testElement);
   });
