@@ -425,7 +425,8 @@
 }
 
 - (void)keyCommand_goToTabGrid {
-  // TODO(crbug.com/1378942): Implement this action.
+  [_dispatcher prepareTabSwitcher];
+  [_dispatcher displayTabSwitcherInGridLayout];
 }
 
 - (void)keyCommand_clearBrowsingData {
