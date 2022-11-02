@@ -74,7 +74,7 @@ class EasyUnlockServiceRegular
   // Persists Smart Lock host and local device to prefs, and then informs
   // the base class to potentially update Smart Lock host and local device
   // stored in the TPM.
-  void SetStoredRemoteDevices(const base::ListValue& devices);
+  void SetStoredRemoteDevices(const base::Value::List& devices);
 
   // EasyUnlockService implementation:
   proximity_auth::ProximityAuthPrefManager* GetProximityAuthPrefManager()

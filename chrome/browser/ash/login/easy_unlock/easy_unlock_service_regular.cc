@@ -202,7 +202,7 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
   local_and_remote_devices.push_back(remote_devices[0]);
   local_and_remote_devices.push_back(*local_device);
 
-  base::ListValue device_list;
+  base::Value::List device_list;
   for (const auto& device : local_and_remote_devices) {
     base::Value::Dict dict;
     std::string b64_public_key, b64_psk;
@@ -254,13 +254,13 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
                     << ", unlock_key: " << unlock_key
                     << ", id: " << device.GetTruncatedDeviceIdForLogs()
                     << " }.";
-    device_list.GetList().Append(std::move(dict));
+    device_list.Append(std::move(dict));
   }
 
-  if (device_list.GetList().size() != 2u) {
+  if (device_list.size() != 2u) {
     PA_LOG(ERROR) << "There should only be 2 devices persisted, the host and "
                      "the client, but there are: "
-                  << device_list.GetList().size();
+                  << device_list.size();
     NOTREACHED();
   }
 
@@ -268,14 +268,14 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
 }
 
 void EasyUnlockServiceRegular::SetStoredRemoteDevices(
-    const base::ListValue& devices) {
+    const base::Value::List& devices) {
   std::string remote_devices_json;
   JSONStringValueSerializer serializer(&remote_devices_json);
   serializer.Serialize(devices);
 
   ScopedDictPrefUpdate pairing_update(profile()->GetPrefs(),
                                       prefs::kEasyUnlockPairing);
-  if (devices.GetList().empty())
+  if (devices.empty())
     pairing_update->Remove(kKeyDevices);
   else
     pairing_update->Set(kKeyDevices, devices.Clone());
