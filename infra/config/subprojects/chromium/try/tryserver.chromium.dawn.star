@@ -85,7 +85,8 @@ try_.builder(
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [
         "ci/Dawn Mac x64 DEPS Builder",
-        "ci/Dawn Mac x64 DEPS Release (AMD)",
+        # Not enough capacity on Mac AMD https://crbug.com/1380184.
+        # "ci/Dawn Mac x64 DEPS Release (AMD)",
         "ci/Dawn Mac x64 DEPS Release (Intel)",
     ],
     main_list_view = "try",
