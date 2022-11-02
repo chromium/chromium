@@ -36,4 +36,9 @@ class NetworkDropdownHandler : public BaseWebUIHandler {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::NetworkDropdownHandler;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_NETWORK_DROPDOWN_HANDLER_H_

@@ -14,12 +14,14 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
-#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
+#include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -28,10 +30,9 @@ namespace content {
 class WebUIDataSource;
 }
 
-namespace chromeos {
-class NetworkStateInformer;
+namespace ash {
+class ErrorScreen;
 class OobeDisplayChooser;
-class SigninScreenHandler;
 
 // A custom WebUI that defines datasource for out-of-box-experience (OOBE) UI:
 // - welcome screen (setup language/keyboard/network).
@@ -214,11 +215,11 @@ class OobeUI : public ui::MojoWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::OobeUI;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::OobeUI;
 }
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OOBE_UI_H_

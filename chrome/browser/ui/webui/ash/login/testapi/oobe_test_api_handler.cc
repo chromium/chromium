@@ -29,7 +29,7 @@
 #include "components/account_id/account_id.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 OobeTestAPIHandler::OobeTestAPIHandler() = default;
 OobeTestAPIHandler::~OobeTestAPIHandler() = default;
@@ -62,11 +62,10 @@ void OobeTestAPIHandler::InitializeDeprecated() {}
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   login::NetworkStateHelper helper_;
-  dict->Set(
-      "testapi_shouldSkipNetworkFirstShow",
-      features::IsOobeNetworkScreenSkipEnabled() &&
-          !ash::switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
-          helper_.IsConnectedToEthernet());
+  dict->Set("testapi_shouldSkipNetworkFirstShow",
+            features::IsOobeNetworkScreenSkipEnabled() &&
+                !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
+                helper_.IsConnectedToEthernet());
   dict->Set("testapi_shouldSkipEula",
             policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
                 StartupUtils::IsEulaAccepted() ||
@@ -79,7 +78,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
                 !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 
   dict->Set("testapi_isFingerprintSupported",
-            ash::quick_unlock::IsFingerprintSupported());
+            quick_unlock::IsFingerprintSupported());
 
   dict->Set("testapi_isLibAssistantEnabled",
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -98,8 +97,8 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   );
 
   dict->Set("testapi_isOobeInTabletMode",
-            ash::TabletMode::Get()->InTabletMode() ||
-                ash::switches::ShouldOobeUseTabletModeFirstRun());
+            TabletMode::Get()->InTabletMode() ||
+                switches::ShouldOobeUseTabletModeFirstRun());
   dict->Set("testapi_shouldSkipConsolidatedConsent",
             !features::IsOobeConsolidatedConsentEnabled() ||
                 !BUILDFLAG(GOOGLE_CHROME_BRANDING));
@@ -116,12 +115,11 @@ void OobeTestAPIHandler::LoginWithPin(const std::string& username,
 }
 
 void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
-  ash::LoginDisplayHost::default_host()->StartWizard(ash::OobeScreenId(screen));
+  LoginDisplayHost::default_host()->StartWizard(OobeScreenId(screen));
 }
 
 void OobeTestAPIHandler::SkipToLoginForTesting() {
-  ash::WizardController* controller =
-      ash::WizardController::default_controller();
+  WizardController* controller = WizardController::default_controller();
   if (!controller || !controller->is_initialized()) {
     LOG(ERROR)
         << "SkipToLoginForTesting is called when WizardController is not yet "
@@ -133,7 +131,7 @@ void OobeTestAPIHandler::SkipToLoginForTesting() {
 
 void OobeTestAPIHandler::EmulateDevicesConnectedForTesting() {
   HIDDetectionScreen* screen_ = static_cast<HIDDetectionScreen*>(
-      ash::WizardController::default_controller()->GetScreen(
+      WizardController::default_controller()->GetScreen(
           HIDDetectionView::kScreenId));
   auto touchscreen = device::mojom::InputDeviceInfo::New();
   touchscreen->id = "fake_touchscreen";
@@ -158,17 +156,16 @@ void OobeTestAPIHandler::EmulateDevicesConnectedForTesting() {
 }
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {
-  ash::WizardController::default_controller()
+  WizardController::default_controller()
       ->SkipPostLoginScreensForTesting();  // IN-TEST
 }
 
 void OobeTestAPIHandler::LoginAsGuest() {
-  ash::WizardController::default_controller()
-      ->SkipToLoginForTesting();  // IN-TEST
-  CHECK(ash::ExistingUserController::current_controller());
+  WizardController::default_controller()->SkipToLoginForTesting();  // IN-TEST
+  CHECK(ExistingUserController::current_controller());
   UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
-  ash::ExistingUserController::current_controller()->Login(context,
-                                                           SigninSpecifics());
+  ExistingUserController::current_controller()->Login(context,
+                                                      SigninSpecifics());
 }
 
 void OobeTestAPIHandler::ShowGaiaDialog() {
@@ -178,7 +175,7 @@ void OobeTestAPIHandler::ShowGaiaDialog() {
 void OobeTestAPIHandler::HandleGetPrimaryDisplayName(
     const std::string& callback_id) {
   mojo::Remote<crosapi::mojom::CrosDisplayConfigController> cros_display_config;
-  ash::BindCrosDisplayConfigController(
+  BindCrosDisplayConfigController(
       cros_display_config.BindNewPipeAndPassReceiver());
 
   cros_display_config->GetDisplayUnitInfoList(
@@ -206,4 +203,4 @@ void OobeTestAPIHandler::OnGetDisplayUnitInfoList(
                             base::Value(display_name));
 }
 
-}  // namespace chromeos
+}  // namespace ash

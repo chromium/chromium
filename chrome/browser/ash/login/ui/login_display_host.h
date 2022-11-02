@@ -20,11 +20,10 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
-// TODO(https://crbug.com/1164001): use forward declaration.
-#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "components/user_manager/user_type.h"
-
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 
 class AccountId;
 
@@ -40,6 +39,7 @@ namespace ash {
 class KioskAppId;
 class KioskLaunchController;
 class MetricsRecorder;
+class OobeUI;
 class WebUILoginView;
 class WizardController;
 enum class OobeDialogState;

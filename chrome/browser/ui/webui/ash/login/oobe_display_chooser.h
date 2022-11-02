@@ -17,7 +17,7 @@ namespace ui {
 class DeviceDataManager;
 }
 
-namespace chromeos {
+namespace ash {
 
 class OobeDisplayChooser : public ui::InputDeviceEventObserver {
  public:
@@ -59,6 +59,6 @@ class OobeDisplayChooser : public ui::InputDeviceEventObserver {
   base::WeakPtrFactory<OobeDisplayChooser> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OOBE_DISPLAY_CHOOSER_H_

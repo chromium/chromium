@@ -8,11 +8,11 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
+
+class BaseScreen;
 
 // Base class for the OOBE/Login WebUI handlers which provide methods specific
 // to a particular OobeScreen.
@@ -78,6 +78,11 @@ class BaseScreenHandler : public BaseWebUIHandler {
 #endif
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::BaseScreenHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_BASE_SCREEN_HANDLER_H_

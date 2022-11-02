@@ -146,12 +146,7 @@
 #include "ui/events/devices/input_device.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace multidevice_setup {
-namespace mojom = ::ash::multidevice_setup::mojom;
-}
+namespace ash {
 
 namespace {
 
@@ -299,8 +294,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   const bool is_oobe_flow = display_type == OobeUI::kOobeDisplay;
   source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
   source->AddBoolean("isOobeFlow", is_oobe_flow);
-  source->AddBoolean("isMaterialNext",
-                     ash::features::IsOobeMaterialNextEnabled());
+  source->AddBoolean("isMaterialNext", features::IsOobeMaterialNextEnabled());
 
   // Configure shared resources
   AddProductLogoResources(source);
@@ -369,7 +363,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
     AddScreenHandler(std::make_unique<DemoPreferencesScreenHandler>());
 
-    if (ash::features::IsOobeQuickStartEnabled()) {
+    if (features::IsOobeQuickStartEnabled()) {
       AddScreenHandler(std::make_unique<QuickStartScreenHandler>());
     }
   }
@@ -523,15 +517,13 @@ void OobeUI::ConfigureOobeDisplay() {
 bool OobeUI::ShouldUpScaleOobe() {
   const int64_t display_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  return upscaled_display_id_ != display_id &&
-         ash::switches::ShouldScaleOobe() &&
+  return upscaled_display_id_ != display_id && switches::ShouldScaleOobe() &&
          policy::EnrollmentRequisitionManager::IsMeetDevice();
 }
 
 void OobeUI::UpScaleOobe() {
   upscaled_display_id_ = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  display::DisplayManager* display_manager =
-      ash::Shell::Get()->display_manager();
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
   const gfx::Size size =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area_size();
   const int longest_side = std::max(size.width(), size.height());
@@ -567,12 +559,12 @@ void OobeUI::BindInterface(
 void OobeUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
         receiver) {
-  ash::GetNetworkConfigService(std::move(receiver));
+  GetNetworkConfigService(std::move(receiver));
 }
 
 void OobeUI::BindInterface(
-    mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver) {
-  ash::GetESimManager(std::move(receiver));
+    mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver) {
+  GetESimManager(std::move(receiver));
 }
 
 OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
@@ -753,4 +745,4 @@ void OobeUI::OnDisplayConfigurationChanged() {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OobeUI)
 
-}  // namespace chromeos
+}  // namespace ash

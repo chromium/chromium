@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 class DebugOverlayHandler : public BaseWebUIHandler {
  public:
@@ -35,6 +35,6 @@ class DebugOverlayHandler : public BaseWebUIHandler {
   bool add_resolution_to_filename_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_DEBUG_DEBUG_OVERLAY_HANDLER_H_

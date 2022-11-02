@@ -16,7 +16,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -37,7 +37,7 @@ class OobeDisplayChooserTest : public OobeBaseTest {
 };
 
 display::DisplayManager* display_manager() {
-  return ash::Shell::Get()->display_manager();
+  return Shell::Get()->display_manager();
 }
 
 int64_t GetPrimaryDisplayId() {
@@ -68,4 +68,4 @@ IN_PROC_BROWSER_TEST_F(OobeDisplayChooserTest,
   EXPECT_EQ(2, GetPrimaryDisplayId());
 }
 
-}  // namespace chromeos
+}  // namespace ash

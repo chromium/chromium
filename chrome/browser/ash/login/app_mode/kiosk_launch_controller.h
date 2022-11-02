@@ -16,8 +16,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
-// TODO(https://crbug.com/1164001): use forward declaration.
-#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 
 namespace app_mode {
 class ForceInstallObserver;
@@ -25,6 +23,7 @@ class ForceInstallObserver;
 
 namespace ash {
 class LoginDisplayHost;
+class OobeUI;
 
 // Controller for the kiosk launch process, responsible for loading the kiosk
 // profile, and updating the splash screen UI.

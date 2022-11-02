@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr char kLoginPrefix[] = "login.";
@@ -23,7 +23,7 @@ constexpr char kUserActedCallback[] = ".userActed";
 
 BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen)
     : oobe_screen_(oobe_screen) {
-  DCHECK_NE(oobe_screen_.name, ash::OOBE_SCREEN_UNKNOWN.name);
+  DCHECK_NE(oobe_screen_.name, OOBE_SCREEN_UNKNOWN.name);
   if (!oobe_screen_.external_api_prefix.empty()) {
     user_acted_method_path_ = base::StrCat(
         {kLoginPrefix, oobe_screen_.external_api_prefix, kUserActedCallback});
@@ -65,19 +65,19 @@ void BaseScreenHandler::HandleUserAction(const base::Value::List& args) {
 }
 
 bool BaseScreenHandler::HandleUserActionImpl(const base::Value::List& args) {
-  if (!ash::LoginDisplayHost::default_host())
+  if (!LoginDisplayHost::default_host())
     return false;
 
 #if DCHECK_IS_ON()
   if (base_screen_) {
     DCHECK_EQ(
-        ash::LoginDisplayHost::default_host()->GetWizardController()->GetScreen(
+        LoginDisplayHost::default_host()->GetWizardController()->GetScreen(
             oobe_screen_),
         base_screen_);
   }
 #endif
 
-  LoginDisplayHost* host = ash::LoginDisplayHost::default_host();
+  LoginDisplayHost* host = LoginDisplayHost::default_host();
   if (!host) {
     return false;
   }
@@ -102,4 +102,4 @@ std::string BaseScreenHandler::GetFullExternalAPIFunctionName(
       {kLoginPrefix, oobe_screen_.external_api_prefix, ".", short_name});
 }
 
-}  // namespace chromeos
+}  // namespace ash

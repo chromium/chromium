@@ -42,4 +42,9 @@ class SshConfiguredHandler : public BaseWebUIHandler {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::SshConfiguredHandler;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SSH_CONFIGURED_HANDLER_H_

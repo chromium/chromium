@@ -134,7 +134,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
 namespace ash {
+using ::chromeos::CoreOobeHandler;
 using ::chromeos::CoreOobeView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_CORE_OOBE_HANDLER_H_

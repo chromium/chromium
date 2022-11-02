@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 class OobeTestAPIHandler : public BaseWebUIHandler {
  public:
@@ -44,6 +44,6 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
       std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_

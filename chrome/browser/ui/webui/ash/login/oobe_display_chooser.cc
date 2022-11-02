@@ -20,7 +20,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -40,7 +40,7 @@ bool IsAllowListedVendorId(uint16_t vendor_id) {
 }  // namespace
 
 OobeDisplayChooser::OobeDisplayChooser() {
-  ash::BindCrosDisplayConfigController(
+  BindCrosDisplayConfigController(
       cros_display_config_.BindNewPipeAndPassReceiver());
 }
 
@@ -114,4 +114,4 @@ void OobeDisplayChooser::OnDeviceListsComplete() {
   MaybeMoveToTouchDisplay();
 }
 
-}  // namespace chromeos
+}  // namespace ash

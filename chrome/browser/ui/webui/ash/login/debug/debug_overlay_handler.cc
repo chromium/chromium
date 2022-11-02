@@ -26,7 +26,7 @@
 #undef ENABLED_VLOG_LEVEL
 #define ENABLED_VLOG_LEVEL 1
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -115,7 +115,7 @@ void DebugOverlayHandler::InitializeDeprecated() {}
 // DebugOverlayHandler, private: ----------------------------------------------
 
 void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
-  aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   if (root_windows.size() == 0)
     return;
 
@@ -134,7 +134,7 @@ void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
     if (add_resolution_to_filename_)
       filename.append("_" + rect.size().ToString());
 
-    if (ash::DarkLightModeController::Get()->IsDarkModeEnabled()) {
+    if (DarkLightModeController::Get()->IsDarkModeEnabled()) {
       filename.append("_dark");
     }
 
@@ -147,8 +147,8 @@ void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
 }
 
 void DebugOverlayHandler::ToggleColorMode() {
-  ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(  // IN-TEST
-      !ash::DarkLightModeController::Get()->IsDarkModeEnabled());
+  DarkLightModeController::Get()->SetDarkModeEnabledForTest(  // IN-TEST
+      !DarkLightModeController::Get()->IsDarkModeEnabled());
 }
 
-}  // namespace chromeos
+}  // namespace ash

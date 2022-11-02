@@ -13,7 +13,7 @@
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 BaseWebUIHandler::BaseWebUIHandler() = default;
 
@@ -56,8 +56,8 @@ OobeUI* BaseWebUIHandler::GetOobeUI() {
 OobeScreenId BaseWebUIHandler::GetCurrentScreen() {
   OobeUI* oobe_ui = GetOobeUI();
   if (!oobe_ui)
-    return ash::OOBE_SCREEN_UNKNOWN;
+    return OOBE_SCREEN_UNKNOWN;
   return oobe_ui->current_screen();
 }
 
-}  // namespace chromeos
+}  // namespace ash
