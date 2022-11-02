@@ -583,7 +583,7 @@
     Auto Sign-in
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_AUTOSIGNIN_CHECKBOX_DESC" desc="Text that describes the 'Auto Sign-in' functionality to users.">
-    Automatically sign in to sites and apps using stored credentials. If turned off, you'll be asked for confirmation every time before signing in to a site or app.
+    Automatically sign in to sites and apps using saved credentials. If turned off, you'll be asked for confirmation every time before signing in to a site or app.
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL" desc="Label for a checkbox that allows users to choose whether chrome should check that credentials have been part of a leak.">
     Warn you if passwords are exposed in a data breach
@@ -751,8 +751,8 @@
   </message>
    <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_COUNT" desc="Label shown in the link that open moving multiple password dialog.">
     {COUNT, plural,
-      =1 {{COUNT} password is stored on this device}
-      other {{COUNT} passwords are stored on this device}}
+      =1 {{COUNT} password is saved on this device}
+      other {{COUNT} passwords are saved on this device}}
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_BODY_TEXT" desc="Text displayed in the dialog that asks the user to select which passwords to move to their Google Account.">
     Choose which passwords to move. You can access them whenever you're signed in.
@@ -788,7 +788,7 @@
     Delete password?
   </message>
   <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_BODY" desc="Description message for the dialog that asks the user which versions of a password to remove (device, Google Account or both).">
-    Your password for <ph name="WEBSITE">&lt;b&gt;$1&lt;/b&gt;</ph> is stored on this device and in your Google Account. Which one do you want to delete?
+    Your password for <ph name="WEBSITE">&lt;b&gt;$1&lt;/b&gt;</ph> is saved on this device and to your Google Account. Which one do you want to delete?
   </message>
   <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_REMOVE_BUTTON_TEXT" desc="Text for the button that confirms the action in the dialog that asks the user which versions of a password to remove (device, Google Account or both).">
     Delete
@@ -893,10 +893,10 @@
     Password is more than 1000 characters
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICT_ACCOUNT" desc="An error message for a row that wasn't imported, because the provided credential is already stored in their Google Password Manager. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    A password for this account is already stored in your Google Password Manager (<ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>)
+    A password for this account is already saved to your Google Password Manager (<ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>)
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICT_DEVICE" desc="An error message for a row that wasn't imported, because the provided credential is already stored on their device. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    A password for this account is already stored on this device
+    A password for this account is already saved on this device
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY" desc="Message is shown on the dialog for importing passwords if some passwords weren't imported.">
     Passwords not imported (<ph name="COUNT"><ex>42</ex>$1</ph>)
