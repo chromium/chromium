@@ -25,7 +25,6 @@ namespace {
 
 const IpczDriver& kTestDriver = reference_drivers::kSyncReferenceDriver;
 
-constexpr NodeName kTestBrokerName(1, 2);
 constexpr NodeName kTestNonBrokerName(2, 3);
 constexpr NodeName kOtherTestNonBrokerName(3, 5);
 
@@ -73,7 +72,7 @@ class NodeLinkMemoryTest : public testing::Test {
   }
 
   void SetUp() override {
-    node_a_->SetAssignedName(kTestBrokerName);
+    // Brokers assign their own names, no need to assign one to `node_a_`.
     node_b_->SetAssignedName(kTestNonBrokerName);
     auto links = ConnectNodes(node_a_, node_b_);
     link_a_ = std::move(links.first);
