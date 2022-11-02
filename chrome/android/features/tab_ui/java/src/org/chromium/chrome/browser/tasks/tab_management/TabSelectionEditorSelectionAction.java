@@ -68,6 +68,24 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         getPropertyModel().set(TabSelectionEditorActionProperties.SKIP_ICON_TINT, true);
         getPropertyModel().set(TabSelectionEditorActionProperties.SHOULD_DISMISS_MENU, false);
         updateState(ActionState.SELECT_ALL, isIncognito);
+        LayerDrawable layers =
+                (LayerDrawable) getPropertyModel().get(TabSelectionEditorActionProperties.ICON);
+        layers.setCallback(new Drawable.Callback() {
+            @Override
+            public void invalidateDrawable(Drawable who) {
+                // No-op.
+            }
+
+            @Override
+            public void scheduleDrawable(Drawable who, Runnable what, long when) {
+                who.invalidateSelf();
+            }
+
+            @Override
+            public void unscheduleDrawable(Drawable who, Runnable what) {
+                who.unscheduleSelf(what);
+            }
+        });
     }
 
     @Override
@@ -135,24 +153,18 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
                     .setLevel(
                             mContext.getResources().getInteger(R.integer.list_item_level_default));
 
-            layers.setDrawable(CHECKMARK,
-                    AnimatedVectorDrawableCompat.create(
-                            mContext, R.drawable.ic_check_googblue_20dp_animated));
             layers.getDrawable(CHECKMARK).setAlpha(0);
             layers.getDrawable(CHECKMARK).setTint(Color.TRANSPARENT);
-            getPropertyModel().set(TabSelectionEditorActionProperties.ICON, layers);
+            layers.invalidateSelf();
         } else if (mActionState == ActionState.DESELECT_ALL) {
             layers.getDrawable(BACKGROUND)
                     .setLevel(
                             mContext.getResources().getInteger(R.integer.list_item_level_selected));
 
-            layers.setDrawable(CHECKMARK,
-                    AnimatedVectorDrawableCompat.create(
-                            mContext, R.drawable.ic_check_googblue_20dp_animated));
             layers.getDrawable(CHECKMARK).setAlpha(255);
             layers.getDrawable(CHECKMARK).setTint(
                     TabUiThemeProvider.getSelectionActionIconCheckedDrawableColor(mContext));
-            getPropertyModel().set(TabSelectionEditorActionProperties.ICON, layers);
+            layers.invalidateSelf();
             ((AnimatedVectorDrawableCompat) layers.getDrawable(CHECKMARK)).start();
         } else {
             assert false : "Invalid selection state";
