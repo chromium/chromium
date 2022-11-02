@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -22,15 +23,16 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::BookmarksSaveEditFolderButton;
 using chrome_test_util::BookmarksDeleteSwipeButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
+using chrome_test_util::BookmarksSaveEditFolderButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
 using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::ContextBarTrailingButtonWithLabel;
 using chrome_test_util::SearchIconButton;
+using chrome_test_util::SwipeToShowDeleteButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark search integration tests for Chrome.
@@ -421,15 +423,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that you can swipe URL items in search mode.
 - (void)testSearchUrlCanBeSwipedToDelete {
-  // TODO(crbug.com/851227): On non Compact Width, the bookmark cell is being
-  // deleted by grey_swipeFastInDirection.
-  // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
-  // fail on devices. Disabling this test under these conditions on the
-  // meantime.
-  if (![ChromeEarlGrey isCompactWidth]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad on iOS11.");
-  }
-
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -440,7 +433,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
+      performAction:SwipeToShowDeleteButton()];
 
   // Verify we have a delete button.
   [[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
@@ -449,15 +442,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that you can swipe folders in search mode.
 - (void)testSearchFolderCanBeSwipedToDelete {
-  // TODO(crbug.com/851227): On non Compact Width, the bookmark cell is being
-  // deleted by grey_swipeFastInDirection.
-  // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
-  // fail on devices. Disabling this test under these conditions on the
-  // meantime.
-  if (![ChromeEarlGrey isCompactWidth]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad on iOS11.");
-  }
-
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -468,7 +452,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
+      performAction:SwipeToShowDeleteButton()];
 
   // Verify we have a delete button.
   [[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]

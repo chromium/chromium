@@ -17,7 +17,33 @@
 #endif
 
 namespace {
+
+// Action to swipe left on 150pt.
+NSArray<NSValue*>* SwipeLeft(CGPoint startPoint) {
+  const CGFloat total_length = 150;
+  const int number_of_frames = 30;
+  const CGFloat deltaX = total_length / number_of_frames;
+  // Initial displacement to trigger a swipe.
+  const int initial_displacement = 10;
+  const int beginning = ceil(initial_displacement / deltaX);
+
+  NSMutableArray* touchPath = [[NSMutableArray alloc] init];
+  [touchPath addObject:[NSValue valueWithCGPoint:startPoint]];
+
+  for (int i = beginning; i < number_of_frames; i++) {
+    CGPoint point = CGPointMake(startPoint.x - i * deltaX, startPoint.y);
+    [touchPath addObject:[NSValue valueWithCGPoint:point]];
+  }
+
+  [touchPath addObject:[NSValue valueWithCGPoint:CGPointMake(startPoint.x -
+                                                                 total_length,
+                                                             startPoint.y)]];
+
+  return touchPath;
+}
+
 NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
+
 }  // namespace
 
 @implementation ChromeActionsAppInterface : NSObject
@@ -149,6 +175,39 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
   return [GREYActionBlock actionWithName:actionName
                              constraints:constraints
                             performBlock:actionBlock];
+}
+
++ (id<GREYAction>)swipeToShowDeleteButton {
+  return [GREYActionBlock
+      actionWithName:@"Swipe to display delete button"
+         constraints:nil
+        performBlock:^(UIView* element, NSError* __strong* errorOrNil) {
+          if ([element window] == nil) {
+            NSString* errorDescription = [NSString
+                stringWithFormat:
+                    @"Cannot swipe on this view as it has no window and "
+                    @"isn't a window itself:\n%@",
+                    [element grey_description]];
+            *errorOrNil = [NSError
+                errorWithDomain:@"No window available"
+                           code:0
+                       userInfo:@{@"Failure Reason" : (errorDescription)}];
+            // Indicates that the action failed.
+            return NO;
+          }
+          CGRect accessibilityFrame = element.accessibilityFrame;
+          CGPoint startPoint = CGPointMake(
+              accessibilityFrame.origin.x + accessibilityFrame.size.width * 0.5,
+              accessibilityFrame.origin.y +
+                  accessibilityFrame.size.height * 0.5);
+          // Invoke a custom selector that animates the window of the element.
+          [GREYSyntheticEvents touchAlongPath:SwipeLeft(startPoint)
+                             relativeToWindow:[element window]
+                                  forDuration:1
+                                      timeout:10];
+          // Indicates that the action was executed successfully.
+          return YES;
+        }];
 }
 
 @end

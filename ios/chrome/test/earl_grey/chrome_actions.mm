@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 
@@ -58,6 +59,10 @@ id<GREYAction> TapAtPointPercentage(CGFloat xOriginStartPercentage,
   return [ChromeActionsAppInterface
       tapAtPointAtxOriginStartPercentage:xOriginStartPercentage
                   yOriginStartPercentage:yOriginStartPercentage];
+}
+
+id<GREYAction> SwipeToShowDeleteButton() {
+  return [ChromeActionsAppInterface swipeToShowDeleteButton];
 }
 
 }  // namespace chrome_test_util

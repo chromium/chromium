@@ -51,6 +51,10 @@
 + (id<GREYAction>)tapAtPointAtxOriginStartPercentage:(CGFloat)x
                               yOriginStartPercentage:(CGFloat)y;
 
+// Action to swipe a TableViewCell enough to display the "Delete" button and
+// not too much to have the cell being deleted right away.
++ (id<GREYAction>)swipeToShowDeleteButton;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_ACTIONS_APP_INTERFACE_H_

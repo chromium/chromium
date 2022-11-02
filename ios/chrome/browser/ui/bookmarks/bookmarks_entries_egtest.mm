@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -36,9 +37,10 @@ using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::ContextMenuCopyButton;
 using chrome_test_util::OmniboxText;
-using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInIncognitoButton;
+using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
+using chrome_test_util::SwipeToShowDeleteButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 using chrome_test_util::WindowWithNumber;
 
@@ -78,15 +80,6 @@ id<GREYMatcher> AddBookmarkButton() {
 #pragma mark - BookmarksEntriesTestCase Tests
 
 - (void)testUndoDeleteBookmarkFromSwipe {
-  // TODO(crbug.com/851227): On Compact Width, the bookmark cell is being
-  // deleted by grey_swipeFastInDirection.
-  // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
-  // fail on devices. Disabling this test under these conditions on the
-  // meantime.
-  if (![ChromeEarlGrey isCompactWidth]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad.");
-  }
-
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -94,7 +87,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Swipe action on the URL.
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Second URL")]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
+      performAction:SwipeToShowDeleteButton()];
 
   // Verify context bar does not change when "Delete" shows up.
   [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:YES
@@ -120,15 +113,6 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 - (void)testSwipeToDeleteDisabledInEditMode {
-  // TODO(crbug.com/851227): On non Compact Width  the bookmark cell is being
-  // deleted by grey_swipeFastInDirection.
-  // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
-  // fail on devices. Disabling this test under these conditions on the
-  // meantime.
-  if (![ChromeEarlGrey isCompactWidth]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad on iOS11.");
-  }
-
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -136,7 +120,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Swipe action on the URL.
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
+      performAction:SwipeToShowDeleteButton()];
 
   // Verify the delete confirmation button shows up.
   [[[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
@@ -158,7 +142,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // confirmation button as swipe-to-delete is disabled in edit mode.
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Second URL")]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
+      performAction:SwipeToShowDeleteButton()];
 
   // Verify the delete confirmation button doesn't appear.
   [[[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
@@ -171,7 +155,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Swipe action on the URL.
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"French URL")]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
+      performAction:SwipeToShowDeleteButton()];
 
   // Verify the delete confirmation button shows up. (swipe-to-delete is
   // re-enabled).
