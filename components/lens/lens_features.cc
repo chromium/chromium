@@ -50,6 +50,10 @@ BASE_FEATURE(kLensRegionSearchStaticPage,
              "LensRegionSearchStaticPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensImageFormatOptimizations,
+             "LensImageFormatOptimizations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 
@@ -98,6 +102,15 @@ const base::FeatureParam<bool> kUseSelectionIconWithImage{
 
 const base::FeatureParam<bool> kUseAltChipString{
     &kLensInstructionChipImprovements, "use-alt-chip-string", false};
+
+const base::FeatureParam<bool> kUseWebpInRegionSearch{
+    &kLensImageFormatOptimizations, "use-webp-region-search", true};
+
+const base::FeatureParam<bool> kUseJpegInRegionSearch{
+    &kLensImageFormatOptimizations, "use-jpeg-region-search", false};
+
+const base::FeatureParam<int> kEncodingQualityRegionSearch{
+    &kLensImageFormatOptimizations, "encoding-quality-region-search", 90};
 
 bool GetEnableLatencyLogging() {
   return base::FeatureList::IsEnabled(kEnableLatencyLogging) &&
@@ -212,6 +225,20 @@ bool EnablePersistentBubble() {
 
 bool IsLensRegionSearchStaticPageEnabled() {
   return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
+}
+
+bool IsWebpForRegionSearchEnabled() {
+  return base::FeatureList::IsEnabled(kLensImageFormatOptimizations) &&
+         kUseWebpInRegionSearch.Get();
+}
+
+bool IsJpegForRegionSearchEnabled() {
+  return base::FeatureList::IsEnabled(kLensImageFormatOptimizations) &&
+         kUseJpegInRegionSearch.Get();
+}
+
+int GetRegionSearchEncodingQuality() {
+  return kEncodingQualityRegionSearch.Get();
 }
 
 }  // namespace features

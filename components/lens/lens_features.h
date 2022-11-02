@@ -47,6 +47,9 @@ BASE_DECLARE_FEATURE(kEnableImageSearchSidePanelFor3PDse);
 // Enables launching the region search experience in a new tab with WebUI.
 BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
 
+// Enables using more optimized image formats for Lens requests.
+BASE_DECLARE_FEATURE(kLensImageFormatOptimizations);
+
 // Enables using `Google` as the visual search provider instead of `Google
 // Lens`.
 extern const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider;
@@ -92,6 +95,18 @@ extern const base::FeatureParam<bool> kUseSelectionIconWithImage;
 
 // Enables the use of an alternative string for the instruction chip.
 extern const base::FeatureParam<bool> kUseAltChipString;
+
+// Enables encoding to WebP for region search queries. This param takes
+// precedence over kUseJpegInRegionSearch.
+extern const base::FeatureParam<bool> kUseWebpInRegionSearch;
+
+// Enables encoding to JPEG for region search queries. This param does
+// nothing if kUseWebpInRegionSearch is enabled.
+extern const base::FeatureParam<bool> kUseJpegInRegionSearch;
+
+// Value in range 0-100 that dictates the encoding quality for region search
+// lossy formats, with 100 being the best quality.
+extern const base::FeatureParam<int> kEncodingQualityRegionSearch;
 
 // Enables Latency logging for the LensStandalone feature.
 extern bool GetEnableLatencyLogging();
@@ -174,6 +189,15 @@ extern bool UseAltChipString();
 
 // Returns whether we should use a WebUI static page for region search.
 extern bool IsLensRegionSearchStaticPageEnabled();
+
+// Returns whether to use WebP encoding for region search queries.
+extern bool IsWebpForRegionSearchEnabled();
+
+// Returns whether to use JPEG encoding for region search queries.
+extern bool IsJpegForRegionSearchEnabled();
+
+// Get the encoding quality for region search queries.
+extern int GetRegionSearchEncodingQuality();
 }  // namespace features
 }  // namespace lens
 
