@@ -2106,7 +2106,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void MarkContainerChainForLayout(bool schedule_relayout = true,
                                    SubtreeLayoutScope* = nullptr);
-  void MarkParentForOutOfFlowPositionedChange();
+  void MarkParentForSpannerOrOutOfFlowPositionedChange();
   void SetNeedsLayout(LayoutInvalidationReasonForTracing,
                       MarkingBehavior = kMarkContainerChain,
                       SubtreeLayoutScope* = nullptr);

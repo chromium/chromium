@@ -1121,7 +1121,7 @@ void LayoutBlock::RemovePositionedObjects(
     // It is parent blocks job to add positioned child to positioned objects
     // list of its containing block.
     // Parent layout needs to be invalidated to ensure this happens.
-    positioned_object->MarkParentForOutOfFlowPositionedChange();
+    positioned_object->MarkParentForSpannerOrOutOfFlowPositionedChange();
     return true;
   };
 

@@ -1527,6 +1527,10 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout,
 // LayoutNG "bubbles" up the static-position inside the NGLayoutResult.
 // See: |NGLayoutResult::OutOfFlowPositionedDescendants()|.
 //
+// Column spanners also have a bubbling mechanism, and therefore also need to
+// mark ancestors between the element itself and the containing block (the
+// multicol container).
+//
 // Whenever an OOF-positioned object is added/removed we need to invalidate
 // layout for all the layout objects which may have stored a NGLayoutResult
 // with this object contained in that list.
@@ -1537,7 +1541,7 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout,
 //  - For the adding case, if the OOF-positioned doesn't require a
 //    static-position, simply insert the object up the NGLayoutResult chain with
 //    an invalid static-position.
-void LayoutObject::MarkParentForOutOfFlowPositionedChange() {
+void LayoutObject::MarkParentForSpannerOrOutOfFlowPositionedChange() {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   DCHECK(!IsSetNeedsLayoutForbidden());
@@ -1551,6 +1555,9 @@ void LayoutObject::MarkParentForOutOfFlowPositionedChange() {
   // As OOF-positioned objects are represented as an object replacement
   // character in the inline items list. We need to ensure we collect the
   // inline items again to either collect or drop the OOF-positioned object.
+  //
+  // Note that this isn't necessary if we're dealing with a column spanner here,
+  // but in order to keep things simple, we'll make no difference.
   object->SetNeedsCollectInlines();
 
   const LayoutBlock* containing_block = ContainingBlock();
@@ -1559,7 +1566,8 @@ void LayoutObject::MarkParentForOutOfFlowPositionedChange() {
     object = object->Parent();
   }
   // Finally mark the parent block for layout. This will mark everything which
-  // has an OOF-positioned object in a NGLayoutResult as needing layout.
+  // has an OOF-positioned object or column spanner in a NGLayoutResult as
+  // needing layout.
   if (object)
     object->SetChildNeedsLayout();
 }
@@ -3058,7 +3066,10 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     if (old_style->HasOutOfFlowPosition() != style_->HasOutOfFlowPosition()) {
       SetScrollAnchorDisablingStyleChangedOnAncestor();
       if (RuntimeEnabledFeatures::LayoutNGEnabled())
-        MarkParentForOutOfFlowPositionedChange();
+        MarkParentForSpannerOrOutOfFlowPositionedChange();
+    } else if (old_style->GetColumnSpan() != style_->GetColumnSpan() &&
+               RuntimeEnabledFeatures::LayoutNGEnabled()) {
+      MarkParentForSpannerOrOutOfFlowPositionedChange();
     }
 
     // If the object already needs layout, then setNeedsLayout won't do
