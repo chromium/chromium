@@ -10,6 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "build/build_config.h"
+
 namespace viz {
 
 gpu::GPUInfo GpuHostImplTestApi::HookDelegateBase::GetGPUInfo() const {
@@ -106,7 +108,7 @@ void GpuHostImplTestApi::HookDelegateBase::BindInterface(
   original_delegate_->BindInterface(interface_name, std::move(interface_pipe));
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 void GpuHostImplTestApi::HookDelegateBase::TerminateGpuProcess(
     const std::string& message) {
   original_delegate_->TerminateGpuProcess(message);

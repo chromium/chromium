@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
@@ -71,7 +72,7 @@ class GpuHostImplTestApi {
         override;
     void BindInterface(const std::string& interface_name,
                        mojo::ScopedMessagePipeHandle interface_pipe) override;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     void TerminateGpuProcess(const std::string& message) override;
 #endif
 

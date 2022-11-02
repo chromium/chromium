@@ -55,6 +55,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
@@ -132,7 +133,7 @@ constexpr base::FilePath::CharType kCustomServerDir[] =
     FILE_PATH_LITERAL("wayland");
 
 bool IsDrmAtomicAvailable() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   auto& host_properties =
       ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
   return host_properties.supports_overlays;

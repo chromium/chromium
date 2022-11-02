@@ -17,7 +17,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/image/image.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"       // nogncheck
 #include "ui/ozone/public/platform_menu_utils.h"  // nogncheck
 #endif
@@ -25,7 +25,7 @@
 namespace {
 
 std::string ToDBusKeySym(ui::KeyboardCode code) {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   if (const auto* const platorm_menu_utils =
           ui::OzonePlatform::GetInstance()->GetPlatformMenuUtils()) {
     return platorm_menu_utils->ToDBusKeySym(code);

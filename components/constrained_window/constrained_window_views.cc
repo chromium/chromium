@@ -24,7 +24,7 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -120,7 +120,7 @@ void UpdateModalDialogPosition(views::Widget* widget,
                  widget->non_client_view()->frame_view()->GetInsets().top());
 
   const bool supports_global_screen_coordinates =
-#if !defined(USE_OZONE)
+#if !BUILDFLAG(IS_OZONE)
       true;
 #else
       ui::OzonePlatform::GetInstance()
