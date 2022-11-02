@@ -520,8 +520,8 @@ void VP8VaapiVideoEncoderDelegate::SetFrameHeader(
           ? picture.metadata_for_encoding->temporal_idx
           : 0;
 
-  rate_ctrl_->ComputeQP(frame_params);
-  picture.frame_hdr->quantization_hdr.y_ac_qi = rate_ctrl_->GetQP();
+  picture.frame_hdr->quantization_hdr.y_ac_qi =
+      rate_ctrl_->ComputeQP(frame_params);
   DVLOGF(4) << "qp="
             << static_cast<int>(picture.frame_hdr->quantization_hdr.y_ac_qi)
             << (keyframe ? " (keyframe)" : "")

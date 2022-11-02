@@ -36,11 +36,11 @@ class VideoRateControl {
     impl_->UpdateRateControl(rate_control_config);
   }
   // libvpx::VP(8|9)FrameParamsQpRTC take 0-63 quantization parameter.
-  virtual void ComputeQP(const U& frame_params) {
+  // ComputeQP() returns vp8/9 ac/dc table index. The range is 0-255.
+  virtual int ComputeQP(const U& frame_params) {
     impl_->ComputeQP(frame_params);
+    return impl_->GetQP();
   }
-  // GetQP() returns vp8/9 ac/dc table index. The range is 0-255.
-  virtual int GetQP() const { return impl_->GetQP(); }
   // GetLoopfilterLevel() is only available for VP9 -- see .cc file.
   virtual int GetLoopfilterLevel() const { return -1; }
   virtual void PostEncodeUpdate(uint64_t encoded_frame_size) {

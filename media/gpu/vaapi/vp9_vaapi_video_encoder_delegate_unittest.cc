@@ -248,9 +248,8 @@ class MockVP9RateControl
   ~MockVP9RateControl() override = default;
 
   MOCK_METHOD1(UpdateRateControl, void(const libvpx::VP9RateControlRtcConfig&));
-  MOCK_CONST_METHOD0(GetQP, int());
   MOCK_CONST_METHOD0(GetLoopfilterLevel, int());
-  MOCK_METHOD1(ComputeQP, void(const libvpx::VP9FrameParamsQpRTC&));
+  MOCK_METHOD1(ComputeQP, int(const libvpx::VP9FrameParamsQpRTC&));
   MOCK_METHOD1(PostEncodeUpdate, void(uint64_t));
 };
 }  // namespace
@@ -400,14 +399,13 @@ void VP9VaapiVideoEncoderDelegateTest::
 
   FRAME_TYPE libvpx_frame_type =
       is_keyframe ? FRAME_TYPE::KEY_FRAME : FRAME_TYPE::INTER_FRAME;
+  constexpr int kDefaultQP = 34;
   EXPECT_CALL(
       *mock_rate_ctrl_,
       ComputeQP(MatchFrameParam(libvpx_frame_type, expected_temporal_layer_id,
                                 expected_spatial_layer_id)))
-      .WillOnce(Return());
-  constexpr int kDefaultQP = 34;
+      .WillOnce(Return(kDefaultQP));
   constexpr int kDefaultLoopFilterLevel = 8;
-  EXPECT_CALL(*mock_rate_ctrl_, GetQP()).WillOnce(Return(kDefaultQP));
   EXPECT_CALL(*mock_rate_ctrl_, GetLoopfilterLevel())
       .WillOnce(Return(kDefaultLoopFilterLevel));
 

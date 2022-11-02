@@ -468,8 +468,8 @@ void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
         picture->metadata_for_encoding->temporal_idx;
     frame_params.spatial_layer_id = picture->metadata_for_encoding->spatial_idx;
   }
-  rate_ctrl_->ComputeQP(frame_params);
-  picture->frame_hdr->quant_params.base_q_idx = rate_ctrl_->GetQP();
+  picture->frame_hdr->quant_params.base_q_idx =
+      rate_ctrl_->ComputeQP(frame_params);
   picture->frame_hdr->loop_filter.level = rate_ctrl_->GetLoopfilterLevel();
   DVLOGF(4) << "qp="
             << static_cast<int>(picture->frame_hdr->quant_params.base_q_idx)
