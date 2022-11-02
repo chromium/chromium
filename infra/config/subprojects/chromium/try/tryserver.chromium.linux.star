@@ -282,6 +282,7 @@ try_.builder(
     mirrors = [
         "ci/WebKit Linux MSAN",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -293,14 +294,17 @@ try_.builder(
 
 try_.builder(
     name = "linux-wpt-fyi-rel",
+    goma_backend = None,
 )
 
 try_.builder(
     name = "linux-wpt-identity-fyi-rel",
+    goma_backend = None,
 )
 
 try_.builder(
     name = "linux-wpt-input-fyi-rel",
+    goma_backend = None,
 )
 
 try_.builder(
@@ -728,4 +732,5 @@ try_.builder(
     cores = 16,
     builderless = False,
     experiments = {"chromium_rts.experimental_model": 100},
+    goma_backend = None,
 )

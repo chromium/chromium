@@ -495,7 +495,6 @@
       'Chromium Win Goma RBE Staging (clobber)': 'release_bot_x86_minimal_symbols',
       'Chromium Win Goma RBE ToT': 'release_bot_x86_minimal_symbols',
 
-
       'Chromium iOS Goma RBE ToT': 'ios_device_release_compile_only',
 
       'chromeos-amd64-generic-rel-goma-rbe-staging': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
@@ -1165,17 +1164,17 @@
       'linux-perfetto-rel': 'perfetto_release_trybot_reclient',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck',
-      'linux-rel-ml': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck',
+      'linux-rel-ml': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_reclient',
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-viz-rel': 'release_trybot',
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       # TODO (crbug.com/1287228): Remove when orchestrator is verified
       'linux-wayland-rel-orchestrator': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
-      'linux-webkit-msan-rel': 'msan_release_bot',
+      'linux-webkit-msan-rel': 'msan_release_bot_reclient',
       'linux-wpt-content-shell-fyi-rel': 'release_trybot',
-      'linux-wpt-fyi-rel': 'release_trybot',
-      'linux-wpt-identity-fyi-rel': 'release_trybot',
-      'linux-wpt-input-fyi-rel': 'release_trybot',
+      'linux-wpt-fyi-rel': 'release_trybot_reclient',
+      'linux-wpt-identity-fyi-rel': 'release_trybot_reclient',
+      'linux-wpt-input-fyi-rel': 'release_trybot_reclient',
       'linux-x64-castos': 'cast_release_trybot',
       'linux-x64-castos-audio': 'cast_audio_release_trybot',
       'linux-x64-castos-dbg': 'cast_debug_bot',
@@ -2847,10 +2846,6 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
     ],
 
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck': [
-      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
-      'devtools_do_typecheck',
-    ],
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'devtools_do_typecheck',
@@ -3463,7 +3458,6 @@
     'release_bot_fuchsia_cfv2_script_arm64_reclient': [
       'release_bot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'fuchsia_cfv2_script',
     ],
-
 
     'release_bot_fuchsia_cfv2_script_chrome_reclient': [
       'release_bot_reclient', 'fuchsia',  'fuchsia_cfv2_script', 'fuchsia_chrome',

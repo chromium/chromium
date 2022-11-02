@@ -445,7 +445,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_dummy_lastchange": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-rel-warmed": {
@@ -514,7 +514,7 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 2,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-wpt-content-shell-fyi-rel": {
@@ -532,7 +532,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-wpt-identity-fyi-rel": {
@@ -541,7 +541,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-wpt-input-fyi-rel": {
@@ -550,7 +550,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-x64-castos": {
