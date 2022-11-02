@@ -93,6 +93,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CrosDisks.MountError.{FileSystem}" enum="PopularOSErrno"
+    expires_after="2023-12-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The error returned by the mount() system call when the ChromeOS cros-disks
+    daemon tries to mount a file system.
+  </summary>
+  <token key="FileSystem">
+    <variant name="ext2"/>
+    <variant name="ext3"/>
+    <variant name="ext4"/>
+    <variant name="fuse"/>
+    <variant name="hfsplus"/>
+    <variant name="iso9660"/>
+    <variant name="udf"/>
+    <variant name="vfat"/>
+  </token>
+</histogram>
+
 <histogram name="CrosDisks.PrematureTermination.{Daemon}" enum="DaemonError"
     expires_after="2023-12-01">
   <owner>fdegros@chromium.org</owner>
