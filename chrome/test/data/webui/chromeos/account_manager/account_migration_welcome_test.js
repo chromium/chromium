@@ -46,13 +46,15 @@ suite(account_migration_welcome_test.suiteName, () => {
     assertEquals(1, testBrowserProxy.getCallCount('closeDialog'));
   });
 
-  test(assert(account_migration_welcome_test.TestNames.MigrateAccount), () => {
-    const migrateButton = element.$['migrate-button'];
-    migrateButton.click();
+  test(
+      assert(account_migration_welcome_test.TestNames.MigrateAccount),
+      async () => {
+        const migrateButton = element.$['migrate-button'];
+        migrateButton.click();
 
-    assertEquals(1, testBrowserProxy.getCallCount('reauthenticateAccount'));
-    testBrowserProxy.whenCalled('reauthenticateAccount').then(email => {
-      assertEquals(fakeEmail, email);
-    });
-  });
+        assertEquals(1, testBrowserProxy.getCallCount('reauthenticateAccount'));
+        const email =
+            await testBrowserProxy.whenCalled('reauthenticateAccount');
+        assertEquals(fakeEmail, email);
+      });
 });

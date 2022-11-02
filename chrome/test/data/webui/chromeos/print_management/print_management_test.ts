@@ -361,7 +361,7 @@ suite('PrintManagementTest', () => {
       return mojoApi.whenCalled('getPrintJobs');
     });
   }
-  test('PrintJobHistoryExpirationPeriodOneDay', () => {
+  test('PrintJobHistoryExpirationPeriodOneDay', async () => {
     const completedInfo =
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kPrinted);
     const expectedText = 'Print jobs older than 1 day will be removed';
@@ -373,21 +373,14 @@ suite('PrintManagementTest', () => {
     ];
     // Print job metadata will be stored for 1 day.
     mojoApi_.setExpirationPeriod(1);
-    return initializePrintManagementApp(expectedArr.slice().reverse())
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
-        })
-        .then(() => {
-          const historyInfoTooltip = querySelector(page!, 'paper-tooltip');
-          assertEquals(expectedText, historyInfoTooltip?.textContent?.trim());
-        });
+    await initializePrintManagementApp(expectedArr.slice().reverse());
+    await mojoApi_.whenCalled('getPrintJobs');
+    await mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
+    const historyInfoTooltip = querySelector(page!, 'paper-tooltip');
+    assertEquals(expectedText, historyInfoTooltip?.textContent?.trim());
   });
 
-  test('PrintJobHistoryExpirationPeriodDefault', () => {
+  test('PrintJobHistoryExpirationPeriodDefault', async () => {
     const completedInfo =
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kPrinted);
     const expectedText = 'Print jobs older than 90 days will be removed';
@@ -401,21 +394,15 @@ suite('PrintManagementTest', () => {
     // Print job metadata will be stored for 90 days which is the default
     // period when the policy is not controlled.
     mojoApi_.setExpirationPeriod(90);
-    return initializePrintManagementApp(expectedArr.slice().reverse())
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
-        })
-        .then(() => {
-          const historyInfoTooltip = querySelector(page!, 'paper-tooltip');
-          assertEquals(expectedText, historyInfoTooltip?.textContent?.trim());
-        });
+    await initializePrintManagementApp(expectedArr.slice().reverse());
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    await mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
+    const historyInfoTooltip = querySelector(page!, 'paper-tooltip');
+    assertEquals(expectedText, historyInfoTooltip?.textContent?.trim());
   });
 
-  test('PrintJobHistoryExpirationPeriodIndefinte', () => {
+  test('PrintJobHistoryExpirationPeriodIndefinte', async () => {
     const completedInfo =
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kPrinted);
     const expectedText = 'Print jobs will appear in history unless they are ' +
@@ -430,21 +417,15 @@ suite('PrintManagementTest', () => {
     // When this policy is set to a value of -1, the print jobs metadata is
     // stored indefinitely.
     mojoApi_.setExpirationPeriod(-1);
-    return initializePrintManagementApp(expectedArr.slice().reverse())
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
-        })
-        .then(() => {
-          const historyInfoTooltip = querySelector(page!, 'paper-tooltip');
-          assertEquals(expectedText, historyInfoTooltip?.textContent?.trim());
-        });
+    await initializePrintManagementApp(expectedArr.slice().reverse());
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    await mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
+    const historyInfoTooltip = querySelector(page!, 'paper-tooltip');
+    assertEquals(expectedText, historyInfoTooltip?.textContent?.trim());
   });
 
-  test('PrintJobHistoryExpirationPeriodNDays', () => {
+  test('PrintJobHistoryExpirationPeriodNDays', async () => {
     const completedInfo =
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kPrinted);
     const expectedText = 'Print jobs older than 4 days will be removed';
@@ -457,21 +438,15 @@ suite('PrintManagementTest', () => {
 
     // Print job metadata will be stored for 4 days.
     mojoApi_.setExpirationPeriod(4);
-    return initializePrintManagementApp(expectedArr.slice().reverse())
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
-        })
-        .then(() => {
-          const historyInfoTooltip = querySelector(page!, 'paper-tooltip');
-          assertEquals(expectedText, historyInfoTooltip?.textContent?.trim());
-        });
+    await initializePrintManagementApp(expectedArr.slice().reverse());
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    await mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
+    const historyInfoTooltip = querySelector(page!, 'paper-tooltip');
+    assertEquals(expectedText, historyInfoTooltip?.textContent?.trim());
   });
 
-  test('PrintHistoryListIsSortedReverseChronologically', () => {
+  test('PrintHistoryListIsSortedReverseChronologically', async () => {
     const completedInfo =
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kPrinted);
     const expectedArr = [
@@ -492,33 +467,24 @@ suite('PrintManagementTest', () => {
     // Initialize with a reversed array of |expectedArr|, since we expect the
     // app to sort the list when it first loads. Since reverse() mutates the
     // original array, use a copy array to prevent mutating |expectedArr|.
-    return initializePrintManagementApp(expectedArr.slice().reverse())
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(expectedArr, getHistoryPrintJobEntries(page!));
-        });
+    await initializePrintManagementApp(expectedArr.slice().reverse());
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    verifyPrintJobs(expectedArr, getHistoryPrintJobEntries(page!));
   });
 
-  test('ClearAllButtonDisabledWhenNoPrintJobsSaved', () => {
+  test('ClearAllButtonDisabledWhenNoPrintJobsSaved', async () => {
     // Initialize with no saved print jobs, expect the clear all button to be
     // disabled.
-    return initializePrintManagementApp(/*printJobs=*/[])
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          assertTrue(
-              !!querySelector<HTMLButtonElement>(page!, '#clearAllButton')
-                    ?.disabled);
-          assertTrue(!querySelector(page!, '#policyIcon'));
-        });
+    await initializePrintManagementApp(/*printJobs=*/[]);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    assertTrue(
+        !!querySelector<HTMLButtonElement>(page!, '#clearAllButton')?.disabled);
+    assertTrue(!querySelector(page!, '#policyIcon'));
   });
 
-  test('ClearAllButtonDisabledByPolicy', () => {
+  test('ClearAllButtonDisabledByPolicy', async () => {
     const expectedArr = [createJobEntry(
         'newest', 'titleA',
         convertToMojoTime(new Date(Date.UTC(2020, 3, 1, 1, 1, 1))),
@@ -527,20 +493,15 @@ suite('PrintManagementTest', () => {
         /*activeInfo=*/ undefined)];
     // Set policy to prevent user from deleting history.
     mojoApi_.setDeletePrintJobPolicy(/*isAllowedByPolicy=*/ false);
-    return initializePrintManagementApp(expectedArr)
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          assertTrue(
-              !!querySelector<HTMLButtonElement>(page!, '#clearAllButton')
-                    ?.disabled);
-          assertTrue(!!querySelector(page!, '#policyIcon'));
-        });
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    assertTrue(
+        !!querySelector<HTMLButtonElement>(page!, '#clearAllButton')?.disabled);
+    assertTrue(!!querySelector(page!, '#policyIcon'));
   });
 
-  test('ClearAllPrintHistory', () => {
+  test('ClearAllPrintHistory', async () => {
     const completedInfo =
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kPrinted);
     const expectedArr = [
@@ -558,46 +519,38 @@ suite('PrintManagementTest', () => {
           PrinterErrorCode.kNoError, completedInfo, /*activeInfo=*/ undefined),
     ];
 
-    return initializePrintManagementApp(expectedArr)
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          return mojoApi_.whenCalled('getDeletePrintJobHistoryAllowedByPolicy');
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(expectedArr, getHistoryPrintJobEntries(page!));
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    await mojoApi_.whenCalled('getDeletePrintJobHistoryAllowedByPolicy');
+    flush();
+    verifyPrintJobs(expectedArr, getHistoryPrintJobEntries(page!));
 
-          // Click the clear all button.
-          const button =
-              querySelector<HTMLButtonElement>(page!, '#clearAllButton')!;
-          button.click();
-          flush();
-          // Verify that the confirmation dialog shows up and click on the
-          // confirmation button.
-          const dialog = querySelector(page!, '#clearHistoryDialog');
-          assertTrue(!!dialog);
-          const dialogActionButton =
-              querySelector<HTMLButtonElement>(dialog, '.action-button')!;
-          assertTrue(!dialogActionButton.disabled);
-          dialogActionButton.click();
-          assertTrue(dialogActionButton.disabled);
-          return mojoApi_.whenCalled('deleteAllPrintJobs');
-        })
-        .then(() => {
-          flush();
-          // After clearing the history list, expect that the history list and
-          // header are no longer
-          assertTrue(!querySelector(page!, '#entryList'));
-          assertTrue(!querySelector(page!, '#historyHeaderContainer'));
-          assertTrue(
-              !!querySelector<HTMLButtonElement>(page!, '#clearAllButton')
-                    ?.disabled);
-        });
+    // Click the clear all button.
+    const button = querySelector<HTMLButtonElement>(page!, '#clearAllButton')!;
+    button.click();
+    flush();
+
+    // Verify that the confirmation dialog shows up and click on the
+    // confirmation button.
+    const dialog = querySelector(page!, '#clearHistoryDialog');
+    assertTrue(!!dialog);
+    const dialogActionButton =
+        querySelector<HTMLButtonElement>(dialog, '.action-button')!;
+    assertTrue(!dialogActionButton.disabled);
+    dialogActionButton.click();
+    assertTrue(dialogActionButton.disabled);
+    await mojoApi_.whenCalled('deleteAllPrintJobs');
+    flush();
+
+    // After clearing the history list, expect that the history list and
+    // header are no longer
+    assertTrue(!querySelector(page!, '#entryList'));
+    assertTrue(!querySelector(page!, '#historyHeaderContainer'));
+    assertTrue(
+        !!querySelector<HTMLButtonElement>(page!, '#clearAllButton')?.disabled);
   });
 
-  test('PrintJobDeletesFromObserver', () => {
+  test('PrintJobDeletesFromObserver', async () => {
     const completedInfo =
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kPrinted);
     const expectedArr = [
@@ -615,45 +568,34 @@ suite('PrintManagementTest', () => {
           PrinterErrorCode.kNoError, completedInfo, /*activeInfo=*/ undefined),
     ];
 
-    return initializePrintManagementApp(expectedArr)
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(expectedArr, getHistoryPrintJobEntries(page!));
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    verifyPrintJobs(expectedArr, getHistoryPrintJobEntries(page!));
 
-          // Simulate observer call that signals all print jobs have been
-          // deleted. Expect the UI to retrieve an empty list of print jobs.
-          mojoApi_.simulatePrintJobsDeletedfromDatabase();
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          // After clearing the history list, expect that the history list and
-          // header are no longer
-          assertTrue(!querySelector(page!, '#entryList'));
-          assertTrue(!querySelector(page!, '#historyHeaderContainer'));
-          assertTrue(
-              !!querySelector<HTMLButtonElement>(page!, '#clearAllButton')
-                    ?.disabled);
-        });
+    // Simulate observer call that signals all print jobs have been
+    // deleted. Expect the UI to retrieve an empty list of print jobs.
+    mojoApi_.simulatePrintJobsDeletedfromDatabase();
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    // After clearing the history list, expect that the history list and
+    // header are no longer
+    assertTrue(!querySelector(page!, '#entryList'));
+    assertTrue(!querySelector(page!, '#historyHeaderContainer'));
+    assertTrue(
+        !!querySelector<HTMLButtonElement>(page!, '#clearAllButton')?.disabled);
   });
 
-  test('HistoryHeaderIsHiddenWithEmptyPrintJobsInHistory', () => {
-    return initializePrintManagementApp(/*expectedArr=*/[])
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          // Header should be not be rendered since no there are no completed
-          // print jobs in the history.
-          assertTrue(!querySelector(page!, '#historyHeaderContainer'));
-        });
+  test('HistoryHeaderIsHiddenWithEmptyPrintJobsInHistory', async () => {
+    await initializePrintManagementApp(/*expectedArr=*/[]);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    // Header should be not be rendered since no there are no completed
+    // print jobs in the history.
+    assertTrue(!querySelector(page!, '#historyHeaderContainer'));
   });
 
-  test('LoadsOngoingPrintJob', () => {
+  test('LoadsOngoingPrintJob', async () => {
     const activeInfo1 = createOngoingPrintJobInfo(
         /*printedPages=*/ 0, ActivePrintJobState.kStarted);
     const activeInfo2 = createOngoingPrintJobInfo(
@@ -669,17 +611,13 @@ suite('PrintManagementTest', () => {
           PrinterErrorCode.kNoError, /*completedInfo=*/ undefined, activeInfo2),
     ];
 
-    return initializePrintManagementApp(expectedArr)
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(expectedArr, getOngoingPrintJobEntries(page!));
-        });
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    verifyPrintJobs(expectedArr, getOngoingPrintJobEntries(page!));
   });
 
-  test('OngoingPrintJobUpdated', () => {
+  test('OngoingPrintJobUpdated', async () => {
     const expectedArr = [
       createJobEntry(
           'fileA', 'titleA',
@@ -698,23 +636,17 @@ suite('PrintManagementTest', () => {
           PrinterErrorCode.kNoError, /*completedInfo=*/ undefined, activeInfo2),
     ];
 
-    return initializePrintManagementApp(expectedArr)
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(expectedArr, getOngoingPrintJobEntries(page!));
-          mojoApi_.simulateUpdatePrintJob(expectedUpdatedArr[0]!);
-          return flushTasks();
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(expectedUpdatedArr, getOngoingPrintJobEntries(page!));
-        });
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    verifyPrintJobs(expectedArr, getOngoingPrintJobEntries(page!));
+    mojoApi_.simulateUpdatePrintJob(expectedUpdatedArr[0]!);
+    await flushTasks();
+    flush();
+    verifyPrintJobs(expectedUpdatedArr, getOngoingPrintJobEntries(page!));
   });
 
-  test('OngoingPrintJobUpdatedToStopped', () => {
+  test('OngoingPrintJobUpdatedToStopped', async () => {
     const expectedArr = [
       createJobEntry(
           'fileA', 'titleA',
@@ -734,23 +666,17 @@ suite('PrintManagementTest', () => {
           activeInfo2),
     ];
 
-    return initializePrintManagementApp(expectedArr)
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(expectedArr, getOngoingPrintJobEntries(page!));
-          mojoApi_.simulateUpdatePrintJob(expectedUpdatedArr[0]!);
-          return flushTasks();
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(expectedUpdatedArr, getOngoingPrintJobEntries(page!));
-        });
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    verifyPrintJobs(expectedArr, getOngoingPrintJobEntries(page!));
+    mojoApi_.simulateUpdatePrintJob(expectedUpdatedArr[0]!);
+    await flushTasks();
+    flush();
+    verifyPrintJobs(expectedUpdatedArr, getOngoingPrintJobEntries(page!));
   });
 
-  test('NewOngoingPrintJobsDetected', () => {
+  test('NewOngoingPrintJobsDetected', async () => {
     const initialJob = [createJobEntry(
         'fileA', 'titleA',
         convertToMojoTime(new Date('February 5, 2020 03:24:00')),
@@ -765,25 +691,18 @@ suite('PrintManagementTest', () => {
         createOngoingPrintJobInfo(
             /*printedPages=*/ 1, ActivePrintJobState.kStarted));
 
-    return initializePrintManagementApp(initialJob)
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(initialJob, getOngoingPrintJobEntries(page!));
-          mojoApi_.simulateUpdatePrintJob(newOngoingJob);
-          return flushTasks();
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(
-              [initialJob[0]!, newOngoingJob],
-              getOngoingPrintJobEntries(page!));
-        });
+    await initializePrintManagementApp(initialJob);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    verifyPrintJobs(initialJob, getOngoingPrintJobEntries(page!));
+    mojoApi_.simulateUpdatePrintJob(newOngoingJob);
+    await flushTasks();
+    flush();
+    verifyPrintJobs(
+        [initialJob[0]!, newOngoingJob], getOngoingPrintJobEntries(page!));
   });
 
-  test('OngoingPrintJobCompletesAndUpdatesHistoryList', () => {
+  test('OngoingPrintJobCompletesAndUpdatesHistoryList', async () => {
     const id = 'fileA';
     const title = 'titleA';
     const date =
@@ -800,43 +719,34 @@ suite('PrintManagementTest', () => {
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kPrinted),
         /*activeInfo=*/ undefined)];
 
-    return initializePrintManagementApp([activeJob])
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs([activeJob], getOngoingPrintJobEntries(page!));
-          // Simulate ongoing print job has completed.
-          activeJob.activePrintJobInfo!.activeState =
-              ActivePrintJobState.kDocumentDone;
-          mojoApi_.simulateUpdatePrintJob(activeJob);
-          // Simulate print job has been added to history.
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          verifyPrintJobs(
-              expectedPrintJobArr, getHistoryPrintJobEntries(page!));
-        });
+    await initializePrintManagementApp([activeJob]);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    verifyPrintJobs([activeJob], getOngoingPrintJobEntries(page!));
+
+    // Simulate ongoing print job has completed.
+    activeJob.activePrintJobInfo!.activeState =
+        ActivePrintJobState.kDocumentDone;
+    mojoApi_.simulateUpdatePrintJob(activeJob);
+
+    // Simulate print job has been added to history.
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    verifyPrintJobs(expectedPrintJobArr, getHistoryPrintJobEntries(page!));
   });
 
-  test('OngoingPrintJobEmptyState', () => {
-    return initializePrintManagementApp(/*expectedArr=*/[])
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          // Assert that ongoing list is empty and the empty state message is
-          // not hidden.
-          assertTrue(!querySelector(page!, '#ongoingList'));
-          assertTrue(
-              !querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden);
-        });
+  test('OngoingPrintJobEmptyState', async () => {
+    await initializePrintManagementApp(/*expectedArr=*/[]);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    // Assert that ongoing list is empty and the empty state message is
+    // not hidden.
+    assertTrue(!querySelector(page!, '#ongoingList'));
+    assertTrue(
+        !querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden);
   });
 
-  test('CancelOngoingPrintJob', () => {
+  test('CancelOngoingPrintJob', async () => {
     const kId = 'fileA';
     const kTitle = 'titleA';
     const kTime =
@@ -853,30 +763,24 @@ suite('PrintManagementTest', () => {
         kId, kTitle, kTime, PrinterErrorCode.kNoError,
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kCanceled))];
 
-    return initializePrintManagementApp(expectedArr)
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          const jobEntries = getOngoingPrintJobEntries(page!);
-          verifyPrintJobs(expectedArr, jobEntries);
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    const jobEntries = getOngoingPrintJobEntries(page!);
+    verifyPrintJobs(expectedArr, jobEntries);
 
-          return simulateCancelPrintJob(
-              jobEntries[0]!, mojoApi_,
-              /*shouldAttemptCancel*/ true, expectedHistoryList);
-        })
-        .then(() => {
-          flush();
-          // Verify that there are no ongoing print jobs and history list is
-          // populated.
-          assertTrue(!querySelector(page!, '#ongoingList'));
-          verifyPrintJobs(
-              expectedHistoryList, getHistoryPrintJobEntries(page!));
-        });
+    await simulateCancelPrintJob(
+        jobEntries[0]!, mojoApi_,
+        /*shouldAttemptCancel*/ true, expectedHistoryList);
+    flush();
+
+    // Verify that there are no ongoing print jobs and history list is
+    // populated.
+    assertTrue(!querySelector(page!, '#ongoingList'));
+    verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page!));
   });
 
-  test('CancelOngoingPrintJobNotAttempted', () => {
+  test('CancelOngoingPrintJobNotAttempted', async () => {
     const kId = 'fileA';
     const kTitle = 'titleA';
     const kTime =
@@ -894,28 +798,22 @@ suite('PrintManagementTest', () => {
         kId, kTitle, kTime, PrinterErrorCode.kNoError,
         createCompletedPrintJobInfo(PrintJobCompletionStatus.kCanceled))];
 
-    return initializePrintManagementApp(expectedArr)
-        .then(() => {
-          return mojoApi_.whenCalled('getPrintJobs');
-        })
-        .then(() => {
-          flush();
-          const jobEntries = getOngoingPrintJobEntries(page!);
-          verifyPrintJobs(expectedArr, jobEntries);
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    const jobEntries = getOngoingPrintJobEntries(page!);
+    verifyPrintJobs(expectedArr, jobEntries);
 
-          return simulateCancelPrintJob(
-              jobEntries[0]!, mojoApi_,
-              /*shouldAttemptCancel=*/ false, expectedHistoryList);
-        })
-        .then(() => {
-          flush();
-          // Verify that there are no ongoing print jobs and history list is
-          // populated.
-          // TODO(crbug/1093527): Show error message to user after UX guidance.
-          assertTrue(!querySelector(page!, '#ongoingList'));
-          verifyPrintJobs(
-              expectedHistoryList, getHistoryPrintJobEntries(page!));
-        });
+    await simulateCancelPrintJob(
+        jobEntries[0]!, mojoApi_,
+        /*shouldAttemptCancel=*/ false, expectedHistoryList);
+    flush();
+
+    // Verify that there are no ongoing print jobs and history list is
+    // populated.
+    // TODO(crbug/1093527): Show error message to user after UX guidance.
+    assertTrue(!querySelector(page!, '#ongoingList'));
+    verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page!));
   });
 });
 

@@ -158,11 +158,9 @@ suite('<crostini-installer-app>', () => {
     await flushTasks();
     assertFalse(app.$$('#configure-message').hidden);
     await clickInstall();
-    await fakeBrowserProxy.handler.whenCalled('install').then(
-        ([diskSize, username]) => {
-          assertEquals(
-              username, loadTimeData.getString('defaultContainerUsername'));
-        });
+    const [diskSize, username] =
+        await fakeBrowserProxy.handler.whenCalled('install');
+    assertEquals(username, loadTimeData.getString('defaultContainerUsername'));
     assertFalse(app.$$('#installing-message').hidden);
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
     assertTrue(getInstallButton().hidden);
@@ -254,10 +252,9 @@ suite('<crostini-installer-app>', () => {
       assertTrue(isHidden(app.$$('#diskSlider')));
 
       await clickInstall();
-      await fakeBrowserProxy.handler.whenCalled('install').then(
-          ([diskSize, username]) => {
-            assertEquals(Number(diskSize), diskTicks[defaultIndex].value);
-          });
+      const [diskSize, username] =
+          await fakeBrowserProxy.handler.whenCalled('install');
+      assertEquals(Number(diskSize), diskTicks[defaultIndex].value);
       assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
     });
   });
@@ -280,10 +277,9 @@ suite('<crostini-installer-app>', () => {
     app.$$('#diskSlider').value = 1;
 
     await clickInstall();
-    await fakeBrowserProxy.handler.whenCalled('install').then(
-        ([diskSize, username]) => {
-          assertEquals(Number(diskSize), diskTicks[1].value);
-        });
+    const [diskSize, username] =
+        await fakeBrowserProxy.handler.whenCalled('install');
+    assertEquals(Number(diskSize), diskTicks[1].value);
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
   });
 
@@ -336,10 +332,9 @@ suite('<crostini-installer-app>', () => {
     await flushTasks();
     assertFalse(app.$.username.invalid);
     clickInstall();
-    await fakeBrowserProxy.handler.whenCalled('install').then(
-        ([diskSize, username]) => {
-          assertEquals(username, validUsername);
-        });
+    const [diskSize, username] =
+        await fakeBrowserProxy.handler.whenCalled('install');
+    assertEquals(username, validUsername);
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
   });
 
