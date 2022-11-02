@@ -106,7 +106,8 @@ bool IsWaitSchedulingEnabled() {
 }
 
 bool IsLibAssistantSandboxEnabled() {
-  return base::FeatureList::IsEnabled(kEnableLibAssistantSandbox);
+  return IsLibAssistantV2Enabled() ||
+         base::FeatureList::IsEnabled(kEnableLibAssistantSandbox);
 }
 
 bool IsLibAssistantV2Enabled() {
@@ -114,7 +115,8 @@ bool IsLibAssistantV2Enabled() {
 }
 
 bool IsLibAssistantDlcEnabled() {
-  return base::FeatureList::IsEnabled(kEnableLibAssistantDlc);
+  return IsLibAssistantV2Enabled() ||
+         base::FeatureList::IsEnabled(kEnableLibAssistantDlc);
 }
 
 }  // namespace ash::assistant::features
