@@ -158,6 +158,10 @@ int TaskGroupSampler::RefreshOpenFdCount() {
 bool TaskGroupSampler::RefreshProcessPriority() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
 #if BUILDFLAG(IS_MAC)
+  if (process_.is_current()) {
+    base::SelfPortProvider self_provider;
+    return process_.IsProcessBackgrounded(&self_provider);
+  }
   return process_.IsProcessBackgrounded(
       content::BrowserChildProcessHost::GetPortProvider());
 #else

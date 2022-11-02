@@ -35,6 +35,10 @@
 #include "chrome/android/modules/stack_unwinder/public/module.h"
 #endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 
+#if BUILDFLAG(IS_MAC)
+#include "base/process/port_provider_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 using CallStackProfileBuilder = metrics::CallStackProfileBuilder;
 using CallStackProfileParams = metrics::CallStackProfileParams;
 using StackSamplingProfiler = base::StackSamplingProfiler;
@@ -51,14 +55,7 @@ constexpr double kFractionOfExecutionTimeToSample = 0.02;
 
 bool IsCurrentProcessBackgrounded() {
 #if BUILDFLAG(IS_MAC)
-  // Port provider that returns the calling process's task port, ignoring its
-  // argument.
-  class SelfPortProvider : public base::PortProvider {
-    mach_port_t TaskForPid(base::ProcessHandle process) const override {
-      return mach_task_self();
-    }
-  };
-  SelfPortProvider provider;
+  base::SelfPortProvider provider;
   return base::Process::Current().IsProcessBackgrounded(&provider);
 #else   // BUILDFLAG(IS_MAC)
   return base::Process::Current().IsProcessBackgrounded();

@@ -57,6 +57,12 @@ class BASE_EXPORT PortProvider {
   base::ObserverList<Observer>::Unchecked observer_list_;
 };
 
+// Port provider that returns the calling process's task port, ignoring its
+// argument.
+class BASE_EXPORT SelfPortProvider : public base::PortProvider {
+  mach_port_t TaskForPid(base::ProcessHandle process) const override;
+};
+
 }  // namespace base
 
 #endif  // BASE_PROCESS_PORT_PROVIDER_MAC_H_
