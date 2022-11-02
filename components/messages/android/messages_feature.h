@@ -66,10 +66,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidStackingAnimation);
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidUpdatePassword);
 
-// Feature that controls whether we always update layout parameters or only
-// while the message container is visible.
-BASE_DECLARE_FEATURE(kMessagesForAndroidReduceLayoutChanges);
-
 bool IsAdsBlockedMessagesUiEnabled();
 
 bool IsNearOomReductionMessagesUiEnabled();

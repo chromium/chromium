@@ -108,10 +108,6 @@ constexpr base::FeatureParam<bool>
     kMessagesForAndroidUpdatePassword_UseFollowupButtonText{
         &kMessagesForAndroidUpdatePassword, "use_followup_button_text", false};
 
-BASE_FEATURE(kMessagesForAndroidReduceLayoutChanges,
-             "MessagesForAndroidReduceLayoutChanges",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
