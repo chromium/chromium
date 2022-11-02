@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
@@ -481,6 +482,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   base::TimeTicks pre_start_time_;
   // The time when ARC was about to start.
   base::TimeTicks start_time_;
+
+  // Used to measure the activation delay.
+  std::unique_ptr<base::ElapsedTimer> activation_delay_elapsed_timer_;
 
   base::RepeatingClosure attempt_user_exit_callback_;
 

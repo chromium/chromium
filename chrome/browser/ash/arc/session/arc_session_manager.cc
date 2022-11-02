@@ -25,6 +25,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -835,6 +836,7 @@ void ArcSessionManager::ShutdownSession() {
 void ArcSessionManager::ResetArcState() {
   pre_start_time_ = base::TimeTicks();
   start_time_ = base::TimeTicks();
+  activation_delay_elapsed_timer_.reset();
   arc_sign_in_timer_.Stop();
   playstore_launcher_.reset();
   requirement_checker_.reset();
@@ -1078,10 +1080,14 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(activation_necessity_checker_);
 
+  base::UmaHistogramBoolean("Arc.DelayedActivation.ActivationIsDelayed",
+                            !result);
+
   activation_necessity_checker_.reset();
   if (result) {
     AllowActivation();
   } else {
+    activation_delay_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
     VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
   }
 }
@@ -1369,6 +1375,11 @@ void ArcSessionManager::StartArcForRegularBoot() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::READY);
   DCHECK(activation_is_allowed_);
+
+  if (activation_delay_elapsed_timer_) {
+    base::UmaHistogramLongTimes("Arc.DelayedActivation.Delay",
+                                activation_delay_elapsed_timer_->Elapsed());
+  }
 
   VLOG(1) << "Starting ARC for a regular boot.";
   StartArc();

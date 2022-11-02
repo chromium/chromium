@@ -28,6 +28,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -264,7 +265,8 @@ TEST_F(ArcSessionManagerInLoginScreenTest, StopMiniArcIfNecessary) {
 class ArcSessionManagerTestBase : public testing::Test {
  public:
   ArcSessionManagerTestBase()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {
     TestingBrowserProcess::GetGlobal()->SetLocalState(&test_local_state_);
     arc::prefs::RegisterLocalStatePrefs(test_local_state_.registry());
@@ -326,6 +328,10 @@ class ArcSessionManagerTestBase : public testing::Test {
   }
 
  protected:
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
   TestingProfile* profile() { return profile_.get(); }
 
   ArcSessionManager* arc_session_manager() {
@@ -453,6 +459,8 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflow) {
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
+  base::HistogramTester histogram_tester;
+
   // Enable ARC on Demand feature.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kArcOnDemandFeature);
@@ -475,10 +483,17 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
   // When signed-in, enabling ARC results in the READY state.
   arc_session_manager()->RequestEnable();
   ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
+  histogram_tester.ExpectUniqueSample(
+      "Arc.DelayedActivation.ActivationIsDelayed", true, 1);
+
+  constexpr auto kDelay = base::Minutes(10);
+  task_environment().FastForwardBy(kDelay);
 
   // ARC starts after calling AllowActivation().
   arc_session_manager()->AllowActivation();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+  histogram_tester.ExpectUniqueTimeSample("Arc.DelayedActivation.Delay", kDelay,
+                                          1);
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflow_ActivationIsAlreadyAllowed) {

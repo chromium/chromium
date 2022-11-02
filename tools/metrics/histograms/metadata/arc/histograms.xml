@@ -991,6 +991,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.DelayedActivation.ActivationIsDelayed" enum="Boolean"
+    expires_after="2023-10-27">
+  <owner>hashimoto@chromium.org</owner>
+  <owner>yuholong@chromium.org</owner>
+  <owner>yusukes@chromium.org</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    True if ARC is going to be activated later in an on-demand manner on a
+    regular boot. False if ARC is going to be automatically activated without
+    delay.
+  </summary>
+</histogram>
+
+<histogram name="Arc.DelayedActivation.Delay" units="ms"
+    expires_after="2023-10-27">
+  <owner>hashimoto@chromium.org</owner>
+  <owner>yuholong@chromium.org</owner>
+  <owner>yusukes@chromium.org</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    Elapsed time from when the ARC is enabled to ARC activation on a regular
+    boot. Recorded only when activation is delayed.
+  </summary>
+</histogram>
+
 <histogram name="Arc.EngagementTime.ArcTotal" units="ms"
     expires_after="2023-04-01">
   <owner>mduggan@google.com</owner>
