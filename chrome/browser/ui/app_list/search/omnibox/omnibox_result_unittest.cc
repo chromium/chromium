@@ -9,7 +9,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
@@ -17,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -158,10 +156,7 @@ bool IsSingletonTextVector(const std::vector<ash::SearchResultTextItem>& v,
 
 class OmniboxResultTest : public testing::Test {
  public:
-  OmniboxResultTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kProductivityLauncher);
-  }
+  OmniboxResultTest() = default;
 
   OmniboxResultTest(const OmniboxResultTest&) = delete;
   OmniboxResultTest& operator=(const OmniboxResultTest&) = delete;
@@ -233,8 +228,6 @@ class OmniboxResultTest : public testing::Test {
 
  private:
   const AutocompleteInput input_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   content::BrowserTaskEnvironment task_environment_;
 

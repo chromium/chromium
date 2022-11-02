@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/app_list/search/omnibox/omnibox_answer_result.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/json/json_reader.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -18,7 +16,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/range/range.h"
 
 namespace app_list {
 namespace {
@@ -27,14 +24,8 @@ using Tag = ash::SearchResultTag;
 
 class OmniboxAnswerResultTest : public testing::Test {
  public:
-  OmniboxAnswerResultTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kProductivityLauncher);
-  }
+  OmniboxAnswerResultTest() = default;
   ~OmniboxAnswerResultTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 MATCHER_P(TagEquals, tag, "") {
