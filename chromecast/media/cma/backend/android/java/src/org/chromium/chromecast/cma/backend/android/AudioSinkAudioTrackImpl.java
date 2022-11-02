@@ -627,15 +627,6 @@ class AudioSinkAudioTrackImpl {
                 mRenderingDelayBuffer.putLong(8, nowUsecs);
                 return;
             }
-            if (mUseHwAvSync) {
-                // Hw av sync stream uses the timestamp in the audio buffer instead
-                // of the reported rendering delay to do synchronization. Therefore
-                // it is safe to report zero rendering delay when it is not
-                // available.
-                mRenderingDelayBuffer.putLong(0, 0);
-                mRenderingDelayBuffer.putLong(8, nowUsecs);
-                return;
-            }
             // No timestamp available yet, just put dummy values and return.
             mRenderingDelayBuffer.putLong(0, 0);
             mRenderingDelayBuffer.putLong(8, NO_TIMESTAMP);
