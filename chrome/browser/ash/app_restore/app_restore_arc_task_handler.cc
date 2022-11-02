@@ -84,6 +84,10 @@ bool AppRestoreArcTaskHandler::IsAppPendingRestore(
     if (launcher->IsAppPendingRestore(arc_app_id))
       return true;
   }
+  for (auto& [unused, launcher] : arc_app_single_restore_handlers_) {
+    if (launcher->IsAppPendingRestore(arc_app_id))
+      return true;
+  }
   return false;
 }
 
