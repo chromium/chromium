@@ -2278,7 +2278,7 @@ void Content::ApplyValue(StyleResolverState& state,
       if (const auto* function_value =
               DynamicTo<CSSFunctionValue>(item.Get())) {
         DCHECK_EQ(function_value->FunctionType(), CSSValueID::kAttr);
-        state.Style()->SetHasAttrContent();
+        builder.SetHasAttrContent();
         // TODO: Can a namespace be specified for an attr(foo)?
         QualifiedName attr(
             g_null_atom,
@@ -2653,28 +2653,31 @@ const CSSValue* Display::CSSValueFromComputedStyleInternal(
 }
 
 void Display::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetDisplay(ComputedStyleInitialValues::InitialDisplay());
-  state.Style()->SetDisplayLayoutCustomName(
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetDisplay(ComputedStyleInitialValues::InitialDisplay());
+  builder.SetDisplayLayoutCustomName(
       ComputedStyleInitialValues::InitialDisplayLayoutCustomName());
 }
 
 void Display::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetDisplay(state.ParentStyle()->Display());
-  state.Style()->SetDisplayLayoutCustomName(
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetDisplay(state.ParentStyle()->Display());
+  builder.SetDisplayLayoutCustomName(
       state.ParentStyle()->DisplayLayoutCustomName());
 }
 
 void Display::ApplyValue(StyleResolverState& state,
                          const CSSValue& value) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    state.Style()->SetDisplay(identifier_value->ConvertTo<EDisplay>());
-    state.Style()->SetDisplayLayoutCustomName(
+    builder.SetDisplay(identifier_value->ConvertTo<EDisplay>());
+    builder.SetDisplayLayoutCustomName(
         ComputedStyleInitialValues::InitialDisplayLayoutCustomName());
     return;
   }
 
   if (value.IsValueList()) {
-    state.Style()->SetDisplayLayoutCustomName(
+    builder.SetDisplayLayoutCustomName(
         ComputedStyleInitialValues::InitialDisplayLayoutCustomName());
     const CSSValueList& display_pair = To<CSSValueList>(value);
     DCHECK_EQ(display_pair.length(), 2u);
@@ -2685,9 +2688,9 @@ void Display::ApplyValue(StyleResolverState& state,
     // TODO(crbug.com/995106): should apply to more than just math.
     DCHECK(inside.GetValueID() == CSSValueID::kMath);
     if (outside.GetValueID() == CSSValueID::kBlock)
-      state.Style()->SetDisplay(EDisplay::kBlockMath);
+      builder.SetDisplay(EDisplay::kBlockMath);
     else
-      state.Style()->SetDisplay(EDisplay::kMath);
+      builder.SetDisplay(EDisplay::kMath);
     return;
   }
 
@@ -2697,8 +2700,8 @@ void Display::ApplyValue(StyleResolverState& state,
   EDisplay display = layout_function_value.IsInline()
                          ? EDisplay::kInlineLayoutCustom
                          : EDisplay::kLayoutCustom;
-  state.Style()->SetDisplay(display);
-  state.Style()->SetDisplayLayoutCustomName(layout_function_value.GetName());
+  builder.SetDisplay(display);
+  builder.SetDisplayLayoutCustomName(layout_function_value.GetName());
 }
 
 const CSSValue* DominantBaseline::CSSValueFromComputedStyleInternal(

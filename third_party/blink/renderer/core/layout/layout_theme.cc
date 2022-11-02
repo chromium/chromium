@@ -244,10 +244,10 @@ void LayoutTheme::AdjustStyle(const Element* element,
       style.Display() == EDisplay::kTableColumn ||
       style.Display() == EDisplay::kTableCell ||
       style.Display() == EDisplay::kTableCaption)
-    style.SetDisplay(EDisplay::kInlineBlock);
+    builder.SetDisplay(EDisplay::kInlineBlock);
   else if (style.Display() == EDisplay::kListItem ||
            style.Display() == EDisplay::kTable)
-    style.SetDisplay(EDisplay::kBlock);
+    builder.SetDisplay(EDisplay::kBlock);
 
   ControlPart part = AdjustAppearanceWithAuthorStyle(
       AdjustAppearanceWithElementType(style, element), style);

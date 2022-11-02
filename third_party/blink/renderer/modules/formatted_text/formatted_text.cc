@@ -37,11 +37,11 @@ FormattedText::FormattedText(ExecutionContext* execution_context) {
   // block flow. In the future we should handle execution_context's from worker
   // threads that do not have a document.
   auto* document = To<LocalDOMWindow>(execution_context)->document();
-  scoped_refptr<ComputedStyle> style =
-      document->GetStyleResolver().CreateComputedStyle();
-  style->SetDisplay(EDisplay::kBlock);
-  block_ =
-      LayoutBlockFlow::CreateAnonymous(document, style, LegacyLayout::kAuto);
+  ComputedStyleBuilder builder =
+      document->GetStyleResolver().CreateComputedStyleBuilder();
+  builder.SetDisplay(EDisplay::kBlock);
+  block_ = LayoutBlockFlow::CreateAnonymous(document, builder.TakeStyle(),
+                                            LegacyLayout::kAuto);
   block_->SetIsLayoutNGObjectForFormattedText(true);
 }
 

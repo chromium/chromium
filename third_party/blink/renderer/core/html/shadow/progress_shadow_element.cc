@@ -50,8 +50,11 @@ scoped_refptr<ComputedStyle> ProgressShadowElement::CustomStyleForLayoutObject(
       OriginalStyleForLayoutObject(style_recalc_context);
   const ComputedStyle* progress_style = ProgressElement()->GetComputedStyle();
   DCHECK(progress_style);
-  if (progress_style->HasEffectiveAppearance())
-    style->SetDisplay(EDisplay::kNone);
+  if (progress_style->HasEffectiveAppearance()) {
+    ComputedStyleBuilder builder(*style);
+    builder.SetDisplay(EDisplay::kNone);
+    style = builder.TakeStyle();
+  }
   return style;
 }
 

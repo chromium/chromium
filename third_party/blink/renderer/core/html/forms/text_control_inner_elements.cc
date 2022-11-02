@@ -153,7 +153,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
       To<HTMLFormControlElement>(host)->IsDisabledOrReadOnly()
           ? EUserModify::kReadOnly
           : EUserModify::kReadWritePlaintextOnly);
-  text_block_style->SetDisplay(EDisplay::kBlock);
+  text_block_style_builder.SetDisplay(EDisplay::kBlock);
   text_block_style_builder.SetHasLineIfEmpty(true);
   text_block_style->SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
@@ -191,15 +191,16 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
     text_block_style_builder.SetOverflowX(EOverflow::kScroll);
     // overflow-y:visible doesn't work because overflow-x:scroll makes a layer.
     text_block_style_builder.SetOverflowY(EOverflow::kScroll);
-    scoped_refptr<ComputedStyle> no_scrollbar_style =
-        GetDocument().GetStyleResolver().CreateComputedStyle();
-    no_scrollbar_style->SetStyleType(kPseudoIdScrollbar);
-    no_scrollbar_style->SetDisplay(EDisplay::kNone);
+    ComputedStyleBuilder no_scrollbar_style_builder =
+        GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+    no_scrollbar_style_builder.SetStyleType(kPseudoIdScrollbar);
+    no_scrollbar_style_builder.SetDisplay(EDisplay::kNone);
     text_block_style->AddCachedPseudoElementStyle(
-        no_scrollbar_style, kPseudoIdScrollbar, g_null_atom);
+        no_scrollbar_style_builder.TakeStyle(), kPseudoIdScrollbar,
+        g_null_atom);
     text_block_style->SetHasPseudoElementStyle(kPseudoIdScrollbar);
 
-    text_block_style->SetDisplay(EDisplay::kFlowRoot);
+    text_block_style_builder.SetDisplay(EDisplay::kFlowRoot);
     if (parentNode()->IsShadowRoot())
       text_block_style_builder.SetAlignSelfBlockCenter(true);
   }

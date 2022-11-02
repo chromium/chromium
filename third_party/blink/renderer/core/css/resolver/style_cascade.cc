@@ -812,7 +812,7 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   if (HasLineHeightDependency(To<CustomProperty>(property), data.get()))
     resolver.DetectCycle(GetCSSPropertyLineHeight());
 
-  state_.Style()->SetHasVariableDeclaration();
+  state_.StyleBuilder().SetHasVariableDeclaration();
 
   if (resolver.InCycle())
     return CSSCyclicVariableValue::Create();
@@ -1172,8 +1172,8 @@ void StyleCascade::MarkIsReferenced(const CSSProperty& referencer,
 
 void StyleCascade::MarkHasVariableReference(const CSSProperty& property) {
   if (!property.IsInherited())
-    state_.Style()->SetHasVariableReferenceFromNonInheritedProperty();
-  state_.Style()->SetHasVariableReference();
+    state_.StyleBuilder().SetHasVariableReferenceFromNonInheritedProperty();
+  state_.StyleBuilder().SetHasVariableReference();
 }
 
 const Document& StyleCascade::GetDocument() const {

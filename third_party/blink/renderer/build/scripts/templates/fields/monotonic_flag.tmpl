@@ -4,9 +4,11 @@
 
 {% macro decl_public_methods(field) %}
 {{base.decl_getter_method(field)}}
+{% if not field.readonly or field.mutable %}
 void {{field.setter_method_name}}() {{print_if(field.mutable, "const ")}}{
   {{set_if_changed(field, encode(field, "true"))|indent(2)}}
 }
+{% endif %}
 {% endmacro %}
 
 {% macro decl_protected_methods(field) -%}

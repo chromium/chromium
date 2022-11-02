@@ -39,10 +39,11 @@ class LayoutTableCellDeathTest : public RenderingTest,
 
   void SetUp() override {
     RenderingTest::SetUp();
-    auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
-    style->SetDisplay(EDisplay::kTableCell);
-    cell_ = LayoutTableCell::CreateAnonymous(&GetDocument(), std::move(style),
-                                             LegacyLayout::kAuto);
+    auto builder =
+        GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+    builder.SetDisplay(EDisplay::kTableCell);
+    cell_ = LayoutTableCell::CreateAnonymous(
+        &GetDocument(), builder.TakeStyle(), LegacyLayout::kAuto);
   }
 
   void TearDown() override {

@@ -6509,8 +6509,11 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
     scoped_refptr<ComputedStyle> result =
         GetDocument().GetStyleResolver().ResolveStyle(
             target, style_recalc_context, first_line_inherited_request);
-    if (result)
-      result->SetStyleType(kPseudoIdFirstLineInherited);
+    if (result) {
+      ComputedStyleBuilder builder(*result);
+      builder.SetStyleType(kPseudoIdFirstLineInherited);
+      result = builder.TakeStyle();
+    }
     return result;
   }
 

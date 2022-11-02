@@ -575,61 +575,75 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
-  scoped_refptr<ComputedStyle> old_style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> new_style = CreateComputedStyle();
+  ComputedStyleBuilder old_builder = CreateComputedStyleBuilder();
+  ComputedStyleBuilder new_builder = CreateComputedStyleBuilder();
 
   using UnitType = CSSPrimitiveValue::UnitType;
 
   const auto* value1 = CSSNumericLiteralValue::Create(1.0, UnitType::kPixels);
   const auto* value2 = CSSNumericLiteralValue::Create(2.0, UnitType::kPixels);
 
+  scoped_refptr<const ComputedStyle> old_style = old_builder.TakeStyle();
+  scoped_refptr<const ComputedStyle> new_style = new_builder.TakeStyle();
   EXPECT_FALSE(old_style->HasVariableDeclaration());
   EXPECT_FALSE(old_style->HasVariableReference());
   EXPECT_FALSE(new_style->HasVariableReference());
   EXPECT_FALSE(new_style->HasVariableDeclaration());
 
   // Removed variable
-  old_style->SetVariableValue("--x", value1, true);
+  old_builder = CreateComputedStyleBuilder();
+  old_builder.MutableInternalStyle()->SetVariableValue("--x", value1, true);
+  old_style = old_builder.TakeStyle();
   EXPECT_EQ(ComputedStyle::Difference::kIndependentInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = CreateComputedStyle();
-  new_style = CreateComputedStyle();
+  old_builder = CreateComputedStyleBuilder();
+  new_builder = CreateComputedStyleBuilder();
 
   // Added a new variable
-  new_style->SetVariableValue("--x", value2, true);
+  new_builder.MutableInternalStyle()->SetVariableValue("--x", value2, true);
+  old_style = old_builder.TakeStyle();
+  new_style = new_builder.TakeStyle();
   EXPECT_EQ(ComputedStyle::Difference::kIndependentInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
   // Change value of variable
-  old_style->SetVariableValue("--x", value1, true);
-  new_style->SetVariableValue("--x", value2, true);
-  new_style->SetHasVariableReference();
+  old_builder = CreateComputedStyleBuilder();
+  new_builder = ComputedStyleBuilder(*new_style);
+  old_builder.MutableInternalStyle()->SetVariableValue("--x", value1, true);
+  new_builder.MutableInternalStyle()->SetVariableValue("--x", value2, true);
+  new_builder.SetHasVariableReference();
+  old_style = old_builder.TakeStyle();
+  new_style = new_builder.TakeStyle();
   EXPECT_FALSE(new_style->HasVariableDeclaration());
   EXPECT_TRUE(new_style->HasVariableReference());
   EXPECT_EQ(ComputedStyle::Difference::kIndependentInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = CreateComputedStyle();
-  new_style = CreateComputedStyle();
+  old_builder = CreateComputedStyleBuilder();
+  new_builder = CreateComputedStyleBuilder();
 
   // New styles with variable declaration don't force style recalc
-  old_style->SetVariableValue("--x", value1, true);
-  new_style->SetVariableValue("--x", value2, true);
-  new_style->SetHasVariableDeclaration();
+  old_builder.MutableInternalStyle()->SetVariableValue("--x", value1, true);
+  new_builder.MutableInternalStyle()->SetVariableValue("--x", value2, true);
+  new_builder.SetHasVariableDeclaration();
+  old_style = old_builder.TakeStyle();
+  new_style = new_builder.TakeStyle();
   EXPECT_TRUE(new_style->HasVariableDeclaration());
   EXPECT_FALSE(new_style->HasVariableReference());
   EXPECT_EQ(ComputedStyle::Difference::kIndependentInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = CreateComputedStyle();
-  new_style = CreateComputedStyle();
+  old_builder = CreateComputedStyleBuilder();
+  new_builder = CreateComputedStyleBuilder();
 
   // New styles with variable reference don't force style recalc
-  old_style->SetVariableValue("--x", value1, true);
-  new_style->SetVariableValue("--x", value2, true);
-  new_style->SetHasVariableDeclaration();
-  new_style->SetHasVariableReference();
+  old_builder.MutableInternalStyle()->SetVariableValue("--x", value1, true);
+  new_builder.MutableInternalStyle()->SetVariableValue("--x", value2, true);
+  new_builder.SetHasVariableDeclaration();
+  new_builder.SetHasVariableReference();
+  old_style = old_builder.TakeStyle();
+  new_style = new_builder.TakeStyle();
   EXPECT_TRUE(new_style->HasVariableDeclaration());
   EXPECT_TRUE(new_style->HasVariableReference());
   EXPECT_EQ(ComputedStyle::Difference::kIndependentInherited,
@@ -641,14 +655,16 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
-  scoped_refptr<ComputedStyle> old_style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> new_style = CreateComputedStyle();
+  ComputedStyleBuilder old_builder = CreateComputedStyleBuilder();
+  ComputedStyleBuilder new_builder = CreateComputedStyleBuilder();
 
   using UnitType = CSSPrimitiveValue::UnitType;
 
   const auto* value1 = CSSNumericLiteralValue::Create(1.0, UnitType::kPixels);
   const auto* value2 = CSSNumericLiteralValue::Create(2.0, UnitType::kPixels);
 
+  scoped_refptr<const ComputedStyle> old_style = old_builder.TakeStyle();
+  scoped_refptr<const ComputedStyle> new_style = new_builder.TakeStyle();
   EXPECT_FALSE(old_style->HasVariableDeclaration());
   EXPECT_FALSE(old_style->HasVariableReference());
   EXPECT_FALSE(new_style->HasVariableReference());
@@ -656,43 +672,51 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
 
   // Removed variable value
   // Old styles with variable reference force style recalc
-  old_style->SetHasVariableReference();
-  old_style->SetVariableValue("--x", value2, true);
+  old_builder = CreateComputedStyleBuilder();
+  old_builder.SetHasVariableReference();
+  old_builder.MutableInternalStyle()->SetVariableValue("--x", value2, true);
+  old_style = old_builder.TakeStyle();
   EXPECT_TRUE(old_style->HasVariableReference());
   EXPECT_EQ(ComputedStyle::Difference::kInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = CreateComputedStyle();
-  new_style = CreateComputedStyle();
+  old_builder = CreateComputedStyleBuilder();
+  new_builder = CreateComputedStyleBuilder();
 
   // New variable value
   // Old styles with variable declaration force style recalc
-  old_style->SetHasVariableDeclaration();
-  new_style->SetVariableValue("--x", value2, true);
+  old_builder.SetHasVariableDeclaration();
+  new_builder.MutableInternalStyle()->SetVariableValue("--x", value2, true);
+  old_style = old_builder.TakeStyle();
+  new_style = new_builder.TakeStyle();
   EXPECT_TRUE(old_style->HasVariableDeclaration());
   EXPECT_EQ(ComputedStyle::Difference::kInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = CreateComputedStyle();
-  new_style = CreateComputedStyle();
+  old_builder = CreateComputedStyleBuilder();
+  new_builder = CreateComputedStyleBuilder();
 
   // Change variable value
   // Old styles with variable declaration force style recalc
-  old_style->SetVariableValue("--x", value1, true);
-  new_style->SetVariableValue("--x", value2, true);
-  old_style->SetHasVariableDeclaration();
+  old_builder.MutableInternalStyle()->SetVariableValue("--x", value1, true);
+  new_builder.MutableInternalStyle()->SetVariableValue("--x", value2, true);
+  old_builder.SetHasVariableDeclaration();
+  old_style = old_builder.TakeStyle();
+  new_style = new_builder.TakeStyle();
   EXPECT_TRUE(old_style->HasVariableDeclaration());
   EXPECT_EQ(ComputedStyle::Difference::kInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = CreateComputedStyle();
-  new_style = CreateComputedStyle();
+  old_builder = CreateComputedStyleBuilder();
+  new_builder = CreateComputedStyleBuilder();
 
   // Change variable value
   // Old styles with variable reference force style recalc
-  old_style->SetVariableValue("--x", value1, true);
-  new_style->SetVariableValue("--x", value2, true);
-  old_style->SetHasVariableReference();
+  old_builder.MutableInternalStyle()->SetVariableValue("--x", value1, true);
+  new_builder.MutableInternalStyle()->SetVariableValue("--x", value2, true);
+  old_builder.SetHasVariableReference();
+  old_style = old_builder.TakeStyle();
+  new_style = new_builder.TakeStyle();
   EXPECT_TRUE(old_style->HasVariableReference());
   EXPECT_EQ(ComputedStyle::Difference::kInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));

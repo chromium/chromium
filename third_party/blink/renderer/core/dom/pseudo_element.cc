@@ -217,7 +217,7 @@ scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
   builder.MutableInternalStyle()->InheritFrom(style);
   builder.SetContent(style.GetContentData());
   builder.SetDisplay(EDisplay::kInline);
-  builder.MutableInternalStyle()->SetStyleType(pseudo_id_);
+  builder.SetStyleType(pseudo_id_);
   return builder.TakeStyle();
 }
 

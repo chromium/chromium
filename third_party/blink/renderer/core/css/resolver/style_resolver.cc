@@ -1072,7 +1072,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
       state.Style()->SetIsEnsuredOutsideFlatTree();
     }
   }
-  state.Style()->SetStyleType(style_request.pseudo_id);
+  state.StyleBuilder().SetStyleType(style_request.pseudo_id);
   state.Style()->SetPseudoArgument(style_request.pseudo_argument);
 
   // For highlight inheritance, propagate link visitedness, forced-colors
@@ -1080,8 +1080,8 @@ void StyleResolver::InitStyleAndApplyInheritance(
   // ‘text-shadow’) from the originating element, even if we have no parent
   // highlight ComputedStyle we can inherit from.
   if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
-    state.Style()->SetInsideLink(state.ElementLinkState());
-    state.Style()->SetInForcedColorsMode(
+    state.StyleBuilder().SetInsideLink(state.ElementLinkState());
+    state.StyleBuilder().SetInForcedColorsMode(
         style_request.originating_element_style->InForcedColorsMode());
     state.StyleBuilder().SetForcedColorAdjust(
         style_request.originating_element_style->ForcedColorAdjust());
@@ -1091,7 +1091,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
   }
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
-    state.Style()->SetIsLink();
+    state.StyleBuilder().SetIsLink();
     EInsideLink link_state = state.ElementLinkState();
     if (link_state != EInsideLink::kNotInsideLink) {
       bool force_visited = false;
@@ -1100,7 +1100,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
       if (force_visited)
         link_state = EInsideLink::kInsideVisitedLink;
     }
-    state.Style()->SetInsideLink(link_state);
+    state.StyleBuilder().SetInsideLink(link_state);
   }
 }
 
@@ -1336,7 +1336,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
   ApplyCallbackSelectors(state);
 
   // Cache our original display.
-  state.Style()->SetOriginalDisplay(state.Style()->Display());
+  state.StyleBuilder().SetOriginalDisplay(state.Style()->Display());
 
   StyleAdjuster::AdjustComputedStyle(
       state, style_request.IsPseudoStyleRequest() ? nullptr : element);
@@ -1383,7 +1383,7 @@ void StyleResolver::ApplyBaseStyle(
     state.SetStyle(ComputedStyle::Clone(*animation_base_computed_style));
     state.StyleRef().SetBaseData(
         scoped_refptr<StyleBaseData>(GetBaseData(state)));
-    state.Style()->SetStyleType(style_request.pseudo_id);
+    state.StyleBuilder().SetStyleType(style_request.pseudo_id);
     if (!state.ParentStyle()) {
       state.SetParentStyle(InitialStyleForElement());
       state.SetLayoutParentStyle(state.ParentStyle());
@@ -1418,9 +1418,10 @@ void StyleResolver::ApplyBaseStyle(
     // but will (generally) not unset them, so reset them before
     // computation.
     state.StyleRef().SetIsStackingContextWithoutContainment(false);
-    state.StyleRef().SetInsideFragmentationContextWithNondeterministicEngine(
-        state.ParentStyle()
-            ->InsideFragmentationContextWithNondeterministicEngine());
+    state.StyleBuilder()
+        .SetInsideFragmentationContextWithNondeterministicEngine(
+            state.ParentStyle()
+                ->InsideFragmentationContextWithNondeterministicEngine());
 
     StyleAdjuster::AdjustComputedStyle(
         state, style_request.IsPseudoStyleRequest() ? nullptr : element);
@@ -1443,7 +1444,7 @@ void StyleResolver::ApplyBaseStyle(
     // children or not. We'd be doing too much work in such cases, but still
     // maintain correctness.
     if (incremental_style->HasExplicitInheritance()) {
-      state.StyleRef().SetHasExplicitInheritance();
+      state.StyleBuilder().SetHasExplicitInheritance();
     }
 
     // Similarly, if a style went from using viewport units to not,
@@ -1910,7 +1911,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
 
       // Unfortunately the 'link status' is treated like an inherited property.
       // We need to explicitly restore it.
-      state.Style()->SetInsideLink(link_status);
+      state.StyleBuilder().SetInsideLink(link_status);
 
       is_inherited_cache_hit = true;
     }
@@ -2553,12 +2554,13 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
 
   // Set up our initial style properties based on either the `default_font` or
   // `parent_style`.
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  ComputedStyle* style = builder.MutableInternalStyle();
   if (default_font)
     style->SetFontDescription(*default_font);
   else  // parent_style
     style->InheritFrom(*parent_style);
-  style->SetDisplay(is_text_run ? EDisplay::kInline : EDisplay::kBlock);
+  builder.SetDisplay(is_text_run ? EDisplay::kInline : EDisplay::kBlock);
 
   // Apply any properties in the `css_property_value_set`.
   if (css_property_value_set) {
@@ -2580,7 +2582,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
     StyleAdjuster::AdjustComputedStyle(state, nullptr);
   }
 
-  return style;
+  return builder.TakeStyle();
 }
 
 static Font ComputeInitialLetterFont(const ComputedStyle& style,

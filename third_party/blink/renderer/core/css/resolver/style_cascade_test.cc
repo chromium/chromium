@@ -2530,7 +2530,7 @@ TEST_F(StyleCascadeTest, AnimatedVisitedImportantOverride) {
     )HTML");
 
   TestCascade cascade(GetDocument());
-  cascade.State().Style()->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
 
   cascade.Add(ParseDeclarationBlock("background-color:red !important"),
               CascadeOrigin::kAuthor, CSSSelector::kMatchVisited);
@@ -2546,11 +2546,15 @@ TEST_F(StyleCascadeTest, AnimatedVisitedImportantOverride) {
 
   auto style = cascade.TakeStyle();
 
-  style->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  ComputedStyleBuilder builder(*style);
+  builder.SetInsideLink(EInsideLink::kInsideVisitedLink);
+  style = builder.TakeStyle();
   EXPECT_EQ(Color(255, 0, 0),
             style->VisitedDependentColor(GetCSSPropertyBackgroundColor()));
 
-  style->SetInsideLink(EInsideLink::kNotInsideLink);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetInsideLink(EInsideLink::kNotInsideLink);
+  style = builder.TakeStyle();
   EXPECT_EQ(Color(150, 150, 150),
             style->VisitedDependentColor(GetCSSPropertyBackgroundColor()));
 }
@@ -2574,11 +2578,15 @@ TEST_F(StyleCascadeTest, AnimatedVisitedHighPrio) {
 
   auto style = cascade.TakeStyle();
 
-  style->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  ComputedStyleBuilder builder(*style);
+  builder.SetInsideLink(EInsideLink::kInsideVisitedLink);
+  style = builder.TakeStyle();
   EXPECT_EQ(Color(150, 150, 150),
             style->VisitedDependentColor(GetCSSPropertyColor()));
 
-  style->SetInsideLink(EInsideLink::kNotInsideLink);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetInsideLink(EInsideLink::kNotInsideLink);
+  style = builder.TakeStyle();
   EXPECT_EQ(Color(150, 150, 150),
             style->VisitedDependentColor(GetCSSPropertyColor()));
 }
@@ -3076,7 +3084,7 @@ TEST_F(StyleCascadeTest, InternalVisitedColorLonghand) {
   cascade.Add("color:green", CascadeOrigin::kAuthor);
   cascade.Add("color:red", CascadeOrigin::kAuthor, CSSSelector::kMatchVisited);
 
-  cascade.State().Style()->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
   cascade.Apply();
 
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
@@ -3094,7 +3102,7 @@ TEST_F(StyleCascadeTest, VarInInternalVisitedColorShorthand) {
   cascade.Add("outline-color:green", CascadeOrigin::kAuthor,
               CSSSelector::kMatchLink);
 
-  cascade.State().Style()->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
   cascade.Apply();
 
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("outline-color"));
@@ -3426,11 +3434,15 @@ TEST_F(StyleCascadeTest, RootColorNotModifiedByEmptyCascade) {
 
   auto style = cascade.TakeStyle();
 
-  style->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  ComputedStyleBuilder builder(*style);
+  builder.SetInsideLink(EInsideLink::kInsideVisitedLink);
+  style = builder.TakeStyle();
   EXPECT_EQ(Color(255, 0, 0),
             style->VisitedDependentColor(GetCSSPropertyColor()));
 
-  style->SetInsideLink(EInsideLink::kNotInsideLink);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetInsideLink(EInsideLink::kNotInsideLink);
+  style = builder.TakeStyle();
   EXPECT_EQ(Color(255, 0, 0),
             style->VisitedDependentColor(GetCSSPropertyColor()));
 }
@@ -3454,10 +3466,14 @@ TEST_F(StyleCascadeTest, InitialColor) {
 
   auto style = cascade.TakeStyle();
 
-  style->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  ComputedStyleBuilder builder(*style);
+  builder.SetInsideLink(EInsideLink::kInsideVisitedLink);
+  style = builder.TakeStyle();
   EXPECT_EQ(Color::kWhite, style->VisitedDependentColor(GetCSSPropertyColor()));
 
-  style->SetInsideLink(EInsideLink::kNotInsideLink);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetInsideLink(EInsideLink::kNotInsideLink);
+  style = builder.TakeStyle();
   EXPECT_EQ(Color::kWhite, style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 

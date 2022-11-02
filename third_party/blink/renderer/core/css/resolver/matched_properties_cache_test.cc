@@ -270,15 +270,17 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependency) {
 
   auto parent_a = CreateStyle();
   auto parent_b = CreateStyle();
-  auto style_a = CreateStyle();
-  auto style_b = CreateStyle();
   parent_a->SetVariableData("--x", CreateVariableData("1px"), true);
   parent_b->SetVariableData("--x", CreateVariableData("2px"), true);
-  style_a->SetHasVariableReferenceFromNonInheritedProperty();
-  style_b->SetHasVariableReferenceFromNonInheritedProperty();
+
+  auto style_builder_a = CreateStyleBuilder();
+  auto style_builder_b = CreateStyleBuilder();
+  style_builder_a.SetHasVariableReferenceFromNonInheritedProperty();
+  style_builder_b.SetHasVariableReferenceFromNonInheritedProperty();
+  auto style_a = style_builder_a.TakeStyle();
+  auto style_b = style_builder_b.TakeStyle();
 
   TestKey key("top:var(--x)", 1, GetDocument());
-
   cache.Add(key, *style_a, *parent_a);
   EXPECT_TRUE(cache.Find(key, *style_a, *parent_a));
   EXPECT_TRUE(cache.Find(key, *style_b, *parent_a));
@@ -290,10 +292,13 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependencyNoVars) {
 
   auto parent_a = CreateStyle();
   auto parent_b = CreateStyle();
-  auto style_a = CreateStyle();
-  auto style_b = CreateStyle();
-  style_a->SetHasVariableReferenceFromNonInheritedProperty();
-  style_b->SetHasVariableReferenceFromNonInheritedProperty();
+
+  auto style_builder_a = CreateStyleBuilder();
+  auto style_builder_b = CreateStyleBuilder();
+  style_builder_a.SetHasVariableReferenceFromNonInheritedProperty();
+  style_builder_b.SetHasVariableReferenceFromNonInheritedProperty();
+  auto style_a = style_builder_a.TakeStyle();
+  auto style_b = style_builder_b.TakeStyle();
 
   TestKey key("top:var(--x)", 1, GetDocument());
 

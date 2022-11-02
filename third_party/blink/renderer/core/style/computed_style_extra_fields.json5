@@ -33,6 +33,7 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
+      readonly: true,
     },
     {
       name: "Display",
@@ -47,6 +48,7 @@
         "layout-custom", "inline-layout-custom", "math", "block math"
       ],
       default_value: "inline",
+      readonly: true,
     },
     {
       name: "DisplayLayoutCustomName",
@@ -55,6 +57,7 @@
       type_name: "AtomicString",
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "g_null_atom",
+      readonly: true,
     },
     {
       name: "DisplayLayoutCustomParentName",
@@ -63,6 +66,7 @@
       type_name: "AtomicString",
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "g_null_atom",
+      readonly: true,
     },
     {
       name: "OriginalDisplay",
@@ -77,6 +81,7 @@
         "layout-custom", "inline-layout-custom", "math", "block math"
       ],
       default_value: "inline",
+      readonly: true,
     },
     {
       name: "InsideLink",
@@ -84,6 +89,7 @@
       default_value: "not-inside-link",
       keywords: ["not-inside-link", "inside-unvisited-link", "inside-visited-link"],
       inherited: true,
+      readonly: true,
     },
     {
       name: "InForcedColorsMode",
@@ -92,6 +98,7 @@
       default_value: "false",
       type_name: "bool",
       inherited: true,
+      readonly: true,
     },
     // Whether we're inside (or at) a block fragmentation context that may
     // switch between legacy and NG layout, depending on the contents.
@@ -103,6 +110,7 @@
       default_value: "false",
       type_name: "bool",
       inherited: true,
+      readonly: true,
     },
     // Style has content property with attr() values.
     {
@@ -111,6 +119,7 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
+      readonly: true,
     },
     // Whether this style is affected by these pseudo-classes.
     {
@@ -148,6 +157,7 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
+      readonly: true,
     },
     // A property references a variable that needs to be resolved
     {
@@ -155,6 +165,7 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      readonly: true,
     },
     // A property which value consists of a custom property declaration.
     {
@@ -162,6 +173,7 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      readonly: true,
     },
     // Set on parent style when a child explicitly inherits a
     // non-inherited property
@@ -172,12 +184,14 @@
       custom_copy: true,
       custom_compare: true,
       mutable: true,
+      readonly: true,
     },
     // Explicitly inherits a non-inherited property
     {
       name: "HasExplicitInheritance",
       field_template: "monotonic_flag",
       default_value: "false",
+      readonly: true,
     },
     // These are set if we used viewport or rem units when resolving a length.
     {
@@ -227,6 +241,7 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      readonly: true,
     },
     // These properties only have generated storage, and their methods are handwritten in ComputedStyle.
     {
@@ -234,10 +249,10 @@
       field_template: "primitive",
       field_size: 6,
       default_value: "PseudoId::kPseudoIdNone",
-      type_name: "unsigned",
+      type_name: "PseudoId",
       custom_copy: true,
       custom_compare: true,
-      computed_style_custom_functions: ["getter", "setter"],
+      readonly: true,
     },
     {
       name: "PseudoBits",

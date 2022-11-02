@@ -106,7 +106,7 @@ void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
 
   bool is_inherited_for_unset = state.IsInheritedForUnset(property);
   if (is_inherit && !is_inherited_for_unset) {
-    state.Style()->SetHasExplicitInheritance();
+    state.StyleBuilder().SetHasExplicitInheritance();
     state.ParentStyle()->SetChildHasExplicitInheritance();
   } else if (value.IsUnsetValue()) {
     DCHECK(!is_inherit && !is_initial);
