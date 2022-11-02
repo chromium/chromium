@@ -816,6 +816,10 @@ def add_common_args(*parsers):
         '--public-image',
         action='store_true',
         help='Will flash a public "full" image to the device.')
+    parser.add_argument(
+        '--magic-vm-cache',
+        help='Path to the magic CrOS VM cache dir. See the comment above '
+             '"magic_cros_vm_cache" in mixins.pyl for more info.')
 
     vm_or_device_group = parser.add_mutually_exclusive_group()
     vm_or_device_group.add_argument(
@@ -927,20 +931,7 @@ def main():
       'cmd-line API, this will overwrite the value(s) of "--test" above.')
 
   add_common_args(gtest_parser, tast_test_parser, host_cmd_parser)
-
-  args = sys.argv[1:]
-  unknown_args = []
-  # If a '--' is present in the args, treat everything to the right of it as
-  # args to the test and everything to the left as args to this test runner.
-  # Otherwise treat all known args as args to this test runner and all unknown
-  # args as test args.
-  if '--' in args:
-    unknown_args = args[args.index('--') + 1:]
-    args = args[0:args.index('--')]
-  if unknown_args:
-    args = parser.parse_args(args=args)
-  else:
-    args, unknown_args = parser.parse_known_args()
+  args, unknown_args = parser.parse_known_args()
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
 
@@ -967,6 +958,12 @@ def main():
     # public images, so make sure the env var GS uses to locate its creds is
     # unset in that case.
     os.environ.pop('BOTO_CONFIG', None)
+
+  if args.magic_vm_cache:
+    full_vm_cache_path = os.path.join(CHROMIUM_SRC_PATH, args.magic_vm_cache)
+    if os.path.exists(full_vm_cache_path):
+      with open(os.path.join(full_vm_cache_path, 'swarming.txt'), 'w') as f:
+        f.write('non-empty file to make swarming persist this cache')
 
   return args.func(args, unknown_args)
 

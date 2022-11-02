@@ -1827,7 +1827,6 @@ class MetaBuildWrapper:
         cmdline += [
             os.path.join('bin', 'cros_test_wrapper'),
             '--logs-dir=${ISOLATED_OUTDIR}',
-            '--',
         ]
       if is_android:
         extra_files.append('../../build/android/test_wrapper/logdog_wrapper.py')

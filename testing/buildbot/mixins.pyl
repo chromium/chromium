@@ -302,6 +302,11 @@
         },
       ],
     },
+    '$mixin_append': {
+      'args': [
+        '--magic-vm-cache=magic_cros_vm_cache',
+      ],
+    },
   },
   'chromeos-betty': {
     'swarming': {
@@ -328,6 +333,11 @@
           'name': 'cros_vm',
           'path': 'magic_cros_vm_cache',
         },
+      ],
+    },
+    '$mixin_append': {
+      'args': [
+        '--magic-vm-cache=magic_cros_vm_cache',
       ],
     },
   },
@@ -386,6 +396,11 @@
           'name': 'cros_reven_vm',
           'path': 'magic_cros_reven_vm_cache',
         },
+      ],
+    },
+    '$mixin_append': {
+      'args': [
+        '--magic-vm-cache=magic_cros_reven_vm_cache',
       ],
     },
   },
