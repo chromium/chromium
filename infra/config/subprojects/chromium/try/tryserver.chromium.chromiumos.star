@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "goma", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -336,6 +336,8 @@ try_.builder(
             "chrome/test/data/webui/chromeos/chromebox_for_meetings/.+",
         ],
     ),
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
 )
 
 # RTS builders

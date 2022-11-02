@@ -263,7 +263,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-annotator-rel": {

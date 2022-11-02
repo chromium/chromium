@@ -99,6 +99,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-blink-heap-verification-try",
+    goma_backend = None,
 )
 
 try_.builder(
@@ -120,6 +121,7 @@ try_.builder(
     mirrors = [
         "ci/linux-extended-tracing-rel",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -133,6 +135,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-headless-shell-rel",
+    goma_backend = None,
 )
 
 try_.builder(
@@ -147,6 +150,7 @@ try_.builder(
 try_.builder(
     name = "linux-mbi-mode-per-render-process-host-rel",
     mirrors = builder_config.copy_from("linux-rel"),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -186,6 +190,7 @@ try_.builder(
             "services/tracing/.+",
         ],
     ),
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(

@@ -4,7 +4,7 @@
 """Definitions of builders in the tryserver.chromium builder group."""
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "goma", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
@@ -50,6 +50,8 @@ try_.builder(
     mirrors = [
         "ci/linux-official",
     ],
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
 )
 
 try_.builder(

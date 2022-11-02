@@ -944,14 +944,14 @@
     'tryserver.chromium': {
       'android-official': 'android_official_optimize_goma_trybot',
       'fuchsia-official': 'fuchsia_official_optimize_goma_trybot',
-      'linux-official': 'official_optimize_goma_trybot',
+      'linux-official': 'official_optimize_reclient_trybot',
       'mac-official': 'official_optimize_goma_trybot',
       'win-official': 'official_optimize_goma_trybot',
       'win32-official': 'x86_official_optimize_goma_trybot',
     },
 
     'tryserver.chromium.accessibility': {
-      'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility',
+      'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility_reclient',
     },
 
     'tryserver.chromium.android': {
@@ -1068,7 +1068,7 @@
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_fyi',
-      'linux-cfm-rel': 'linux_cfm_release_trybot',
+      'linux-cfm-rel': 'linux_cfm_release_trybot_reclient',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
@@ -1147,22 +1147,22 @@
       'linux-autofill-assistant': 'autofill_assistant_release_trybot',
       'linux-bfcache-rel': 'release_bot_blink',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
-      'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification',
+      'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification_reclient',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off',
       'linux-example-builder': 'release_trybot',
-      'linux-extended-tracing-rel': 'release_trybot_extended_tracing',
+      'linux-extended-tracing-rel': 'release_trybot_extended_tracing_reclient',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
       'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
-      'linux-headless-shell-rel': 'headless_shell_release_bot',
+      'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
       'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials',
       'linux-lacros-asan-lsan-rel': 'asan_lsan_lacros_release_bot_dcheck_always_on',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
       'linux-layout-tests-edit-ng': 'release_trybot',
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot_reclient',
-      'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host',
+      'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient',
       'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance',
-      'linux-perfetto-rel': 'perfetto_release_trybot',
+      'linux-perfetto-rel': 'perfetto_release_trybot_reclient',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck',
       'linux-rel-ml': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck',
@@ -1312,7 +1312,7 @@
       'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia',
       'ios-clang-tidy-rel': 'ios_device_release_compile_only',
       'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot',
-      'linux-clang-tidy-dbg': 'debug_bot',
+      'linux-clang-tidy-dbg': 'debug_bot_reclient',
       'linux-clang-tidy-rel': 'release_trybot_reclient',
       'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot',
       'mac-clang-tidy-rel': 'release_trybot',
@@ -2806,8 +2806,8 @@
       'gpu_tests', 'release_trybot', 'invert_fieldtrials',
     ],
 
-    'gpu_tests_release_trybot_mbi_mode_per_render_process_host': [
-      'gpu_tests', 'release_trybot', 'mbi_mode_per_render_process_host'
+    'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'mbi_mode_per_render_process_host'
     ],
 
     'gpu_tests_release_trybot_mbi_mode_per_site_instance': [
@@ -2918,10 +2918,6 @@
     'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'linux_wayland', 'ozone_headless', 'remoting_use_wayland',
-    ],
-
-    'headless_shell_release_bot': [
-      'headless_shell', 'release', 'static', 'goma',
     ],
 
     'headless_shell_release_bot_reclient': [
@@ -3176,8 +3172,8 @@
       'cfm', 'release_bot_reclient', 'chromeos',
     ],
 
-    'linux_cfm_release_trybot': [
-      'cfm', 'release_trybot', 'chromeos',
+    'linux_cfm_release_trybot_reclient': [
+      'cfm', 'release_trybot_reclient', 'chromeos',
     ],
 
     'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl_reclient': [
@@ -3364,6 +3360,11 @@
     'official_optimize_reclient': [
       'official_optimize_reclient',
     ],
+
+    'official_optimize_reclient_trybot': [
+      'official_optimize_reclient_trybot',
+    ],
+
     'official_reclient': [
        'official', 'reclient',
     ],
@@ -3384,6 +3385,10 @@
       'perfetto', 'release_trybot', 'android', 'x64'
     ],
 
+    'perfetto_release_trybot_reclient': [
+      'perfetto', 'release_trybot_reclient',
+    ],
+
     'presubmit': [
       # The chromium_presubmit bot does not use mb.
       'error',
@@ -3395,10 +3400,6 @@
 
     'release_bot_blink': [
       'release_bot_blink',
-    ],
-
-    'release_bot_blink_accessibility': [
-      'release_bot_blink', 'dcheck_always_on',
     ],
 
     'release_bot_blink_accessibility_reclient': [
@@ -3592,12 +3593,12 @@
       'release_trybot_dcheck_off',
     ],
 
-    'release_trybot_enable_blink_heap_verification': [
-      'release_trybot_blink', 'enable_blink_heap_verification',
+    'release_trybot_enable_blink_heap_verification_reclient': [
+      'release_trybot_blink_reclient', 'enable_blink_heap_verification',
     ],
 
-    'release_trybot_extended_tracing': [
-      'release_trybot', 'extended_tracing',
+    'release_trybot_extended_tracing_reclient': [
+      'release_trybot_reclient', 'extended_tracing',
     ],
 
     'release_trybot_fuchsia': [
@@ -4465,6 +4466,10 @@
       'mixins': ['official_optimize', 'reclient'],
     },
 
+    'official_optimize_reclient_trybot': {
+      'mixins': ['official_optimize', 'reclient', 'minimal_symbols', 'dcheck_always_on'],
+    },
+
     'optimize_for_fuzzing': {
       'gn_args': 'optimize_for_fuzzing=true',
     },
@@ -4586,6 +4591,10 @@
 
     'release_trybot_blink': {
       'mixins': ['release_bot_blink', 'minimal_symbols', 'dcheck_always_on'],
+    },
+
+    'release_trybot_blink_reclient': {
+      'mixins': ['release_bot_blink_reclient', 'minimal_symbols', 'dcheck_always_on'],
     },
 
     'release_trybot_dcheck_off': {
