@@ -91,7 +91,8 @@ bool InMemoryClientHintsControllerDelegate::IsJavaScriptAllowed(
 }
 
 bool InMemoryClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
-    const GURL& url) {
+    const GURL& url,
+    content::RenderFrameHost* rfh) {
   return are_third_party_cookies_blocked_callback_.Run(url);
 }
 

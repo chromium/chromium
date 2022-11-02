@@ -47,9 +47,10 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
   virtual bool IsJavaScriptAllowed(const GURL& url,
                                    RenderFrameHost* parent_rfh) = 0;
 
-  // Returns true iff cookies are blocked for the URL or third-party cookies
+  // Returns true iff cookies are blocked for the URL/RFH or third-party cookies
   // are disabled in the user agent.
-  virtual bool AreThirdPartyCookiesBlocked(const GURL& url) = 0;
+  virtual bool AreThirdPartyCookiesBlocked(const GURL& url,
+                                           RenderFrameHost* rfh) = 0;
 
   virtual blink::UserAgentMetadata GetUserAgentMetadata() = 0;
 

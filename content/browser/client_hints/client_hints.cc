@@ -527,7 +527,8 @@ bool IsOriginTrialHintEnabledForFrame(
     // third-party cookies are blocked, so that we don't reveal any more user
     // data than is allowed by the cookie settings.
     if (outermost_main_frame_origin.IsSameOriginWith(current_origin) ||
-        !delegate->AreThirdPartyCookiesBlocked(current_origin.GetURL())) {
+        !delegate->AreThirdPartyCookiesBlocked(current_origin.GetURL(),
+                                               current)) {
       blink::EnabledClientHints current_url_hints;
       delegate->GetAllowedClientHintsFromSource(current_origin,
                                                 &current_url_hints);
@@ -565,7 +566,8 @@ void RemoveAllClientHintsExceptOriginTrialHints(
           origin)) {
     // If third-party cookeis are blocked, we will not persist the
     // Sec-CH-UA-Reduced client hint in a third-party context.
-    if (delegate->AreThirdPartyCookiesBlocked(origin.GetURL())) {
+    if (delegate->AreThirdPartyCookiesBlocked(
+            origin.GetURL(), frame_tree_node->current_frame_host())) {
       accept_ch->clear();
       return;
     }

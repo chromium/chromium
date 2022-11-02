@@ -140,7 +140,8 @@ bool ClientHints::IsJavaScriptAllowed(const GURL& url,
              url, ContentSettingsType::JAVASCRIPT) != CONTENT_SETTING_BLOCK;
 }
 
-bool ClientHints::AreThirdPartyCookiesBlocked(const GURL& url) {
+bool ClientHints::AreThirdPartyCookiesBlocked(const GURL& url,
+                                              content::RenderFrameHost* rfh) {
   return settings_map_->GetContentSetting(
              url, url, ContentSettingsType::COOKIES) == CONTENT_SETTING_BLOCK ||
          cookie_settings_->ShouldBlockThirdPartyCookies();

@@ -63,7 +63,8 @@ class InMemoryClientHintsControllerDelegate final
   network::NetworkQualityTracker* GetNetworkQualityTracker() override;
   bool IsJavaScriptAllowed(const GURL& url,
                            content::RenderFrameHost* parent_rfh) override;
-  bool AreThirdPartyCookiesBlocked(const GURL& url) override;
+  bool AreThirdPartyCookiesBlocked(const GURL& url,
+                                   content::RenderFrameHost* rfh) override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void SetMostRecentMainFrameViewportSize(
       const gfx::Size& viewport_size) override;

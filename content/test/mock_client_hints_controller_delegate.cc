@@ -58,7 +58,8 @@ bool MockClientHintsControllerDelegate::IsJavaScriptAllowed(
 }
 
 bool MockClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
-    const GURL& url) {
+    const GURL& url,
+    content::RenderFrameHost* rfh) {
   return false;
 }
 

@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 
 #include "android_webview/browser/aw_contents.h"
+#include "android_webview/browser/aw_cookie_access_policy.h"
 #include "base/notreached.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
@@ -58,10 +59,25 @@ bool AwClientHintsControllerDelegate::IsJavaScriptAllowed(
 }
 
 bool AwClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
-    const GURL& url) {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
-  return false;
+    const GURL& url,
+    content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    return true;
+  }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    // TODO(crbug.com/921655): Detect and support service workers here.
+    return true;
+  }
+  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
+  if (!aw_contents) {
+    return true;
+  }
+  // Despite the name of the function we want to mirror the function of
+  // ClientHints::AreThirdPartyCookiesBlocked and check the global block too.
+  return !AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies() ||
+         !aw_contents->AllowThirdPartyCookies();
 }
 
 blink::UserAgentMetadata

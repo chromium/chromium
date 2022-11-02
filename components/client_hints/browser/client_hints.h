@@ -49,7 +49,8 @@ class ClientHints : public KeyedService,
   bool IsJavaScriptAllowed(const GURL& url,
                            content::RenderFrameHost* parent_rfh) override;
 
-  bool AreThirdPartyCookiesBlocked(const GURL& url) override;
+  bool AreThirdPartyCookiesBlocked(const GURL& url,
+                                   content::RenderFrameHost* rfh) override;
 
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 
