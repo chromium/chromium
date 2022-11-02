@@ -224,7 +224,7 @@ bool OzoneImageBackingFactory::IsSupported(
   // OzoneImageBacking should be used for all scanout buffers.
   constexpr uint32_t kPrimaryPlaneUsageFlags =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-      SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_RASTER;
+      SHARED_IMAGE_USAGE_SCANOUT;
   if (usage != kPrimaryPlaneUsageFlags || gmb_type != gfx::EMPTY_BUFFER) {
     return false;
   }

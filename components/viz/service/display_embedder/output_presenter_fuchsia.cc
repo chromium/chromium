@@ -186,6 +186,8 @@ std::vector<std::unique_ptr<OutputPresenter::Image>>
 OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
                                        gfx::Size image_size,
                                        size_t num_images) {
+  DCHECK(!features::ShouldRendererAllocateImages());
+
   // Fuchsia allocates images in batches and does not support allocating and
   // releasing images on demand.
   CHECK_NE(num_images, 1u);
@@ -193,7 +195,6 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   // Create PresenterImageFuchsia for each buffer in the collection.
   constexpr uint32_t image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                   gpu::SHARED_IMAGE_USAGE_RASTER |
                                    gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   std::vector<std::unique_ptr<OutputPresenter::Image>> images;
@@ -284,19 +285,42 @@ void OutputPresenterFuchsia::ScheduleOverlayPlane(
     return;
   }
 
-  next_frame_->overlays.emplace_back();
-  auto& overlay = next_frame_->overlays.back();
-  overlay.pixmap = std::move(pixmap);
-  overlay.overlay_plane_data = gfx::OverlayPlaneData(
-      overlay_plane_candidate.plane_z_order,
-      absl::get<gfx::OverlayTransform>(overlay_plane_candidate.transform),
-      overlay_plane_candidate.display_rect, overlay_plane_candidate.uv_rect,
-      !overlay_plane_candidate.is_opaque,
-      gfx::ToRoundedRect(overlay_plane_candidate.damage_rect),
-      overlay_plane_candidate.opacity, overlay_plane_candidate.priority_hint,
-      overlay_plane_candidate.rounded_corners,
-      overlay_plane_candidate.color_space,
-      overlay_plane_candidate.hdr_metadata);
+  if (overlay_plane_candidate.is_root_render_pass) {
+    DCHECK(features::ShouldRendererAllocateImages());
+    DCHECK(!next_frame_->native_pixmap);
+    next_frame_->native_pixmap = std::move(pixmap);
+
+    // Pass the acquire fence to system compositor if one exists.
+    gfx::GpuFenceHandle acqire_fence = access->TakeAcquireFence();
+    if (!acqire_fence.is_null())
+      next_frame_->acquire_fences.push_back(std::move(acqire_fence));
+
+    // Create and pass a release fence to the system compositor too.
+    gpu::ExternalSemaphore semaphore =
+        gpu::ExternalSemaphore::Create(dependency_->GetVulkanContextProvider());
+    DCHECK(semaphore.is_valid());
+    auto release_fence = semaphore.TakeSemaphoreHandle().ToGpuFenceHandle();
+    next_frame_->release_fences.push_back(release_fence.Clone());
+
+    // The release fence is signaled when the primary plane buffer can be
+    // reused, rather than after it's first presented, so added as release fence
+    // for the current access directly.
+    access->SetReleaseFence(std::move(release_fence));
+  } else {
+    next_frame_->overlays.emplace_back();
+    auto& overlay = next_frame_->overlays.back();
+    overlay.pixmap = std::move(pixmap);
+    overlay.overlay_plane_data = gfx::OverlayPlaneData(
+        overlay_plane_candidate.plane_z_order,
+        absl::get<gfx::OverlayTransform>(overlay_plane_candidate.transform),
+        overlay_plane_candidate.display_rect, overlay_plane_candidate.uv_rect,
+        !overlay_plane_candidate.is_opaque,
+        gfx::ToRoundedRect(overlay_plane_candidate.damage_rect),
+        overlay_plane_candidate.opacity, overlay_plane_candidate.priority_hint,
+        overlay_plane_candidate.rounded_corners,
+        overlay_plane_candidate.color_space,
+        overlay_plane_candidate.hdr_metadata);
+  }
 }
 
 void OutputPresenterFuchsia::PresentNextFrame() {
