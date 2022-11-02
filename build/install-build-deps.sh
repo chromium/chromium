@@ -98,7 +98,7 @@ fi
 distro_codename=$(lsb_release --codename --short)
 distro_id=$(lsb_release --id --short)
 # TODO(crbug.com/1199405): Remove 16.04 (xenial).
-supported_codenames="(xenial|bionic|disco|eoan|focal|groovy|jammy)"
+supported_codenames="(xenial|bionic|focal|jammy)"
 supported_ids="(Debian)"
 if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
   if [[ ! $distro_codename =~ $supported_codenames &&
@@ -107,9 +107,6 @@ if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
       "\tUbuntu 16.04 LTS (xenial with EoL April 2024)\n" \
       "\tUbuntu 18.04 LTS (bionic with EoL April 2028)\n" \
       "\tUbuntu 20.04 LTS (focal with EoL April 2030)\n" \
-      "\tUbuntu 19.04 (disco)\n" \
-      "\tUbuntu 19.10 (eoan)\n" \
-      "\tUbuntu 20.10 (groovy)\n" \
       "\tUbuntu 22.04 LTS (jammy with EoL April 2032)\n" \
       "\tDebian 10 (buster) or later" >&2
     exit 1
@@ -457,22 +454,10 @@ case $distro_codename in
                 gcc-5-multilib-arm-linux-gnueabihf
                 gcc-arm-linux-gnueabihf"
     ;;
-  disco|eoan)
-    arm_list+=" g++-9-multilib-arm-linux-gnueabihf
-                gcc-9-multilib-arm-linux-gnueabihf
-                gcc-arm-linux-gnueabihf"
-    ;;
   focal)
     arm_list+=" g++-10-multilib-arm-linux-gnueabihf
                 gcc-10-multilib-arm-linux-gnueabihf
                 gcc-arm-linux-gnueabihf"
-    ;;
-  groovy)
-    arm_list+=" g++-10-multilib-arm-linux-gnueabihf
-                gcc-10-multilib-arm-linux-gnueabihf
-                gcc-arm-linux-gnueabihf
-                g++-10-arm-linux-gnueabihf
-                gcc-10-arm-linux-gnueabihf"
     ;;
   jammy)
     arm_list+=" gcc-arm-linux-gnueabihf
