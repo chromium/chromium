@@ -72,13 +72,17 @@ class FuzzyTokenizedStringMatch {
   // Since prefix match should always be favored over other matches, this
   // function is dedicated to calculate a prefix match score in range of [0, 1]
   // using PrefixMatcher class.
-  // This score has two components: first character match (aka acronym match)
-  // and whole prefix match.
   static double PrefixMatcher(const TokenizedString& query,
-                              const TokenizedString& text,
-                              bool use_acronym_matcher = false);
+                              const TokenizedString& text);
+
+  // This function is dedicated to calculate a first character match (aka
+  // acronym match) score in range of [0, 1] using AcronymMatcher class.
+  static double AcronymMatcher(const TokenizedString& query,
+                               const TokenizedString& text);
 
   // Calculates and returns the relevance score of |query| relative to |text|.
+  // The relevance score is in range of [0,1], representing how well the query
+  // matches the text.
   double Relevance(const TokenizedString& query,
                    const TokenizedString& text,
                    bool use_weighted_ratio,
@@ -87,8 +91,6 @@ class FuzzyTokenizedStringMatch {
   const Hits& hits() const { return hits_; }
 
  private:
-  // Score in range of [0,1] representing how well the query matches the text.
-  double relevance_ = 0;
   Hits hits_;
 };
 

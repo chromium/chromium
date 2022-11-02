@@ -202,22 +202,16 @@ double FuzzyTokenizedStringMatch::WeightedRatio(const TokenizedString& query,
 }
 
 double FuzzyTokenizedStringMatch::PrefixMatcher(const TokenizedString& query,
-                                                const TokenizedString& text,
-                                                bool use_acronym_matcher) {
+                                                const TokenizedString& text) {
   string_matching::PrefixMatcher match(query, text);
   match.Match();
-  double relevance = 0.0;
+  return 1.0 - std::pow(0.5, match.relevance());
+}
 
-  // TODO(crbug.com/1336160): Consider refactoring acronym matching to be
-  // separate from FuzzyTokenizedStringMatch.
-  if (use_acronym_matcher) {
-    AcronymMatcher acronym_match = AcronymMatcher(query, text);
-    relevance = std::max(match.relevance(), acronym_match.CalculateRelevance());
-  } else {
-    relevance = match.relevance();
-  }
-
-  return 1.0 - std::pow(0.5, relevance);
+double FuzzyTokenizedStringMatch::AcronymMatcher(const TokenizedString& query,
+                                                 const TokenizedString& text) {
+  string_matching::AcronymMatcher match(query, text);
+  return 1.0 - std::pow(0.5, match.CalculateRelevance());
 }
 
 double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
@@ -246,8 +240,7 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
   if (query_size > 0 && query_size == text_size &&
       base::EqualsCaseInsensitiveASCII(query_text, text_text)) {
     hits_.emplace_back(0, query_size);
-    relevance_ = 1.0;
-    return true;
+    return 1.0;
   }
 
   // Find |hits_| using SequenceMatcher on original query and text.
@@ -260,26 +253,31 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
   }
 
   // If the query is much longer than the text then it's often not a match.
+  double relevance = 0.0;
   if (query_size >= text_size * 2) {
-    return false;
+    return relevance;
   }
 
-  const double prefix_score = PrefixMatcher(query, text, use_acronym_matcher);
+  const double prefix_score = PrefixMatcher(query, text);
 
   if (use_weighted_ratio) {
     // If WeightedRatio is used, |relevance_| is the average of WeightedRatio
     // and PrefixMatcher scores.
-    relevance_ = (WeightedRatio(query, text) + prefix_score) / 2;
+    relevance = (WeightedRatio(query, text) + prefix_score) / 2;
   } else {
     // Use simple algorithm to calculate match ratio.
-    relevance_ = (SequenceMatcher(base::i18n::ToLower(query_text),
-                                  base::i18n::ToLower(text_text))
-                      .Ratio() +
-                  prefix_score) /
-                 2;
+    relevance = (SequenceMatcher(base::i18n::ToLower(query_text),
+                                 base::i18n::ToLower(text_text))
+                     .Ratio() +
+                 prefix_score) /
+                2;
   }
 
-  return relevance_;
+  // If AcronymMatcher is used, return the maximum of the acronym match score
+  // and the calculated relevance score. Directly return the calculated
+  // relevance score instead.
+  return use_acronym_matcher ? std::max(AcronymMatcher(query, text), relevance)
+                             : relevance;
 }
 
 }  // namespace ash::string_matching
