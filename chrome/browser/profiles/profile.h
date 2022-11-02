@@ -488,6 +488,8 @@ class Profile : public content::BrowserContext {
 
   virtual void RecordPrimaryMainFrameNavigation() = 0;
 
+  base::WeakPtr<Profile> GetWeakPtr();
+
  protected:
   // Creates an OffTheRecordProfile which points to this Profile.
   static std::unique_ptr<Profile> CreateOffTheRecordProfile(
@@ -506,8 +508,6 @@ class Profile : public content::BrowserContext {
 
  private:
   friend class ProfileDestroyer;
-
-  base::WeakPtr<Profile> GetWeakPtr();
 
   // Created on the UI thread, and returned by GetResourceContext(), but
   // otherwise lives on and is destroyed on the IO thread.

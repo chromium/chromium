@@ -514,6 +514,21 @@ void RunCallbacks(std::vector<base::OnceCallback<void(Profile*)>>& callbacks,
     std::move(callback).Run(profile);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+void ClearPrimaryAccountForProfile(
+    base::WeakPtr<Profile> weak_profile,
+    signin_metrics::ProfileSignout signout_source_metric,
+    signin_metrics::SignoutDelete signout_delete_metric) {
+  Profile* profile = weak_profile.get();
+  if (!profile)
+    return;
+
+  IdentityManagerFactory::GetForProfile(profile)
+      ->GetPrimaryAccountMutator()
+      ->ClearPrimaryAccount(signout_source_metric, signout_delete_metric);
+}
+#endif
+
 }  // namespace
 
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
@@ -2284,16 +2299,10 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
               << !entry->CanBeManaged();
       if (signin_util::IsForceSigninEnabled() && could_be_managed_status &&
           !entry->CanBeManaged()) {
-        auto* account_mutator = identity_manager->GetPrimaryAccountMutator();
-
-        // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
-        DCHECK(account_mutator);
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE,
             base::BindOnce(
-                base::IgnoreResult(
-                    &signin::PrimaryAccountMutator::ClearPrimaryAccount),
-                base::Unretained(account_mutator),
+                &ClearPrimaryAccountForProfile, profile->GetWeakPtr(),
                 signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
                 signin_metrics::SignoutDelete::kIgnoreMetric));
       }
