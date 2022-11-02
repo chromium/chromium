@@ -142,6 +142,10 @@ const char kArcSnapshotHours[] = "arc.snapshot_hours";
 // A preferece to keep ARC snapshot related info in dictionary.
 const char kArcSnapshotInfo[] = "arc.snapshot";
 
+// A preference to keep track of whether or not Android WebView was used in the
+// current ARC session.
+const char kWebViewProcessStarted[] = "arc.webview.started";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Sorted in lexicographical order.
   registry->RegisterStringPref(kArcSerialNumberSalt, std::string());
@@ -151,6 +155,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(kAnrPendingCount, 0);
   registry->RegisterTimeDeltaPref(kAnrPendingDuration, base::TimeDelta());
+  registry->RegisterBooleanPref(kWebViewProcessStarted, false);
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {

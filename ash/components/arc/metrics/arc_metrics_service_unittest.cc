@@ -425,6 +425,43 @@ TEST_F(ArcMetricsServiceTest, BootTypeObserver) {
   service()->RemoveBootTypeObserver(&observer);
 }
 
+TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_NoUsageReported) {
+  base::HistogramTester tester;
+
+  service()->OnArcSessionStopped();
+
+  tester.ExpectUniqueSample("Arc.Session.HasWebViewUsage",
+                            static_cast<base::HistogramBase::Sample>(0), 1);
+}
+
+TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_OneUsageReported) {
+  base::HistogramTester tester;
+
+  service()->ReportWebViewProcessStarted();
+  service()->OnArcSessionStopped();
+
+  tester.ExpectUniqueSample("Arc.Session.HasWebViewUsage",
+                            static_cast<base::HistogramBase::Sample>(1), 1);
+}
+
+TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_SomeUsageReported) {
+  base::HistogramTester tester;
+
+  // 3 sessions with webview reported in 2 sessions.
+  service()->ReportWebViewProcessStarted();
+  service()->OnArcSessionStopped();
+
+  service()->OnArcSessionStopped();
+
+  service()->ReportWebViewProcessStarted();
+  service()->OnArcSessionStopped();
+
+  tester.ExpectBucketCount("Arc.Session.HasWebViewUsage",
+                           static_cast<base::HistogramBase::Sample>(0), 1);
+  tester.ExpectBucketCount("Arc.Session.HasWebViewUsage",
+                           static_cast<base::HistogramBase::Sample>(1), 2);
+}
+
 class ArcVmArcMetricsServiceTest
     : public ArcMetricsServiceTest,
       public testing::WithParamInterface<

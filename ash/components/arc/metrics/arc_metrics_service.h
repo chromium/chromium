@@ -171,6 +171,7 @@ class ArcMetricsService : public KeyedService,
       uint32_t number_of_directories,
       uint32_t number_of_non_directories,
       uint32_t size_in_kilobytes) override;
+  void ReportWebViewProcessStarted() override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

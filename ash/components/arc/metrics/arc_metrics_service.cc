@@ -30,6 +30,7 @@
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/exo/wm_helper.h"
 #include "components/metrics/psi_memory_parser.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/events/ozone/gamepad/gamepad_provider_ozone.h"
@@ -870,6 +871,12 @@ void ArcMetricsService::ReportTotalFileStatsOfAndroidDataSubdir(
       kUmaDataSizeInKiloBytesMin, kUmaDataSizeInKiloBytesMax, kUmaNumBuckets);
 }
 
+void ArcMetricsService::ReportWebViewProcessStarted() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(prefs_);
+  prefs_->SetBoolean(prefs::kWebViewProcessStarted, true);
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
@@ -925,8 +932,14 @@ void ArcMetricsService::OnArcStarted() {
 }
 
 void ArcMetricsService::OnArcSessionStopped() {
+  DCHECK(prefs_);
+
   boot_type_ = mojom::BootType::UNKNOWN;
   metrics_anr_.reset();
+
+  base::UmaHistogramBoolean("Arc.Session.HasWebViewUsage",
+                            prefs_->GetBoolean(prefs::kWebViewProcessStarted));
+  prefs_->SetBoolean(prefs::kWebViewProcessStarted, false);
 }
 
 void ArcMetricsService::AddAppKillObserver(AppKillObserver* obs) {

@@ -53,6 +53,7 @@ ARC_EXPORT extern const char kArcSerialNumberSalt[];
 ARC_EXPORT extern const char kArcSnapshotHours[];
 ARC_EXPORT extern const char kArcSnapshotInfo[];
 ARC_EXPORT extern const char kStabilityMetrics[];
+ARC_EXPORT extern const char kWebViewProcessStarted[];
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

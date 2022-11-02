@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 27
+// Next MinVersion: 28
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -366,7 +366,7 @@ enum WaylandTimingEvent {
 };
 
 // Deprecated method IDs: 25
-// Next method ID: 31
+// Next method ID: 32
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -500,6 +500,9 @@ interface MetricsHost {
   [MinVersion=25] ReportTotalFileStatsOfAndroidDataSubdir@29(
       AndroidDataSubdirectory target, uint32 number_of_directories,
       uint32 number_of_non_directories, uint32 size_in_kilobytes);
+
+  // Reports first WebView started event to collect WebView usage in ARC.
+  [MinVersion=27] ReportWebViewProcessStarted@31();
 };
 
 // Deprecated method IDs: 0

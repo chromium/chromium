@@ -1989,6 +1989,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Session.HasWebViewUsage" enum="Boolean"
+    expires_after="2022-12-20">
+  <owner>hungmn@google.com</owner>
+  <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
+  <summary>
+    True if there has been a WebView usage in an ARC session. This is recorded
+    when an ARC session is stopped.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Session.MojoDisconnection{ArcUserTypes}"
     enum="ArcMojoConnectionType" expires_after="2022-11-11">
   <owner>shaochuan@google.com</owner>
