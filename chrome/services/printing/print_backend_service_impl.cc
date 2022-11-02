@@ -50,12 +50,15 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/containers/queue.h"
+#include "base/types/expected.h"
 #include "base/win/win_util.h"
 #include "chrome/services/printing/public/mojom/printer_xml_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "printing/backend/xps_utils_win.h"
 #include "printing/emf_win.h"
 #include "printing/printed_page_win.h"
+#include "printing/printing_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -537,6 +540,20 @@ void PrintBackendServiceImpl::FetchCapabilities(
         mojom::PrinterCapsAndInfoResult::NewResultCode(result));
     return;
   }
+#if BUILDFLAG(IS_WIN)
+  if (xml_parser_remote_.is_bound() &&
+      base::FeatureList::IsEnabled(features::kReadPrinterCapabilitiesWithXps)) {
+    base::expected<XpsCapabilities, mojom::ResultCode> xps_capabilities =
+        GetXpsCapabilities(printer_name);
+    if (!xps_capabilities.has_value()) {
+      std::move(callback).Run(mojom::PrinterCapsAndInfoResult::NewResultCode(
+          xps_capabilities.error()));
+      return;
+    }
+
+    MergeXpsCapabilities(std::move(xps_capabilities.value()), caps);
+  }
+#endif  // BUILDFLAG(IS_WIN)
   mojom::PrinterCapsAndInfoPtr caps_and_info = mojom::PrinterCapsAndInfo::New(
       std::move(printer_info), std::move(user_defined_papers), std::move(caps));
   std::move(callback).Run(
@@ -823,5 +840,36 @@ void PrintBackendServiceImpl::RemoveDocumentHelper(
   // TODO(crbug.com/809738)  This releases a connection; try to start the
   // next job waiting to be started (if any).
 }
+
+#if BUILDFLAG(IS_WIN)
+base::expected<XpsCapabilities, mojom::ResultCode>
+PrintBackendServiceImpl::GetXpsCapabilities(const std::string& printer_name) {
+  base::expected<std::string, mojom::ResultCode> xml =
+      print_backend_->GetXmlPrinterCapabilitiesForXpsDriver(printer_name);
+  if (!xml.has_value()) {
+    DLOG(ERROR) << "Failure getting XPS capabilities of printer "
+                << printer_name << ", error: " << xml.error();
+    return base::unexpected(xml.error());
+  }
+
+  mojom::PrinterCapabilitiesValueResultPtr value_result;
+  xml_parser_remote_->ParseXmlForPrinterCapabilities(xml.value(),
+                                                     &value_result);
+  if (value_result->is_result_code()) {
+    DLOG(ERROR) << "Failure parsing XML of XPS capabilities of printer "
+                << printer_name << ", error: " << xml.error();
+    return base::unexpected(value_result->get_result_code());
+  }
+
+  base::expected<XpsCapabilities, mojom::ResultCode> xps_capabilities =
+      ParseValueForXpsPrinterCapabilities(value_result->get_capabilities());
+  if (!xps_capabilities.has_value()) {
+    DLOG(ERROR) << "Failure parsing value of XPS capabilities of printer "
+                << printer_name << ", error: " << xml.error();
+    return base::unexpected(xps_capabilities.error());
+  }
+  return std::move(xps_capabilities).value();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

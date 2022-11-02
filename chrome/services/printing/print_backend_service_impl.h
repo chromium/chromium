@@ -28,6 +28,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/types/expected.h"
 #include "chrome/services/printing/public/mojom/printer_xml_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -207,6 +208,13 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   // Utility helpers.
   DocumentHelper* GetDocumentHelper(int document_cookie);
   void RemoveDocumentHelper(DocumentHelper& document_helper);
+
+#if BUILDFLAG(IS_WIN)
+  // Get XPS capabilities for printer `printer_name`, or return
+  // mojom::ResultCode on error.
+  base::expected<XpsCapabilities, mojom::ResultCode> GetXpsCapabilities(
+      const std::string& printer_name);
+#endif  // BUILDFLAG(IS_WIN)
 
   // Crash key is kept at class level so that we can obtain printer driver
   // information for a prior call should the process be terminated by the

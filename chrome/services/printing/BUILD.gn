@@ -90,6 +90,7 @@ source_set("lib") {
     deps += [
       "//chrome/common/printing",
       "//components/crash/core/common",
+      "//printing:printing_base",
       "//ui/gfx",
     ]
 
