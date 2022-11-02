@@ -10,7 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
-#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

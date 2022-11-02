@@ -4,6 +4,7 @@
 
 module attribution_internals.mojom;
 
+import "components/attribution_reporting/source_registration_error.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";

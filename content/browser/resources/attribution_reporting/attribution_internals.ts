@@ -11,7 +11,8 @@ import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {ClearedDebugKey, ClearedDebugKey_Type, FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
-import {ReportType, SourceRegistrationError, SourceType} from './attribution_reporting.mojom-webui.js';
+import {ReportType, SourceType} from './attribution_reporting.mojom-webui.js';
+import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
 
 // If kAttributionAggregatableBudgetPerSource changes, update this value

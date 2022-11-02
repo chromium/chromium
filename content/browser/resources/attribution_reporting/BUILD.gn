@@ -14,10 +14,12 @@ html_to_wrapper("html_wrapper_files") {
 # ts_library.
 copy("copy_files") {
   deps = [
+    "//components/attribution_reporting:source_registration_error_mojom_webui_js",
     "//content/browser/attribution_reporting:internals_mojo_bindings_webui_js",
     "//content/browser/attribution_reporting:mojo_bindings_webui_js",
   ]
   sources = [
+    "$root_gen_dir/mojom-webui/components/attribution_reporting/source_registration_error.mojom-webui.js",
     "$root_gen_dir/mojom-webui/content/browser/attribution_reporting/attribution_internals.mojom-webui.js",
     "$root_gen_dir/mojom-webui/content/browser/attribution_reporting/attribution_reporting.mojom-webui.js",
     "attribution_internals.ts",
@@ -38,6 +40,7 @@ ts_library("build_ts") {
     "table_model.ts",
     "attribution_internals.mojom-webui.js",
     "attribution_reporting.mojom-webui.js",
+    "source_registration_error.mojom-webui.js",
   ]
   deps = [
     "//ui/webui/resources:library",

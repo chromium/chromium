@@ -19,27 +19,3 @@ enum SourceType {
   // A source that was not associated with a top-level navigation.
   kEvent = 1,
 };
-
-enum SourceRegistrationError {
-  kInvalidJson,
-  kRootWrongType,
-
-  kDestinationMissing,
-  kDestinationWrongType,
-  kDestinationUntrustworthy,
-
-  kFilterDataWrongType,
-  kFilterDataTooManyKeys,
-  kFilterDataHasSourceTypeKey,
-  kFilterDataKeyTooLong,
-  kFilterDataListWrongType,
-  kFilterDataListTooLong,
-  kFilterDataValueWrongType,
-  kFilterDataValueTooLong,
-
-  kAggregationKeysWrongType,
-  kAggregationKeysTooManyKeys,
-  kAggregationKeysKeyTooLong,
-  kAggregationKeysValueWrongType,
-  kAggregationKeysValueWrongFormat,
-};

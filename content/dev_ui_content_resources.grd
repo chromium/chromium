@@ -53,6 +53,7 @@ files that belong there instead.
       <include name="IDR_SERVICE_WORKER_INTERNALS_HTML" file="browser/resources/service_worker/serviceworker_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_JS" file="browser/resources/service_worker/serviceworker_internals.js" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_CSS" file="browser/resources/service_worker/serviceworker_internals.css" type="BINDATA" />
+      <include name="IDR_SOURCE_REGISTRATION_ERROR_MOJOM_JS" file="${root_gen_dir}/mojom-webui/components/attribution_reporting/source_registration_error.mojom-webui.js" use_base_dir="false" type="BINDATA" />
     </includes>
   </release>
 </grit>

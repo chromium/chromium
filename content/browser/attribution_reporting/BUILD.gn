@@ -18,6 +18,7 @@ mojom("internals_mojo_bindings") {
   sources = [ "attribution_internals.mojom" ]
   public_deps = [
     ":mojo_bindings",
+    "//components/attribution_reporting:source_registration_error_mojom",
     "//url/mojom:url_mojom_origin",
   ]
   webui_module_path = "/"

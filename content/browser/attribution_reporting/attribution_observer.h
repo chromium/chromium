@@ -9,8 +9,8 @@
 
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 
 namespace url {

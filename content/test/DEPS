@@ -45,6 +45,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "attribution_simulator_input_parser.cc": [
+    "+components/attribution_reporting/source_registration_error.mojom.h",
+  ],
   "gpu_browsertest_helpers.cc": [
     "+services/viz/public/cpp/gpu/command_buffer_metrics.h",
     "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",

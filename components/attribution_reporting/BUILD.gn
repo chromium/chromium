@@ -2,7 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+
+mojom("source_registration_error_mojom") {
+  sources = [ "source_registration_error.mojom" ]
+  webui_module_path = "/"
+}
 
 component("attribution_reporting") {
   sources = [

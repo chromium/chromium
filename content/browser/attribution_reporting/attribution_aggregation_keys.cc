@@ -12,7 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
+#include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 

@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace base {
