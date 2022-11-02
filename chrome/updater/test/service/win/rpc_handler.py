@@ -28,7 +28,7 @@ class UpdaterTestRPCHandler():
           timeout: How long the child process should wait before timeout.
 
       Returns:
-          (pid, exit_code, sdtout, stderr) tuple.
+          (pid, exit_code, stdout, stderr) tuple.
       """
         try:
             process = subprocess.Popen(command,
@@ -61,7 +61,7 @@ class UpdaterTestRPCHandler():
           timeout: How long the child process should wait before timeout.
 
       Returns:
-          (pid, exit_code, sdtout, stderr) tuple.
+          (pid, exit_code, stdout, stderr) tuple.
       """
         return impersonate.RunAsStandardUser(command_line, env, cwd, timeout)
 
