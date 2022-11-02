@@ -153,8 +153,12 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   abort_printing_ = false;
   in_print_job_ = true;
 
-  if (!skip_system_calls() && new_document_blocked_by_permissions_)
-    return mojom::ResultCode::kAccessDenied;
+  if (!skip_system_calls()) {
+    if (new_document_fails_)
+      return mojom::ResultCode::kFailed;
+    if (new_document_blocked_by_permissions_)
+      return mojom::ResultCode::kAccessDenied;
+  }
 
   // No-op.
   return mojom::ResultCode::kSuccess;

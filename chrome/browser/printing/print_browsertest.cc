@@ -211,6 +211,8 @@ class BrowserPrintingContextFactoryForTest
     auto context = MakeDefaultTestPrintingContext(delegate, skip_system_calls,
                                                   printer_name_);
 
+    if (failed_error_for_new_document_)
+      context->SetNewDocumentFails();
     if (access_denied_errors_for_new_document_)
       context->SetNewDocumentBlockedByPermissions();
 #if BUILDFLAG(IS_WIN)
@@ -242,6 +244,10 @@ class BrowserPrintingContextFactoryForTest
 
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
     printer_name_ = printer_name;
+  }
+
+  void SetFailedErrorOnNewDocument(bool cause_errors) {
+    failed_error_for_new_document_ = cause_errors;
   }
 
   void SetAccessDeniedErrorOnNewDocument(bool cause_errors) {
@@ -282,6 +288,7 @@ class BrowserPrintingContextFactoryForTest
 
  private:
   std::string printer_name_;
+  bool failed_error_for_new_document_ = false;
   bool access_denied_errors_for_new_document_ = false;
 #if BUILDFLAG(IS_WIN)
   bool access_denied_errors_for_render_page_ = false;
@@ -2546,6 +2553,11 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
   }
 #endif
 
+  void PrimeForErrorsInNewDocument() {
+    test_printing_context_factory()->SetFailedErrorOnNewDocument(
+        /*cause_errors=*/true);
+  }
+
   void PrimeForAccessDeniedErrorsInNewDocument() {
     test_printing_context_factory()->SetAccessDeniedErrorOnNewDocument(
         /*cause_errors=*/true);
@@ -2974,6 +2986,46 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
+                       StartPrintingFails) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForErrorsInNewDocument();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // There are no callbacks for tracking in-browser printing.  The only
+  // message is to wait for the one print job to be destroyed to ensure
+  // printing finished cleanly before completing the test.  So only need
+  // to override the number of expected messages for OOP.
+  if (GetParam() != PrintBackendFeatureVariation::kInBrowserProcess) {
+    // The test sequence for this is:
+    // - A print job is started, but that fails.
+    // - An error dialog is shown.
+    // - Wait for the one print job to be destroyed, to ensure printing
+    //   finished cleanly before completing the test.
+    // This results in a total of 3 calls.
+    SetNumExpectedMessages(/*num=*/3);
+  }
+
+  PrintAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
+  // TODO(crbug.com/1375018)  Update once in-browser failure is fixed to notify
+  // user of error.
+  EXPECT_EQ(
+      error_dialog_shown_count(),
+      GetParam() == PrintBackendFeatureVariation::kInBrowserProcess ? 0u : 1u);
+  EXPECT_EQ(print_job_destruction_count(), 1);
+}
+
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        StartPrintingAccessDenied) {
   AddPrinter("printer1");
@@ -3291,6 +3343,57 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
 
   // `PrintBackendService` should never be used when printing in-browser.
   EXPECT_FALSE(print_backend_service_use_detected());
+}
+
+// TODO(crbug.com/1361032)  Enable once crash after processing error from
+// PrintingContext::NewDocument() is resolved.
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
+                       DISABLED_StartBasicPrintFails) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForErrorsInNewDocument();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
+    // There are only partial overrides to track most steps in the printing
+    // pipeline, so the test sequence for this is:
+    // - Gets default settings.
+    // - Asks user for settings.
+    // - Wait for the one print job to be destroyed, to ensure printing
+    //   finished cleanly before completing the test.
+    // This results in a total of 3 calls.
+    SetNumExpectedMessages(/*num=*/3);
+  } else {
+    // The test sequence for this is:
+    // - Gets default settings.
+    // - Asks user for settings.
+    // - A print job is started, which fails.
+    // - An error dialog is shown.
+    // - Wait for the one print job to be destroyed, to ensure printing
+    //   finished cleanly before completing the test.
+    // This results in a total of 5 calls.
+    SetNumExpectedMessages(/*num=*/5);
+  }
+
+  StartBasicPrint(web_contents);
+
+  WaitUntilCallbackReceived();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
+  // TODO(crbug.com/1375018)  Update once in-browser failure is fixed to notify
+  // user of error.
+  EXPECT_EQ(
+      error_dialog_shown_count(),
+      GetParam() == PrintBackendFeatureVariation::kInBrowserProcess ? 0u : 1u);
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 // macOS and Linux currently have to invoke a system dialog from within the
