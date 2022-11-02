@@ -21,6 +21,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
   private internalDisplayPowerStateObserver_:
       InternalDisplayPowerStateObserverRemote;
   private touchDevices_: TouchDeviceInfo[] = [];
+  private moveAppToTestingScreenCalled: number = 0;
   constructor() {
     this.registerMethods();
   }
@@ -31,6 +32,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
     this.observers_ = [];
     this.keyboards_ = [];
     this.touchDevices_ = [];
+    this.moveAppToTestingScreenCalled = 0;
 
     this.registerMethods();
   }
@@ -192,5 +194,20 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
     for (const observer of this.observers_) {
       observer.onTouchDeviceDisconnected(id);
     }
+  }
+
+  /**
+   * Fakes the function to move the Diagnostics app to the testing touchscreen.
+   */
+  moveAppToTestingScreen(): Promise<{isMoved: boolean}> {
+    this.moveAppToTestingScreenCalled++;
+    return Promise.resolve({isMoved: true});
+  }
+
+  /**
+   * Returns the number of times moveAppToTestingScreen function is called.
+   */
+  getMoveAppToTestingScreenCalled(): number {
+    return this.moveAppToTestingScreenCalled;
   }
 }

@@ -131,6 +131,8 @@ source_set("unit_tests") {
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
     "//ui/chromeos/events",
+    "//ui/events/devices:devices",
+    "//ui/events/devices:test_support",
     "//ui/events/ozone",
     "//ui/events/ozone/evdev:event_device_info_test_utils",
     "//ui/gfx",

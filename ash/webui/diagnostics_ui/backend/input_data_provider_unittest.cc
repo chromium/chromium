@@ -27,6 +27,7 @@
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -39,6 +40,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/touch_device_transform.h"
+#include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/ozone/device/device_event_observer.h"
@@ -132,6 +137,10 @@ constexpr char kModifiedJinlonDescriptor[] =
     "EA E7 91 92 93 94 95 C4 97 98 A0 AE B0";
 constexpr uint32_t kUnknownScancode = 0xC4;
 constexpr int kUnknownScancodeIndex = 7;
+
+// Device id in DeviceDataManager.
+constexpr int kDeviceId1 = 1;
+constexpr int kDeviceId2 = 2;
 
 struct KeyDefinition {
   uint32_t key_code;
@@ -491,6 +500,9 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
       info->keyboard_top_row_layout =
           ui::EventRewriterChromeOS::KeyboardTopRowLayout::kKbdTopRowLayout2;
       EXPECT_EQ(13, id);
+    } else if (base_name == "event14") {
+      device_caps = ui::kBaskingTouchScreen;
+      EXPECT_EQ(14, id);
     } else if (base_name == kSillyDeviceName) {
       // Simulate a device that is properly described, but has a malformed
       // device name.
@@ -2262,6 +2274,84 @@ TEST_F(InputDataProviderTest, InternalDisplayPowerStateObserver) {
 
   ASSERT_TRUE(fake_observer.is_display_on());
   EXPECT_EQ(2u, fake_observer.num_display_state_change_calls());
+}
+
+// Test the behavior if the app is not already in the testing touchscreen, the
+// app should be moved to the targeting touchscreen.
+TEST_F(InputDataProviderTest, MoveAppToTestingScreen) {
+  // Construct two touchscreens. "/dev/input/event2" and "/dev/input/event14"
+  // map to touchscreens.
+  ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                         ui::DeviceEvent::ActionType::ADD,
+                         base::FilePath("/dev/input/event2"));
+  ui::DeviceEvent event1(ui::DeviceEvent::DeviceType::INPUT,
+                         ui::DeviceEvent::ActionType::ADD,
+                         base::FilePath("/dev/input/event14"));
+  provider_->OnDeviceEvent(event0);
+  provider_->OnDeviceEvent(event1);
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      getConnectedDevicesFuture;
+  provider_->GetConnectedDevices(getConnectedDevicesFuture.GetCallback());
+
+  const auto& keyboards = getConnectedDevicesFuture.Get<0>();
+  const auto& touch_devices = getConnectedDevicesFuture.Get<1>();
+
+  ASSERT_EQ(0ul, keyboards.size());
+  ASSERT_EQ(2ul, touch_devices.size());
+
+  // Set up three fake displays.
+  UpdateDisplay("500x400, 600x400, 800x600");
+  display::Screen* screen = display::Screen::GetScreen();
+  const int64_t primary_display_id = screen->GetAllDisplays()[0].id();
+  const int64_t secondary_display_id = screen->GetAllDisplays()[1].id();
+  const int64_t third_display_id = screen->GetAllDisplays()[2].id();
+
+  // Initialize two touchscreens in DeviceDataManager.
+  std::vector<ui::TouchscreenDevice> touchscreen_devices;
+  touchscreen_devices.push_back(ui::TouchscreenDevice(
+      kDeviceId1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      touch_devices[0]->name, /*size=*/gfx::Size(600, 400),
+      /*touch_points=*/0));
+  touchscreen_devices.push_back(ui::TouchscreenDevice(
+      kDeviceId2, ui::InputDeviceType::INPUT_DEVICE_USB, touch_devices[1]->name,
+      /*size=*/gfx::Size(800, 600),
+      /*touch_points=*/0));
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(touchscreen_devices);
+
+  // Associate the touchscreens in DeviceDataManager to the fake displays.
+  std::vector<ui::TouchDeviceTransform> touch_device_transforms(2);
+  touch_device_transforms[0].display_id = secondary_display_id;
+  touch_device_transforms[0].device_id = kDeviceId1;
+  touch_device_transforms[1].display_id = third_display_id;
+  touch_device_transforms[1].device_id = kDeviceId2;
+  ui::DeviceDataManager::GetInstance()->ConfigureTouchDevices(
+      touch_device_transforms);
+
+  // Before move: make sure the app is currently in the primary display.
+  aura::Window* window = widget_->GetNativeWindow();
+  ASSERT_EQ(primary_display_id, screen->GetDisplayNearestWindow(window).id());
+
+  // Call MoveAppToTestingScreen function with the touchscreen evdev id 2, which
+  // maps to the secondary display.
+  base::test::RepeatingTestFuture<bool> moveAppToTestingScreenFuture;
+  provider_->MoveAppToTestingScreen(/*evdev_id=*/2,
+                                    moveAppToTestingScreenFuture.GetCallback());
+
+  // Confirm the app has been moved to the secondary display.
+  ASSERT_EQ(secondary_display_id, screen->GetDisplayNearestWindow(window).id());
+  ASSERT_TRUE(moveAppToTestingScreenFuture.Take());
+
+  // Call MoveAppToTestingScreen function with the touchscreen evdev id 14,
+  // which maps to the third display.
+  provider_->MoveAppToTestingScreen(/*evdev_id=*/14,
+                                    moveAppToTestingScreenFuture.GetCallback());
+
+  // Confirm the app has been moved to the third display.
+  ASSERT_EQ(third_display_id, screen->GetDisplayNearestWindow(window).id());
+  ASSERT_TRUE(moveAppToTestingScreenFuture.Take());
 }
 
 }  // namespace diagnostics

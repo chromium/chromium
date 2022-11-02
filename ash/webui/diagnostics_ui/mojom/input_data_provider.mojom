@@ -221,4 +221,10 @@ interface InputDataProvider {
   // Registers an observer for changes to the internal display power state.
   ObserveInternalDisplayPowerState(
     pending_remote<InternalDisplayPowerStateObserver> observer);
+
+  // When touchscreen tester is launched, the Diagnostics app should be moved
+  // to the correct testing touchscreen. `evdev_id` is the evdev id of the
+  // testing touchscreen. The function returns a boolean indicating if the
+  // app has been moved.
+  MoveAppToTestingScreen(uint32 evdev_id) => (bool is_moved);
 };

@@ -210,11 +210,11 @@ export class InputListElement extends InputListElementBase {
   /**
    * Handles when the touchscreen Test button is clicked.
    */
-  private handleTouchscreenTestButtonClick_(): void {
+  private handleTouchscreenTestButtonClick_(e: CustomEvent): void {
     const touchscreenTester =
         this.shadowRoot!.querySelector('touchscreen-tester');
     assert(touchscreenTester);
-    touchscreenTester.showTester();
+    touchscreenTester.showTester(e.detail.evdevId);
   }
 
   /**

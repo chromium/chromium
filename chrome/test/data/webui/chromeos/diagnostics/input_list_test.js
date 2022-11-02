@@ -205,6 +205,9 @@ export function inputListTestSuite() {
     await flushTasks();
     assertEquals(1, requestFullscreenCalled);
     assertTrue(introDialog.open);
+    assertEquals(
+        /*expectedMoveAppToTestingScreenCalled=*/ 1,
+        provider.getMoveAppToTestingScreenCalled());
 
     touchscreenTester.shadowRoot.dispatchEvent(new Event('fullscreenchange'));
     assertFalse(introDialog.open);
