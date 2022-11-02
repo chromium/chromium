@@ -378,7 +378,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
 
   if (codec == VideoCodec::kHEVC) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    if (!base::FeatureList::IsEnabled(kMediaFoundationHEVCEncoding)) {
+    if (!base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport)) {
       return profiles;
     }
 #else

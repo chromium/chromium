@@ -12,6 +12,8 @@
 #include "base/mac/mac_logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -20,7 +22,10 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/video/video_encode_accelerator.h"
 
 // This is a min version of macOS where we want to support SVC encoding via
@@ -33,20 +38,30 @@ namespace media {
 
 namespace {
 
-// TODO(emircan): Check if we can find the actual system capabilities via
-// creating VTCompressionSessions with varying requirements.
-// See https://crbug.com/584784.
-const size_t kBitsPerByte = 8;
-const size_t kDefaultResolutionWidth = 640;
-const size_t kDefaultResolutionHeight = 480;
-const size_t kMaxFrameRateNumerator = 30;
-const size_t kMaxFrameRateDenominator = 1;
-const size_t kMaxResolutionWidth = 4096;
-const size_t kMaxResolutionHeight = 2160;
-const size_t kNumInputBuffers = 3;
+constexpr size_t kBitsPerByte = 8;
+constexpr size_t kDefaultResolutionWidth = 640;
+constexpr size_t kDefaultResolutionHeight = 480;
+constexpr size_t kMaxFrameRateNumerator = 120;
+constexpr size_t kMaxFrameRateDenominator = 1;
+constexpr size_t kNumInputBuffers = 3;
 
-const VideoCodecProfile kSupportedProfiles[] = {
-    H264PROFILE_BASELINE, H264PROFILE_MAIN, H264PROFILE_HIGH};
+constexpr auto kModernResolutions = {
+    gfx::Size(8192, 8192), gfx::Size(8192, 4320), gfx::Size(4096, 4096),
+    gfx::Size(4096, 2304), gfx::Size(4096, 2160), gfx::Size(2560, 1440),
+    gfx::Size(1920, 1080)};
+
+constexpr VideoCodecProfile kSupportedProfiles[] = {
+    H264PROFILE_BASELINE,
+    H264PROFILE_MAIN,
+    H264PROFILE_HIGH,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    // macOS actually start supporting HEVC since macOS 10.13+, but we only
+    // support decoding HEVC on macOS 11.0+ due to the failure of create a
+    // decompression session on some device, so limit this to macOS 11.0 as
+    // well.
+    HEVCPROFILE_MAIN,
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+};
 
 static CFStringRef VideoCodecProfileToVTProfile(VideoCodecProfile profile) {
   switch (profile) {
@@ -56,10 +71,28 @@ static CFStringRef VideoCodecProfileToVTProfile(VideoCodecProfile profile) {
       return kVTProfileLevel_H264_Main_AutoLevel;
     case H264PROFILE_HIGH:
       return kVTProfileLevel_H264_High_AutoLevel;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case HEVCPROFILE_MAIN:
+      return kVTProfileLevel_HEVC_Main_AutoLevel;
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     default:
       NOTREACHED();
   }
   return kVTProfileLevel_H264_Baseline_AutoLevel;
+}
+
+static CMVideoCodecType VideoCodecToCMVideoCodec(VideoCodec codec) {
+  switch (codec) {
+    case VideoCodec::kH264:
+      return kCMVideoCodecType_H264;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoCodec::kHEVC:
+      return kCMVideoCodecType_HEVC;
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    default:
+      NOTREACHED();
+  }
+  return kCMVideoCodecType_H264;
 }
 
 base::ScopedCFTypeRef<CFArrayRef> CreateRateLimitArray(const Bitrate& bitrate) {
@@ -160,8 +193,7 @@ struct VTVideoEncodeAccelerator::BitstreamBufferRef {
 // conditions, 0.95 seems to give us better overall bitrate over long periods
 // of time.
 VTVideoEncodeAccelerator::VTVideoEncodeAccelerator()
-    : h264_profile_(H264PROFILE_BASELINE),
-      bitrate_adjuster_(.5, .95),
+    : bitrate_adjuster_(.5, .95),
       client_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       encoder_thread_task_runner_(
           base::ThreadPool::CreateSingleThreadTaskRunner({})),
@@ -175,33 +207,93 @@ VTVideoEncodeAccelerator::~VTVideoEncodeAccelerator() {
   DCHECK(!encoder_task_weak_factory_.HasWeakPtrs());
 }
 
+gfx::Size VTVideoEncodeAccelerator::GetMaxSupportedResolution(
+    VideoCodec codec) {
+  for (const auto& resolution : kModernResolutions) {
+    bool supported = CreateCompressionSession(codec, resolution);
+    DestroyCompressionSession();
+    if (supported)
+      return resolution;
+  }
+  return gfx::Size(kDefaultResolutionWidth, kDefaultResolutionHeight);
+}
+
+VideoEncodeAccelerator::SupportedProfiles
+VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
+  SupportedProfiles profiles;
+  bool supported = CreateCompressionSession(
+      VideoCodec::kH264,
+      gfx::Size(kDefaultResolutionWidth, kDefaultResolutionHeight));
+  DestroyCompressionSession();
+  if (!supported) {
+    DVLOG(1) << "Hardware H.264 encode acceleration is not available on this "
+                "platform.";
+    return profiles;
+  }
+  SupportedProfile profile;
+  profile.max_resolution = GetMaxSupportedResolution(VideoCodec::kH264);
+  profile.max_framerate_numerator = kMaxFrameRateNumerator;
+  profile.max_framerate_denominator = kMaxFrameRateDenominator;
+  profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
+                               VideoEncodeAccelerator::kVariableMode;
+  if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *))
+    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+
+  for (const auto& supported_profile : kSupportedProfiles) {
+    if (VideoCodecProfileToVideoCodec(supported_profile) == VideoCodec::kH264) {
+      profile.profile = supported_profile;
+      profiles.push_back(profile);
+    }
+  }
+  return profiles;
+}
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+VideoEncodeAccelerator::SupportedProfiles
+VTVideoEncodeAccelerator::GetSupportedHEVCProfiles() {
+  SupportedProfiles profiles;
+  if (!base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport))
+    return profiles;
+  if (__builtin_available(macOS 11.0, *)) {
+    bool supported = CreateCompressionSession(
+        VideoCodec::kHEVC,
+        gfx::Size(kDefaultResolutionWidth, kDefaultResolutionHeight));
+    DestroyCompressionSession();
+    if (!supported) {
+      DVLOG(1) << "Hardware HEVC encode acceleration is not available on this "
+                  "platform.";
+      return profiles;
+    }
+    SupportedProfile profile;
+    profile.max_resolution = GetMaxSupportedResolution(VideoCodec::kHEVC);
+    profile.max_framerate_numerator = kMaxFrameRateNumerator;
+    profile.max_framerate_denominator = kMaxFrameRateDenominator;
+    profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
+                                 VideoEncodeAccelerator::kVariableMode;
+    for (const auto& supported_profile : kSupportedProfiles) {
+      if (VideoCodecProfileToVideoCodec(supported_profile) ==
+          VideoCodec::kHEVC) {
+        profile.profile = supported_profile;
+        profiles.push_back(profile);
+      }
+    }
+  }
+  return profiles;
+}
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
 VideoEncodeAccelerator::SupportedProfiles
 VTVideoEncodeAccelerator::GetSupportedProfiles() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   SupportedProfiles profiles;
-  const bool rv = CreateCompressionSession(
-      gfx::Size(kDefaultResolutionWidth, kDefaultResolutionHeight));
-  if (!rv) {
-    VLOG(1)
-        << "Hardware encode acceleration is not available on this platform.";
-    return profiles;
-  }
-
-  DestroyCompressionSession();
-  SupportedProfile profile;
-  profile.max_framerate_numerator = kMaxFrameRateNumerator;
-  profile.max_framerate_denominator = kMaxFrameRateDenominator;
-  profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
-                               VideoEncodeAccelerator::kVariableMode;
-  profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
-  if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *))
-    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
-  for (const auto& supported_profile : kSupportedProfiles) {
-    profile.profile = supported_profile;
-    profiles.push_back(profile);
-  }
+  for (const auto& supported_profile : GetSupportedH264Profiles())
+    profiles.push_back(supported_profile);
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  for (const auto& supported_profile : GetSupportedHEVCProfiles())
+    profiles.push_back(supported_profile);
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   return profiles;
 }
 
@@ -222,13 +314,16 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
         << VideoPixelFormatToString(config.input_format);
     return false;
   }
-  if (!base::Contains(kSupportedProfiles, config.output_profile)) {
+  static const base::NoDestructor<VideoEncodeAccelerator::SupportedProfiles>
+      kActualSupportedProfiles(GetSupportedProfiles());
+  if (!base::Contains(*kActualSupportedProfiles, config.output_profile,
+                      &VideoEncodeAccelerator::SupportedProfile::profile)) {
     MEDIA_LOG(ERROR, media_log.get()) << "Output profile not supported= "
                                       << GetProfileName(config.output_profile);
     return false;
   }
-  h264_profile_ = config.output_profile;
-
+  profile_ = config.output_profile;
+  codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
   client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
   client_ = client_ptr_factory_->GetWeakPtr();
   input_visible_size_ = config.input_visible_size;
@@ -249,7 +344,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  if (!ResetCompressionSession()) {
+  if (!ResetCompressionSession(codec_)) {
     MEDIA_LOG(ERROR, media_log.get()) << "Failed creating compression session.";
     return false;
   }
@@ -574,7 +669,7 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
 
   size_t used_buffer_size = 0;
   const bool copy_rv = video_toolbox::CopySampleBufferToAnnexBBuffer(
-      encode_output->sample_buffer.get(), keyframe, buffer_ref->size,
+      codec_, encode_output->sample_buffer.get(), keyframe, buffer_ref->size,
       static_cast<char*>(buffer_ref->mapping.memory()), &used_buffer_size);
   if (!copy_rv) {
     DLOG(ERROR) << "Cannot copy output from SampleBuffer to AnnexBBuffer.";
@@ -589,29 +684,42 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
 
   BitstreamBufferMetadata md(used_buffer_size, keyframe,
                              encode_output->capture_timestamp);
-  md.h264.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
+
+  switch (codec_) {
+    case VideoCodec::kH264:
+      md.h264.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
+      break;
+    case VideoCodec::kHEVC:
+      md.h265.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
   client_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Client::BitstreamBufferReady, client_,
                                 buffer_ref->id, std::move(md)));
   MaybeRunFlushCallback();
 }
 
-bool VTVideoEncodeAccelerator::ResetCompressionSession() {
+bool VTVideoEncodeAccelerator::ResetCompressionSession(VideoCodec codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   DestroyCompressionSession();
 
-  bool session_rv = CreateCompressionSession(input_visible_size_);
+  bool session_rv = CreateCompressionSession(codec, input_visible_size_);
   if (!session_rv)
     return false;
 
-  const bool configure_rv = ConfigureCompressionSession();
+  const bool configure_rv = ConfigureCompressionSession(codec);
   if (configure_rv)
     RequestEncodingParametersChange(bitrate_, frame_rate_);
   return configure_rv;
 }
 
 bool VTVideoEncodeAccelerator::CreateCompressionSession(
+    VideoCodec codec,
     const gfx::Size& input_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
@@ -620,7 +728,8 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
   std::vector<CFTypeRef> encoder_values{kCFBooleanTrue};
 
   if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *)) {
-    if (require_low_delay_) {
+    // Remove the validation once HEVC SVC mode is supported on macOS.
+    if (require_low_delay_ && codec == VideoCodec::kH264) {
       encoder_keys.push_back(
           kVTVideoEncoderSpecification_EnableLowLatencyRateControl);
       encoder_values.push_back(kCFBooleanTrue);
@@ -641,7 +750,7 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
   // are guaranteed that the output callback will not execute again.
   OSStatus status = VTCompressionSessionCreate(
       kCFAllocatorDefault, input_size.width(), input_size.height(),
-      kCMVideoCodecType_H264, encoder_spec,
+      VideoCodecToCMVideoCodec(codec), encoder_spec,
       nullptr /* sourceImageBufferAttributes */,
       nullptr /* compressedDataAllocator */,
       &VTVideoEncodeAccelerator::CompressionCallback,
@@ -653,7 +762,7 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
     // we'll clear it without calling CFRelease() because it can be unsafe
     // to call on a not fully created session.
     (void)compression_session_.release();
-    DLOG(ERROR) << " VTCompressionSessionCreate failed: " << status;
+    DVLOG(1) << " VTCompressionSessionCreate failed: " << status;
     return false;
   }
   DVLOG(3) << " VTCompressionSession created with input size="
@@ -661,18 +770,19 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
   return true;
 }
 
-bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
+bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(compression_session_);
 
   video_toolbox::SessionPropertySetter session_property_setter(
       compression_session_);
   bool rv = true;
-  rv &=
-      session_property_setter.Set(kVTCompressionPropertyKey_ProfileLevel,
-                                  VideoCodecProfileToVTProfile(h264_profile_));
-  rv &= session_property_setter.Set(kVTCompressionPropertyKey_RealTime,
-                                    require_low_delay_);
+  rv &= session_property_setter.Set(kVTCompressionPropertyKey_ProfileLevel,
+                                    VideoCodecProfileToVTProfile(profile_));
+  // Remove the validation once HEVC SVC mode is supported on macOS.
+  rv &= session_property_setter.Set(
+      kVTCompressionPropertyKey_RealTime,
+      require_low_delay_ && codec == VideoCodec::kH264);
 
   rv &= session_property_setter.Set(
       kVTCompressionPropertyKey_AllowFrameReordering, false);
@@ -692,7 +802,8 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
     DLOG(WARNING) << "MaxFrameDelayCount is not supported";
   }
 
-  if (num_temporal_layers_ == 2) {
+  // Remove the validation once HEVC SVC mode is supported on macOS.
+  if (num_temporal_layers_ == 2 && codec_ == VideoCodec::kH264) {
     if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *)) {
       if (!session_property_setter.IsSupported(
               kVTCompressionPropertyKey_BaseLayerFrameRateFraction)) {

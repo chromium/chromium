@@ -16,6 +16,7 @@
 #include "base/threading/thread_checker.h"
 #include "media/base/bitrate.h"
 #include "media/base/mac/videotoolbox_helpers.h"
+#include "media/base/video_codecs.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/webrtc/common_video/include/bitrate_adjuster.h"
@@ -36,7 +37,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   VTVideoEncodeAccelerator& operator=(const VTVideoEncodeAccelerator&) = delete;
 
   // VideoEncodeAccelerator implementation.
-  VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
+  SupportedProfiles GetSupportedProfiles() override;
 
   bool Initialize(const Config& config,
                   Client* client,
@@ -90,16 +91,26 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
       std::unique_ptr<EncodeOutput> encode_output,
       std::unique_ptr<VTVideoEncodeAccelerator::BitstreamBufferRef> buffer_ref);
 
+  // Get the max supported resolution of a certain codec.
+  gfx::Size GetMaxSupportedResolution(VideoCodec codec);
+
+  // Get the supported H.264 profiles.
+  SupportedProfiles GetSupportedH264Profiles();
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  // Get the supported HEVC profiles.
+  SupportedProfiles GetSupportedHEVCProfiles();
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
   // Reset the encoder's compression session by destroying the existing one
   // using DestroyCompressionSession() and creating a new one. The new session
   // is configured using ConfigureCompressionSession().
-  bool ResetCompressionSession();
+  bool ResetCompressionSession(VideoCodec codec);
 
   // Create a compression session.
-  bool CreateCompressionSession(const gfx::Size& input_size);
+  bool CreateCompressionSession(VideoCodec codec, const gfx::Size& input_size);
 
   // Configure the current compression session using current encoder settings.
-  bool ConfigureCompressionSession();
+  bool ConfigureCompressionSession(VideoCodec codec);
 
   // Destroy the current compression session if any. Blocks until all pending
   // frames have been flushed out (similar to EmitFrames without doing any
@@ -117,7 +128,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   size_t bitstream_buffer_size_ = 0;
   int32_t frame_rate_ = 0;
   int num_temporal_layers_ = 1;
-  VideoCodecProfile h264_profile_;
+  VideoCodecProfile profile_ = H264PROFILE_BASELINE;
+  VideoCodec codec_ = VideoCodec::kH264;
 
   media::Bitrate bitrate_;
 

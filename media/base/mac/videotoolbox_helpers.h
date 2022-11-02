@@ -10,6 +10,7 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "media/base/media_export.h"
+#include "media/base/video_codecs.h"
 
 namespace media {
 
@@ -33,12 +34,14 @@ MEDIA_EXPORT base::ScopedCFTypeRef<CFArrayRef> ArrayWithIntegerAndFloat(
     int int_val,
     float float_val);
 
-// Copy a H.264 frame stored in a CM sample buffer to an Annex B buffer. Copies
-// parameter sets for keyframes before the frame data as well.
-MEDIA_EXPORT bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
+// Copy a H.264/HEVC frame stored in a CM sample buffer to an Annex B buffer.
+// Copies parameter sets for keyframes before the frame data as well.
+MEDIA_EXPORT bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
+                                                 CMSampleBufferRef sbuf,
                                                  bool keyframe,
                                                  std::string* annexb_buffer);
-MEDIA_EXPORT bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
+MEDIA_EXPORT bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
+                                                 CMSampleBufferRef sbuf,
                                                  bool keyframe,
                                                  size_t annexb_buffer_size,
                                                  char* annexb_buffer,

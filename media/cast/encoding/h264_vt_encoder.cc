@@ -551,8 +551,8 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
   }
 
   if (has_frame_data) {
-    video_toolbox::CopySampleBufferToAnnexBBuffer(sbuf, is_keyframe,
-                                                  &encoded_frame->data);
+    video_toolbox::CopySampleBufferToAnnexBBuffer(
+        VideoCodec::kH264, sbuf, is_keyframe, &encoded_frame->data);
   }
 
   encoded_frame->encode_completion_time =

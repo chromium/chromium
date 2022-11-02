@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "media/base/video_codecs.h"
 
 namespace media {
 
@@ -119,31 +120,56 @@ class StringAnnexBBuffer : public AnnexBBuffer {
 };
 
 template <typename NalSizeType>
-void CopyNalsToAnnexB(char* avcc_buffer,
-                      const size_t avcc_size,
+void CopyNalsToAnnexB(char* buffer,
+                      const size_t buffer_size,
                       AnnexBBuffer* annexb_buffer) {
   static_assert(sizeof(NalSizeType) == 1 || sizeof(NalSizeType) == 2 ||
                     sizeof(NalSizeType) == 4,
                 "NAL size type has unsupported size");
-  DCHECK(avcc_buffer);
+  DCHECK(buffer);
   DCHECK(annexb_buffer);
-  size_t bytes_left = avcc_size;
+  size_t bytes_left = buffer_size;
   while (bytes_left > 0) {
     DCHECK_GT(bytes_left, sizeof(NalSizeType));
     NalSizeType nal_size;
-    base::ReadBigEndian(reinterpret_cast<uint8_t*>(avcc_buffer), &nal_size);
+    base::ReadBigEndian(reinterpret_cast<uint8_t*>(buffer), &nal_size);
     bytes_left -= sizeof(NalSizeType);
-    avcc_buffer += sizeof(NalSizeType);
+    buffer += sizeof(NalSizeType);
 
     DCHECK_GE(bytes_left, nal_size);
     annexb_buffer->Append(kAnnexBHeaderBytes, sizeof(kAnnexBHeaderBytes));
-    annexb_buffer->Append(avcc_buffer, nal_size);
+    annexb_buffer->Append(buffer, nal_size);
     bytes_left -= nal_size;
-    avcc_buffer += nal_size;
+    buffer += nal_size;
   }
 }
 
-bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
+OSStatus GetParameterSetAtIndex(VideoCodec codec,
+                                CMFormatDescriptionRef videoDesc,
+                                size_t parameterSetIndex,
+                                const uint8_t** parameterSetPointerOut,
+                                size_t* parameterSetSizeOut,
+                                size_t* parameterSetCountOut,
+                                int* NALUnitHeaderLengthOut) {
+  switch (codec) {
+    case VideoCodec::kH264:
+      return CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
+          videoDesc, parameterSetIndex, parameterSetPointerOut,
+          parameterSetSizeOut, parameterSetCountOut, NALUnitHeaderLengthOut);
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoCodec::kHEVC:
+      return CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
+          videoDesc, parameterSetIndex, parameterSetPointerOut,
+          parameterSetSizeOut, parameterSetCountOut, NALUnitHeaderLengthOut);
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    default:
+      NOTREACHED();
+      return kCMFormatDescriptionBridgeError_InvalidParameter;
+  }
+}
+
+bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
+                                    CMSampleBufferRef sbuf,
                                     AnnexBBuffer* annexb_buffer,
                                     bool keyframe) {
   // Perform two pass, one to figure out the total output size, and another to
@@ -163,16 +189,15 @@ bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
 
   size_t pset_count;
   int nal_size_field_bytes;
-  status = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
-      fdesc, 0, nullptr, nullptr, &pset_count, &nal_size_field_bytes);
+  status = GetParameterSetAtIndex(codec, fdesc, 0, nullptr, nullptr,
+                                  &pset_count, &nal_size_field_bytes);
   if (status == kCMFormatDescriptionBridgeError_InvalidParameter) {
-    DLOG(WARNING) << " assuming 2 parameter sets and 4 bytes NAL length header";
-    pset_count = 2;
+    DLOG(WARNING) << " assuming " << int(codec == VideoCodec::kHEVC ? 3 : 2)
+                  << " parameter sets and 4 bytes NAL length header";
+    pset_count = codec == VideoCodec::kHEVC ? 3 : 2;
     nal_size_field_bytes = 4;
   } else if (status != noErr) {
-    DLOG(ERROR)
-        << " CMVideoFormatDescriptionGetH264ParameterSetAtIndex failed: "
-        << status;
+    DLOG(ERROR) << " GetParameterSetAtIndex failed: " << status;
     return false;
   }
 
@@ -180,12 +205,10 @@ bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
     const uint8_t* pset;
     size_t pset_size;
     for (size_t pset_i = 0; pset_i < pset_count; ++pset_i) {
-      status = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
-          fdesc, pset_i, &pset, &pset_size, nullptr, nullptr);
+      status = GetParameterSetAtIndex(codec, fdesc, pset_i, &pset, &pset_size,
+                                      nullptr, nullptr);
       if (status != noErr) {
-        DLOG(ERROR)
-            << " CMVideoFormatDescriptionGetH264ParameterSetAtIndex failed: "
-            << status;
+        DLOG(ERROR) << " GetParameterSetAtIndex failed: " << status;
         return false;
       }
       total_bytes += pset_size + nal_size_field_bytes;
@@ -203,12 +226,10 @@ bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
     const uint8_t* pset;
     size_t pset_size;
     for (size_t pset_i = 0; pset_i < pset_count; ++pset_i) {
-      status = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
-          fdesc, pset_i, &pset, &pset_size, nullptr, nullptr);
+      status = GetParameterSetAtIndex(codec, fdesc, pset_i, &pset, &pset_size,
+                                      nullptr, nullptr);
       if (status != noErr) {
-        DLOG(ERROR)
-            << " CMVideoFormatDescriptionGetH264ParameterSetAtIndex failed: "
-            << status;
+        DLOG(ERROR) << " GetParameterSetAtIndex failed: " << status;
         return false;
       }
       annexb_buffer->Append(kAnnexBHeaderBytes, sizeof(kAnnexBHeaderBytes));
@@ -231,7 +252,7 @@ bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
     }
   }
 
-  // Copy all the NAL units. In the process convert them from AVCC format
+  // Copy all the NAL units. In the process convert them from AVCC/HVCC format
   // (length header) to AnnexB format (start code).
   char* bb_data;
   status =
@@ -253,20 +274,23 @@ bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
   return true;
 }
 
-bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
+bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
+                                    CMSampleBufferRef sbuf,
                                     bool keyframe,
                                     std::string* annexb_buffer) {
   StringAnnexBBuffer buffer(annexb_buffer);
-  return CopySampleBufferToAnnexBBuffer(sbuf, &buffer, keyframe);
+  return CopySampleBufferToAnnexBBuffer(codec, sbuf, &buffer, keyframe);
 }
 
-bool CopySampleBufferToAnnexBBuffer(CMSampleBufferRef sbuf,
+bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
+                                    CMSampleBufferRef sbuf,
                                     bool keyframe,
                                     size_t annexb_buffer_size,
                                     char* annexb_buffer,
                                     size_t* used_buffer_size) {
   RawAnnexBBuffer buffer(annexb_buffer, annexb_buffer_size);
-  const bool copy_rv = CopySampleBufferToAnnexBBuffer(sbuf, &buffer, keyframe);
+  const bool copy_rv =
+      CopySampleBufferToAnnexBBuffer(codec, sbuf, &buffer, keyframe);
   *used_buffer_size = buffer.GetReservedSize();
   return copy_rv;
 }

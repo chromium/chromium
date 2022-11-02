@@ -297,6 +297,13 @@ BASE_FEATURE(kPictureInPicture,
 BASE_FEATURE(kPlatformHEVCDecoderSupport,
              "PlatformHEVCDecoderSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Enables HEVC hardware accelerated encoding for Windows and Mac.
+BASE_FEATURE(kPlatformHEVCEncoderSupport,
+             "PlatformHEVCEncoderSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
 // Only decode preload=metadata elements upon visibility.
@@ -964,12 +971,6 @@ BASE_FEATURE(kDirectShowGetPhotoState,
 BASE_FEATURE(kIncludeIRCamerasInDeviceEnumeration,
              "IncludeIRCamerasInDeviceEnumeration",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-// Enables HEVC encode acceleration for Windows.
-const base::Feature MEDIA_EXPORT kMediaFoundationHEVCEncoding{
-    "MediaFoundationHEVCEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
 // Enables AV1 encode acceleration for Windows.
 const base::Feature MEDIA_EXPORT kMediaFoundationAV1Encoding{
