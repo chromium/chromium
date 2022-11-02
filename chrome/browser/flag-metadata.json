@@ -7059,8 +7059,8 @@
   },
   {
     "name": "web-midi",
-    "owners": [ "reillyg", "hongchan", "deviceapi-team@google.com" ],
-    "expiry_milestone": 109
+    "owners": [ "//third_party/blink/renderer/modules/webaudio/OWNERS", "reillyg", "deviceapi-team@google.com" ],
+    "expiry_milestone": 112
   },
   {
     "name": "web-otp-backend",
