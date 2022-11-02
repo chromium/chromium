@@ -109,15 +109,15 @@ class LocalDeviceTestRun(test_run.TestRun):
                 base_test_result.BaseTestResult(
                     self._GetUniqueTestName(test),
                     base_test_result.ResultType.TIMEOUT))
-        except Exception as e:  # pylint: disable=broad-except
+        except device_errors.DeviceUnreachableError:
+          # If the device is no longer reachable then terminate this
+          # run_tests_on_device call.
+          raise
+        except base_error.BaseError:
+          # If we get a device error but believe the device is still
+          # reachable, attempt to continue using it.
           if isinstance(tests, test_collection.TestCollection):
             rerun = test
-          if (isinstance(e, device_errors.DeviceUnreachableError)
-              or not isinstance(e, base_error.BaseError)):
-            # If we get a device error but believe the device is still
-            # reachable, attempt to continue using it. Otherwise, raise
-            # the exception and terminate this run_tests_on_device call.
-            raise
 
           consecutive_device_errors += 1
           if consecutive_device_errors >= 3:
