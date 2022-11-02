@@ -224,6 +224,7 @@ def _goma_property(*, goma_backend, goma_debug, goma_enable_ats, goma_jobs):
 
 def _code_coverage_property(
         *,
+        coverage_gs_bucket,
         use_clang_coverage,
         use_java_coverage,
         use_javascript_coverage,
@@ -231,6 +232,13 @@ def _code_coverage_property(
         coverage_test_types,
         export_coverage_to_zoss):
     code_coverage = {}
+
+    coverage_gs_bucket = defaults.get_value(
+        "coverage_gs_bucket",
+        coverage_gs_bucket,
+    )
+    if coverage_gs_bucket:
+        code_coverage["coverage_gs_bucket"] = coverage_gs_bucket
 
     use_clang_coverage = defaults.get_value(
         "use_clang_coverage",
@@ -362,6 +370,7 @@ defaults = args.defaults(
     sheriff_rotations = None,
     xcode = None,
     ssd = args.COMPUTE,
+    coverage_gs_bucket = None,
     use_clang_coverage = False,
     use_java_coverage = False,
     use_javascript_coverage = False,
@@ -425,6 +434,7 @@ def builder(
         goma_debug = args.DEFAULT,
         goma_enable_ats = args.DEFAULT,
         goma_jobs = args.DEFAULT,
+        coverage_gs_bucket = args.DEFAULT,
         use_clang_coverage = args.DEFAULT,
         use_java_coverage = args.DEFAULT,
         use_javascript_coverage = args.DEFAULT,
@@ -563,6 +573,9 @@ def builder(
             jobs to be used by the builder. Sets the 'jobs' field of the
             '$build/goma' property will be set according to the enum member. By
             default, the 'jobs' considered None.
+        coverage_gs_bucket: a string specifying the GS bucket to upload
+            coverage data to. Will be copied to '$build/code_coverage' property.
+            By default, considered None.
         use_clang_coverage: a boolean indicating whether clang coverage should
             be used. If True, the 'use_clang_coverage" field will be set in the
             '$build/code_coverage' property. By default, considered False.
@@ -646,8 +659,9 @@ def builder(
              "use goma_backend, goma_dbug, goma_enable_ats and goma_jobs instead")
     if "$build/code_coverage" in properties:
         fail('Setting "$build/code_coverage" property is not supported: ' +
-             "use use_clang_coverage, use_java_coverage, use_javascript_coverage " +
-             " coverage_exclude_sources, coverage_test_types instead")
+             "use coverage_gs_bucket, use_clang_coverage, use_java_coverage, " +
+             "use_javascript_coverage, coverage_exclude_sources, " +
+             "coverage_test_types instead")
     if "$build/reclient" in properties:
         fail('Setting "$build/reclient" property is not supported: ' +
              "use reclient_instance and reclient_rewrapper_env instead")
@@ -745,6 +759,7 @@ def builder(
         properties["$build/goma"] = gp
 
     code_coverage = _code_coverage_property(
+        coverage_gs_bucket = coverage_gs_bucket,
         use_clang_coverage = use_clang_coverage,
         use_java_coverage = use_java_coverage,
         use_javascript_coverage = use_javascript_coverage,
