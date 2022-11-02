@@ -1575,7 +1575,6 @@ source_set("unit_tests") {
     "../ash/login/signin/offline_signin_limiter_unittest.cc",
     "../ash/login/signin/signin_error_notifier_unittest.cc",
     "../ash/login/signin_partition_manager_unittest.cc",
-    "../ash/login/test/cryptohome_mixin_unittest.cc",
     "../ash/login/ui/login_screen_extension_ui/dialog_delegate_unittest.cc",
     "../ash/login/ui/login_screen_extension_ui/web_dialog_view_unittest.cc",
     "../ash/login/ui/oobe_dialog_size_utils_unittest.cc",

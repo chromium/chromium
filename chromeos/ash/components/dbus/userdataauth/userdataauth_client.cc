@@ -533,37 +533,43 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
 
 }  // namespace
 
-UserDataAuthClient::UserDataAuthClient() {
-  CHECK(!g_instance);
-  g_instance = this;
-}
+UserDataAuthClient::UserDataAuthClient() = default;
 
-UserDataAuthClient::~UserDataAuthClient() {
-  CHECK_EQ(this, g_instance);
-  g_instance = nullptr;
-}
+UserDataAuthClient::~UserDataAuthClient() = default;
 
 // static
 void UserDataAuthClient::Initialize(dbus::Bus* bus) {
   CHECK(bus);
-  (new UserDataAuthClientImpl())->Init(bus);
+  CHECK(!g_instance);
+  auto* impl = new UserDataAuthClientImpl();
+  g_instance = impl;
+  impl->Init(bus);
 }
 
 // static
 void UserDataAuthClient::InitializeFake() {
-  // Certain tests may create FakeUserDataAuthClient() before the browser starts
-  // to set parameters.
-  if (!FakeUserDataAuthClient::Get()) {
-    new FakeUserDataAuthClient();
+  if (g_instance) {
+    // TODO(b/239430274): Certain tests call InitializeFake() before the
+    // browser starts to set parameters. They should just access the fake
+    // instance directly via FakeUserDataAuthClient::Get(), via
+    // FakeUserDataAuthClient::TestApi or via CryptohomeMixin.
+    CHECK(g_instance == FakeUserDataAuthClient::Get());
+  } else {
+    g_instance = FakeUserDataAuthClient::Get();
+    CHECK(g_instance);
   }
+}
+
+void UserDataAuthClient::OverrideGlobalInstanceForTesting(
+    UserDataAuthClient* client) {
+  g_instance = client;
 }
 
 // static
 void UserDataAuthClient::Shutdown() {
   CHECK(g_instance);
   delete g_instance;
-  // The destructor resets |g_instance|.
-  DCHECK(!g_instance);
+  g_instance = nullptr;
 }
 
 // static

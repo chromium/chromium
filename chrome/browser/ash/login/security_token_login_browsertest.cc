@@ -313,8 +313,13 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
                                public LocalStateMixin::Delegate,
                                public testing::WithParamInterface<bool> {
  protected:
-  SecurityTokenLoginTest()
-      : cryptohome_client_(new ChallengeResponseFakeUserDataAuthClient) {
+  SecurityTokenLoginTest() {
+    auto cryptohome_client =
+        std::make_unique<ChallengeResponseFakeUserDataAuthClient>();
+    cryptohome_client_ = cryptohome_client.get();
+    FakeUserDataAuthClient::TestApi::OverrideGlobalInstance(
+        std::move(cryptohome_client));
+
     // TODO(b/239422391): Clean up after full migration to kUseAuthFactors.
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(ash::features::kUseAuthFactors);
@@ -469,7 +474,7 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
       feature_allowlist_{TestCertificateProviderExtension::extension_id()};
 
   // Unowned (referencing a global singleton)
-  ChallengeResponseFakeUserDataAuthClient* const cryptohome_client_;
+  raw_ptr<ChallengeResponseFakeUserDataAuthClient> cryptohome_client_ = nullptr;
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   LoginManagerMixin login_manager_mixin_{&mixin_host_,
                                          {},

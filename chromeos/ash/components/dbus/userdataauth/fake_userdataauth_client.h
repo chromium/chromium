@@ -40,6 +40,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     // Legacy method for tests that do not use `CryptohomeMixin`.
     static TestApi* Get();
 
+    // Override the global fake instance for browser tests. Must be called
+    // before browser startup, for example in the constructor of the fixture,
+    // and before the global instance is configured in any way using this
+    // TestApi or FakeUserDataAuth::Get().
+    static void OverrideGlobalInstance(std::unique_ptr<FakeUserDataAuthClient>);
+
     // Sets whether dircrypto migration update should be run automatically.
     // If set to false, the client will not send any dircrypto migration
     // progress updates on its own - a test that sets this will have to call

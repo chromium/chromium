@@ -24,12 +24,8 @@ CryptohomeMixin::~CryptohomeMixin() = default;
 
 void CryptohomeMixin::MarkUserAsExisting(const AccountId& user) {
   auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(user);
-  if (FakeUserDataAuthClient::TestApi::Get()) {
-    FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(
-        std::move(account_id));
-  } else {
-    pending_users_.emplace(account_id);
-  }
+  FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(
+      std::move(account_id));
 }
 
 void CryptohomeMixin::AddGaiaPassword(const AccountId& user,
@@ -55,14 +51,6 @@ void CryptohomeMixin::AddGaiaPassword(const AccountId& user,
 bool CryptohomeMixin::HasPinFactor(const AccountId& user) {
   return TestApi::HasPinFactor(
       cryptohome::CreateAccountIdentifierFromAccountId(user));
-}
-
-void CryptohomeMixin::SetUpOnMainThread() {
-  while (!pending_users_.empty()) {
-    auto user = pending_users_.front();
-    FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(std::move(user));
-    pending_users_.pop();
-  }
 }
 
 }  // namespace ash

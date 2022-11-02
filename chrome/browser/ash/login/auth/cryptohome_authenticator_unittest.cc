@@ -291,8 +291,11 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kLoginManager);
 
-    fake_userdataauth_client_ = new TestUserDataAuthClient;
-
+    // The TestUserDataAuthClient we create here is deleted via the call to
+    // UserDataAuthClient::Shutdown() in TearDown();
+    fake_userdataauth_client_ = new TestUserDataAuthClient();
+    UserDataAuthClient::OverrideGlobalInstanceForTesting(
+        fake_userdataauth_client_);
     CryptohomeMiscClient::InitializeFake();
     SystemSaltGetter::Initialize();
 

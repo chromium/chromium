@@ -252,7 +252,15 @@ void SecretInterceptingFakeUserDataAuthClient::Mount(
 
 class SamlTestBase : public OobeBaseTest {
  public:
-  SamlTestBase() { fake_gaia_.set_initialize_fake_merge_session(false); }
+  SamlTestBase() {
+    auto cryptohome_client =
+        std::make_unique<SecretInterceptingFakeUserDataAuthClient>();
+    cryptohome_client_ = cryptohome_client.get();
+    FakeUserDataAuthClient::TestApi::OverrideGlobalInstance(
+        std::move(cryptohome_client));
+
+    fake_gaia_.set_initialize_fake_merge_session(false);
+  }
 
   SamlTestBase(const SamlTestBase&) = delete;
   SamlTestBase& operator=(const SamlTestBase&) = delete;
@@ -270,9 +278,6 @@ class SamlTestBase : public OobeBaseTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    // Creates a fake UserDataAuthClient. Will be destroyed in browser shutdown.
-    cryptohome_client_ = new SecretInterceptingFakeUserDataAuthClient();
-
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
   }
 

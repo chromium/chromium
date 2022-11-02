@@ -246,6 +246,8 @@ class AuthSessionAuthenticatorTest : public ::testing::Test,
 
     CryptohomeMiscClient::InitializeFake();
     chromeos::SystemSaltGetter::Initialize();
+    UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);
+
     EXPECT_CALL(auth_status_consumer_, OnAuthSuccess(_))
         .Times(AtMost(1))
         .WillOnce([this](const UserContext& user_context) {

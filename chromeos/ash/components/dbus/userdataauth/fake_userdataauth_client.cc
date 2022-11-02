@@ -102,7 +102,16 @@ constexpr char kAuthSessionIdTemplate[] = "AuthSession-%d";
 // Guest username constant that mirrors the one in real cryptohome
 constexpr char kGuestUserName[] = "$guest";
 
-// Used to track the fake instance, mirrors the instance in the base class.
+// Used to track the global fake instance. This global fake instance is created
+// in the first call to FakeUserDataAuth::Get(). During browser startup in
+// browser tests and cros-linux, the global instance pointer in
+// userdataauth_client.cc is set to the address of this global fake instance.
+// During shutdown, the fake instance is deleted in the same way as the normal
+// UserDataAuth instance would be deleted. We do this to stay as faithful as
+// possible to the real implementation.
+// However, browser tests can access and configure the fake instance via the
+// TestApi or CryptohomeMixin even before the browser starts, for example in
+// the constructor of a browser test fixture.
 FakeUserDataAuthClient* g_instance = nullptr;
 
 // `OverloadedFunctor` and `FunctorWithReturnType` are used to implement
@@ -385,40 +394,45 @@ FakeUserDataAuthClient::AuthSessionData::~AuthSessionData() = default;
 
 // static
 FakeUserDataAuthClient::TestApi* FakeUserDataAuthClient::TestApi::Get() {
-  // TestApi assumes that the FakeUserDataAuthClient singleton is initialized.
-  if (FakeUserDataAuthClient::Get() == nullptr) {
-    return nullptr;
-  }
-
   static TestApi instance;
   return &instance;
 }
 
+// static
+void FakeUserDataAuthClient::TestApi::OverrideGlobalInstance(
+    std::unique_ptr<FakeUserDataAuthClient> client) {
+  CHECK(!g_instance);
+  g_instance = client.release();
+}
+
 void FakeUserDataAuthClient::TestApi::SetServiceIsAvailable(bool is_available) {
-  g_instance->service_is_available_ = is_available;
+  FakeUserDataAuthClient::Get()->service_is_available_ = is_available;
   if (!is_available)
     return;
-  g_instance->RunPendingWaitForServiceToBeAvailableCallbacks();
+  FakeUserDataAuthClient::Get()
+      ->RunPendingWaitForServiceToBeAvailableCallbacks();
 }
 
 void FakeUserDataAuthClient::TestApi::ReportServiceIsNotAvailable() {
-  DCHECK(!g_instance->service_is_available_);
-  g_instance->service_reported_not_available_ = true;
-  g_instance->RunPendingWaitForServiceToBeAvailableCallbacks();
+  DCHECK(!FakeUserDataAuthClient::Get()->service_is_available_);
+  FakeUserDataAuthClient::Get()->service_reported_not_available_ = true;
+  FakeUserDataAuthClient::Get()
+      ->RunPendingWaitForServiceToBeAvailableCallbacks();
 }
 
 void FakeUserDataAuthClient::TestApi::SetHomeEncryptionMethod(
     const cryptohome::AccountIdentifier& cryptohome_id,
     HomeEncryptionMethod method) {
-  auto user_it = g_instance->users_.find(cryptohome_id);
-  if (user_it == std::end(g_instance->users_)) {
+  auto user_it = FakeUserDataAuthClient::Get()->users_.find(cryptohome_id);
+  if (user_it == std::end(FakeUserDataAuthClient::Get()->users_)) {
     LOG(ERROR) << "User does not exist: " << cryptohome_id.account_id();
     // TODO(crbug.com/1334538): Some existing tests rely on us creating the
     // user here, but new tests shouldn't. Eventually this should crash.
-    user_it =
-        g_instance->users_.insert({cryptohome_id, UserCryptohomeState()}).first;
+    user_it = FakeUserDataAuthClient::Get()
+                  ->users_.insert({cryptohome_id, UserCryptohomeState()})
+                  .first;
   }
-  DCHECK(user_it != std::end(g_instance->users_));
+  DCHECK(user_it != std::end(FakeUserDataAuthClient::Get()->users_));
   UserCryptohomeState& user_state = user_it->second;
   user_state.home_encryption_method = method;
 }
@@ -427,8 +441,8 @@ void FakeUserDataAuthClient::TestApi::SetPinLocked(
     const cryptohome::AccountIdentifier& account_id,
     const std::string& label,
     bool locked) {
-  auto user_it = g_instance->users_.find(account_id);
-  CHECK(user_it != g_instance->users_.end())
+  auto user_it = FakeUserDataAuthClient::Get()->users_.find(account_id);
+  CHECK(user_it != FakeUserDataAuthClient::Get()->users_.end())
       << "User does not exist: " << account_id.account_id();
   UserCryptohomeState& user_state = user_it->second;
 
@@ -446,14 +460,15 @@ void FakeUserDataAuthClient::TestApi::SetPinLocked(
 void FakeUserDataAuthClient::TestApi::AddExistingUser(
     const cryptohome::AccountIdentifier& account_id) {
   const auto [user_it, was_inserted] =
-      g_instance->users_.insert({std::move(account_id), UserCryptohomeState()});
+      FakeUserDataAuthClient::Get()->users_.insert(
+          {std::move(account_id), UserCryptohomeState()});
   if (!was_inserted) {
     LOG(WARNING) << "User already exists: " << user_it->first.account_id();
     return;
   }
 
   const absl::optional<base::FilePath> profile_dir =
-      g_instance->GetUserProfileDir(user_it->first);
+      FakeUserDataAuthClient::Get()->GetUserProfileDir(user_it->first);
   if (!profile_dir) {
     LOG(WARNING) << "User data directory has not been set, will not create "
                     "user profile directory";
@@ -467,7 +482,7 @@ void FakeUserDataAuthClient::TestApi::AddExistingUser(
 absl::optional<base::FilePath>
 FakeUserDataAuthClient::TestApi::GetUserProfileDir(
     const cryptohome::AccountIdentifier& account_id) const {
-  return g_instance->GetUserProfileDir(account_id);
+  return FakeUserDataAuthClient::Get()->GetUserProfileDir(account_id);
 }
 
 void FakeUserDataAuthClient::TestApi::AddKey(
@@ -475,8 +490,9 @@ void FakeUserDataAuthClient::TestApi::AddKey(
     const cryptohome::Key& key) {
   UserCryptohomeState& user_state = GetUserState(account_id);
 
-  const auto [factor_it, was_inserted] = user_state.auth_factors.insert(
-      KeyToFakeAuthFactor(key, g_instance->enable_auth_check_));
+  const auto [factor_it, was_inserted] =
+      user_state.auth_factors.insert(KeyToFakeAuthFactor(
+          key, FakeUserDataAuthClient::Get()->enable_auth_check_));
   CHECK(was_inserted) << "Factor already exists";
 }
 
@@ -505,13 +521,16 @@ bool FakeUserDataAuthClient::TestApi::HasPinFactor(
 std::string FakeUserDataAuthClient::TestApi::AddSession(
     const cryptohome::AccountIdentifier& account_id,
     bool authenticated) {
-  CHECK(g_instance->users_.contains(account_id));
+  CHECK(FakeUserDataAuthClient::Get()->users_.contains(account_id));
 
   std::string auth_session_id = base::StringPrintf(
-      kAuthSessionIdTemplate, g_instance->next_auth_session_id_++);
+      kAuthSessionIdTemplate,
+      FakeUserDataAuthClient::Get()->next_auth_session_id_++);
 
-  CHECK_EQ(g_instance->auth_sessions_.count(auth_session_id), 0u);
-  AuthSessionData& session = g_instance->auth_sessions_[auth_session_id];
+  CHECK_EQ(FakeUserDataAuthClient::Get()->auth_sessions_.count(auth_session_id),
+           0u);
+  AuthSessionData& session =
+      FakeUserDataAuthClient::Get()->auth_sessions_[auth_session_id];
 
   session.id = auth_session_id;
   session.ephemeral = false;
@@ -524,23 +543,26 @@ std::string FakeUserDataAuthClient::TestApi::AddSession(
 FakeUserDataAuthClient::UserCryptohomeState&
 FakeUserDataAuthClient::TestApi::GetUserState(
     const cryptohome::AccountIdentifier& account_id) {
-  const auto user_it = g_instance->users_.find(account_id);
-  CHECK(user_it != std::end(g_instance->users_)) << "User doesn't exist";
+  const auto user_it = FakeUserDataAuthClient::Get()->users_.find(account_id);
+  CHECK(user_it != std::end(FakeUserDataAuthClient::Get()->users_))
+      << "User doesn't exist";
   return user_it->second;
 }
 
-FakeUserDataAuthClient::FakeUserDataAuthClient() {
-  DCHECK(!g_instance);
-  g_instance = this;
-}
+FakeUserDataAuthClient::FakeUserDataAuthClient() = default;
 
 FakeUserDataAuthClient::~FakeUserDataAuthClient() {
-  DCHECK_EQ(this, g_instance);
-  g_instance = nullptr;
+  if (this == g_instance) {
+    // If we're deleting the global instance, clear the pointer to it.
+    g_instance = nullptr;
+  }
 }
 
 // static
 FakeUserDataAuthClient* FakeUserDataAuthClient::Get() {
+  if (!g_instance) {
+    g_instance = new FakeUserDataAuthClient();
+  }
   return g_instance;
 }
 

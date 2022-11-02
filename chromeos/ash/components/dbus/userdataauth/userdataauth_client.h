@@ -130,6 +130,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Creates and initializes a fake global instance if not already created.
   static void InitializeFake();
 
+  // Override the global instance for testing. Must only be called in unit
+  // tests, which bypass the normal browser startup and shutdown sequence. Use
+  // InitializeFake or OverrideGlobalInstance in FakeUserDataAuth for browser
+  // tests.
+  static void OverrideGlobalInstanceForTesting(UserDataAuthClient*);
+
   // Destroys the global instance.
   static void Shutdown();
 
