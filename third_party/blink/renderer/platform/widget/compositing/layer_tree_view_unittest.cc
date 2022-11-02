@@ -258,7 +258,7 @@ class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   cc::TestTaskGraphRunner test_task_graph_runner_;
-  Persistent<PageScheduler> dummy_page_scheduler_;
+  std::unique_ptr<PageScheduler> dummy_page_scheduler_;
   FakeLayerTreeViewDelegate layer_tree_view_delegate_;
   LayerTreeViewWithFrameSinkTracking layer_tree_view_;
 };
@@ -323,7 +323,7 @@ TEST(LayerTreeViewTest, VisibilityTest) {
   base::test::TaskEnvironment task_environment;
 
   cc::TestTaskGraphRunner test_task_graph_runner;
-  auto* page_scheduler = scheduler::CreateDummyPageScheduler();
+  auto page_scheduler = scheduler::CreateDummyPageScheduler();
   // Synchronously callback with null FrameSink.
   StubLayerTreeViewDelegate layer_tree_view_delegate;
   VisibilityTestLayerTreeView layer_tree_view(&layer_tree_view_delegate,
@@ -369,7 +369,8 @@ TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
   base::test::TaskEnvironment task_environment;
 
   cc::TestTaskGraphRunner test_task_graph_runner;
-  PageScheduler* dummy_page_scheduler = scheduler::CreateDummyPageScheduler();
+  std::unique_ptr<PageScheduler> dummy_page_scheduler =
+      scheduler::CreateDummyPageScheduler();
   StubLayerTreeViewDelegate layer_tree_view_delegate;
   LayerTreeView layer_tree_view(&layer_tree_view_delegate,
                                 dummy_page_scheduler->CreateWidgetScheduler());
