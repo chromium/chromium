@@ -15,8 +15,9 @@
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -47,16 +48,12 @@ class UserSigninMediatorTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                               gaiaID:@"foo1ID"
-                                                 name:@"Fake Foo 1"];
+    identity_ = [FakeSystemIdentity fakeIdentity1];
     identity_service()->AddIdentity(identity_);
-
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(ConsentAuditorFactory::GetInstance(),
                               base::BindRepeating(&BuildFakeConsentAuditor));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
@@ -66,6 +63,9 @@ class UserSigninMediatorTest : public PlatformTest {
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = builder.Build();
 
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     mediator_delegate_mock_ =
@@ -141,7 +141,10 @@ class UserSigninMediatorTest : public PlatformTest {
   void SetPerformerSignoutExpectations() {
     OCMExpect([performer_mock_ signOutBrowserState:browser_state_.get()])
         .andDo(^(NSInvocation*) {
-          [authentication_flow_ didSignOut];
+          authentication_service()->SignOut(
+              signin_metrics::ProfileSignout::SIGNOUT_TEST, false, ^{
+                [authentication_flow_ didSignOut];
+              });
         });
   }
 
@@ -261,7 +264,7 @@ class UserSigninMediatorTest : public PlatformTest {
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  FakeSystemIdentity* identity_ = nullptr;
+  id<SystemIdentity> identity_ = nil;
 
   AuthenticationFlow* authentication_flow_ = nullptr;
   std::unique_ptr<Browser> browser_;
@@ -500,10 +503,7 @@ TEST_F(UserSigninMediatorTest, CancelSyncAndStaySignin) {
 //   * Cancel the user sign-in dialog
 TEST_F(UserSigninMediatorTest, OpenSettingsLinkWithDifferentIdentityAndCancel) {
   // Signs in with identity 2.
-  id<SystemIdentity> identity2 =
-      [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
-                                     gaiaID:@"foo2ID"
-                                       name:@"Fake Foo 2"];
+  id<SystemIdentity> identity2 = [FakeSystemIdentity fakeIdentity2];
   identity_service()->AddIdentity(identity2);
   authentication_service()->SignIn(identity2);
 

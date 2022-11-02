@@ -11,12 +11,14 @@
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/test/block_cleanup_test.h"
@@ -38,7 +40,7 @@ class SignedInAccountsViewControllerTest : public BlockCleanupTest {
     BlockCleanupTest::SetUp();
     identity_service_ =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    identity_service_->AddIdentities(@[ @"identity1" ]);
+    identity_service_->AddIdentity([FakeSystemIdentity fakeIdentity1]);
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
@@ -47,6 +49,8 @@ class SignedInAccountsViewControllerTest : public BlockCleanupTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateMockSyncService));
     browser_state_ = builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),

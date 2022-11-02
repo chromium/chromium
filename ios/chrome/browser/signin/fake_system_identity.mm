@@ -59,6 +59,12 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
                                           name:@"Fake Foo 2"];
 }
 
++ (instancetype)fakeIdentity3 {
+  return [FakeSystemIdentity identityWithEmail:@"foo3@gmail.com"
+                                        gaiaID:@"foo3ID"
+                                          name:@"Fake Foo 3"];
+}
+
 + (instancetype)fakeManagedIdentity {
   return [FakeSystemIdentity identityWithEmail:@"foo@google.com"
                                         gaiaID:@"fooManagedID"

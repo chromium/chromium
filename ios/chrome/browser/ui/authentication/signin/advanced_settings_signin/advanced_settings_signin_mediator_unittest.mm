@@ -14,8 +14,9 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
@@ -47,28 +48,27 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                               gaiaID:@"foo1ID"
-                                                 name:@"Fake Foo 1"];
+    identity_ = [FakeSystemIdentity fakeIdentity1];
     identity_service()->AddIdentity(identity_);
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     browser_state_ = builder.Build();
-
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
     mediator_ = [[AdvancedSettingsSigninMediator alloc]
         initWithAuthenticationService:authentication_service()
                           syncService:sync_service()
                           prefService:GetPrefService()
                       identityManager:identity_manager()];
 
-    authentication_service_fake_ =
-        static_cast<AuthenticationServiceFake*>(authentication_service());
+    authentication_service_ =
+        static_cast<AuthenticationService*>(authentication_service());
   }
 
   // Registers account preferences that will be used in reauthentication.
@@ -106,24 +106,24 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
   base::test::TaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  FakeSystemIdentity* identity_ = nullptr;
+  id<SystemIdentity> identity_ = nil;
 
   AdvancedSettingsSigninMediator* mediator_ = nil;
 
-  AuthenticationServiceFake* authentication_service_fake_ = nullptr;
+  AuthenticationService* authentication_service_ = nullptr;
 };
 
 // Tests that a user's authentication does not change when sign-in is
 // interrupted.
 TEST_F(AdvancedSettingsSigninMediatorTest,
        saveUserPreferenceSigninInterruptedWithSyncDisabled) {
-  authentication_service_fake_->SignIn(identity_);
+  authentication_service_->SignIn(identity_);
   [mediator_
       saveUserPreferenceForSigninResult:SigninCoordinatorResultInterrupted
                     originalSigninState:
                         IdentitySigninStateSignedInWithSyncDisabled];
 
-  ASSERT_TRUE(authentication_service_fake_->HasPrimaryIdentity(
+  ASSERT_TRUE(authentication_service_->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 }
 
@@ -131,11 +131,11 @@ TEST_F(AdvancedSettingsSigninMediatorTest,
 // interrupted with IdentitySigninStateSignedOut.
 TEST_F(AdvancedSettingsSigninMediatorTest,
        saveUserPreferenceSigninInterruptedWithSignout) {
-  authentication_service_fake_->SignIn(identity_);
+  authentication_service_->SignIn(identity_);
   [mediator_
       saveUserPreferenceForSigninResult:SigninCoordinatorResultInterrupted
                     originalSigninState:IdentitySigninStateSignedOut];
 
-  ASSERT_FALSE(authentication_service_fake_->HasPrimaryIdentity(
+  ASSERT_FALSE(authentication_service_->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 }

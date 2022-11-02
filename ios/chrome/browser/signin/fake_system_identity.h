@@ -27,6 +27,9 @@
 // Returns a second fake identity.
 + (instancetype)fakeIdentity2;
 
+// Returns a third fake identity.
++ (instancetype)fakeIdentity3;
+
 // Returns a fake managed identity.
 + (instancetype)fakeManagedIdentity;
 

@@ -9,8 +9,9 @@
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -33,22 +34,18 @@ class UnifiedConsentMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    identity1_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                                gaiaID:@"foo1ID"
-                                                  name:@"Fake Foo 1"];
-    identity2_ = [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
-                                                gaiaID:@"foo2ID"
-                                                  name:@"Fake Foo 2"];
-    identity3_ = [FakeSystemIdentity identityWithEmail:@"foo3@gmail.com"
-                                                gaiaID:@"foo3ID"
-                                                  name:@"Fake Foo 3"];
+    identity1_ = [FakeSystemIdentity fakeIdentity1];
+    identity2_ = [FakeSystemIdentity fakeIdentity2];
+    identity3_ = [FakeSystemIdentity fakeIdentity3];
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
     view_controller_ = [[UnifiedConsentViewController alloc]
         initWithPostRestoreSigninPromo:NO];
     pref_service_ = new TestingPrefServiceSimple();
@@ -96,9 +93,9 @@ class UnifiedConsentMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
-  FakeSystemIdentity* identity1_ = nullptr;
-  FakeSystemIdentity* identity2_ = nullptr;
-  FakeSystemIdentity* identity3_ = nullptr;
+  id<SystemIdentity> identity1_ = nil;
+  id<SystemIdentity> identity2_ = nil;
+  id<SystemIdentity> identity3_ = nil;
 
   UnifiedConsentMediator* mediator_ = nullptr;
   PrefService* pref_service_ = nullptr;

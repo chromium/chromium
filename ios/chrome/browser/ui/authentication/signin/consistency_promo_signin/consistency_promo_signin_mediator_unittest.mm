@@ -7,14 +7,16 @@
 #import <UIKit/UIKit.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -47,22 +49,18 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     authentication_flow_ = OCMStrictClassMock([AuthenticationFlow class]);
-    identity1_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                                gaiaID:@"foo1ID1"
-                                                  name:@"Fake Foo 1"];
-    identity2_ = [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
-                                                gaiaID:@"foo1ID2"
-                                                  name:@"Fake Foo 2"];
+    identity1_ = [FakeSystemIdentity fakeIdentity1];
+    identity2_ = [FakeSystemIdentity fakeIdentity2];
     GetIdentityService()->AddIdentity(identity1_);
     GetIdentityService()->AddIdentity(identity2_);
-
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
-
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
     PrefRegistrySimple* registry = pref_service_.registry();
     registry->RegisterIntegerPref(prefs::kSigninWebSignDismissalCount, 0);
 
@@ -129,10 +127,15 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   void SigninAndSimulateError(ConsistencyPromoSigninMediator* mediator,
                               id<SystemIdentity> identity) {
     GetAuthenticationService()->SignIn(identity);
-    OCMExpect([mediator_delegate_mock_
-        consistencyPromoSigninMediator:mediator
-                        errorDidHappen:
-                            ConsistencyPromoSigninMediatorErrorGeneric]);
+    __block BOOL error_did_happen_called = NO;
+    OCMExpect(
+        [mediator_delegate_mock_
+            consistencyPromoSigninMediator:mediator
+                            errorDidHappen:
+                                ConsistencyPromoSigninMediatorErrorGeneric])
+        .andDo(^(NSInvocation*) {
+          error_did_happen_called = YES;
+        });
     id<IdentityManagerObserverBridgeDelegate>
         identityManagerObserverBridgeDelegate =
             (id<IdentityManagerObserverBridgeDelegate>)mediator;
@@ -145,6 +148,11 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     [identityManagerObserverBridgeDelegate
         onAccountsInCookieUpdated:cookieJarInfo
                             error:error];
+    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForActionTimeout, ^bool {
+          base::RunLoop().RunUntilIdle();
+          return error_did_happen_called;
+        }));
   }
 
   void SigninWithMediator(ConsistencyPromoSigninMediator* mediator,

@@ -17,8 +17,9 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -59,7 +60,7 @@ namespace {
 class SigninPromoViewMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    user_full_name_ = @"John Doe";
+    identity_ = [FakeSystemIdentity fakeIdentity1];
     close_button_hidden_ = YES;
 
     TestChromeBrowserState::Builder builder;
@@ -70,9 +71,11 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = builder.Build();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        chrome_browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
   }
 
   void TearDown() override {
@@ -134,12 +137,8 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   // Creates the default identity and adds it into the ChromeIdentityService.
   void AddDefaultIdentity() {
-    expected_default_identity_ =
-        [FakeSystemIdentity identityWithEmail:@"johndoe@example.com"
-                                       gaiaID:@"1"
-                                         name:user_full_name_];
     ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-        ->AddIdentity(expected_default_identity_);
+        ->AddIdentity(identity_);
   }
 
   PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
@@ -207,7 +206,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Expects the signin promo view to be configured when accounts are on the
   // device.
   void ExpectSigninWithAccountConfiguration(SigninPromoViewStyle style) {
-    EXPECT_EQ(expected_default_identity_, mediator_.identity);
+    EXPECT_EQ(identity_, mediator_.identity);
     OCMExpect(
         [signin_promo_view_ setMode:SigninPromoViewModeSigninWithAccount]);
     switch (style) {
@@ -217,9 +216,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
               image_view_profile_image_ = value;
               return YES;
             }]]);
-        NSString* name = expected_default_identity_.userGivenName.length
-                             ? expected_default_identity_.userGivenName
-                             : expected_default_identity_.userEmail;
+        NSString* name = identity_.userGivenName.length
+                             ? identity_.userGivenName
+                             : identity_.userEmail;
         std::u16string name16 = SysNSStringToUTF16(name);
         OCMExpect([primary_button_
             setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
@@ -268,9 +267,8 @@ class SigninPromoViewMediatorTest : public PlatformTest {
           image_view_profile_image_ = value;
           return YES;
         }]]);
-    NSString* name = expected_default_identity_.userGivenName.length
-                         ? expected_default_identity_.userGivenName
-                         : expected_default_identity_.userEmail;
+    NSString* name = identity_.userGivenName.length ? identity_.userGivenName
+                                                    : identity_.userEmail;
     std::u16string name16 = SysNSStringToUTF16(name);
     OCMExpect([primary_button_
         setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
@@ -312,10 +310,8 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Mediator used for the tests.
   SigninPromoViewMediator* mediator_;
 
-  // User full name for the identity;
-  NSString* user_full_name_;
   // Identity used for sign-in.
-  FakeSystemIdentity* expected_default_identity_;
+  id<SystemIdentity> identity_;
 
   // Configurator received from the consumer.
   SigninPromoViewConfigurator* configurator_;
@@ -359,7 +355,6 @@ TEST_F(SigninPromoViewMediatorTest, SigninWithAccountConfigureSigninPromoView) {
 // without full name.
 TEST_F(SigninPromoViewMediatorTest,
        SigninWithAccountConfigureSigninPromoViewWithoutName) {
-  user_full_name_ = nil;
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   TestSigninPromoWithAccount(SigninPromoViewStyleStandard);
 }
@@ -401,8 +396,8 @@ TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithWarmAndCold) {
   // configureSigninPromoWithConfigurator:identityChanged:].
   ExpectConfiguratorNotification(YES /* identity changed */);
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->ForgetIdentity(expected_default_identity_, nil);
-  expected_default_identity_ = nil;
+      ->ForgetIdentity(identity_, nil);
+  identity_ = nil;
   // Check the received configurator.
   CheckNoAccountsConfigurator(configurator_, SigninPromoViewStyleStandard);
 }
@@ -495,7 +490,7 @@ TEST_F(SigninPromoViewMediatorTest,
         return YES;
       }];
   OCMExpect([consumer_ signinPromoViewMediator:mediator_
-                  shouldOpenSigninWithIdentity:expected_default_identity_
+                  shouldOpenSigninWithIdentity:identity_
                                    promoAction:signin_metrics::PromoAction::
                                                    PROMO_ACTION_WITH_DEFAULT
                                     completion:completion_arg]);
@@ -506,7 +501,7 @@ TEST_F(SigninPromoViewMediatorTest,
   id<ChromeAccountManagerServiceObserver> accountManagerServiceObserver =
       (id<ChromeAccountManagerServiceObserver>)mediator_;
   // Simulates an identity update.
-  [accountManagerServiceObserver identityChanged:expected_default_identity_];
+  [accountManagerServiceObserver identityChanged:identity_];
   // Spins the run loop to wait for the profile image update.
   EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
                   ->WaitForServiceCallbacksToComplete());
@@ -535,17 +530,14 @@ TEST_F(SigninPromoViewMediatorTest,
 // signed in.
 TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
   AddDefaultIdentity();
-  expected_default_identity_ =
-      [FakeSystemIdentity identityWithEmail:@"johndoe2@example.com"
-                                     gaiaID:@"2"
-                                       name:@"johndoe2"];
+  identity_ = [FakeSystemIdentity fakeIdentity2];
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(
-      expected_default_identity_);
-  GetAuthenticationService()->SignIn(expected_default_identity_);
+      identity_);
+  GetAuthenticationService()->SignIn(identity_);
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   ExpectConfiguratorNotification(NO /* identity changed */);
   [mediator_ signinPromoViewIsVisible];
-  EXPECT_EQ(expected_default_identity_, mediator_.identity);
+  EXPECT_EQ(identity_, mediator_.identity);
   EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
                   ->WaitForServiceCallbacksToComplete());
   CheckSyncPromoWithAccountConfigurator(configurator_,
@@ -572,7 +564,7 @@ TEST_F(SigninPromoViewMediatorTest,
     return value == weak_mediator;
   }];
   OCMExpect([consumer_ signinPromoViewMediator:mediator_checker
-                  shouldOpenSigninWithIdentity:expected_default_identity_
+                  shouldOpenSigninWithIdentity:identity_
                                    promoAction:signin_metrics::PromoAction::
                                                    PROMO_ACTION_WITH_DEFAULT
                                     completion:completion_arg]);
@@ -603,7 +595,7 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
         return YES;
       }];
   OCMExpect([consumer_ signinPromoViewMediator:mediator_
-                  shouldOpenSigninWithIdentity:expected_default_identity_
+                  shouldOpenSigninWithIdentity:identity_
                                    promoAction:signin_metrics::PromoAction::
                                                    PROMO_ACTION_WITH_DEFAULT
                                     completion:completion_arg]);

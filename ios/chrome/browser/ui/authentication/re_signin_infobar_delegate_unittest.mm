@@ -13,12 +13,13 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -43,22 +44,23 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = builder.Build();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        chrome_browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
   }
 
   void SetUpMainChromeBrowserStateWithSignedInUser() {
     SetUpMainChromeBrowserStateNotSignedIn();
 
-    id<SystemIdentity> chrome_identity =
-        [FakeSystemIdentity identityWithEmail:@"john.appleseed@gmail.com"
-                                       gaiaID:@"1234"
-                                         name:@"John"];
-
+    id<SystemIdentity> chrome_identity = [FakeSystemIdentity fakeIdentity1];
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
+    ios::FakeChromeIdentityService* identity_service_ =
+        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+    identity_service_->AddIdentity(chrome_identity);
     authentication_service->SignIn(chrome_identity);
   }
 
