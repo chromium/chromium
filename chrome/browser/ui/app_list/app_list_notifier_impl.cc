@@ -60,6 +60,13 @@ void AppListNotifierImpl::NotifyResultsUpdated(
   if (location == Location::kList) {
     for (const auto& result : results)
       list_results_[result.id] = result;
+  } else if (location == Location::kAnswerCard) {
+    if (results.size() > 0) {
+      DoStateTransition(Location::kAnswerCard, State::kShown);
+    } else {
+      DoStateTransition(Location::kAnswerCard, State::kNone);
+    }
+    results_[location] = results;
   } else {
     results_[location] = results;
   }
@@ -90,6 +97,7 @@ void AppListNotifierImpl::NotifySearchQueryChanged(
   if (shown_) {
     if (query.empty()) {
       DoStateTransition(Location::kList, State::kNone);
+      DoStateTransition(Location::kAnswerCard, State::kNone);
       DoStateTransition(Location::kContinue,
                         GetContinueSectionVisibility(Location::kContinue)
                             ? State::kShown
@@ -100,6 +108,7 @@ void AppListNotifierImpl::NotifySearchQueryChanged(
                             : State::kNone);
     } else {
       DoStateTransition(Location::kList, State::kShown);
+      DoStateTransition(Location::kAnswerCard, State::kNone);
       DoStateTransition(Location::kContinue, State::kNone);
       DoStateTransition(Location::kRecentApps, State::kNone);
     }
@@ -142,6 +151,7 @@ void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
     DoStateTransition(Location::kList, State::kNone);
     DoStateTransition(Location::kContinue, State::kNone);
     DoStateTransition(Location::kRecentApps, State::kNone);
+    DoStateTransition(Location::kAnswerCard, State::kNone);
   }
 }
 
