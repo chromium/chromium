@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {ConnectionStateType, CrosNetworkType, DiagnosticsNetworkIconElement, networkToNetworkStateAdapter} from 'chrome://diagnostics/diagnostics_network_icon.js';
 import {fakeCellularDisabledNetwork, fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeEthernetNetwork, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -11,7 +13,7 @@ import {isVisible} from '../../test_util.js';
 
 import {assertTextContains} from './diagnostics_test_utils.js';
 
-export function diagnosticsNetworkIconTestSuite() {
+suite('diagnosticsNetworkIconTestSuite', function() {
   /** @type {?DiagnosticsNetworkIconElement} */
   let diagnosticsNetworkIconElement = null;
 
@@ -212,4 +214,4 @@ export function diagnosticsNetworkIconTestSuite() {
               'Ethernet network, connecting', getConnectingIcon().alt);
         });
   });
-}
+});

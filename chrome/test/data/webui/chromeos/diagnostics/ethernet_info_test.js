@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/ethernet_info.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {fakeEthernetNetwork} from 'chrome://diagnostics/fake_data.js';
 import {AuthenticationType, EthernetStateProperties, Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
@@ -12,7 +13,7 @@ import {assertFalse, assertTrue} from '../../chai_assert.js';
 
 import {assertDataPointHasExpectedHeaderAndValue, assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
 
-export function ethernetInfoTestSuite() {
+suite('ethernetInfoTestSuite', function() {
   /** @type {?EthernetInfoElement} */
   let ethernetInfoElement = null;
 
@@ -94,4 +95,4 @@ export function ethernetInfoTestSuite() {
               expectedValue);
         });
   });
-}
+});

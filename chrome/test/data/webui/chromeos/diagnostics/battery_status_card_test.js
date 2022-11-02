@@ -4,6 +4,7 @@
 
 import 'chrome://diagnostics/battery_status_card.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {BatteryStatusCardElement} from 'chrome://diagnostics/battery_status_card.js';
 import {getDiagnosticsIcon} from 'chrome://diagnostics/diagnostics_utils.js';
@@ -25,7 +26,7 @@ import * as dx_utils from './diagnostics_test_utils.js';
 
 const BATTERY_ICON_PREFIX = 'battery-';
 
-export function batteryStatusCardTestSuite() {
+suite('batteryStatusCardTestSuite', function() {
   /** @type {?BatteryStatusCardElement} */
   let batteryStatusElement = null;
 
@@ -263,4 +264,4 @@ export function batteryStatusCardTestSuite() {
               batteryStatusElement.batteryIcon);
         });
   });
-}
+});

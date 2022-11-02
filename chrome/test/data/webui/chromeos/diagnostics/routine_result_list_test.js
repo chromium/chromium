@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/routine_result_list.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
@@ -14,7 +15,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-export function routineResultListTestSuite() {
+suite('routineResultListTestSuite', function() {
   /** @type {?RoutineResultListElement} */
   let routineResultListElement = null;
 
@@ -211,4 +212,4 @@ export function routineResultListTestSuite() {
           });
     });
   });
-}
+});

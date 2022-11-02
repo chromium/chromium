@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/routine_result_entry.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
@@ -17,7 +18,7 @@ import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-export function routineResultEntryTestSuite() {
+suite('routineResultEntryTestSuite', function() {
   /** @type {?RoutineResultEntryElement} */
   let routineResultEntryElement = null;
 
@@ -320,4 +321,4 @@ export function routineResultEntryTestSuite() {
           assertEquals(expectedAnnounceText, getAnnoucedText());
         });
   });
-}
+});

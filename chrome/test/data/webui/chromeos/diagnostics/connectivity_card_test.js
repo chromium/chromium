@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/connectivity_card.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
@@ -21,7 +22,7 @@ import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-export function connectivityCardTestSuite() {
+suite('connectivityCardTestSuite', function() {
   /** @type {?ConnectivityCardElement} */
   let connectivityCardElement = null;
 
@@ -225,4 +226,4 @@ export function connectivityCardTestSuite() {
                 TestSuiteStatus.RUNNING,
                 connectivityCardElement.testSuiteStatus));
   });
-}
+});

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/cellular_info.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {getLockType, getSignalStrength} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeCellularNetwork} from 'chrome://diagnostics/fake_data.js';
@@ -12,7 +13,7 @@ import {assertFalse, assertTrue} from '../../chai_assert.js';
 
 import {assertDataPointHasExpectedHeaderAndValue} from './diagnostics_test_utils.js';
 
-export function cellularInfoTestSuite() {
+suite('cellularInfoTestSuite', function() {
   /** @type {?CellularInfoElement} */
   let cellularInfoElement = null;
 
@@ -170,4 +171,4 @@ export function cellularInfoTestSuite() {
                 cellularInfoElement, '#technology',
                 cellularInfoElement.i18n('networkTechnologyLabel'), ''));
   });
-}
+});

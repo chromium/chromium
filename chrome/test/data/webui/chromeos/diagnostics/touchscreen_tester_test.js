@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {DialogType, SCREEN_MAX_LENGTH, TouchEventType} from 'chrome://diagnostics/touchscreen_tester.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertTrue} from '../../chai_assert.js';
 import {MockController} from '../../mock_controller.js';
 
-export function touchscreenTesterTestSuite() {
+suite('touchscreenTesterTestSuite', function() {
   /** @type {?TouchscreenTesterElement} */
   let touchscreenTesterElement = null;
 
@@ -249,4 +251,4 @@ export function touchscreenTesterTestSuite() {
       mockController.verifyMocks();
     }
   });
-}
+});

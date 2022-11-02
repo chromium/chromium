@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://diagnostics/strings.m.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {CanvasDrawingProvider} from 'chrome://diagnostics/drawing_provider.js';
 import {constructRgba, DESTINATION_OVER, LINE_CAP, LINE_WIDTH, lookupCssVariableValue, MARK_COLOR, MARK_OPACITY, MARK_RADIUS, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider_utils.js';
 
@@ -46,7 +49,7 @@ class FakeCanvasCtx {
   }
 }
 
-export function drawingProviderTestSuite() {
+suite('drawingProviderTestSuite', function() {
   /** @type {{createFunctionMock: Function, reset: Function}} */
   let mockController;
 
@@ -128,4 +131,4 @@ export function drawingProviderTestSuite() {
     assertEquals(
         DESTINATION_OVER, drawingProvider.getGlobalCompositeOperation());
   });
-}
+});

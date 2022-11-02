@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://diagnostics/strings.m.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {InputCardElement, InputCardType} from 'chrome://diagnostics/input_card.js';
 import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -45,7 +48,7 @@ const keyboards = [
   },
 ];
 
-export function inputCardTestSuite() {
+suite('inputCardTestSuite', function() {
   /** @type {?InputCardElement} */
   let inputCardElement = null;
 
@@ -105,4 +108,4 @@ export function inputCardTestSuite() {
     await flushTasks();
     assertTrue(listenerCalled);
   });
-}
+});

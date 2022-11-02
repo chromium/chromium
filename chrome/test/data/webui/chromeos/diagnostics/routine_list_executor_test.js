@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor} from 'chrome://diagnostics/routine_list_executor.js';
 import {PowerRoutineResult, RoutineResultInfo, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 
-export function fakeRoutineListExecutorTestSuite() {
+suite('fakeRoutineListExecutorTestSuite', function() {
   /** @type {?FakeSystemRoutineController} */
   let controller = null;
 
@@ -145,4 +147,4 @@ export function fakeRoutineListExecutorTestSuite() {
 
     return runRoutinesAndAssertResults(routines);
   });
-}
+});

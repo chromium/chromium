@@ -4,6 +4,7 @@
 
 import 'chrome://diagnostics/memory_card.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {convertKibToGibDecimalString} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeMemoryUsage, fakeMemoryUsageLowAvailableMemory} from 'chrome://diagnostics/fake_data.js';
@@ -20,7 +21,7 @@ import {isChildVisible, isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-export function memoryCardTestSuite() {
+suite('memoryCardTestSuite', function() {
   /** @type {?MemoryCardElement} */
   let memoryElement = null;
 
@@ -128,4 +129,4 @@ export function memoryCardTestSuite() {
           routineSectionElement.shadowRoot.querySelector('#messageIcon'))));
     });
   });
-}
+});

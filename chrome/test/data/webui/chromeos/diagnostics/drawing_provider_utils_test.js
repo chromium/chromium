@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://diagnostics/strings.m.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {constructRgba, getTrailOpacityFromPressure, lookupCssVariableValue, MARK_COLOR, MARK_OPACITY, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider_utils.js';
 
 import {assertEquals} from '../../chai_assert.js';
@@ -19,7 +22,7 @@ const mockGetPropertyValue = (valName) => {
   }
 };
 
-export function drawingProviderUtilsTestSuite() {
+suite('drawingProviderUtilsTestSuite', function() {
   /** @type {{createFunctionMock: Function, reset: Function}} */
   let mockController;
 
@@ -65,4 +68,4 @@ export function drawingProviderUtilsTestSuite() {
       assertEquals(expectedRgba[i], constructRgba(rgbList[i], opacityList[i]));
     }
   });
-}
+});

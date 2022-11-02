@@ -4,6 +4,7 @@
 
 import 'chrome://diagnostics/routine_section.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {createRoutine} from 'chrome://diagnostics/diagnostics_utils.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
@@ -23,7 +24,7 @@ import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-export function routineSectionTestSuite() {
+suite('routineSectionTestSuite', function() {
   /** @type {?RoutineSectionElement} */
   let routineSectionElement = null;
 
@@ -1367,4 +1368,4 @@ export function routineSectionTestSuite() {
           assertEquals('', getAnnouncedText());
         });
   });
-}
+});

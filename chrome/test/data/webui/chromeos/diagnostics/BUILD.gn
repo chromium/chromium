@@ -21,7 +21,6 @@ js_type_check("closure_compile") {
     ":cpu_card_test",
     ":data_point_test",
     ":diagnostics_app_test",
-    ":diagnostics_app_unified_test",
     ":diagnostics_sticky_banner_test",
     ":diagnostics_test_utils",
     ":diagnostics_utils_test",
@@ -145,11 +144,6 @@ js_library("diagnostics_sticky_banner_test") {
     "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_sticky_banner",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("diagnostics_app_unified_test") {
-  deps = []
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 

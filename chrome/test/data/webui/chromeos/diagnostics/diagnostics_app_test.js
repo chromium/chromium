@@ -4,6 +4,7 @@
 
 import 'chrome://diagnostics/diagnostics_app.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
@@ -21,7 +22,7 @@ import {isVisible} from '../../test_util.js';
 import * as dx_utils from './diagnostics_test_utils.js';
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 
-export function appTestSuite() {
+suite('appTestSuite', function() {
   /** @type {?DiagnosticsAppElement} */
   let page = null;
 
@@ -177,7 +178,8 @@ export function appTestSuite() {
     return flushTasks();
   }
 
-  if (window.isNetworkEnabled || window.isInputEnabled) {
+  if (window.loadTimeData.getBoolean('isNetworkingEnabled') ||
+      window.loadTimeData.getBoolean('isInputEnabled')) {
     test('SystemPagePopulated', () => {
       return initializeDiagnosticsApp(
                  fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
@@ -232,4 +234,4 @@ export function appTestSuite() {
           });
     });
   }
-}
+});

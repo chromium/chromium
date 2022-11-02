@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/cpu_card.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {CpuCardElement} from 'chrome://diagnostics/cpu_card.js';
 import {fakeCpuUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
@@ -19,7 +20,7 @@ import {isChildVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-export function cpuCardTestSuite() {
+suite('cpuCardTestSuite', function() {
   /** @type {?CpuCardElement} */
   let cpuElement = null;
 
@@ -148,4 +149,4 @@ export function cpuCardTestSuite() {
               dx_utils.getDataPoint(cpuElement, '#cpuSpeed').tooltipText, '');
         });
   });
-}
+});

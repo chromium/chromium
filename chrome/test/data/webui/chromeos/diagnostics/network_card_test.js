@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/network_card.js';
+import 'chrome://diagnostics/strings.m.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {fakeCellularDisabledNetwork, fakeCellularDisconnectedNetwork, fakeCellularNetwork, fakeCellularWithIpConfigNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers, fakeWifiNetworkNoIpAddress} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
@@ -17,7 +19,7 @@ import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-export function networkCardTestSuite() {
+suite('networkCardTestSuite', function() {
   /** @type {?NetworkCardElement} */
   let networkCardElement = null;
 
@@ -398,4 +400,4 @@ export function networkCardTestSuite() {
           getTroubleshootingLinkText());
     });
   });
-}
+});

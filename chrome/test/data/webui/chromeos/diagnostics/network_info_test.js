@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/network_info.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
@@ -14,7 +15,7 @@ import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-export function networkInfoTestSuite() {
+suite('networkInfoTestSuite', function() {
   /** @type {?NetworkInfoElement} */
   let networkInfoElement = null;
 
@@ -86,4 +87,4 @@ export function networkInfoTestSuite() {
               isVisible(dx_utils.getCellularInfoElement(networkInfoElement)));
         });
   });
-}
+});

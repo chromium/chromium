@@ -9,11 +9,13 @@
  * To run all tests in a single instance (default, faster):
  * `browser_tests --gtest_filter=DiagnosticsApp*``
  *
- * To run each test in a new instance:
- * `browser_tests --run-manual --gtest_filter=DiagnosticsApp.MANUAL_*``
- *
  * To run a single test suite, such as 'CpuCard':
- * `browser_tests --run-manual --gtest_filter=DiagnosticsApp.MANUAL_CpuCard`
+ * `browser_tests
+ * --gtest_filter=DiagnosticsApp_CpuCard.All`
+ *
+ * To run a single test suite, such as 'TouchscreenTester':
+ * `browser_tests
+ * --gtest_filter=DiagnosticsAppWithInput_TouchscreenTester.All`
  *
  */
 
@@ -22,42 +24,12 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-const dxTestSuites = 'chromeos/diagnostics/diagnostics_app_unified_test.js';
-const diagnosticsUrl =
-    `chrome://diagnostics/test_loader.html?module=${dxTestSuites}&host=test`;
-
-this.DiagnosticsApp = class extends PolymerTest {
-  /** @override */
-  get browsePreload() {
-    return diagnosticsUrl;
-  }
-
+const DiagnosticsApp = class extends PolymerTest {
   /** @override */
   get featureList() {}
 };
 
-this.DiagnosticsAppWithNetwork = class extends PolymerTest {
-  /** @override */
-  get browsePreload() {
-    return diagnosticsUrl;
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'chromeos::features::kEnableNetworkingInDiagnosticsApp',
-      ],
-    };
-  }
-};
-
-this.DiagnosticsAppWithInput = class extends PolymerTest {
-  /** @override */
-  get browsePreload() {
-    return diagnosticsUrl;
-  }
-
+const DiagnosticsAppWithInput = class extends PolymerTest {
   /** @override */
   get featureList() {
     return {
@@ -70,82 +42,64 @@ this.DiagnosticsAppWithInput = class extends PolymerTest {
   }
 };
 
-// List of names of suites in unified test to register for individual debugging.
-// You must register all suites in unified test here as well for consistency,
-// although technically is not necessary.
-const debug_suites_list = [
-  'App',
-  'AppForInputHiding',
-  'BatteryStatusCard',
-  'CellularInfo',
-  'ConnectivityCard',
-  'CpuCard',
-  'DataPoint',
-  'DiagnosticsNetworkIcon',
-  'DiagnosticsStickyBanner',
-  'DiagnosticsUtils',
-  'DrawingProvider',
-  'DrawingProviderUtils',
-  'EthernetInfo',
-  'FakeMojoInterface',
-  'FakeNetworkHealthProvider',
-  'FakeSystemDataProvider',
-  'FakeSystemRoutineContoller',
-  'FrequencyChannelUtils',
-  'InputCard',
-  'InputList',
-  'IpConfigInfoDrawer',
-  'KeyboardTester',
-  'MemoryCard',
-  'NetworkCard',
-  'NetworkInfo',
-  'NetworkList',
-  'NetworkTroubleshooting',
-  'OverviewCard',
-  'PercentBarChart',
-  'RealtimeCpuChart',
-  'RoutineGroup',
-  'RoutineListExecutor',
-  'RoutineResultEntry',
-  'RoutineResultList',
-  'RoutineSection',
-  'SystemPage',
-  'TextBadge',
-  'TouchscreenTester',
-  'WifiInfo',
+const tests = [
+  ['App', 'diagnostics_app_test.js'],
+  ['AppForInputHiding', 'diagnostics_app_input_hiding_test.js', 'Input'],
+  ['BatteryStatusCard', 'battery_status_card_test.js'],
+  ['CellularInfo', 'cellular_info_test.js'],
+  ['ConnectivityCard', 'connectivity_card_test.js'],
+  ['CpuCard', 'cpu_card_test.js'],
+  ['DataPoint', 'data_point_test.js'],
+  ['DiagnosticsNetworkIcon', 'diagnostics_network_icon_test.js'],
+  ['DiagnosticsStickyBanner', 'diagnostics_sticky_banner_test.js'],
+  ['DiagnosticsUtils', 'diagnostics_utils_test.js'],
+  ['DrawingProvider', 'drawing_provider_test.js'],
+  ['DrawingProviderUtils', 'drawing_provider_utils_test.js'],
+  ['EthernetInfo', 'ethernet_info_test.js'],
+  ['FakeMojoInterface', 'mojo_interface_provider_test.js'],
+  ['FakeNetworkHealthProvider', 'fake_network_health_provider_test.js'],
+  ['FakeSystemDataProvider', 'fake_system_data_provider_test.js'],
+  ['FakeSystemRoutineContoller', 'fake_system_routine_controller_test.js'],
+  ['FrequencyChannelUtils', 'frequency_channel_utils_test.js'],
+  ['InputCard', 'input_card_test.js', 'Input'],
+  ['InputList', 'input_list_test.js', 'Input'],
+  ['IpConfigInfoDrawer', 'ip_config_info_drawer_test.js'],
+  ['KeyboardTester', 'keyboard_tester_test.js', 'Input', 'DISABLED_All'],
+  ['MemoryCard', 'memory_card_test.js'],
+  ['NetworkCard', 'network_card_test.js', undefined, 'DISABLED_All'],
+  ['NetworkInfo', 'network_info_test.js'],
+  ['NetworkList', 'network_list_test.js'],
+  ['NetworkTroubleshooting', 'network_troubleshooting_test.js'],
+  ['OverviewCard', 'overview_card_test.js'],
+  ['PercentBarChart', 'percent_bar_chart_test.js'],
+  ['RealtimeCpuChart', 'realtime_cpu_chart_test.js'],
+  ['RoutineGroup', 'routine_group_test.js'],
+  ['RoutineListExecutor', 'routine_list_executor_test.js'],
+  ['RoutineResultEntry', 'routine_result_entry_test.js'],
+  ['RoutineResultList', 'routine_result_list_test.js'],
+  ['RoutineSection', 'routine_section_test.js'],
+  ['SystemPage', 'system_page_test.js', undefined, 'DISABLED_All'],
+  ['TextBadge', 'text_badge_test.js'],
+  ['TouchscreenTester', 'touchscreen_tester_test.js', 'Input'],
+  ['WifiInfo', 'wifi_info_test.js'],
 ];
 
-// Flaky: https://crbug.com/1372958
-TEST_F('DiagnosticsApp', 'DISABLED_BrowserTest', function() {
-  assertDeepEquals(
-      debug_suites_list, Object.keys(test_suites_list),
-      'List of registered tests suites and debug suites do not match.\n' +
-          'Did you forget to add your test in debug_suites_list?');
+tests.forEach(([testName, module, condition, caseName]) => {
+  const className =
+      `DiagnosticsApp${condition ? `with${condition}` : ''}_${testName}`;
 
-  mocha.run();
+  let classToExtend = DiagnosticsApp;
+  if (condition === 'Input') {
+    classToExtend = DiagnosticsAppWithInput;
+  }
+
+  this[className] = class extends classToExtend {
+    /** @override */
+    get browsePreload() {
+      return `chrome://diagnostics/test_loader.html` +
+          `?module=chromeos/diagnostics/${module}&host=test`;
+    }
+  }
+
+  TEST_F(className, caseName || 'All', () => mocha.run());
 });
-
-// Flaky: https://crbug.com/1372958
-TEST_F('DiagnosticsAppWithNetwork', 'DISABLED_BrowserTest', function() {
-  mocha.run();
-});
-
-// Flaky: https://crbug.com/1372958
-TEST_F('DiagnosticsAppWithInput', 'DISABLED_BrowserTest', function() {
-  mocha.run();
-});
-
-// Register each suite listed as individual tests for debugging purposes.
-for (const suiteName of debug_suites_list) {
-  TEST_F('DiagnosticsApp', `MANUAL_${suiteName}`, function() {
-    runMochaSuite(suiteName);
-  });
-
-  TEST_F('DiagnosticsAppWithNetwork', `MANUAL_${suiteName}`, function() {
-    runMochaSuite(suiteName);
-  });
-
-  TEST_F('DiagnosticsAppWithInput', `MANUAL_${suiteName}`, function() {
-    runMochaSuite(suiteName);
-  });
-}
