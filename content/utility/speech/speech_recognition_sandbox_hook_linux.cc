@@ -38,7 +38,7 @@ std::vector<BrokerFilePermission> GetSodaFilePermissions() {
         language_packs_dir.AsEndingWithSeparator().value()));
   }
 
-#if BUILDFLAG(ENABLE_SODA)
+#if BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
   auto test_resources_dir = GetSodaTestResourcesDirectory();
   if (!test_resources_dir.empty()) {
     permissions.push_back(BrokerFilePermission::ReadOnlyRecursive(
@@ -53,7 +53,7 @@ std::vector<BrokerFilePermission> GetSodaFilePermissions() {
 
 bool SpeechRecognitionPreSandboxHook(
     sandbox::policy::SandboxLinux::Options options) {
-#if BUILDFLAG(ENABLE_SODA)
+#if BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
   base::FilePath test_binary_path = GetSodaTestBinaryPath();
   DVLOG(0) << "SODA test binary path: " << test_binary_path.value().c_str();
   DCHECK(base::PathExists(test_binary_path));

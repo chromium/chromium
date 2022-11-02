@@ -2656,7 +2656,7 @@ if (!is_android) {
       data_deps += [ "//chrome:packed_resources" ]
     }
 
-    if (enable_soda) {
+    if (enable_soda_integration_tests) {
       assert(enable_speech_service)
       sources +=
           [ "../browser/speech/speech_recognition_service_browsertest.cc" ]
@@ -6391,7 +6391,7 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_soda) {
+  if (enable_soda_integration_tests) {
     deps += [ "//chrome/services/speech/soda:unit_tests" ]
   }
 

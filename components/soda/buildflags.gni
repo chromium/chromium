@@ -4,5 +4,9 @@
 
 declare_args() {
   # Used to enable the Speech On-Device API (SODA) in unit and browser tests.
-  enable_soda = false
+  # This affects production code on some platforms and should not be enabled in
+  # official builds.
+  enable_soda_integration_tests = false
 }
+
+assert(!is_official_build || !enable_soda_integration_tests)

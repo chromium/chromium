@@ -41,7 +41,7 @@ source_set("soda") {
 source_set("unit_tests") {
   testonly = true
 
-  if (enable_soda) {
+  if (enable_soda_integration_tests) {
     sources = [ "soda_client_unittest.cc" ]
 
     if (is_mac) {
