@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "ui/gfx/native_widget_types.h"
 
 // Avoid including this header file directly. Instead:
@@ -42,7 +42,7 @@ class AppServiceProxy : public AppServiceProxyBase {
 
   // Used for setting Run on OS Login modes.
   void SetRunOnOsLoginMode(const std::string& app_id,
-                           apps::mojom::RunOnOsLoginMode run_on_os_login_mode);
+                           apps::RunOnOsLoginMode run_on_os_login_mode);
 
   base::WeakPtr<AppServiceProxy> GetWeakPtr();
 

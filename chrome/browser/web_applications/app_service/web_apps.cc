@@ -274,12 +274,6 @@ void WebApps::SetWindowMode(const std::string& app_id,
       app_id, apps::ConvertMojomWindowModeToWindowMode(window_mode));
 }
 
-void WebApps::SetRunOnOsLoginMode(
-    const std::string& app_id,
-    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
-  publisher_helper().SetRunOnOsLoginMode(app_id, run_on_os_login_mode);
-}
-
 void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (!is_ready_) {
     return;

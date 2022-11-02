@@ -71,6 +71,7 @@ class SystemWebAppManager;
 
 namespace apps {
 struct AppLaunchParams;
+enum class RunOnOsLoginMode;
 }
 
 namespace base {
@@ -96,10 +97,8 @@ void UninstallImpl(WebAppProvider* provider,
                    apps::UninstallSource uninstall_source,
                    gfx::NativeWindow parent_window);
 
-// Converts RunOnOsLoginMode from apps::mojom::RunOnOsLoginMode to
-// RunOnOsLoginMode.
 RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
-    apps::mojom::RunOnOsLoginMode login_mode);
+    apps::RunOnOsLoginMode login_mode);
 
 class WebAppPublisherHelper : public AppRegistrarObserver,
                               public WebAppInstallManagerObserver,
@@ -244,7 +243,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void SetWindowMode(const std::string& app_id, apps::WindowMode window_mode);
 
   void SetRunOnOsLoginMode(const std::string& app_id,
-                           apps::mojom::RunOnOsLoginMode run_on_os_login_mode);
+                           apps::RunOnOsLoginMode run_on_os_login_mode);
 
   // Converts |display_mode| to a |window_mode|.
   apps::WindowMode ConvertDisplayModeToWindowMode(

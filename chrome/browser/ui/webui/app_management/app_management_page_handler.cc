@@ -361,8 +361,7 @@ void AppManagementPageHandler::SetRunOnOsLoginMode(
   NOTREACHED();
 #else
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetRunOnOsLoginMode(
-      app_id, apps::ConvertRunOnOsLoginModeToMojomRunOnOsLoginMode(
-                  run_on_os_login_mode));
+      app_id, run_on_os_login_mode);
 #endif
 }
 

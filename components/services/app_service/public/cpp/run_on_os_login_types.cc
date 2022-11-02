@@ -33,15 +33,6 @@ apps::mojom::RunOnOsLoginPtr ConvertRunOnOsLoginToMojomRunOnOsLogin(
   return run_on_os_login_mojom;
 }
 
-RunOnOsLoginPtr ConvertMojomRunOnOsLoginToRunOnOsLogin(
-    const apps::mojom::RunOnOsLoginPtr& run_on_os_login) {
-  DCHECK(run_on_os_login);
-  return std::make_unique<RunOnOsLogin>(
-      ConvertMojomRunOnOsLoginModeToRunOnOsLoginMode(
-          run_on_os_login->login_mode),
-      run_on_os_login->is_managed);
-}
-
 apps::mojom::RunOnOsLoginMode ConvertRunOnOsLoginModeToMojomRunOnOsLoginMode(
     RunOnOsLoginMode login_mode) {
   switch (login_mode) {
@@ -54,15 +45,4 @@ apps::mojom::RunOnOsLoginMode ConvertRunOnOsLoginModeToMojomRunOnOsLoginMode(
   }
 }
 
-RunOnOsLoginMode ConvertMojomRunOnOsLoginModeToRunOnOsLoginMode(
-    apps::mojom::RunOnOsLoginMode login_mode) {
-  switch (login_mode) {
-    case apps::mojom::RunOnOsLoginMode::kUnknown:
-      return RunOnOsLoginMode::kUnknown;
-    case apps::mojom::RunOnOsLoginMode::kNotRun:
-      return RunOnOsLoginMode::kNotRun;
-    case apps::mojom::RunOnOsLoginMode::kWindowed:
-      return RunOnOsLoginMode::kWindowed;
-  }
-}
 }  // namespace apps

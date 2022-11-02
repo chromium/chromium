@@ -140,9 +140,6 @@ class WebApps : public apps::PublisherBase,
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
-  void SetRunOnOsLoginMode(
-      const std::string& app_id,
-      apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
 
   // WebAppPublisherHelper::Delegate overrides.
   void PublishWebApps(std::vector<apps::AppPtr> apps) override;

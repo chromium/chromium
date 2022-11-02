@@ -424,6 +424,18 @@ WindowMode ConvertMojomWindowModeToWindowMode(
   }
 }
 
+apps::RunOnOsLoginMode ConvertMojomRunOnOsLoginModeToRunOnOsLoginMode(
+    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+  switch (run_on_os_login_mode) {
+    case apps::mojom::RunOnOsLoginMode::kUnknown:
+      return apps::RunOnOsLoginMode::kUnknown;
+    case apps::mojom::RunOnOsLoginMode::kWindowed:
+      return apps::RunOnOsLoginMode::kWindowed;
+    case apps::mojom::RunOnOsLoginMode::kNotRun:
+      return apps::RunOnOsLoginMode::kNotRun;
+  }
+}
+
 apps::mojom::WindowMode ConvertWindowModeToMojomWindowMode(
     WindowMode window_mode) {
   switch (window_mode) {

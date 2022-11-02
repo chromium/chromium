@@ -375,16 +375,16 @@ void UninstallImpl(WebAppProvider* provider,
 }
 
 RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
-    apps::mojom::RunOnOsLoginMode login_mode) {
+    apps::RunOnOsLoginMode login_mode) {
   RunOnOsLoginMode web_app_constant_login_mode = RunOnOsLoginMode::kMinValue;
   switch (login_mode) {
-    case apps::mojom::RunOnOsLoginMode::kWindowed:
+    case apps::RunOnOsLoginMode::kWindowed:
       web_app_constant_login_mode = RunOnOsLoginMode::kWindowed;
       break;
-    case apps::mojom::RunOnOsLoginMode::kNotRun:
+    case apps::RunOnOsLoginMode::kNotRun:
       web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
       break;
-    case apps::mojom::RunOnOsLoginMode::kUnknown:
+    case apps::RunOnOsLoginMode::kUnknown:
       web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
       break;
   }
@@ -1269,7 +1269,7 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
 
 void WebAppPublisherHelper::SetRunOnOsLoginMode(
     const std::string& app_id,
-    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+    apps::RunOnOsLoginMode run_on_os_login_mode) {
   provider_->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
           &provider_->registrar(), &provider_->os_integration_manager(),

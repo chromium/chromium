@@ -78,10 +78,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
   void SetWindowMode(apps::mojom::AppType app_type,
                      const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
-  void SetRunOnOsLoginMode(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
 
  private:
   void OnPublisherDisconnected(apps::mojom::AppType app_type);

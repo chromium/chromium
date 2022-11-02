@@ -47,7 +47,7 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
 
 void AppServiceProxy::SetRunOnOsLoginMode(
     const std::string& app_id,
-    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+    apps::RunOnOsLoginMode run_on_os_login_mode) {
   auto app_type = app_registry_cache_.GetAppType(app_id);
   if (app_type == apps::AppType::kWeb) {
     web_app::WebAppProvider* provider =

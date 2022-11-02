@@ -178,17 +178,6 @@ void AppServiceMojomImpl::SetWindowMode(apps::mojom::AppType app_type,
   iter->second->SetWindowMode(app_id, window_mode);
 }
 
-void AppServiceMojomImpl::SetRunOnOsLoginMode(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-  iter->second->SetRunOnOsLoginMode(app_id, run_on_os_login_mode);
-}
-
 void AppServiceMojomImpl::OnPublisherDisconnected(
     apps::mojom::AppType app_type) {
   publishers_.erase(app_type);
