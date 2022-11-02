@@ -11,7 +11,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
@@ -58,20 +57,8 @@ public class ChromeBasePreference extends Preference {
 
         if (SettingsFeatureList.isEnabled(
                     SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
-            // Use {@code chrome_base_preference.xml} as the preference layout if a custom layout
-            // has not been set. That situation happens for example in the Sync and Google service
-            // preferences in the Main Settings menu, that define their own layouts and use this
-            // class to leverage icon tinting. Also, those preferences don't need to be managed, so
-            // there is no need to change their layouts to include the managed disclaimer.
-            final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Preference);
-
-            // Take the custom layout defined via either {@code Preference_layout} or
-            // {@code Preference_android_layout}. If neither is set, use
-            // {@code chrome_base_preference} as fallback.
-            @LayoutRes
-            int fallback = a.getResourceId(
-                    R.styleable.Preference_android_layout, R.layout.chrome_base_preference);
-            setLayoutResource(a.getResourceId(R.styleable.Preference_layout, fallback));
+            setLayoutResource(
+                    ManagedPreferencesUtils.getLayoutResourceForPreference(context, attrs));
         }
 
         setSingleLineTitle(false);
@@ -99,14 +86,7 @@ public class ChromeBasePreference extends Preference {
             icon.setColorFilter(mIconTint.getDefaultColor(), PorterDuff.Mode.SRC_IN);
         }
 
-        if (SettingsFeatureList.isEnabled(
-                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
-            ManagedPreferencesUtils.onBindViewToChromeBasePreference(
-                    mManagedPrefDelegate, this, holder.itemView);
-        } else {
-            ManagedPreferencesUtils.onBindViewToPreference(
-                    mManagedPrefDelegate, this, holder.itemView);
-        }
+        ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, holder.itemView);
 
         if (mDividerAllowedAbove != null) {
             holder.setDividerAllowedAbove(mDividerAllowedAbove);

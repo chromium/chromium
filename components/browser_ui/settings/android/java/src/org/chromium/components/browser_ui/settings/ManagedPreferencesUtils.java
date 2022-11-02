@@ -5,13 +5,16 @@
 package org.chromium.components.browser_ui.settings;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -119,13 +122,13 @@ public class ManagedPreferencesUtils {
      *
      * @param delegate The delegate that controls whether the preference is managed. May be null,
      *         then this method does nothing.
-     * @param preference The Preference that is being initialized
+     * @param preference The Preference that is being initialized.
      */
     public static void initPreference(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
         if (delegate == null) return;
 
-        if (shouldApplyManagedIcon(delegate, preference)) {
+        if (!(preference instanceof ChromeImageViewPreference)) {
             preference.setIcon(getManagedIconDrawable(delegate, preference));
         }
 
@@ -156,6 +159,14 @@ public class ManagedPreferencesUtils {
             @Nullable ManagedPreferenceDelegate delegate, Preference preference, View view) {
         if (delegate == null) return;
 
+        // If disclaimer highlighting is enabled, perform binding taking into account that a
+        // disclaimer view may be available.
+        if (SettingsFeatureList.isEnabled(
+                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
+            ManagedPreferencesUtils.onBindViewToChromeManagedPreference(delegate, preference, view);
+            return;
+        }
+
         if (delegate.isPreferenceClickDisabledByPolicy(preference)) {
             ViewUtils.setEnabledRecursive(view, false);
         }
@@ -177,11 +188,11 @@ public class ManagedPreferencesUtils {
      * @param preference The ChromeBasePreference that owns the view.
      * @param view The View that was bound to the ChromeBasePreference.
      */
-    public static void onBindViewToChromeBasePreference(
-            @Nullable ManagedPreferenceDelegate delegate, ChromeBasePreference preference,
-            View view) {
+    private static void onBindViewToChromeManagedPreference(
+            @Nullable ManagedPreferenceDelegate delegate, Preference preference, View view) {
         assert SettingsFeatureList.isEnabled(
                 SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID);
+        assert delegate != null;
         if (delegate == null) return;
 
         if (delegate.isPreferenceClickDisabledByPolicy(preference)) {
@@ -202,6 +213,8 @@ public class ManagedPreferencesUtils {
         //                          by a custodian.
         if (view.findViewById(R.id.managed_disclaimer_text) != null
                 && delegate.isPreferenceControlledByPolicy(preference)) {
+            // Hide the icon since it will be shown on the highlighted managed disclaimer.
+            hideManagedIcon(preference, view);
             setSummaryWithHighlightedManagedInfo(preference.getContext(), descriptionText, view);
         } else {
             CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
@@ -277,6 +290,29 @@ public class ManagedPreferencesUtils {
     }
 
     /**
+     * Use {@code chrome_managed_preference} as the preference layout if a custom layout has not
+     * been set. That situation happens for example in the Sync and Google service preferences in
+     * the Main Settings menu, that define their own layouts and use this class to leverage icon
+     * tinting. Also, those preferences don't need to be managed, so there is no need to change
+     * their layouts to include the managed disclaimer.
+     * @param context The context for a given preference.
+     * @param attrs The attributes of the XML tag that is inflating the view.
+     * @return The layout resource to be used by a managed preference.
+     */
+    public static @LayoutRes int getLayoutResourceForPreference(
+            Context context, AttributeSet attrs) {
+        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Preference);
+
+        // Take the custom layout defined via either {@code Preference_layout} or
+        // {@code Preference_android_layout}. If neither is set, use
+        // {@code chrome_managed_preference} as fallback.
+        @LayoutRes
+        int fallback = a.getResourceId(
+                R.styleable.Preference_android_layout, R.layout.chrome_managed_preference);
+        return a.getResourceId(R.styleable.Preference_layout, fallback);
+    }
+
+    /**
      * @param descriptionText A description or a state for a given preference.
      * @param managedDisclaimerText The text the indicates that a preference is managed.
      * @param view The view corresponding to a given preference.
@@ -317,6 +353,24 @@ public class ManagedPreferencesUtils {
         }
 
         showManagedDisclaimerView(view);
+    }
+
+    /**
+     * Hide the managed icon, to be used when the preference defines a custom layout and is managed
+     * by policy. In that case, the icon will be shown on the managed disclaimer view.
+     * @param preference The {@link Preference} that is being show to the user for a given
+     *         preference.
+     * @param view The view corresponding to a given preference.
+     */
+    private static void hideManagedIcon(Preference preference, View view) {
+        final ImageView imageView = (ImageView) view.findViewById(android.R.id.icon);
+        if (imageView != null) {
+            imageView.setVisibility(View.GONE);
+        }
+        final View imageFrame = view.findViewById(R.id.icon_frame);
+        if (imageFrame != null) {
+            imageFrame.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -395,29 +449,5 @@ public class ManagedPreferencesUtils {
                 != null : "Missing managed disclaimer view; custom layout for a new preference?";
         managedDisclaimerView.setVisibility(View.VISIBLE);
         managedDisclaimerView.setEnabled(true);
-    }
-
-    /**
-     * @param delegate The delegate that controls whether the preference is managed. May be null,
-     *         then this method does nothing.
-     * @param preference The Preference that is being initialized
-     * @return Whether the preference's {@code icon} view should show a special managed icon.
-     */
-    private static boolean shouldApplyManagedIcon(
-            @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
-        // Never replace the icon for {@link ChromeImageViewPreference}.
-        if (preference instanceof ChromeImageViewPreference) return false;
-
-        // Preferences managed by a custodian use the legacy UI that doesn't highlight the managed
-        // disclaimer, and thus should show the managed icon beside the title and summary.
-        // TODO(crbug.com/1378293): Apply highlighted managed disclaimer for preferences managed
-        //                          by a custodian.
-        if (delegate.isPreferenceControlledByCustodian(preference)) return true;
-
-        // For preferences controlled by policy, show the managed icon beside the title/summary
-        // only for the legacy UI. For the UI that highlights managed disclaimers, the icon will
-        // be shown next to the disclaimer text, hide it from the preference's view.
-        return !SettingsFeatureList.isEnabled(
-                SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID);
     }
 }

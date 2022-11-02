@@ -73,7 +73,7 @@ android_resources("java_resources") {
     "java/res/layout/button_preference_button.xml",
     "java/res/layout/button_preference_layout.xml",
     "java/res/layout/checkable_image_view_widget.xml",
-    "java/res/layout/chrome_base_preference.xml",
+    "java/res/layout/chrome_managed_preference.xml",
     "java/res/layout/clickable_spans_text_message_preference_layout.xml",
     "java/res/layout/image_button_widget.xml",
     "java/res/layout/long_summary_text_message_preference.xml",
@@ -93,12 +93,16 @@ android_resources("java_resources") {
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
-    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
-    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",
-    "widget/java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtilsTest.java",
+    "widget/javatests/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
+    "widget/javatests/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",
+    "widget/javatests/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreferenceTest.java",
+    "widget/javatests/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtilsTest.java",
+    "widget/javatests/src/org/chromium/components/browser_ui/settings/Matchers.java",
   ]
   deps = [
     ":java",
+    ":java_resources",
+    ":java_test_resources",
     ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -113,17 +117,19 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
+  resources_package = "org.chromium.components.browser_ui.settings.test"
 }
 
 android_library("test_support_java") {
   testonly = true
 
   sources = [
-    "java/src/org/chromium/components/browser_ui/settings/BlankUiTestActivitySettingsTestRule.java",
-    "widget/java/src/org/chromium/components/browser_ui/settings/PlaceholderSettingsForTest.java",
+    "widget/javatests/src/org/chromium/components/browser_ui/settings/BlankUiTestActivitySettingsTestRule.java",
+    "widget/javatests/src/org/chromium/components/browser_ui/settings/PlaceholderSettingsForTest.java",
   ]
 
   deps = [
@@ -134,6 +140,20 @@ android_library("test_support_java") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/hamcrest:hamcrest_java",
     "//ui/android:ui_java_test_support",
+  ]
+}
+
+android_resources("java_test_resources") {
+  testonly = true
+  sources = [
+    "widget/javatests/res/layout/chrome_managed_preference_with_custom_layout.xml",
+    "widget/javatests/res/xml/test_chrome_base_preference_screen.xml",
+    "widget/javatests/res/xml/test_chrome_switch_preference_screen.xml",
+  ]
+  deps = [
+    ":java_resources",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_java_resources",
   ]
 }
 

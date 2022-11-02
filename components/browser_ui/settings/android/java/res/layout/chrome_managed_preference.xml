@@ -81,4 +81,11 @@ found in the LICENSE file.
 
     </RelativeLayout>
 
+    <LinearLayout android:id="@android:id/widget_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:minWidth="64dp"
+        android:gravity="center_vertical|end"
+        android:orientation="vertical" />
+
 </LinearLayout>

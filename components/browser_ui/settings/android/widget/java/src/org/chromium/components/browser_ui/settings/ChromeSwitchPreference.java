@@ -27,11 +27,16 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     private Integer mBackgroundColorRes;
 
     public ChromeSwitchPreference(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public ChromeSwitchPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        if (SettingsFeatureList.isEnabled(
+                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
+            setLayoutResource(
+                    ManagedPreferencesUtils.getLayoutResourceForPreference(context, attrs));
+        }
     }
 
     /**
@@ -59,7 +64,8 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
 
         mView = holder.itemView;
         updateBackground();
-        ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, mView);
+
+        ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, holder.itemView);
     }
 
     @Override
