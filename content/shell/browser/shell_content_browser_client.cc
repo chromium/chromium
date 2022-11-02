@@ -373,11 +373,12 @@ ShellContentBrowserClient::GetWebContentsViewDelegate(
 
 bool ShellContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
-    const GURL& url) {
-  // Enable application isolation level to allow restricted APIs in WPT.
-  // Note that this will not turn on application isolation for all URLs; the
-  // content layer will still run its own checks.
-  return true;
+    const GURL& url,
+    bool origin_matches_flag) {
+  // Enable application isolation level to allow restricted APIs in WPT.  Note
+  // that will only turn on application isolation for URLs which pass the
+  // content layer checks, as specified by `origin_matches_flag`.
+  return origin_matches_flag;
 }
 
 GeneratedCodeCacheSettings

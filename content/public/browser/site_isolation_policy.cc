@@ -337,9 +337,8 @@ bool SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
   bool origin_matches_flag = g_disable_flag_caching_for_tests
                                  ? CreateIsolatedAppOriginSet().contains(origin)
                                  : GetIsolatedAppOriginSet().contains(origin);
-  return origin_matches_flag &&
-         GetContentClient()->browser()->ShouldUrlUseApplicationIsolationLevel(
-             browser_context, url);
+  return GetContentClient()->browser()->ShouldUrlUseApplicationIsolationLevel(
+      browser_context, url, origin_matches_flag);
 }
 
 // static

@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -235,7 +236,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       override;
   bool ShouldUrlUseApplicationIsolationLevel(
       content::BrowserContext* browser_context,
-      const GURL& url) override;
+      const GURL& url,
+      bool origin_matches_flag) override;
   bool IsIsolatedContextAllowedForUrl(content::BrowserContext* browser_context,
                                       const GURL& lock_url) override;
   bool IsIsolatedWebAppsDeveloperModeAllowed(

@@ -5379,9 +5379,11 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
   IsolatedWebAppContentBrowserClient() = default;
 
-  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
-                                             const GURL& url) override {
-    return true;
+  bool ShouldUrlUseApplicationIsolationLevel(
+      BrowserContext* browser_context,
+      const GURL& url,
+      bool origin_matches_flag) override {
+    return origin_matches_flag;
   }
 };
 

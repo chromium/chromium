@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -95,9 +96,11 @@
 #include "third_party/blink/public/common/features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-using content::BrowsingDataFilterBuilder;
-using testing::_;
-using testing::NotNull;
+using ::content::BrowsingDataFilterBuilder;
+using ::testing::_;
+using ::testing::IsFalse;
+using ::testing::IsTrue;
+using ::testing::NotNull;
 
 class ChromeContentBrowserClientTest : public testing::Test {
  public:
@@ -818,7 +821,8 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
   EXPECT_EQ(CreateDefaultStoragePartitionConfig(), config);
   EXPECT_FALSE(
       test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-          &profile_, GURL(kHttpsScope)));
+          &profile_, GURL(kHttpsScope),
+          /*origin_matches_flag=*/false));
 }
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
@@ -833,7 +837,47 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
   EXPECT_EQ(CreateDefaultStoragePartitionConfig(), config);
   EXPECT_FALSE(
       test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-          &profile_, GURL(kHttpsScope)));
+          &profile_, GURL(kHttpsScope),
+          /*origin_matches_flag=*/false));
+}
+
+TEST_F(ChromeContentBrowserClientStoragePartitionTest,
+       EnableIsolatedLevelForIsolatedAppSchemeWhenIsolatedAppFeatureIsEnabled) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
+
+  EXPECT_THAT(
+      test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
+          &profile_, GURL(kIsolatedAppScope), /*origin_matches_flag=*/false),
+      IsTrue());
+}
+
+TEST_F(
+    ChromeContentBrowserClientStoragePartitionTest,
+    DoNotEnableIsolatedLevelForIsolatedAppSchemeWhenIsolatedAppFeatureIsDisabled) {
+  TestChromeContentBrowserClient test_content_browser_client;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kIsolatedWebApps);
+
+  EXPECT_THAT(test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
+                  &profile_, GURL(kIsolatedAppScope),
+                  /*origin_matches_flag=*/false),
+              IsFalse());
+}
+
+TEST_F(ChromeContentBrowserClientStoragePartitionTest,
+       DoNotEnableIsolatedLevelForNonIsolatedApp) {
+  TestChromeContentBrowserClient test_content_browser_client;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
+
+  EXPECT_THAT(test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
+                  &profile_, GURL(kHttpsScope),
+                  /*origin_matches_flag=*/false),
+              IsFalse());
 }
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
@@ -856,7 +900,8 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
       /*in_memory=*/false);
   EXPECT_EQ(expected_config, config);
   EXPECT_TRUE(test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-      &profile_, GURL(kHttpsScope)));
+      &profile_, GURL(kHttpsScope),
+      /*origin_matches_flag=*/true));
 }
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
@@ -869,7 +914,8 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
   EXPECT_EQ(CreateDefaultStoragePartitionConfig(), config);
   EXPECT_FALSE(
       test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-          &profile_, GURL(kIsolatedAppScope)));
+          &profile_, GURL(kIsolatedAppScope),
+          /*origin_matches_flag=*/false));
 }
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
@@ -892,7 +938,8 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
       /*in_memory=*/false);
   EXPECT_EQ(expected_config, config);
   EXPECT_TRUE(test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-      &profile_, GURL(kIsolatedAppScope)));
+      &profile_, GURL(kIsolatedAppScope),
+      /*origin_matches_flag=*/false));
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

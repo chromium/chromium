@@ -13,6 +13,7 @@
 #include "base/guid.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
@@ -324,7 +325,8 @@ ContentBrowserClient::GetAdditionalSiteIsolationModes() {
 
 bool ContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
-    const GURL& url) {
+    const GURL& url,
+    bool origin_matches_flag) {
   return false;
 }
 

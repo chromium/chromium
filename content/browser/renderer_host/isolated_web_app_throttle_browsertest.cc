@@ -42,9 +42,11 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
     app_origin_ = url::Origin::Create(app_url);
   }
 
-  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
-                                             const GURL& url) override {
-    return true;
+  bool ShouldUrlUseApplicationIsolationLevel(
+      BrowserContext* browser_context,
+      const GURL& url,
+      bool origin_matches_flag) override {
+    return origin_matches_flag;
   }
 
  private:

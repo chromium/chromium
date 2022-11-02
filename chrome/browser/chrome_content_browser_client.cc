@@ -27,6 +27,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -2365,17 +2366,25 @@ void ChromeContentBrowserClient::PersistIsolatedOrigin(
 
 bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     content::BrowserContext* browser_context,
-    const GURL& url) {
+    const GURL& url,
+    bool origin_matches_flag) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
-    // TODO(crbug.com/1363756): Remove the GetStorageIsolationKey call.
-    Profile* profile = Profile::FromBrowserContext(browser_context);
-    return url.SchemeIs(chrome::kIsolatedAppScheme) ||
-           !!web_app::GetStorageIsolationKey(profile->GetPrefs(),
-                                             url::Origin::Create(url));
+  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+    return false;
   }
-#endif
+
+  if (url.SchemeIs(chrome::kIsolatedAppScheme)) {
+    return true;
+  }
+
+  // TODO(crbug.com/1363756): Remove the GetStorageIsolationKey call.
+  return origin_matches_flag &&
+         !!web_app::GetStorageIsolationKey(
+             Profile::FromBrowserContext(browser_context)->GetPrefs(),
+             url::Origin::Create(url));
+#else
   return false;
+#endif
 }
 
 bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(

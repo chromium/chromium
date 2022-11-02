@@ -69,9 +69,11 @@ TEST(SiteIsolationPolicyTest, DisableSiteIsolationForPolicySwitch) {
 
 class ApplicationIsolationEnablingBrowserClient : public ContentBrowserClient {
  public:
-  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
-                                             const GURL& url) override {
-    return true;
+  bool ShouldUrlUseApplicationIsolationLevel(
+      BrowserContext* browser_context,
+      const GURL& url,
+      bool origin_matches_flag) override {
+    return origin_matches_flag || url.SchemeIs("isolated-app");
   }
 };
 
@@ -153,6 +155,30 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, PortRemoved) {
       /*browser_context=*/nullptr, GURL("https://app.com")));
   EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       /*browser_context=*/nullptr, GURL("https://app.com:443")));
+}
+
+TEST_F(
+    SiteIsolationPolicyIsolatedApplicationTest,
+    ShouldSchemeUseApplicationIsolationLevelOverridesIsolatedAppOriginsFlag) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kIsolatedAppOrigins);
+
+  // For the format of isolated app identifier see
+  // https://github.com/WICG/isolated-web-apps/blob/main/Scheme.md
+  EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr,
+      GURL(
+          R"(isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic)")));
+}
+
+TEST_F(
+    SiteIsolationPolicyIsolatedApplicationTest,
+    ShouldSchemeUseApplicationIsolationLevelIsDisableForNonIsolatedAppScheme) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kIsolatedAppOrigins);
+
+  EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr, GURL("http://example.com")));
 }
 
 }  // namespace content

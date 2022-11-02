@@ -627,10 +627,13 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns true if the given URL needs be loaded with the "isolated
   // application" isolation level. COOP/COEP headers must also be properly set
-  // in order to enable the application isolation level.
+  // in order to enable the application isolation level. `origin_matches_flag`
+  // specifies whether the URL's origin is allowed to use application isolation
+  // according to the content-level `kIsolatedAppOrigins` switch.
   virtual bool ShouldUrlUseApplicationIsolationLevel(
       BrowserContext* browser_context,
-      const GURL& url);
+      const GURL& url,
+      bool origin_matches_flag);
 
   // Allows the embedder to enable access to Isolated Context Web APIs for the
   // given |lock_url| -- the URL to which the renderer process is locked.

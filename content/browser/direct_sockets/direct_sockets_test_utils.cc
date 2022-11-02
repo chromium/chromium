@@ -208,8 +208,9 @@ std::string AsyncJsRunner::MakeScriptSendResultToDomQueue(
 
 bool IsolatedWebAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
-    const GURL& url) {
-  return true;
+    const GURL& url,
+    bool origin_matches_flag) {
+  return origin_matches_flag;
 }
 
 absl::optional<blink::ParsedPermissionsPolicy>
