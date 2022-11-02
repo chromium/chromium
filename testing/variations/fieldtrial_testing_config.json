@@ -6819,6 +6819,25 @@
             ]
         }
     ],
+    "MerchantWidePromotion": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled_merchant_wide_promotion_20221102",
+                    "enable_features": [
+                        "MerchantWidePromotion"
+                    ]
+                }
+            ]
+        }
+    ],
     "MessagePumpEpoll": [
         {
             "platforms": [
