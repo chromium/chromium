@@ -223,8 +223,10 @@ public class BrowserControlsManager
             }
 
             @Override
-            public void onCrash(Tab tab) {
-                if (tab == getTab() && SadTab.isShowing(tab)) showAndroidControls(false);
+            public void onContentChanged(Tab tab) {
+                if (tab.isShowingCustomView()) {
+                    showAndroidControls(false);
+                }
             }
 
             @Override

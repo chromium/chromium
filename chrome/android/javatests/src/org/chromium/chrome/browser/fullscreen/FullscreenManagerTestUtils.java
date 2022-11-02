@@ -17,14 +17,10 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.content_public.browser.GestureListenerManager;
-import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -58,10 +54,8 @@ public class FullscreenManagerTestUtils {
             dragEndY = tempDragStartY;
         }
         long downTime = SystemClock.uptimeMillis();
-        TouchCommon.dragStart(testRule.getActivity(), dragX, dragStartY, downTime);
-        TouchCommon.dragTo(
+        TouchCommon.performDrag(
                 testRule.getActivity(), dragX, dragX, dragStartY, dragEndY, 100, downTime);
-        TouchCommon.dragEnd(testRule.getActivity(), dragX, dragEndY, downTime);
         waitForBrowserControlsPosition(testRule, expectedPosition);
     }
 
@@ -112,98 +106,34 @@ public class FullscreenManagerTestUtils {
         final float initialVisibleContentOffset =
                 browserControlsStateProvider.getTopVisibleContentOffset();
 
-        browserControlsStateProvider.addObserver(new BrowserControlsStateProvider.Observer() {
-            @Override
-            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-                if (browserControlsStateProvider.getTopVisibleContentOffset()
-                        != initialVisibleContentOffset) {
-                    contentMovedCallback.notifyCalled();
-                    browserControlsStateProvider.removeObserver(this);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            browserControlsStateProvider.addObserver(new BrowserControlsStateProvider.Observer() {
+                @Override
+                public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
+                        int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+                    if (browserControlsStateProvider.getTopVisibleContentOffset()
+                            != initialVisibleContentOffset) {
+                        contentMovedCallback.notifyCalled();
+                        browserControlsStateProvider.removeObserver(this);
+                    }
                 }
-            }
+            });
         });
 
         float dragX = 50f;
         float dragStartY = tab.getView().getHeight() - 50f;
 
-        WebContents webContents = tab.getWebContents();
-
-        final CallbackHelper scrollEndCallback = new CallbackHelper();
-        final CallbackHelper flingEndCallback = new CallbackHelper();
-        GestureStateListener scrollEndListener = new GestureStateListener() {
-            @Override
-            public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
-                scrollEndCallback.notifyCalled();
-            }
-
-            @Override
-            public void onFlingEndGesture(int scrollOffsetY, int scrollExtentY) {
-                flingEndCallback.notifyCalled();
-            }
-
-        };
-        GestureListenerManager gestureListenerManager =
-                WebContentsUtils.getGestureListenerManager(webContents);
-        gestureListenerManager.addListener(scrollEndListener);
-
         for (int i = 0; i < 10; i++) {
-            int numScrollEndCalled = scrollEndCallback.getCallCount();
-            int numFlingEndCalled = flingEndCallback.getCallCount();
             float dragEndY = dragStartY - browserControlsStateProvider.getTopControlsHeight();
 
             long downTime = SystemClock.uptimeMillis();
-            TouchCommon.dragStart(testRule.getActivity(), dragX, dragStartY, downTime);
-            TouchCommon.dragTo(
+            TouchCommon.performDrag(
                     testRule.getActivity(), dragX, dragX, dragStartY, dragEndY, 100, downTime);
-            TouchCommon.dragEnd(testRule.getActivity(), dragX, dragEndY, downTime);
 
             try {
                 contentMovedCallback.waitForCallback(0, 1, 500, TimeUnit.MILLISECONDS);
-
-                try {
-                    scrollEndCallback.waitForCallback(
-                            numScrollEndCalled, 1, 5000, TimeUnit.MILLISECONDS);
-                    flingEndCallback.waitForCallback(
-                            numFlingEndCalled, 1, 5000, TimeUnit.MILLISECONDS);
-                } catch (TimeoutException e) {
-                    Assert.fail("Didn't get expected ScrollEnd gestures");
-                }
-
-                try {
-                    flingEndCallback.waitForCallback(
-                            numFlingEndCalled, 1, 200, TimeUnit.MILLISECONDS);
-                } catch (TimeoutException e) {
-                    // Depending on timing - the above scroll may not have
-                    // generated a fling. If it did, it the fling end may
-                    // sometimes be called after the scroll end so wait a little
-                    // for it.
-                }
-
-                numFlingEndCalled = flingEndCallback.getCallCount();
-
                 scrollBrowserControls(testRule, false);
                 scrollBrowserControls(testRule, true);
-
-                // Make sure the gesture stream is finished before we hand back control.
-                try {
-                    scrollEndCallback.waitForCallback(
-                            numScrollEndCalled + 1, 2, 5000, TimeUnit.MILLISECONDS);
-                } catch (TimeoutException e) {
-                    Assert.fail("Didn't get expected ScrollEnd gestures");
-                }
-
-                try {
-                    flingEndCallback.waitForCallback(
-                            numFlingEndCalled, 2, 200, TimeUnit.MILLISECONDS);
-                } catch (TimeoutException e) {
-                    // Depending on timing - the above scrolls may not have
-                    // generated flings. If they did, the fling end may sometimes
-                    // be called after the scroll end so wait a little for it.
-                }
-
-                gestureListenerManager.removeListener(scrollEndListener);
-
                 return;
             } catch (TimeoutException e) {
                 // Ignore and retry
