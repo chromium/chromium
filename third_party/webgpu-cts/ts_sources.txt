@@ -212,6 +212,8 @@ src/webgpu/api/validation/capability_checks/features/texture_formats.spec.ts
 src/webgpu/api/validation/encoding/beginComputePass.spec.ts
 src/webgpu/api/validation/encoding/beginRenderPass.spec.ts
 src/webgpu/api/validation/encoding/createRenderBundleEncoder.spec.ts
+src/webgpu/api/validation/encoding/queries/common.ts
+src/webgpu/api/validation/encoding/encoder_open_state.spec.ts
 src/webgpu/api/validation/encoding/encoder_state.spec.ts
 src/webgpu/api/validation/encoding/render_bundle.spec.ts
 src/webgpu/api/validation/encoding/cmds/clearBuffer.spec.ts
@@ -231,7 +233,6 @@ src/webgpu/api/validation/encoding/cmds/render/setPipeline.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/setVertexBuffer.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/state_tracking.spec.ts
 src/webgpu/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
-src/webgpu/api/validation/encoding/queries/common.ts
 src/webgpu/api/validation/encoding/queries/begin_end.spec.ts
 src/webgpu/api/validation/encoding/queries/general.spec.ts
 src/webgpu/api/validation/encoding/queries/pipeline_statistics.spec.ts
