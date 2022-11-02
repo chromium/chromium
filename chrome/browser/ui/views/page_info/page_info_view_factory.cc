@@ -442,7 +442,6 @@ const ui::ImageModel PageInfoViewFactory::GetAboutThisSiteIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetAboutThisPageIcon() {
-  // TODO(crbug.com/1318000): Use globe icon.
   return ui::ImageModel::FromVectorIcon(views::kInfoIcon, ui::kColorIcon,
                                         GetIconSize());
 }
