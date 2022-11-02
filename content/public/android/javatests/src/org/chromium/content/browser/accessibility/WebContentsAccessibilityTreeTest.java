@@ -1580,6 +1580,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1181596")
     public void test_iframeAriaHidden() {
         performHtmlTest("iframe-aria-hidden.html");
     }
@@ -1599,6 +1600,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1379850")
     public void test_iframeEmptyPositioned() {
         performHtmlTest("iframe-empty-positioned.html");
     }
