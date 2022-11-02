@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/handlers/bluetooth_policy_handler.h"
 
+#include <utility>
+
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -16,11 +18,8 @@ namespace policy {
 class BluetoothPolicyHandlerTest : public testing::Test {
  protected:
   class TestingBluetoothAdapter : public device::MockBluetoothAdapter {
-   protected:
-    ~TestingBluetoothAdapter() override {}
-
    public:
-    TestingBluetoothAdapter() : is_shutdown_(false), is_powered_(true) {}
+    TestingBluetoothAdapter() = default;
 
     void Shutdown() override { is_shutdown_ = true; }
     void SetPowered(bool powered,
@@ -38,13 +37,16 @@ class BluetoothPolicyHandlerTest : public testing::Test {
     const UUIDList& GetAllowList() const { return uuids_; }
 
    protected:
-    bool is_shutdown_;
-    bool is_powered_;
+    ~TestingBluetoothAdapter() override = default;
+
+    bool is_shutdown_ = false;
+    bool is_powered_ = true;
     UUIDList uuids_;
   };
 
-  BluetoothPolicyHandlerTest() : adapter_(new TestingBluetoothAdapter) {}
-  ~BluetoothPolicyHandlerTest() override {}
+  BluetoothPolicyHandlerTest()
+      : adapter_(base::MakeRefCounted<TestingBluetoothAdapter>()) {}
+  ~BluetoothPolicyHandlerTest() override = default;
 
   // testing::Test
   void SetUp() override {
@@ -52,17 +54,16 @@ class BluetoothPolicyHandlerTest : public testing::Test {
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
   }
 
-  void TearDown() override {}
-
  protected:
   void SetAllowBluetooth(bool allow_bluetooth) {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
         ash::kAllowBluetooth, allow_bluetooth);
   }
 
-  void SetDeviceAllowedBluetoothServices(const base::ListValue& allowlist) {
+  void SetDeviceAllowedBluetoothServices(base::Value::List allowlist) {
     scoped_testing_cros_settings_.device_settings()->Set(
-        ash::kDeviceAllowedBluetoothServices, allowlist);
+        ash::kDeviceAllowedBluetoothServices,
+        base::Value(std::move(allowlist)));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -100,19 +101,20 @@ TEST_F(BluetoothPolicyHandlerTest, OnDuringStartup) {
 }
 
 TEST_F(BluetoothPolicyHandlerTest, TestSetServiceAllowList) {
-  base::ListValue allowlist;
-  const char* test_uuid1_str = "0x1124";
-  const char* test_uuid2_str = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
-  allowlist.Append(base::Value(test_uuid1_str));
-  allowlist.Append(base::Value(test_uuid2_str));
-  SetDeviceAllowedBluetoothServices(allowlist);
+  base::Value::List allowlist;
+  const char kTestUuid1[] = "0x1124";
+  const char kTestUuid2[] = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+  allowlist.Append(kTestUuid1);
+  allowlist.Append(kTestUuid2);
+  SetDeviceAllowedBluetoothServices(std::move(allowlist));
   BluetoothPolicyHandler bluetooth_policy_handler(ash::CrosSettings::Get());
-  const device::BluetoothUUID test_uuid1(test_uuid1_str);
-  const device::BluetoothUUID test_uuid2(test_uuid2_str);
-  const std::vector<device::BluetoothUUID>& allowlist_ =
+  const device::BluetoothUUID test_uuid1(kTestUuid1);
+  const device::BluetoothUUID test_uuid2(kTestUuid2);
+  const std::vector<device::BluetoothUUID>& allowlist_result =
       adapter_->GetAllowList();
-  EXPECT_EQ(test_uuid1, allowlist_[0]);
-  EXPECT_EQ(test_uuid2, allowlist_[1]);
+  ASSERT_EQ(2u, allowlist_result.size());
+  EXPECT_EQ(test_uuid1, allowlist_result[0]);
+  EXPECT_EQ(test_uuid2, allowlist_result[1]);
 }
 
 }  // namespace policy
