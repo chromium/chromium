@@ -69,7 +69,9 @@ class FakeSettingsPrivate {
     assertEquals(Array.isArray(value), Array.isArray(pref.value));
 
     if (this.failNextSetPref_) {
-      callback(false);
+      if (callback) {
+        callback(false);
+      }
       this.failNextSetPref_ = false;
       return;
     }
@@ -77,8 +79,9 @@ class FakeSettingsPrivate {
 
     const changed = JSON.stringify(pref.value) !== JSON.stringify(value);
     pref.value = deepCopy(value);
-    callback(true);
-
+    if (callback) {
+      callback(true);
+    }
     // Like chrome.settingsPrivate, send a notification when prefs change.
     if (changed) {
       this.sendPrefChanges([{key, value}]);

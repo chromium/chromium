@@ -42,7 +42,6 @@ SelectToSpeakPrefsTest = class extends SelectToSpeakE2ETest {
   // This must be done before setting STS rate and pitch for tests to work
   // properly.
   setGlobalRateAndPitch(rate, pitch) {
-    const unused = () => {};
     chrome.settingsPrivate.setPref('settings.tts.speech_rate', rate);
     chrome.settingsPrivate.setPref('settings.tts.speech_pitch', pitch);
   }

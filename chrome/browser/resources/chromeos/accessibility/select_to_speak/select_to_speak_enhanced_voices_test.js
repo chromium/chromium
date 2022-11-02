@@ -45,7 +45,7 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
   // Sets the policy to allow or disallow the network voices.
   setEnhancedNetworkVoicesPolicy(allowed) {
     chrome.settingsPrivate.setPref(
-        PrefsManager.ENHANCED_VOICES_POLICY_KEY, allowed, '', () => {});
+        PrefsManager.ENHANCED_VOICES_POLICY_KEY, allowed);
   }
 };
 
