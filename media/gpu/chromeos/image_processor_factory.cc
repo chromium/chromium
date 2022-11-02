@@ -167,7 +167,6 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& input_visible_rect,
     const gfx::Size& output_size,
-    size_t num_buffers,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     ImageProcessorFactory::PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
@@ -202,7 +201,6 @@ std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& input_visible_rect,
     const gfx::Size& output_size,
-    size_t num_buffers,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     ImageProcessorFactory::PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
@@ -283,15 +281,15 @@ ImageProcessorFactory::CreateWithInputCandidates(
 #elif BUILDFLAG(USE_V4L2_CODEC)
   if (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor)) {
     auto processor = CreateGLImageProcessorWithInputCandidates(
-        input_candidates, input_visible_rect, output_size, num_buffers,
-        client_task_runner, out_format_picker, error_cb);
+        input_candidates, input_visible_rect, output_size, client_task_runner,
+        out_format_picker, error_cb);
     if (processor)
       return processor;
   }
   if (base::FeatureList::IsEnabled(media::kPreferLibYuvImageProcessor)) {
     auto processor = CreateLibYUVImageProcessorWithInputCandidates(
-        input_candidates, input_visible_rect, output_size, num_buffers,
-        client_task_runner, out_format_picker, error_cb);
+        input_candidates, input_visible_rect, output_size, client_task_runner,
+        out_format_picker, error_cb);
     if (processor)
       return processor;
   }
