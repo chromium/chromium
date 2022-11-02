@@ -102,7 +102,13 @@ template("system_webview_apk_or_module_tmpl") {
       alternative_android_sdk_dep = webview_framework_dep
     }
 
-    if (webview_devui_show_icon) {
+    # We can't include an icon for anything with the Stable channel package name
+    # because it confuses work profiles. We check
+    # use_stable_package_name_for_trichrome here instead of where
+    # webview_devui_show_icon is assigned to avoid a circular dependency
+    # between //android_webview/variables.gni and
+    # //chrome/android/trichrome.gni.
+    if (webview_devui_show_icon && !use_stable_package_name_for_trichrome) {
       deps += [ "//android_webview/nonembedded:devui_launcher_icon_resources" ]
     }
 
