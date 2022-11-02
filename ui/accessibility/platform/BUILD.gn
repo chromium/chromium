@@ -133,6 +133,8 @@ source_set("platform") {
       "fuchsia/semantic_provider.h",
       "fuchsia/semantic_provider_impl.cc",
       "fuchsia/semantic_provider_impl.h",
+      "inspect/ax_event_recorder_fuchsia.cc",
+      "inspect/ax_event_recorder_fuchsia.h",
     ]
 
     public_deps += [

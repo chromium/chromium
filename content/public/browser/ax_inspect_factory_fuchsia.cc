@@ -4,10 +4,10 @@
 
 #include "content/public/browser/ax_inspect_factory.h"
 
-#include "content/browser/accessibility/accessibility_event_recorder_fuchsia.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_fuchsia.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder_fuchsia.h"
 
 namespace content {
 
@@ -58,7 +58,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
 
   switch (type) {
     case ui::AXApiType::kFuchsia:
-      return std::make_unique<AccessibilityEventRecorderFuchsia>(pid, selector);
+      return std::make_unique<ui::AXEventRecorderFuchsia>(pid, selector);
     default:
       NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }

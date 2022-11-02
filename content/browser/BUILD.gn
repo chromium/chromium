@@ -2396,8 +2396,6 @@ source_set("browser") {
 
   if (is_fuchsia) {
     sources += [
-      "accessibility/accessibility_event_recorder_fuchsia.cc",
-      "accessibility/accessibility_event_recorder_fuchsia.h",
       "accessibility/accessibility_tree_formatter_fuchsia.cc",
       "accessibility/accessibility_tree_formatter_fuchsia.h",
       "accessibility/browser_accessibility_fuchsia.cc",
