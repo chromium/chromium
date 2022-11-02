@@ -70,7 +70,7 @@ void BiometricAuthenticatorWin::AuthenticateWithMessage(
   authenticator_->AuthenticateUser(
       message,
       base::BindOnce(&BiometricAuthenticatorWin::RecordAuthenticationResult,
-                     base::Unretained(this))
+                     base::UnsafeDanglingUntriaged(this))
           .Then(std::move(callback)));
 }
 
