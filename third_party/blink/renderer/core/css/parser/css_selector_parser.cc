@@ -645,13 +645,14 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     //
     // We need to temporarily mark the end of the selector list, for the benefit
     // of SelectorListIsNestContaining().
-    reset_vector.AddedElements().back().SetLastInSelectorList(true);
+    wtf_size_t last_index = output_.size() - 1;
+    output_[last_index].SetLastInSelectorList(true);
     if (!SelectorListIsNestContaining(reset_vector.AddedElements().data())) {
       output_.back().SetRelation(CSSSelector::kDescendant);
       output_.push_back(
           CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/true));
     }
-    reset_vector.AddedElements().back().SetLastInSelectorList(false);
+    output_[last_index].SetLastInSelectorList(false);
   }
 
   MarkAsEntireComplexSelector(reset_vector.AddedElements());
