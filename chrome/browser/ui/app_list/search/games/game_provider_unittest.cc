@@ -207,4 +207,41 @@ TEST_P(GameProviderTest, RandomizeSourceOrder) {
   EXPECT_GE(b_first, 10);
 }
 
+// Tests that threshold is loose enough to include the acronym match results.
+TEST_P(GameProviderTest, AcronymMatchIncluded) {
+  GameProvider::GameIndex index;
+  index.push_back(MakeAppsResult(u"Clash of Clan"));
+  index.push_back(MakeAppsResult(u"Assassin's Creed Origins"));
+  provider_->SetGameIndexForTest(std::move(index));
+
+  StartSearch(u"coc");
+  EXPECT_THAT(LastResults(), ElementsAre(Title(u"Clash of Clan")));
+
+  StartSearch(u"aco");
+  EXPECT_THAT(LastResults(), ElementsAre(Title(u"Assassin's Creed Origins")));
+}
+
+// Tests that threshold is strict enough to exclude certain problematic cases.
+TEST_P(GameProviderTest, ProblematicCasesExcluded) {
+  GameProvider::GameIndex index;
+  index.push_back(MakeAppsResult(u"Distance"));
+  index.push_back(MakeAppsResult(u"Hell Pie"));
+  index.push_back(MakeAppsResult(u"Hell Pie Demo"));
+  index.push_back(MakeAppsResult(u"Elyon"));
+  index.push_back(MakeAppsResult(u"Kill It With Fire"));
+  provider_->SetGameIndexForTest(std::move(index));
+
+  StartSearch(u"disney");
+  ASSERT_EQ(LastResults().size(), 0u);
+
+  StartSearch(u"help");
+  ASSERT_EQ(LastResults().size(), 0u);
+
+  StartSearch(u"layton");
+  ASSERT_EQ(LastResults().size(), 0u);
+
+  StartSearch(u"wifi");
+  ASSERT_EQ(LastResults().size(), 0u);
+}
+
 }  // namespace app_list
