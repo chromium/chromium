@@ -1049,10 +1049,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       !profile->IsOffTheRecord()) {
     return &NewWebUI<ash::multidevice::ProximityAuthUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIInternetConfigDialogHost)
-    return &NewWebUI<ash::InternetConfigDialogUI>;
-  if (url.host_piece() == chrome::kChromeUIInternetDetailDialogHost)
-    return &NewWebUI<ash::InternetDetailDialogUI>;
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile) &&
       url.host_piece() == chrome::kChromeUINearbyShareHost &&

@@ -8,7 +8,10 @@
 #include <string>
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -49,6 +52,17 @@ class InternetConfigDialog : public SystemWebDialogDelegate {
   std::string dialog_id_;
   std::string network_type_;
   std::string network_id_;
+};
+
+class InternetConfigDialogUI;
+
+// WebUIConfig for chrome://internet-config-dialog
+class InternetConfigDialogUIConfig
+    : public content::DefaultWebUIConfig<InternetConfigDialogUI> {
+ public:
+  InternetConfigDialogUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIInternetConfigDialogHost) {}
 };
 
 // A WebUI to host the network configuration UI in a dialog, used in the

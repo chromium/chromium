@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_DETAIL_DIALOG_H_
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
@@ -43,6 +46,17 @@ class InternetDetailDialog : public SystemWebDialogDelegate {
   std::string network_id_;
   std::string network_type_;
   std::string network_name_;
+};
+
+class InternetDetailDialogUI;
+
+// WebUIConfig for chrome://internet-detail-dialog
+class InternetDetailDialogUIConfig
+    : public content::DefaultWebUIConfig<InternetDetailDialogUI> {
+ public:
+  InternetDetailDialogUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIInternetDetailDialogHost) {}
 };
 
 // A WebUI to host a subset of the network details page to allow setting of
