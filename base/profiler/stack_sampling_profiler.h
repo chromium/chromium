@@ -109,13 +109,6 @@ class BASE_EXPORT StackSamplingProfiler {
       RepeatingClosure record_sample_callback = RepeatingClosure(),
       StackSamplerTestDelegate* test_delegate = nullptr);
 
-  // Same as above function, with custom |sampler| implementation. The sampler
-  // on Android is not implemented in base.
-  StackSamplingProfiler(SamplingProfilerThreadToken thread_token,
-                        const SamplingParams& params,
-                        std::unique_ptr<ProfileBuilder> profile_builder,
-                        std::unique_ptr<StackSampler> sampler);
-
   StackSamplingProfiler(const StackSamplingProfiler&) = delete;
   StackSamplingProfiler& operator=(const StackSamplingProfiler&) = delete;
 

@@ -7,8 +7,8 @@
 #include <pthread.h>
 
 #include "base/check.h"
+#include "base/memory/ptr_util.h"
 #include "base/profiler/stack_copier_signal.h"
-#include "base/profiler/stack_sampler_impl.h"
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/profiler/unwinder.h"
 #include "base/threading/platform_thread.h"
@@ -24,10 +24,10 @@ std::unique_ptr<StackSampler> StackSampler::Create(
   auto thread_delegate = ThreadDelegatePosix::Create(thread_token);
   if (!thread_delegate)
     return nullptr;
-  return std::make_unique<StackSamplerImpl>(
+  return base::WrapUnique(new StackSampler(
       std::make_unique<StackCopierSignal>(std::move(thread_delegate)),
       std::move(core_unwinders_factory), module_cache,
-      std::move(record_sample_callback), test_delegate);
+      std::move(record_sample_callback), test_delegate));
 }
 
 size_t StackSampler::GetStackBufferSize() {

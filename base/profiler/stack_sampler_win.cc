@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/ptr_util.h"
 #include "base/profiler/native_unwinder_win.h"
 #include "base/profiler/stack_copier_suspend.h"
-#include "base/profiler/stack_sampler_impl.h"
 #include "base/profiler/suspendable_thread_delegate_win.h"
 #include "build/build_config.h"
 
@@ -28,11 +28,11 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     unwinders.push_back(std::make_unique<NativeUnwinderWin>());
     return unwinders;
   };
-  return std::make_unique<StackSamplerImpl>(
+  return base::WrapUnique(new StackSampler(
       std::make_unique<StackCopierSuspend>(
           std::make_unique<SuspendableThreadDelegateWin>(thread_token)),
       BindOnce(create_unwinders), module_cache,
-      std::move(record_sample_callback), test_delegate);
+      std::move(record_sample_callback), test_delegate));
 #else
   return nullptr;
 #endif

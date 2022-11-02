@@ -792,25 +792,14 @@ StackSamplingProfiler::StackSamplingProfiler(
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate)
-    : StackSamplingProfiler(thread_token,
-                            params,
-                            std::move(profile_builder),
-                            std::unique_ptr<StackSampler>()) {
-  sampler_ =
-      StackSampler::Create(thread_token, profile_builder_->GetModuleCache(),
-                           std::move(core_unwinders_factory),
-                           std::move(record_sample_callback), test_delegate);
-}
-
-StackSamplingProfiler::StackSamplingProfiler(
-    SamplingProfilerThreadToken thread_token,
-    const SamplingParams& params,
-    std::unique_ptr<ProfileBuilder> profile_builder,
-    std::unique_ptr<StackSampler> sampler)
     : thread_token_(thread_token),
       params_(params),
       profile_builder_(std::move(profile_builder)),
-      sampler_(std::move(sampler)),
+      sampler_(StackSampler::Create(thread_token,
+                                    profile_builder_->GetModuleCache(),
+                                    std::move(core_unwinders_factory),
+                                    std::move(record_sample_callback),
+                                    test_delegate)),
       // The event starts "signaled" so code knows it's safe to start thread
       // and "manual" so that it can be waited in multiple places.
       profiling_inactive_(kResetPolicy, WaitableEvent::InitialState::SIGNALED),
