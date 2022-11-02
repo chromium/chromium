@@ -92,6 +92,10 @@ constexpr base::FeatureParam<base::TimeDelta>
         "shopping-list-bookmark-update-interval",
         base::Hours(6));
 
+// Shopping list revert page action icon on failure.
+extern const char kRevertIconOnFailureParam[];
+extern const base::FeatureParam<bool> kRevertIconOnFailure;
+
 // Feature parameters for ChromeCart on Desktop.
 
 // Whether to use OptimizationGuide to optimize renderer signal collection.
