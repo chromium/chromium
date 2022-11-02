@@ -38,16 +38,16 @@ constexpr Dst saturated_cast(Src value) {
 template <typename T>
 constexpr T CheckAdd(T a, T b) {
   T result;
-  ABSL_HARDENING_ASSERT(
-      !ABSL_PREDICT_FALSE(__builtin_add_overflow(a, b, &result)));
+  const bool did_overflow = ABSL_PREDICT_FALSE(__builtin_add_overflow(a, b, &result));
+  ABSL_HARDENING_ASSERT(!did_overflow);
   return result;
 }
 
 template <typename T>
 constexpr T CheckMul(T a, T b) {
   T result;
-  ABSL_HARDENING_ASSERT(
-      !ABSL_PREDICT_FALSE(__builtin_mul_overflow(a, b, &result)));
+  const bool did_overflow = ABSL_PREDICT_FALSE(__builtin_mul_overflow(a, b, &result));
+  ABSL_HARDENING_ASSERT(!did_overflow);
   return result;
 }
 
