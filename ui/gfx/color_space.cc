@@ -154,6 +154,13 @@ bool ColorSpace::IsValid() const {
 }
 
 // static
+ColorSpace ColorSpace::CreateExtendedSRGB10Bit() {
+  return ColorSpace(PrimaryID::P3, TransferID::CUSTOM_HDR, MatrixID::RGB,
+                    RangeID::FULL, nullptr,
+                    &SkNamedTransferFnExt::kSRGBExtended1023Over510, true);
+}
+
+// static
 ColorSpace ColorSpace::CreatePiecewiseHDR(
     PrimaryID primaries,
     float sdr_joint,
@@ -716,6 +723,16 @@ ColorSpace::RangeID ColorSpace::GetRangeID() const {
 
 bool ColorSpace::HasExtendedSkTransferFn() const {
   return matrix_ == MatrixID::RGB;
+}
+
+bool ColorSpace::IsTransferFunctionEqualTo(
+    const skcms_TransferFunction& fn) const {
+  if (fn.a == transfer_params_[0] && fn.b == transfer_params_[1] &&
+      fn.c == transfer_params_[2] && fn.d == transfer_params_[3] &&
+      fn.e == transfer_params_[4] && fn.f == transfer_params_[5] &&
+      fn.g == transfer_params_[6])
+    return true;
+  return false;
 }
 
 bool ColorSpace::Contains(const ColorSpace& other) const {

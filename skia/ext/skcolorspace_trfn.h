@@ -85,6 +85,18 @@ static constexpr skcms_TransferFunction kInvalid = {0};
 // on macOS.
 static constexpr skcms_TransferFunction kRec709Apple = {1.961f, 1.};
 
+// If the sRGB transfer function is f(x), then this transfer function is
+// f(x * 1023 / 510). This function gives 510 values to SDR content, and can
+// reach a maximum brightnes of 4.99x SDR brightness.
+static constexpr skcms_TransferFunction kSRGBExtended1023Over510 = {
+    SkNamedTransferFnExt::kSRGB.g,
+    SkNamedTransferFnExt::kSRGB.a * 1023 / 510,
+    SkNamedTransferFnExt::kSRGB.b,
+    SkNamedTransferFnExt::kSRGB.c * 1023 / 510,
+    SkNamedTransferFnExt::kSRGB.d * 1023 / 510,
+    SkNamedTransferFnExt::kSRGB.e,
+    SkNamedTransferFnExt::kSRGB.f};
+
 }  // namespace SkNamedTransferFnExt
 
 #endif  // SKIA_EXT_SKCOLORSPACE_TRFN_H_

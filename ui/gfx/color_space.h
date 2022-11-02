@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
+#include "skia/ext/skcolorspace_trfn.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space_export.h"
@@ -231,6 +232,11 @@ class COLOR_SPACE_EXPORT ColorSpace {
                       RangeID::FULL);
   }
 
+  // An extended sRGB ColorSpace that matches the sRGB EOTF but extends to
+  // 4.99x the headroom of SDR brightness. Designed for a 10 bpc buffer format.
+  // Uses P3 primaries. An HDR ColorSpace suitable for blending and compositing.
+  static ColorSpace CreateExtendedSRGB10Bit();
+
   // Create a piecewise-HDR color space.
   // - If |primaries| is CUSTOM, then |custom_primary_matrix| must be
   //   non-nullptr.
@@ -382,6 +388,10 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // skcms_TransferFunction which is extended to all real values. This is true
   // unless the color space has a non-RGB matrix.
   bool HasExtendedSkTransferFn() const;
+
+  // Returns true if the transfer function values of this color space match
+  // those of the passed in skcms_TransferFunction.
+  bool IsTransferFunctionEqualTo(const skcms_TransferFunction& fn) const;
 
   // Returns true if each color in |other| can be expressed in this color space.
   bool Contains(const ColorSpace& other) const;
