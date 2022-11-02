@@ -35,7 +35,6 @@ source_set("app_shim") {
     "//content/public/browser",
     "//ipc",
     "//mojo/core/embedder",
-    "//mojo/core/embedder:features",
     "//ui/accelerated_widget_mac",
     "//ui/base",
   ]
