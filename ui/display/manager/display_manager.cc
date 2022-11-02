@@ -1004,9 +1004,20 @@ void DisplayManager::UpdateDisplaysWith(
       ++new_info_iter;
     }
   }
+
   Display old_primary;
-  if (delegate_)
-    old_primary = screen_->GetPrimaryDisplay();
+  if (delegate_) {
+    // Get old primary from current resolved layout, because we could be in the
+    // middle of updating the primary display, so screen_->GetPrimaryDisplay()
+    // may already point to the new primary.
+    if (current_resolved_layout_) {
+      Display* primary = FindDisplayForId(current_resolved_layout_->primary_id);
+      if (primary)
+        old_primary = *primary;
+    }
+    if (!old_primary.is_valid())
+      old_primary = screen_->GetPrimaryDisplay();
+  }
 
   // Clear focus if the display has been removed, but don't clear focus if
   // the destkop has been moved from one display to another

@@ -30,6 +30,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/format_macros.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
@@ -106,7 +107,16 @@ class DisplayManagerTest : public AshTestBase,
 
   const vector<display::Display>& changed() const { return changed_; }
   const vector<display::Display>& added() const { return added_; }
-  uint32_t changed_metrics() const { return changed_metrics_; }
+  uint32_t changed_metrics() const {
+    uint32_t changed_metrics = 0;
+    for (const auto& display_metrics : changed_metrics_) {
+      changed_metrics |= display_metrics.second;
+    }
+    return changed_metrics;
+  }
+  uint32_t changed_metrics(int64_t display_id) const {
+    return changed_metrics_.at(display_id);
+  }
 
   string GetCountSummary() const {
     return StringPrintf("%" PRIuS " %" PRIuS " %" PRIuS " %" PRIuS " %" PRIuS,
@@ -118,7 +128,7 @@ class DisplayManagerTest : public AshTestBase,
     changed_.clear();
     added_.clear();
     removed_count_ = will_process_count_ = did_process_count_ = 0U;
-    changed_metrics_ = 0U;
+    changed_metrics_.clear();
     root_window_destroyed_ = false;
   }
 
@@ -147,7 +157,8 @@ class DisplayManagerTest : public AshTestBase,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override {
     changed_.push_back(display);
-    changed_metrics_ |= changed_metrics;
+    if (!changed_metrics_.try_emplace(display.id(), changed_metrics).second)
+      changed_metrics_[display.id()] |= changed_metrics;
   }
   void OnDisplayAdded(const display::Display& new_display) override {
     added_.push_back(new_display);
@@ -197,7 +208,7 @@ class DisplayManagerTest : public AshTestBase,
   size_t will_process_count_ = 0u;
   size_t did_process_count_ = 0u;
   bool root_window_destroyed_ = false;
-  uint32_t changed_metrics_ = 0u;
+  base::flat_map<int64_t, uint32_t> changed_metrics_;
   bool check_root_window_on_destruction_ = true;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
@@ -2362,7 +2373,30 @@ TEST_F(DisplayManagerTest, InvertLayout) {
                 .ToString());
 }
 
-TEST_F(DisplayManagerTest, NotifyPrimaryChange) {
+TEST_F(DisplayManagerTest, NotifyPrimaryChangeSwapped) {
+  UpdateDisplay("500x400,500x400");
+  int64_t old_primary_id = GetPrimaryDisplay().id();
+  int64_t new_primary_id = GetSecondaryDisplay().id();
+  SwapPrimaryDisplay();
+
+  // Old primary display.
+  EXPECT_TRUE(changed_metrics(old_primary_id) &
+              display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
+  EXPECT_TRUE(changed_metrics(old_primary_id) &
+              display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
+  EXPECT_FALSE(changed_metrics(old_primary_id) &
+               display::DisplayObserver::DISPLAY_METRIC_PRIMARY);
+
+  // New primary display.
+  EXPECT_TRUE(changed_metrics(new_primary_id) &
+              display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
+  EXPECT_TRUE(changed_metrics(new_primary_id) &
+              display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
+  EXPECT_TRUE(changed_metrics(new_primary_id) &
+              display::DisplayObserver::DISPLAY_METRIC_PRIMARY);
+}
+
+TEST_F(DisplayManagerTest, NotifyPrimaryChangeDock) {
   UpdateDisplay("500x400,500x400");
   SwapPrimaryDisplay();
   reset();
