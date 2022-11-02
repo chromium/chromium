@@ -722,8 +722,8 @@
     },
 
     'chromium.updater': {
-      'mac-updater-builder-arm64-dbg': 'updater_debug_bot_arm64',
-      'mac-updater-builder-arm64-rel': 'updater_release_bot_arm64',
+      'mac-updater-builder-arm64-dbg': 'updater_debug_bot_arm64_reclient',
+      'mac-updater-builder-arm64-rel': 'updater_release_bot_arm64_reclient',
       'mac-updater-builder-dbg': 'updater_debug_bot_reclient',
       'mac-updater-builder-rel': 'updater_release_bot_reclient',
       'win-updater-builder-dbg': 'updater_debug_bot_reclient',
@@ -3673,8 +3673,8 @@
       'updater_on_win_mac', 'debug_static_bot',
     ],
 
-    'updater_debug_bot_arm64': [
-      'arm64', 'updater_on_win_mac', 'debug_static_bot',
+    'updater_debug_bot_arm64_reclient': [
+      'arm64', 'updater_on_win_mac', 'debug_static_bot_reclient',
     ],
 
     'updater_debug_bot_reclient': [
@@ -3685,8 +3685,8 @@
       'updater_on_win_mac', 'debug_static_bot_reclient', 'x86', 'no_symbols',
     ],
 
-    'updater_release_bot_arm64': [
-      'arm64', 'updater_on_win_mac', 'release_bot',
+    'updater_release_bot_arm64_reclient': [
+      'arm64', 'updater_on_win_mac', 'release_bot_reclient',
     ],
 
     'updater_release_bot_reclient': [

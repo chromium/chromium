@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builders", "cpu", "goma", "os", "reclient")
+load("//lib/builders.star", "builders", "cpu", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -112,9 +112,7 @@ ci.builder(
     ),
     cores = None,
     cpu = cpu.ARM64,
-    goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -140,9 +138,7 @@ ci.builder(
     ),
     cores = None,
     cpu = cpu.ARM64,
-    goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    reclient_instance = None,
 )
 
 ci.thin_tester(
