@@ -46,7 +46,11 @@ constexpr net::NetworkTrafficAnnotationTag kCalendarTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
-          policy_exception_justification: "Not implemented."
+          chrome_policy {
+              CalendarIntegrationEnabled {
+                CalendarIntegrationEnabled: true
+              }
+          }
         })");
 
 }  // namespace
