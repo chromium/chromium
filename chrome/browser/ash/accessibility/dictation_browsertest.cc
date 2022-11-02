@@ -1287,7 +1287,12 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextMultiLineString) {
   SendFinalResultAndWaitForEditableValue("the weather outside", expected);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavEndTextSimple) {
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_NavEndTextSimple DISABLED_NavEndTextSimple
+#else
+#define MAYBE_NavEndTextSimple NavEndTextSimple
+#endif
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MAYBE_NavEndTextSimple) {
   SendFinalResultAndWaitForEditableValue("The weather outside is",
                                          "The weather outside is");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
