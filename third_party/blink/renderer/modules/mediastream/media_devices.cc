@@ -860,8 +860,7 @@ void MediaDevices::CloseFocusWindowOfOpportunity(
 
   DCHECK(!capture_controller ||
          RuntimeEnabledFeatures::ConditionalFocusEnabled(context));
-  if (RuntimeEnabledFeatures::ConditionalFocusEnabled(context) &&
-      capture_controller) {
+  if (capture_controller) {
     capture_controller->FinalizeFocusDecision();
   }
 
