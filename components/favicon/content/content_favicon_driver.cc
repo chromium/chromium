@@ -115,7 +115,7 @@ void ContentFaviconDriver::DownloadManifest(const GURL& url,
   // here.
   web_contents()->GetPrimaryPage().GetManifest(
       base::BindOnce(&ContentFaviconDriver::OnDidDownloadManifest,
-                     base::Unretained(this), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 bool ContentFaviconDriver::IsOffTheRecord() {
