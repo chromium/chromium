@@ -324,7 +324,8 @@ class HttpStreamFactory::Job
   static bool ShouldForceQuic(HttpNetworkSession* session,
                               const url::SchemeHostPort& destination,
                               const ProxyInfo& proxy_info,
-                              bool using_ssl);
+                              bool using_ssl,
+                              bool is_websocket);
 
   // Called in Job constructor. Use |spdy_session_key_| after construction.
   static SpdySessionKey GetSpdySessionKey(

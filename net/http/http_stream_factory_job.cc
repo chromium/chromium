@@ -159,10 +159,14 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
       job_type_(job_type),
       using_ssl_(origin_url_.SchemeIs(url::kHttpsScheme) ||
                  origin_url_.SchemeIs(url::kWssScheme)),
-      using_quic_(
-          alternative_protocol == kProtoQUIC ||
-          (ShouldForceQuic(session, destination_, proxy_info, using_ssl_)) ||
-          job_type == DNS_ALPN_H3 || job_type == PRECONNECT_DNS_ALPN_H3),
+      using_quic_(alternative_protocol == kProtoQUIC ||
+                  (ShouldForceQuic(session,
+                                   destination_,
+                                   proxy_info,
+                                   using_ssl_,
+                                   is_websocket_)) ||
+                  job_type == DNS_ALPN_H3 ||
+                  job_type == PRECONNECT_DNS_ALPN_H3),
       quic_version_(quic_version),
       expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
       quic_request_(session_->quic_stream_factory()),
@@ -195,7 +199,8 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
   // The Job is forced to use QUIC without a designated version, try the
   // preferred QUIC version that is supported by default.
   if (quic_version_ == quic::ParsedQuicVersion::Unsupported() &&
-      ShouldForceQuic(session, destination_, proxy_info, using_ssl_)) {
+      ShouldForceQuic(session, destination_, proxy_info, using_ssl_,
+                      is_websocket_)) {
     quic_version_ =
         session->context().quic_context->params()->supported_versions[0];
   }
@@ -381,8 +386,11 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
     HttpNetworkSession* session,
     const url::SchemeHostPort& destination,
     const ProxyInfo& proxy_info,
-    bool using_ssl) {
+    bool using_ssl,
+    bool is_websocket) {
   if (!session->IsQuicEnabled())
+    return false;
+  if (is_websocket)
     return false;
   // If this is going through a QUIC proxy, only force QUIC for insecure
   // requests. If the request is secure, a tunnel will be needed, and those are
