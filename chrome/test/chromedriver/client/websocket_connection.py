@@ -39,21 +39,36 @@ class WebSocketConnection(object):
       WebSocketCommands.CREATE_WEBSOCKET, cmd_params)
     self._websocket = websocket.create_connection(self._server_url + path)
     self._responses = {}
+    self._events = []
 
   def SendCommand(self, cmd_params):
-    self._command_id = self._command_id + 1
-    cmd_params['id'] = self._command_id
+    if 'id' not in cmd_params:
+      self._command_id = self._command_id + 1
+      cmd_params['id'] = self._command_id
     try:
       self._websocket.send(json.dumps(cmd_params))
     except InternalWebSocketTimeoutException:
       raise WebSocketTimeoutException()
-    return self._command_id
+    return cmd_params['id']
 
-  def WaitForResponse(self, command_id):
-    if command_id in self._responses:
-      msg = self._responses[command_id]
-      del self._responses[command_id]
-      return msg
+  def TakeEvents(self):
+    result = self._events;
+    self._events = []
+    return result;
+
+  def TryGetResponse(self, command_id, channel = None):
+    if channel not in self._responses:
+      return None
+    if command_id not in self._responses[channel]:
+      return None
+    return self._responses[channel][command_id]
+
+  def WaitForResponse(self, command_id, channel = None):
+    if channel in self._responses:
+      if command_id in self._responses[channel]:
+        msg = self._responses[channel][command_id]
+        del self._responses[channel][command_id]
+        return msg
 
     start = time.monotonic()
     timeout = self.GetTimeout()
@@ -62,10 +77,17 @@ class WebSocketConnection(object):
       while True:
         msg = json.loads(self._websocket.recv())
         if 'id' in msg:
-          if msg['id'] == command_id:
+          resp_channel = None
+          if 'channel' in msg:
+            resp_channel = msg['channel']
+          if msg['id'] == command_id and resp_channel == channel:
             return msg
           elif msg['id'] >= 0:
-            self._responses[msg['id']] = msg
+            if resp_channel not in self._responses:
+              self._responses[resp_channel] = {}
+            self._responses[resp_channel][msg['id']] = msg
+        else: # event
+          self._events.append(msg)
         if start + timeout <= time.monotonic():
           raise TimeoutError()
     except InternalWebSocketConnectionClosedException:

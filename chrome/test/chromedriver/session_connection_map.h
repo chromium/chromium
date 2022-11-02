@@ -8,6 +8,6 @@
 #include <string>
 #include <unordered_map>
 
-using SessionConnectionMap = std::unordered_map<std::string, int>;
+using SessionConnectionMap = std::unordered_map<std::string, std::vector<int>>;
 
 #endif  // CHROME_TEST_CHROMEDRIVER_SESSION_CONNECTION_MAP_H_

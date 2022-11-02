@@ -12,6 +12,8 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_local.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
@@ -25,6 +27,39 @@ base::LazyInstance<base::ThreadLocalPointer<Session>>::DestructorAtExit
     lazy_tls_session = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
+
+namespace internal {
+
+Status SplitChannel(std::string* channel,
+                    int* connection_id,
+                    std::string* suffix) {
+  DCHECK(channel);  // precondition
+  size_t k = channel->size();
+  for (; k && (*channel)[k - 1] != '/'; --k) {
+  }
+  if (k == 0) {
+    return Status{kUnknownError,
+                  "channel does not end with an expected suffix"};
+  }
+  *suffix = channel->substr(k - 1);
+  channel->erase(std::next(channel->begin(), k - 1), channel->end());
+  --k;
+
+  for (; k && (*channel)[k - 1] != '/'; --k) {
+  }
+  if (k == 0) {
+    return Status{kUnknownError, "channel does not contain connection_id"};
+  }
+  std::string connection_str = channel->substr(k);
+  channel->erase(std::next(channel->begin(), k - 1), channel->end());
+  if (!base::StringToInt(connection_str, connection_id)) {
+    return Status{kUnknownError,
+                  "connection_id in the channel must be integer"};
+  }
+
+  return Status{kOk};
+}
+}  // namespace internal
 
 FrameInfo::FrameInfo(const std::string& parent_frame_id,
                      const std::string& frame_id,
@@ -72,7 +107,9 @@ BidiConnection& BidiConnection::operator=(BidiConnection&& other) = default;
 const base::TimeDelta Session::kDefaultImplicitWaitTimeout = base::Seconds(0);
 const base::TimeDelta Session::kDefaultPageLoadTimeout = base::Seconds(300);
 const base::TimeDelta Session::kDefaultScriptTimeout = base::Seconds(30);
-const int kBidiQueueCapacity = 20;
+const char Session::kChannelSuffix[] = "/chan";
+const char Session::kNoChannelSuffix[] = "/nochan";
+const char Session::kBlockingChannelSuffix[] = "/blocking";
 
 Session::Session(const std::string& id)
     : id(id),
@@ -160,15 +197,53 @@ void Session::SwitchFrameInternal(bool for_top_frame) {
   }
 }
 
-void Session::OnBidiResponse(base::Value::Dict payload) {
-  // If there is no active bidi connections the events will be accumulated.
-  bidi_response_queue_.push(std::move(payload));
-  for (; bidi_response_queue_.size() > kBidiQueueCapacity;
-       bidi_response_queue_.pop()) {
-    LOG(WARNING) << "BiDi response queue overflow, dropping the message: "
-                 << bidi_response_queue_.front();
+Status Session::OnBidiResponse(base::Value::Dict payload) {
+  std::string* channel = payload.FindString("channel");
+  if (!channel) {
+    return Status{kUnknownError, "channel is missing in the BiDi response"};
   }
-  ProcessBidiResponseQueue();
+
+  if (base::EndsWith(*channel, kBlockingChannelSuffix)) {
+    if (!awaiting_bidi_response) {
+      return Status{kUnknownError, "unexpected blocking BiDi response"};
+    }
+    awaiting_bidi_response = false;
+    size_t pos = channel->size() - std::strlen(kBlockingChannelSuffix);
+    // Update the channel value of the payload in-place.
+    channel->erase(std::next(channel->begin(), pos), channel->end());
+  }
+
+  int connection_id = -1;
+  std::string suffix;
+  Status status = internal::SplitChannel(channel, &connection_id, &suffix);
+  if (status.IsError()) {
+    return status;
+  }
+
+  if (suffix == kNoChannelSuffix) {
+    payload.Remove("channel");
+  } else if (suffix != kChannelSuffix) {
+    return Status{kUnknownError,
+                  "unexpected channel name in the BiDi response"};
+  }
+
+  std::string message;
+  if (!base::JSONWriter::Write(payload, &message)) {
+    return Status{kUnknownError, "unable to serialize a BiDi response"};
+  }
+
+  auto it = base::ranges::find(bidi_connections_, connection_id,
+                               &BidiConnection::connection_id);
+  if (it == bidi_connections_.end()) {
+    // It can happen that we receive a message from the mapper designated to the
+    // channel that has recently been closed.
+    LOG(INFO) << "BiDi connection is closed. Skipping the BiDiMapper message: "
+              << message;
+    return Status{kOk};
+  }
+
+  it->send_response.Run(std::move(message));
+  return Status{kOk};
 }
 
 void Session::AddBidiConnection(int connection_id,
@@ -176,10 +251,12 @@ void Session::AddBidiConnection(int connection_id,
                                 CloseFunc close_connection) {
   bidi_connections_.emplace_back(connection_id, std::move(send_response),
                                  std::move(close_connection));
-  ProcessBidiResponseQueue();
 }
 
 void Session::RemoveBidiConnection(int connection_id) {
+  // As connections can be closed by both remote and local ends
+  // we don't treat an attempt to close a non-existing (presumably closed)
+  // connection as an error.
   // Reallistically we will not have many connections, therefore linear search
   // is optimal.
   auto it = base::ranges::find(bidi_connections_, connection_id,
@@ -189,43 +266,13 @@ void Session::RemoveBidiConnection(int connection_id) {
   }
 }
 
-void Session::ProcessBidiResponseQueue() {
-  if (bidi_connections_.empty() || bidi_response_queue_.empty()) {
-    return;
-  }
-  // Only single websocket connection is supported now.
-  DCHECK(bidi_connections_.size() == 1);
-  for (; !bidi_response_queue_.empty(); bidi_response_queue_.pop()) {
-    // TODO(chromedriver:4179): In the future we will support multiple
-    // connections. The payload will have to be parsed and routed to the
-    // appropriate connection. The events will have to be delivered to all
-    // connections.
-    base::Value::Dict response_parsed = std::move(bidi_response_queue_.front());
-    std::string response;
-    if (!base::JSONWriter::Write(response_parsed, &response)) {
-      LOG(WARNING) << "unable to serialize a BiDi response";
-      continue;
-    }
-    for (const BidiConnection& conn : bidi_connections_) {
-      // If the callback fails (asynchronously) because the connection was
-      // broken we simply ignore this fact as the message cannot be delivered
-      // over that connection anyway.
-      conn.send_response.Run(response);
-      absl::optional<int> response_id = response_parsed.FindInt("id");
-      if (response_id && *response_id == awaited_bidi_response_id) {
-        awaited_bidi_response_id = -1;
-        // No "id" means that we are dealing with an event
-      }
-    }
-  }
-}
-
 void Session::CloseAllConnections() {
   for (BidiConnection& conn : bidi_connections_) {
     // If the callback fails (asynchronously) because the connection was
     // terminated we simply ignore this - it is already closed.
     conn.close_connection.Run();
   }
+  bidi_connections_.clear();
 }
 
 Session* GetThreadLocalSession() {

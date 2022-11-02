@@ -57,8 +57,8 @@ class SyncWebSocket;
 class DevToolsClientImpl : public DevToolsClient {
  public:
   static const char kBrowserwideDevToolsClientId[];
-  static const char kInfraChannel[];
-  static const char kClientChannelSuffix[];
+  static const char kCdpTunnelChannel[];
+  static const char kBidiChannelSuffix[];
 
   // Postcondition: !IsNull()
   // Postcondition: !IsConnected()

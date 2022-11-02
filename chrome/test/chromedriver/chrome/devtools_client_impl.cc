@@ -148,7 +148,7 @@ Status WrapCdpCommandInBidiCommand(base::Value::Dict cdp_cmd,
   dict.Set("id", *cdp_cmd_id);
   dict.Set("method", "cdp.sendCommand");
   dict.Set("params", std::move(params));
-  dict.Set("channel", DevToolsClientImpl::kInfraChannel);
+  dict.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   *bidi_cmd = std::move(dict);
   return Status{kOk};
 }
@@ -196,8 +196,8 @@ InspectorCommandResponse::~InspectorCommandResponse() {}
 }  // namespace internal
 
 const char DevToolsClientImpl::kBrowserwideDevToolsClientId[] = "browser";
-const char DevToolsClientImpl::kInfraChannel[] = "/infra";
-const char DevToolsClientImpl::kClientChannelSuffix[] = "/channel";
+const char DevToolsClientImpl::kCdpTunnelChannel[] = "/cdp";
+const char DevToolsClientImpl::kBidiChannelSuffix[] = "/bidi";
 
 DevToolsClientImpl::DevToolsClientImpl(const std::string& id,
                                        const std::string& session_id,
@@ -366,7 +366,7 @@ Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script,
     bidi_cmd.Set("id", AdvanceNextMessageId());
     bidi_cmd.Set("method", "session.subscribe");
     bidi_cmd.Set("params", std::move(params));
-    status = PostBidiCommandInternal(DevToolsClientImpl::kInfraChannel,
+    status = PostBidiCommandInternal(DevToolsClientImpl::kCdpTunnelChannel,
                                      std::move(bidi_cmd));
   }
 
@@ -554,11 +554,10 @@ Status DevToolsClientImpl::SetUpDevTools() {
 }
 
 Status DevToolsClientImpl::PostBidiCommand(base::Value::Dict command) {
-  std::string* maybe_user_channel = command.FindString("channel");
+  std::string* maybe_channel = command.FindString("channel");
   std::string channel =
-      maybe_user_channel
-          ? *maybe_user_channel + DevToolsClientImpl::kClientChannelSuffix
-          : std::string();
+      maybe_channel ? *maybe_channel + DevToolsClientImpl::kBidiChannelSuffix
+                    : std::string();
   // Corner cases:
   // In user message channel=nullptr
   //    -> the posted command has no channel
@@ -1244,7 +1243,7 @@ bool ParseInspectorMessage(const std::string& message,
 
       std::string* channel = payload.FindString("channel");
 
-      if (channel && *channel == DevToolsClientImpl::kInfraChannel) {
+      if (channel && *channel == DevToolsClientImpl::kCdpTunnelChannel) {
         // handle CDP over BiDi events and responses
         std::string* payload_method = payload.FindString("method");
 
@@ -1313,9 +1312,9 @@ bool ParseInspectorMessage(const std::string& message,
       }  // Infra CDP tunnel
 
       if (channel &&
-          base::EndsWith(*channel, DevToolsClientImpl::kClientChannelSuffix)) {
+          base::EndsWith(*channel, DevToolsClientImpl::kBidiChannelSuffix)) {
         size_t pos = channel->size() -
-                     std::strlen(DevToolsClientImpl::kClientChannelSuffix);
+                     std::strlen(DevToolsClientImpl::kBidiChannelSuffix);
         // Update the channel value of the payload in-place.
         channel->erase(std::next(channel->begin(), pos), channel->end());
       }

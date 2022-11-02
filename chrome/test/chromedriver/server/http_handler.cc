@@ -12,9 +12,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -79,11 +81,11 @@ void SendWebSocketResponseOnCmdThread(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     HttpServer* http_server,
     int connection_id,
-    const std::string& data) {
+    std::string data) {
   io_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HttpServer::SendOverWebSocket,
-                     base::Unretained(http_server), connection_id, data));
+      FROM_HERE, base::BindOnce(&HttpServer::SendOverWebSocket,
+                                base::Unretained(http_server), connection_id,
+                                std::move(data)));
 }
 
 void SendWebSocketResponseOnSessionThread(
@@ -91,11 +93,11 @@ void SendWebSocketResponseOnSessionThread(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     HttpServer* http_server,
     int connection_id,
-    const std::string& data) {
+    std::string data) {
   cmd_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SendWebSocketResponseOnCmdThread, io_task_runner,
-                     base::Unretained(http_server), connection_id, data));
+      FROM_HERE, base::BindOnce(&SendWebSocketResponseOnCmdThread,
+                                io_task_runner, base::Unretained(http_server),
+                                connection_id, std::move(data)));
 }
 
 void CloseWebSocketOnCmdThread(
@@ -1459,15 +1461,8 @@ void HttpHandler::OnWebSocketRequest(HttpServer* http_server,
     SendWebSocketRejectResponse(http_server, connection_id,
                                 net::HTTP_BAD_REQUEST, err_msg);
     return;
-  } else if (it->second != -1) {
-    std::string err_msg = "bad request only one connection for session id " +
-                          session_id + " is allowed";
-    VLOG(0) << "HttpHandler WebSocketRequest error " << err_msg;
-    SendWebSocketRejectResponse(http_server, connection_id,
-                                net::HTTP_BAD_REQUEST, err_msg);
-    return;
   } else {
-    session_connection_map_[session_id] = connection_id;
+    session_connection_map_[session_id].push_back(connection_id);
     connection_session_map_[connection_id] = session_id;
 
     auto thread_it = session_thread_map_.find(session_id);
@@ -1545,6 +1540,7 @@ void HttpHandler::OnWebSocketMessage(HttpServer* http_server,
 
   base::Value::Dict params;
   params.Set("bidiCommand", data);
+  params.Set("connectionId", connection_id);
 
   auto callback = base::BindRepeating(
       [](base::RepeatingCallback<void(const Status&)> send_error,
@@ -1596,7 +1592,10 @@ void HttpHandler::OnClose(HttpServer* http_server, int connection_id) {
     return;
   }
   std::string session_id = it->second;
-  session_connection_map_[session_id] = -1;
+  std::vector<int>& bucket = session_connection_map_[session_id];
+  auto bucket_it = base::ranges::find(bucket, connection_id);
+  DCHECK(bucket_it != bucket.end());
+  bucket.erase(bucket_it);
   connection_session_map_.erase(it);
 
   auto thread_it = session_thread_map_.find(session_id);

@@ -31,10 +31,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace {
+
 using testing::Eq;
 using testing::Pointee;
-
-namespace {
 
 const char kTestMapperScript[] = "Lorem ipsum dolor sit amet";
 
@@ -1022,7 +1022,7 @@ TEST(ParseInspectorMessage, TunneledCdpEvent) {
   base::Value::Dict payload;
   payload.Set("method", "cdp.eventReceived");
   payload.Set("params", std::move(params));
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1051,7 +1051,7 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpSession) {
   base::Value::Dict payload;
   payload.Set("method", "cdp.eventReceived");
   payload.Set("params", std::move(params));
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1078,7 +1078,7 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpParams) {
   base::Value::Dict payload;
   payload.Set("method", "cdp.eventReceived");
   payload.Set("params", std::move(params));
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1103,7 +1103,7 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpMethod) {
   base::Value::Dict payload;
   payload.Set("method", "cdp.eventReceived");
   payload.Set("params", std::move(params));
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1120,7 +1120,7 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpMethod) {
 TEST(ParseInspectorMessage, TunneledCdpEventNoPayloadParams) {
   base::Value::Dict payload;
   payload.Set("method", "cdp.eventReceived");
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
@@ -1141,7 +1141,7 @@ TEST(ParseInspectorMessage, TunneledCdpResponse) {
   payload.Set("id", 11);
   payload.Set("cdpSession", "ABC");
   payload.Set("result", std::move(result));
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -1167,7 +1167,7 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoSession) {
   base::Value::Dict payload;
   payload.Set("id", 11);
   payload.Set("result", std::move(result));
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -1193,7 +1193,7 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoId) {
   base::Value::Dict payload;
   payload.Set("cdpSession", "ABC");
   payload.Set("result", std::move(result));
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -1211,7 +1211,7 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoResult) {
   base::Value::Dict payload;
   payload.Set("id", 11);
   payload.Set("cdpSession", "ABC");
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -1236,7 +1236,7 @@ TEST(ParseInspectorMessage, TunneledCdpResponseError) {
   payload.Set("id", 11);
   payload.Set("cdpSession", "ABC");
   payload.Set("error", std::move(error));
-  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  payload.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
   base::Value::Dict resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
@@ -2999,8 +2999,8 @@ TEST_F(DevToolsClientImplTest, BidiChannels) {
   ASSERT_TRUE(StatusOk(mapper_client.ConnectIfNecessary()));
   ASSERT_TRUE(StatusOk(mapper_client.AppointAsBidiServerForTesting()));
 
-  for (std::string channel : {DevToolsClientImpl::kInfraChannel,
-                              DevToolsClientImpl::kClientChannelSuffix, ""}) {
+  for (std::string channel : {DevToolsClientImpl::kCdpTunnelChannel,
+                              DevToolsClientImpl::kBidiChannelSuffix, ""}) {
     base::Value::Dict bidi_cmd;
     ASSERT_TRUE(StatusOk(CreateBidiCommand(1, "method", base::Value::Dict(),
                                            &channel, &bidi_cmd)));
@@ -3120,7 +3120,7 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
     if (!channel) {
       return false;
     }
-    EXPECT_EQ(DevToolsClientImpl::kInfraChannel, *channel);
+    EXPECT_EQ(DevToolsClientImpl::kCdpTunnelChannel, *channel);
     EXPECT_EQ("session.subscribe", method);
     EXPECT_THAT(params.FindString("events"), Pointee(Eq("cdp.eventReceived")));
     mapper_state_->subscribed_to_cdp = true;

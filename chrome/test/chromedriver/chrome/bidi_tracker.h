@@ -18,7 +18,7 @@ class DictionaryValue;
 
 class DevToolsClient;
 class Status;
-typedef base::RepeatingCallback<void(base::Value::Dict)> SendBidiPayloadFunc;
+typedef base::RepeatingCallback<Status(base::Value::Dict)> SendBidiPayloadFunc;
 
 // Tracks the state of the DOM and BiDi messages coming from the browser
 class BidiTracker : public DevToolsEventListener {
@@ -35,11 +35,18 @@ class BidiTracker : public DevToolsEventListener {
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
                  const base::DictionaryValue& params) override;
+  Status OnEvent(DevToolsClient* client,
+                 const std::string& method,
+                 const base::Value::Dict& params);
 
   void SetBidiCallback(SendBidiPayloadFunc on_bidi_message);
 
+  const std::string& ChannelSuffix() const;
+  void SetChannelSuffix(std::string channel_suffix);
+
  private:
   SendBidiPayloadFunc send_bidi_response_;
+  std::string channel_suffix_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_BIDI_TRACKER_H_

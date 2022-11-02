@@ -66,8 +66,7 @@ struct InputCancelListEntry {
   std::unique_ptr<KeyEvent> key_event;
 };
 
-typedef base::RepeatingCallback<void(const std::string& /*payload*/)>
-    SendTextFunc;
+typedef base::RepeatingCallback<void(std::string /*payload*/)> SendTextFunc;
 
 typedef base::RepeatingCallback<void()> CloseFunc;
 
@@ -87,6 +86,9 @@ struct Session {
   static const base::TimeDelta kDefaultImplicitWaitTimeout;
   static const base::TimeDelta kDefaultPageLoadTimeout;
   static const base::TimeDelta kDefaultScriptTimeout;
+  static const char kChannelSuffix[];
+  static const char kNoChannelSuffix[];
+  static const char kBlockingChannelSuffix[];
 
   explicit Session(const std::string& id);
   Session(const std::string& id, std::unique_ptr<Chrome> chrome);
@@ -102,8 +104,7 @@ struct Session {
   std::string GetCurrentFrameId() const;
   std::vector<WebDriverLog*> GetAllLogs() const;
 
-  bool BidiMapperIsLaunched() const;
-  void OnBidiResponse(base::Value::Dict payload);
+  Status OnBidiResponse(base::Value::Dict payload);
   void AddBidiConnection(int connection_id,
                          SendTextFunc send_response,
                          CloseFunc close_connection);
@@ -115,8 +116,7 @@ struct Session {
   bool webSocketUrl = false;
   bool quit;
   bool detach;
-  bool bidi_mapper_is_launched_ = false;
-  int awaited_bidi_response_id = -1;
+  bool awaiting_bidi_response = false;
   std::unique_ptr<Chrome> chrome;
   std::string window;
   std::string bidi_mapper_web_view_id;
@@ -165,7 +165,6 @@ struct Session {
 
  private:
   void SwitchFrameInternal(bool for_top_frame);
-  void ProcessBidiResponseQueue();
 
   // TODO: for the moment being we support single connection per client
   // In the future (2022Q4) we will probably support multiple bidi connections.
@@ -183,5 +182,11 @@ struct Session {
 Session* GetThreadLocalSession();
 
 void SetThreadLocalSession(std::unique_ptr<Session> session);
+
+namespace internal {
+Status SplitChannel(std::string* channel,
+                    int* connection_id,
+                    std::string* suffix);
+}
 
 #endif  // CHROME_TEST_CHROMEDRIVER_SESSION_H_

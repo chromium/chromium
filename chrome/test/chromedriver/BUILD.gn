@@ -436,6 +436,7 @@ python_library("chromedriver_replay_unittests") {
 test("chromedriver_unittests") {
   sources = [
     "capabilities_unittest.cc",
+    "chrome/bidi_tracker_unittest.cc",
     "chrome/browser_info_unittest.cc",
     "chrome/cast_tracker_unittest.cc",
     "chrome/chrome_finder_unittest.cc",

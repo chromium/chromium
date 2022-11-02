@@ -91,7 +91,7 @@ Status EvaluateScriptAndIgnoreResult(Session* session,
 
 void InitSessionForWebSocketConnection(SessionConnectionMap* session_map,
                                        std::string session_id) {
-  session_map->insert({session_id, -1});
+  session_map->insert({session_id, std::vector<int>{}});
 }
 
 }  // namespace
@@ -313,10 +313,17 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   session->command_listeners.swap(command_listeners);
 
   if (session->webSocketUrl) {
-    BidiTracker* bidi_tracker = new BidiTracker();
-    bidi_tracker->SetBidiCallback(base::BindRepeating(
-        &Session::OnBidiResponse, base::Unretained(session)));
-    devtools_event_listeners.emplace_back(bidi_tracker);
+    // Suffixes used with the client channels.
+    std::string client_suffixes[] = {Session::kChannelSuffix,
+                                     Session::kNoChannelSuffix,
+                                     Session::kBlockingChannelSuffix};
+    for (std::string suffix : client_suffixes) {
+      BidiTracker* bidi_tracker = new BidiTracker();
+      bidi_tracker->SetChannelSuffix(std::move(suffix));
+      bidi_tracker->SetBidiCallback(base::BindRepeating(
+          &Session::OnBidiResponse, base::Unretained(session)));
+      devtools_event_listeners.emplace_back(bidi_tracker);
+    }
   }
 
   status =
@@ -1399,8 +1406,15 @@ Status ExecuteBidiCommand(Session* session,
   if (session == nullptr) {
     return Status{kNoSuchFrame, "session not found"};
   }
-  std::string data;
-  GetOptionalString(params, "bidiCommand", &data);
+  const std::string* data = params.FindString("bidiCommand");
+  if (!data) {
+    return Status{kUnknownError, "bidiCommand is missing in params"};
+  }
+
+  absl::optional<int> connection_id = params.FindInt("connectionId");
+  if (!connection_id) {
+    return Status{kUnknownCommand, "connectionId is missing in params"};
+  }
 
   WebView* web_view = nullptr;
   Status status = session->chrome->GetWebViewById(
@@ -1410,40 +1424,48 @@ Status ExecuteBidiCommand(Session* session,
   }
 
   absl::optional<base::Value> data_parsed =
-      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+      base::JSONReader::Read(*data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!data_parsed) {
-    return Status(kUnknownError, "cannot parse the BiDi command: " + data);
+    return Status(kUnknownError, "cannot parse the BiDi command: " + *data);
   }
 
   if (!data_parsed->is_dict()) {
     return Status(kUnknownError,
-                  "a JSON map is expected as a BiDi command: " + data);
+                  "a JSON map is expected as a BiDi command: " + *data);
   }
 
-  absl::optional<int> cmd_id = data_parsed->GetDict().FindInt("id");
-  if (!cmd_id) {
-    return Status(kUnknownError, "BiDi command is missing 'id' field: " + data);
-  }
+  base::Value::Dict& bidi_cmd = data_parsed->GetDict();
 
-  std::string* method = data_parsed->GetDict().FindString("method");
+  std::string* method = bidi_cmd.FindString("method");
   if (!method) {
     return Status(kUnknownError,
-                  "BiDi command is missing 'method' field: " + data);
+                  "BiDi command is missing 'method' field: " + *data);
+  }
+
+  std::string* user_channel = bidi_cmd.FindString("channel");
+  std::string channel;
+  if (user_channel) {
+    channel = *user_channel + "/" + base::NumberToString(*connection_id) +
+              Session::kChannelSuffix;
+  } else {
+    channel =
+        "/" + base::NumberToString(*connection_id) + Session::kNoChannelSuffix;
   }
 
   if (*method == "browsingContext.close") {
+    bidi_cmd.Set("channel", channel + Session::kBlockingChannelSuffix);
     // Closing of the context is handled in a blocking way.
     // This simplifies us closing the browser if the last tab was closed.
-    session->awaited_bidi_response_id = *cmd_id;
-    status = web_view->PostBidiCommand(std::move(data_parsed->GetDict()));
+    session->awaiting_bidi_response = true;
+    status = web_view->PostBidiCommand(std::move(bidi_cmd));
     base::RepeatingCallback<Status(bool*)> bidi_response_is_received =
         base::BindRepeating(
-            [](Session* session, int cmd_id, bool* condition_is_met) {
-              *condition_is_met = session->awaited_bidi_response_id != cmd_id;
+            [](Session* session, bool* condition_is_met) {
+              *condition_is_met = !session->awaiting_bidi_response;
               return Status{kOk};
             },
-            base::Unretained(session), *cmd_id);
+            base::Unretained(session));
     if (status.IsError()) {
       return status;
     }
@@ -1473,7 +1495,8 @@ Status ExecuteBidiCommand(Session* session,
       status = session->chrome->Quit();
     }
   } else {
-    status = web_view->PostBidiCommand(std::move(data_parsed->GetDict()));
+    bidi_cmd.Set("channel", std::move(channel));
+    status = web_view->PostBidiCommand(std::move(bidi_cmd));
   }
 
   return status;

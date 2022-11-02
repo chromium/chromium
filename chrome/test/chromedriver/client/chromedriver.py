@@ -137,7 +137,6 @@ class ChromeDriver(object):
     self._executor = command_executor.CommandExecutor(server_url)
     self._server_url = server_url
     self.w3c_compliant = False
-    self._websocket = None
 
     options = {}
 
@@ -357,11 +356,7 @@ class ChromeDriver(object):
     return self._UnwrapValue(response['value'])
 
   def CreateWebSocketConnection(self):
-    if self._websocket:
-      return self._websocket
-    else:
-      self._websocket = WebSocketConnection(self._server_url, self._session_id)
-      return self._websocket
+    return WebSocketConnection(self._server_url, self._session_id)
 
   def GetWindowHandles(self):
     return self.ExecuteCommand(Command.GET_WINDOW_HANDLES)
