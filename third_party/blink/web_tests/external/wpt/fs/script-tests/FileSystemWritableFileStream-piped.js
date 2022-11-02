@@ -1,3 +1,5 @@
+'use strict';
+
 directory_test(async (t, root) => {
   const handle = await createEmptyFile(t, 'foo_string.txt', root);
   const wfs = await handle.createWritable();

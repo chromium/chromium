@@ -1,3 +1,5 @@
+'use strict';
+
 directory_test(async (t, dir) => {
   await promise_rejects_dom(
       t, 'NotFoundError', dir.getFileHandle('non-existing-file'));

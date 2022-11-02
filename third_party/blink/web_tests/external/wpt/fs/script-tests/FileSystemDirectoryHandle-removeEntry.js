@@ -1,3 +1,4 @@
+'use strict';
 
 directory_test(async (t, root) => {
   const handle =

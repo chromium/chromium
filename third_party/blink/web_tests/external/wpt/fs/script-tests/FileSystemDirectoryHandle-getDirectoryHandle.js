@@ -1,3 +1,5 @@
+'use strict';
+
 directory_test(async (t, root) => {
   await promise_rejects_dom(
       t, 'NotFoundError', root.getDirectoryHandle('non-existing-dir'));

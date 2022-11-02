@@ -1,3 +1,5 @@
+'use strict';
+
 directory_test(async (t, root) => {
   const handle = await createEmptyFile(t, 'empty_blob', root);
   const stream = await handle.createWritable();

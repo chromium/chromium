@@ -1,3 +1,5 @@
+'use strict';
+
 directory_test(async (t, root) => {
   const fileContents = 'awesome content';
   let handle = await createFileWithContents(t, 'foo.txt', fileContents, /*parent=*/ root);

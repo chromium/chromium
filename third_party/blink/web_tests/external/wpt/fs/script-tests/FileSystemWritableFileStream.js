@@ -1,3 +1,5 @@
+'use strict';
+
 directory_test(async (t, root) => {
   const handle = await createEmptyFile(t, 'trunc_shrink', root);
   const stream = await handle.createWritable();

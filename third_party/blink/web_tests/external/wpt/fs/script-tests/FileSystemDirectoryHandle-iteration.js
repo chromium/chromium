@@ -1,3 +1,5 @@
+'use strict';
+
 directory_test(async (t, root) => {
   const file_name1 = 'foo1.txt';
   const file_name2 = 'foo2.txt';
