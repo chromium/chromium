@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "media/base/limits.h"
 #include "media/base/video_types.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
@@ -47,6 +48,12 @@ using StringSet = media_constraints::DiscreteSet<std::string>;
 using BoolSet = media_constraints::DiscreteSet<bool>;
 using DoubleRangeSet = media_constraints::NumericRangeSet<double>;
 
+// If enabled, the minimum frame rate is a small positive value.
+// If disabled, the minimum frame rate is zero.
+BASE_FEATURE(kMinScreenCastFrameRateIsMoreThanZero,
+             "MinScreenCastFrameRateIsMoreThanZero",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 constexpr double kMinScreenCastAspectRatio =
     static_cast<double>(kMinScreenCastDimension) /
     static_cast<double>(kMaxScreenCastDimension);
@@ -69,7 +76,7 @@ class VideoContentCaptureCandidates {
                                     kMaxScreenCastDimension),
         frame_rate_set_(
             DoubleRangeSet::FromConstraint(constraint_set.frame_rate,
-                                           0.0,
+                                           MinScreenCastFrameRate(),
                                            kMaxScreenCastFrameRate)),
         device_id_set_(media_constraints::StringSetFromConstraint(
             constraint_set.device_id)),
@@ -384,6 +391,13 @@ VideoCaptureSettings UnsatisfiedConstraintsResult(
 }
 
 }  // namespace
+
+double MinScreenCastFrameRate() {
+  if (base::FeatureList::IsEnabled(kMinScreenCastFrameRateIsMoreThanZero)) {
+    return 0.01;
+  }
+  return 0;
+}
 
 VideoCaptureSettings SelectSettingsVideoContentCapture(
     const MediaConstraints& constraints,

@@ -1335,7 +1335,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, MandatoryMinFrameRate) {
 
   // MinFrameRate less than the minimum allowed.
   {
-    const double kMinFrameRate = -0.01;
+    const double kMinFrameRate = MinScreenCastFrameRate() - 0.01;
     constraint_factory_.basic().frame_rate.SetMin(kMinFrameRate);
     auto result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
@@ -1350,7 +1350,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, MandatoryMinFrameRate) {
 
   // MinFrameRate equal to the minimum allowed.
   {
-    const double kMinFrameRate = 0.0;
+    const double kMinFrameRate = MinScreenCastFrameRate();
     constraint_factory_.basic().frame_rate.SetMin(kMinFrameRate);
     auto result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
