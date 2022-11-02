@@ -792,7 +792,8 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyValues) {
   values.Set(policy::key::kURLBlocklist, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
              std::move(blocked_urls), nullptr);
-  expected_values[policy::key::kURLBlocklist] = "site1.com,site2.com,site3.com";
+  expected_values[policy::key::kURLBlocklist] =
+      R"(["site1.com","site2.com","site3.com"])";
   values.Set(policy::key::kHomepageLocation, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
              base::Value("http://google.com"), nullptr);

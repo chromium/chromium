@@ -107,10 +107,20 @@ export class PolicyRowElement extends CustomElement {
       const sourceDisplay = this.shadowRoot.querySelector('.source');
       sourceDisplay.textContent = loadTimeData.getString(policy.source);
       // Reduces load on the DOM for long values;
-      const truncatedValue =
-          (policy.value && policy.value.toString().length > 256) ?
-          `${policy.value.toString().substr(0, 256)}\u2026` :
-          policy.value;
+
+      const convertValue = (value, format) => {
+        // Skip 'string' policy to avoid unnecessary conversions.
+        if (typeof value == 'string') {
+          return value;
+        }
+        return JSON.stringify(value, null, format ? 2 : null);
+      };
+
+      // If value is longer than 256 characters, truncate and add ellipsis.
+      const policyValueStr = convertValue(policy.value);
+      const truncatedValue = policyValueStr.length > 256 ?
+          `${policyValueStr.substring(0, 256)}\u2026` :
+          policyValueStr;
 
       const valueDisplay = this.shadowRoot.querySelector('.value');
       valueDisplay.textContent = truncatedValue;
@@ -120,7 +130,9 @@ export class PolicyRowElement extends CustomElement {
 
       const valueRowContentDisplay =
           this.shadowRoot.querySelector('.value.row .value');
-      valueRowContentDisplay.textContent = policy.value;
+      // Expanded policy value is formatted.
+      valueRowContentDisplay.textContent =
+          convertValue(policy.value, /*format=*/ true);
 
       const errorRowContentDisplay =
           this.shadowRoot.querySelector('.errors.row .value');

@@ -47,7 +47,7 @@ base::Value::Dict ChromePoliciesValueProvider::GetValues() {
   auto client =
       std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
   auto policy_conversions = policy::ChromePolicyConversions(std::move(client));
-  return policy_conversions.EnableConvertValues(true).ToValueDict();
+  return policy_conversions.ToValueDict();
 }
 
 base::Value::Dict ChromePoliciesValueProvider::GetNames() {
