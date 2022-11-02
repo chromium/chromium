@@ -265,10 +265,6 @@ public final class ProductionSupportedFlagList {
                     "Restricts insertion of XRequestedWith header on outgoing requests "
                             + "to those that have been allow-listed through the appropriate "
                             + "developer API."),
-            Flag.baseFeature(
-                    AwFeatures.WEBVIEW_SYNTHESIZE_PAGE_LOAD_ONLY_ON_INITIAL_MAIN_DOCUMENT_ACCESS,
-                    "Only synthesize page load for URL spoof prevention at most once,"
-                            + " on initial main document access."),
             Flag.baseFeature(BlinkFeatures.VIEWPORT_HEIGHT_CLIENT_HINT_HEADER,
                     "Enables the use of sec-ch-viewport-height client hint."),
             Flag.baseFeature(BlinkFeatures.USER_AGENT_OVERRIDE_EXPERIMENT,

@@ -991,11 +991,6 @@ bool ContentBrowserClient::ShouldOverrideUrlLoading(
   return true;
 }
 
-bool ContentBrowserClient::
-    ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport() {
-  return false;
-}
-
 bool ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() {
   return true;
 }

@@ -4144,20 +4144,7 @@ void NavigationControllerImpl::NotifyNavigationEntryCommitted(
   // when it wants to draw.  See http://crbug.com/11157
   ssl_manager_.DidCommitProvisionalLoad(*details);
 
-  bool should_fire_navigation_state_changed = true;
-#if BUILDFLAG(IS_ANDROID)
-  if (details && details->should_stay_as_initial_entry) {
-    // For initial NavigationEntries, only fire NavigationStateChanged() if the
-    // embedder wants to hear about it.
-    should_fire_navigation_state_changed =
-        !GetContentClient()
-             ->browser()
-             ->ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport();
-  }
-#endif
-  if (should_fire_navigation_state_changed)
-    delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_ALL);
-
+  delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_ALL);
   delegate_->NotifyNavigationEntryCommitted(*details);
 
   // TODO(avi): Remove. http://crbug.com/170921
@@ -4317,20 +4304,7 @@ void NavigationControllerImpl::DiscardNonCommittedEntriesWithCommitDetails(
 
   if (!delegate_)
     return;
-
-  bool should_fire_navigation_state_changed = true;
-#if BUILDFLAG(IS_ANDROID)
-  if (commit_details && commit_details->should_stay_as_initial_entry) {
-    // For initial NavigationEntries, only fire NavigationStateChanged() if the
-    // embedder wants to hear about it.
-    should_fire_navigation_state_changed =
-        !GetContentClient()
-             ->browser()
-             ->ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport();
-  }
-#endif
-  if (should_fire_navigation_state_changed)
-    delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_ALL);
+  delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_ALL);
 }
 
 int NavigationControllerImpl::GetEntryIndexWithUniqueID(

@@ -1797,20 +1797,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                                         ui::PageTransition transition,
                                         bool* ignore_navigation);
 
-  // Only used by Android WebView. Whether creating or modifying the initial
-  // NavigationEntry of a WebContents should notify the embedder via
-  // NavigationStateChanged() calls or not. The embedder should return true if
-  // NavigationStateChanged() calls should be skipped for the initial entry, or
-  // false otherwise (which is the default). On Android WebView, we should not
-  // fire the initial NavigationEntry creation/modification
-  // NavigationStateChanged calls to preserve legacy behavior (not firing extra
-  // onPageFinished calls), as initial NavigationEntries used to not exist.
-  // See https://crbug.com/1277414.
-  // TODO(https://crbug.com/1293332): Remove this function if the
-  // kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess approach works.
-  virtual bool
-  ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport();
-
   // Returns true if navigation can synchronously continue if the frame
   // being navigated (and all child frames) do not have beforeunload handlers.
   // Synchronously continuing with navigation can lead to reentrancy in

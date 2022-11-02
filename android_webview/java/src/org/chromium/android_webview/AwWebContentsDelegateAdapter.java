@@ -18,7 +18,6 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.FrameLayout;
 
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ThreadUtils;
@@ -249,19 +248,15 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     public void navigationStateChanged(int flags) {
         // If this is a popup whose document has been accessed by script, hint
         // the client to show the last committed url through synthesizing a page
-        // load, as it may be unsafe to show the pending entry.
-        boolean shouldSynthesizePageLoad = ((flags & InvalidateTypes.URL) != 0)
-                && mAwContents.isPopupWindow() && mAwContents.hasAccessedInitialDocument();
-        if (AwFeatureList.isEnabled(
-                    AwFeatures.WEBVIEW_SYNTHESIZE_PAGE_LOAD_ONLY_ON_INITIAL_MAIN_DOCUMENT_ACCESS)) {
-            // Since we want to synthesize the page load only once for when the
-            // NavigationStateChange call is triggered by the first initial main
-            // document access, the flag must match InvalidateTypes.URL (the flag
-            // fired by NavigationControllerImpl::DidAccessInitialMainDocument())
-            // and we must check whether a page load has previously been
-            // synthesized here.
-            shouldSynthesizePageLoad &= (flags == InvalidateTypes.URL) && !mDidSynthesizePageLoad;
-        }
+        // load, as it may be unsafe to show the pending entry. Since we want to
+        // synthesize the page load only once for when the NavigationStateChange
+        // call is triggered by the first initial main document access, the flag
+        // must match InvalidateTypes.URL (the flag fired by
+        // NavigationControllerImpl::DidAccessInitialMainDocument()) and we must
+        // check whether a page load has previously been synthesized here.
+        boolean shouldSynthesizePageLoad = mAwContents.isPopupWindow()
+                && mAwContents.hasAccessedInitialDocument() && (flags == InvalidateTypes.URL)
+                && !mDidSynthesizePageLoad;
         if (shouldSynthesizePageLoad) {
             String url = mAwContents.getLastCommittedUrl();
             url = TextUtils.isEmpty(url) ? ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL : url;

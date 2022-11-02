@@ -698,20 +698,6 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
       ignore_navigation);
 }
 
-bool AwContentBrowserClient::
-    ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport() {
-  // On Android WebView, we should not fire the initial NavigationEntry
-  // creation/modification NavigationStateChanged calls to preserve legacy
-  // behavior (not firing extra onPageFinished calls), as initial
-  // NavigationEntries used to not exist. See https://crbug.com/1277414.
-  // However, if kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess is
-  // enabled, we won't need to ignore the extra NavigationStateChanged() calls,
-  // because they won't trigger synthesized page loads and won't cause extra
-  // onPageFinished calls.
-  return !base::FeatureList::IsEnabled(
-      features::kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess);
-}
-
 bool AwContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() {
   // WebView allows the embedder to override navigation in such a way that
   // might trigger reentrancy if this returned true. See comments in
