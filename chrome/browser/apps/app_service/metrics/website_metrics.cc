@@ -600,7 +600,6 @@ void WebsiteMetrics::EmitUkm(const GURL& url,
     LOG(ERROR) << "WebsiteMetrics::EmitUkm url is " << url.spec()
                << ", source id type is "
                << (int)ukm::SourceIdObj::FromInt64(source_id).GetType();
-    base::debug::DumpWithoutCrashing();
     return;
   }
 
