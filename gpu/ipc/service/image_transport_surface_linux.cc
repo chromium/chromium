@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/service/image_transport_surface.h"
 
+#include "build/build_config.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -18,7 +19,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
   scoped_refptr<gl::GLSurface> surface;
   bool override_vsync_for_multi_window_swap = false;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   surface = gl::init::CreateSurfacelessViewGLSurface(display, surface_handle);
 #endif
   if (!surface) {

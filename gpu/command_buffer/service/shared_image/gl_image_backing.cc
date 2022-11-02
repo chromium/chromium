@@ -520,12 +520,12 @@ GLImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
 std::unique_ptr<OverlayImageRepresentation> GLImageBacking::ProduceOverlay(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-#if defined(USE_OZONE) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
   return std::make_unique<OverlayGLImageRepresentation>(manager, this, tracker,
                                                         image_);
-#else   // || defined(USE_OZONE) || BUILDFLAG(IS_WIN))
+#else   // || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN))
   return SharedImageBacking::ProduceOverlay(manager, tracker);
-#endif  // defined(USE_OZONE) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 }
 
 std::unique_ptr<DawnImageRepresentation> GLImageBacking::ProduceDawn(

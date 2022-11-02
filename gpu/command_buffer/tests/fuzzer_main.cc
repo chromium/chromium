@@ -50,7 +50,7 @@
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -325,7 +325,7 @@ class CommandBufferSetup {
     [[maybe_unused]] auto* command_line =
         base::CommandLine::ForCurrentProcess();
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
 #endif
 

@@ -15,7 +15,7 @@
 #include "media/media_buildflags.h"
 #include "ui/gfx/buffer_types.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "base/message_loop/message_pump_type.h"
 #endif
 
@@ -271,7 +271,7 @@ struct GPU_EXPORT GpuPreferences {
   // only enabled on Windows platform for the info collection GPU process.
   bool enable_perf_data_collection = false;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Determines message pump type for the GPU thread.
   base::MessagePumpType message_pump_type = base::MessagePumpType::DEFAULT;
 #endif

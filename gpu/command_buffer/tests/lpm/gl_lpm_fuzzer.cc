@@ -21,6 +21,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_executor.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -33,7 +34,7 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -53,7 +54,7 @@ struct Env {
                                     gl::kANGLEImplementationNullName);
     base::FeatureList::InitializeInstance(std::string(), std::string());
     base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
 #endif
     gpu::GLTestHelper::InitializeGLDefault();

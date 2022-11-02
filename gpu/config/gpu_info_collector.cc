@@ -45,7 +45,7 @@
 #include "base/mac/foundation_util.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"           // nogncheck
 #include "ui/ozone/public/platform_gl_egl_utility.h"  // nogncheck
 #endif
@@ -586,7 +586,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
     }
   }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   if (const auto* const egl_utility =
           ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility()) {
     egl_utility->CollectGpuExtraInfo(prefs.enable_native_gpu_memory_buffers,

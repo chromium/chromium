@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "gpu/gles2_conform_support/egl/test_support.h"
 
 // This file tests EGL basic interface for command_buffer_gles2, the mode of
@@ -36,7 +37,7 @@ TEST_F(EGLTest, GetDisplay) {
   EGLDisplay display2 = eglGetDisplay(EGL_DEFAULT_DISPLAY);
   EXPECT_EQ(display1, display2);
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   EGLNativeDisplayType invalid_display_type =
       static_cast<EGLNativeDisplayType>(0x1);
 #else

@@ -317,7 +317,7 @@ OverlayImageRepresentation::GetAHardwareBufferFenceSync() {
   NOTREACHED();
   return nullptr;
 }
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
 scoped_refptr<gfx::NativePixmap> OverlayImageRepresentation::GetNativePixmap() {
   return backing()->GetNativePixmap();
 }

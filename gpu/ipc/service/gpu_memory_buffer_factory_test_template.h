@@ -17,7 +17,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_display.h"
 
-#if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)
 #include "base/command_line.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
@@ -29,7 +29,7 @@ namespace gpu {
 template <typename GpuMemoryBufferFactoryType>
 class GpuMemoryBufferFactoryTest : public testing::Test {
  public:
-#if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)
   // Overridden from testing::Test:
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
@@ -40,7 +40,7 @@ class GpuMemoryBufferFactoryTest : public testing::Test {
     display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
   }
   void TearDown() override { gl::GLSurfaceTestSupport::ShutdownGL(display_); }
-#endif  // BUILDFLAG(IS_WIN) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)
 
  protected:
   base::test::TaskEnvironment task_environment_{

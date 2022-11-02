@@ -3174,7 +3174,7 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
   gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
   if (format == GL_RGB) {
     buffer_format = gfx::BufferFormat::RGBX_8888;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     // BGRX format is preferred for Ozone as it matches the format used by the
     // buffer queue and is as a result guaranteed to work on all devices.
     // TODO(reveman): Define this format in one place instead of having to

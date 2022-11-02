@@ -15,7 +15,7 @@
 #include "gpu/vulkan/win32/vulkan_implementation_win32.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
@@ -29,7 +29,7 @@ namespace gpu {
 std::unique_ptr<VulkanImplementation> CreateVulkanImplementation(
     bool use_swiftshader,
     bool allow_protected_memory) {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   return ui::OzonePlatform::GetInstance()
       ->GetSurfaceFactoryOzone()
       ->CreateVulkanImplementation(use_swiftshader, allow_protected_memory);

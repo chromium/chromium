@@ -21,7 +21,7 @@ namespace {
 
 int RunHelper(base::TestSuite* testSuite) {
   base::MessagePumpType pump_type = base::MessagePumpType::IO;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   pump_type = base::MessagePumpType::UI;
 #endif
   base::SingleThreadTaskExecutor executor(pump_type);

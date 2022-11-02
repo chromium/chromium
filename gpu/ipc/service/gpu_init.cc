@@ -49,7 +49,7 @@
 #include <GLES2/gl2.h>
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
@@ -400,7 +400,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   base::ElapsedTimer elapsed_timer;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Initialize Ozone GPU after the watchdog in case it hangs. The sandbox
   // may also have started at this point.
   ui::OzonePlatform::InitParams params;
@@ -426,7 +426,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->GetSupportedFormatsForTexturing();
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   if (!gl_use_swiftshader_) {
     gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
@@ -761,7 +761,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
                         gpu_info_.sandboxed);
 
   init_successful_ = true;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
       std::move(supported_buffer_formats_for_texturing);
@@ -818,7 +818,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
                                   const GpuPreferences& gpu_preferences) {
   gpu_preferences_ = gpu_preferences;
   init_successful_ = true;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
 
@@ -961,7 +961,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     AdjustInfoToSwiftShader();
   }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   const std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()

@@ -12,14 +12,14 @@
 #include "build/build_config.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 static int RunHelper(base::TestSuite* test_suite) {
   base::FeatureList::InitializeInstance(std::string(), std::string());
   std::unique_ptr<base::SingleThreadTaskExecutor> executor;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   executor = std::make_unique<base::SingleThreadTaskExecutor>(
       base::MessagePumpType::UI);
   ui::OzonePlatform::InitParams params;

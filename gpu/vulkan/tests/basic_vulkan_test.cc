@@ -6,12 +6,13 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_piece_forward.h"
+#include "build/build_config.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/tests/native_window.h"
 #include "gpu/vulkan/vulkan_surface.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -23,7 +24,7 @@ BasicVulkanTest::~BasicVulkanTest() {}
 
 void BasicVulkanTest::SetUp() {
   bool supports_swapchain = true;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   supports_swapchain = ui::OzonePlatform::GetInstance()
                            ->GetPlatformProperties()
                            .supports_vulkan_swap_chain;
