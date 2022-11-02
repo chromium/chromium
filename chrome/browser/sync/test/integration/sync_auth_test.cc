@@ -63,19 +63,26 @@ bool HasUserPrefValue(const PrefService* pref_service,
 // Waits until local changes are committed or an auth error is encountered.
 class TestForAuthError : public UpdatedProgressMarkerChecker {
  public:
+  static bool HasAuthError(syncer::SyncService* service) {
+    // Note that depending on the nature of the auth error, sync may become
+    // paused (for persistent auth errors) or in some other cases transient
+    // errors may be surfaced via GetSyncTokenStatusForDebugging() (e.g. 401
+    // HTTP status codes returned by the Sync server when the access token has
+    // expired).
+    return service->GetTransportState() ==
+               syncer::SyncService::TransportState::PAUSED ||
+           service->GetSyncTokenStatusForDebugging()
+                   .last_get_token_error.state() !=
+               GoogleServiceAuthError::NONE;
+  }
+
   explicit TestForAuthError(syncer::SyncServiceImpl* service)
       : UpdatedProgressMarkerChecker(service) {}
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for auth error";
-    // Note: This is quite fragile. It relies on Sync trying to fetch a new
-    // access token, even though it might already be in a persistent auth error
-    // state.
-    return (service()
-                ->GetSyncTokenStatusForDebugging()
-                .last_get_token_error.state() !=
-            GoogleServiceAuthError::NONE) ||
+    return HasAuthError(service()) ||
            UpdatedProgressMarkerChecker::IsExitConditionSatisfied(os);
   }
 };
@@ -113,12 +120,7 @@ class SyncAuthTest : public SyncTest {
 
     // Run until the bookmark is committed or an auth error is encountered.
     TestForAuthError(GetSyncService(0)).Wait();
-
-    GoogleServiceAuthError oauth_error = GetSyncService(0)
-                                             ->GetSyncTokenStatusForDebugging()
-                                             .last_get_token_error;
-
-    return oauth_error.state() != GoogleServiceAuthError::NONE;
+    return TestForAuthError::HasAuthError(GetSyncService(0));
   }
 
   void DisableTokenFetchRetries() {
@@ -220,15 +222,16 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, InvalidGrant) {
                          net::OK);
   ASSERT_TRUE(AttemptToTriggerAuthError());
   EXPECT_EQ(GetSyncService(0)->GetTransportState(),
-            syncer::SyncService::TransportState::ACTIVE);
+            syncer::SyncService::TransportState::PAUSED);
   EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
             GetSyncService(0)->GetAuthError().state());
+  EXPECT_FALSE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
-// Verify that SyncServiceImpl retries after SERVICE_ERROR auth error when
-// an invalid_client error is returned by the access token fetcher with an
+// Verify that SyncServiceImpl does not retry after SERVICE_ERROR auth error
+// when an invalid_client error is returned by the access token fetcher with an
 // HTTP_BAD_REQUEST (400) response code.
-IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInvalidClient) {
+IN_PROC_BROWSER_TEST_F(SyncAuthTest, InvalidClient) {
   ASSERT_TRUE(SetupSync());
   ASSERT_FALSE(AttemptToTriggerAuthError());
   GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
@@ -237,8 +240,10 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInvalidClient) {
                          net::OK);
   ASSERT_TRUE(AttemptToTriggerAuthError());
   EXPECT_EQ(GetSyncService(0)->GetTransportState(),
-            syncer::SyncService::TransportState::ACTIVE);
-  EXPECT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
+            syncer::SyncService::TransportState::PAUSED);
+  EXPECT_EQ(GoogleServiceAuthError::SERVICE_ERROR,
+            GetSyncService(0)->GetAuthError().state());
+  EXPECT_FALSE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
 // Verify that SyncServiceImpl retries after REQUEST_CANCELED auth error
@@ -270,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, FailInitialSetupWithPersistentError) {
   ASSERT_FALSE(GetClient(0)->SetupSync());
   EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
   EXPECT_EQ(GetSyncService(0)->GetTransportState(),
-            syncer::SyncService::TransportState::INITIALIZING);
+            syncer::SyncService::TransportState::PAUSED);
   EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
             GetSyncService(0)->GetAuthError().state());
 }

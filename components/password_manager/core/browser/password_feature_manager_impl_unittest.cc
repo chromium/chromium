@@ -133,18 +133,18 @@ TEST_F(PasswordFeatureManagerImplTest,
 }
 
 TEST_F(PasswordFeatureManagerImplTest,
-       GenerationEnabledDespiteSyncAuthErrorOtherThanWebSignout) {
+       GenerationDisabledIfSyncAuthErrorOtherThanWebSignout) {
   sync_service_.SetAccountInfo(account_);
   sync_service_.SetHasSyncConsent(true);
   sync_service_.SetDisableReasons({});
   sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
 
-  ASSERT_NE(sync_service_.GetTransportState(),
+  ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
   ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
-            password_manager::SyncState::kSyncingNormalEncryption);
+            password_manager::SyncState::kNotSyncing);
 
-  EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
+  EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }
 
 TEST_F(PasswordFeatureManagerImplTest,

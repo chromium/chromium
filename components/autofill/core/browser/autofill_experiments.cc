@@ -116,6 +116,8 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
     return false;
   }
 
+  // TODO(crbug.com/1156584): This should simply check SyncService::
+  // GetTransportState() is PAUSED.
   if (sync_service->GetAuthError().IsPersistentError()) {
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::kSyncServicePersistentAuthError,

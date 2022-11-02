@@ -82,6 +82,9 @@ void AutofillWalletModelTypeController::Stop(
 syncer::DataTypeController::PreconditionState
 AutofillWalletModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
+  // TODO(crbug.com/1156584): No need to handle IsPersistentError() once the
+  // feature toggle is cleaned up and sync gets paused for all persistent auth
+  // errors.
   bool preconditions_met =
       pref_service_->GetBoolean(
           autofill::prefs::kAutofillWalletImportEnabled) &&

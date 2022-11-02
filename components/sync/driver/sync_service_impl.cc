@@ -335,8 +335,8 @@ void SyncServiceImpl::CredentialsChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the engine isn't allowed to start anymore due to the credentials change,
-  // then shut down. This happens when the user signs out on the web, i.e. we're
-  // in the "Sync paused" state.
+  // then shut down. This happens when there is a persistent auth error (e.g.
+  // the user signs out on the web), which implies the "Sync paused" state.
   if (!IsEngineAllowedToRun()) {
     // If the engine currently exists, then ResetEngine() will notify observers
     // anyway. Otherwise, notify them here. (One relevant case is when entering

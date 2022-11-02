@@ -146,6 +146,6 @@ BASE_FEATURE(kSyncEnableContactInfoDataType,
 // this exclusively for web signouts.
 BASE_FEATURE(kSyncPauseUponAnyPersistentAuthError,
              "SyncPauseUponAnyPersistentAuthError",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace syncer

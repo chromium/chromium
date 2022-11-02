@@ -862,8 +862,8 @@ TEST_F(SyncServiceImplTest, CredentialErrorReturned) {
             service()->GetAuthError().state());
   EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
             observer.auth_error().state());
-  // The overall state should remain ACTIVE.
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+  // Sync should pause.
+  EXPECT_EQ(SyncService::TransportState::PAUSED,
             service()->GetTransportState());
 
   service()->RemoveObserver(&observer);
@@ -916,8 +916,8 @@ TEST_F(SyncServiceImplTest, CredentialErrorClearsOnNewToken) {
   // Check that the invalid token is returned from sync.
   ASSERT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
             service()->GetAuthError().state());
-  // The overall state should remain ACTIVE.
-  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+  // Sync should pause.
+  ASSERT_EQ(SyncService::TransportState::PAUSED,
             service()->GetTransportState());
 
   // Now emulate Chrome receiving a new, valid LST.

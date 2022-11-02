@@ -917,17 +917,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
   EXPECT_EQ(password_manager_util::GetPasswordSyncState(GetSyncService(0)),
             password_manager::SyncState::kSyncingNormalEncryption);
 
-  // Enter a persistent auth error state (web signout).
+  // Enter a persistent auth error state.
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
-  ASSERT_EQ(GetSyncService(0)->GetAuthError(),
-            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                    CREDENTIALS_REJECTED_BY_CLIENT));
 
-  // Passwords are not sync-ing actively while sync is paused due to a web
-  // signout. Note that this is not the case for other persistent auth errors.
-  // TODO(crbug.com/1156584): Update comments when the logic gets unified for
-  // all persistent auth errors.
+  // Passwords are not sync-ing actively while sync is paused (any persistent
+  // auth error).
   EXPECT_FALSE(
       password_manager::sync_util::IsPasswordSyncActive(GetSyncService(0)));
   EXPECT_EQ(password_manager_util::GetPasswordSyncState(GetSyncService(0)),
