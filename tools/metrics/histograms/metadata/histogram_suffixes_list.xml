@@ -9250,13 +9250,6 @@ chromium-metrics-reviews@google.com.
       name="ServiceWorker.ActivatedWorkerPreparationForMainFrame.Time"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache_Cache" separator=".">
-  <suffix name="MatchAll2"
-      label="The time to perform the 'matchAll' operation on a ServiceWorker
-             Cache, which does a mass cache lookup."/>
-  <affected-histogram name="ServiceWorkerCache.Cache"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ServiceWorkerCache_Cache_MatchSuffixes" separator=".">
   <owner>wanderview@chromium.org</owner>
   <suffix name="Hit"
@@ -9356,10 +9349,7 @@ chromium-metrics-reviews@google.com.
       label="Collected from a BackgroundSyncManager instance"/>
   <suffix name="Cache" label="Collected from a CacheStorageCache instance"/>
   <suffix name="CacheStorage" label="Collected from a CacheStorage instance"/>
-  <affected-histogram name="ServiceWorkerCache.Scheduler.IsOperationSlow"/>
-  <affected-histogram name="ServiceWorkerCache.Scheduler.OperationDuration"/>
   <affected-histogram name="ServiceWorkerCache.Scheduler.OperationDuration2"/>
-  <affected-histogram name="ServiceWorkerCache.Scheduler.QueueDuration"/>
   <affected-histogram name="ServiceWorkerCache.Scheduler.QueueDuration2"/>
   <affected-histogram name="ServiceWorkerCache.Scheduler.QueueLength"/>
 </histogram_suffixes>
@@ -9380,13 +9370,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="WriteIndex" label=""/>
   <suffix name="WriteSideData" label=""/>
   <affected-histogram
-      name="ServiceWorkerCache.Cache.Scheduler.IsOperationSlow"/>
-  <affected-histogram
       name="ServiceWorkerCache.Cache.Scheduler.OperationDuration2"/>
   <affected-histogram name="ServiceWorkerCache.Cache.Scheduler.QueueDuration2"/>
   <affected-histogram name="ServiceWorkerCache.Cache.Scheduler.QueueLength"/>
-  <affected-histogram
-      name="ServiceWorkerCache.CacheStorage.Scheduler.IsOperationSlow"/>
   <affected-histogram
       name="ServiceWorkerCache.CacheStorage.Scheduler.OperationDuration2"/>
   <affected-histogram
