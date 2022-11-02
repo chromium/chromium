@@ -3923,6 +3923,8 @@ if (!is_android) {
         "../browser/ash/policy/networking/policy_certs_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_browsertest.cc",
+        "../browser/ash/policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.cc",
+        "../browser/ash/policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.h",
         "../browser/ash/policy/reporting/metrics_reporting/metric_browsertest_utils.cc",
         "../browser/ash/policy/reporting/metrics_reporting/metric_browsertest_utils.h",
         "../browser/ash/policy/reporting/metrics_reporting/network/network_events_observer_browsertest.cc",

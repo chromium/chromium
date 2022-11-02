@@ -7,6 +7,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,19 +26,9 @@ struct TbtTestCase {
   std::vector<reporting::ThunderboltSecurityLevel> reporting_security_levels;
 };
 
-struct MemoryEncryptionTestCase {
-  std::string test_name;
-  cros_healthd::EncryptionState healthd_encryption_state;
-  reporting::MemoryEncryptionState reporting_encryption_state;
-  cros_healthd::CryptoAlgorithm healthd_encryption_algorithm;
-  reporting::MemoryEncryptionAlgorithm reporting_encryption_algorithm;
-  int64_t max_keys;
-  int64_t key_length;
-};
-
 // Memory constants.
-constexpr int64_t kTmeMaxKeys = 2;
-constexpr int64_t kTmeKeysLength = 4;
+static constexpr int64_t kTmeMaxKeys = 2;
+static constexpr int64_t kTmeKeysLength = 4;
 
 // Boot Performance constants.
 constexpr int64_t kBootUpSeconds = 5054;
@@ -112,26 +103,6 @@ cros_healthd::TelemetryInfoPtr CreateAudioResult(
   auto telemetry_info = cros_healthd::TelemetryInfo::New();
   telemetry_info->audio_result =
       cros_healthd::AudioResult::NewAudioInfo(std::move(audio_info));
-  return telemetry_info;
-}
-
-cros_healthd::MemoryEncryptionInfoPtr CreateMemoryEncryptionInfo(
-    cros_healthd::EncryptionState encryption_state,
-    int64_t max_keys,
-    int64_t key_length,
-    cros_healthd::CryptoAlgorithm encryption_algorithm) {
-  return cros_healthd::MemoryEncryptionInfo::New(
-      encryption_state, max_keys, key_length, encryption_algorithm);
-}
-
-cros_healthd::TelemetryInfoPtr CreateMemoryResult(
-    cros_healthd::MemoryEncryptionInfoPtr memory_encryption_info) {
-  auto telemetry_info = cros_healthd::TelemetryInfo::New();
-  telemetry_info->memory_result =
-      cros_healthd::MemoryResult::NewMemoryInfo(cros_healthd::MemoryInfo::New(
-          /*total_memory=*/0, /*free_memory=*/0, /*available_memory=*/0,
-          /*page_faults_since_last_boot=*/0,
-          std::move(memory_encryption_info)));
   return telemetry_info;
 }
 
@@ -260,9 +231,9 @@ class CrosHealthdMetricSamplerTbtTest
     : public CrosHealthdMetricSamplerTest,
       public testing::WithParamInterface<TbtTestCase> {};
 
-class CrosHealthdMetricSamplerMemoryEncryptionTest
+class CrosHealthdMetricSamplerMemoryInfoTest
     : public CrosHealthdMetricSamplerTest,
-      public testing::WithParamInterface<MemoryEncryptionTestCase> {};
+      public testing::WithParamInterface<MemoryInfoTestCase> {};
 
 TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetryMultipleEntries) {
   // Max value for 8-bit unsigned integer
@@ -405,9 +376,8 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
   EXPECT_EQ(usb_telemetry.firmware_version(), kFirmwareVersion);
 }
 
-TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,
-       TestMemoryEncryptionReporting) {
-  const MemoryEncryptionTestCase& test_case = GetParam();
+TEST_P(CrosHealthdMetricSamplerMemoryInfoTest, TestMemoryInfoeporting) {
+  const auto& test_case = GetParam();
   const absl::optional<MetricData> optional_result = CollectData(
       CreateMemoryResult(CreateMemoryEncryptionInfo(
           test_case.healthd_encryption_state, test_case.max_keys,
@@ -417,17 +387,7 @@ TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,
 
   ASSERT_TRUE(optional_result.has_value());
   const MetricData& result = optional_result.value();
-
-  ASSERT_TRUE(result.has_info_data());
-  ASSERT_TRUE(result.info_data().has_memory_info());
-  ASSERT_TRUE(result.info_data().memory_info().has_tme_info());
-
-  const auto& tme_info = result.info_data().memory_info().tme_info();
-  EXPECT_EQ(tme_info.encryption_state(), test_case.reporting_encryption_state);
-  EXPECT_EQ(tme_info.encryption_algorithm(),
-            test_case.reporting_encryption_algorithm);
-  EXPECT_EQ(tme_info.max_keys(), test_case.max_keys);
-  EXPECT_EQ(tme_info.key_length(), test_case.key_length);
+  AssertMemoryInfo(result, test_case);
 }
 
 TEST_P(CrosHealthdMetricSamplerTbtTest, TestTbtSecurityLevels) {
@@ -1096,9 +1056,9 @@ INSTANTIATE_TEST_SUITE_P(
            info) { return info.param.test_name; });
 
 INSTANTIATE_TEST_SUITE_P(
-    CrosHealthdMetricSamplerMemoryEncryptionTests,
-    CrosHealthdMetricSamplerMemoryEncryptionTest,
-    testing::ValuesIn<MemoryEncryptionTestCase>({
+    CrosHealthdMetricSamplerMemoryInfoTests,
+    CrosHealthdMetricSamplerMemoryInfoTest,
+    testing::ValuesIn<MemoryInfoTestCase>({
         {"UnknownEncryptionState", cros_healthd::EncryptionState::kUnknown,
          ::reporting::MEMORY_ENCRYPTION_STATE_UNKNOWN,
          cros_healthd::CryptoAlgorithm::kUnknown,
@@ -1137,7 +1097,7 @@ INSTANTIATE_TEST_SUITE_P(
          kTmeKeysLength},
     }),
     [](const testing::TestParamInfo<
-        CrosHealthdMetricSamplerMemoryEncryptionTest::ParamType>& info) {
+        CrosHealthdMetricSamplerMemoryInfoTest::ParamType>& info) {
       return info.param.test_name;
     });
 

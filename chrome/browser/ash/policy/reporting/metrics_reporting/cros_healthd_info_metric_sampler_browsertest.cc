@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_browsertest_utils.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
@@ -14,6 +15,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::reporting {
 
@@ -39,11 +41,37 @@ using ::reporting::Priority;
 using ::reporting::Record;
 using ::testing::Eq;
 
+// Is the given record about info metric?
+absl::optional<MetricData> IsRecordInfo(const Record& record) {
+  if (record.destination() != Destination::INFO_METRIC) {
+    return absl::nullopt;
+  }
+
+  MetricData record_data;
+  EXPECT_TRUE(record_data.ParseFromString(record.data()));
+  EXPECT_TRUE(record_data.has_info_data());
+  return record_data;
+}
+
+}  // namespace
+
+// ---- Memory ----
+
+// Memory constants.
+static constexpr int64_t kTmeMaxKeys = 2;
+static constexpr int64_t kTmeKeysLength = 4;
+
 class MemoryInfoSamplerBrowserTest
-    : public policy::DevicePolicyCrosBrowserTest {
+    : public policy::DevicePolicyCrosBrowserTest,
+      public testing::WithParamInterface<
+          ::reporting::test::MemoryInfoTestCase> {
+ public:
+  MemoryInfoSamplerBrowserTest(const MemoryInfoSamplerBrowserTest&) = delete;
+  MemoryInfoSamplerBrowserTest& operator=(const MemoryInfoSamplerBrowserTest&) =
+      delete;
+
  protected:
   MemoryInfoSamplerBrowserTest() = default;
-
   ~MemoryInfoSamplerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -52,18 +80,11 @@ class MemoryInfoSamplerBrowserTest
         kReportDeviceMemoryInfo, true);
   }
 
+  // Is the given record about memory info metric?
   static bool IsRecordMemoryInfo(const Record& record) {
-    if (record.destination() != Destination::INFO_METRIC) {
-      return false;
-    }
-
-    MetricData record_data;
-    EXPECT_TRUE(record_data.ParseFromString(record.data()));
-    if (!record_data.has_info_data()) {
-      return false;
-    }
-
-    return record_data.info_data().has_memory_info();
+    auto record_data = IsRecordInfo(record);
+    return record_data.has_value() &&
+           record_data.value().info_data().has_memory_info();
   }
 
   // Gets next enqueued memory info record. This is useful in excluding
@@ -88,32 +109,7 @@ class MemoryInfoSamplerBrowserTest
     MetricData record_data;
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     EXPECT_TRUE(record_data.has_timestamp_ms());
-    EXPECT_FALSE(record_data.has_telemetry_data());
-    ASSERT_TRUE(record_data.has_info_data());
-
-    const auto& info_data = record_data.info_data();
-    ASSERT_TRUE(info_data.has_memory_info());
-    EXPECT_THAT(info_data.memory_info().tme_info().max_keys(), Eq(0));
-  }
-
-  cros_healthd::MemoryEncryptionInfoPtr CreateMemoryEncryptionInfo(
-      cros_healthd::EncryptionState encryption_state,
-      int64_t max_keys,
-      int64_t key_length,
-      cros_healthd::CryptoAlgorithm encryption_algorithm) {
-    return cros_healthd::MemoryEncryptionInfo::New(
-        encryption_state, max_keys, key_length, encryption_algorithm);
-  }
-
-  cros_healthd::TelemetryInfoPtr CreateMemoryResult(
-      cros_healthd::MemoryEncryptionInfoPtr memory_encryption_info) {
-    auto telemetry_info = cros_healthd::TelemetryInfo::New();
-    telemetry_info->memory_result =
-        cros_healthd::MemoryResult::NewMemoryInfo(cros_healthd::MemoryInfo::New(
-            /*total_memory=*/0, /*free_memory=*/0, /*available_memory=*/0,
-            /*page_faults_since_last_boot=*/0,
-            std::move(memory_encryption_info)));
-    return telemetry_info;
+    ::reporting::test::AssertMemoryInfo(record_data, GetParam());
   }
 
  private:
@@ -121,10 +117,12 @@ class MemoryInfoSamplerBrowserTest
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
-IN_PROC_BROWSER_TEST_F(MemoryInfoSamplerBrowserTest, ReportMemoryInfo) {
-  auto memory_result = CreateMemoryResult(
-      CreateMemoryEncryptionInfo(cros_healthd::EncryptionState::kUnknown, 0, 0,
-                                 cros_healthd::CryptoAlgorithm::kUnknown));
+IN_PROC_BROWSER_TEST_P(MemoryInfoSamplerBrowserTest, ReportMemoryInfo) {
+  const auto& test_case = GetParam();
+  auto memory_result = ::reporting::test::CreateMemoryResult(
+      ::reporting::test::CreateMemoryEncryptionInfo(
+          test_case.healthd_encryption_state, test_case.max_keys,
+          test_case.key_length, test_case.healthd_encryption_algorithm));
 
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(memory_result);
@@ -132,6 +130,21 @@ IN_PROC_BROWSER_TEST_F(MemoryInfoSamplerBrowserTest, ReportMemoryInfo) {
   AssertMemoryInfo(&observer);
 }
 
-}  // namespace
+INSTANTIATE_TEST_SUITE_P(
+    MemoryInfoSamplerBrowserTests,
+    MemoryInfoSamplerBrowserTest,
+    testing::ValuesIn<::reporting::test::MemoryInfoTestCase>({
+        {"UnknownEncryptionState", cros_healthd::EncryptionState::kUnknown,
+         ::reporting::MEMORY_ENCRYPTION_STATE_UNKNOWN,
+         cros_healthd::CryptoAlgorithm::kUnknown,
+         ::reporting::MEMORY_ENCRYPTION_ALGORITHM_UNKNOWN, 0, 0},
+        {"KeyValuesSet", cros_healthd::EncryptionState::kUnknown,
+         ::reporting::MEMORY_ENCRYPTION_STATE_UNKNOWN,
+         cros_healthd::CryptoAlgorithm::kUnknown,
+         ::reporting::MEMORY_ENCRYPTION_ALGORITHM_UNKNOWN, kTmeMaxKeys,
+         kTmeKeysLength},
+    }),
+    [](const testing::TestParamInfo<MemoryInfoSamplerBrowserTest::ParamType>&
+           info) { return info.param.test_name; });
 
 }  // namespace ash::reporting

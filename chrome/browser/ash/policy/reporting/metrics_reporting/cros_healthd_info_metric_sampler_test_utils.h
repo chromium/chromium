@@ -1,0 +1,45 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Some utilities that can be used for info metric unit tests and browser tests.
+
+#ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_INFO_METRIC_SAMPLER_TEST_UTILS_H_
+#define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_INFO_METRIC_SAMPLER_TEST_UTILS_H_
+
+#include <string>
+
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
+
+namespace reporting::test {
+
+namespace cros_healthd = ::ash::cros_healthd::mojom;
+
+// ------- memory --------
+
+struct MemoryInfoTestCase {
+  std::string test_name;
+  cros_healthd::EncryptionState healthd_encryption_state;
+  reporting::MemoryEncryptionState reporting_encryption_state;
+  cros_healthd::CryptoAlgorithm healthd_encryption_algorithm;
+  reporting::MemoryEncryptionAlgorithm reporting_encryption_algorithm;
+  int64_t max_keys;
+  int64_t key_length;
+};
+
+// Create a memory encryption info for memory tests.
+cros_healthd::MemoryEncryptionInfoPtr CreateMemoryEncryptionInfo(
+    cros_healthd::EncryptionState encryption_state,
+    int64_t max_keys,
+    int64_t key_length,
+    cros_healthd::CryptoAlgorithm encryption_algorithm);
+
+// Create a memory test result.
+cros_healthd::TelemetryInfoPtr CreateMemoryResult(
+    cros_healthd::MemoryEncryptionInfoPtr memory_encryption_info);
+
+void AssertMemoryInfo(const MetricData& result,
+                      const MemoryInfoTestCase& test_case);
+}  // namespace reporting::test
+
+#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_INFO_METRIC_SAMPLER_TEST_UTILS_H_
