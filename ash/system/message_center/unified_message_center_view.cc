@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/message_center/unified_message_center_view.h"
 
 #include <algorithm>
 #include <memory>
@@ -13,9 +13,9 @@
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_scroll_bar.h"
+#include "ash/system/message_center/stacked_notification_bar.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
-#include "ash/system/notification_center/notification_list_view.h"
-#include "ash/system/notification_center/stacked_notification_bar.h"
+#include "ash/system/message_center/unified_message_list_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -24,7 +24,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/message_center/message_center.h"
@@ -47,12 +46,12 @@ constexpr base::TimeDelta kCollapseAnimationDuration = base::Milliseconds(640);
 
 class ScrollerContentsView : public views::View {
  public:
-  explicit ScrollerContentsView(NotificationListView* notification_list_view) {
+  explicit ScrollerContentsView(UnifiedMessageListView* message_list_view) {
     auto* contents_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
     contents_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kStretch);
-    AddChildView(notification_list_view);
+    AddChildView(message_list_view);
   }
 
   ScrollerContentsView(const ScrollerContentsView&) = delete;
@@ -70,7 +69,7 @@ class ScrollerContentsView : public views::View {
 
 }  // namespace
 
-NotificationCenterView::NotificationCenterView(
+UnifiedMessageCenterView::UnifiedMessageCenterView(
     UnifiedSystemTrayView* parent,
     scoped_refptr<UnifiedSystemTrayModel> model,
     UnifiedMessageCenterBubble* bubble)
@@ -81,7 +80,7 @@ NotificationCenterView::NotificationCenterView(
       // TODO(crbug.com/1247455): Determine how to use ScrollWithLayers without
       // breaking ARC.
       scroller_(new views::ScrollView()),
-      notification_list_view_(new NotificationListView(this, model)),
+      message_list_view_(new UnifiedMessageListView(this, model)),
       last_scroll_position_from_bottom_(0),
       is_notifications_refresh_enabled_(
           features::IsNotificationsRefreshEnabled()),
@@ -99,7 +98,7 @@ NotificationCenterView::NotificationCenterView(
   }
 }
 
-NotificationCenterView::~NotificationCenterView() {
+UnifiedMessageCenterView::~UnifiedMessageCenterView() {
   DCHECK(model_);
   model_->set_notification_target_mode(
       UnifiedSystemTrayModel::NotificationTargetMode::LAST_NOTIFICATION);
@@ -107,8 +106,8 @@ NotificationCenterView::~NotificationCenterView() {
   RemovedFromWidget();
 }
 
-void NotificationCenterView::Init() {
-  notification_list_view_->Init();
+void UnifiedMessageCenterView::Init() {
+  message_list_view_->Init();
 
   if (!is_notifications_refresh_enabled_)
     AddChildView(notification_bar_);
@@ -118,7 +117,7 @@ void NotificationCenterView::Init() {
   // TODO(crbug.com/1247455): Be able to do
   // SetContentsLayerType(LAYER_NOT_DRAWN).
   scroller_->SetContents(
-      std::make_unique<ScrollerContentsView>(notification_list_view_));
+      std::make_unique<ScrollerContentsView>(message_list_view_));
   scroller_->SetBackgroundColor(absl::nullopt);
   scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_));
   scroller_->SetDrawOverflowIndicator(false);
@@ -133,14 +132,14 @@ void NotificationCenterView::Init() {
     AddChildView(notification_bar_);
 }
 
-bool NotificationCenterView::UpdateNotificationBar() {
+bool UnifiedMessageCenterView::UpdateNotificationBar() {
   return notification_bar_->Update(
-      notification_list_view_->GetTotalNotificationCount(),
-      notification_list_view_->GetTotalPinnedNotificationCount(),
+      message_list_view_->GetTotalNotificationCount(),
+      message_list_view_->GetTotalPinnedNotificationCount(),
       GetStackedNotifications());
 }
 
-void NotificationCenterView::SetMaxHeight(int max_height) {
+void UnifiedMessageCenterView::SetMaxHeight(int max_height) {
   int max_scroller_height = max_height;
   if (notification_bar_->GetVisible()) {
     max_scroller_height -=
@@ -152,12 +151,12 @@ void NotificationCenterView::SetMaxHeight(int max_height) {
   scroller_->ClipHeightTo(0, max_scroller_height);
 }
 
-void NotificationCenterView::SetAvailableHeight(int available_height) {
+void UnifiedMessageCenterView::SetAvailableHeight(int available_height) {
   available_height_ = available_height;
   UpdateVisibility();
 }
 
-void NotificationCenterView::SetExpanded() {
+void UnifiedMessageCenterView::SetExpanded() {
   if (!collapsed_)
     return;
 
@@ -166,7 +165,7 @@ void NotificationCenterView::SetExpanded() {
   scroller_->SetVisible(true);
 }
 
-void NotificationCenterView::SetCollapsed(bool animate) {
+void UnifiedMessageCenterView::SetCollapsed(bool animate) {
   if (!GetVisible() || collapsed_)
     return;
 
@@ -184,40 +183,40 @@ void NotificationCenterView::SetCollapsed(bool animate) {
   }
 }
 
-void NotificationCenterView::ClearAllNotifications() {
+void UnifiedMessageCenterView::ClearAllNotifications() {
   base::RecordAction(
       base::UserMetricsAction("StatusArea_Notifications_StackingBarClearAll"));
 
-  notification_list_view_->ClearAllWithAnimation();
+  message_list_view_->ClearAllWithAnimation();
 }
 
-void NotificationCenterView::ExpandMessageCenter() {
+void UnifiedMessageCenterView::ExpandMessageCenter() {
   base::RecordAction(
       base::UserMetricsAction("StatusArea_Notifications_SeeAllNotifications"));
   message_center_bubble_->ExpandMessageCenter();
 }
 
-bool NotificationCenterView::IsNotificationBarVisible() const {
+bool UnifiedMessageCenterView::IsNotificationBarVisible() const {
   return notification_bar_->GetVisible();
 }
 
-bool NotificationCenterView::IsScrollBarVisible() const {
+bool UnifiedMessageCenterView::IsScrollBarVisible() const {
   return scroll_bar_->GetVisible();
 }
 
-void NotificationCenterView::OnNotificationSlidOut() {
+void UnifiedMessageCenterView::OnNotificationSlidOut() {
   if (notification_bar_->GetVisible()) {
     UpdateNotificationBar();
     if (!notification_bar_->GetVisible())
       StartHideStackingBarAnimation();
   }
 
-  if (!notification_list_view_->GetTotalNotificationCount()) {
+  if (!message_list_view_->GetTotalNotificationCount()) {
     StartCollapseAnimation();
   }
 }
 
-void NotificationCenterView::ListPreferredSizeChanged() {
+void UnifiedMessageCenterView::ListPreferredSizeChanged() {
   UpdateVisibility();
   PreferredSizeChanged();
   SetMaxHeight(available_height_);
@@ -226,25 +225,25 @@ void NotificationCenterView::ListPreferredSizeChanged() {
     GetWidget()->SynthesizeMouseMoveEvent();
 }
 
-void NotificationCenterView::ConfigureMessageView(
+void UnifiedMessageCenterView::ConfigureMessageView(
     message_center::MessageView* message_view) {
   message_view->set_scroller(scroller_);
 }
 
-void NotificationCenterView::AddedToWidget() {
+void UnifiedMessageCenterView::AddedToWidget() {
   focus_manager_ = GetFocusManager();
   if (focus_manager_)
     focus_manager_->AddFocusChangeListener(this);
 }
 
-void NotificationCenterView::RemovedFromWidget() {
+void UnifiedMessageCenterView::RemovedFromWidget() {
   if (!focus_manager_)
     return;
   focus_manager_->RemoveFocusChangeListener(this);
   focus_manager_ = nullptr;
 }
 
-void NotificationCenterView::Layout() {
+void UnifiedMessageCenterView::Layout() {
   if (is_notifications_refresh_enabled_)
     return views::View::Layout();
 
@@ -257,7 +256,8 @@ void NotificationCenterView::Layout() {
                                       ? kStackedNotificationBarCollapsedHeight
                                       : notification_bar_expanded_height;
     int notification_bar_offset = 0;
-    if (animation_state_ == NotificationCenterAnimationState::HIDE_STACKING_BAR)
+    if (animation_state_ ==
+        UnifiedMessageCenterAnimationState::HIDE_STACKING_BAR)
       notification_bar_offset = GetAnimationValue() * notification_bar_height;
 
     counter_bounds.set_height(notification_bar_height);
@@ -276,7 +276,7 @@ void NotificationCenterView::Layout() {
   ScrollToTarget();
 }
 
-gfx::Size NotificationCenterView::CalculatePreferredSize() const {
+gfx::Size UnifiedMessageCenterView::CalculatePreferredSize() const {
   if (is_notifications_refresh_enabled_)
     return views::View::CalculatePreferredSize();
 
@@ -285,12 +285,13 @@ gfx::Size NotificationCenterView::CalculatePreferredSize() const {
   if (notification_bar_->GetVisible()) {
     int bar_height = kStackedNotificationBarHeight;
 
-    if (animation_state_ == NotificationCenterAnimationState::HIDE_STACKING_BAR)
+    if (animation_state_ ==
+        UnifiedMessageCenterAnimationState::HIDE_STACKING_BAR)
       bar_height -= GetAnimationValue() * bar_height;
     preferred_size.set_height(preferred_size.height() + bar_height);
   }
 
-  if (animation_state_ == NotificationCenterAnimationState::COLLAPSE) {
+  if (animation_state_ == UnifiedMessageCenterAnimationState::COLLAPSE) {
     int height = preferred_size.height() * (1.0 - GetAnimationValue());
 
     if (collapsed_)
@@ -304,7 +305,11 @@ gfx::Size NotificationCenterView::CalculatePreferredSize() const {
   return preferred_size;
 }
 
-void NotificationCenterView::OnMessageCenterScrolled() {
+const char* UnifiedMessageCenterView::GetClassName() const {
+  return "UnifiedMessageCenterView";
+}
+
+void UnifiedMessageCenterView::OnMessageCenterScrolled() {
   last_scroll_position_from_bottom_ =
       scroll_bar_->GetMaxPosition() - scroller_->GetVisibleRect().y();
 
@@ -323,12 +328,12 @@ void NotificationCenterView::OnMessageCenterScrolled() {
   }
 }
 
-void NotificationCenterView::OnWillChangeFocus(views::View* before,
-                                               views::View* now) {}
+void UnifiedMessageCenterView::OnWillChangeFocus(views::View* before,
+                                                 views::View* now) {}
 
-void NotificationCenterView::OnDidChangeFocus(views::View* before,
-                                              views::View* now) {
-  if (notification_list_view_->is_deleting_removed_notifications())
+void UnifiedMessageCenterView::OnDidChangeFocus(views::View* before,
+                                                views::View* now) {
+  if (message_list_view_->is_deleting_removed_notifications())
     return;
 
   OnMessageCenterScrolled();
@@ -357,17 +362,17 @@ void NotificationCenterView::OnDidChangeFocus(views::View* before,
   }
 }
 
-void NotificationCenterView::AnimationEnded(const gfx::Animation* animation) {
+void UnifiedMessageCenterView::AnimationEnded(const gfx::Animation* animation) {
   // This is also called from AnimationCanceled().
   animation_->SetCurrentValue(1.0);
   PreferredSizeChanged();
 
-  animation_state_ = NotificationCenterAnimationState::IDLE;
+  animation_state_ = UnifiedMessageCenterAnimationState::IDLE;
   notification_bar_->SetAnimationState(animation_state_);
   UpdateVisibility();
 }
 
-void NotificationCenterView::AnimationProgressed(
+void UnifiedMessageCenterView::AnimationProgressed(
     const gfx::Animation* animation) {
   // Make the scroller containing notifications invisible and change the
   // notification bar to it's collapsed state in the middle of the animation to
@@ -380,42 +385,43 @@ void NotificationCenterView::AnimationProgressed(
   PreferredSizeChanged();
 }
 
-void NotificationCenterView::AnimationCanceled(
+void UnifiedMessageCenterView::AnimationCanceled(
     const gfx::Animation* animation) {
   AnimationEnded(animation);
 }
 
-void NotificationCenterView::StartHideStackingBarAnimation() {
+void UnifiedMessageCenterView::StartHideStackingBarAnimation() {
   animation_->End();
-  animation_state_ = NotificationCenterAnimationState::HIDE_STACKING_BAR;
+  animation_state_ = UnifiedMessageCenterAnimationState::HIDE_STACKING_BAR;
   notification_bar_->SetAnimationState(animation_state_);
   animation_->SetDuration(kHideStackingBarAnimationDuration);
   animation_->Start();
 }
 
-void NotificationCenterView::StartCollapseAnimation() {
+void UnifiedMessageCenterView::StartCollapseAnimation() {
   animation_->End();
-  animation_state_ = NotificationCenterAnimationState::COLLAPSE;
+  animation_state_ = UnifiedMessageCenterAnimationState::COLLAPSE;
   notification_bar_->SetAnimationState(animation_state_);
   animation_->SetDuration(kCollapseAnimationDuration);
   animation_->Start();
 }
 
-double NotificationCenterView::GetAnimationValue() const {
+double UnifiedMessageCenterView::GetAnimationValue() const {
   return gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_SLOW_IN,
                                     animation_->GetCurrentValue());
 }
 
-void NotificationCenterView::UpdateVisibility() {
+void UnifiedMessageCenterView::UpdateVisibility() {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
 
-  SetVisible(available_height_ >= kUnifiedNotificationMinimumHeight &&
-             (animation_state_ == NotificationCenterAnimationState::COLLAPSE ||
-              notification_list_view_->GetPreferredSize().height() > 0) &&
-             session_controller->ShouldShowNotificationTray() &&
-             (!session_controller->IsScreenLocked() ||
-              AshMessageCenterLockScreenController::IsEnabled()));
+  SetVisible(
+      available_height_ >= kUnifiedNotificationMinimumHeight &&
+      (animation_state_ == UnifiedMessageCenterAnimationState::COLLAPSE ||
+       message_list_view_->GetPreferredSize().height() > 0) &&
+      session_controller->ShouldShowNotificationTray() &&
+      (!session_controller->IsScreenLocked() ||
+       AshMessageCenterLockScreenController::IsEnabled()));
 
   DCHECK(model_);
   if (!GetVisible()) {
@@ -433,7 +439,7 @@ void NotificationCenterView::UpdateVisibility() {
   }
 }
 
-void NotificationCenterView::ScrollToTarget() {
+void UnifiedMessageCenterView::ScrollToTarget() {
   // Following logic doesn't work when the view is invisible, because it uses
   // the height of |scroller_|.
   if (!GetVisible())
@@ -445,7 +451,7 @@ void NotificationCenterView::ScrollToTarget() {
 
   // Notification views may be deleted during an animation, so wait until it
   // finishes before scrolling to a new target (see crbug.com/954001).
-  if (notification_list_view_->IsAnimating())
+  if (message_list_view_->IsAnimating())
     target_mode = UnifiedSystemTrayModel::NotificationTargetMode::LAST_POSITION;
 
   int position;
@@ -462,9 +468,9 @@ void NotificationCenterView::ScrollToTarget() {
       const gfx::Rect& target_rect =
           (model_->notification_target_mode() ==
            UnifiedSystemTrayModel::NotificationTargetMode::NOTIFICATION_ID)
-              ? notification_list_view_->GetNotificationBounds(
+              ? message_list_view_->GetNotificationBounds(
                     model_->notification_target_id())
-              : notification_list_view_->GetLastNotificationBounds();
+              : message_list_view_->GetLastNotificationBounds();
 
       const int last_notification_offset =
           target_rect.height() - scroller_->height();
@@ -487,7 +493,7 @@ void NotificationCenterView::ScrollToTarget() {
 }
 
 std::vector<message_center::Notification*>
-NotificationCenterView::GetStackedNotifications() const {
+UnifiedMessageCenterView::GetStackedNotifications() const {
   // CountNotificationsAboveY() only works after SetBoundsRect() is called at
   // least once.
   if (scroller_->bounds().IsEmpty())
@@ -496,23 +502,23 @@ NotificationCenterView::GetStackedNotifications() const {
   if (collapsed_) {
     // When in collapsed state, all notifications are hidden, so all
     // notifications are stacked.
-    return notification_list_view_->GetAllNotifications();
+    return message_list_view_->GetAllNotifications();
   }
 
   if (is_notifications_refresh_enabled_) {
     const int y_offset = scroller_->GetVisibleRect().bottom() - scroller_->y();
-    return notification_list_view_->GetNotificationsBelowY(y_offset);
+    return message_list_view_->GetNotificationsBelowY(y_offset);
   }
 
   const int notification_bar_height =
       IsNotificationBarVisible() ? kStackedNotificationBarHeight : 0;
   const int y_offset = scroller_->GetVisibleRect().y() - scroller_->y() +
                        notification_bar_height;
-  return notification_list_view_->GetNotificationsAboveY(y_offset);
+  return message_list_view_->GetNotificationsAboveY(y_offset);
 }
 
 std::vector<std::string>
-NotificationCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
+UnifiedMessageCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
   // CountNotificationsAboveY() only works after SetBoundsRect() is called at
   // least once.
   if (scroller_->bounds().IsEmpty())
@@ -520,7 +526,7 @@ NotificationCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
   if (collapsed_) {
     // When in collapsed state, all notifications are hidden, so all
     // notifications are stacked.
-    return notification_list_view_->GetAllNotificationIds();
+    return message_list_view_->GetAllNotificationIds();
   }
 
   const int notification_bar_height =
@@ -528,31 +534,31 @@ NotificationCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
   const int y_offset_above = scroller_->GetVisibleRect().y() - scroller_->y() +
                              notification_bar_height;
   auto above_id_list =
-      notification_list_view_->GetNotificationIdsAboveY(y_offset_above);
+      message_list_view_->GetNotificationIdsAboveY(y_offset_above);
   const int y_offset_below =
       scroller_->GetVisibleRect().bottom() - scroller_->y();
   const auto below_id_list =
-      notification_list_view_->GetNotificationIdsBelowY(y_offset_below);
+      message_list_view_->GetNotificationIdsBelowY(y_offset_below);
   above_id_list.insert(above_id_list.end(), below_id_list.begin(),
                        below_id_list.end());
   return above_id_list;
 }
 
-void NotificationCenterView::FocusOut(bool reverse) {
+void UnifiedMessageCenterView::FocusOut(bool reverse) {
   if (message_center_bubble_ && message_center_bubble_->FocusOut(reverse)) {
     GetFocusManager()->ClearFocus();
     GetFocusManager()->SetStoredFocusView(nullptr);
   }
 }
 
-void NotificationCenterView::FocusEntered(bool reverse) {
+void UnifiedMessageCenterView::FocusEntered(bool reverse) {
   views::View* focus_view =
       reverse ? GetLastFocusableChild() : GetFirstFocusableChild();
   GetFocusManager()->ClearFocus();
   GetFocusManager()->SetFocusedView(focus_view);
 }
 
-views::View* NotificationCenterView::GetFirstFocusableChild() {
+views::View* UnifiedMessageCenterView::GetFirstFocusableChild() {
   views::FocusTraversable* dummy_focus_traversable;
   views::View* dummy_focus_traversable_view;
   return focus_search_->FindNextFocusableView(
@@ -563,7 +569,7 @@ views::View* NotificationCenterView::GetFirstFocusableChild() {
       &dummy_focus_traversable, &dummy_focus_traversable_view);
 }
 
-views::View* NotificationCenterView::GetLastFocusableChild() {
+views::View* UnifiedMessageCenterView::GetLastFocusableChild() {
   views::FocusTraversable* focus_traversable = nullptr;
   views::View* dummy_focus_traversable_view = nullptr;
   views::View* last_view = focus_search_->FindNextFocusableView(
@@ -583,8 +589,5 @@ views::View* NotificationCenterView::GetLastFocusableChild() {
       views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
       &focus_traversable, &dummy_focus_traversable_view);
 }
-
-BEGIN_METADATA(NotificationCenterView, views::View);
-END_METADATA
 
 }  // namespace ash

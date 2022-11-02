@@ -14,7 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/message_center/message_center_style.h"
-#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/tray/tray_utils.h"
@@ -86,14 +86,14 @@ UnifiedMessageCenterBubble::UnifiedMessageCenterBubble(UnifiedSystemTray* tray)
 
   bubble_view_ = new TrayBubbleView(init_params);
 
-  notification_center_view_ =
-      bubble_view_->AddChildView(std::make_unique<NotificationCenterView>(
+  message_center_view_ =
+      bubble_view_->AddChildView(std::make_unique<UnifiedMessageCenterView>(
           nullptr /* parent */, tray->model(), this));
 
   time_to_click_recorder_ =
-      std::make_unique<TimeToClickRecorder>(this, notification_center_view_);
+      std::make_unique<TimeToClickRecorder>(this, message_center_view_);
 
-  notification_center_view_->AddObserver(this);
+  message_center_view_->AddObserver(this);
 }
 
 void UnifiedMessageCenterBubble::ShowBubble() {
@@ -123,7 +123,7 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   }
 
   bubble_view_->InitializeAndShowBubble();
-  notification_center_view_->Init();
+  message_center_view_->Init();
   UpdateBubbleState();
 
   tray_->tray_event_filter()->AddBubble(this);
@@ -134,8 +134,8 @@ UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
   if (bubble_widget_) {
     tray_->tray_event_filter()->RemoveBubble(this);
     tray_->bubble()->unified_view()->RemoveObserver(this);
-    CHECK(notification_center_view_);
-    notification_center_view_->RemoveObserver(this);
+    CHECK(message_center_view_);
+    message_center_view_->RemoveObserver(this);
 
     bubble_view_->ResetDelegate();
     bubble_widget_->RemoveObserver(this);
@@ -150,20 +150,20 @@ gfx::Rect UnifiedMessageCenterBubble::GetBoundsInScreen() const {
 }
 
 void UnifiedMessageCenterBubble::CollapseMessageCenter() {
-  if (notification_center_view_->collapsed())
+  if (message_center_view_->collapsed())
     return;
 
-  notification_center_view_->SetCollapsed(true /*animate*/);
+  message_center_view_->SetCollapsed(true /*animate*/);
 }
 
 void UnifiedMessageCenterBubble::ExpandMessageCenter() {
-  if (!notification_center_view_->collapsed())
+  if (!message_center_view_->collapsed())
     return;
 
   if (tray_->IsShowingCalendarView())
     tray_->bubble()->unified_system_tray_controller()->TransitionToMainView(
         /*restore_focus=*/true);
-  notification_center_view_->SetExpanded();
+  message_center_view_->SetExpanded();
   UpdatePosition();
   tray_->EnsureQuickSettingsCollapsed(true /*animate*/);
 }
@@ -171,8 +171,8 @@ void UnifiedMessageCenterBubble::ExpandMessageCenter() {
 void UnifiedMessageCenterBubble::UpdatePosition() {
   int available_height = CalculateAvailableHeight();
 
-  notification_center_view_->SetMaxHeight(available_height);
-  notification_center_view_->SetAvailableHeight(available_height);
+  message_center_view_->SetMaxHeight(available_height);
+  message_center_view_->SetAvailableHeight(available_height);
 
   if (!tray_->bubble())
     return;
@@ -208,11 +208,11 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
                     kUnifiedMessageCenterBubbleSpacing);
   bubble_view_->ChangeAnchorRect(anchor_rect);
 
-  notification_center_view_->UpdateNotificationBar();
+  message_center_view_->UpdateNotificationBar();
 
   if (!features::IsNotificationsRefreshEnabled()) {
     bubble_view_->layer()->StackAtTop(border_->layer());
-    border_->layer()->SetBounds(notification_center_view_->GetContentsBounds());
+    border_->layer()->SetBounds(message_center_view_->GetContentsBounds());
   }
 
   if (shadow_) {
@@ -221,13 +221,12 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
     // than its blur region. To avoid this, we hide the shadow when the message
     // center has no notifications.
     shadow_->GetLayer()->SetVisible(
-        notification_center_view_->notification_list_view()
-            ->GetTotalNotificationCount());
+        message_center_view_->message_list_view()->GetTotalNotificationCount());
   }
 }
 
 void UnifiedMessageCenterBubble::FocusEntered(bool reverse) {
-  notification_center_view_->FocusEntered(reverse);
+  message_center_view_->FocusEntered(reverse);
 }
 
 bool UnifiedMessageCenterBubble::FocusOut(bool reverse) {
@@ -239,12 +238,12 @@ void UnifiedMessageCenterBubble::ActivateQuickSettingsBubble() {
 }
 
 bool UnifiedMessageCenterBubble::IsMessageCenterVisible() {
-  return !!bubble_widget_ && notification_center_view_ &&
-         notification_center_view_->GetVisible();
+  return !!bubble_widget_ && message_center_view_ &&
+         message_center_view_->GetVisible();
 }
 
 bool UnifiedMessageCenterBubble::IsMessageCenterCollapsed() {
-  return notification_center_view_->collapsed();
+  return message_center_view_->collapsed();
 }
 
 TrayBackgroundView* UnifiedMessageCenterBubble::GetTray() const {
@@ -278,7 +277,7 @@ void UnifiedMessageCenterBubble::OnViewVisibilityChanged(
     views::View* starting_view) {
   // Hide the message center widget if the message center is not
   // visible. This is to ensure we do not see an empty bubble.
-  if (observed_view != notification_center_view_)
+  if (observed_view != message_center_view_)
     return;
 
   bubble_view_->UpdateBubble();
@@ -288,7 +287,7 @@ void UnifiedMessageCenterBubble::OnWidgetDestroying(views::Widget* widget) {
   CHECK_EQ(bubble_widget_, widget);
   tray_->tray_event_filter()->RemoveBubble(this);
   tray_->bubble()->unified_view()->RemoveObserver(this);
-  notification_center_view_->RemoveObserver(this);
+  message_center_view_->RemoveObserver(this);
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
   shadow_.reset();
@@ -312,16 +311,15 @@ void UnifiedMessageCenterBubble::OnDisplayConfigurationChanged() {
 
 void UnifiedMessageCenterBubble::UpdateBubbleState() {
   if (CalculateAvailableHeight() < kMessageCenterCollapseThreshold &&
-      notification_center_view_->notification_list_view()
-          ->GetTotalNotificationCount()) {
+      message_center_view_->message_list_view()->GetTotalNotificationCount()) {
     if (tray_->IsQuickSettingsExplicitlyExpanded()) {
-      notification_center_view_->SetCollapsed(false /*animate*/);
+      message_center_view_->SetCollapsed(false /*animate*/);
     } else {
-      notification_center_view_->SetExpanded();
+      message_center_view_->SetExpanded();
       tray_->EnsureQuickSettingsCollapsed(false /*animate*/);
     }
-  } else if (notification_center_view_->collapsed()) {
-    notification_center_view_->SetExpanded();
+  } else if (message_center_view_->collapsed()) {
+    message_center_view_->SetExpanded();
   }
 
   UpdatePosition();
