@@ -4,10 +4,12 @@
 
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 
+#include "android_webview/browser/aw_contents.h"
 #include "base/notreached.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -38,9 +40,21 @@ void AwClientHintsControllerDelegate::GetAllowedClientHintsFromSource(
 bool AwClientHintsControllerDelegate::IsJavaScriptAllowed(
     const GURL& url,
     content::RenderFrameHost* parent_rfh) {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
-  return false;
+  if (!parent_rfh) {
+    return false;
+  }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          parent_rfh->GetOutermostMainFrame());
+  if (!web_contents) {
+    // TODO(crbug.com/921655): Detect and support service workers here.
+    return false;
+  }
+  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
+  if (!aw_contents) {
+    return false;
+  }
+  return aw_contents->IsJavaScriptAllowed();
 }
 
 bool AwClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(

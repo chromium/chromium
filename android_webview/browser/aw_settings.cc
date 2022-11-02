@@ -78,13 +78,6 @@ AwSettings::AwSettings(JNIEnv* env,
                        jobject obj,
                        content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      renderer_prefs_initialized_(false),
-      javascript_can_open_windows_automatically_(false),
-      allow_third_party_cookies_(false),
-      allow_file_access_(false),
-      enterprise_authentication_app_link_policy_enabled_(
-          true),  // TODO(b/222053757,ayushsha): Change this policy to be by
-                  // default false from next Android version(Maybe Android U).
       xrw_allowlist_matcher_(base::MakeRefCounted<AwContentsOriginMatcher>()),
       aw_settings_(env, obj) {
   web_contents->SetUserData(kAwSettingsUserDataKey,
@@ -110,6 +103,10 @@ bool AwSettings::GetJavaScriptCanOpenWindowsAutomatically() {
 
 bool AwSettings::GetAllowThirdPartyCookies() {
   return allow_third_party_cookies_;
+}
+
+bool AwSettings::GetJavaScriptEnabled() {
+  return javascript_enabled_;
 }
 
 AwSettings::MixedContentMode AwSettings::GetMixedContentMode() {
@@ -188,6 +185,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateOffscreenPreRasterLocked(env, obj);
   UpdateWillSuppressErrorStateLocked(env, obj);
   UpdateCookiePolicyLocked(env, obj);
+  UpdateJavaScriptPolicyLocked(env, obj);
   UpdateAllowFileAccessLocked(env, obj);
   UpdateMixedContentModeLocked(env, obj);
 }
@@ -310,6 +308,15 @@ void AwSettings::UpdateCookiePolicyLocked(JNIEnv* env,
 
   allow_third_party_cookies_ =
       Java_AwSettings_getAcceptThirdPartyCookiesLocked(env, obj);
+}
+
+void AwSettings::UpdateJavaScriptPolicyLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  if (!web_contents())
+    return;
+
+  javascript_enabled_ = Java_AwSettings_getJavaScriptEnabledLocked(env, obj);
 }
 
 void AwSettings::UpdateOffscreenPreRasterLocked(

@@ -226,6 +226,9 @@ class AwContents : public FindHelper::Listener,
   void ClearMatches(JNIEnv* env);
   FindHelper* GetFindHelper();
 
+  // Per WebView Javascript Policy
+  bool IsJavaScriptAllowed();
+
   // Per WebView Cookie Policy
   bool AllowThirdPartyCookies();
 

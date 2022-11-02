@@ -801,6 +801,12 @@ FindHelper* AwContents::GetFindHelper() {
   return find_helper_.get();
 }
 
+bool AwContents::IsJavaScriptAllowed() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents_.get());
+  return aw_settings->GetJavaScriptEnabled();
+}
+
 bool AwContents::AllowThirdPartyCookies() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents_.get());
