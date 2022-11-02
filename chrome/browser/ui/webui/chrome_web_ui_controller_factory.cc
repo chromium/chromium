@@ -1009,8 +1009,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::LauncherInternalsUI>;
   if (url.host_piece() == ash::kChromeUIHelpAppHost)
     return &NewComponentUI<ash::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
-  if (url.host_piece() == chrome::kChromeUIHumanPresenceInternalsHost)
-    return &NewWebUI<ash::HumanPresenceInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIManageMirrorSyncHost &&
       ash::features::IsDriveFsMirroringEnabled()) {
     return &NewWebUI<ash::ManageMirrorSyncUI>;
