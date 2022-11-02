@@ -305,6 +305,8 @@ static_library("browser") {
     "payments/full_card_request.h",
     "payments/iban_save_manager.cc",
     "payments/iban_save_manager.h",
+    "payments/iban_save_strike_database.cc",
+    "payments/iban_save_strike_database.h",
     "payments/legal_message_line.cc",
     "payments/legal_message_line.h",
     "payments/offer_notification_handler.cc",

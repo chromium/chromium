@@ -248,6 +248,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".CreditCardSave" summary="Credit card save"/>
   <variant name=".FidoAuthentication"
       summary="Fido authentication (Better Auth Project)"/>
+  <variant name=".IBANSave" summary="IBAN save"/>
   <variant name=".LocalCardMigration" summary="Local card migration"/>
   <variant name=".VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>

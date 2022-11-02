@@ -13,13 +13,14 @@
 
 namespace autofill {
 
+class IBANSaveStrikeDatabase;
 class PersonalDataManager;
 
 // Decides whether an IBAN local save should be offered and handles the workflow
 // for local saves.
 class IBANSaveManager {
  public:
-  explicit IBANSaveManager(PersonalDataManager* personal_data_manager);
+  explicit IBANSaveManager(AutofillClient* client);
   IBANSaveManager(const IBANSaveManager&) = delete;
   IBANSaveManager& operator=(const IBANSaveManager&) = delete;
   virtual ~IBANSaveManager();
@@ -34,8 +35,6 @@ class IBANSaveManager {
       const absl::optional<std::u16string>& nickname = absl::nullopt) {
     OnUserDidDecideOnLocalSave(user_decision, nickname);
   }
-
-  IBAN get_iban_save_candidate_for_testing() { return iban_save_candidate_; }
 
  private:
   // Called once the user makes a decision with respect to the local IBAN
@@ -53,6 +52,9 @@ class IBANSaveManager {
   // The IBAN to be saved if local IBAN save is accepted. It will be set if
   // imported IBAN is not empty.
   IBAN iban_save_candidate_;
+
+  // StrikeDatabase used to check whether to offer to save the IBAN or not.
+  std::unique_ptr<IBANSaveStrikeDatabase> iban_save_strike_database_;
 
   base::WeakPtrFactory<IBANSaveManager> weak_ptr_factory_{this};
 };
