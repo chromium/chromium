@@ -7863,7 +7863,24 @@ chromium-metrics-reviews@google.com.
 
   <owner>calamity@chromium.org</owner>
   <owner>grt@chromium.org</owner>
-  <summary>The different ways Chrome is launched.</summary>
+  <summary>
+    The different ways Chrome is launched.
+
+    This metric is gradually being replaced with an improved version. See
+    tracking bug http://crbug.com/1366137
+
+    Warnings about this version of this metric.
+
+    1. If user starts Chrome while Chrome is already running, this reports
+    incorrect data. See http://crbug.com/1067205
+
+    2. On ChromeOS, if a user session-restores multiple profiles, each profile
+    records this metric. See http://crbug.com/1356222
+
+    3. When the profile picker is shown on startup (which can only happen on
+    Windows, Mac, and Linux), this metric is not recorded. See
+    http://crbug.com/1380458
+  </summary>
 </histogram>
 
 <histogram name="Layout.MicroSecondsPerComplexText" units="microseconds"
