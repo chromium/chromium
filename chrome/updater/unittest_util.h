@@ -58,6 +58,12 @@ absl::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope);
 bool DeleteFileAndEmptyParentDirectories(
     const absl::optional<base::FilePath>& file_path);
 
+#if BUILDFLAG(IS_WIN)
+// Change Windows Defender settings to skip scanning the paths used by the
+// updater if test runs with the flag `exclude-paths-from-win-defender`.
+void MaybeExcludePathsFromWindowsDefender();
+#endif
+
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_UNITTEST_UTIL_H_

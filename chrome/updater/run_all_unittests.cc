@@ -164,6 +164,8 @@ int main(int argc, char** argv) {
   MaybeIncreaseTestTimeouts(argc, argv);
 
 #if BUILDFLAG(IS_WIN)
+  updater::test::MaybeExcludePathsFromWindowsDefender();
+
   std::cerr << "Process priority: " << base::Process::Current().GetPriority()
             << std::endl;
   std::cerr << updater::GetUACState() << std::endl;
