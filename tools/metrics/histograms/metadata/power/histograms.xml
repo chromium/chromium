@@ -550,6 +550,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Power.AdaptiveChargingDelayDelta{AdaptiveChargingState}.{OnTimeStatus}"
+    units="minutes" expires_after="2023-10-26">
+  <owner>dbasehore@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The difference between the correct delay time and the actual delay time for
+    Adaptive Charging, as computed by (correct delay - actual delay) in minutes.
+    Adaptive Charging delays charging from a hold charge percentage, 80%, to
+    full if it predicts the charger will be unplugged more than 2 hours in the
+    future. The correct delay time ends exactly 2 hours before the user unplugs
+    the charger. This metric is recorded upon unplug of an AC charger, if the
+    hold percent was reached.
+
+    We record this under several variants, which split this result by whether
+    Adaptive Charging is enabled and active, a heuristic disabled the feature,
+    the user canceled the feature for this use, the user disabled the feature,
+    or the feature is not supported on the hardware class. We still record the
+    metric if the feature is not supported, since we may backport support to
+    older systems, and we'd like to know how well the ML model does before
+    enabling support.
+
+    Since metrics don't work with negative values, this is additionally split
+    across Late and Early variants. The absolute values of negatives are
+    reported under the Late variant. Positive and 0 values are reported under
+    the Early variant.
+  </summary>
+  <token key="AdaptiveChargingState">
+    <variant name="Active"/>
+    <variant name="HeuristicDisabled"/>
+    <variant name="NotSupported"/>
+    <variant name="UserCanceled"/>
+    <variant name="UserDisabled"/>
+  </token>
+  <token key="OnTimeStatus">
+    <variant name="Early"/>
+    <variant name="Late"/>
+  </token>
+</histogram>
+
 <histogram name="Power.AdaptiveChargingMinutes.{ReportType}" units="minutes"
     expires_after="2023-03-19">
   <owner>dbasehore@chromium.org</owner>
@@ -603,6 +643,30 @@ chromium-metrics-reviews@google.com.
   <token key="OnTimeStatus">
     <variant name="Early"/>
     <variant name="Late"/>
+  </token>
+</histogram>
+
+<histogram name="Power.AdaptiveChargingMinutesFullOnAC{AdaptiveChargingState}"
+    units="minutes" expires_after="2023-10-26">
+  <owner>dbasehore@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    This shows the time spent fully charged while on AC in minutes.
+
+    We record this under several variants, which split this result by whether
+    Adaptive Charging is enabled and active, a heuristic disabled the feature,
+    the user canceled the feature for this use, the user disabled the feature,
+    or the feature is not supported on the hardware class. We still record the
+    metric if the feature is not supported, since we may backport support to
+    older systems, and we'd like to know how well the ML model does before
+    enabling support.
+  </summary>
+  <token key="AdaptiveChargingState">
+    <variant name="Active"/>
+    <variant name="HeuristicDisabled"/>
+    <variant name="NotSupported"/>
+    <variant name="UserCanceled"/>
+    <variant name="UserDisabled"/>
   </token>
 </histogram>
 
