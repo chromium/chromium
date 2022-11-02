@@ -205,7 +205,7 @@ TEST_P(ProfileDestroyerTest,
 
   // No profile are destroyed, because of the RenderProcessHosts.
   StopKeepingAliveOriginalProfile();
-  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(OtrProfile(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(original_profile());
   EXPECT_TRUE(OtrProfile(0));
@@ -238,7 +238,7 @@ TEST_P(ProfileDestroyerTest, ImmediateOTRProfileDestruction) {
   EXPECT_TRUE(OtrProfile(0));
 
   // Ask for destruction of OTR profile, and expect immediate destruction.
-  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(OtrProfile(0));
   EXPECT_FALSE(OtrProfile(0));
 }
 
@@ -254,7 +254,7 @@ TEST_P(ProfileDestroyerTest, DelayedOTRProfileDestruction) {
       CreatedRendererProcessHost(OtrProfile(0));
 
   // Ask for destruction of OTR profile, but expect it to be delayed.
-  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(OtrProfile(0));
   EXPECT_TRUE(OtrProfile(0));
 
   // Destroy the first pending render process host, and expect it not to destroy
@@ -270,29 +270,6 @@ TEST_P(ProfileDestroyerTest, DelayedOTRProfileDestruction) {
   EXPECT_FALSE(OtrProfile(0));
 }
 
-// Regression test for:
-// https://crbug.com/1337388#c11
-TEST_P(ProfileDestroyerTest,
-       DestructionRequestedTwiceWhileDelayedOriginalProfile) {
-  if (!IsScopedProfileKeepAliveSupported())
-    return;
-  CreateOriginalProfile();
-
-  content::RenderProcessHost* render_process_host =
-      CreatedRendererProcessHost(original_profile());
-  StopKeepingAliveOriginalProfile();
-
-  EXPECT_TRUE(original_profile());
-  ProfileDestroyer::DestroyProfileWhenAppropriate(original_profile());
-  EXPECT_TRUE(original_profile());
-  ProfileDestroyer::DestroyProfileWhenAppropriate(original_profile());
-  EXPECT_TRUE(original_profile());
-
-  render_process_host->Cleanup();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(original_profile());
-}
-
 TEST_P(ProfileDestroyerTest, RenderProcessAddedAfterDestroyRequested) {
   if (!IsScopedProfileKeepAliveSupported())
     return;
@@ -301,8 +278,6 @@ TEST_P(ProfileDestroyerTest, RenderProcessAddedAfterDestroyRequested) {
   content::RenderProcessHost* render_process_host_1 =
       CreatedRendererProcessHost(original_profile());
   StopKeepingAliveOriginalProfile();
-
-  ProfileDestroyer::DestroyProfileWhenAppropriate(original_profile());
 
   EXPECT_TRUE(original_profile());
   content::RenderProcessHost* render_process_host_2 =
@@ -329,9 +304,9 @@ TEST_P(ProfileDestroyerTest, DestructionRequestedTwiceWhileDelayedOTRProfile) {
   content::RenderProcessHost* render_process_host =
       CreatedRendererProcessHost(OtrProfile(0));
 
-  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(OtrProfile(0));
   EXPECT_TRUE(OtrProfile(0));
-  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(OtrProfile(0));
   EXPECT_TRUE(OtrProfile(0));
 
   render_process_host->Cleanup();
@@ -359,8 +334,8 @@ TEST_P(ProfileDestroyerTest, MultipleOTRPRofile) {
 
   // Ask for the destruction of two of them. The destruction is delayed, because
   // they are kept alive by two RenderProcessHost depending on them.
-  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
-  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(1));
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(OtrProfile(0));
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(OtrProfile(1));
   EXPECT_TRUE(original_profile());
   EXPECT_TRUE(OtrProfile(0));
   EXPECT_TRUE(OtrProfile(1));
@@ -391,7 +366,7 @@ TEST_P(ProfileDestroyerTest, MultipleOTRPRofile) {
   EXPECT_TRUE(OtrProfile(2));
 
   // Allow the deletion of the last OTR profile:
-  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(2));
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(OtrProfile(2));
   EXPECT_TRUE(original_profile());
   EXPECT_FALSE(OtrProfile(0));
   EXPECT_FALSE(OtrProfile(1));

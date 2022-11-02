@@ -508,6 +508,7 @@ class Profile : public content::BrowserContext {
 
  private:
   friend class ProfileDestroyer;
+  friend class OTRProfileDestroyer;
 
   // Created on the UI thread, and returned by GetResourceContext(), but
   // otherwise lives on and is destroyed on the IO thread.

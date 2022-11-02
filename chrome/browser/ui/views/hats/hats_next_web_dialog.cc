@@ -209,7 +209,7 @@ HatsNextWebDialog::~HatsNextWebDialog() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (otr_profile_) {
     otr_profile_->RemoveObserver(this);
-    ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile_);
+    ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile_);
   }
   auto* service = HatsServiceFactory::GetForProfile(browser_->profile(), false);
   DCHECK(service);

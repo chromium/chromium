@@ -496,7 +496,7 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
   }
 
   void TearDownOnMainThread() override {
-    ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile_);
+    ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile_);
     DebuggerApiTest::TearDownOnMainThread();
   }
 

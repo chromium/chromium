@@ -139,7 +139,7 @@ OffscreenTab::~OffscreenTab() {
   DVLOG(1) << "Destroying OffscreenTab for start_url=" << start_url_.spec();
   if (otr_profile_) {
     otr_profile_->RemoveObserver(this);
-    ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile_);
+    ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile_);
   }
 }
 

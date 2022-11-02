@@ -853,7 +853,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
   watcher1.Watch(otr_profile1);
   watcher2.Watch(otr_profile2);
 
-  ProfileDestroyer::DestroyProfileWhenAppropriate(regular_profile.release());
+  ProfileDestroyer::DestroyOriginalProfileWhenAppropriate(
+      std::move(regular_profile));
 
   EXPECT_TRUE(watcher1.destroyed());
   EXPECT_TRUE(watcher2.destroyed());
@@ -883,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
       incognito_browser->profile()->GetIOTaskRunner();
 
   // Request the destruction of one OTR profile:
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile[1]);
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile[1]);
   EXPECT_FALSE(watcher[0].destroyed());
   EXPECT_TRUE(watcher[1].destroyed());
   EXPECT_FALSE(watcher[2].destroyed());
@@ -908,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
   EXPECT_FALSE(watcher[2].destroyed());
 
   // Cleanup
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile[2]);
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile[2]);
   watcher[2].WaitForDestruction();
 }
 
@@ -965,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
       regular_profile, ProfileKeepAliveOrigin::kOffTheRecordProfile));
 
   // Destroy the OTR profile. *Now* the regular Profile should get deleted.
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile);
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile);
   otr_watcher.WaitForDestruction();
   regular_watcher.WaitForDestruction();
 

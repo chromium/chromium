@@ -1789,7 +1789,8 @@ ProfileManager::ProfileInfo::~ProfileInfo() {
   DCHECK(owned_profile_);
   DCHECK_EQ(owned_profile_.get(), unowned_profile_);
   unowned_profile_ = nullptr;
-  ProfileDestroyer::DestroyProfileWhenAppropriate(owned_profile_.release());
+  ProfileDestroyer::DestroyOriginalProfileWhenAppropriate(
+      std::move(owned_profile_));
 }
 
 // static

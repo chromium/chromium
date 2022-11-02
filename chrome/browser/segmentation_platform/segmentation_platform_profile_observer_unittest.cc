@@ -98,7 +98,7 @@ TEST_F(SegmentationPlatformProfileObserverTest,
 
   // Kill the OTR profile. The signal collection resumes.
   EXPECT_CALL(segmentation_platform_service_, EnableMetrics(true)).Times(1);
-  ProfileDestroyer::DestroyProfileWhenAppropriate(profile1_otr1);
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(profile1_otr1);
 
   // Start again another OTR profile. The signal collection should stop.
   EXPECT_CALL(segmentation_platform_service_, EnableMetrics(false)).Times(1);
@@ -119,13 +119,13 @@ TEST_F(SegmentationPlatformProfileObserverTest,
   // Start killing the OTR profiles one by one. The signal collection resumes
   // only after the last one is killed.
   EXPECT_CALL(segmentation_platform_service_, EnableMetrics(_)).Times(0);
-  ProfileDestroyer::DestroyProfileWhenAppropriate(profile1_otr2_secondary);
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(profile1_otr2_secondary);
 
   EXPECT_CALL(segmentation_platform_service_, EnableMetrics(_)).Times(0);
-  ProfileDestroyer::DestroyProfileWhenAppropriate(profile1_otr2);
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(profile1_otr2);
 
   EXPECT_CALL(segmentation_platform_service_, EnableMetrics(true)).Times(1);
-  ProfileDestroyer::DestroyProfileWhenAppropriate(profile2_otr1);
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(profile2_otr1);
 
   // Cleanup profiles.
   testing_profile_manager_->DeleteTestingProfile(kProfile1);
@@ -145,7 +145,7 @@ TEST_F(SegmentationPlatformProfileObserverTest, StartWithOTRProfile) {
 
   // Kill the OTR profile. The signal collection resumes.
   EXPECT_CALL(segmentation_platform_service_, EnableMetrics(true)).Times(1);
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr);
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr);
 
   // Cleanup profiles.
   EXPECT_CALL(segmentation_platform_service_, EnableMetrics(_)).Times(0);

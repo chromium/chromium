@@ -95,7 +95,7 @@ void DevToolsBrowserContextManager::DisposeBrowserContext(
   // If no browsers are opened - dispose right away.
   if (!has_opened_browser) {
     StopObservingProfileIfAny(profile);
-    ProfileDestroyer::DestroyProfileWhenAppropriateWithTimeout(
+    ProfileDestroyer::DestroyOTRProfileWhenAppropriateWithTimeout(
         profile, base::Seconds(kDestroyProfileTimeoutSeconds));
     std::move(callback).Run(true, "");
     return;
@@ -141,7 +141,7 @@ void DevToolsBrowserContextManager::OnBrowserRemoved(Browser* browser) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ProfileDestroyer::DestroyProfileWhenAppropriateWithTimeout,
+          &ProfileDestroyer::DestroyOTRProfileWhenAppropriateWithTimeout,
           base::Unretained(browser->profile()),
           base::Seconds(kDestroyProfileTimeoutSeconds)));
 

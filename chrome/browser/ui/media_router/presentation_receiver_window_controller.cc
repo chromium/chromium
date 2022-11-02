@@ -53,7 +53,7 @@ PresentationReceiverWindowController::~PresentationReceiverWindowController() {
 
   if (otr_profile_) {
     otr_profile_observation_.Reset();
-    ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile_);
+    ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile_);
   }
 }
 
