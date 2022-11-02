@@ -1154,6 +1154,11 @@ BASE_FEATURE(kTouchpadOverscrollHistoryNavigation,
 #endif
 );
 
+// Enable TrustedTypes .fromLiteral support.
+BASE_FEATURE(kTrustedTypesFromLiteral,
+             "TrustedTypesFromLiteral",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
 // sites as they migrate towards requiring cross-origin isolation for these
 // features.

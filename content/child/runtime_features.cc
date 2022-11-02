@@ -324,6 +324,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"StorageAccessAPI", net::features::kStorageAccessAPI},
           {"TopicsAPI", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
+          {"TrustedTypesFromLiteral", features::kTrustedTypesFromLiteral},
           {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
           {"WGIGamepadTriggerRumble",

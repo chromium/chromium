@@ -11,4 +11,5 @@ typedef [StringContext=TrustedScriptURL] USVString ScriptURLString;
 ] interface TrustedScriptURL {
     stringifier;
     USVString toJSON();
+    [RaisesException, CallWith=ScriptState, RuntimeEnabled=TrustedTypesFromLiteral] static TrustedScriptURL fromLiteral(any templateLiteral);
 };

@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+class ScriptValue;
+class ExceptionState;
 
 class CORE_EXPORT TrustedHTML final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -20,6 +22,9 @@ class CORE_EXPORT TrustedHTML final : public ScriptWrappable {
   // TrustedHTML.idl
   const String& toString() const;
   const String& toJSON() const { return toString(); }
+  static TrustedHTML* fromLiteral(ScriptState* script_state,
+                                  const ScriptValue& templateString,
+                                  ExceptionState& exception_state);
 
  private:
   const String html_;

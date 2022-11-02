@@ -2749,6 +2749,10 @@
       status: "experimental",
     },
     {
+      name: "TrustedTypesFromLiteral",
+      status: "experimental",
+    },
+    {
       name: "TrustedTypesUseCodeLike",
       status: "experimental",
     },

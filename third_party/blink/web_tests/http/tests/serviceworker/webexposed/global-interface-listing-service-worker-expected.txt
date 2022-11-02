@@ -1534,16 +1534,19 @@ interface TransformStreamDefaultController
     method error
     method terminate
 interface TrustedHTML
+    static method fromLiteral
     attribute @@toStringTag
     method constructor
     method toJSON
     method toString
 interface TrustedScript
+    static method fromLiteral
     attribute @@toStringTag
     method constructor
     method toJSON
     method toString
 interface TrustedScriptURL
+    static method fromLiteral
     attribute @@toStringTag
     method constructor
     method toJSON

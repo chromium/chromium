@@ -15,6 +15,8 @@ namespace blink {
 class ExceptionState;
 class ExecutionContext;
 class QualifiedName;
+class ScriptValue;
+class ScriptState;
 class V8UnionStringOrTrustedScript;
 class V8UnionStringTreatNullAsEmptyStringOrTrustedScript;
 
@@ -97,6 +99,15 @@ CORE_EXPORT bool RequireTrustedTypesCheck(const ExecutionContext*);
 // user-defined attribute/property, and thus must check against a list of known
 // event handlers.
 bool IsTrustedTypesEventHandlerAttribute(const QualifiedName&);
+
+// Return a string, if the passed-in script value is a literal. With "literal"
+// meaning it passes the checks for TrustedType's fromLiteral definition.
+//
+// If an error occurs, this will return a null-String.
+//
+// Spec:
+// https://w3c.github.io/webappsec-trusted-types/dist/spec/#check-templatedness-algorithm
+String GetTrustedTypesLiteral(const ScriptValue&, ScriptState*);
 
 }  // namespace blink
 

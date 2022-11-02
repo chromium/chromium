@@ -12,4 +12,6 @@ typedef [StringContext=TrustedScript] DOMString ScriptString;
 ] interface TrustedScript {
     stringifier;
     DOMString toJSON();
+    [RaisesException, CallWith=ScriptState, RuntimeEnabled=TrustedTypesFromLiteral]
+ static TrustedScript fromLiteral(any templateLiteral);
 };

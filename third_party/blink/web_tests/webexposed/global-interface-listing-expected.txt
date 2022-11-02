@@ -9180,16 +9180,19 @@ interface TreeWalker
     method previousSibling
     setter currentNode
 interface TrustedHTML
+    static method fromLiteral
     attribute @@toStringTag
     method constructor
     method toJSON
     method toString
 interface TrustedScript
+    static method fromLiteral
     attribute @@toStringTag
     method constructor
     method toJSON
     method toString
 interface TrustedScriptURL
+    static method fromLiteral
     attribute @@toStringTag
     method constructor
     method toJSON

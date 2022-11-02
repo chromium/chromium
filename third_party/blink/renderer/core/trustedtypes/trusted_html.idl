@@ -11,5 +11,7 @@ typedef [StringContext=TrustedHTML] DOMString HTMLString;
 ] interface TrustedHTML {
     stringifier;
     DOMString toJSON();
+    [RaisesException, CallWith=ScriptState, RuntimeEnabled=TrustedTypesFromLiteral]
+ static TrustedHTML fromLiteral(any templateLiteral);
 };
 

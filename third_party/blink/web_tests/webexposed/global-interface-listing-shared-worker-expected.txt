@@ -1412,16 +1412,19 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method error
 [Worker]     method terminate
 [Worker] interface TrustedHTML
+[Worker]     static method fromLiteral
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method toJSON
 [Worker]     method toString
 [Worker] interface TrustedScript
+[Worker]     static method fromLiteral
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method toJSON
 [Worker]     method toString
 [Worker] interface TrustedScriptURL
+[Worker]     static method fromLiteral
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method toJSON
