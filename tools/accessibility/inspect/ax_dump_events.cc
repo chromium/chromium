@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
   // A future patch will update mac and linux to use selector->widget and remove
   // the `pid` argument.
   unsigned int pid = 0;
-#if defined(USE_OZONE) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
   pid = selector->widget;
 #endif
   const auto server =
