@@ -1,0 +1,35 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("private_computing") {
+  defines = [ "IS_PRIVATE_COMPUTING_IMPL" ]
+
+  public_deps = [
+    ":private_computing_proto",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/dbus/common",
+  ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_private_computing_client.cc",
+    "fake_private_computing_client.h",
+    "private_computing_client.cc",
+    "private_computing_client.h",
+  ]
+}
+
+proto_library("private_computing_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/private_computing/private_computing_service.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/private_computing"
+}
