@@ -2,29 +2,9 @@
 
 ## Understanding builder results
 
-The [Flake portal](https://analysis.chromium.org/p/chromium/flake-portal/flakes)
-links to the flake occurrences of various tests on various bots. On the flake
-occurrences page for a specific test, clicking on any of the timestamps takes
-you to the bot run that flaked.
-
-![flake_portal_occurrences]
-
-You can then search the page for the flaky test name to view
-details on how it failed. The failure will either be in a unittest run or
-browsertest run. Note that the flake may either be detected as a flaky failure
-if it passed on a following run (a "cq hidden flake" on the flake portal), or it
-could have flaked multiple times causing the bot run to fail (a "cq false
-rejection" on the flake portal). The build step output provides a link to your
-test output. If your flaky test has both hidden flakes and false rejections,
-take a look at the output for both as they may provide different hints toward
-the issue.
-
-![flaky_build_step]
-
-Compare the flake output to the expected output when the test passes. Sometimes
-observing the output is enough to narrow down the issue. However, sometimes
-there’s very little output or it’s not that useful, such as when the test times
-out. In this case you can try and add more logging and reproduce the flake.
+[LUCI Analysis](https://luci-analysis.appspot.com/p/chromium/clusters) lists the
+top flake clusters of tests along with any associated bug and failure counts in
+different contexts.
 
 ## Reproducing the flaky test
 
@@ -102,6 +82,4 @@ fix may apply to other tests, or if documentation can be improved either in the
 relevant code or this flaky test documentation.
 
 
-[flake_portal_occurrences]: images/flake_portal_occurrences.png
-[flaky_build_step]: images/flaky_build_step.png
 [bot_gn_args]: images/bot_gn_args.png
