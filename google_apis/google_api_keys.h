@@ -79,19 +79,19 @@ std::string GetNonStableAPIKey();
 // Retrieves the Chrome Remote Desktop API key.
 std::string GetRemotingAPIKey();
 
+// Retrieves the Speech On-Device API (SODA) API Key.
+std::string GetSodaAPIKey();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Retrieves the Sharing API Key.
 std::string GetSharingAPIKey();
-#endif
-
-// Retrieves the Speech On-Device API (SODA) API Key.
-std::string GetSodaAPIKey();
 
 // Retrieves the ReadAloud API Key.
 std::string GetReadAloudAPIKey();
 
 // Retrieves the Fresnel API Key.
 std::string GetFresnelAPIKey();
+#endif
 
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 // Sets the API key. This should be called as early as possible before this
