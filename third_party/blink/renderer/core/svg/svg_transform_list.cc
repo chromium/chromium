@@ -69,30 +69,28 @@ const unsigned kMaxTransformArguments = 6;
 
 using TransformArguments = Vector<float, kMaxTransformArguments>;
 
-SVGTransform* SkewXTransformValue(float angle) {
-  return MakeGarbageCollected<SVGTransform>(SVGTransformType::kSkewx, angle,
-                                            gfx::PointF(),
-                                            AffineTransform::MakeSkewX(angle));
+using SVGTransformData = std::tuple<float, gfx::PointF, AffineTransform>;
+
+SVGTransformData SkewXTransformValue(float angle) {
+  return {angle, gfx::PointF(), AffineTransform::MakeSkewX(angle)};
 }
-SVGTransform* SkewYTransformValue(float angle) {
-  return MakeGarbageCollected<SVGTransform>(SVGTransformType::kSkewy, angle,
-                                            gfx::PointF(),
-                                            AffineTransform::MakeSkewY(angle));
+SVGTransformData SkewYTransformValue(float angle) {
+  return {angle, gfx::PointF(), AffineTransform::MakeSkewY(angle)};
 }
-SVGTransform* ScaleTransformValue(float sx, float sy) {
-  return MakeGarbageCollected<SVGTransform>(
-      SVGTransformType::kScale, 0, gfx::PointF(),
-      AffineTransform::MakeScaleNonUniform(sx, sy));
+SVGTransformData ScaleTransformValue(float sx, float sy) {
+  return {0, gfx::PointF(), AffineTransform::MakeScaleNonUniform(sx, sy)};
 }
-SVGTransform* TranslateTransformValue(float tx, float ty) {
-  return MakeGarbageCollected<SVGTransform>(
-      SVGTransformType::kTranslate, 0, gfx::PointF(),
-      AffineTransform::Translation(tx, ty));
+SVGTransformData TranslateTransformValue(float tx, float ty) {
+  return {0, gfx::PointF(), AffineTransform::Translation(tx, ty)};
 }
-SVGTransform* RotateTransformValue(float angle, float cx, float cy) {
-  return MakeGarbageCollected<SVGTransform>(
-      SVGTransformType::kRotate, angle, gfx::PointF(cx, cy),
-      AffineTransform::MakeRotationAroundPoint(angle, cx, cy));
+SVGTransformData RotateTransformValue(float angle, float cx, float cy) {
+  return {angle, gfx::PointF(cx, cy),
+          AffineTransform::MakeRotationAroundPoint(angle, cx, cy)};
+}
+SVGTransformData MatrixTransformValue(const TransformArguments& arguments) {
+  return {0, gfx::PointF(),
+          AffineTransform(arguments[0], arguments[1], arguments[2],
+                          arguments[3], arguments[4], arguments[5])};
 }
 
 template <typename CharType>
@@ -134,8 +132,8 @@ SVGParseStatus ParseTransformArgumentsForType(SVGTransformType type,
   return SVGParseStatus::kNoError;
 }
 
-SVGTransform* CreateTransformFromValues(SVGTransformType type,
-                                        const TransformArguments& arguments) {
+SVGTransformData TransformDataFromValues(SVGTransformType type,
+                                         const TransformArguments& arguments) {
   switch (type) {
     case SVGTransformType::kSkewx:
       return SkewXTransformValue(arguments[0]);
@@ -156,14 +154,17 @@ SVGTransform* CreateTransformFromValues(SVGTransformType type,
         return RotateTransformValue(arguments[0], 0, 0);
       return RotateTransformValue(arguments[0], arguments[1], arguments[2]);
     case SVGTransformType::kMatrix:
-      return MakeGarbageCollected<SVGTransform>(
-          AffineTransform(arguments[0], arguments[1], arguments[2],
-                          arguments[3], arguments[4], arguments[5]));
-    case SVGTransformType::kUnknown: {
+      return MatrixTransformValue(arguments);
+    case SVGTransformType::kUnknown:
       NOTREACHED();
-      return MakeGarbageCollected<SVGTransform>();
-    }
+      return ScaleTransformValue(1, 1);
   }
+}
+
+SVGTransform* CreateTransformFromValues(SVGTransformType type,
+                                        const TransformArguments& arguments) {
+  const auto [angle, center, matrix] = TransformDataFromValues(type, arguments);
+  return MakeGarbageCollected<SVGTransform>(type, angle, center, matrix);
 }
 
 }  // namespace

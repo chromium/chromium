@@ -26,27 +26,17 @@
 
 namespace blink {
 
-SVGTransform::SVGTransform()
-    : transform_type_(SVGTransformType::kUnknown), angle_(0) {}
+SVGTransform::SVGTransform() : transform_type_(SVGTransformType::kUnknown) {}
 
 SVGTransform::SVGTransform(SVGTransformType transform_type,
                            ConstructionMode mode)
-    : transform_type_(transform_type), angle_(0) {
+    : transform_type_(transform_type) {
   if (mode == kConstructZeroTransform)
     matrix_ = AffineTransform(0, 0, 0, 0, 0, 0);
 }
 
 SVGTransform::SVGTransform(const AffineTransform& matrix)
-    : transform_type_(SVGTransformType::kMatrix), angle_(0), matrix_(matrix) {}
-
-SVGTransform::SVGTransform(SVGTransformType transform_type,
-                           float angle,
-                           const gfx::PointF& center,
-                           const AffineTransform& matrix)
-    : transform_type_(transform_type),
-      angle_(angle),
-      center_(center),
-      matrix_(matrix) {}
+    : SVGTransform(SVGTransformType::kMatrix, 0, gfx::PointF(), matrix) {}
 
 SVGTransform::~SVGTransform() = default;
 

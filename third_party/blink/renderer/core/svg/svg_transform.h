@@ -58,10 +58,14 @@ class SVGTransform final : public SVGListablePropertyBase {
   explicit SVGTransform(SVGTransformType,
                         ConstructionMode = kConstructIdentityTransform);
   explicit SVGTransform(const AffineTransform&);
-  SVGTransform(SVGTransformType,
-               float,
-               const gfx::PointF&,
-               const AffineTransform&);
+  SVGTransform(SVGTransformType transform_type,
+               float angle,
+               const gfx::PointF& center,
+               const AffineTransform& matrix)
+      : transform_type_(transform_type),
+        angle_(angle),
+        center_(center),
+        matrix_(matrix) {}
   ~SVGTransform() override;
 
   SVGTransform* Clone() const;
@@ -108,7 +112,7 @@ class SVGTransform final : public SVGListablePropertyBase {
 
  private:
   SVGTransformType transform_type_;
-  float angle_;
+  float angle_ = 0;
   gfx::PointF center_;
   AffineTransform matrix_;
 };
