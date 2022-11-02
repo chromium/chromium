@@ -62,14 +62,6 @@ class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
   // Attribute's union type based on its value type.
   template <typename T>
   struct AttributeUnion;
-  template <>
-  struct AttributeUnion<String> {
-    using Type = V8UnionOpaquePropertyOrUSVString;
-  };
-  template <>
-  struct AttributeUnion<uint32_t> {
-    using Type = V8UnionOpaquePropertyOrUnsignedLong;
-  };
 
   // Get attribute's visibility.
   template <Attribute attr>
@@ -117,6 +109,15 @@ class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
     }
     NOTREACHED();
   }
+};
+
+template <>
+struct FencedFrameInnerConfig::AttributeUnion<String> {
+  using Type = V8UnionOpaquePropertyOrUSVString;
+};
+template <>
+struct FencedFrameInnerConfig::AttributeUnion<uint32_t> {
+  using Type = V8UnionOpaquePropertyOrUnsignedLong;
 };
 
 }  // namespace blink
