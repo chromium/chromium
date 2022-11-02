@@ -301,7 +301,7 @@ DesktopNativeWidgetAura::DesktopNativeWidgetAura(
     : desktop_window_tree_host_(nullptr),
       ownership_(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET),
       content_window_(new aura::Window(this)),
-      native_widget_delegate_(delegate),
+      native_widget_delegate_(delegate->AsWidget()->GetWeakPtr()),
       last_drop_operation_(ui::DragDropTypes::DRAG_NONE),
       restore_focus_on_activate_(false),
       cursor_(gfx::kNullCursor),
@@ -317,10 +317,7 @@ DesktopNativeWidgetAura::~DesktopNativeWidgetAura() {
     // `native_widget_delegate_` to avoid holding a briefly dangling ptr.
     drop_helper_.reset();
     window_reorderer_.reset();
-    //  Use `ClearAndDelete` here to stop referencing the underlying pointer and
-    //  free its memory. Compared to raw delete calls, this avoids the raw_ptr
-    //  to be temporarily dangling.
-    native_widget_delegate_.ClearAndDelete();
+    owned_native_widget_delegate.reset();
   } else {
     CloseNow();
   }
@@ -392,7 +389,8 @@ void DesktopNativeWidgetAura::OnHostClosed() {
   bool should_delete_this =
       (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) ||
       (ownership_ == Widget::InitParams::CLIENT_OWNS_WIDGET);
-  native_widget_delegate_->OnNativeWidgetDestroyed();
+  if (native_widget_delegate_)
+    native_widget_delegate_->OnNativeWidgetDestroyed();
   if (should_delete_this)
     delete this;
 }
@@ -553,6 +551,10 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   widget_type_ = params.type;
   name_ = params.name;
 
+  if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
+    owned_native_widget_delegate =
+        base::WrapUnique(native_widget_delegate_.get());
+
   content_window_->AcquireAllPropertiesFrom(
       std::move(params.init_properties_container));
 
@@ -566,7 +568,7 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
       desktop_window_tree_host_ = params.desktop_window_tree_host;
     } else {
       desktop_window_tree_host_ =
-          DesktopWindowTreeHost::Create(native_widget_delegate_, this);
+          DesktopWindowTreeHost::Create(native_widget_delegate_.get(), this);
     }
     host_.reset(desktop_window_tree_host_->AsWindowTreeHost());
   }

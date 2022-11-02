@@ -875,6 +875,19 @@ TEST_F(NativeWidgetAuraTest, MinimizedWidgetRestoreBounds) {
   EXPECT_EQ(restore_bounds, window->bounds());
 }
 
+// NativeWidgetAura has a protected destructor.
+// Use a test object that overrides the destructor for unit tests.
+class TestNativeWidgetAura : public NativeWidgetAura {
+ public:
+  explicit TestNativeWidgetAura(internal::NativeWidgetDelegate* delegate)
+      : NativeWidgetAura(delegate) {}
+
+  TestNativeWidgetAura(const TestNativeWidgetAura&) = delete;
+  TestNativeWidgetAura& operator=(const TestNativeWidgetAura&) = delete;
+
+  ~TestNativeWidgetAura() override = default;
+};
+
 // Series of tests that verifies having a null NativeWidgetDelegate doesn't
 // crash.
 class NativeWidgetAuraWithNoDelegateTest : public NativeWidgetAuraTest {
@@ -891,23 +904,26 @@ class NativeWidgetAuraWithNoDelegateTest : public NativeWidgetAuraTest {
   // testing::Test overrides:
   void SetUp() override {
     NativeWidgetAuraTest::SetUp();
-    // This gets destroyed by Widget.
-    native_widget = new NativeWidgetAura(widget.get());
+    native_widget = new TestNativeWidgetAura(widget.get());
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
     params.native_widget = native_widget;
     widget->Init(std::move(params));
-    native_widget->set_delegate_for_testing(nullptr);
+
+    // Widget will create a DefaultWidgetDelegate if no delegates are provided.
+    // Call Widget::OnNativeWidgetDestroyed() to destroy
+    // the WidgetDelegate properly.
+    widget->OnNativeWidgetDestroyed();
+    widget.reset();
   }
 
   void TearDown() override {
-    native_widget->set_delegate_for_testing(widget.get());
-    widget.reset();
+    native_widget->CloseNow();
     ViewsTestBase::TearDown();
   }
 
   std::unique_ptr<Widget> widget;
-  raw_ptr<NativeWidgetAura> native_widget = nullptr;
+  raw_ptr<TestNativeWidgetAura> native_widget;
 };
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {

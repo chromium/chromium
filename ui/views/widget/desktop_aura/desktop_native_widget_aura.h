@@ -113,10 +113,6 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // DesktopWindowTreeHost's transparency.
   void UpdateWindowTransparency();
 
-  void set_delegate_for_testing(internal::NativeWidgetDelegate* delegate) {
-    native_widget_delegate_ = delegate;
-  }
-
   base::WeakPtr<internal::NativeWidgetPrivate> GetWeakPtr() override;
 
  protected:
@@ -299,9 +295,12 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // WARNING: this may be NULL, in particular during shutdown it becomes NULL.
   raw_ptr<aura::Window, DanglingUntriaged> content_window_;
 
-  // TODO(crbug.com/1346381) Change delegate to a WeakPtr after
-  // removing ownership model.
-  raw_ptr<internal::NativeWidgetDelegate> native_widget_delegate_;
+  base::WeakPtr<internal::NativeWidgetDelegate> native_widget_delegate_;
+
+  // This is a unique ptr to enforce scenarios where NativeWidget
+  // will own the NativeWidgetDelegate.
+  // Used for ownership model: NativeWidgetOwnsWidget.
+  std::unique_ptr<internal::NativeWidgetDelegate> owned_native_widget_delegate;
 
   std::unique_ptr<wm::FocusController> focus_client_;
   std::unique_ptr<aura::client::ScreenPositionClient> position_client_;

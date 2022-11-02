@@ -843,7 +843,9 @@ bool DesktopWindowTreeHostWin::WidgetSizeIsClientSize() const {
 }
 
 bool DesktopWindowTreeHostWin::IsModal() const {
-  return native_widget_delegate_->IsModal();
+  if (native_widget_delegate_)
+    return native_widget_delegate_->IsModal();
+  return false;
 }
 
 int DesktopWindowTreeHostWin::GetInitialShowState() const {
@@ -961,7 +963,8 @@ void DesktopWindowTreeHostWin::HandleCreate() {
 
 void DesktopWindowTreeHostWin::HandleDestroying() {
   drag_drop_client_->OnNativeWidgetDestroying(GetHWND());
-  native_widget_delegate_->OnNativeWidgetDestroying();
+  if (native_widget_delegate_)
+    native_widget_delegate_->OnNativeWidgetDestroying();
 
   // Destroy the compositor before destroying the HWND since shutdown
   // may try to swap to the window.

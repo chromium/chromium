@@ -373,7 +373,8 @@ void DesktopWindowTreeHostPlatform::CloseNow() {
   platform_window()->PrepareForShutdown();
 
   ReleaseCapture();
-  native_widget_delegate_->OnNativeWidgetDestroying();
+  if (native_widget_delegate_)
+    native_widget_delegate_->OnNativeWidgetDestroying();
 
   // If we have children, close them. Use a copy for iteration because they'll
   // remove themselves.

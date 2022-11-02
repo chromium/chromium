@@ -370,6 +370,23 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetCanBeDestroyedFromNestedLoop) {
   run_loop.Run();
 }
 
+// DesktopNativeWidgetAura::CloseNow is protected.
+// Create a new object to override CloseNow so we can test deleting
+// the native widget.
+class TestDesktopNativeWidgetAura : public DesktopNativeWidgetAura {
+ public:
+  explicit TestDesktopNativeWidgetAura(internal::NativeWidgetDelegate* delegate)
+      : DesktopNativeWidgetAura(delegate) {}
+
+  TestDesktopNativeWidgetAura(const TestDesktopNativeWidgetAura&) = delete;
+  TestDesktopNativeWidgetAura& operator=(const TestDesktopNativeWidgetAura&) =
+      delete;
+
+  ~TestDesktopNativeWidgetAura() override = default;
+
+  void CloseNow() override { DesktopNativeWidgetAura::CloseNow(); }
+};
+
 class DesktopNativeWidgetAuraWithNoDelegateTest
     : public DesktopNativeWidgetAuraTest {
  public:
@@ -386,23 +403,26 @@ class DesktopNativeWidgetAuraWithNoDelegateTest
   // testing::Test overrides:
   void SetUp() override {
     DesktopNativeWidgetAuraTest::SetUp();
-    // This gets destroyed by Widget.
-    desktop_native_widget = new DesktopNativeWidgetAura(widget.get());
+    desktop_native_widget = new TestDesktopNativeWidgetAura(widget.get());
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
     params.native_widget = desktop_native_widget;
     widget->Init(std::move(params));
-    desktop_native_widget->set_delegate_for_testing(nullptr);
+
+    // Widget will create a DefaultWidgetDelegate if no delegates are provided.
+    // Call Widget::OnNativeWidgetDestroyed() to destroy
+    // the WidgetDelegate properly.
+    widget->OnNativeWidgetDestroyed();
+    widget.reset();
   }
 
   void TearDown() override {
-    desktop_native_widget->set_delegate_for_testing(widget.get());
-    widget.reset();
+    desktop_native_widget->CloseNow();
     ViewsTestBase::TearDown();
   }
 
   std::unique_ptr<Widget> widget;
-  raw_ptr<DesktopNativeWidgetAura> desktop_native_widget = nullptr;
+  raw_ptr<TestDesktopNativeWidgetAura> desktop_native_widget;
 };
 
 // Verifies having a null NativeWidgetDelegate doesn't crash.

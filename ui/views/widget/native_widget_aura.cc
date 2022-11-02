@@ -124,7 +124,7 @@ bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
 // NativeWidgetAura, public:
 
 NativeWidgetAura::NativeWidgetAura(internal::NativeWidgetDelegate* delegate)
-    : delegate_(delegate),
+    : delegate_(delegate->AsWidget()->GetWeakPtr()),
       window_(new aura::Window(this, aura::client::WINDOW_TYPE_UNKNOWN)),
       ownership_(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
   aura::client::SetFocusChangeObserver(window_, this);
@@ -186,6 +186,8 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   DCHECK(params.parent || params.context);
 
   ownership_ = params.ownership;
+  if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
+    owned_delegate_ = base::WrapUnique(delegate_.get());
 
   window_->AcquireAllPropertiesFrom(
       std::move(params.init_properties_container));
@@ -1225,10 +1227,7 @@ NativeWidgetAura::~NativeWidgetAura() {
     // briefly dangling ptr.
     drop_helper_.reset();
     window_reorderer_.reset();
-    //  Use `ClearAndDelete` here to stop referencing the underlying pointer and
-    //  free its memory. Compared to raw delete calls, this avoids the raw_ptr
-    //  to be temporarily dangling.
-    delegate_.ClearAndDelete();
+    owned_delegate_.reset();
   } else {
     CloseNow();
   }
