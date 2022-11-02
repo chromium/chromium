@@ -131,17 +131,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
                         bool force_dircrypto);
 
   // Helpers for starting the auth session and cleaning stale data during that.
-  void StartAuthSessionWithChecks(std::unique_ptr<UserContext> context,
+  void StartAuthSessionForLogin(std::unique_ptr<UserContext> context,
+                                bool ephemeral,
+                                AuthSessionIntent intent,
+                                StartAuthSessionCallback callback);
+  void OnStartAuthSessionForLogin(std::unique_ptr<UserContext> original_context,
                                   bool ephemeral,
                                   AuthSessionIntent intent,
-                                  StartAuthSessionCallback callback);
-  void OnStartAuthSession(std::unique_ptr<UserContext> original_context,
-                          bool ephemeral,
-                          AuthSessionIntent intent,
-                          StartAuthSessionCallback callback,
-                          bool user_exists,
-                          std::unique_ptr<UserContext> context,
-                          absl::optional<AuthenticationError> error);
+                                  StartAuthSessionCallback callback,
+                                  bool user_exists,
+                                  std::unique_ptr<UserContext> context,
+                                  absl::optional<AuthenticationError> error);
   void RemoveStaleUserForEphemeral(
       const std::string& auth_session_id,
       std::unique_ptr<UserContext> original_context,
@@ -152,11 +152,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
       AuthSessionIntent intent,
       StartAuthSessionCallback callback,
       absl::optional<user_data_auth::RemoveReply> reply);
-  void OnStartAuthSessionAfterStaleRemoval(
+  void OnStartAuthSessionForLoginAfterStaleRemoval(
       StartAuthSessionCallback callback,
       bool user_exists,
       std::unique_ptr<UserContext> context,
       absl::optional<AuthenticationError> error);
+  // Similar to `StartAuthSessionForLogin()`, but doesn't trigger the stale data
+  // removal logic.
+  void StartAuthSessionForLoggedIn(std::unique_ptr<UserContext> context,
+                                   bool ephemeral,
+                                   AuthSessionIntent intent,
+                                   StartAuthSessionCallback callback);
 
   // Notifies `UserDirectoryIntegrityManager` that a user creation
   // process has started.

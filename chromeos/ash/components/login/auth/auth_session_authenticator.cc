@@ -82,14 +82,14 @@ void AuthSessionAuthenticator::CompleteLoginImpl(
       LOGIN_LOG(ERROR) << "Empty password used in AuthenticateToLogin";
     }
   }
-  StartAuthSessionWithChecks(
+  StartAuthSessionForLogin(
       std::move(context), is_ephemeral_mount_enforced_,
       AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoCompleteLogin,
                      weak_factory_.GetWeakPtr()));
 }
 
-void AuthSessionAuthenticator::StartAuthSessionWithChecks(
+void AuthSessionAuthenticator::StartAuthSessionForLogin(
     std::unique_ptr<UserContext> context,
     bool ephemeral,
     AuthSessionIntent intent,
@@ -99,12 +99,12 @@ void AuthSessionAuthenticator::StartAuthSessionWithChecks(
   auto original_context = std::make_unique<UserContext>(*context);
   auth_performer_->StartAuthSession(
       std::move(context), ephemeral, intent,
-      base::BindOnce(&AuthSessionAuthenticator::OnStartAuthSession,
+      base::BindOnce(&AuthSessionAuthenticator::OnStartAuthSessionForLogin,
                      weak_factory_.GetWeakPtr(), std::move(original_context),
                      ephemeral, intent, std::move(callback)));
 }
 
-void AuthSessionAuthenticator::OnStartAuthSession(
+void AuthSessionAuthenticator::OnStartAuthSessionForLogin(
     std::unique_ptr<UserContext> original_context,
     bool ephemeral,
     AuthSessionIntent intent,
@@ -162,12 +162,12 @@ void AuthSessionAuthenticator::OnRemoveStaleUserForEphemeral(
   // Retry the auth session creation after we recovered from stale data.
   auth_performer_->StartAuthSession(
       std::move(original_context), /*ephemeral=*/true, intent,
-      base::BindOnce(
-          &AuthSessionAuthenticator::OnStartAuthSessionAfterStaleRemoval,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&AuthSessionAuthenticator::
+                         OnStartAuthSessionForLoginAfterStaleRemoval,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void AuthSessionAuthenticator::OnStartAuthSessionAfterStaleRemoval(
+void AuthSessionAuthenticator::OnStartAuthSessionForLoginAfterStaleRemoval(
     StartAuthSessionCallback callback,
     bool user_exists,
     std::unique_ptr<UserContext> context,
@@ -185,6 +185,15 @@ void AuthSessionAuthenticator::OnStartAuthSessionAfterStaleRemoval(
   }
   std::move(callback).Run(user_exists, std::move(context),
                           /*error=*/absl::nullopt);
+}
+
+void AuthSessionAuthenticator::StartAuthSessionForLoggedIn(
+    std::unique_ptr<UserContext> context,
+    bool ephemeral,
+    AuthSessionIntent intent,
+    StartAuthSessionCallback callback) {
+  auth_performer_->StartAuthSession(std::move(context), ephemeral, intent,
+                                    std::move(callback));
 }
 
 void AuthSessionAuthenticator::RecordCreatingNewUser(
@@ -336,7 +345,7 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
       LOGIN_LOG(ERROR) << "Empty password used in AuthenticateToLogin";
     }
   }
-  StartAuthSessionWithChecks(
+  StartAuthSessionForLogin(
       std::move(context), is_ephemeral_mount_enforced_,
       AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoLoginAsExistingUser,
@@ -364,11 +373,14 @@ void AuthSessionAuthenticator::AuthenticateToUnlock(
       LOGIN_LOG(ERROR) << "Empty password used in AuthenticateToLogin";
     }
   }
-  StartAuthSessionWithChecks(std::move(user_context),
-                             is_ephemeral_mount_enforced_,
-                             AuthSessionIntent::kVerifyOnly,
-                             base::BindOnce(&AuthSessionAuthenticator::DoUnlock,
-                                            weak_factory_.GetWeakPtr()));
+  const bool is_user_ephemeral =
+      is_ephemeral_mount_enforced_ ||
+      (user_context->GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  StartAuthSessionForLoggedIn(
+      std::move(user_context), is_user_ephemeral,
+      AuthSessionIntent::kVerifyOnly,
+      base::BindOnce(&AuthSessionAuthenticator::DoUnlock,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AuthSessionAuthenticator::DoLoginAsExistingUser(
@@ -531,7 +543,7 @@ void AuthSessionAuthenticator::LoginAsPublicSession(
     return;
   }
 
-  StartAuthSessionWithChecks(
+  StartAuthSessionForLogin(
       std::move(context), true /* ephemeral */, AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoLoginAsPublicSession,
                      weak_factory_.GetWeakPtr()));
@@ -606,7 +618,7 @@ void AuthSessionAuthenticator::LoginAsKioskImpl(
     NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
     return;
   }
-  StartAuthSessionWithChecks(
+  StartAuthSessionForLogin(
       std::move(context), is_ephemeral_mount_enforced_,
       AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoLoginAsKiosk,
