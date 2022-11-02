@@ -14,7 +14,7 @@
 
 namespace ash {
 
-constexpr base::TimeDelta kMinCameraOpenDurationForSurvey = base::Minutes(3);
+constexpr base::TimeDelta kMinCameraOpenDurationForSurvey = base::Seconds(15);
 constexpr base::TimeDelta kCameraSurveyTriggerDelay = base::Seconds(5);
 
 class CameraGeneralSurveyHandlerDelegate
