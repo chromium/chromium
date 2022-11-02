@@ -101,7 +101,7 @@
 #include "ui/gfx/win/rendering_window_manager.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -282,7 +282,7 @@ static const char* const kSwitchNames[] = {
     switches::kShowMacOverlayBorders,
     switches::kUseHighGPUThreadPriorityForPerfTests,
 #endif
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     switches::kOzonePlatform,
     switches::kDisableExplicitDmaFences,
     switches::kOzoneDumpFile,
@@ -342,7 +342,7 @@ void OnGpuProcessHostDestroyedOnUI(int host_id, const std::string& message) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   GpuDataManagerImpl::GetInstance()->AddLogMessage(logging::LOG_ERROR,
                                                    "GpuProcessHost", message);
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()
       ->GetGpuPlatformSupportHost()
       ->OnChannelDestroyed(host_id);
@@ -680,7 +680,7 @@ void GpuProcessHost::BindInterface(
       mojo::GenericPendingReceiver(interface_name, std::move(interface_pipe)));
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 void GpuProcessHost::TerminateGpuProcess(const std::string& message) {
   // At the moment, this path is only used by Ozone/Wayland. Once others start
   // to use this, start to distinguish the origin of termination. By default,
@@ -688,7 +688,7 @@ void GpuProcessHost::TerminateGpuProcess(const std::string& message) {
   termination_origin_ = GpuTerminationOrigin::kOzoneWaylandProxy;
   process_->TerminateOnBadMessageReceived(message);
 }
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 // static
 GpuProcessHost* GpuProcessHost::FromID(int host_id) {

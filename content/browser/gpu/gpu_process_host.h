@@ -189,7 +189,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   void BindInterface(const std::string& interface_name,
                      mojo::ScopedMessagePipeHandle interface_pipe) override;
   void BindHostReceiver(mojo::GenericPendingReceiver generic_receiver) override;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   void TerminateGpuProcess(const std::string& message) override;
 #endif
 

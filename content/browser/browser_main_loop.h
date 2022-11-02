@@ -28,7 +28,7 @@ class Env;
 }
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/buildflags.h"  // nogncheck
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 #define USE_OZONE_PLATFORM_X11

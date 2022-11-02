@@ -264,7 +264,7 @@
 #include "content/browser/hyphenation/hyphenation_impl.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
@@ -3427,7 +3427,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kTrySupportedChannelLayouts,
     switches::kRaiseTimerFrequency,
 #endif
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     switches::kOzonePlatform,
 #endif
 #if defined(ENABLE_IPC_FUZZER)

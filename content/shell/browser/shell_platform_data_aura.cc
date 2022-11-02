@@ -28,7 +28,7 @@
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/aura/screen_ozone.h"
 #endif
 
@@ -83,10 +83,10 @@ class FillLayout : public aura::LayoutManager {
 ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
   CHECK(aura::Env::GetInstance());
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Setup global display::Screen singleton.
   screen_ = std::make_unique<aura::ScopedScreenOzone>();
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   ui::PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(initial_size);

@@ -260,7 +260,7 @@ int GpuMain(MainFunctionParams parameters) {
     main_thread_task_executor =
         std::make_unique<base::SingleThreadTaskExecutor>(
             base::MessagePumpType::DEFAULT);
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
     // The MessagePump type required depends on the Ozone platform selected at
     // runtime.
     if (!main_thread_task_executor) {

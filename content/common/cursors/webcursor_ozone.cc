@@ -7,11 +7,12 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace content {
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 void WebCursor::SetDisplayInfo(const display::Display& display) {
   if (rotation_ == display.panel_rotation() &&
       device_scale_factor_ == display.device_scale_factor() &&

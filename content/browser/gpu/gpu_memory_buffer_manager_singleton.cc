@@ -15,7 +15,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/base/ui_base_features.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #elif BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"

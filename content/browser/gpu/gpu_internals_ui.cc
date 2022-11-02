@@ -63,9 +63,9 @@
 #include "ui/gfx/win/physical_size.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 namespace content {
 namespace {

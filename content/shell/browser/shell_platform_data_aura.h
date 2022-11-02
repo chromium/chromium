@@ -19,7 +19,7 @@ class WindowParentingClient;
 }  // namespace client
 }  // namespace aura
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 namespace display {
 class ScopedNativeScreen;
 }
@@ -46,7 +46,7 @@ class ShellPlatformDataAura {
   aura::WindowTreeHost* host() { return host_.get(); }
 
  private:
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   std::unique_ptr<display::ScopedNativeScreen> screen_;
 #endif
 

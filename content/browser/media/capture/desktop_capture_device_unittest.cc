@@ -22,6 +22,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,9 +31,9 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/buildflags.h"
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -275,7 +276,7 @@ TEST_F(DesktopCaptureDeviceTest, Capture) {
       webrtc::DesktopCapturer::CreateScreenCapturer(
           webrtc::DesktopCaptureOptions::CreateDefault()));
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #if !BUILDFLAG(OZONE_PLATFORM_X11)
   // webrtc::DesktopCapturer is only supported on Ozone X11 by default.
   // TODO(webrtc/13429): Enable for Wayland.
@@ -284,7 +285,7 @@ TEST_F(DesktopCaptureDeviceTest, Capture) {
   if (!capturer)
     return;
 #endif  // !BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   CreateScreenCaptureDevice(std::move(capturer));
 

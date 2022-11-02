@@ -26,7 +26,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
@@ -68,7 +68,7 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
         GetFilePathNextToCurrentExecutable(kShellExecutableName));
     command_line.AppendSwitchPath(switches::kContentShellDataPath,
                                   temp_dir_.GetPath());
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
     const char* kSwitchesToCopy[] = {
         // Keep the kOzonePlatform switch that the Ozone must use.

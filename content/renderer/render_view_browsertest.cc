@@ -128,7 +128,7 @@
 #include "base/win/windows_version.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #endif
 
@@ -147,7 +147,7 @@ namespace {
 
 static const int kProxyRoutingId = 13;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 // Converts MockKeyboard::Modifiers to ui::EventFlags.
 int ConvertMockKeyboardModifier(MockKeyboard::Modifiers modifiers) {
   static struct ModifierMap {
@@ -411,7 +411,7 @@ class RenderViewImplTest : public RenderViewTest {
     return param;
   }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   int SendKeyEventOzone(MockKeyboard::Layout layout,
                         int key_code,
                         MockKeyboard::Modifiers modifiers,
@@ -482,7 +482,7 @@ class RenderViewImplTest : public RenderViewTest {
     SendNativeKeyEvent(keyup_event);
 
     return length;
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
     return SendKeyEventOzone(layout, key_code, modifiers, output);
 #else
     NOTIMPLEMENTED();
