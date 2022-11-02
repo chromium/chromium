@@ -18,3 +18,4 @@ import '../elements/xf_button.js';
 import '../elements/xf_circular_progress.js';
 import '../elements/xf_display_panel.js';
 import '../elements/xf_panel_item.js';
+import '../../widgets/xf_conflict_dialog.js';

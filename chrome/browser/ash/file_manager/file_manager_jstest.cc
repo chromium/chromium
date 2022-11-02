@@ -314,6 +314,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerAllEntries) {
   RunTestURL("state/reducers/all_entries_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfConflictDialog) {
+  RunTestURL("widgets/xf_conflict_dialog_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfDlpRestrictionDetailsDialog) {
   RunTestURL("widgets/xf_dlp_restriction_details_dialog_unittest.js");
 }

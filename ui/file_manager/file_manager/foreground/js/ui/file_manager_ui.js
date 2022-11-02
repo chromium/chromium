@@ -12,6 +12,7 @@ import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
+import {XfConflictDialog} from '../../../widgets/xf_conflict_dialog.js';
 import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
 import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 import {FilesToast} from '../../elements/files_toast.js';
@@ -167,6 +168,12 @@ export class FileManagerUI {
      * @type {?FilesPasswordDialog}
      */
     this.passwordDialog_ = null;
+
+    /**
+     * Dialog for resolving file conflicts.
+     * @type {?XfConflictDialog}
+     */
+    this.xfConflictDialog_ = null;
 
     /**
      * Dialog for DLP (Data Leak Prevention) restriction details.
@@ -461,6 +468,20 @@ export class FileManagerUI {
         document.createElement('files-password-dialog'));
     this.element.appendChild(this.passwordDialog_);
     return this.passwordDialog_;
+  }
+
+  /**
+   * Gets conflict dialog.
+   * @return {!XfConflictDialog}
+   */
+  get conflictDialog() {
+    if (this.xfConflictDialog_) {
+      return this.xfConflictDialog_;
+    }
+    this.xfConflictDialog_ = /** @type {!XfConflictDialog} */ (
+        document.createElement('xf-conflict-dialog'));
+    this.element.appendChild(this.xfConflictDialog_);
+    return this.xfConflictDialog_;
   }
 
   /**
