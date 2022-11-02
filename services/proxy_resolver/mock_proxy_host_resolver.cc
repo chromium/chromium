@@ -119,7 +119,7 @@ class HangingProxyHostResolver::RequestImpl : public Request {
   }
 
   const std::vector<net::IPAddress>& GetResults() const override {
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
  private:

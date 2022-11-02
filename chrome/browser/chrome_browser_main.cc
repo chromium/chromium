@@ -356,7 +356,7 @@ std::unique_ptr<base::RunLoop>& GetMainRunLoopInstance() {
 void HandleTestParameters(const base::CommandLine& command_line) {
   // This parameter causes a null pointer crash (crash reporter trigger).
   if (command_line.HasSwitch(switches::kBrowserCrashTest)) {
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 }
 

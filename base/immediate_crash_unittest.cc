@@ -23,10 +23,10 @@ namespace base {
 
 namespace {
 
-// If IMMEDIATE_CRASH() is not treated as noreturn by the compiler, the compiler
+// If ImmediateCrash() is not treated as noreturn by the compiler, the compiler
 // will complain that not all paths through this function return a value.
 [[maybe_unused]] int TestImmediateCrashTreatedAsNoReturn() {
-  IMMEDIATE_CRASH();
+  ImmediateCrash();
 }
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -201,13 +201,13 @@ std::vector<Instruction> MaybeSkipCoverageHook(
 
 }  // namespace
 
-// Attempts to verify the actual instructions emitted by IMMEDIATE_CRASH().
+// Attempts to verify the actual instructions emitted by ImmediateCrash().
 // While the test results are highly implementation-specific, this allows macro
 // changes (e.g. CLs like https://crrev.com/671123) to be verified using the
 // trybots/waterfall, without having to build and disassemble Chrome on
 // multiple platforms. This makes it easier to evaluate changes to
-// IMMEDIATE_CRASH() against its requirements (e.g. size of emitted sequence,
-// whether or not multiple IMMEDIATE_CRASH sequences can be folded together, et
+// ImmediateCrash() against its requirements (e.g. size of emitted sequence,
+// whether or not multiple ImmediateCrash sequences can be folded together, et
 // cetera). Please see immediate_crash.h for more details about the
 // requirements.
 //

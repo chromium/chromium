@@ -139,7 +139,7 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
       // deadlock.  By crashing immediately we at least have a chance to get a
       // stack trace from the system to give some clue about the nature of the
       // problem.
-      IMMEDIATE_CRASH();
+      ImmediateCrash();
     }
 
     // We should really crash at the first instance, but it does happen on bots,

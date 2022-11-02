@@ -956,7 +956,7 @@ LogMessage::~LogMessage() {
 #endif
 
       // Crash the process to generate a dump.
-      IMMEDIATE_CRASH();
+      base::ImmediateCrash();
     }
   }
 }
@@ -1194,7 +1194,7 @@ void RawLog(int level, const char* message) {
   }
 
   if (level == LOGGING_FATAL)
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
 }
 
 // This was defined at the beginning of this file.

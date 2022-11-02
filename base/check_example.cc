@@ -18,7 +18,7 @@
 // See https://crbug.com/672699.
 
 #define BLINK_RELEASE_ASSERT_EQUIVALENT(assertion) \
-  (UNLIKELY(!(assertion)) ? (IMMEDIATE_CRASH()) : (void)0)
+  (UNLIKELY(!(assertion)) ? (base::ImmediateCrash()) : (void)0)
 
 void DoCheck(bool b) {
   CHECK(b) << "DoCheck " << b;

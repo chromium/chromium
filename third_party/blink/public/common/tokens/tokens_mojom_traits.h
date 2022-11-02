@@ -56,7 +56,7 @@ struct BLINK_COMMON_EXPORT
       case blink::FrameToken::IndexOf<blink::RemoteFrameToken>():
         return DataView::Tag::kRemoteFrameToken;
     }
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   static const blink::LocalFrameToken& local_frame_token(
@@ -112,7 +112,7 @@ struct BLINK_COMMON_EXPORT
       case blink::WorkerToken::IndexOf<blink::SharedWorkerToken>():
         return DataView::Tag::kSharedWorkerToken;
     }
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   static const blink::DedicatedWorkerToken& dedicated_worker_token(
@@ -181,7 +181,7 @@ struct BLINK_COMMON_EXPORT
       case blink::WorkletToken::IndexOf<blink::PaintWorkletToken>():
         return DataView::Tag::kPaintWorkletToken;
     }
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   static const blink::AnimationWorkletToken& animation_worklet_token(
@@ -256,7 +256,7 @@ struct BLINK_COMMON_EXPORT
       case blink::ExecutionContextToken::IndexOf<blink::PaintWorkletToken>():
         return DataView::Tag::kPaintWorkletToken;
     }
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   static const blink::LocalFrameToken& local_frame_token(
@@ -321,7 +321,7 @@ struct BLINK_COMMON_EXPORT
           blink::DedicatedWorkerToken>():
         return DataView::Tag::kDedicatedWorkerToken;
     }
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   static const blink::DocumentToken& document_token(

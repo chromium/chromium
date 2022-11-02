@@ -343,8 +343,7 @@ class ChildThreadImpl::IOThreadState
   // the function body unique by adding a log line, so it doesn't get merged
   // with other functions by link time optimizations (ICF).
   NOINLINE void CrashHungProcess() override {
-    LOG(ERROR) << "Crashing because hung";
-    IMMEDIATE_CRASH();
+    LOG(FATAL) << "Crashing because hung";
   }
 
   void RunServiceDeprecated(

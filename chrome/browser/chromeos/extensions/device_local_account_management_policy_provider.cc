@@ -31,7 +31,7 @@ DeviceLocalAccountManagementPolicyProvider::GetDebugPolicyProviderName() const {
 #if DCHECK_IS_ON()
   return "whitelist for device-local accounts";
 #else
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 #endif
 }
 

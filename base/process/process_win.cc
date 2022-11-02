@@ -86,7 +86,7 @@ void Process::TerminateCurrentProcessImmediately(int exit_code) {
   ::TerminateProcess(GetCurrentProcess(), static_cast<UINT>(exit_code));
   // There is some ambiguity over whether the call above can return. Rather than
   // hitting confusing crashes later on we should crash right here.
-  IMMEDIATE_CRASH();
+  ImmediateCrash();
 }
 
 bool Process::IsValid() const {

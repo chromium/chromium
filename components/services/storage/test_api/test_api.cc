@@ -60,7 +60,7 @@ class TestApiImpl : public mojom::TestApi {
   }
 
   // mojom::TestApi implementation:
-  void CrashNow() override { IMMEDIATE_CRASH(); }
+  void CrashNow() override { base::ImmediateCrash(); }
 
   void ForceLeveldbDatabaseCompaction(
       const std::string& name,

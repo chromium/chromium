@@ -1436,34 +1436,36 @@ class HangingHostResolver::RequestImpl
     return ERR_IO_PENDING;
   }
 
-  const AddressList* GetAddressResults() const override { IMMEDIATE_CRASH(); }
+  const AddressList* GetAddressResults() const override {
+    base::ImmediateCrash();
+  }
 
   const std::vector<HostResolverEndpointResult>* GetEndpointResults()
       const override {
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()
       const override {
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   const absl::optional<std::vector<HostPortPair>>& GetHostnameResults()
       const override {
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   const std::set<std::string>* GetDnsAliasResults() const override {
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   net::ResolveErrorInfo GetResolveErrorInfo() const override {
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   const absl::optional<HostCache::EntryStaleness>& GetStaleInfo()
       const override {
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   void ChangeRequestPriority(RequestPriority priority) override {}

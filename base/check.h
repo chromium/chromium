@@ -117,7 +117,7 @@ class VoidifyStream {
 // Note that this uses IMMEDIATE_CRASH_ALWAYS_INLINE to force-inline in debug
 // mode as well. See LoggingTest.CheckCausesDistinctBreakpoints.
 [[noreturn]] IMMEDIATE_CRASH_ALWAYS_INLINE void CheckFailure() {
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 }
 
 // Discard log strings to reduce code bloat.

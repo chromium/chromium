@@ -39,7 +39,7 @@ void EchoService::Quit() {
 }
 
 void EchoService::Crash() {
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 }
 
 #if BUILDFLAG(IS_WIN)

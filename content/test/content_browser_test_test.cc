@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(MockContentBrowserTest, DISABLED_FailTest) {
 }
 // Basic Test to crash
 IN_PROC_BROWSER_TEST_F(MockContentBrowserTest, DISABLED_CrashTest) {
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 }
 
 // This is disabled due to flakiness: https://crbug.com/1086372

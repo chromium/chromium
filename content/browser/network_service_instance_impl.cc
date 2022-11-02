@@ -179,7 +179,7 @@ bool IsSafeToUseDataPath(SandboxGrantResult result) {
       //
       // These cases are handled internally and so this case should never be
       // hit. It is undefined behavior to proceed in this case so CHECK here.
-      IMMEDIATE_CRASH();
+      base::ImmediateCrash();
     case SandboxGrantResult::kFailedToCreateDataDirectory:
       // A failure to create the `data_directory` is fatal, and the
       // `unsandboxed_data_path` should be used.

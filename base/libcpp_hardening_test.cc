@@ -46,7 +46,7 @@ TEST(LibcppHardeningTest, Assertions) {
 //
 // We also have to prevent this test from running on Android because even though
 // death tests are supported on Android, GTest death tests don't work with
-// IMMEDIATE_CRASH() (https://crbug.com/1353549#c2).
+// base::ImmediateCrash() (https://crbug.com/1353549#c2).
 #if GTEST_HAS_DEATH_TEST && !GTEST_OS_LINUX_ANDROID
   EXPECT_DEATH(vec[3], Not(ContainsRegex(".*assertion.*failed:")));
 #else

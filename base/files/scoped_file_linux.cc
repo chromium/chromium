@@ -29,7 +29,7 @@ std::array<std::atomic_bool, kMaxTrackedFds> g_is_fd_owned;
 NOINLINE void CrashOnFdOwnershipViolation() {
   RAW_LOG(ERROR, "Crashing due to FD ownership violation:\n");
   base::debug::StackTrace().Print();
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 }
 
 bool CanTrack(int fd) {

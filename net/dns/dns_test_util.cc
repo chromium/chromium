@@ -819,7 +819,7 @@ scoped_refptr<DnsSession> MockDnsClient::BuildSession() {
   // Session not expected to be used for anything that will actually require
   // random numbers.
   auto null_random_callback =
-      base::BindRepeating([](int, int) -> int { IMMEDIATE_CRASH(); });
+      base::BindRepeating([](int, int) -> int { base::ImmediateCrash(); });
 
   return base::MakeRefCounted<DnsSession>(
       effective_config_.value(), null_random_callback, nullptr /* net_log */);

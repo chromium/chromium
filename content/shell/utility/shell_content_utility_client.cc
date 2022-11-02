@@ -63,7 +63,7 @@ class TestUtilityServiceImpl : public mojom::TestService {
   }
 
   void DoCrashImmediately(DoCrashImmediatelyCallback callback) override {
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   }
 
   void CreateFolder(CreateFolderCallback callback) override {

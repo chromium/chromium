@@ -36,7 +36,7 @@ std::string SigninScreenPolicyProvider::GetDebugPolicyProviderName() const {
 #if DCHECK_IS_ON()
   return "Guard for sign-in screen";
 #else
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 #endif
 }
 

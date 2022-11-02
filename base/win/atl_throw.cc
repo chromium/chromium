@@ -18,7 +18,7 @@ NOINLINE void __stdcall AtlThrowImpl(HRESULT hr) {
   base::debug::Alias(&hr);
   if (hr == E_OUTOFMEMORY)
     base::TerminateBecauseOutOfMemory(0);
-  IMMEDIATE_CRASH();
+  ImmediateCrash();
 }
 
 }  // namespace win

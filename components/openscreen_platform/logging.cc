@@ -49,7 +49,7 @@ void LogWithLevel(LogLevel level,
 
 void Break() {
 #if defined(OFFICIAL_BUILD) && defined(NDEBUG)
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 #else
   // Chrome's base::debug::BreakDebugger is not properly annotated as
   // [[noreturn]], so we abort instead. This may need to be revisited

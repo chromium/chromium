@@ -76,7 +76,7 @@ std::string
 #if DCHECK_IS_ON()
   return "extension management policy controlled settings";
 #else
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 #endif
 }
 

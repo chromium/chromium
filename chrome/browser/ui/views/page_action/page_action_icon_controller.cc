@@ -274,7 +274,7 @@ PageActionIconType PageActionIconController::GetIconType(
       return page_action.first;
     }
   }
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 }
 
 void PageActionIconController::UpdateAll() {

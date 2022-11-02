@@ -180,7 +180,7 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
     // Only the code in the native library is instrumented. Callees are expected
     // to be within the native library bounds.
     Disable();
-    IMMEDIATE_CRASH();
+    ImmediateCrash();
   }
 
   size_t offset = callee_address - start;

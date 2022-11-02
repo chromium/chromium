@@ -11,7 +11,7 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 
 _LIBCPP_NORETURN BASE_EXPORT void __libcpp_verbose_abort(char const* format,
                                                          ...) {
-  IMMEDIATE_CRASH();
+  base::ImmediateCrash();
 }
 
 _LIBCPP_END_NAMESPACE_STD

@@ -15,17 +15,17 @@ extern "C" {
 
 IMMEDIATE_CRASH_TEST_HELPER_EXPORT int TestFunction1(int x, int y) {
   if (x < 1)
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   if (y < 1)
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   return x + y;
 }
 
 IMMEDIATE_CRASH_TEST_HELPER_EXPORT int TestFunction2(int x, int y) {
   if (x < 2)
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   if (y < 2)
-    IMMEDIATE_CRASH();
+    base::ImmediateCrash();
   return x * y;
 }
 

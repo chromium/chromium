@@ -1456,7 +1456,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
       // before crashpad is initialized. Please leave this check immediately
       // before the crashpad initialization; the amount of memory used at this
       // point is important to the test.
-      IMMEDIATE_CRASH();
+      base::ImmediateCrash();
     }
 #if BUILDFLAG(IS_ANDROID)
     crash_reporter::InitializeCrashpad(process_type.empty(), process_type);

@@ -5803,7 +5803,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessCrashes) {
         GetPrerenderedMainFrameHost(host_id)->GetProcess();
     ScopedAllowRendererCrashes allow_renderer_crashes(process);
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
-    // On x86 and x86_64 Android, IMMEDIATE_CRASH() macro used in
+    // On x86 and x86_64 Android, base::ImmediateCrash() macro used in
     // ChildProcessHostImpl::CrashHungProcess() called from ForceCrash()
     // does not seem to work as expected. (See https://crbug.com/1211655)
     // We have no other ForceCrash() call sites on other than Linux and CrOS.
@@ -5925,8 +5925,9 @@ class PrerenderRestartStorageServiceBrowserTest : public PrerenderBrowserTest {
     mojo::Remote<storage::mojom::TestApi> test_api;
     StoragePartitionImpl::GetStorageServiceForTesting()->BindTestApi(
         test_api.BindNewPipeAndPassReceiver().PassPipe());
-    // On x86 and x86_64 Android, IMMEDIATE_CRASH() macro used in CrashNow()
-    // does not seem to work as expected. (See https://crbug.com/1211655)
+    // On x86 and x86_64 Android, base::ImmediateCrash() macro used in
+    // CrashNow() does not seem to work as expected. (See
+    // https://crbug.com/1211655)
     test_api->CrashNow();
     loop.Run();
   }

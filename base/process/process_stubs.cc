@@ -48,7 +48,7 @@ Process Process::OpenWithExtraPrivileges(ProcessId pid) {
 void Process::TerminateCurrentProcessImmediately(int exit_code) {
   // This method is marked noreturn, so we crash rather than just provide an
   // empty stub implementation.
-  IMMEDIATE_CRASH();
+  ImmediateCrash();
 }
 
 bool Process::IsValid() const {

@@ -1127,7 +1127,7 @@ TEST(MockUnitTests, DISABLED_FailTest) {
 }
 // Basic test to crash
 TEST(MockUnitTests, DISABLED_CrashTest) {
-  IMMEDIATE_CRASH();
+  ImmediateCrash();
 }
 // Basic test will not be reached, due to the preceding crash in the same batch.
 TEST(MockUnitTests, DISABLED_NoRunTest) {

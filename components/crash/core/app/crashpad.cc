@@ -59,8 +59,8 @@ void AbslAbortHook(const char* file,
                    const char* prefix_end,
                    const char* buf_end) {
   // This simulates that a CHECK(false) was done at file:line instead of here.
-  // This is used instead of IMMEDIATE_CRASH() to give better error messages
-  // locally (printed stack for one).
+  // This is used instead of base::ImmediateCrash() to give better error
+  // messages locally (printed stack for one).
   logging::CheckError::Check(file, line, "false").stream() << prefix_end;
 }
 
