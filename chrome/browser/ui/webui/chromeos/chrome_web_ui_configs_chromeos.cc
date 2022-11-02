@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/power_ui.h"
 #include "chrome/browser/ui/webui/ash/set_time_ui.h"
+#include "chrome/browser/ui/webui/ash/slow_trace_ui.h"
+#include "chrome/browser/ui/webui/ash/slow_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
@@ -78,6 +80,8 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SetTimeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::SlowTraceControllerConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::SlowUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)

@@ -1064,10 +1064,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       IsProjectorAppEnabled(profile)) {
     return &NewWebUI<ash::TrustedProjectorAnnotatorUI>;
   }
-  if (url.host_piece() == chrome::kChromeUISlowHost)
-    return &NewWebUI<ash::SlowUI>;
-  if (url.host_piece() == chrome::kChromeUISlowTraceHost)
-    return &NewWebUI<ash::SlowTraceController>;
   if (url.host_piece() == chrome::kChromeUISmbCredentialsHost)
     return &NewWebUI<ash::smb_dialog::SmbCredentialsDialogUI>;
   if (url.host_piece() == chrome::kChromeUISmbShareHost)

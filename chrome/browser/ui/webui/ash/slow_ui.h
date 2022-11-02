@@ -5,9 +5,22 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SLOW_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SLOW_UI_H_
 
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace ash {
+
+class SlowUI;
+
+// WebUIConfig for chrome://slow
+class SlowUIConfig : public content::DefaultWebUIConfig<SlowUI> {
+ public:
+  SlowUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISlowHost) {}
+};
 
 // A custom WebUI that allows users to enable and disable performance tracing
 // for feedback reports.

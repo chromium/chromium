@@ -7,8 +7,11 @@
 
 #include <string>
 
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/layout.h"
 
 namespace base {
@@ -42,6 +45,17 @@ class SlowTraceSource : public content::URLDataSource {
  private:
   void OnGetTraceData(content::URLDataSource::GotDataCallback callback,
                       scoped_refptr<base::RefCountedString> trace_data);
+};
+
+class SlowTraceController;
+
+// WebUIConfig for chrome://slow_trace
+class SlowTraceControllerConfig
+    : public content::DefaultWebUIConfig<SlowTraceController> {
+ public:
+  SlowTraceControllerConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISlowTraceHost) {}
 };
 
 class SlowTraceController : public content::WebUIController {
