@@ -527,9 +527,9 @@ class MEDIA_GPU_EXPORT V4L2Queue
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<V4L2Queue> weak_this_factory_;
-
   bool incoherent_ = false;
+
+  base::WeakPtrFactory<V4L2Queue> weak_this_factory_;
 };
 
 class V4L2Request;

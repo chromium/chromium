@@ -209,14 +209,14 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 
+  // Whether or not our V4L2Queues should be requested with
+  // V4L2_MEMORY_FLAG_NON_COHERENT
+  bool incoherent_ = false;
+
   // |weak_this_for_polling_| must be dereferenced and invalidated on
   // |decoder_task_runner_|.
   base::WeakPtr<V4L2VideoDecoder> weak_this_for_polling_;
   base::WeakPtrFactory<V4L2VideoDecoder> weak_this_for_polling_factory_;
-
-  // Whether or not our V4L2Queues should be requested with
-  // V4L2_MEMORY_FLAG_NON_COHERENT
-  bool incoherent_ = false;
 };
 
 }  // namespace media
