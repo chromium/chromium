@@ -114,6 +114,9 @@ enum class WebappInstallSource {
   // Lock screen app infrastructure installing to the lock screen app profile.
   EXTERNAL_LOCK_SCREEN = 23,
 
+  // OEM apps installed by the App Preload Service.
+  PRELOADED_OEM = 24,
+
   // Add any new values above this one.
   COUNT,
 };

@@ -36,6 +36,7 @@ enum Type {
   // Installed by Kiosk on Chrome OS.
   kKiosk,
   kPolicy,
+  kOem,
   kSubApp,
   kWebAppStore,
   // User-installed web apps are managed by the sync system.or

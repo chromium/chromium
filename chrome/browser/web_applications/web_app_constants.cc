@@ -25,6 +25,8 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
       return os << "Kiosk";
     case WebAppManagement::Type::kPolicy:
       return os << "Policy";
+    case WebAppManagement::Type::kOem:
+      return os << "OEM";
     case WebAppManagement::Type::kSubApp:
       return os << "SubApp";
     case WebAppManagement::Type::kWebAppStore:

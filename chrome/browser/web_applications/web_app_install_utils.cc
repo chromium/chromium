@@ -882,6 +882,9 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
       return WebAppManagement::kDefault;
 
+    case webapps::WebappInstallSource::PRELOADED_OEM:
+      return WebAppManagement::kOem;
+
     case webapps::WebappInstallSource::EXTERNAL_POLICY:
       return WebAppManagement::kPolicy;
 

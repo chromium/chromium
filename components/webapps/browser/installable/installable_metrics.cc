@@ -45,6 +45,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
     case WebappInstallSource::SYSTEM_DEFAULT:
     case WebappInstallSource::KIOSK:
+    case WebappInstallSource::PRELOADED_OEM:
       return true;
     case WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
     case WebappInstallSource::MANAGEMENT_API:

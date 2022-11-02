@@ -103922,6 +103922,7 @@ others/histograms.xml -->
   <int value="21" label="Installed by Kiosk on Chrome OS"/>
   <int value="22" label="Isolated app installation for development"/>
   <int value="23" label="Lock screen app infrastructure"/>
+  <int value="24" label="OEM apps installed by the App Preload Service"/>
 </enum>
 
 <enum name="WebAppLauncherLaunchResult">

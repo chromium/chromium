@@ -285,6 +285,12 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
       << kGenerateExpectationsMessage;
 }
 
+// The values of the SampleApp are randomly generated. This test is mainly
+// checking that the output is formatted well and doesn't crash. Exact field
+// values are unimportant.
+//
+// If you have made changes and this test is failing, run the test with
+// `--rebaseline-web-app-expectations` to generate a new `sample_web_app.json`.
 TEST(WebAppTest, SampleAppAsDebugValue) {
   const base::FilePath path_to_test_file =
       GetPathToTestFile("sample_web_app.json");

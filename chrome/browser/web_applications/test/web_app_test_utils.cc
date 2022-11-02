@@ -382,6 +382,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->AddSource(WebAppManagement::kCommandLine);
     management_types.push_back(WebAppManagement::kCommandLine);
   }
+  if (random.next_bool()) {
+    app->AddSource(WebAppManagement::kOem);
+    management_types.push_back(WebAppManagement::kOem);
+  }
 
   // Must always be at least one source.
   if (!app->HasAnySources()) {

@@ -255,6 +255,8 @@ WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
       return WebAppManagement::Type::kDefault;
     case WebAppManagementProto::COMMAND_LINE:
       return WebAppManagement::Type::kCommandLine;
+    case WebAppManagementProto::OEM:
+      return WebAppManagement::Type::kOem;
   }
 }
 
@@ -276,6 +278,8 @@ WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
       return WebAppManagementProto::DEFAULT;
     case WebAppManagement::Type::kCommandLine:
       return WebAppManagementProto::COMMAND_LINE;
+    case WebAppManagement::Type::kOem:
+      return WebAppManagementProto::OEM;
   }
 }
 
@@ -408,6 +412,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.sources_[WebAppManagement::kKiosk]);
   local_data->mutable_sources()->set_command_line(
       web_app.sources_[WebAppManagement::kCommandLine]);
+  local_data->mutable_sources()->set_oem(
+      web_app.sources_[WebAppManagement::kOem]);
 
   local_data->set_is_locally_installed(web_app.is_locally_installed());
 
@@ -822,6 +828,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       local_data.sources().web_app_store();
   sources[WebAppManagement::kSync] = local_data.sources().sync();
   sources[WebAppManagement::kDefault] = local_data.sources().default_();
+  sources[WebAppManagement::kOem] = local_data.sources().oem();
   if (local_data.sources().has_sub_app()) {
     sources[WebAppManagement::kSubApp] = local_data.sources().sub_app();
   }

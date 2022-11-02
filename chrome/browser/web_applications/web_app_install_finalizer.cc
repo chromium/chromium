@@ -85,6 +85,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::SYNC:
     case InstallSource::SUB_APP:
     case InstallSource::KIOSK:
+    case InstallSource::PRELOADED_OEM:
       return false;
     case InstallSource::COUNT:
       NOTREACHED();
@@ -522,6 +523,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     case WebAppManagement::kSystem:
     case WebAppManagement::kPolicy:
     case WebAppManagement::kDefault:
+    case WebAppManagement::kOem:
       hooks_options.reason = SHORTCUT_CREATION_AUTOMATED;
       break;
     case WebAppManagement::kKiosk:

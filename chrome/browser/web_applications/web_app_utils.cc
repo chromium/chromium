@@ -484,6 +484,7 @@ bool CanUserUninstallWebApp(WebAppSources sources) {
   specified_sources[WebAppManagement::kSync] = true;
   specified_sources[WebAppManagement::kWebAppStore] = true;
   specified_sources[WebAppManagement::kSubApp] = true;
+  specified_sources[WebAppManagement::kOem] = true;
   return HasAnySpecifiedSourcesAndNoOtherSources(sources, specified_sources);
 }
 

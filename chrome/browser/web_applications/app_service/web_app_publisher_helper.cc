@@ -79,6 +79,7 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/shortcut.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -191,9 +192,8 @@ apps::mojom::PermissionType GetPermissionType(
 
 apps::mojom::InstallReason GetHighestPriorityInstallReason(
     const WebApp* web_app) {
-  // TODO(crbug.com/1189949): Introduce kOem as a new WebAppManagement::Type
-  // value immediately below WebAppManagement::kSystem, so that this
-  // custom behavior isn't needed.
+  // TODO(crbug.com/1189949): Migrate apps with chromeos_data.oem_installed set
+  // to the new WebAppManagement::Type::kOem install type.
   if (web_app->chromeos_data().has_value()) {
     auto& chromeos_data = web_app->chromeos_data().value();
     if (chromeos_data.oem_installed) {
@@ -209,6 +209,8 @@ apps::mojom::InstallReason GetHighestPriorityInstallReason(
       return apps::mojom::InstallReason::kKiosk;
     case WebAppManagement::kPolicy:
       return apps::mojom::InstallReason::kPolicy;
+    case WebAppManagement::kOem:
+      return apps::mojom::InstallReason::kOem;
     case WebAppManagement::kSubApp:
       return apps::mojom::InstallReason::kSubApp;
     case WebAppManagement::kWebAppStore:
@@ -253,6 +255,7 @@ apps::mojom::InstallSource ConvertInstallSourceToMojom(
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
     case webapps::WebappInstallSource::EXTERNAL_LOCK_SCREEN:
     case webapps::WebappInstallSource::SYSTEM_DEFAULT:
+    case webapps::WebappInstallSource::PRELOADED_OEM:
       return apps::mojom::InstallSource::kSystem;
     case webapps::WebappInstallSource::SYNC:
       return apps::mojom::InstallSource::kSync;
