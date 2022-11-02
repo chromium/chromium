@@ -327,6 +327,15 @@
       ]
      ]
     },
+    "css-anchor-position": {
+     "anchor-scroll-no-overflow-crash.html": [
+      "d8fa3821cf5660f7f382bf8aee10c9ddd625b4c1",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-animations": {
      "CSSAnimation-getKeyframes-crash.html": [
       "72eb5e88195e0181c9ac74b81122809d2173fc5e",
@@ -99413,12 +99422,12 @@
       ]
      ],
      "contain-size-grid-005.html": [
-      "4e4b681a731e8e8822595c2f22f91deff4f9b214",
+      "bd750d2f54d7c6ddf018883d3cd6e0d1ec85c449",
       [
        null,
        [
         [
-         "/css/css-contain/contain-size-grid-005-ref.html",
+         "/css/css-contain/reference/contain-size-grid-005-ref.html",
          "=="
         ]
        ],
@@ -130927,7 +130936,7 @@
      ],
      "gradient": {
       "css-color-4-colors-default-to-oklab-gradient.html": [
-       "c34521cbf2a7109bac0ddf34d7a8de439ab36fe8",
+       "5be18ac30ff461779c5e441ced2b7f23cbf38a04",
        [
         null,
         [
@@ -130943,7 +130952,7 @@
            [
             [
              1,
-             2
+             8
             ],
             [
              0,
@@ -131246,7 +131255,7 @@
        ]
       ],
       "oklab-gradient.html": [
-       "b520cbef126876113ac61cb29d912ba304004af1",
+       "71230ef5997c27144d683477a712811987ed56e4",
        [
         null,
         [
@@ -131262,7 +131271,7 @@
            [
             [
              1,
-             2
+             8
             ],
             [
              0,
@@ -131304,7 +131313,7 @@
        ]
       ],
       "srgb-linear-gradient.html": [
-       "fa2dd1a7a325668213643b4a09268017ec160060",
+       "0869f3dfbfa7871b0bf50b9b5b3901140dd63129",
        [
         null,
         [
@@ -131320,7 +131329,7 @@
            [
             [
              1,
-             2
+             8
             ],
             [
              0,
@@ -131333,7 +131342,7 @@
        ]
       ],
       "xyz-gradient.html": [
-       "fc7c9c470b97210e6074cd2d660a9c82cd661d82",
+       "f760f148cd26484aa6983caa61924c821240505f",
        [
         null,
         [
@@ -131349,7 +131358,7 @@
            [
             [
              1,
-             2
+             8
             ],
             [
              0,
@@ -261410,6 +261419,10 @@
        "3c31bf5077d73ac258f4a96bb6b4f5e95802f184",
        []
       ],
+      "intercept_service_worker.js": [
+       "773e38fd21b023b8314f732b6d1893ab6c65a3cd",
+       []
+      ],
       "keys.py": [
        "6b7d67e21e7eea7927a40ab094847b7224d49985",
        []
@@ -261432,6 +261445,10 @@
       ],
       "select_manifest_in_root_manifest.py": [
        "d4f1efff6a74c7636f60cba35b4eff010fccfd29",
+       []
+      ],
+      "simple.html": [
+       "d62419ce8a0ac12a85f5b8e595a874714b038b44",
        []
       ],
       "token.py": [
@@ -272267,7 +272284,7 @@
        []
       ],
       "color-valid-color-mix-function-expected.txt": [
-       "b261cc4adf057f319814ffe3f627687f6532ae94",
+       "9f5087498977ee58932672f8e701518541328ee3",
        []
       ],
       "color-valid-relative-color-expected.txt": [
@@ -272893,10 +272910,6 @@
       "995c45197fde976b8930e98f7ea859e9bd3bebb9",
       []
      ],
-     "contain-size-grid-005-ref.html": [
-      "b2fdf4b887692798c73a1a27c4c0c76150ee08c1",
-      []
-     ],
      "contain-size-inline-block-001-ref.html": [
       "92a6c7de5ee4fdc19be842955fc413f36097cc4b",
       []
@@ -273448,6 +273461,10 @@
       ],
       "contain-size-grid-001-ref.html": [
        "cf4f8076650928dfd0cefc18665ef1e8ab52d7b6",
+       []
+      ],
+      "contain-size-grid-005-ref.html": [
+       "b2fdf4b887692798c73a1a27c4c0c76150ee08c1",
        []
       ],
       "contain-size-monolithic-001-ref.html": [
@@ -286451,12 +286468,12 @@
         "9e52fd9b84ba9f16cdfba6fa1df67f17521c2ff5",
         []
        ],
-       "srgb-gradient.png": [
-        "1fc6660919a637c684be84236af5f1cf4bc07eaf",
+       "red-green-gradient-linear-colorspace.png": [
+        "e379a5df3e1b290befdde5d655ff9741839277fa",
         []
        ],
-       "srgb-linear-gradient.png": [
-        "e379a5df3e1b290befdde5d655ff9741839277fa",
+       "srgb-gradient.png": [
+        "1fc6660919a637c684be84236af5f1cf4bc07eaf",
         []
        ],
        "xyz-gradient.png": [
@@ -346738,10 +346755,6 @@
      "1fc6dd5522acbaea255f0d13c18ba4ab0a683fda",
      []
     ],
-    "offsetParent-across-shadow-boundaries-expected.txt": [
-     "9b46c721b94ae2f38049d8d7d3d5bf73ffec3f9a",
-     []
-    ],
     "reference": {
      "empty.html": [
       "0e76edd65b7baf5316fc9d0c4da59a3502e4c27a",
@@ -351533,7 +351546,7 @@
      []
     ],
     "disabled-by-permissions-policy.https.sub.html.headers": [
-     "f84ca89164e17920a58d8b7dac5ec8e04c50c215",
+     "83f5a343faf985e64f6a400cc0ecb2791fe39460",
      []
     ],
     "feature-policy-listed-expected.txt": [
@@ -351547,6 +351560,10 @@
      ],
      "manual-helper.js": [
       "15bb17936e4479f7338b7cefbaa87522a2a02df4",
+      []
+     ],
+     "post-message.html": [
+      "30134e2901fdfa3c104b5837e982f02a31e9e512",
       []
      ]
     },
@@ -390915,7 +390932,7 @@
      ]
     ],
     "fedcm-network-requests.https.html": [
-     "46065eb929ffea5d0a9386da1664d1ce1270e4d5",
+     "2d1d72d21597feedab7bd737b236c5126f68c669",
      [
       null,
       {}
@@ -395158,7 +395175,7 @@
        ]
       ],
       "color-valid-color-mix-function.html": [
-       "b1027a6604deb449c53d7c299e5032adf4b02d86",
+       "76209b1a93e1c31c9c4f677c3f68ca99a7b9e840",
        [
         null,
         {}
@@ -395426,6 +395443,13 @@
      ],
      "contain-size-grid-004.html": [
       "c333c03298c7049292913f3e21de52eb0564c8d2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "contain-size-grid-006.html": [
+      "7bfbac1c6c7fb0bc0f97957a402981193dbd1585",
       [
        null,
        {}
@@ -403707,7 +403731,7 @@
      ],
      "parsing": {
       "gradient-interpolation-method-computed.html": [
-       "050fb43e7c30932153658070eb8806d70ce2ddca",
+       "9593a59777a5792332ba07d6cf4687eed09a0747",
        [
         null,
         {}
@@ -403721,7 +403745,7 @@
        ]
       ],
       "gradient-interpolation-method-valid.html": [
-       "d71d8da28482bed2bfa8ef99fcdee7761eceee1c",
+       "a5ae5c0dd985b4eabac7a1c56df779625998029d",
        [
         null,
         {}
@@ -413890,7 +413914,7 @@
       ]
      ],
      "toggle-activation.tentative.html": [
-      "c013314b3fbc80231e30f257fb9ced403b691318",
+      "20064605668da8dde7e847408360fb92fbf3b7b9",
       [
        null,
        {}
@@ -415935,6 +415959,20 @@
        ],
        "all.html": [
         "dd618bcde65d838f7ca3c34c9cc86dfd54f93fb6",
+        [
+         null,
+         {}
+        ]
+       ],
+       "animation-delay-end.tentative.html": [
+        "79b9f946174eaf5dcbd39556f7010d6d74ea96c9",
+        [
+         null,
+         {}
+        ]
+       ],
+       "animation-delay-start.tentative.html": [
+        "2fba4d8e514471d540c17a384ab6803a4142155a",
         [
          null,
          {}
@@ -421230,6 +421268,13 @@
        {}
       ]
      ],
+     "offsetTop-offsetLeft-nested-offsetParents.html": [
+      "e9446708d35ef243789892da585ed9990ad4cec4",
+      [
+       null,
+       {}
+      ]
+     ],
      "offsetTopLeft-border-box.html": [
       "8cabf6478f7afc158617914776548db528c3a7f5",
       [
@@ -422011,6 +422056,13 @@
       "d11638b26a664b0dea0206b657847236239e2aa2",
       [
        "css/geometry/DOMMatrix-css-string.worker.html",
+       {}
+      ]
+     ],
+     "DOMMatrix-invert-invertible.html": [
+      "3e7c73ad2bb36512212fb94a84cfc6b3100d34ce",
+      [
+       null,
        {}
       ]
      ],
@@ -554699,6 +554751,13 @@
       {}
      ]
     ],
+    "offsetTop-offsetLeft-across-shadow-boundaries.html": [
+     "5d7c7b80533bc30ebae6167e2b37b3d12eceea2a",
+     [
+      null,
+      {}
+     ]
+    ],
     "scroll-to-the-fragment-in-shadow-tree.html": [
      "b4ecc16a67daeb1160523e10cca057d0c9582d5c",
      [
@@ -575550,6 +575609,13 @@
     ],
     "canShare.https.html": [
      "f0aed9a2446da0eef05c280fe4fe5b71757c8fb2",
+     [
+      null,
+      {}
+     ]
+    ],
+    "disabled-by-permissions-policy-cross-origin.https.sub.html": [
+     "b13f7e0539f6652c7b82edee5c5f746fbf8fe727",
      [
       null,
       {}
@@ -617575,14 +617641,14 @@
        ]
       ],
       "srgb-linear-gradient-expected.html": [
-       "b3984d7432d50e7235048ddb5396b5d1cae8c9af",
+       "34f660f6f02d07c6440f4790f966806113fca0dd",
        [
         null,
         {}
        ]
       ],
       "xyz-gradient-expected.html": [
-       "0411ccff8c1be3e8d475b23900856c6d2a746504",
+       "a435bbfd5888414d5f199c2a49daf7138ca1c4d5",
        [
         null,
         {}
