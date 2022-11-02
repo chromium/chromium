@@ -15,12 +15,11 @@ using content::WebContents;
 static void JNI_ReparentingTask_AttachTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
-  auto* background_tab_manager = BackgroundTabManager::GetInstance();
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-  if (background_tab_manager->IsBackgroundTab(web_contents)) {
-    Profile* profile = background_tab_manager->GetProfile();
-    background_tab_manager->CommitHistory(HistoryServiceFactory::GetForProfile(
+  if (BackgroundTabManager::IsBackgroundTab(web_contents)) {
+    Profile* profile = BackgroundTabManager::GetProfile(web_contents);
+    BackgroundTabManager::CommitHistory(web_contents, HistoryServiceFactory::GetForProfile(
         profile, ServiceAccessType::IMPLICIT_ACCESS));
-    background_tab_manager->UnregisterBackgroundTab();
+    BackgroundTabManager::UnregisterBackgroundTab(web_contents);
   }
 }

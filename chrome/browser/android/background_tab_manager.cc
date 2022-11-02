@@ -14,84 +14,91 @@ using content::BrowserThread;
 namespace chrome {
 namespace android {
 
+static std::map<content::WebContents *, chrome::android::BackgroundTabItem*> background_map_ = {};
+
 WebContentsDestroyedObserver::WebContentsDestroyedObserver(
-    BackgroundTabManager* owner,
     content::WebContents* watched_contents)
-    : content::WebContentsObserver(watched_contents), owner_(owner) {}
+    : content::WebContentsObserver(watched_contents) {}
 
 WebContentsDestroyedObserver::~WebContentsDestroyedObserver() {}
 
 void WebContentsDestroyedObserver::WebContentsDestroyed() {
-  DCHECK(owner_->IsBackgroundTab(web_contents()));
-  owner_->UnregisterBackgroundTab();
+    BackgroundTabManager::UnregisterBackgroundTab(web_contents());
 }
 
-BackgroundTabManager::BackgroundTabManager() {
+bool BackgroundTabManager::IsBackgroundTab(content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents_ = nullptr;
-  profile_ = nullptr;
-}
-
-BackgroundTabManager::~BackgroundTabManager() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents_ = nullptr;
-  profile_ = nullptr;
-}
-
-bool BackgroundTabManager::IsBackgroundTab(
-    content::WebContents* web_contents) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!web_contents)
-    return false;
-  return web_contents_ == web_contents;
+  return !web_contents && background_map_.find(web_contents) != background_map_.end();
 }
 
 void BackgroundTabManager::RegisterBackgroundTab(
     content::WebContents* web_contents,
     Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!web_contents_);
-  web_contents_ = web_contents;
-  profile_ = profile;
-  web_contents_observer_ =
-      std::make_unique<WebContentsDestroyedObserver>(this, web_contents);
+
+  chrome::android::BackgroundTabItem* item = new BackgroundTabItem();
+  item->profile_ = profile;
+  item->web_contents_observer_ =
+          std::make_unique<WebContentsDestroyedObserver>(web_contents);
+  background_map_.insert(std::pair(web_contents, item));
 }
 
-void BackgroundTabManager::UnregisterBackgroundTab() {
+void BackgroundTabManager::UnregisterBackgroundTab(content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_);
-  web_contents_ = nullptr;
-  profile_ = nullptr;
-  cached_history_.clear();
-  web_contents_observer_.reset();
+  BackgroundTabItem* item = findBackgroundTabItem(web_contents);
+  if (item) {
+      item->profile_ = nullptr;
+      item->cached_history_.clear();
+      item->web_contents_observer_.reset();
+      background_map_.erase(web_contents);
+  }
 }
 
-Profile* BackgroundTabManager::GetProfile() const {
+Profile* BackgroundTabManager::GetProfile(content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return profile_;
+  BackgroundTabItem* item = findBackgroundTabItem(web_contents);
+  if (item) {
+      return item->profile_;
+  }
+  return nullptr;
+
 }
 
 void BackgroundTabManager::CacheHistory(
+    content::WebContents* web_contents,
     const history::HistoryAddPageArgs& history_item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  cached_history_.push_back(history_item);
+  BackgroundTabItem* item = findBackgroundTabItem(web_contents);
+  if (item) {
+      item->cached_history_.push_back(history_item);
+  }
 }
 
 void BackgroundTabManager::CommitHistory(
+    content::WebContents* web_contents,
     history::HistoryService* history_service) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!history_service) {
+      return;
+  }
   // History service can be null in non exceptional conditions, e.g. incognito
   // mode. We clear the cached history in any case.
-  if (history_service) {
-    for (const auto& history_item : cached_history_) {
-      history_service->AddPage(history_item);
-    }
+  BackgroundTabItem* item = findBackgroundTabItem(web_contents);
+  if (item) {
+      for (const auto& history_item : item->cached_history_) {
+          history_service->AddPage(history_item);
+      }
+      item->cached_history_.clear();
   }
-  cached_history_.clear();
 }
 
-BackgroundTabManager* BackgroundTabManager::GetInstance() {
-  return base::Singleton<BackgroundTabManager>::get();
+BackgroundTabItem* BackgroundTabManager::findBackgroundTabItem(content::WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto it = background_map_.find(web_contents);
+  if (it != background_map_.end()) {
+      return it->second;
+  }
+  return nullptr;
 }
 
 }  // namespace android

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_BACKGROUND_TAB_MANAGER_H_
 #define CHROME_BROWSER_ANDROID_BACKGROUND_TAB_MANAGER_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -30,8 +31,7 @@ class BackgroundTabManager;
 
 class WebContentsDestroyedObserver : public content::WebContentsObserver {
  public:
-  WebContentsDestroyedObserver(BackgroundTabManager* owner,
-                               content::WebContents* watched_contents);
+  WebContentsDestroyedObserver(content::WebContents* watched_contents);
 
   WebContentsDestroyedObserver(const WebContentsDestroyedObserver&) = delete;
   WebContentsDestroyedObserver& operator=(const WebContentsDestroyedObserver&) =
@@ -41,9 +41,12 @@ class WebContentsDestroyedObserver : public content::WebContentsObserver {
 
   // WebContentsObserver:
   void WebContentsDestroyed() override;
+};
 
- private:
-  raw_ptr<BackgroundTabManager> owner_;
+struct BackgroundTabItem {
+    raw_ptr<Profile> profile_;
+    std::vector<history::HistoryAddPageArgs> cached_history_;
+    std::unique_ptr<WebContentsDestroyedObserver> web_contents_observer_;
 };
 
 // BackgroundTabManager is responsible for storing state for the current
@@ -56,43 +59,38 @@ class WebContentsDestroyedObserver : public content::WebContentsObserver {
 // All methods should be called on the UI thread.
 class BackgroundTabManager {
  public:
-  BackgroundTabManager();
-
-  ~BackgroundTabManager();
 
   // Return wether this WebContents is currently identified as being part of a
   // background tab.
-  bool IsBackgroundTab(content::WebContents* web_contents) const;
+  static bool IsBackgroundTab(content::WebContents* web_contents);
 
   // Register the WebContents as the content for the current background tab.
   // At most one tab can be registered as a background tab.
-  void RegisterBackgroundTab(content::WebContents* web_contents,
+  static void RegisterBackgroundTab(content::WebContents* web_contents,
                              Profile* profile);
 
   // Manually unregister a WebContents. Called automatically when the registered
   // WebContents is destroyed. Clear all state.
-  void UnregisterBackgroundTab();
+  static void UnregisterBackgroundTab(content::WebContents* web_contents);
 
   // Retrieves the profile that was stored during background tab registration.
-  Profile* GetProfile() const;
+  static Profile* GetProfile(content::WebContents* web_contents);
 
   // Cache a single history item, to be either used by CommitHistory() or
   // discarded by UnregisterBackgroundTab().
-  void CacheHistory(const history::HistoryAddPageArgs& history_item);
+  static void CacheHistory(content::WebContents* web_contents, const history::HistoryAddPageArgs& history_item);
 
   // Commit the history that was previously cached for this tab. Committing
   // history clears it from the local cache.
-  void CommitHistory(history::HistoryService* history_service);
-
-  static BackgroundTabManager* GetInstance();
+  static void CommitHistory(content::WebContents* web_contents, history::HistoryService* history_service);
 
  private:
-  friend struct base::DefaultSingletonTraits<BackgroundTabManager>;
 
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<Profile> profile_;
-  std::vector<history::HistoryAddPageArgs> cached_history_;
-  std::unique_ptr<WebContentsDestroyedObserver> web_contents_observer_;
+  static BackgroundTabItem* findBackgroundTabItem(content::WebContents* web_contents);
+
+//  static std::map<content::WebContents *, chrome::android::BackgroundTabItem*> background_map_;
+
+
 };
 
 }  // namespace android

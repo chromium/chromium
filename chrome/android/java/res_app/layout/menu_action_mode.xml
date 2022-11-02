@@ -7,7 +7,7 @@
     android:background="#cccccc"
     app:cardBackgroundColor="#ffffff"
     app:cardElevation="4dp"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="12dp"
     app:cardUseCompatPadding="true"
     >
 

@@ -357,11 +357,10 @@ bool HistoryTabHelper::IsEligibleTab(
     return true;
 
 #if BUILDFLAG(IS_ANDROID)
-  auto* background_tab_manager = BackgroundTabManager::GetInstance();
-  if (background_tab_manager->IsBackgroundTab(web_contents())) {
+  if (BackgroundTabManager::IsBackgroundTab(web_contents())) {
     // No history insertion is done for now since this is a tab that speculates
     // future navigations. Just caching and returning for now.
-    background_tab_manager->CacheHistory(add_page_args);
+    BackgroundTabManager::CacheHistory(web_contents(), add_page_args);
     return false;
   }
   return true;
