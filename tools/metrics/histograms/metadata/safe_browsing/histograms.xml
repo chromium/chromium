@@ -220,6 +220,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".ConsumerFullUrlLookup" summary="consumer real time"/>
     <variant name=".EnterpriseFullUrlLookup" summary="enterprise real time"/>
     <variant name=".HashBasedCheck" summary="hash-based"/>
+    <variant name=".NoneFullUrlLookup"
+        summary="neither consumer nor enterprise"/>
   </token>
 </histogram>
 

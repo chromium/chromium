@@ -146,10 +146,11 @@ class BrowserURLLoaderThrottle::CheckerOnIO
   void OnCheckUrlResult(NativeUrlCheckNotifier* slow_check_notifier,
                         bool proceed,
                         bool showed_interstitial,
+                        bool did_perform_real_time_check,
                         bool did_check_allowlist) {
     if (!slow_check_notifier) {
       OnCompleteCheck(false /* slow_check */, proceed, showed_interstitial,
-                      did_check_allowlist);
+                      did_perform_real_time_check, did_check_allowlist);
       return;
     }
 
@@ -169,11 +170,13 @@ class BrowserURLLoaderThrottle::CheckerOnIO
   void OnCompleteCheck(bool slow_check,
                        bool proceed,
                        bool showed_interstitial,
+                       bool did_perform_real_time_check,
                        bool did_check_allowlist) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck,
-                                  throttle_, slow_check, proceed,
-                                  showed_interstitial, did_check_allowlist));
+        FROM_HERE,
+        base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck, throttle_,
+                       slow_check, proceed, showed_interstitial,
+                       did_perform_real_time_check, did_check_allowlist));
   }
 
   // The following member stays valid until |url_checker_| is created.
@@ -213,7 +216,7 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Decide whether to do real time URL lookups or not.
-  bool real_time_lookup_enabled =
+  real_time_lookup_enabled_ =
       url_lookup_service ? url_lookup_service->CanPerformFullURLLookup()
                          : false;
 
@@ -230,17 +233,15 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
           ? url_lookup_service->CanCheckSafeBrowsingHighConfidenceAllowlist()
           : true;
 
-  url_check_type_ = real_time_lookup_enabled
-                        ? base::StrCat({url_lookup_service->GetMetricSuffix(),
-                                        kFullURLLookup})
-                        : ".HashBasedCheck";
+  url_lookup_service_metric_suffix_ =
+      real_time_lookup_enabled_ ? url_lookup_service->GetMetricSuffix()
+                                : kNoRealTimeURLLookupService;
 
   io_checker_ = std::make_unique<CheckerOnIO>(
       std::move(delegate_getter), frame_tree_node_id, web_contents_getter,
-      weak_factory_.GetWeakPtr(), real_time_lookup_enabled,
+      weak_factory_.GetWeakPtr(), real_time_lookup_enabled_,
       can_rt_check_subresource_url, can_check_db,
-      can_check_high_confidence_allowlist,
-      url_lookup_service ? url_lookup_service->GetMetricSuffix() : ".None",
+      can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
       url_lookup_service);
 }
 
@@ -336,9 +337,11 @@ const char* BrowserURLLoaderThrottle::NameForLoggingWillProcessResponse() {
 void BrowserURLLoaderThrottle::OnCompleteCheck(bool slow_check,
                                                bool proceed,
                                                bool showed_interstitial,
+                                               bool did_perform_real_time_check,
                                                bool did_check_allowlist) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!blocked_);
+  DCHECK(real_time_lookup_enabled_ || !did_perform_real_time_check);
 
   DCHECK_LT(0u, pending_checks_);
   pending_checks_--;
@@ -354,7 +357,11 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(bool slow_check,
     // If the resource load is currently deferred, there is a delay.
     if (deferred_)
       total_delay_ = base::TimeTicks::Now() - defer_start_time_;
-    LogTotalDelay2Metrics(url_check_type_, did_check_allowlist, total_delay_);
+    std::string url_check_type =
+        (did_perform_real_time_check)
+            ? base::StrCat({url_lookup_service_metric_suffix_, kFullURLLookup})
+            : ".HashBasedCheck";
+    LogTotalDelay2Metrics(url_check_type, did_check_allowlist, total_delay_);
   }
 
   if (proceed) {

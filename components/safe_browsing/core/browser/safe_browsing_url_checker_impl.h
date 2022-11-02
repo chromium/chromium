@@ -69,6 +69,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
                               bool /* showed_interstitial */,
+                              bool /* did_perform_real_time_check */,
                               bool /* did_check_allowlist */)>;
 
   // If |slow_check_notifier| is not null, the callback is supposed to update
@@ -78,6 +79,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       base::OnceCallback<void(NativeUrlCheckNotifier* /* slow_check_notifier */,
                               bool /* proceed */,
                               bool /* showed_interstitial */,
+                              bool /* did_perform_real_time_check */,
                               bool /* did_check_allowlist */)>;
 
   // Constructor for SafeBrowsingUrlCheckerImpl. |real_time_lookup_enabled|
@@ -164,6 +166,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
     void OnStartSlowCheck();
     void OnCompleteCheck(bool proceed,
                          bool showed_interstitial,
+                         bool did_perform_real_time_check,
                          bool did_check_allowlist);
 
    private:
@@ -286,6 +289,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
             const std::string& method,
             Notifier notifier,
             bool is_cached_safe_url,
+            bool did_perform_real_time_check,
             bool did_check_allowlist);
     UrlInfo(UrlInfo&& other);
 
@@ -297,6 +301,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
     // If the URL is classified as safe in cache manager during real time
     // lookup.
     bool is_cached_safe_url;
+    // Whether real time check (including allowlist and cache checks) was
+    // performed.
+    bool did_perform_real_time_check;
     // If the allowlist was checked for this URL.
     bool did_check_allowlist;
   };

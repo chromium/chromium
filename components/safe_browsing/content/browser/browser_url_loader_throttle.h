@@ -81,6 +81,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
                               bool /* showed_interstitial */,
+                              bool /* did_perform_real_time_check */,
                               bool /* did_check_allowlist */)>;
 
   // |web_contents_getter| is used for displaying SafeBrowsing UI when
@@ -98,6 +99,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   void OnCompleteCheck(bool slow_check,
                        bool proceed,
                        bool showed_interstitial,
+                       bool did_perform_real_time_check,
                        bool did_check_allowlist);
 
   // Called to skip future safe browsing checks and resume the request if
@@ -129,8 +131,11 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   std::unique_ptr<CheckerOnIO> io_checker_;
 
-  // Metric suffix for the URL check type.
-  std::string url_check_type_;
+  // Metric suffix for the URL lookup service.
+  std::string url_lookup_service_metric_suffix_;
+
+  // Whether real time lookup is enabled for the user.
+  bool real_time_lookup_enabled_;
 
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
 };

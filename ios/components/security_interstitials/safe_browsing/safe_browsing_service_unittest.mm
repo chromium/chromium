@@ -119,6 +119,7 @@ class TestUrlCheckerClient {
           slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
+      bool did_perform_real_time_check,
       bool did_check_allowlist) {
     if (slow_check_notifier) {
       *slow_check_notifier =

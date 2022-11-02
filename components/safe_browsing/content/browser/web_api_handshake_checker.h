@@ -54,6 +54,7 @@ class WebApiHandshakeChecker {
   void OnCompleteCheck(bool slow_check,
                        bool proceed,
                        bool showed_interstitial,
+                       bool did_perform_real_time_check,
                        bool did_check_allowlist);
 
   std::unique_ptr<CheckerOnIO> io_checker_;

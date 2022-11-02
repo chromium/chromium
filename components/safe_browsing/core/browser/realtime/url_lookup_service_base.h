@@ -34,6 +34,9 @@ class SharedURLLoaderFactory;
 
 namespace safe_browsing {
 
+// Suffix for metrics when there is no URL lookup service.
+constexpr char kNoRealTimeURLLookupService[] = ".None";
+
 using RTLookupRequestCallback =
     base::OnceCallback<void(std::unique_ptr<RTLookupRequest>, std::string)>;
 
