@@ -18,7 +18,7 @@ def frameset(inline, *docs):
     return "<frameset rows='{}'>\n{}</frameset>".format(len(frames) * "*,", "\n".join(frames))
 
 
-def test_frame_id_webelement_no_element_reference(session, inline, iframe):
+def test_frame_id_webelement_no_such_element(session, iframe, inline):
     session.url = inline(iframe("<p>foo"))
     frame = session.find.css("iframe", all=False)
     frame.id = "bar"
@@ -28,7 +28,7 @@ def test_frame_id_webelement_no_element_reference(session, inline, iframe):
 
 
 @pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
-def test_stale_element_reference(session, iframe, stale_element, as_frame):
+def test_frame_id_webelement_stale_element_reference(session, iframe, stale_element, as_frame):
     frame = stale_element(iframe("<div>"), "iframe", as_frame=as_frame)
 
     result = switch_to_frame(session, frame)
