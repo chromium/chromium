@@ -30,7 +30,6 @@ import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
 import android.nfc.tech.TagTechnology;
-import android.os.Build;
 import android.os.Bundle;
 
 import org.junit.Before;
@@ -71,7 +70,7 @@ import java.util.List;
  * Unit tests for NfcImpl and NdefMessageUtils classes.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
+@Config(manifest = Config.NONE)
 public class NFCTest {
     private TestNfcDelegate mDelegate;
     private int mNextWatchId;
