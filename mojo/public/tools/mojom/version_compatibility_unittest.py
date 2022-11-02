@@ -60,40 +60,48 @@ class VersionCompatibilityTest(MojomParserTestCase):
     """Adding a value to an existing version is not allowed, even if the old
     enum was marked [Extensible]. Note that it is irrelevant whether or not the
     new enum is marked [Extensible]."""
-    self.assertNotBackwardCompatible('[Extensible] enum E { kFoo, kBar };',
-                                     'enum E { kFoo, kBar, kBaz };')
     self.assertNotBackwardCompatible(
-        '[Extensible] enum E { kFoo, kBar };',
-        '[Extensible] enum E { kFoo, kBar, kBaz };')
+        '[Extensible] enum E { [Default] kFoo, kBar };',
+        'enum E { kFoo, kBar, kBaz };')
     self.assertNotBackwardCompatible(
-        '[Extensible] enum E { kFoo, [MinVersion=1] kBar };',
+        '[Extensible] enum E { [Default] kFoo, kBar };',
+        '[Extensible] enum E { [Default] kFoo, kBar, kBaz };')
+    self.assertNotBackwardCompatible(
+        '[Extensible] enum E { [Default] kFoo, [MinVersion=1] kBar };',
         'enum E { kFoo, [MinVersion=1] kBar, [MinVersion=1] kBaz };')
 
   def testEnumValueRemoval(self):
     """Removal of an enum value is never valid even for [Extensible] enums."""
     self.assertNotBackwardCompatible('enum E { kFoo, kBar };',
                                      'enum E { kFoo };')
-    self.assertNotBackwardCompatible('[Extensible] enum E { kFoo, kBar };',
-                                     '[Extensible] enum E { kFoo };')
     self.assertNotBackwardCompatible(
-        '[Extensible] enum E { kA, [MinVersion=1] kB };',
-        '[Extensible] enum E { kA, };')
+        '[Extensible] enum E { [Default] kFoo, kBar };',
+        '[Extensible] enum E { [Default] kFoo };')
     self.assertNotBackwardCompatible(
-        '[Extensible] enum E { kA, [MinVersion=1] kB, [MinVersion=1] kZ };',
-        '[Extensible] enum E { kA, [MinVersion=1] kB };')
+        '[Extensible] enum E { [Default] kA, [MinVersion=1] kB };',
+        '[Extensible] enum E { [Default] kA, };')
+    self.assertNotBackwardCompatible(
+        """[Extensible] enum E {
+          [Default] kA,
+          [MinVersion=1] kB,
+          [MinVersion=1] kZ };""",
+        '[Extensible] enum E { [Default] kA, [MinVersion=1] kB };')
 
   def testNewExtensibleEnumValueWithMinVersion(self):
     """Adding a new and properly [MinVersion]'d value to an [Extensible] enum
     is a backward-compatible change. Note that it is irrelevant whether or not
     the new enum is marked [Extensible]."""
-    self.assertBackwardCompatible('[Extensible] enum E { kA, kB };',
+    self.assertBackwardCompatible('[Extensible] enum E { [Default] kA, kB };',
                                   'enum E { kA, kB, [MinVersion=1] kC };')
     self.assertBackwardCompatible(
-        '[Extensible] enum E { kA, kB };',
-        '[Extensible] enum E { kA, kB, [MinVersion=1] kC };')
+        '[Extensible] enum E { [Default] kA, kB };',
+        '[Extensible] enum E { [Default] kA, kB, [MinVersion=1] kC };')
     self.assertBackwardCompatible(
-        '[Extensible] enum E { kA, [MinVersion=1] kB };',
-        '[Extensible] enum E { kA, [MinVersion=1] kB, [MinVersion=2] kC };')
+        '[Extensible] enum E { [Default] kA, [MinVersion=1] kB };',
+        """[Extensible] enum E {
+          [Default] kA,
+          [MinVersion=1] kB,
+          [MinVersion=2] kC };""")
 
   def testRenameEnumValue(self):
     """Renaming an enum value does not affect backward-compatibility. Only
@@ -161,14 +169,17 @@ class VersionCompatibilityTest(MojomParserTestCase):
         'struct S {}; struct T { S s; };',
         'struct S { [MinVersion=1] int32 x; }; struct T { S s; };')
     self.assertBackwardCompatible(
-        '[Extensible] enum E { kA }; struct S { E e; };',
-        '[Extensible] enum E { kA, [MinVersion=1] kB }; struct S { E e; };')
+        '[Extensible] enum E { [Default] kA }; struct S { E e; };',
+        """[Extensible] enum E {
+          [Default] kA,
+          [MinVersion=1] kB };
+          struct S { E e; };""")
     self.assertNotBackwardCompatible(
         'struct S {}; struct T { S s; };',
         'struct S { int32 x; }; struct T { S s; };')
     self.assertNotBackwardCompatible(
-        '[Extensible] enum E { kA }; struct S { E e; };',
-        '[Extensible] enum E { kA, kB }; struct S { E e; };')
+        '[Extensible] enum E { [Default] kA }; struct S { E e; };',
+        '[Extensible] enum E { [Default] kA, kB }; struct S { E e; };')
 
   def testNewStructFieldWithInvalidMinVersion(self):
     """Adding a new field using an existing MinVersion breaks backward-
@@ -305,14 +316,17 @@ class VersionCompatibilityTest(MojomParserTestCase):
         'struct S {}; union U { S s; };',
         'struct S { [MinVersion=1] int32 x; }; union U { S s; };')
     self.assertBackwardCompatible(
-        '[Extensible] enum E { kA }; union U { E e; };',
-        '[Extensible] enum E { kA, [MinVersion=1] kB }; union U { E e; };')
+        '[Extensible] enum E { [Default] kA }; union U { E e; };',
+        """[Extensible] enum E {
+          [Default] kA,
+          [MinVersion=1] kB };
+          union U { E e; };""")
     self.assertNotBackwardCompatible(
         'struct S {}; union U { S s; };',
         'struct S { int32 x; }; union U { S s; };')
     self.assertNotBackwardCompatible(
-        '[Extensible] enum E { kA }; union U { E e; };',
-        '[Extensible] enum E { kA, kB }; union U { E e; };')
+        '[Extensible] enum E { [Default] kA }; union U { E e; };',
+        '[Extensible] enum E { [Default] kA, kB }; union U { E e; };')
 
   def testNewUnionFieldWithInvalidMinVersion(self):
     """Adding a new field using an existing MinVersion breaks backward-
