@@ -503,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, TestHTTPSOCSPOldStapledButValidAIA) {
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, HardFailOnOCSPInvalid) {
   if (!ssl_test_util::SystemSupportsHardFailRevocationChecking()) {
     LOG(WARNING) << "Skipping test because system doesn't support hard fail "
@@ -706,6 +707,7 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+        // || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 
 using AIABrowserTest = OCSPBrowserTest;
 
