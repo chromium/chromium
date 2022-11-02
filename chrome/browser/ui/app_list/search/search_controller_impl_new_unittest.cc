@@ -14,7 +14,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
@@ -76,16 +76,16 @@ class TestSearchProvider : public SearchProvider {
   base::TimeDelta delay_;
 };
 
-// A test ranker delegate that circumvents all result rankings, and hardcodes
+// A test ranker manager that circumvents all result rankings, and hardcodes
 // category ranking.
-class TestRankerDelegate : public RankerDelegate {
+class TestRankerManager : public RankerManager {
  public:
-  explicit TestRankerDelegate(Profile* profile)
-      : RankerDelegate(profile, nullptr) {}
-  ~TestRankerDelegate() override {}
+  explicit TestRankerManager(Profile* profile)
+      : RankerManager(profile, nullptr) {}
+  ~TestRankerManager() override {}
 
-  TestRankerDelegate(const TestRankerDelegate&) = delete;
-  TestRankerDelegate& operator=(const TestRankerDelegate&) = delete;
+  TestRankerManager(const TestRankerManager&) = delete;
+  TestRankerManager& operator=(const TestRankerManager&) = delete;
 
   void SetCategoryRanks(base::flat_map<Category, double> category_ranks) {
     category_ranks_ = category_ranks;
@@ -157,10 +157,9 @@ class SearchControllerImplNewTest : public testing::Test {
         /*model_updater=*/&model_updater_, /*list_controller=*/nullptr,
         /*notifier=*/nullptr, &profile_);
 
-    auto ranker_delegate = std::make_unique<TestRankerDelegate>(&profile_);
-    ranker_delegate_ = ranker_delegate.get();
-    search_controller_->set_ranker_delegate_for_test(
-        std::move(ranker_delegate));
+    auto ranker_manager = std::make_unique<TestRankerManager>(&profile_);
+    ranker_manager_ = ranker_manager.get();
+    search_controller_->set_ranker_manager_for_test(std::move(ranker_manager));
   }
 
   void ExpectIdOrder(std::vector<std::string> expected_ids) {
@@ -224,7 +223,7 @@ class SearchControllerImplNewTest : public testing::Test {
   FakeAppListModelUpdater model_updater_{&profile_, /*order_delegate=*/nullptr};
   std::unique_ptr<SearchControllerImplNew> search_controller_;
   // Owned by |search_controller_|.
-  TestRankerDelegate* ranker_delegate_{nullptr};
+  TestRankerManager* ranker_manager_{nullptr};
 };
 
 // Tests that best matches are ordered first, and categories are ignored when
@@ -234,7 +233,7 @@ TEST_F(SearchControllerImplNewTest, BestMatchesOrderedAboveOtherResults) {
       {"a", "b", "c", "d"},
       {Category::kWeb, Category::kWeb, Category::kApps, Category::kWeb},
       {0, -1, 1, -1}, {0.4, 0.7, 0.2, 0.8});
-  ranker_delegate_->SetCategoryRanks(
+  ranker_manager_->SetCategoryRanks(
       {{Category::kApps, 0.4}, {Category::kWeb, 0.2}});
 
   search_controller_->StartSearch(u"abc");
@@ -265,7 +264,7 @@ TEST_F(SearchControllerImplNewTest,
   // individual results, and ignores the effect that these numbers can have on
   // final sorting of the categories or results lists.
 
-  ranker_delegate_->SetCategoryRanks({{Category::kFiles, 0.1}});
+  ranker_manager_->SetCategoryRanks({{Category::kFiles, 0.1}});
 
   // Set up some results from two different providers.
   auto file_results = MakeResults({"a"}, {Category::kFiles}, {-1}, {0.9});
@@ -311,7 +310,7 @@ TEST_F(SearchControllerImplNewTest,
   // categories, and ignores the effect that these numbers can have on final
   // sorting of the categories or results lists.
 
-  ranker_delegate_->SetCategoryRanks({{Category::kFiles, 0.1}});
+  ranker_manager_->SetCategoryRanks({{Category::kFiles, 0.1}});
 
   // Set up some results from four different providers. Only their categories
   // are relevant, and individual result scores are not.
@@ -366,7 +365,7 @@ TEST_F(SearchControllerImplNewTest,
 // Tests that categories which arrive pre-burn-in are ordered correctly, and
 // their results are grouped together and ordered by score.
 TEST_F(SearchControllerImplNewTest, CategoriesOrderedCorrectly_PreBurnIn) {
-  ranker_delegate_->SetCategoryRanks(
+  ranker_manager_->SetCategoryRanks(
       {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
   auto file_results = MakeResults({"a"}, {Category::kFiles}, {-1}, {0.9});
   auto web_results = MakeResults(
@@ -391,7 +390,7 @@ TEST_F(SearchControllerImplNewTest, CategoriesOrderedCorrectly_PreBurnIn) {
 // Tests that categories which arrive post-burn-in are ordered correctly, and
 // their results are grouped together and ordered by score.
 TEST_F(SearchControllerImplNewTest, CategoriesOrderedCorrectly_PostBurnIn) {
-  ranker_delegate_->SetCategoryRanks(
+  ranker_manager_->SetCategoryRanks(
       {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
   auto web_results = MakeResults(
       {"b", "c", "a"}, {Category::kWeb, Category::kWeb, Category::kWeb},
@@ -421,7 +420,7 @@ TEST_F(SearchControllerImplNewTest, CategoriesOrderedCorrectly_PostBurnIn) {
 TEST_F(
     SearchControllerImplNewTest,
     CategoriesOrderedCorrectly_PreAndPostBurnIn_OneProviderReturnPerCategory) {
-  ranker_delegate_->SetCategoryRanks(
+  ranker_manager_->SetCategoryRanks(
       {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
   auto web_results = MakeResults(
       {"c", "d", "b"}, {Category::kWeb, Category::kWeb, Category::kWeb},
@@ -459,9 +458,9 @@ TEST_F(
 // appear below Search and Assistant.
 TEST_F(SearchControllerImplNewTest,
        CategoriesOrderedCorrectly_SearchAndAssistantPinnedToBottomOfPreBurnIn) {
-  ranker_delegate_->SetCategoryRanks({{Category::kFiles, 0.3},
-                                      {Category::kSearchAndAssistant, 0.2},
-                                      {Category::kApps, 0.1}});
+  ranker_manager_->SetCategoryRanks({{Category::kFiles, 0.3},
+                                     {Category::kSearchAndAssistant, 0.2},
+                                     {Category::kApps, 0.1}});
   auto search_and_assistant_results =
       MakeResults({"a", "b", "c"},
                   {Category::kSearchAndAssistant, Category::kSearchAndAssistant,
@@ -499,7 +498,7 @@ TEST_F(SearchControllerImplNewTest,
 TEST_F(
     SearchControllerImplNewTest,
     ResultsOrderedCorrectly_PreAndPostBurnIn_SingleProviderReturnsMultipleTimes) {
-  ranker_delegate_->SetCategoryRanks({{Category::kWeb, 0.2}});
+  ranker_manager_->SetCategoryRanks({{Category::kWeb, 0.2}});
   auto web_results_1 = MakeResults(
       {"b", "c", "a"}, {Category::kWeb, Category::kWeb, Category::kWeb},
       {-1, -1, -1}, {0.2, 0.1, 0.3});
@@ -546,7 +545,7 @@ TEST_F(
 TEST_F(
     SearchControllerImplNewTest,
     ResultsOrderedCorrectly_PreAndPostBurnIn_MultipleProvidersReturnToSingleCategory) {
-  ranker_delegate_->SetCategoryRanks({{Category::kWeb, 0.2}});
+  ranker_manager_->SetCategoryRanks({{Category::kWeb, 0.2}});
 
   auto installed_app_results = MakeResults(
       {"b", "c", "a"}, {Category::kApps, Category::kApps, Category::kApps},
@@ -583,7 +582,7 @@ TEST_F(
 }
 
 TEST_F(SearchControllerImplNewTest, FirstSearchResultsNotShownInSecondSearch) {
-  ranker_delegate_->SetCategoryRanks({{Category::kApps, 0.1}});
+  ranker_manager_->SetCategoryRanks({{Category::kApps, 0.1}});
 
   auto provider = std::make_unique<TestSearchProvider>(Result::kInstalledApp,
                                                        base::Seconds(1));
@@ -618,7 +617,7 @@ TEST_F(SearchControllerImplNewTest, FirstSearchResultsNotShownInSecondSearch) {
 }
 
 TEST_F(SearchControllerImplNewTest, ZeroStateResultsAreBlocked) {
-  ranker_delegate_->SetCategoryRanks({{Category::kApps, 0.1}});
+  ranker_manager_->SetCategoryRanks({{Category::kApps, 0.1}});
 
   // Set up four providers, two provide zero-state results. One is slow. The
   // particular result categories don't matter.
@@ -667,7 +666,7 @@ TEST_F(SearchControllerImplNewTest, ZeroStateResultsAreBlocked) {
 }
 
 TEST_F(SearchControllerImplNewTest, ZeroStateResultsGetTimedOut) {
-  ranker_delegate_->SetCategoryRanks({{Category::kApps, 0.1}});
+  ranker_manager_->SetCategoryRanks({{Category::kApps, 0.1}});
 
   auto provider_a = std::make_unique<TestSearchProvider>(Result::kZeroStateApp,
                                                          base::Seconds(1));
@@ -701,8 +700,8 @@ TEST_F(SearchControllerImplNewTest, ZeroStateResultsGetTimedOut) {
 
 TEST_F(SearchControllerImplNewTest, ContinueRanksDriveAboveLocal) {
   // Use the full ranking stack.
-  search_controller_->set_ranker_delegate_for_test(
-      std::make_unique<RankerDelegate>(&profile_, search_controller_.get()));
+  search_controller_->set_ranker_manager_for_test(
+      std::make_unique<RankerManager>(&profile_, search_controller_.get()));
 
   auto drive_provider = std::make_unique<TestSearchProvider>(
       Result::kZeroStateDrive, base::Seconds(0));

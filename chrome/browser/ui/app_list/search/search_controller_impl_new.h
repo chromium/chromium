@@ -18,7 +18,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/burnin_controller.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
-#include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -81,9 +81,9 @@ class SearchControllerImplNew : public SearchController {
   base::Time session_start() override;
   void disable_ranking_for_test() override;
 
-  void set_ranker_delegate_for_test(
-      std::unique_ptr<RankerDelegate> ranker_delegate) {
-    ranker_ = std::move(ranker_delegate);
+  void set_ranker_manager_for_test(
+      std::unique_ptr<RankerManager> ranker_manager) {
+    ranker_manager_ = std::move(ranker_manager);
   }
 
  private:
@@ -132,7 +132,7 @@ class SearchControllerImplNew : public SearchController {
   std::string last_launched_app_id_;
 
   // Top-level result ranker.
-  std::unique_ptr<RankerDelegate> ranker_;
+  std::unique_ptr<RankerManager> ranker_manager_;
 
   bool disable_ranking_for_test_ = false;
 

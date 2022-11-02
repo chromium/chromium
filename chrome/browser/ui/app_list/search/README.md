@@ -30,7 +30,7 @@ This folder contains the backend implementation of Chrome OS launcher search.
 Ranking is the process of assigning scores to each result and category to
 determine their final display order. Located inside the `ranking/` subdirectory.
 
-- **RankerDelegate**. This owns the ranking stack and determines the order of
+- **RankerManager**. This owns the ranking stack and determines the order of
   ranking steps.
 - **Ranker**. The base class for all rankers. Rankers can be used for all kinds
   of post-processing steps, including but not limited to ranking.

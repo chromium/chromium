@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_DELEGATE_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_MANAGER_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_MANAGER_H_
 
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 
@@ -14,23 +14,19 @@ namespace app_list {
 
 class SearchController;
 
-// A delegate for a series of rankers. Rankers can be added via AddRanker, and
+// A manager for a series of rankers. Rankers can be added via AddRanker, and
 // all other methods will delegate the call to each ranker in the order they
 // were added.
 //
 // This is the place to configure experiments or flags that change ranking
 // behavior.
-//
-// TODO(crbug.com/1199206): This is now much more than a delegate, because it
-// does all the work of setting up the rankers. Rename to something more
-// appropriate.
-class RankerDelegate : public Ranker {
+class RankerManager : public Ranker {
  public:
-  RankerDelegate(Profile* profile, SearchController* controller);
-  ~RankerDelegate() override;
+  RankerManager(Profile* profile, SearchController* controller);
+  ~RankerManager() override;
 
-  RankerDelegate(const RankerDelegate&) = delete;
-  RankerDelegate& operator=(const RankerDelegate&) = delete;
+  RankerManager(const RankerManager&) = delete;
+  RankerManager& operator=(const RankerManager&) = delete;
 
   // Ranker:
   void Start(const std::u16string& query,
@@ -52,4 +48,4 @@ class RankerDelegate : public Ranker {
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_MANAGER_H_

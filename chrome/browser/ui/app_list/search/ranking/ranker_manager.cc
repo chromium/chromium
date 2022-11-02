@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranker_manager.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/metrics/field_trial_params.h"
@@ -33,7 +33,7 @@ constexpr base::TimeDelta kStandardWriteDelay = base::Seconds(3);
 
 }  // namespace
 
-RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
+RankerManager::RankerManager(Profile* profile, SearchController* controller) {
   // Score normalization parameters:
   ScoreNormalizer::Params score_normalizer_params;
   // Change this version number when changing the number of bins below.
@@ -131,43 +131,43 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
   AddRanker(std::make_unique<AnswerRanker>());
 }
 
-RankerDelegate::~RankerDelegate() {}
+RankerManager::~RankerManager() {}
 
-void RankerDelegate::Start(const std::u16string& query,
-                           ResultsMap& results,
-                           CategoriesList& categories) {
+void RankerManager::Start(const std::u16string& query,
+                          ResultsMap& results,
+                          CategoriesList& categories) {
   for (auto& ranker : rankers_)
     ranker->Start(query, results, categories);
 }
 
-void RankerDelegate::UpdateResultRanks(ResultsMap& results,
-                                       ProviderType provider) {
+void RankerManager::UpdateResultRanks(ResultsMap& results,
+                                      ProviderType provider) {
   for (auto& ranker : rankers_)
     ranker->UpdateResultRanks(results, provider);
 }
 
-void RankerDelegate::UpdateCategoryRanks(const ResultsMap& results,
-                                         CategoriesList& categories,
-                                         ProviderType provider) {
+void RankerManager::UpdateCategoryRanks(const ResultsMap& results,
+                                        CategoriesList& categories,
+                                        ProviderType provider) {
   for (auto& ranker : rankers_)
     ranker->UpdateCategoryRanks(results, categories, provider);
 }
 
-void RankerDelegate::Train(const LaunchData& launch) {
+void RankerManager::Train(const LaunchData& launch) {
   for (auto& ranker : rankers_)
     ranker->Train(launch);
 }
 
-void RankerDelegate::Remove(ChromeSearchResult* result) {
+void RankerManager::Remove(ChromeSearchResult* result) {
   for (auto& ranker : rankers_)
     ranker->Remove(result);
 }
 
-void RankerDelegate::AddRanker(std::unique_ptr<Ranker> ranker) {
+void RankerManager::AddRanker(std::unique_ptr<Ranker> ranker) {
   rankers_.emplace_back(std::move(ranker));
 }
 
-void RankerDelegate::OnBurnInPeriodElapsed() {
+void RankerManager::OnBurnInPeriodElapsed() {
   for (auto& ranker : rankers_)
     ranker->OnBurnInPeriodElapsed();
 }
