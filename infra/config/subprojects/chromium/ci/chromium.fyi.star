@@ -384,7 +384,6 @@ ci.builder(
             ],
         },
     },
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.builder(
@@ -455,7 +454,6 @@ ci.builder(
         short_name = "TD",
     ),
     os = os.LINUX_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.builder(
@@ -1792,7 +1790,6 @@ fyi_coverage_builder(
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
     triggered_by = [],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 fyi_coverage_builder(

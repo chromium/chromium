@@ -418,16 +418,16 @@
       'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi_reclient',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_fyi_reclient',
       'linux-annotator-rel': 'release_bot_reclient',
-      'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
+      'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
-      'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta',
+      'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta_reclient',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_minimal_symbols_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient',
       'linux-blink-v8-sandbox-future-rel': 'release_bot_enable_v8_sandbox_future_dcheck_always_on_reclient',
       'linux-blink-wpt-reset-rel': 'release_bot_blink_minimal_symbols_reclient',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
-      'linux-code-coverage': 'clang_code_coverage',
+      'linux-code-coverage': 'clang_code_coverage_reclient',
       'linux-example-builder': 'release_bot_reclient',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
@@ -2252,10 +2252,6 @@
       'chromeos_with_codecs', 'debug_bot_reclient',
     ],
 
-    'chromeos_with_codecs_release_bot': [
-      'chromeos_with_codecs', 'release_bot',
-    ],
-
     'chromeos_with_codecs_release_bot_coverage_reclient': [
       'chromeos_with_codecs', 'release_bot_reclient', 'use_clang_coverage',
     ],
@@ -2280,10 +2276,6 @@
 
     'chromeos_with_codecs_with_lacros_release_bot_reclient': [
       'chromeos_with_codecs', 'release_bot_reclient', 'also_build_lacros_chrome'
-    ],
-
-    'clang_code_coverage': [
-      'release_bot', 'clang', 'use_clang_coverage', 'no_symbols',
     ],
 
     'clang_code_coverage_ios_xctest_reclient': [
@@ -2471,8 +2463,8 @@
       'debug_bot_blink_reclient',
     ],
 
-    'debug_bot_enable_blink_animation_use_time_delta': [
-      'debug_bot', 'enable_blink_animation_use_time_delta',
+    'debug_bot_enable_blink_animation_use_time_delta_reclient': [
+      'debug_bot_reclient', 'enable_blink_animation_use_time_delta',
     ],
 
     'debug_bot_fuchsia': [
