@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.location.LocationManager;
-import android.os.Build;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 
@@ -37,7 +36,7 @@ import java.util.Collection;
  * Test suite for Java Geolocation.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
+@Config(manifest = Config.NONE)
 public class LocationProviderTest {
     public static enum LocationProviderType { MOCK, ANDROID, GMS_CORE }
 
