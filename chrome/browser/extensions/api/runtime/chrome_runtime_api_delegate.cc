@@ -336,7 +336,7 @@ bool ChromeRuntimeAPIDelegate::RestartDevice(std::string* error_message) {
   if (user_manager::UserManager::Get()->IsLoggedInAsKioskApp() ||
       user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()) {
     chromeos::PowerManagerClient::Get()->RequestRestart(
-        power_manager::REQUEST_RESTART_OTHER, "chrome.runtime API");
+        power_manager::REQUEST_RESTART_API, "chrome.runtime API");
     return true;
   }
 #endif

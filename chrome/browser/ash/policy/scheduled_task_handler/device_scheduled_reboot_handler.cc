@@ -26,6 +26,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 
 namespace policy {
 
@@ -237,7 +238,8 @@ const base::TimeDelta DeviceScheduledRebootHandler::GetExternalDelay() const {
 void DeviceScheduledRebootHandler::RebootDevice(
     const std::string& reboot_description) const {
   chromeos::PowerManagerClient::Get()->RequestRestart(
-      power_manager::REQUEST_RESTART_OTHER, reboot_description);
+      power_manager::REQUEST_RESTART_SCHEDULED_REBOOT_POLICY,
+      reboot_description);
 }
 
 }  // namespace policy

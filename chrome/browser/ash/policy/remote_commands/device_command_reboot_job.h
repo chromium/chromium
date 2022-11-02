@@ -23,7 +23,7 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
   DeviceCommandRebootJob(const DeviceCommandRebootJob&) = delete;
   DeviceCommandRebootJob& operator=(const DeviceCommandRebootJob&) = delete;
 
-  ~DeviceCommandRebootJob() override;
+  ~DeviceCommandRebootJob() override = default;
 
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;

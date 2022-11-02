@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace policy {
@@ -24,9 +25,6 @@ DeviceCommandRebootJob::DeviceCommandRebootJob(
     chromeos::PowerManagerClient* power_manager_client)
     : power_manager_client_(power_manager_client) {
   CHECK(power_manager_client_);
-}
-
-DeviceCommandRebootJob::~DeviceCommandRebootJob() {
 }
 
 enterprise_management::RemoteCommand_Type DeviceCommandRebootJob::GetType()
@@ -55,8 +53,9 @@ void DeviceCommandRebootJob::RunImpl(CallbackWithResult succeeded_callback,
   }
 
   SYSLOG(INFO) << "Rebooting immediately.";
-  power_manager_client_->RequestRestart(power_manager::REQUEST_RESTART_OTHER,
-                                        "policy device command");
+  power_manager_client_->RequestRestart(
+      power_manager::REQUEST_RESTART_REMOTE_ACTION_REBOOT,
+      "policy device command");
 }
 
 }  // namespace policy
