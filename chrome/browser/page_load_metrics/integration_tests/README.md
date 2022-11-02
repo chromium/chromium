@@ -39,13 +39,13 @@ Integration Test Framework. The framework makes it easy to
     - Trace Events can be queried and aggregated with a TraceAnalyzer
 
 ## Examples
-See the [source](metric_browsertest.cc)!
+See the [source](metric_integration_test.cc)!
 
 ## Tips and Tricks
 Use [`content::EvalJS`][evaljs] to pass JavaScript values back to C++ and check for
 consistency.
 
-Use [`xvfb-run`][xvfb-run] when running the `browser_test` executable.
+Use [`xvfb-run`][xvfb-run] when running the `browser_tests` executable.
 
 - no more flashing windows
 - no chance to accidentally send real input to the test
