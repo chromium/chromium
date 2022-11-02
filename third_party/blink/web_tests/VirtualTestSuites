@@ -1385,5 +1385,11 @@
       "external/wpt/web-nfc"
     ],
     "args": ["--disable-features=AbortSignalHandleBasedRemoval"]
+  },
+  {
+    "prefix": "devtools-tab-target",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["http/tests/devtools/extensions", "http/tests/devtools/tracing"],
+    "args": ["--content-shell-devtools-tab-target"]
   }
 ]
