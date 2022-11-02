@@ -94,9 +94,14 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   const SyncedBookmarkTracker* GetTrackerForTest() const;
   bool IsConnectedForTest() const;
 
+  // Reset max bookmarks till which sync is enabled.
+  void SetMaxBookmarksTillSyncEnabledForTest(size_t limit);
+
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetWeakPtr();
 
  private:
+  static constexpr size_t kDefaultMaxBookmarksTillSyncEnabled = 100000;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // If preconditions are met, inform sync that we are ready to connect.
@@ -119,6 +124,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // changes from the bookmark model.
   void StartTrackingMetadata();
   void StopTrackingMetadata();
+
+  // Resets bookmark tracker in addition to stopping metadata tracking.
+  void StopTrackingMetadataAndResetTracker();
 
   // Creates a DictionaryValue for local and remote debugging information about
   // |node| and appends it to |all_nodes|. It does the same for child nodes
@@ -176,6 +184,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   syncer::ModelErrorHandler error_handler_;
 
   std::unique_ptr<BookmarkModelObserverImpl> bookmark_model_observer_;
+
+  // This member variable exists only to allow tests to override the limit.
+  size_t max_bookmarks_till_sync_enabled_ = kDefaultMaxBookmarksTillSyncEnabled;
 
   // WeakPtrFactory for this processor for ModelTypeController.
   base::WeakPtrFactory<BookmarkModelTypeProcessor>

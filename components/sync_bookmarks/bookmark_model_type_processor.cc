@@ -20,6 +20,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
@@ -39,6 +40,7 @@
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "components/undo/bookmark_undo_utils.h"
+#include "ui/base/models/tree_node_iterator.h"
 
 namespace sync_bookmarks {
 
@@ -99,6 +101,20 @@ std::string ComputeServerDefinedUniqueTagForDebugging(
     return "synced_bookmarks";
   }
   return "";
+}
+
+size_t CountSyncableBookmarksFromModel(bookmarks::BookmarkModel* model) {
+  size_t count = 0;
+  ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
+      model->root_node());
+  // Does not count the root node.
+  while (iterator.has_next()) {
+    const bookmarks::BookmarkNode* node = iterator.Next();
+    if (model->client()->CanSyncNode(node)) {
+      ++count;
+    }
+  }
+  return count;
 }
 
 }  // namespace
@@ -310,6 +326,7 @@ void BookmarkModelTypeProcessor::OnSyncStarting(
   error_handler_ = request.error_handler;
 
   DCHECK(!cache_guid_.empty());
+  DCHECK(error_handler_);
   ConnectIfReady();
 }
 
@@ -320,6 +337,24 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
   }
   // Return if Sync didn't start yet.
   if (!start_callback_) {
+    return;
+  }
+
+  DCHECK(error_handler_);
+
+  // Issue error and disable sync if bookmarks exceed limit.
+  // TODO(ankushkush): Think about adding two different limits: one for when
+  // sync just starts, the other (larger one) as hard limit, incl. incremental
+  // changes.
+  const size_t count = bookmark_tracker_
+                           ? bookmark_tracker_->TrackedBookmarksCount()
+                           : CountSyncableBookmarksFromModel(bookmark_model_);
+  if (count > max_bookmarks_till_sync_enabled_ &&
+      base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
+    StopTrackingMetadataAndResetTracker();
+    start_callback_.Reset();
+    error_handler_.Run(
+        syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
     return;
   }
 
@@ -393,6 +428,21 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
 
 void BookmarkModelTypeProcessor::NudgeForCommitIfNeeded() {
   DCHECK(bookmark_tracker_);
+
+  // Issue error and disable sync if the number of local bookmarks exceed limit.
+  // If |error_handler_| is not set, the check is ignored because this gets
+  // re-evaluated in ConnectIfReady().
+  if (error_handler_ &&
+      bookmark_tracker_->TrackedBookmarksCount() >
+          max_bookmarks_till_sync_enabled_ &&
+      base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
+    StopTrackingMetadataAndResetTracker();
+    start_callback_.Reset();
+    error_handler_.Run(
+        syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
+    return;
+  }
+
   // Don't bother sending anything if there's no one to send to.
   if (!worker_) {
     return;
@@ -585,6 +635,23 @@ void BookmarkModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   } else {
     SyncRecordModelTypeCountHistogram(syncer::BOOKMARKS, 0);
   }
+}
+
+void BookmarkModelTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
+    size_t limit) {
+  max_bookmarks_till_sync_enabled_ = limit;
+}
+
+void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
+  if (!bookmark_tracker_) {
+    return;
+  }
+  DCHECK(bookmark_model_);
+  DCHECK(bookmark_model_observer_);
+
+  StopTrackingMetadata();
+  bookmark_tracker_.reset();
+  schedule_save_closure_.Run();
 }
 
 }  // namespace sync_bookmarks

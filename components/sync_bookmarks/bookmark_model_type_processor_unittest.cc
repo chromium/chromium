@@ -23,6 +23,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -275,6 +276,7 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   void SimulateOnSyncStarting() {
     syncer::DataTypeActivationRequest request;
     request.cache_guid = kCacheGuid;
+    request.error_handler = error_handler_.Get();
     processor_->OnSyncStarting(request, base::DoNothing());
   }
 
@@ -318,9 +320,16 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
     return local_changes;
   }
 
+  base::MockRepeatingCallback<void(const syncer::ModelError&)>*
+  error_handler() {
+    return &error_handler_;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   NiceMock<base::MockCallback<base::RepeatingClosure>> schedule_save_closure_;
+  NiceMock<base::MockRepeatingCallback<void(const syncer::ModelError&)>>
+      error_handler_;
   BookmarkUndoService bookmark_undo_service_;
   NiceMock<favicon::MockFaviconService> favicon_service_;
   NiceMock<MockCommitQueue> mock_commit_queue_;
@@ -863,6 +872,193 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
                   ->GetTrackerForTest()
                   ->BuildBookmarkModelMetadata()
                   .bookmarks_hierarchy_fields_reuploaded());
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldReportErrorIfIncrementalLocalCreationCrossesMaxCountLimit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
+  // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
+
+  // Expect failure when adding new bookmark.
+  EXPECT_CALL(*error_handler(), Run);
+  EXPECT_CALL(*schedule_save_closure(), Run);
+
+  SimulateOnSyncStarting();
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateConnectSync();
+
+  const std::string kNodeId = "node_id1";
+  const std::string kTitle = "title1";
+  const std::string kUrl = "http://www.url1.com";
+  const std::string kIconUrl = "http://www.url1.com/favicon";
+
+  ASSERT_TRUE(processor()->IsConnectedForTest());
+  // Add a new bookmark to exceed the limit.
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model()->bookmark_bar_node();
+  bookmark_model()->AddURL(
+      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
+      GURL(kUrl));
+
+  EXPECT_FALSE(processor()->IsConnectedForTest());
+}
+
+TEST_F(
+    BookmarkModelTypeProcessorTest,
+    ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataMatchesModel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
+  // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
+
+  // Expect error twice. First, when new bookmark is added. Next after restart.
+  EXPECT_CALL(*error_handler(), Run).Times(2);
+  EXPECT_CALL(*schedule_save_closure(), Run).Times(2);
+
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  SimulateConnectSync();
+
+  const std::string kNodeId = "node_id1";
+  const std::string kTitle = "title1";
+  const std::string kUrl = "http://www.url1.com";
+  const std::string kIconUrl = "http://www.url1.com/favicon";
+
+  // Add a new bookmark to exceed the limit.
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model()->bookmark_bar_node();
+  const bookmarks::BookmarkNode* bookmarknode = bookmark_model()->AddURL(
+      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
+      GURL(kUrl));
+
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+
+  // Add an entry for the bookmark node.
+  *model_metadata.add_bookmarks_metadata() =
+      CreateNodeMetadata(bookmarknode, kNodeId);
+
+  // Save metadata for init after restart.
+  std::string metadata_str;
+  model_metadata.SerializeToString(&metadata_str);
+
+  // Simulate browser restart.
+  ResetModelTypeProcessor();
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
+  processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
+                                bookmark_model());
+  // Metadata matches model, so tracker should be not null.
+  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
+  // Should invoke error_handler::Run and schedule_save_closure::Run.
+  SimulateOnSyncStarting();
+
+  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+}
+
+TEST_F(
+    BookmarkModelTypeProcessorTest,
+    ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataDoesNotMatchModel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
+  // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
+
+  // Expect error twice. First, when new bookmark is added. Next after restart.
+  EXPECT_CALL(*error_handler(), Run).Times(2);
+  // save closure is invoked only once because bookmark tracker won't be set by
+  // ModelReadyToSync().
+  EXPECT_CALL(*schedule_save_closure(), Run);
+
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  SimulateConnectSync();
+
+  const std::string kNodeId = "node_id1";
+  const std::string kTitle = "title1";
+  const std::string kUrl = "http://www.url1.com";
+  const std::string kIconUrl = "http://www.url1.com/favicon";
+
+  // Add a new bookmark to exceed the limit.
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model()->bookmark_bar_node();
+  bookmark_model()->AddURL(
+      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
+      GURL(kUrl));
+
+  // Simulate browser restart.
+  ResetModelTypeProcessor();
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
+  SimulateModelReadyToSyncWithoutLocalMetadata();
+  // Metadata does not match model, so tracker should be null.
+  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  // Should invoke error_handler::Run and schedule_save_closure::Run.
+  SimulateOnSyncStarting();
+
+  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+}
+
+TEST_F(
+    BookmarkModelTypeProcessorTest,
+    BookmarkModelShouldWorkNormallyEvenAfterSyncReportedErrorDueToMaxLimitCrossed) {
+  // Ensure that bookmarks model works normally even after sync reports error
+  // when max count limit is crossed.
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
+  // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
+
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  SimulateConnectSync();
+
+  const std::string kNodeId1 = "node_id1";
+  const std::string kTitle1 = "title1";
+  const std::string kUrl1 = "http://www.url1.com";
+
+  // Add a new bookmark to exceed the limit.
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model()->bookmark_bar_node();
+  const bookmarks::BookmarkNode* bookmarknode1 = bookmark_model()->AddURL(
+      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle1),
+      GURL(kUrl1));
+
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+
+  // Add an entry for the bookmark node.
+  *model_metadata.add_bookmarks_metadata() =
+      CreateNodeMetadata(bookmarknode1, kNodeId1);
+
+  // Add another bookmark.
+  const std::string kNodeId2 = "node_id2";
+  const std::string kTitle2 = "title2";
+  const std::string kUrl2 = "http://www.url2.com";
+
+  const bookmarks::BookmarkNode* bookmarknode2 = bookmark_model()->AddURL(
+      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle2),
+      GURL(kUrl2));
+
+  // Add an entry for the bookmark node.
+  *model_metadata.add_bookmarks_metadata() =
+      CreateNodeMetadata(bookmarknode2, kNodeId2);
+
+  // Save metadata for init after restart.
+  std::string metadata_str;
+  model_metadata.SerializeToString(&metadata_str);
+
+  // Simulate browser restart.
+  ResetModelTypeProcessor();
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
+  processor()->ModelReadyToSync(metadata_str, base::DoNothing(),
+                                bookmark_model());
+  // Should lead to error_handler::Run.
+  SimulateOnSyncStarting();
+
+  // The second bookmark should have been added anyway.
+  EXPECT_EQ(bookmark_model()->bookmark_bar_node()->children().size(), 2u);
 }
 
 }  // namespace

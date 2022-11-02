@@ -47,4 +47,10 @@ BookmarkSyncService::GetBookmarkSyncControllerDelegate(
   return bookmark_model_type_processor_->GetWeakPtr();
 }
 
+void BookmarkSyncService::SetBookmarksLimitForTesting(size_t limit) {
+  bookmark_model_type_processor_
+      ->SetMaxBookmarksTillSyncEnabledForTest(  // IN-TEST
+          limit);
+}
+
 }  // namespace sync_bookmarks

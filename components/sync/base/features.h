@@ -174,6 +174,9 @@ BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataType);
 
 BASE_DECLARE_FEATURE(kSyncPauseUponAnyPersistentAuthError);
 
+// If enabled, issues error and disables bookmarks sync when limit is crossed.
+BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

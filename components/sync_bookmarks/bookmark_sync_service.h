@@ -60,6 +60,9 @@ class BookmarkSyncService : public KeyedService {
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetBookmarkSyncControllerDelegate(favicon::FaviconService* favicon_service);
 
+  // For integration tests.
+  void SetBookmarksLimitForTesting(size_t limit);
+
  private:
   // BookmarkModelTypeProcessor handles communications between sync engine and
   // BookmarkModel/HistoryService.
