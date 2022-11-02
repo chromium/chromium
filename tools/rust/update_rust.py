@@ -45,7 +45,7 @@ CRUBIT_SUB_REVISION = 1
 # This should almost always be None. When a breakage happens the fallback should
 # be temporary. Once fixed, the applicable revision(s) above should be updated
 # and FALLBACK_CLANG_VERSION should be reset to None.
-FALLBACK_CLANG_VERSION = None
+FALLBACK_CLANG_VERSION = 'llvmorg-16-init-8697-g60809cd2-1'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
@@ -91,7 +91,10 @@ def GetStampVersion():
         with open(VERSION_STAMP_PATH) as version_file:
             existing_stamp = version_file.readline().rstrip()
         version_re = re.compile(r'rustc [0-9.]+-dev \((.+?) chromium\)')
-        return version_re.fullmatch(existing_stamp).group(1)
+        match = version_re.fullmatch(existing_stamp)
+        if match is None:
+            return None
+        return match.group(1)
 
     return None
 
