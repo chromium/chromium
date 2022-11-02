@@ -95436,7 +95436,6 @@
       {
         "args": [
           "--child-processes=8",
-          "--no-restart-on-new-group",
           "--log-wptreport",
           "--xvfb",
           "--flag-specific",
@@ -95464,7 +95463,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 3
         },
         "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
       }

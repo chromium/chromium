@@ -5410,7 +5410,6 @@
       'wpt_tests_suite_highdpi': {
         'args': [
           '--child-processes=8',
-          '--no-restart-on-new-group',
           '--log-wptreport',
           '--xvfb',
           '--flag-specific',
@@ -5425,7 +5424,7 @@
         'isolate_name': 'wpt_tests_isolate_content_shell',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 15,
+          'shards': 3,
         },
         'experiment_percentage': 100,
       },
