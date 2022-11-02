@@ -5,6 +5,8 @@
 #ifndef SANDBOX_LINUX_SERVICES_CREDENTIALS_H_
 #define SANDBOX_LINUX_SERVICES_CREDENTIALS_H_
 
+#include <sys/types.h>
+
 #include "build/build_config.h"
 // Link errors are tedious to track, raise a compile-time error instead.
 #if BUILDFLAG(IS_ANDROID)
