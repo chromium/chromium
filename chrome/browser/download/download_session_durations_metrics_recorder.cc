@@ -11,12 +11,27 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 
+namespace {
+bool IsDownloadBubbleShowing() {
+  Browser* browser = chrome::FindLastActive();
+  return browser && browser->window() &&
+         browser->window()->GetDownloadBubbleUIController() &&
+         browser->window()
+             ->GetDownloadBubbleUIController()
+             ->GetDownloadDisplayController()
+             ->IsDisplayShowingDetails();
+}
+}  // namespace
+
 DownloadSessionDurationsMetricsRecorder::
     DownloadSessionDurationsMetricsRecorder()
     : session_start_(base::TimeTicks::Now()) {}
 
 void DownloadSessionDurationsMetricsRecorder::OnSessionStarted(
     base::TimeTicks session_start) {
+  base::UmaHistogramBoolean(
+      "Download.Session.IsDownloadBubbleShowingWhenSessionStarts",
+      IsDownloadBubbleShowing());
   // Do not reset the session start time if the bubble is showing when the last
   // session ends. Assume user is spending time on the bubble during this
   // period.
@@ -27,14 +42,7 @@ void DownloadSessionDurationsMetricsRecorder::OnSessionStarted(
 
 void DownloadSessionDurationsMetricsRecorder::OnSessionEnded(
     base::TimeTicks session_end) {
-  Browser* browser = chrome::FindLastActive();
-  is_bubble_showing_when_session_end_ =
-      browser && browser->window() &&
-      browser->window()->GetDownloadBubbleUIController() &&
-      browser->window()
-          ->GetDownloadBubbleUIController()
-          ->GetDownloadDisplayController()
-          ->IsDisplayShowingDetails();
+  is_bubble_showing_when_session_end_ = IsDownloadBubbleShowing();
   base::UmaHistogramBoolean(
       "Download.Session.IsDownloadBubbleShowingWhenSessionEnds",
       is_bubble_showing_when_session_end_);
