@@ -50,7 +50,6 @@ files_app_path = rebase_path("$root_gen_dir/ui/file_manager/tsc/file_manager",
 js_type_check("closure_compile") {
   deps = [
     ":main_js",
-    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   closure_flags =
