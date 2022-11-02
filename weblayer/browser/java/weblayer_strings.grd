@@ -176,9 +176,6 @@
       <message name="IDS_WEBLAYER_NOTIFICATION_CHANNEL_GROUP_NAME" desc="The user-facing label for the notification channel group used for notifications arising from web browsing activity.">
         Web browser activity
       </message>
-      <message name="IDS_AMP_PUBLISHER_URL" desc="Text shown in WebLayer url bar for a web page that is hosted by the Google content delivery network but was originally published by someone else.">
-        <ph name="PUBLISHER_ORIGIN">%1$s<ex>example.com</ex></ph> – delivered by Google
-      </message>
     </messages>
   </release>
 </grit>

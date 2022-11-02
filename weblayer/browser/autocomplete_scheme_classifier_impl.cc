@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "weblayer/browser/url_bar/autocomplete_scheme_classifier_impl.h"
+#include "weblayer/browser/autocomplete_scheme_classifier_impl.h"
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"

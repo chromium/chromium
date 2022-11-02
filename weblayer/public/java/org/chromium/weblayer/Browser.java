@@ -46,7 +46,6 @@ class Browser {
     // Set to null once destroyed (or for tests).
     private IBrowser mImpl;
     private final ObserverList<TabListCallback> mTabListCallbacks;
-    private final UrlBarController mUrlBarController;
 
     private final ObserverList<BrowserControlsOffsetCallback> mBrowserControlsOffsetCallbacks;
     private final ObserverList<BrowserRestoreCallback> mBrowserRestoreCallbacks;
@@ -80,7 +79,6 @@ class Browser {
     protected Browser() {
         mImpl = null;
         mTabListCallbacks = null;
-        mUrlBarController = null;
         mBrowserControlsOffsetCallbacks = null;
         mBrowserRestoreCallbacks = null;
     }
@@ -97,7 +95,6 @@ class Browser {
 
         try {
             mImpl.setClient(new BrowserClientImpl());
-            mUrlBarController = new UrlBarController(mImpl.getUrlBarController());
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -531,16 +528,6 @@ class Browser {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
-    }
-
-    /**
-     * Returns the UrlBarController.
-     */
-    @NonNull
-    public UrlBarController getUrlBarController() {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        return mUrlBarController;
     }
 
     /**

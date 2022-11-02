@@ -20,15 +20,9 @@ jinja_template("weblayer_bundle_utils") {
 
 android_resources("weblayer_resources") {
   sources = [
-    "res/drawable-hdpi/amp_icon.png",
-    "res/drawable-mdpi/amp_icon.png",
-    "res/drawable-xhdpi/amp_icon.png",
-    "res/drawable-xxhdpi/amp_icon.png",
-    "res/drawable-xxxhdpi/amp_icon.png",
     "res/drawable/weblayer_tab_indicator.xml",
     "res/layout/settings_layout.xml",
     "res/layout/weblayer_infobar_translate_compact_content.xml",
-    "res/layout/weblayer_url_bar.xml",
     "res/values-night/styles.xml",
     "res/values/colors.xml",
     "res/values/dimens.xml",
@@ -160,7 +154,6 @@ android_library("java") {
     "org/chromium/weblayer_private/NavigationImpl.java",
     "org/chromium/weblayer_private/NewTabCallbackProxy.java",
     "org/chromium/weblayer_private/PageImpl.java",
-    "org/chromium/weblayer_private/PageInfoControllerDelegateImpl.java",
     "org/chromium/weblayer_private/PrerenderControllerImpl.java",
     "org/chromium/weblayer_private/ProfileImpl.java",
     "org/chromium/weblayer_private/ProfileManager.java",
@@ -168,7 +161,6 @@ android_library("java") {
     "org/chromium/weblayer_private/TabCallbackProxy.java",
     "org/chromium/weblayer_private/TabImpl.java",
     "org/chromium/weblayer_private/TranslateCompactInfoBar.java",
-    "org/chromium/weblayer_private/UrlBarControllerImpl.java",
     "org/chromium/weblayer_private/WebApkInstallSchedulerBridge.java",
     "org/chromium/weblayer_private/WebApkInstallSchedulerClient.java",
     "org/chromium/weblayer_private/WebApkServiceConnection.java",
@@ -513,7 +505,6 @@ generate_jni("jni") {
     "org/chromium/weblayer_private/TabCallbackProxy.java",
     "org/chromium/weblayer_private/TabImpl.java",
     "org/chromium/weblayer_private/TranslateCompactInfoBar.java",
-    "org/chromium/weblayer_private/UrlBarControllerImpl.java",
     "org/chromium/weblayer_private/WebApkInstallSchedulerBridge.java",
     "org/chromium/weblayer_private/WebLayerExceptionFilter.java",
     "org/chromium/weblayer_private/WebLayerFactoryImpl.java",
@@ -571,7 +562,6 @@ android_library("interfaces_java") {
     "org/chromium/weblayer_private/interfaces/SettingType.java",
     "org/chromium/weblayer_private/interfaces/SettingsFragmentArgs.java",
     "org/chromium/weblayer_private/interfaces/SettingsIntentHelper.java",
-    "org/chromium/weblayer_private/interfaces/UrlBarOptionsKeys.java",
     "org/chromium/weblayer_private/interfaces/WebLayerVersionConstants.java",
   ]
 
@@ -663,7 +653,6 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/ISiteSettingsFragment.aidl",
     "org/chromium/weblayer_private/interfaces/ITab.aidl",
     "org/chromium/weblayer_private/interfaces/ITabClient.aidl",
-    "org/chromium/weblayer_private/interfaces/IUrlBarController.aidl",
     "org/chromium/weblayer_private/interfaces/IUserIdentityCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IWebLayer.aidl",
     "org/chromium/weblayer_private/interfaces/IWebLayerClient.aidl",

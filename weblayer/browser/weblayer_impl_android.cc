@@ -16,7 +16,6 @@
 #include "weblayer/browser/component_updater/registration.h"
 #include "weblayer/browser/devtools_server_android.h"
 #include "weblayer/browser/java/jni/WebLayerImpl_jni.h"
-#include "weblayer/browser/url_bar/page_info_client_impl.h"
 #include "weblayer/common/crash_reporter/crash_keys.h"
 
 using base::android::JavaParamRef;

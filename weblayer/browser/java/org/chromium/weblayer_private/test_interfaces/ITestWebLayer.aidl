@@ -48,8 +48,6 @@ interface ITestWebLayer {
 
   boolean canInfoBarContainerScroll(in ITab tab) = 14;
 
-  String getDisplayedUrl(IObjectWrapper /* View */ urlBarView) = 15;
-
   // Returns the target language of the currently-showing translate infobar, or null if no translate
   // infobar is currently showing.
   String getTranslateInfoBarTargetLanguage(in ITab tab) = 16;
@@ -70,7 +68,6 @@ interface ITestWebLayer {
   void crashTab(in ITab tab) = 20;
 
   boolean isWindowOnSmallDevice(in IBrowser browser) = 21;
-  IObjectWrapper getSecurityButton(IObjectWrapper /* View */ urlBarView) = 22;
   void fetchAccessToken(in IProfile profile, in IObjectWrapper /* Set<String */ scopes, in IObjectWrapper /* ValueCallback<String> */ onTokenFetched) = 23;
   // Add a TestContentCaptureConsumer for the provided |browser|, with a Runnable |onNewEvent| to notify the
   // caller when the events happened, the event ID will be received through |eventsObserved| list.

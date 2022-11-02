@@ -1,9 +1,9 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBLAYER_BROWSER_URL_BAR_AUTOCOMPLETE_SCHEME_CLASSIFIER_IMPL_H_
-#define WEBLAYER_BROWSER_URL_BAR_AUTOCOMPLETE_SCHEME_CLASSIFIER_IMPL_H_
+#ifndef WEBLAYER_BROWSER_AUTOCOMPLETE_SCHEME_CLASSIFIER_IMPL_H_
+#define WEBLAYER_BROWSER_AUTOCOMPLETE_SCHEME_CLASSIFIER_IMPL_H_
 
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 
@@ -23,4 +23,4 @@ class AutocompleteSchemeClassifierImpl : public AutocompleteSchemeClassifier {
 
 }  // namespace weblayer
 
-#endif  // WEBLAYER_BROWSER_URL_BAR_AUTOCOMPLETE_SCHEME_CLASSIFIER_IMPL_H_
+#endif  // WEBLAYER_BROWSER_AUTOCOMPLETE_SCHEME_CLASSIFIER_IMPL_H_

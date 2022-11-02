@@ -11,7 +11,6 @@ import android.os.RemoteException;
 import android.util.AndroidRuntimeException;
 import android.view.View;
 import android.webkit.ValueCallback;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -127,10 +126,6 @@ public final class TestWebLayer {
         return mITestWebLayer.canInfoBarContainerScroll(tab.getITab());
     }
 
-    public String getDisplayedUrl(View urlBarView) throws RemoteException {
-        return mITestWebLayer.getDisplayedUrl(ObjectWrapper.wrap(urlBarView));
-    }
-
     public String getTranslateInfoBarTargetLanguage(Tab tab) throws RemoteException {
         return mITestWebLayer.getTranslateInfoBarTargetLanguage(tab.getITab());
     }
@@ -160,11 +155,6 @@ public final class TestWebLayer {
 
     public boolean isWindowOnSmallDevice(Browser browser) throws RemoteException {
         return mITestWebLayer.isWindowOnSmallDevice(browser.getIBrowser());
-    }
-
-    public ImageView getSecurityButton(View urlBarView) throws RemoteException {
-        return (ImageView) ObjectWrapper.unwrap(
-                mITestWebLayer.getSecurityButton(ObjectWrapper.wrap(urlBarView)), ImageView.class);
     }
 
     public void fetchAccessToken(Profile profile, Set<String> scopes,

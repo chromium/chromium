@@ -6,9 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <dimen name="security_status_icon_size">18dp</dimen>
-    <dimen name="url_text_edge_padding">5dp</dimen>
-  
     <!-- Dimensions for compact translate infobar. -->
     <dimen name="weblayer_infobar_translate_fade_edge_length">18dp</dimen>
 

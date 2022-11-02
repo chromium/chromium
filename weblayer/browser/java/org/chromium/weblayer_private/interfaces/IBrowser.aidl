@@ -8,7 +8,6 @@ import org.chromium.weblayer_private.interfaces.IBrowserClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.ITab;
-import org.chromium.weblayer_private.interfaces.IUrlBarController;
 
 import java.util.List;
 
@@ -26,7 +25,6 @@ interface IBrowser {
 
   void addTab(in ITab tab) = 7;
   void destroyTab(in ITab tab) = 8;
-  IUrlBarController getUrlBarController() = 9;
 
   void setBottomView(in IObjectWrapper view) = 10;
 

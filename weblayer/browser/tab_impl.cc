@@ -131,7 +131,6 @@
 #include "weblayer/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "weblayer/browser/safe_browsing/weblayer_safe_browsing_tab_observer_delegate.h"
 #include "weblayer/browser/translate_client_impl.h"
-#include "weblayer/browser/url_bar/trusted_cdn_observer.h"
 #include "weblayer/browser/webapps/weblayer_app_banner_manager_android.h"
 #include "weblayer/browser/weblayer_factory_impl_android.h"
 #include "weblayer/browser/webrtc/media_stream_manager.h"
@@ -397,8 +396,6 @@ TabImpl::TabImpl(ProfileImpl* profile,
   browser_controls_navigation_state_handler_ =
       std::make_unique<BrowserControlsNavigationStateHandler>(
           web_contents_.get(), this);
-
-  TrustedCDNObserver::CreateForWebContents(web_contents_.get());
 
   if (base::FeatureList::IsEnabled(
           features::kWebLayerClientSidePhishingDetection)) {

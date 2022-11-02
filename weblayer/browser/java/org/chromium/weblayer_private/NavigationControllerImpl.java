@@ -78,15 +78,6 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
         NavigateParamsImpl params = (NavigateParamsImpl) iParams;
         WebResourceResponseInfo responseInfo = null;
         if (params.getResponse() != null) {
-            if (mTab.isActiveTab()) {
-                BrowserImpl browser = mTab.getBrowser();
-                UrlBarControllerImpl urlBarController = browser.getUrlBarControllerImpl();
-                if (urlBarController != null && urlBarController.hasActiveView()) {
-                    throw new IllegalStateException(
-                            "Can't navigate to an InputStream if the stock URL bar is visible.");
-                }
-            }
-
             WebResourceResponse response =
                     ObjectWrapper.unwrap(params.getResponse(), WebResourceResponse.class);
             responseInfo = new WebResourceResponseInfo(response.getMimeType(),

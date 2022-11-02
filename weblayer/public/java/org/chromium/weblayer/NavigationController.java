@@ -54,8 +54,6 @@ class NavigationController {
      * @param uri the destination URI.
      * @param params extra parameters for the navigation.
      *
-     * @throws IllegalStateException if params.getResponse() is not null but a URLBarController
-     *         View is attached to a Window.
      */
     public void navigate(@NonNull Uri uri, @Nullable NavigateParams params) {
         ThreadCheck.ensureOnUiThread();
