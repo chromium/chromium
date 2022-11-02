@@ -21,9 +21,6 @@
     "persistent": false
   },
   "externally_connectable": {
-    "ids": [
-      "hhaomjibdihmijegdhdafkllkbggdgoj"  // File Manager
-    ],
     "matches": [
       "chrome://file-manager/*"  // File Manager SWA
     ]

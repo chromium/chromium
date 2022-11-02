@@ -97,7 +97,6 @@ export function ImageLoader() {
  * @type {Array<string>}
  */
 ImageLoader.ALLOWED_CLIENT_ORIGINS = [
-  'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj',  // File Manager
   'chrome://file-manager',  // File Manager SWA
 ];
 
