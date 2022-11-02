@@ -61,7 +61,7 @@ String CSSColorMixValue::CustomCSSText() const {
   // eagerly resolved (https://github.com/w3c/csswg-drafts/issues/6168)
   // Color keywords should be handled similarly.
   StringBuilder result;
-  result.Append("color-mix(");
+  result.Append("color-mix(in ");
   result.Append(Color::ColorInterpolationSpaceToString(
       color_interpolation_space_, hue_interpolation_method_));
   result.Append(", ");
