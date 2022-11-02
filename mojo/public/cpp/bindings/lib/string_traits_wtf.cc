@@ -32,15 +32,4 @@ bool StringTraits<WTF::String>::Read(StringDataView input,
   return true;
 }
 
-// static
-bool StringTraits<WTF::String>::IsValidUTF8(const WTF::String& value) {
-  if (value.IsNull())
-    return true;
-  if (!value.Is8Bit())
-    return false;
-  base::span<const LChar> data = value.Span8();
-  return base::IsStringUTF8(base::StringPiece(
-      reinterpret_cast<const char*>(data.data()), data.size()));
-}
-
 }  // namespace mojo

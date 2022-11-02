@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_STRING_TRAITS_STRING_PIECE_H_
 
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/string_traits.h"
 
 namespace mojo {
@@ -32,10 +31,6 @@ struct StringTraits<base::StringPiece> {
   static bool Read(StringDataView input, base::StringPiece* output) {
     *output = base::StringPiece(input.storage(), input.size());
     return true;
-  }
-
-  static bool IsValidUTF8(const base::StringPiece& value) {
-    return base::IsStringUTF8(value);
   }
 };
 

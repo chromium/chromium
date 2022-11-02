@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/string_traits.h"
 
 namespace mojo {
@@ -19,10 +18,6 @@ struct StringTraits<std::string> {
   static bool Read(StringDataView input, std::string* output) {
     output->assign(input.storage(), input.size());
     return true;
-  }
-
-  static bool IsValidUTF8(const std::string& value) {
-    return base::IsStringUTF8(value);
   }
 };
 

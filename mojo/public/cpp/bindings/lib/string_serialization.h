@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
@@ -41,7 +42,8 @@ struct Serializer<StringDataView, MaybeConstUserType> {
     if (!input)
       return CallSetToNullIfExists<Traits>(output);
     bool ok = Traits::Read(StringDataView(input, message), output);
-    if (ok && !Traits::IsValidUTF8(*output)) {
+    if (ok && !base::IsStringUTF8(
+                  base::StringPiece(input->storage(), input->size()))) {
       RecordInvalidStringDeserialization();
     }
     return ok;
