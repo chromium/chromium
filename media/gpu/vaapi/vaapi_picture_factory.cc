@@ -5,13 +5,14 @@
 #include "media/gpu/vaapi/vaapi_picture_factory.h"
 
 #include "base/containers/contains.h"
+#include "build/build_config.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/video/picture.h"
 #include "ui/gl/gl_bindings.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap_ozone.h"
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(USE_VAAPI_X11)
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap_angle.h"
 #include "media/gpu/vaapi/vaapi_picture_tfp.h"
@@ -52,7 +53,7 @@ VaapiPictureFactory::VaapiPictureFactory() {
   vaapi_impl_pairs_.insert(
       std::make_pair(gl::kGLImplementationDesktopGL,
                      VaapiPictureFactory::kVaapiImplementationX11));
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
   vaapi_impl_pairs_.insert(
       std::make_pair(gl::kGLImplementationEGLANGLE,
                      VaapiPictureFactory::kVaapiImplementationDrm));
@@ -114,14 +115,14 @@ gfx::BufferFormat VaapiPictureFactory::GetBufferFormat() {
 
 void VaapiPictureFactory::DeterminePictureCreationAndDownloadingMechanism() {
   switch (GetVaapiImplementation(gl::GetGLImplementation())) {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     // We can be called without GL initialized, which is valid if we use Ozone.
     case kVaapiImplementationNone:
       create_picture_cb_ = base::BindRepeating(
           &CreateVaapiPictureNativeImpl<VaapiPictureNativePixmapOzone>);
       needs_vpp_for_downloading_ = true;
       break;
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(USE_VAAPI_X11)
     case kVaapiImplementationX11:
       create_picture_cb_ =
@@ -137,7 +138,7 @@ void VaapiPictureFactory::DeterminePictureCreationAndDownloadingMechanism() {
       break;
 #endif  // BUILDFLAG(USE_VAAPI_X11)
     case kVaapiImplementationDrm:
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
       create_picture_cb_ = base::BindRepeating(
           &CreateVaapiPictureNativeImpl<VaapiPictureNativePixmapOzone>);
       needs_vpp_for_downloading_ = true;

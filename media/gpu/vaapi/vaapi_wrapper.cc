@@ -72,7 +72,7 @@ extern "C" {
 #include "ui/gfx/x/connection.h"  // nogncheck
 #endif                            // BUILDFLAG(USE_VAAPI_X11)
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
@@ -740,7 +740,7 @@ VADisplayState::VADisplayState()
 bool VADisplayState::Initialize() {
   base::AutoLock auto_lock(va_lock_);
 
-#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/1116701): add vaapi support for other Ozone platforms on
   // Linux. See comment in OzonePlatform::PlatformProperties::supports_vaapi
   // for more details. This will also require revisiting everything that's

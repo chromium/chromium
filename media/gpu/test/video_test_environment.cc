@@ -16,7 +16,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -51,7 +51,7 @@ VideoTestEnvironment::VideoTestEnvironment(
 
   // Perform all static initialization that is required when running video
   // codecs in a test environment.
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Initialize Ozone. This is necessary to gain access to the GPU for hardware
   // video acceleration.
   // TODO(b/230370976): we may no longer need to initialize Ozone since we don't

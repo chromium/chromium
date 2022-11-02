@@ -63,11 +63,11 @@ constexpr size_t kTimestampCacheSize = 128;
 absl::optional<VideoPixelFormat> GetPixelFormatForBitDepth(uint8_t bit_depth) {
   constexpr auto kSupportedBitDepthAndGfxFormats = base::MakeFixedFlatMap<
       uint8_t, gfx::BufferFormat>({
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     {8u, gfx::BufferFormat::YUV_420_BIPLANAR}, {10u, gfx::BufferFormat::P010},
 #else
     {8u, gfx::BufferFormat::RGBX_8888},
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
   });
   if (!base::Contains(kSupportedBitDepthAndGfxFormats, bit_depth)) {
     VLOGF(1) << "Unsupported bit depth: " << base::strict_cast<int>(bit_depth);

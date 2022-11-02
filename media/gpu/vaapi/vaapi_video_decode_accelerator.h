@@ -27,6 +27,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "build/build_config.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
@@ -77,7 +78,7 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
   void Decode(scoped_refptr<DecoderBuffer> buffer,
               int32_t bitstream_id) override;
   void AssignPictureBuffers(const std::vector<PictureBuffer>& buffers) override;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   void ImportBufferForPicture(
       int32_t picture_buffer_id,
       VideoPixelFormat pixel_format,

@@ -17,7 +17,7 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #endif
 
@@ -33,7 +33,7 @@ class UserInputMonitorTest : public testing::Test {
  protected:
   // testing::Test.
   void SetUp() override {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     if (ui::OzonePlatform::GetPlatformNameForTest() == "drm") {
       // OzonePlatformDrm::InitializeUI hangs in tests on the DRM platform.
       GTEST_SKIP();

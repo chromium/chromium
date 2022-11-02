@@ -243,7 +243,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
 
   if (config.storage_type.value_or(Config::StorageType::kShmem) ==
       Config::StorageType::kGpuMemoryBuffer) {
-#if !defined(USE_OZONE)
+#if !BUILDFLAG(IS_OZONE)
     MEDIA_LOG(ERROR, media_log.get())
         << "Native mode is only available on OZONE platform.";
     return false;
@@ -256,7 +256,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
       return false;
     }
     native_input_mode_ = true;
-#endif  // USE_OZONE
+#endif  // BUILDFLAG(IS_OZONE)
   }
 
   if (config.HasSpatialLayer() && !native_input_mode_) {

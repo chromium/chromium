@@ -33,6 +33,7 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_suite.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -41,7 +42,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/linux/gbm_defines.h"
 
-#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_LINUX)
 // GN doesn't understand conditional includes, so we need nogncheck here.
 // See crbug.com/1125897.
 #include "ui/ozone/public/ozone_platform.h"  // nogncheck
@@ -921,7 +922,7 @@ INSTANTIATE_TEST_SUITE_P(
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
 
-#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_LINUX)
   // Initialize Ozone so that the VADisplayState can decide if we're running
   // on top of a platform that can deal with VA-API buffers.
   // TODO(b/230370976): we may no longer need to initialize Ozone since we

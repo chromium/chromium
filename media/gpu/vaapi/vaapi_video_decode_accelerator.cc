@@ -805,7 +805,7 @@ void VaapiVideoDecodeAccelerator::AssignPictureBuffers(
   }
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 void VaapiVideoDecodeAccelerator::ImportBufferForPicture(
     int32_t picture_buffer_id,
     VideoPixelFormat pixel_format,

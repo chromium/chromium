@@ -161,10 +161,10 @@ TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
 
 // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) because
 // media::FakeGpuMemoryBuffer supports NativePixmapHandle backed
-// GpuMemoryBufferHandle only. !defined(USE_OZONE) so as to force
+// GpuMemoryBufferHandle only. !BUILDFLAG(IS_OZONE) so as to force
 // GpuMemoryBufferSupport to select gfx::ClientNativePixmapFactoryDmabuf for
 // gfx::ClientNativePixmapFactory.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_OZONE)
 TEST_F(VideoFrameStructTraitsTest, GpuMemoryBufferVideoFrame) {
   gfx::Size coded_size = gfx::Size(256, 256);
   gfx::Rect visible_rect(coded_size);
@@ -197,5 +197,5 @@ TEST_F(VideoFrameStructTraitsTest, GpuMemoryBufferVideoFrame) {
   EXPECT_EQ(frame->GetGpuMemoryBuffer()->GetSize(), expected_gmb_size);
 }
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // !defined(USE_OZONE)
+        // !BUILDFLAG(IS_OZONE)
 }  // namespace media

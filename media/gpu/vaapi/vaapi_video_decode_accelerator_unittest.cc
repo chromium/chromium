@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/vaapi/vaapi_picture.h"
 #include "media/gpu/vaapi/vaapi_picture_factory.h"
@@ -427,7 +428,7 @@ TEST_P(VaapiVideoDecodeAcceleratorTest, SupportedPlatforms) {
   EXPECT_EQ(VaapiPictureFactory::kVaapiImplementationX11,
             mock_vaapi_picture_factory_->GetVaapiImplementation(
                 gl::kGLImplementationDesktopGL));
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
   EXPECT_EQ(VaapiPictureFactory::kVaapiImplementationDrm,
             mock_vaapi_picture_factory_->GetVaapiImplementation(
                 gl::kGLImplementationEGLANGLE));
