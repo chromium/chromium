@@ -8,6 +8,8 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -241,19 +243,31 @@ const url::Origin* AttributionHost::TopFrameOriginForSecureContext() {
   // store it as either the source or destination origin. Using
   // `is_web_secure_context` would allow opaque origins to pass through, but
   // they cannot be handled by the storage layer.
+
+  auto dump_without_crashing = [render_frame_host, &top_frame_origin]() {
+    SCOPED_CRASH_KEY_STRING1024("", "top_frame_url",
+                                render_frame_host->GetOutermostMainFrame()
+                                    ->GetLastCommittedURL()
+                                    .spec());
+    SCOPED_CRASH_KEY_STRING256("", "top_frame_origin",
+                               top_frame_origin.Serialize());
+    base::debug::DumpWithoutCrashing();
+  };
+
+  // TODO(crbug.com/1378749): Invoke mojo::ReportBadMessage here when we can be
+  // sure honest renderers won't hit this path.
   if (!network::IsOriginPotentiallyTrustworthy(top_frame_origin)) {
-    mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used with a secure top-level "
-        "frame.");
+    dump_without_crashing();
     return nullptr;
   }
 
+  // TODO(crbug.com/1378492): Invoke mojo::ReportBadMessage here when we can be
+  // sure honest renderers won't hit this path.
   if (render_frame_host != render_frame_host->GetOutermostMainFrame() &&
       !render_frame_host->policy_container_host()
            ->policies()
            .is_web_secure_context) {
-    mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used in secure contexts.");
+    dump_without_crashing();
     return nullptr;
   }
 

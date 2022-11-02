@@ -329,7 +329,8 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
   EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
-TEST_F(AttributionHostTest, DataHostOnInsecurePage_BadMessage) {
+// crbug.com/1378749.
+TEST_F(AttributionHostTest, DISABLED_DataHostOnInsecurePage_BadMessage) {
   contents()->NavigateAndCommit(GURL("http://top.example"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
@@ -347,7 +348,9 @@ TEST_F(AttributionHostTest, DataHostOnInsecurePage_BadMessage) {
       bad_message_observer.WaitForBadMessage());
 }
 
-TEST_F(AttributionHostTest, NavigationDataHostOnInsecurePage_BadMessage) {
+// crbug.com/1378749.
+TEST_F(AttributionHostTest,
+       DISABLED_NavigationDataHostOnInsecurePage_BadMessage) {
   contents()->NavigateAndCommit(GURL("http://top.example"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
@@ -417,7 +420,9 @@ TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
   EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
-TEST_F(AttributionHostTest, DataHostInSubframeOnInsecurePage_BadMessage) {
+// crbug.com/1378749.
+TEST_F(AttributionHostTest,
+       DISABLED_DataHostInSubframeOnInsecurePage_BadMessage) {
   contents()->NavigateAndCommit(GURL("http://top.example"));
 
   content::RenderFrameHostTester* rfh_tester =
