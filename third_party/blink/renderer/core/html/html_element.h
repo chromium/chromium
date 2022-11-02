@@ -187,12 +187,14 @@ class CORE_EXPORT HTMLElement : public Element {
 
   virtual String AltText() const { return String(); }
 
+  // unclosedOffsetParent doesn't return Elements which are closed shadow hidden
+  // from this element. offsetLeftForBinding and offsetTopForBinding have their
+  // values adjusted for this as well.
+  Element* unclosedOffsetParent();
   int offsetLeftForBinding();
   int offsetTopForBinding();
   int offsetWidthForBinding();
   int offsetHeightForBinding();
-
-  Element* unclosedOffsetParent();
 
   ElementInternals* attachInternals(ExceptionState& exception_state);
   virtual FormAssociated* ToFormAssociatedOrNull() { return nullptr; }
@@ -343,6 +345,9 @@ class CORE_EXPORT HTMLElement : public Element {
   void OnNonceAttrChanged(const AttributeModificationParams&);
 
   void ReparseAttribute(const AttributeModificationParams&);
+
+  int AdjustedOffsetForZoom(LayoutUnit);
+  int OffsetTopOrLeft(bool top);
 };
 
 template <typename T>

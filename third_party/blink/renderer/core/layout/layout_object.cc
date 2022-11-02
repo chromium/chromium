@@ -4343,6 +4343,10 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
   if (IsFixedPositioned())
     return nullptr;
 
+  HashSet<Member<TreeScope>> ancestor_tree_scopes;
+  if (base)
+    ancestor_tree_scopes = base->GetAncestorTreeScopes();
+
   float effective_zoom = StyleRef().EffectiveZoom();
   Node* node = nullptr;
   for (LayoutObject* ancestor = Parent(); ancestor;
@@ -4354,23 +4358,30 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
     if (!node)
       continue;
 
-    // In the case where |base| is getting slotted into a shadow root, we
-    // shouldn't return anything inside the shadow root. The returned node must
-    // be in the same shadow root or document as |base|.
-    // https://github.com/w3c/csswg-drafts/issues/159
+    // If |base| was provided, then we should not return an Element which is
+    // closed shadow hidden from |base|. If we keep going up the flat tree, then
+    // we will eventually get to a node which is not closed shadow hidden from
+    // |base|. https://github.com/w3c/csswg-drafts/issues/159
     // TODO(crbug.com/920069): Remove the feature check here when the feature
     // has gotten to stable without any issues.
     if (RuntimeEnabledFeatures::OffsetParentNewSpecBehaviorEnabled() && base &&
-        !base->IsDescendantOrShadowDescendantOf(&node->TreeRoot())) {
+        !ancestor_tree_scopes.Contains(&node->GetTreeScope())) {
+      // If 'position: fixed' node is found while traversing up, terminate the
+      // loop and return null.
+      if (ancestor->IsFixedPositioned())
+        return nullptr;
       continue;
     }
 
     // TODO(kochi): If |base| or |node| is nested deep in shadow roots, this
-    // loop may get expensive, as isUnclosedNodeOf() can take up to O(N+M) time
-    // (N and M are depths).
-    if (base && (node->IsClosedShadowHiddenFrom(*base) ||
-                 (node->IsInShadowTree() &&
-                  node->ContainingShadowRoot()->IsUserAgent()))) {
+    // loop may get expensive, as IsClosedShadowHiddenFrom() can take up to
+    // O(N+M) time (N and M are depths).
+    // TODO(crbug.com/920069): Remove this when the feature has gotten to stable
+    // without any issues.
+    if (!RuntimeEnabledFeatures::OffsetParentNewSpecBehaviorEnabled() && base &&
+        (node->IsClosedShadowHiddenFrom(*base) ||
+         (node->IsInShadowTree() &&
+          node->ContainingShadowRoot()->IsUserAgent()))) {
       // If 'position: fixed' node is found while traversing up, terminate the
       // loop and return null.
       if (ancestor->IsFixedPositioned())

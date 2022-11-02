@@ -2602,34 +2602,54 @@ void HTMLElement::HandleKeypressEvent(KeyboardEvent& event) {
   }
 }
 
-int HTMLElement::offsetLeftForBinding() {
-  // Both of the following calls may update style and layout:
+int HTMLElement::AdjustedOffsetForZoom(LayoutUnit offset) {
+  const auto* layout_object = GetLayoutObject();
+  DCHECK(layout_object);
+  return AdjustForAbsoluteZoom::AdjustLayoutUnit(offset,
+                                                 layout_object->StyleRef())
+      .Round();
+}
+
+int HTMLElement::OffsetTopOrLeft(bool top) {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
-  Element* offset_parent = unclosedOffsetParent();
+  const auto* layout_object = GetLayoutBoxModelObject();
+  if (!layout_object)
+    return 0;
 
-  if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               layout_object->OffsetLeft(offset_parent),
-               layout_object->StyleRef())
-        .Round();
-  }
-  return 0;
+  HashSet<Member<TreeScope>> ancestor_tree_scopes = GetAncestorTreeScopes();
+  LayoutUnit offset;
+  Element* offset_parent = this;
+  bool new_spec_behavior =
+      RuntimeEnabledFeatures::OffsetParentNewSpecBehaviorEnabled();
+  // This loop adds up all of the offsetTop/offsetLeft values for this and
+  // parent shadow-hidden offsetParents up the flat tree. If
+  // |ancestor_tree_scopes| doesn't contain the next |offset_parent|'s
+  // TreeScope, then we know that |offset_parent| is shadow-hidden from |this|.
+  do {
+    // offset_parent->OffsetParent() may update style and layout:
+    Element* next_offset_parent = offset_parent->OffsetParent();
+    if (const auto* offset_parent_layout_object =
+            offset_parent->GetLayoutBoxModelObject()) {
+      if (top) {
+        offset += offset_parent_layout_object->OffsetTop(next_offset_parent);
+      } else {
+        offset += offset_parent_layout_object->OffsetLeft(next_offset_parent);
+      }
+    }
+    offset_parent = next_offset_parent;
+  } while (new_spec_behavior && offset_parent &&
+           !ancestor_tree_scopes.Contains(&offset_parent->GetTreeScope()));
+
+  return AdjustedOffsetForZoom(offset);
+}
+
+int HTMLElement::offsetLeftForBinding() {
+  return OffsetTopOrLeft(/*top=*/false);
 }
 
 int HTMLElement::offsetTopForBinding() {
-  // Both of the following calls may update style and layout:
-  GetDocument().EnsurePaintLocationDataValidForNode(
-      this, DocumentUpdateReason::kJavaScript);
-  Element* offset_parent = unclosedOffsetParent();
-
-  if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               layout_object->OffsetTop(offset_parent),
-               layout_object->StyleRef())
-        .Round();
-  }
-  return 0;
+  return OffsetTopOrLeft(/*top=*/true);
 }
 
 int HTMLElement::offsetWidthForBinding() {
@@ -2637,10 +2657,8 @@ int HTMLElement::offsetWidthForBinding() {
       this, DocumentUpdateReason::kJavaScript, CSSPropertyID::kWidth);
   int result = 0;
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                 layout_object->OffsetWidth(), layout_object->StyleRef())
-                 .Round();
-    RecordScrollbarSizeForStudy(result, /* isWidth= */ true,
+    result = AdjustedOffsetForZoom(layout_object->OffsetWidth());
+    RecordScrollbarSizeForStudy(result, /* is_width= */ true,
                                 /* is_offset= */ true);
   }
   return result;
@@ -2652,9 +2670,7 @@ int HTMLElement::offsetHeightForBinding() {
       this, DocumentUpdateReason::kJavaScript, CSSPropertyID::kHeight);
   int result = 0;
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                 layout_object->OffsetHeight(), layout_object->StyleRef())
-                 .Round();
+    result = AdjustedOffsetForZoom(layout_object->OffsetHeight());
     RecordScrollbarSizeForStudy(result, /* is_width= */ false,
                                 /* is_offset= */ true);
   }

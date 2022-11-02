@@ -7394,6 +7394,12 @@
             ],
             "experiments": [
                 {
+                    "name": "Control",
+                    "enable_features": [
+                        "OffsetParentNewSpecBehavior"
+                    ]
+                },
+                {
                     "name": "Disabled",
                     "disable_features": [
                         "OffsetParentNewSpecBehavior"
