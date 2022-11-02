@@ -105,6 +105,21 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
+<histogram name="HeapProfiling.InProcess.TotalSampledMemory{Process}"
+    units="samples" expires_after="2023-04-30">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The total amount of memory in a heap snapshot taken in {Process}. This is an
+    estimate of total memory allocations in the code being sampled. Because it
+    is collected through random sampling it is only statistically accurate when
+    aggregated over many reports. Emitted once per snapshot when the in-process
+    heap profiler is enabled.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+</histogram>
+
 <histogram name="HeapProfiling.ProfiledProcess.Type"
     enum="HeapProfilingProcessType" expires_after="2021-12-12">
   <owner>erikchen@chromium.org</owner>

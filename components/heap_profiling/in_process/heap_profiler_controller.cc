@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/clamped_math.h"
 #include "base/profiler/module_cache.h"
 #include "base/rand_util.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
@@ -272,6 +273,7 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
 
   SampleMap merged_samples = MergeSamples(samples);
 
+  base::ClampedNumeric<uint64_t> total_sampled_bytes;
   for (auto& pair : merged_samples) {
     const Sample& sample = pair.first;
     const SampleValue& value = pair.second;
@@ -288,9 +290,17 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
     // do not have a meaningful timestamp.
     profile_builder.OnSampleCompleted(std::move(frames), base::TimeTicks(),
                                       value.total, value.count);
+
+    total_sampled_bytes += value.total;
   }
 
   profile_builder.OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
+
+  constexpr int kBytesPerMB = 1024 * 1024;
+  base::UmaHistogramMemoryLargeMB(
+      ProcessHistogramName("HeapProfiling.InProcess.TotalSampledMemory",
+                           process_type),
+      base::ClampDiv(total_sampled_bytes, kBytesPerMB));
 }
 
 }  // namespace heap_profiling
