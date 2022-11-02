@@ -4,6 +4,9 @@
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_trust_token_getter.h"
 
+#include <atomic>
+
+#include "base/debug/dump_without_crashing.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/sequence_checker.h"
@@ -12,6 +15,7 @@
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
@@ -51,6 +55,22 @@ constexpr net::NetworkTrafficAnnotationTag
     comments:
       ""
     )");
+
+// This should only be called by the UI thread (as the main code and the
+// callbacks are supposed to be on that thread.). For some reason this is does
+// not seem to be true sometimes on Android. So we forward the call to this
+// function to the correct thread to avoid a crash from a race condition.
+void CheckThreadAndMaybeForward(base::OnceClosure callback) {
+  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    // Only dump the first time, but always forward the call.
+    static std::atomic<bool> dumped = false;
+    if (!dumped.exchange(true)) {
+      base::debug::DumpWithoutCrashing();
+    }
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(callback));
+  }
+}
 
 }  // namespace
 
@@ -98,6 +118,8 @@ KAnonymityTrustTokenGetter::~KAnonymityTrustTokenGetter() = default;
 
 void KAnonymityTrustTokenGetter::TryGetTrustTokenAndKey(
     TryGetTrustTokenAndKeyCallback callback) {
+  // TODO(crbug.com/1376858): Change this back to a DCHECK
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::FeatureList::IsEnabled(network::features::kTrustTokens) ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -524,12 +546,23 @@ void KAnonymityTrustTokenGetter::OnFetchedTrustToken(
 }
 
 void KAnonymityTrustTokenGetter::FailAllCallbacks() {
+  // TODO(crbug.com/1376858): Remove this check once it is no longer needed.
+  // Ensure we are in the right thread.
+  CheckThreadAndMaybeForward(
+      base::BindOnce(&KAnonymityTrustTokenGetter::FailAllCallbacks,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (!pending_callbacks_.empty())
     DoCallback(false);
 }
 
 void KAnonymityTrustTokenGetter::CompleteOneRequest() {
+  // TODO(crbug.com/1376858): Remove this check once it is no longer needed.
+  // Ensure we are in the right thread.
+  CheckThreadAndMaybeForward(
+      base::BindOnce(&KAnonymityTrustTokenGetter::CompleteOneRequest,
+                     weak_ptr_factory_.GetWeakPtr()));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!pending_callbacks_.empty());
   RecordTrustTokenGetterAction(
@@ -545,8 +578,7 @@ void KAnonymityTrustTokenGetter::CompleteOneRequest() {
 
 void KAnonymityTrustTokenGetter::DoCallback(bool status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(behamilton): Change this back to a DCHECK once we have resolved
-  // https://crbug.com/1376858
+  // TODO(crbug.com/1376858): Change this back to a DCHECK
   CHECK(!pending_callbacks_.empty());
 
   absl::optional<KeyAndNonUniqueUserId> result;
