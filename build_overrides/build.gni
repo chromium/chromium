@@ -37,6 +37,9 @@ declare_args() {
   # Allows googletest to pretty-print various absl types.  Disabled for nacl due
   # to lack of toolchain support.
   gtest_enable_absl_printers = !is_nacl
+
+  # Allows third-party repositories to use C++17 for MSVC builds
+  msvc_use_cxx17 = false
 }
 
 # Allows different projects to specify their own suppression/ignore lists for

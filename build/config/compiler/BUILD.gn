@@ -598,7 +598,11 @@ config("compiler") {
     }
   } else if (is_win) {
     cflags_c += [ "/std:c11" ]
-    cflags_cc += [ "/std:c++20" ]
+    if (!is_clang && defined(msvc_use_cxx17) && msvc_use_cxx17) {
+      cflags_cc += [ "/std:c++17" ]
+    } else {
+      cflags_cc += [ "/std:c++20" ]
+    }
   } else if (!is_nacl) {
     # TODO(mcgrathr) - the NaCl GCC toolchain doesn't support either
     # gnu11/gnu++11 or c11/c++11; we technically don't need this toolchain any
