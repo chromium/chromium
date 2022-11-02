@@ -712,28 +712,6 @@ js_library("file_selection") {
   ]
 }
 
-js_unittest("file_tasks_unittest") {
-  deps = [
-    ":directory_model",
-    ":file_transfer_controller",
-    ":task_history",
-    "metadata:metadata_model",
-    "ui:file_manager_ui",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_crostini",
-    "//ui/file_manager/file_manager/background/js:mock_progress_center",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:entry_location",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
-  ]
-}
-
 js_library("file_transfer_controller") {
   deps = [
     ":directory_model",
@@ -1252,7 +1230,6 @@ js_test_type_check("js_test_type_check") {
     ":empty_folder_controller_unittest",
     ":file_list_model_unittest",
     ":file_manager_commands_unittest",
-    ":file_tasks_unittest",
     ":file_transfer_controller_unittest",
     ":file_type_filters_controller_unittest",
     ":list_thumbnail_loader_unittest",

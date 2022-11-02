@@ -303,6 +303,7 @@ ts_test_files = [
   "file_manager/widgets/xf_select_unittest.ts",
 
   # Foreground:
+  "file_manager/foreground/js/file_tasks_unittest.ts",
   "file_manager/foreground/js/task_controller_unittest.ts",
 ]
 
@@ -445,7 +446,6 @@ unittest_files = [
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",
   "file_manager/foreground/js/directory_model_unittest.js",
-  "file_manager/foreground/js/file_tasks_unittest.js",
   "file_manager/foreground/js/file_transfer_controller_unittest.js",
 
   # Image Loader:

@@ -141,8 +141,6 @@ js_library("mock_crostini") {
     ":crostini",
     "//ui/file_manager/file_manager/externs/background:crostini",
   ]
-  visibility +=
-      [ "//ui/file_manager/file_manager/foreground/js:file_tasks_unittest" ]
 }
 
 js_unittest("crostini_unittest") {
@@ -307,8 +305,6 @@ js_library("mock_progress_center") {
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/externs/background:progress_center",
   ]
-  visibility +=
-      [ "//ui/file_manager/file_manager/foreground/js:file_tasks_unittest" ]
 }
 
 js_library("progress_center") {
