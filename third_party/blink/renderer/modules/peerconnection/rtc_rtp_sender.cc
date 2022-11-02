@@ -446,6 +446,23 @@ ScriptPromise RTCRtpSender::replaceTrack(ScriptState* script_state,
                                            "The peer connection is closed."));
     return promise;
   }
+
+  if (with_track && kind_ != with_track->kind()) {
+    ExceptionState exception_state(script_state->GetIsolate(),
+                                   ExceptionState::kExecutionContext,
+                                   "RTCRtpSender", "replaceTrack");
+    exception_state.ThrowTypeError("Track kind does not match Sender kind");
+    resolver->Reject(exception_state);
+    return promise;
+  }
+
+  if (transceiver_ && transceiver_->stopped()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "replaceTrack cannot be called on a stopped sender"));
+    return promise;
+  }
+
   MediaStreamComponent* component = nullptr;
   if (with_track) {
     pc_->RegisterTrack(with_track);
