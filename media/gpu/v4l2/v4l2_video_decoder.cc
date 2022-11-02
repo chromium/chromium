@@ -137,7 +137,7 @@ V4L2VideoDecoder::~V4L2VideoDecoder() {
 }
 
 void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
-                                  bool low_delay,
+                                  bool /*low_delay*/,
                                   CdmContext* cdm_context,
                                   InitCB init_cb,
                                   const OutputCB& output_cb,
@@ -222,7 +222,6 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   profile_ = config.profile();
   aspect_ratio_ = config.aspect_ratio();
   color_space_ = config.color_space_info();
-  low_delay_ = low_delay;
 
   if (profile_ == VIDEO_CODEC_PROFILE_UNKNOWN) {
     VLOGF(1) << "Unknown profile.";
@@ -326,8 +325,7 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
     VLOGF(1) << "Using a stateful API for profile: " << GetProfileName(profile_)
              << " and fourcc: " << FourccToString(input_format_fourcc);
     backend_ = std::make_unique<V4L2StatefulVideoDecoderBackend>(
-        this, device_, profile_, color_space_, low_delay_,
-        decoder_task_runner_);
+        this, device_, profile_, color_space_, decoder_task_runner_);
   } else {
     DCHECK_EQ(preferred_api_and_format.first, kStateless);
     VLOGF(1) << "Using a stateless API for profile: "
