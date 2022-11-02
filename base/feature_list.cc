@@ -9,9 +9,7 @@
 
 #include <stddef.h>
 
-#include "base/base_paths.h"
 #include "base/base_switches.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
@@ -20,8 +18,8 @@
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/path_service.h"
 #include "base/pickle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
@@ -40,9 +38,57 @@ namespace {
 // have more control over initialization timing. Leaky.
 FeatureList* g_feature_list_instance = nullptr;
 
-// Tracks whether the FeatureList instance was initialized via an accessor, and
-// which Feature that accessor was for, if so.
-const Feature* g_initialized_from_accessor = nullptr;
+// Tracks access to Feature state before FeatureList registration.
+class EarlyFeatureAccessTracker {
+ public:
+  static EarlyFeatureAccessTracker* GetInstance() {
+    static NoDestructor<EarlyFeatureAccessTracker> instance;
+    return instance.get();
+  }
+
+  // Invoked when `feature` is accessed before FeatureList registration.
+  void AccessedFeature(const Feature& feature) {
+    AutoLock lock(lock_);
+    if (feature_)
+      return;
+
+    feature_ = &feature;
+    stack_trace_ = std::make_unique<debug::StackTrace>();
+  }
+
+  // Asserts that no feature was accessed before FeatureList registration.
+  void AssertNoAccess() {
+    AutoLock lock(lock_);
+    if (!feature_)
+      return;
+
+    DEBUG_ALIAS_FOR_CSTR(feature_name, feature_->name, 128);
+    CHECK(!feature_) << "Accessed feature " << feature_->name
+                     << " before FeatureList registration, in stack:"
+                     << stack_trace_->ToString();
+  }
+
+  // Resets the state of this tracker.
+  void Reset() {
+    AutoLock lock(lock_);
+    feature_ = nullptr;
+    stack_trace_.reset();
+  }
+
+ private:
+  friend class NoDestructor<EarlyFeatureAccessTracker>;
+
+  EarlyFeatureAccessTracker() = default;
+  ~EarlyFeatureAccessTracker() = default;
+
+  Lock lock_;
+
+  // First feature to be accessed before FeatureList registration.
+  const Feature* feature_ GUARDED_BY(lock_) = nullptr;
+
+  // Stack trace of the first feature access before FeatureList registration.
+  std::unique_ptr<debug::StackTrace> stack_trace_ GUARDED_BY(lock_);
+};
 
 // Controls whether a feature's override state will be cached in
 // `base::Feature::cached_value`. This field and the associated `base::Feature`
@@ -385,7 +431,7 @@ bool FeatureList::IsEnabled(const Feature& feature) {
   CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
 #endif
   if (!g_feature_list_instance) {
-    g_initialized_from_accessor = &feature;
+    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
     return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
   }
   return g_feature_list_instance->IsFeatureEnabled(feature);
@@ -402,7 +448,7 @@ absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
   CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
 #endif
   if (!g_feature_list_instance) {
-    g_initialized_from_accessor = &feature;
+    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
     // If there is no feature list, there can be no overrides.
     return absl::nullopt;
   }
@@ -416,7 +462,7 @@ FieldTrial* FeatureList::GetFieldTrial(const Feature& feature) {
   CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
 #endif
   if (!g_feature_list_instance) {
-    g_initialized_from_accessor = &feature;
+    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
     return nullptr;
   }
   return g_feature_list_instance->GetAssociatedFieldTrial(feature);
@@ -490,10 +536,7 @@ bool FeatureList::InitializeInstance(
   // If the singleton was previously initialized from within an accessor, we
   // want to prevent callers from reinitializing the singleton and masking the
   // accessor call(s) which likely returned incorrect information.
-  if (g_initialized_from_accessor) {
-    DEBUG_ALIAS_FOR_CSTR(accessor_name, g_initialized_from_accessor->name, 128);
-    CHECK(!g_initialized_from_accessor);
-  }
+  EarlyFeatureAccessTracker::GetInstance()->AssertNoAccess();
   bool instance_existed_before = false;
   if (g_feature_list_instance) {
     if (g_feature_list_instance->initialized_from_command_line_)
@@ -524,10 +567,16 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   // Note: Intentional leak of global singleton.
   g_feature_list_instance = instance.release();
 
+  // TODO(crbug.com/1358639): Enable this check on all platforms.
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  EarlyFeatureAccessTracker::GetInstance()->AssertNoAccess();
+#endif
+
 #if !BUILDFLAG(IS_NACL)
   // Configured first because it takes precedence over the getrandom() trial.
   internal::ConfigureBoringSSLBackedRandBytesFieldTrial();
 #endif
+
 #if BUILDFLAG(IS_ANDROID)
   internal::ConfigureRandBytesFieldTrial();
 #endif
@@ -559,7 +608,7 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
 std::unique_ptr<FeatureList> FeatureList::ClearInstanceForTesting() {
   FeatureList* old_instance = g_feature_list_instance;
   g_feature_list_instance = nullptr;
-  g_initialized_from_accessor = nullptr;
+  EarlyFeatureAccessTracker::GetInstance()->Reset();
   return WrapUnique(old_instance);
 }
 
@@ -575,7 +624,7 @@ void FeatureList::RestoreInstanceForTesting(
 void FeatureList::ForbidUseForCurrentModule() {
 #if DCHECK_IS_ON()
   // Verify there hasn't been any use prior to being called.
-  DCHECK(!g_initialized_from_accessor);
+  EarlyFeatureAccessTracker::GetInstance()->AssertNoAccess();
   g_use_allowed = false;
 #endif  // DCHECK_IS_ON()
 }

@@ -27,7 +27,7 @@ namespace {
 
 const int64_t kSmallArchiveSize = 1LL * 1024 * 1024;
 const int64_t kLargeArchiveSize =
-    2 * PrefetchDownloaderQuota::GetMaxDailyQuotaBytes() / 3;
+    2 * PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes / 3;
 
 const PrefetchItem* FindPrefetchItemByOfflineId(
     const std::set<PrefetchItem>& items,

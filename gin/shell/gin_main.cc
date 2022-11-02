@@ -72,11 +72,11 @@ int main(int argc, char** argv) {
   gin::V8Initializer::LoadV8Snapshot();
 #endif
 
-  base::SingleThreadTaskExecutor main_thread_task_executor;
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("gin");
-
   // Initialize the base::FeatureList since IsolateHolder can depend on it.
   base::FeatureList::SetInstance(base::WrapUnique(new base::FeatureList));
+
+  base::SingleThreadTaskExecutor main_thread_task_executor;
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("gin");
 
   {
     gin::IsolateHolder::Initialize(gin::IsolateHolder::kStrictMode,
