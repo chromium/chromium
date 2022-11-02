@@ -11,14 +11,11 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/lazy_instance.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/json/values_util.h"
 #include "base/stl_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -68,15 +65,15 @@ const size_t kSaltBytes = 32;
 const char kBackendUrl[] =
     "https://www.googleapis.com/chromewebstore/v1.1/items/verify";
 
-const char kPublicKeyPEM[] =                                            \
-    "-----BEGIN PUBLIC KEY-----"                                        \
-    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj/u/XDdjlDyw7gHEtaaa"  \
-    "sZ9GdG8WOKAyJzXd8HFrDtz2Jcuy7er7MtWvHgNDA0bwpznbI5YdZeV4UfCEsA4S"  \
-    "rA5b3MnWTHwA1bgbiDM+L9rrqvcadcKuOlTeN48Q0ijmhHlNFbTzvT9W0zw/GKv8"  \
-    "LgXAHggxtmHQ/Z9PP2QNF5O8rUHHSL4AJ6hNcEKSBVSmbbjeVm4gSXDuED5r0nwx"  \
-    "vRtupDxGYp8IZpP5KlExqNu1nbkPc+igCTIB6XsqijagzxewUHCdovmkb2JNtskx"  \
-    "/PMIEv+TvWIx2BzqGp71gSh/dV7SJ3rClvWd2xj8dtxG8FfAWDTIIi0qZXWn2Qhi"  \
-    "zQIDAQAB"                                                          \
+const char kPublicKeyPEM[] =
+    "-----BEGIN PUBLIC KEY-----"
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj/u/XDdjlDyw7gHEtaaa"
+    "sZ9GdG8WOKAyJzXd8HFrDtz2Jcuy7er7MtWvHgNDA0bwpznbI5YdZeV4UfCEsA4S"
+    "rA5b3MnWTHwA1bgbiDM+L9rrqvcadcKuOlTeN48Q0ijmhHlNFbTzvT9W0zw/GKv8"
+    "LgXAHggxtmHQ/Z9PP2QNF5O8rUHHSL4AJ6hNcEKSBVSmbbjeVm4gSXDuED5r0nwx"
+    "vRtupDxGYp8IZpP5KlExqNu1nbkPc+igCTIB6XsqijagzxewUHCdovmkb2JNtskx"
+    "/PMIEv+TvWIx2BzqGp71gSh/dV7SJ3rClvWd2xj8dtxG8FfAWDTIIi0qZXWn2Qhi"
+    "zQIDAQAB"
     "-----END PUBLIC KEY-----";
 
 GURL GetBackendUrl() {
@@ -112,7 +109,7 @@ bool ValidateExpireDateFormat(const std::string& input) {
   if (input.length() != 10)
     return false;
   for (int i = 0; i < 10; i++) {
-    if (i == 4 ||  i == 7) {
+    if (i == 4 || i == 7) {
       if (input[i] != '-')
         return false;
     } else if (!base::IsAsciiDigit(input[i])) {
@@ -122,106 +119,92 @@ bool ValidateExpireDateFormat(const std::string& input) {
   return true;
 }
 
-// Sets the value of |key| in |dictionary| to be a list with the contents of
-// |ids|.
-void SetExtensionIdSet(base::DictionaryValue* dictionary,
-                       const char* key,
-                       const ExtensionIdSet& ids) {
-  auto id_list = std::make_unique<base::ListValue>();
-  for (auto i = ids.begin(); i != ids.end(); ++i)
-    id_list->Append(*i);
-  dictionary->Set(key, std::move(id_list));
+// Helper for serialization of ExtensionIdSets to/from a base::Value::List.
+[[nodiscard]] base::Value::List ExtensionIdSetToList(
+    const ExtensionIdSet& ids) {
+  base::Value::List id_list;
+  base::ranges::for_each(ids,
+                         [&id_list](const auto& id) { id_list.Append(id); });
+  return id_list;
 }
 
-// Tries to fetch a list of strings from |dictionay| for |key|, and inserts
-// them into |ids|. The return value indicates success/failure. Note: on
-// failure, |ids| might contain partial results, for instance if some of the
-// members of the list were not strings.
-bool GetExtensionIdSet(const base::DictionaryValue& dictionary,
-                       const char* key,
-                       ExtensionIdSet* ids) {
-  const base::ListValue* id_list = nullptr;
-  if (!dictionary.GetList(key, &id_list))
-    return false;
-  for (const auto& entry : id_list->GetList()) {
-    if (!entry.is_string()) {
-      return false;
-    }
-    ids->insert(entry.GetString());
+[[nodiscard]] absl::optional<ExtensionIdSet> ExtensionIdSetFromList(
+    const base::Value::List& list) {
+  ExtensionIdSet ids;
+  for (const base::Value& value : list) {
+    if (!value.is_string())
+      return absl::nullopt;
+    ids.insert(value.GetString());
   }
-  return true;
+  return ids;
 }
 
 }  // namespace
 
 namespace extensions {
 
-InstallSignature::InstallSignature() {
-}
+InstallSignature::InstallSignature() = default;
 InstallSignature::InstallSignature(const InstallSignature& other) = default;
-InstallSignature::~InstallSignature() {
-}
+InstallSignature::~InstallSignature() = default;
 
-void InstallSignature::ToValue(base::DictionaryValue* value) const {
-  CHECK(value);
-
-  value->SetIntKey(kSignatureFormatVersionKey, kSignatureFormatVersion);
-  SetExtensionIdSet(value, kIdsKey, ids);
-  SetExtensionIdSet(value, kInvalidIdsKey, invalid_ids);
-  value->SetStringKey(kExpireDateKey, expire_date);
+base::Value::Dict InstallSignature::ToDict() const {
+  base::Value::Dict dict;
+  dict.Set(kSignatureFormatVersionKey, kSignatureFormatVersion);
+  dict.Set(kIdsKey, ExtensionIdSetToList(ids));
+  dict.Set(kInvalidIdsKey, ExtensionIdSetToList(invalid_ids));
+  dict.Set(kExpireDateKey, expire_date);
   std::string salt_base64;
   std::string signature_base64;
   base::Base64Encode(salt, &salt_base64);
   base::Base64Encode(signature, &signature_base64);
-  value->SetStringKey(kSaltKey, salt_base64);
-  value->SetStringKey(kSignatureKey, signature_base64);
-  value->SetStringKey(kTimestampKey,
-                      base::NumberToString(timestamp.ToInternalValue()));
+  dict.Set(kSaltKey, salt_base64);
+  dict.Set(kSignatureKey, signature_base64);
+  dict.Set(kTimestampKey, base::TimeToValue(timestamp));
+  return dict;
 }
 
 // static
-std::unique_ptr<InstallSignature> InstallSignature::FromValue(
-    const base::DictionaryValue& value) {
-  std::unique_ptr<InstallSignature> result(new InstallSignature);
+std::unique_ptr<InstallSignature> InstallSignature::FromDict(
+    const base::Value::Dict& dict) {
+  std::unique_ptr<InstallSignature> result =
+      std::make_unique<InstallSignature>();
 
   // For now we don't want to support any backwards compability, but in the
   // future if we do, we would want to put the migration code here.
-  absl::optional<int> format_version =
-      value.FindIntKey(kSignatureFormatVersionKey);
-  if (format_version != kSignatureFormatVersion) {
-    result.reset();
-    return result;
-  }
+  if (dict.FindInt(kSignatureFormatVersionKey) != kSignatureFormatVersion)
+    return nullptr;
 
-  const base::Value::Dict& dict = value.GetDict();
-  const std::string* expire_date = dict.FindString(kExpireDateKey);
-  const std::string* salt_base64 = dict.FindString(kSaltKey);
-  const std::string* signature_base64 = dict.FindString(kSignatureKey);
+  base::raw_ptr<const std::string> expire_date =
+      dict.FindString(kExpireDateKey);
+  base::raw_ptr<const std::string> salt_base64 = dict.FindString(kSaltKey);
+  base::raw_ptr<const std::string> signature_base64 =
+      dict.FindString(kSignatureKey);
   if (!expire_date || !salt_base64 || !signature_base64 ||
       !base::Base64Decode(*salt_base64, &result->salt) ||
-      !base::Base64Decode(*signature_base64, &result->signature)) {
-    result.reset();
-    return result;
-  }
+      !base::Base64Decode(*signature_base64, &result->signature))
+    return nullptr;
+
   result->expire_date = *expire_date;
 
   // Note: earlier versions of the code did not write out a timestamp value
   // so older entries will not necessarily have this.
-  if (const base::Value* timestamp = value.FindKey(kTimestampKey)) {
-    int64_t timestamp_value = 0;
-    if (!timestamp->is_string() ||
-        !base::StringToInt64(timestamp->GetString(), &timestamp_value)) {
-      result.reset();
-      return result;
-    }
-    result->timestamp = base::Time::FromInternalValue(timestamp_value);
-  }
+  result->timestamp =
+      base::ValueToTime(dict.Find(kTimestampKey)).value_or(base::Time());
 
-  if (!GetExtensionIdSet(value, kIdsKey, &result->ids) ||
-      !GetExtensionIdSet(value, kInvalidIdsKey, &result->invalid_ids)) {
-    result.reset();
-    return result;
-  }
+  base::raw_ptr<const base::Value::List> ids_list = dict.FindList(kIdsKey);
+  base::raw_ptr<const base::Value::List> invalid_ids_list =
+      dict.FindList(kInvalidIdsKey);
+  if (!ids_list || !invalid_ids_list)
+    return nullptr;
+
+  absl::optional<ExtensionIdSet> ids = ExtensionIdSetFromList(*ids_list);
+  absl::optional<ExtensionIdSet> invalid_ids =
+      ExtensionIdSetFromList(*invalid_ids_list);
+  if (!ids || !invalid_ids)
+    return nullptr;
+
+  result->ids = ids.value();
+  result->invalid_ids = invalid_ids.value();
 
   return result;
 }
@@ -231,8 +214,7 @@ InstallSigner::InstallSigner(
     const ExtensionIdSet& ids)
     : ids_(ids), url_loader_factory_(std::move(url_loader_factory)) {}
 
-InstallSigner::~InstallSigner() {
-}
+InstallSigner::~InstallSigner() = default;
 
 // static
 bool InstallSigner::VerifySignature(const InstallSignature& signature) {
@@ -421,10 +403,9 @@ void InstallSigner::ParseFetchResponse(
     expire_date = *maybe_expire_date;
   }
 
-  bool fields_success =
-      protocol_version == 1 && !signature_base64.empty() &&
-      ValidateExpireDateFormat(expire_date) &&
-      base::Base64Decode(signature_base64, &signature);
+  bool fields_success = protocol_version == 1 && !signature_base64.empty() &&
+                        ValidateExpireDateFormat(expire_date) &&
+                        base::Base64Decode(signature_base64, &signature);
   if (!fields_success) {
     ReportErrorViaCallback();
     return;
@@ -469,6 +450,5 @@ void InstallSigner::HandleSignatureResult(const std::string& signature,
   if (!callback_.is_null())
     std::move(callback_).Run(std::move(result));
 }
-
 
 }  // namespace extensions

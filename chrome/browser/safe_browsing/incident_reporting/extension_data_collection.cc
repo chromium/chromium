@@ -69,20 +69,17 @@ void PopulateExtensionInfo(
   extension_info->set_install_time_msec(
       extension_prefs.GetInstallTime(extension.id()).ToJavaTime());
 
-  const base::DictionaryValue* signature =
-      extension_prefs.GetInstallSignature();
-  if (signature) {
-    std::unique_ptr<extensions::InstallSignature> signature_from_prefs =
-        extensions::InstallSignature::FromValue(*signature);
-    if (signature_from_prefs) {
-      if (base::Contains(signature_from_prefs->ids, extension_id)) {
-        extension_info->set_has_signature_validation(true);
-        extension_info->set_signature_is_valid(true);
-      } else if (base::Contains(signature_from_prefs->invalid_ids,
-                                extension_id)) {
-        extension_info->set_has_signature_validation(true);
-        extension_info->set_signature_is_valid(false);
-      }
+  std::unique_ptr<extensions::InstallSignature> signature_from_prefs =
+      extensions::InstallSignature::FromDict(
+          extension_prefs.GetInstallSignature());
+  if (signature_from_prefs) {
+    if (base::Contains(signature_from_prefs->ids, extension_id)) {
+      extension_info->set_has_signature_validation(true);
+      extension_info->set_signature_is_valid(true);
+    } else if (base::Contains(signature_from_prefs->invalid_ids,
+                              extension_id)) {
+      extension_info->set_has_signature_validation(true);
+      extension_info->set_signature_is_valid(false);
     }
   }
 

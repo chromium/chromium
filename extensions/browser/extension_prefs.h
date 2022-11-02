@@ -658,14 +658,14 @@ class ExtensionPrefs : public KeyedService {
   // Used by AppWindowGeometryCache to persist its cache. These methods
   // should not be called directly.
   const base::DictionaryValue* GetGeometryCache(
-        const std::string& extension_id) const;
+      const std::string& extension_id) const;
   void SetGeometryCache(const std::string& extension_id,
                         std::unique_ptr<base::DictionaryValue> cache);
 
   // Used for verification of installed extension ids. For the Set method, pass
   // null to remove the preference.
-  const base::DictionaryValue* GetInstallSignature() const;
-  void SetInstallSignature(const base::DictionaryValue* signature);
+  const base::Value::Dict& GetInstallSignature() const;
+  void SetInstallSignature(base::Value::Dict* signature);
 
   // The installation parameter associated with the extension.
   std::string GetInstallParam(const std::string& extension_id) const;

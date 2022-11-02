@@ -293,7 +293,7 @@ class ScopedExtensionPrefUpdate : public prefs::ScopedDictionaryPrefUpdate {
   ScopedExtensionPrefUpdate& operator=(const ScopedExtensionPrefUpdate&) =
       delete;
 
-  ~ScopedExtensionPrefUpdate() override {}
+  ~ScopedExtensionPrefUpdate() override = default;
 
   // ScopedDictionaryPrefUpdate overrides:
   std::unique_ptr<prefs::DictionaryValueUpdate> Get() override {
@@ -422,8 +422,8 @@ static std::string MakePathRelative(const base::FilePath& parent,
   if (!parent.IsParent(child))
     return child.AsUTF8Unsafe();
 
-  base::FilePath::StringType retval = child.value().substr(
-      parent.value().length());
+  base::FilePath::StringType retval =
+      child.value().substr(parent.value().length());
   if (base::FilePath::IsSeparator(retval[0]))
     retval = retval.substr(1);
 #if BUILDFLAG(IS_WIN)
@@ -463,17 +463,17 @@ void ExtensionPrefs::MakePathsRelative() {
   // Fix these paths.
   prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_names::kExtensions);
   auto update_dict = update.Get();
-  for (auto i = absolute_keys.begin(); i != absolute_keys.end(); ++i) {
+  for (const std::string& key : absolute_keys) {
     std::unique_ptr<prefs::DictionaryValueUpdate> extension_dict;
-    if (!update_dict->GetDictionaryWithoutPathExpansion(*i, &extension_dict)) {
-      NOTREACHED() << "Control should never reach here for extension " << *i;
+    if (!update_dict->GetDictionaryWithoutPathExpansion(key, &extension_dict)) {
+      NOTREACHED() << "Control should never reach here for extension " << key;
       continue;
     }
     std::string path_string;
     extension_dict->GetString(kPrefPath, &path_string);
     base::FilePath path = base::FilePath::FromUTF8Unsafe(path_string);
     extension_dict->SetString(kPrefPath,
-        MakePathRelative(install_directory_, path));
+                              MakePathRelative(install_directory_, path));
   }
 }
 
@@ -852,7 +852,7 @@ static std::unique_ptr<base::ListValue> CreatePermissionList(
     const T& permissions) {
   auto values = std::make_unique<base::ListValue>();
   for (typename T::const_iterator i = permissions.begin();
-      i != permissions.end(); ++i) {
+       i != permissions.end(); ++i) {
     std::unique_ptr<base::Value> detail(i->ToValue());
     if (detail) {
       base::Value::Dict tmp;
@@ -1296,7 +1296,7 @@ void ExtensionPrefs::RemoveRuntimeGrantedPermissions(
 }
 
 void ExtensionPrefs::SetExtensionRunning(const std::string& extension_id,
-    bool is_running) {
+                                         bool is_running) {
   UpdateExtensionPref(extension_id, kPrefRunning,
                       std::make_unique<base::Value>(is_running));
 }
@@ -1349,7 +1349,8 @@ bool ExtensionPrefs::HasAllowFileAccessSetting(
 }
 
 bool ExtensionPrefs::DoesExtensionHaveState(
-    const std::string& id, Extension::State check_state) const {
+    const std::string& id,
+    Extension::State check_state) const {
   const base::DictionaryValue* extension = GetExtensionPref(id);
   if (!extension)
     return false;
@@ -1603,17 +1604,16 @@ void ExtensionPrefs::SetDelayedInstallInfo(
   // should not be in the final extension prefs. All entries here should have
   // a corresponding Remove() call in FinishDelayedInstallInfo().
   if (extension->RequiresSortOrdinal()) {
-    extension_dict->SetString(
-        kPrefSuggestedPageOrdinal,
-        page_ordinal.IsValid() ? page_ordinal.ToInternalValue()
-                               : std::string());
+    extension_dict->SetString(kPrefSuggestedPageOrdinal,
+                              page_ordinal.IsValid()
+                                  ? page_ordinal.ToInternalValue()
+                                  : std::string());
   }
   extension_dict->SetInteger(kDelayedInstallReason,
                              static_cast<int>(delay_reason));
 }
 
-bool ExtensionPrefs::RemoveDelayedInstallInfo(
-    const std::string& extension_id) {
+bool ExtensionPrefs::RemoveDelayedInstallInfo(const std::string& extension_id) {
   if (!GetExtensionPref(extension_id))
     return false;
   ScopedExtensionPrefUpdate update(prefs_, extension_id);
@@ -1621,8 +1621,7 @@ bool ExtensionPrefs::RemoveDelayedInstallInfo(
   return result;
 }
 
-bool ExtensionPrefs::FinishDelayedInstallInfo(
-    const std::string& extension_id) {
+bool ExtensionPrefs::FinishDelayedInstallInfo(const std::string& extension_id) {
   CHECK(crx_file::id_util::IdIsValid(extension_id));
   ScopedExtensionPrefUpdate update(prefs_, extension_id);
   auto extension_dict = update.Get();
@@ -1660,8 +1659,7 @@ bool ExtensionPrefs::FinishDelayedInstallInfo(
 
 std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetDelayedInstallInfo(
     const std::string& extension_id) const {
-  const base::DictionaryValue* extension_prefs =
-      GetExtensionPref(extension_id);
+  const base::DictionaryValue* extension_prefs = GetExtensionPref(extension_id);
   if (!extension_prefs)
     return nullptr;
 
@@ -1675,8 +1673,7 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetDelayedInstallInfo(
 
 ExtensionPrefs::DelayReason ExtensionPrefs::GetDelayedInstallReason(
     const std::string& extension_id) const {
-  const base::DictionaryValue* extension_prefs =
-      GetExtensionPref(extension_id);
+  const base::DictionaryValue* extension_prefs = GetExtensionPref(extension_id);
   if (!extension_prefs)
     return DELAY_REASON_NONE;
 
@@ -1709,8 +1706,7 @@ ExtensionPrefs::GetAllDelayedInstallInfo() const {
   return extensions_info;
 }
 
-bool ExtensionPrefs::IsFromWebStore(
-    const std::string& extension_id) const {
+bool ExtensionPrefs::IsFromWebStore(const std::string& extension_id) const {
   const base::DictionaryValue* dictionary = GetExtensionPref(extension_id);
   if (dictionary)
     return dictionary->FindBoolKey(kPrefFromWebStore).value_or(false);
@@ -1936,13 +1932,9 @@ void ExtensionPrefs::DecrementPref(const PrefMap& pref) {
 
 void ExtensionPrefs::GetExtensions(ExtensionIdList* out) const {
   CHECK(out);
-
-  std::unique_ptr<ExtensionsInfo> extensions_info(GetInstalledExtensionsInfo());
-
-  for (size_t i = 0; i < extensions_info->size(); ++i) {
-    ExtensionInfo* info = extensions_info->at(i).get();
-    out->push_back(info->extension_id);
-  }
+  base::ranges::transform(*GetInstalledExtensionsInfo(),
+                          std::back_inserter(*out),
+                          [](const auto& info) { return info->extension_id; });
 }
 
 void ExtensionPrefs::AddObserver(ExtensionPrefsObserver* observer) {
@@ -2003,8 +1995,7 @@ void ExtensionPrefs::InitPrefStore() {
 
 bool ExtensionPrefs::HasIncognitoPrefValue(const std::string& pref_key) const {
   bool has_incognito_pref_value = false;
-  extension_pref_value_map_->GetEffectivePrefValue(pref_key,
-                                                   true,
+  extension_pref_value_map_->GetEffectivePrefValue(pref_key, true,
                                                    &has_incognito_pref_value);
   return has_incognito_pref_value;
 }
@@ -2028,17 +2019,13 @@ void ExtensionPrefs::SetGeometryCache(
   UpdateExtensionPref(extension_id, kPrefGeometryCache, std::move(cache));
 }
 
-const base::DictionaryValue* ExtensionPrefs::GetInstallSignature() const {
-  // TODO (https://crbug.com/1342019) This should call
-  // `PrefService::GetDict`, which will in turn require the return type to
-  // be `base::Value::Dict`.
-  return &base::Value::AsDictionaryValue(prefs_->GetValue(kInstallSignature));
+const base::Value::Dict& ExtensionPrefs::GetInstallSignature() const {
+  return prefs_->GetDict(kInstallSignature);
 }
 
-void ExtensionPrefs::SetInstallSignature(
-    const base::DictionaryValue* signature) {
+void ExtensionPrefs::SetInstallSignature(base::Value::Dict* signature) {
   if (signature) {
-    prefs_->Set(kInstallSignature, *signature);
+    prefs_->Set(kInstallSignature, base::Value(std::move(*signature)));
     DVLOG(1) << "SetInstallSignature - saving";
   } else {
     DVLOG(1) << "SetInstallSignature - clearing";
@@ -2238,10 +2225,8 @@ ExtensionPrefs::ExtensionPrefs(
   MakePathsRelative();
 
   // Ensure that any early observers are watching before prefs are initialized.
-  for (auto iter = early_observers.cbegin(); iter != early_observers.cend();
-       ++iter) {
-    (*iter)->OnExtensionPrefsAvailable(this);
-  }
+  for (auto* observer : early_observers)
+    observer->OnExtensionPrefsAvailable(this);
 
   InitPrefStore();
 
