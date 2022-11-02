@@ -9,8 +9,10 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -30,6 +32,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
+#include "components/reporting/util/refcounted_closure_list.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -128,6 +131,11 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   void AssignDegradationQueues(
       const std::vector<scoped_refptr<StorageQueue>>& degradation_queues);
 
+  // Registers completion notification callback. Thread-safe.
+  // All registered callbacks are called when the queue destruction comes
+  // to its completion.
+  void RegisterCompletionCallback(base::OnceClosure callback);
+
   // Test only: makes specified records fail on specified operation kind.
   void TestInjectErrorsForOperation(
       const test::StorageQueueOperationKind operation_kind,
@@ -165,7 +173,8 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
         const base::FilePath& filename,
         int64_t size,
         scoped_refptr<ResourceInterface> memory_resource,
-        scoped_refptr<ResourceInterface> disk_space_resource);
+        scoped_refptr<ResourceInterface> disk_space_resource,
+        scoped_refptr<RefCountedClosureList> completion_closure_list);
 
     Status Open(bool read_only);  // No-op if already opened.
     void Close();                 // No-op if not opened.
@@ -207,7 +216,14 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     SingleFile(const base::FilePath& filename,
                int64_t size,
                scoped_refptr<ResourceInterface> memory_resource,
-               scoped_refptr<ResourceInterface> disk_space_resource);
+               scoped_refptr<ResourceInterface> disk_space_resource,
+               scoped_refptr<RefCountedClosureList> completion_closure_list);
+
+    SEQUENCE_CHECKER(sequence_checker_);
+
+    // Completion closure list reference. Dropped last, when `ReadContext` is
+    // destructed.
+    const scoped_refptr<RefCountedClosureList> completion_closure_list_;
 
     // Flag (valid for opened file only): true if file was opened for reading
     // only, false otherwise.
@@ -218,8 +234,8 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
     std::unique_ptr<base::File> handle_;  // Set only when opened/created.
 
-    scoped_refptr<ResourceInterface> memory_resource_;
-    scoped_refptr<ResourceInterface> disk_space_resource_;
+    const scoped_refptr<ResourceInterface> memory_resource_;
+    const scoped_refptr<ResourceInterface> disk_space_resource_;
 
     // When reading the file, this is the buffer and data positions.
     // If the data is read sequentially, buffered portions are reused
@@ -387,6 +403,10 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   SEQUENCE_CHECKER(storage_queue_sequence_checker_);
 
+  // Completion closure list reference. Dropped when `StorageQueue` is
+  // destructed.
+  const scoped_refptr<RefCountedClosureList> completion_closure_list_;
+
   // Dedicated sequence task runner for low priority actions (which make
   // no impact on the main activity - e.g., deletion of the outdated metafiles).
   // Serializeing them should reduce their impact.
@@ -437,9 +457,6 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // [first_unconfirmed_sequencing_id_, first_sequencing_id_) is a gap
   // that cannot be filled in and is uploaded as such.
   absl::optional<int64_t> first_unconfirmed_sequencing_id_;
-
-  // Latest metafile. May be null.
-  scoped_refptr<SingleFile> meta_file_;
 
   // Ordered map of the files by ascending sequencing id.
   std::map<int64_t, scoped_refptr<SingleFile>> files_;

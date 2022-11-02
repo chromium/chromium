@@ -132,14 +132,7 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     options_.set_directory(base::FilePath(location_.GetPath()));
   }
 
-  void TearDown() override {
-    ResetTestStorageQueue();
-    // Make sure all memory is deallocated.
-    EXPECT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
-    // Make sure all disk is not reserved (files remain, but Storage is not
-    // responsible for them anymore).
-    EXPECT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
-  }
+  void TearDown() override { ResetTestStorageQueue(); }
 
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {
     ASSERT_FALSE(storage_queue_) << "StorageQueue already assigned";
@@ -167,12 +160,22 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   }
 
   void ResetTestStorageQueue() {
-    // Let everything ongoing to finish.
+    if (storage_queue_) {
+      // StorageQueue is destructed on thread, wait for it to finish.
+      test::TestCallbackAutoWaiter waiter;
+      storage_queue_->RegisterCompletionCallback(base::BindOnce(
+          &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
+      storage_queue_.reset();
+    }
+    // Let remaining asynchronous activity finish.
+    // TODO(b/254418902): The next line is not logically necessary, but for
+    // unknown reason the tests becomes flaky without it, keeping it for now.
     task_environment_.RunUntilIdle();
-    storage_queue_.reset();
-    // StorageQueue is destructed on a thread,
-    // so we need to wait for it to destruct.
-    task_environment_.RunUntilIdle();
+    // Make sure all memory is deallocated.
+    EXPECT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
+    // Make sure all disk is not reserved (files remain, but Storage is not
+    // responsible for them anymore).
+    EXPECT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
   }
 
   void AsyncStartTestUploader(

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_list.h"
@@ -942,5 +943,26 @@ Status Storage::StorePipelineId(base::StringPiece pipeline_id) {
 
 StatusOr<std::string> Storage::GetPipelineId() {
   return pipeline_id_in_storage_->GetPipelineId();
+}
+
+void Storage::RegisterCompletionCallback(base::OnceClosure callback) {
+  // Although this is an asynchronous action, note that Storage cannot be
+  // destructed until the callback is registered - StorageQueue is held by added
+  // reference here. Thus, the callback being registered is guaranteed
+  // to be called when the Storage is being destructed.
+  DCHECK(callback);
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceClosure callback, scoped_refptr<Storage> self) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+            const base::RepeatingClosure queue_callback =
+                base::BarrierClosure(self->queues_.size(), std::move(callback));
+            for (auto& queue : self->queues_) {
+              // Copy the callback as base::OnceClosure.
+              queue.second->RegisterCompletionCallback(queue_callback);
+            }
+          },
+          std::move(callback), base::WrapRefCounted(this)));
 }
 }  // namespace reporting
