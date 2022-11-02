@@ -381,6 +381,10 @@ class MetaBuildWrapper:
                       help=('Run under the internal swarming server '
                             '(chrome-swarming) instead of the public server '
                             '(chromium-swarm).'))
+    subp.add_argument('--realm',
+                      default=None,
+                      help=('Optional realm used when triggering swarming '
+                            'tasks.'))
     subp.add_argument('--tags', default=[], action='append', metavar='FOO:BAR',
                       help='Tags to assign to the swarming task')
     subp.add_argument('--no-default-dimensions', action='store_false',
@@ -677,9 +681,11 @@ class MetaBuildWrapper:
     if internal:
       cas_instance = 'chrome-swarming'
       swarming_server = 'chrome-swarming.appspot.com'
+      realm = 'chrome:try' if not self.args.realm else self.args.realm
     else:
       cas_instance = 'chromium-swarm'
       swarming_server = 'chromium-swarm.appspot.com'
+      realm = self.args.realm
     # TODO(dpranke): Look up the information for the target in
     # the //testing/buildbot.json file, if possible, so that we
     # can determine the isolate target, command line, and additional
@@ -751,11 +757,8 @@ class MetaBuildWrapper:
           '-dump-json',
           json_file,
       ]
-      if internal:
-        cmd += [
-            '--realm',
-            'chrome:try',
-        ]
+      if realm:
+        cmd += ['--realm', realm]
       cmd += tags + dimensions + ['--'] + list(isolate_cmd)
       if self.args.extra_args:
         cmd += self.args.extra_args
