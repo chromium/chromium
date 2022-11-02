@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 import './password_list_item.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -21,7 +22,9 @@ export interface PasswordsSectionElement {
   };
 }
 
-export class PasswordsSectionElement extends PolymerElement {
+const PasswordsSectionElementBase = I18nMixin(PolymerElement);
+
+export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
     return 'passwords-section';
   }
