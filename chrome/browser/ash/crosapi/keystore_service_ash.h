@@ -13,6 +13,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom-shared.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -62,6 +63,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       mojom::KeystoreType type,
       const std::vector<uint8_t>& challenge,
       bool migrate,
+      mojom::KeystoreSigningAlgorithmName algorithm,
       ChallengeAttestationOnlyKeystoreCallback callback) override;
   void GetKeyStores(GetKeyStoresCallback callback) override;
   void SelectClientCertificates(

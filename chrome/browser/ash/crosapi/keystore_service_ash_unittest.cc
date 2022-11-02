@@ -43,6 +43,7 @@ namespace {
 
 using ::ash::platform_keys::MockKeyPermissionsService;
 using ::ash::platform_keys::MockPlatformKeysService;
+using ::attestation::KEY_TYPE_ECC;
 using ::attestation::KEY_TYPE_RSA;
 using ::base::test::RunOnceCallback;
 using ::chromeos::platform_keys::HashAlgorithm;
@@ -755,6 +756,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
   CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
   keystore_service_.ChallengeAttestationOnlyKeystore(
       mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(), /*migrate=*/false,
+      mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
       observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
@@ -784,6 +786,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
   CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
   keystore_service_.ChallengeAttestationOnlyKeystore(
       mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(), /*migrate=*/true,
+      mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
       observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
@@ -813,7 +816,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
   CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
   keystore_service_.ChallengeAttestationOnlyKeystore(
       mojom::KeystoreType::kDevice, /*challenge=*/GetDataBin(),
-      /*migrate=*/false, observer.GetCallback());
+      /*migrate=*/false, mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
+      observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   ASSERT_TRUE(observer.result.value()->is_challenge_response());
@@ -842,7 +846,37 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
   CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
   keystore_service_.ChallengeAttestationOnlyKeystore(
       mojom::KeystoreType::kDevice, /*challenge=*/GetDataBin(),
-      /*migrate=*/true, observer.GetCallback());
+      /*migrate=*/true, mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_challenge_response());
+  EXPECT_EQ(observer.result.value()->get_challenge_response(), GetDataBin());
+}
+
+TEST_F(KeystoreServiceAshTest, ChallengeUserEcdsaKeyMigrateSuccess) {
+  // Incoming challenge and outgoing challenge response are imitated with the
+  // same data blob. It is not realistic, but good enough for this test.
+
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/true,
+                    /*key_crypto_type=*/KEY_TYPE_ECC,
+                    /*key_name=*/std::string(),
+                    /*signals=*/_))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              GetDataStr())));
+
+  CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
+  keystore_service_.ChallengeAttestationOnlyKeystore(
+      mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(), /*migrate=*/true,
+      mojom::KeystoreSigningAlgorithmName::kEcdsa, observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   ASSERT_TRUE(observer.result.value()->is_challenge_response());
@@ -869,7 +903,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
   CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
   keystore_service_.ChallengeAttestationOnlyKeystore(
       mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(),
-      /*migrate=*/false, observer.GetCallback());
+      /*migrate=*/false, mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
+      observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   ASSERT_TRUE(observer.result.value()->is_error_message());

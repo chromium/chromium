@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom-shared.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/x509_certificate.h"
@@ -201,6 +202,7 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
     mojom::KeystoreType type,
     const std::vector<uint8_t>& challenge,
     bool migrate,
+    mojom::KeystoreSigningAlgorithmName algorithm,
     ChallengeAttestationOnlyKeystoreCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!crosapi::mojom::IsKnownEnumValue(type)) {
@@ -208,6 +210,18 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
         mojom::ChallengeAttestationOnlyKeystoreResult::NewErrorMessage(
             kUnsupportedKeystoreType));
     return;
+  }
+
+  attestation::KeyType key_crypto_type;
+  switch (algorithm) {
+    // Use RSA by default for backwards compatibility.
+    case mojom::KeystoreSigningAlgorithmName::kUnknown:
+    case mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115:
+      key_crypto_type = attestation::KEY_TYPE_RSA;
+      break;
+    case mojom::KeystoreSigningAlgorithmName::kEcdsa:
+      key_crypto_type = attestation::KEY_TYPE_ECC;
+      break;
   }
 
   ash::attestation::AttestationKeyType key_type;
@@ -239,7 +253,7 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      challenge_key_ptr),
       std::string(challenge.begin(), challenge.end()),
-      /*register_key=*/migrate, ::attestation::KEY_TYPE_RSA, key_name_for_spkac,
+      /*register_key=*/migrate, key_crypto_type, key_name_for_spkac,
       /*signals=*/absl::nullopt);
 }
 
