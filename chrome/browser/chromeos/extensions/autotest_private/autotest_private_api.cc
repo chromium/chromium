@@ -5832,6 +5832,8 @@ AutotestPrivateDisableAutomationFunction::Run() {
 
   // This disables accessibility for all other accessibility trees including
   // ARC++, Ash web contents.
+  AutomationEventRouter::GetInstance()
+      ->UnregisterAllListenersWithDesktopPermission();
   AutomationEventRouter::GetInstance()->NotifyAllAutomationExtensionsGone();
 
   // Finally, this disables accessibility in Lacros.

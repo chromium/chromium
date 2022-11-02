@@ -35,6 +35,7 @@ struct ExtensionMsg_AccessibilityLocationChangeParams;
 
 namespace extensions {
 struct AutomationListener;
+struct WorkerId;
 
 class AutomationEventRouterObserver {
  public:
@@ -66,7 +67,11 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
       content::WebContents* web_contents);
 
   // Undoes the Register call above. May result in disabling of automation.
-  void UnregisterListenerWithDesktopPermission(int lsitener_process_id);
+  void UnregisterListenerWithDesktopPermission(int listener_process_id);
+
+  // Like the above function, but for all listeners. Definitely results in
+  // disabling of automation.
+  void UnregisterAllListenersWithDesktopPermission();
 
   // The following two methods should only be called by Lacros.
   void NotifyAllAutomationExtensionsGone();
@@ -157,6 +162,8 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
 
   content::NotificationRegistrar registrar_;
   std::vector<std::unique_ptr<AutomationListener>> listeners_;
+
+  std::map<WorkerId, std::string> keepalive_request_uuid_for_worker_;
 
   raw_ptr<content::BrowserContext> active_context_;
 

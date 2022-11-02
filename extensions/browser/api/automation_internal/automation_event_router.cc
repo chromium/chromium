@@ -20,6 +20,7 @@
 #include "extensions/browser/api/automation_internal/automation_internal_api_delegate.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
@@ -76,6 +77,29 @@ void AutomationEventRouter::UnregisterListenerWithDesktopPermission(
       content::RenderProcessHost::FromID(listener_process_id);
   if (host)
     RemoveAutomationListener(host);
+}
+
+void AutomationEventRouter::UnregisterAllListenersWithDesktopPermission() {
+  for (const auto& request_pair : keepalive_request_uuid_for_worker_) {
+    const WorkerId& worker_id = request_pair.first;
+    const std::string& request_uuid = request_pair.second;
+    content::RenderProcessHost* host =
+        content::RenderProcessHost::FromID(worker_id.render_process_id);
+
+    if (rph_observers_.IsObservingSource(host))
+      rph_observers_.RemoveObservation(host);
+
+    ProcessManager* process_manager =
+        ProcessManager::Get(host->GetBrowserContext());
+    DCHECK(process_manager);
+
+    process_manager->DecrementServiceWorkerKeepaliveCount(
+        worker_id, request_uuid, extensions::Activity::ACCESSIBILITY,
+        std::string());
+  }
+  keepalive_request_uuid_for_worker_.clear();
+
+  UpdateActiveProfile();
 }
 
 void AutomationEventRouter::DispatchAccessibilityEventsInternal(
@@ -236,33 +260,55 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
                                      ui::AXTreeID ax_tree_id,
                                      bool desktop) {
   DCHECK(desktop || ax_tree_id != ui::AXTreeIDUnknown());
+
   const auto& iter = base::ranges::find(listeners_, listener_process_id,
                                         &AutomationListener::process_id);
 
-  // Add a new entry if we don't have one with that process.
-  if (iter == listeners_.end()) {
-    auto listener = std::make_unique<AutomationListener>(web_contents);
-    listener->router = this;
-    listener->extension_id = extension_id;
-    listener->process_id = listener_process_id;
-    listener->desktop = desktop;
-    if (!desktop)
-      listener->tree_ids.insert(ax_tree_id);
-    listeners_.emplace_back(std::move(listener));
-    rph_observers_.AddObservation(
-        content::RenderProcessHost::FromID(listener_process_id));
-    UpdateActiveProfile();
-    for (AutomationEventRouterObserver& observer : observers_)
-      observer.ExtensionListenerAdded();
+  // We have an entry with that process so update the set of tree ids it wants
+  // to listen to, and update its desktop permission.
+  if (iter != listeners_.end()) {
+    if (desktop)
+      iter->get()->desktop = true;
+    else
+      iter->get()->tree_ids.insert(ax_tree_id);
     return;
   }
 
-  // We have an entry with that process so update the set of tree ids it wants
-  // to listen to, and update its desktop permission.
-  if (desktop)
-    iter->get()->desktop = true;
-  else
-    iter->get()->tree_ids.insert(ax_tree_id);
+  // Add a new entry if we don't have one with that process.
+  auto listener = std::make_unique<AutomationListener>(web_contents);
+  listener->router = this;
+  listener->extension_id = extension_id;
+  listener->process_id = listener_process_id;
+  listener->desktop = desktop;
+  if (!desktop)
+    listener->tree_ids.insert(ax_tree_id);
+  listeners_.emplace_back(std::move(listener));
+  content::RenderProcessHost* host =
+      content::RenderProcessHost::FromID(listener_process_id);
+  rph_observers_.AddObservation(host);
+  UpdateActiveProfile();
+  for (AutomationEventRouterObserver& observer : observers_)
+    observer.ExtensionListenerAdded();
+
+  if (!desktop)
+    return;
+
+  ProcessManager* process_manager =
+      ProcessManager::Get(host->GetBrowserContext());
+  DCHECK(process_manager);
+
+  std::vector<WorkerId> all_worker_ids =
+      process_manager->GetServiceWorkersForExtension(extension_id);
+  for (const WorkerId& worker_id : all_worker_ids) {
+    if (worker_id.render_process_id != listener_process_id)
+      continue;
+
+    keepalive_request_uuid_for_worker_[worker_id] =
+        process_manager->IncrementServiceWorkerKeepaliveCount(
+            worker_id,
+            content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout,
+            extensions::Activity::ACCESSIBILITY, std::string());
+  }
 }
 
 void AutomationEventRouter::DispatchAccessibilityEvents(
@@ -299,9 +345,17 @@ void AutomationEventRouter::RenderProcessHostDestroyed(
 void AutomationEventRouter::RemoveAutomationListener(
     content::RenderProcessHost* host) {
   int process_id = host->GetID();
-  base::EraseIf(listeners_, [process_id](const auto& item) {
-    return item->process_id == process_id;
-  });
+  ExtensionId extension_id;
+  for (auto listener = listeners_.begin(); listener != listeners_.end();) {
+    if ((*listener)->process_id == process_id) {
+      // Copy the extension ID, as we're about to erase the source.
+      extension_id = (*listener)->extension_id;
+      listener = listeners_.erase(listener);
+    } else {
+      listener++;
+    }
+  }
+
   if (rph_observers_.IsObservingSource(host))
     rph_observers_.RemoveObservation(host);
   UpdateActiveProfile();
@@ -309,6 +363,29 @@ void AutomationEventRouter::RemoveAutomationListener(
   if (rph_observers_.GetSourcesCount() == 0) {
     for (AutomationEventRouterObserver& observer : observers_)
       observer.AllAutomationExtensionsGone();
+  }
+
+  extensions::ProcessManager* process_manager =
+      ProcessManager::Get(host->GetBrowserContext());
+  DCHECK(process_manager);
+
+  std::vector<WorkerId> all_worker_ids =
+      process_manager->GetServiceWorkersForExtension(extension_id);
+
+  for (const WorkerId& worker_id : all_worker_ids) {
+    if (worker_id.render_process_id != process_id)
+      continue;
+    const auto& request_uuid_iter =
+        keepalive_request_uuid_for_worker_.find(worker_id);
+    if (request_uuid_iter == keepalive_request_uuid_for_worker_.end())
+      continue;
+
+    const std::string& request_uuid = request_uuid_iter->second;
+    keepalive_request_uuid_for_worker_.erase(worker_id);
+
+    process_manager->DecrementServiceWorkerKeepaliveCount(
+        worker_id, request_uuid, extensions::Activity::ACCESSIBILITY,
+        std::string());
   }
 }
 
