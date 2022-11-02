@@ -200,11 +200,10 @@ void SystemWebDialogDelegate::OnDialogShown(content::WebUI* webui) {
   // System dialogs don't use the browser's default page zoom. Their contents
   // stay at 100% to match the size of app list, shelf, status area, etc.
   auto* web_contents = webui_->GetWebContents();
-  auto* rvh = web_contents->GetRenderViewHost();
+  auto* rfh = web_contents->GetPrimaryMainFrame();
   auto* zoom_map = content::HostZoomMap::GetForWebContents(web_contents);
   // Temporary means the lifetime of the WebContents.
-  zoom_map->SetTemporaryZoomLevel(rvh->GetProcess()->GetID(),
-                                  rvh->GetRoutingID(),
+  zoom_map->SetTemporaryZoomLevel(rfh->GetGlobalId(),
                                   blink::PageZoomFactorToZoomLevel(1.0));
 }
 

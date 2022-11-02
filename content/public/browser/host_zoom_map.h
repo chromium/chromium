@@ -26,6 +26,7 @@ class NavigationEntry;
 class BrowserContext;
 class SiteInstance;
 class WebContents;
+struct GlobalRenderFrameHostId;
 
 // Maps hostnames to custom zoom levels.  Written on the UI thread and read on
 // any thread.  One instance per browser context. Must be created on the UI
@@ -141,17 +142,16 @@ class HostZoomMap {
                                             const std::string& host,
                                             double level) = 0;
 
-  // Returns whether the view manages its zoom level independently of other
-  // views displaying content from the same host.
-  virtual bool UsesTemporaryZoomLevel(int render_process_id,
-                                      int render_view_id) = 0;
+  // Returns whether the frame manages its zoom level independently of other
+  // frames from the same host.
+  virtual bool UsesTemporaryZoomLevel(
+      const GlobalRenderFrameHostId& rfh_id) = 0;
 
   // Sets the temporary zoom level that's only valid for the lifetime of this
-  // WebContents.
+  // RenderFrameHost.
   //
   // This should only be called on the UI thread.
-  virtual void SetTemporaryZoomLevel(int render_process_id,
-                                     int render_view_id,
+  virtual void SetTemporaryZoomLevel(const GlobalRenderFrameHostId& rfh_id,
                                      double level) = 0;
 
   // Clear zoom levels with a modification date greater than or equal
@@ -160,11 +160,11 @@ class HostZoomMap {
   virtual void ClearZoomLevels(base::Time delete_begin,
                                base::Time delete_end) = 0;
 
-  // Clears the temporary zoom level stored for this WebContents.
+  // Clears the temporary zoom level stored for this RenderFrameHost.
   //
   // This should only be called on the UI thread.
-  virtual void ClearTemporaryZoomLevel(int render_process_id,
-                                       int render_view_id) = 0;
+  virtual void ClearTemporaryZoomLevel(
+      const GlobalRenderFrameHostId& rfh_id) = 0;
 
   // Get/Set the default zoom level for pages that don't override it.
   virtual double GetDefaultZoomLevel() = 0;

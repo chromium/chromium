@@ -288,28 +288,26 @@ IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest,
   // Confirm that temporary zoom level is set to 1.
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetForWebContents(web_view_impl->web_contents());
-  content::RenderViewHost* render_view_host =
-      web_view_impl->web_contents()->GetRenderViewHost();
+  content::RenderFrameHost* render_frame_host =
+      web_view_impl->web_contents()->GetPrimaryMainFrame();
   EXPECT_TRUE(
-      zoom_map->UsesTemporaryZoomLevel(render_view_host->GetProcess()->GetID(),
-                                       render_view_host->GetRoutingID()));
+      zoom_map->UsesTemporaryZoomLevel(render_frame_host->GetGlobalId()));
   EXPECT_DOUBLE_EQ(
       1.0, content::HostZoomMap::GetZoomLevel(web_view_impl->web_contents()));
 
-  // Navigate to a different url to trigger a RenderViewHost change.
+  // Navigate to a different url to trigger a RenderFrameHost change.
   web_view->Navigate(CreateDataUrlWithBody("World"));
   EXPECT_DID_STOP_LOADING(web_view);
-  ASSERT_NE(render_view_host,
-            web_view_impl->web_contents()->GetRenderViewHost());
+  ASSERT_NE(render_frame_host,
+            web_view_impl->web_contents()->GetPrimaryMainFrame());
 
-  // Confirm that temporary zoom level is still applied even if RenderViewHost
+  // Confirm that temporary zoom level is still applied even if RenderFrameHost
   // gets changed.
   zoom_map =
       content::HostZoomMap::GetForWebContents(web_view_impl->web_contents());
-  render_view_host = web_view_impl->web_contents()->GetRenderViewHost();
+  render_frame_host = web_view_impl->web_contents()->GetPrimaryMainFrame();
   EXPECT_TRUE(
-      zoom_map->UsesTemporaryZoomLevel(render_view_host->GetProcess()->GetID(),
-                                       render_view_host->GetRoutingID()));
+      zoom_map->UsesTemporaryZoomLevel(render_frame_host->GetGlobalId()));
   EXPECT_DOUBLE_EQ(
       1.0, content::HostZoomMap::GetZoomLevel(web_view_impl->web_contents()));
 }

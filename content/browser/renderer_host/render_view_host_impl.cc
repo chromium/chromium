@@ -726,14 +726,6 @@ void RenderViewHostImpl::ClosePage() {
   if (IsRenderViewLive() && !SuddenTerminationAllowed()) {
     close_timeout_->Start(kUnloadTimeout);
 
-    // TODO(creis): Should this be moved to Shutdown?  It may not be called for
-    // RenderViewHosts that have been swapped out.
-#if !BUILDFLAG(IS_ANDROID)
-    static_cast<HostZoomMapImpl*>(
-        HostZoomMap::Get(GetMainRenderFrameHost()->GetSiteInstance()))
-        ->WillCloseRenderView(GetProcess()->GetID(), GetRoutingID());
-#endif
-
     GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->ClosePage(
         base::BindOnce(&RenderViewHostImpl::OnPageClosed,
                        weak_factory_.GetWeakPtr()));

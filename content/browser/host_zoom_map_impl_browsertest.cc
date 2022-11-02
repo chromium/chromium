@@ -34,9 +34,8 @@ void RunTestForURL(const GURL& url,
   HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
       HostZoomMap::GetForWebContents(web_contents));
 
-  int view_id =
-      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetRoutingID();
-  int process_id = web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  GlobalRenderFrameHostId rfh_id =
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
 
   // Assume caller has set the zoom level to |host_zoom_level| using
   // either a host or host+scheme entry in the HostZoomMap prior to
@@ -44,11 +43,11 @@ void RunTestForURL(const GURL& url,
   EXPECT_DOUBLE_EQ(host_zoom_level, host_zoom_map->GetZoomLevel(web_contents));
 
   // Make sure that GetZoomLevel() works for temporary zoom levels.
-  host_zoom_map->SetTemporaryZoomLevel(process_id, view_id, temp_zoom_level);
+  host_zoom_map->SetTemporaryZoomLevel(rfh_id, temp_zoom_level);
   EXPECT_DOUBLE_EQ(temp_zoom_level, host_zoom_map->GetZoomLevel(web_contents));
   // Clear the temporary zoom level in case subsequent test calls use the same
   // web_contents.
-  host_zoom_map->ClearTemporaryZoomLevel(process_id, view_id);
+  host_zoom_map->ClearTemporaryZoomLevel(rfh_id);
 }
 
 // Test to make sure that GetZoomLevel() works properly for zoom levels

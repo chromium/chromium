@@ -16,8 +16,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,17 +39,13 @@ namespace content {
 
 namespace {
 
-std::string GetHostFromProcessView(int render_process_id, int render_view_id) {
+std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderViewHost* render_view_host =
-      RenderViewHost::FromID(render_process_id, render_view_id);
-  if (!render_view_host)
+  if (!rfh)
     return std::string();
 
-  WebContents* web_contents = WebContents::FromRenderViewHost(render_view_host);
-
   NavigationEntry* entry =
-      web_contents->GetController().GetLastCommittedEntry();
+      rfh->frame_tree()->controller().GetLastCommittedEntry();
   if (!entry)
     return std::string();
 
@@ -292,10 +288,6 @@ void HostZoomMapImpl::SetDefaultZoomLevel(double level) {
     if (GetForWebContents(web_contents) != this)
       continue;
 
-    int render_process_id =
-        web_contents->GetRenderViewHost()->GetProcess()->GetID();
-    int render_view_id = web_contents->GetRenderViewHost()->GetRoutingID();
-
     // Get the url from the navigation controller directly, as calling
     // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
     // is different than the one stored in the map.
@@ -315,7 +307,8 @@ void HostZoomMapImpl::SetDefaultZoomLevel(double level) {
 
     bool uses_default_zoom =
         !HasZoomLevel(scheme, host) &&
-        !UsesTemporaryZoomLevel(render_process_id, render_view_id);
+        !UsesTemporaryZoomLevel(
+            web_contents->GetPrimaryMainFrame()->GetGlobalId());
 
     if (uses_default_zoom) {
       web_contents->UpdateZoom();
@@ -339,12 +332,11 @@ base::CallbackListSubscription HostZoomMapImpl::AddZoomLevelChangedCallback(
 double HostZoomMapImpl::GetZoomLevelForWebContents(
     WebContentsImpl* web_contents_impl) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  int render_process_id =
-      web_contents_impl->GetRenderViewHost()->GetProcess()->GetID();
-  int routing_id = web_contents_impl->GetRenderViewHost()->GetRoutingID();
 
-  if (UsesTemporaryZoomLevel(render_process_id, routing_id))
-    return GetTemporaryZoomLevel(render_process_id, routing_id);
+  GlobalRenderFrameHostId rfh_id =
+      web_contents_impl->GetPrimaryMainFrame()->GetGlobalId();
+  if (UsesTemporaryZoomLevel(rfh_id))
+    return GetTemporaryZoomLevel(rfh_id);
 
   // Get the url from the navigation controller directly, as calling
   // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
@@ -382,15 +374,15 @@ void HostZoomMapImpl::SetZoomLevelForWebContents(
     WebContentsImpl* web_contents_impl,
     double level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  int render_process_id =
-      web_contents_impl->GetRenderViewHost()->GetProcess()->GetID();
-  int render_view_id = web_contents_impl->GetRenderViewHost()->GetRoutingID();
-  if (UsesTemporaryZoomLevel(render_process_id, render_view_id)) {
-    SetTemporaryZoomLevel(render_process_id, render_view_id, level);
+
+  GlobalRenderFrameHostId rfh_id =
+      web_contents_impl->GetPrimaryMainFrame()->GetGlobalId();
+  if (UsesTemporaryZoomLevel(rfh_id)) {
+    SetTemporaryZoomLevel(rfh_id, level);
   } else {
     // Get the url from the navigation controller directly, as calling
     // WebContentsImpl::GetLastCommittedURL() may give us a virtual url that
-    // is different than what the render view is using. If the two don't match,
+    // is different than what the render frame is using. If the two don't match,
     // the attempt to set the zoom will fail.
     NavigationEntry* entry =
         web_contents_impl->GetController().GetLastCommittedEntry();
@@ -404,44 +396,42 @@ void HostZoomMapImpl::SetZoomLevelForWebContents(
   }
 }
 
-bool HostZoomMapImpl::UsesTemporaryZoomLevel(int render_process_id,
-                                             int render_view_id) {
+bool HostZoomMapImpl::UsesTemporaryZoomLevel(
+    const GlobalRenderFrameHostId& rfh_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderViewKey key(render_process_id, render_view_id);
-  return base::Contains(temporary_zoom_levels_, key);
+  return base::Contains(temporary_zoom_levels_, rfh_id);
 }
 
-void HostZoomMapImpl::SetNoLongerUsesTemporaryZoomLevel(int render_process_id,
-                                                        int render_view_id) {
+void HostZoomMapImpl::SetNoLongerUsesTemporaryZoomLevel(
+    const GlobalRenderFrameHostId& rfh_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderViewKey key(render_process_id, render_view_id);
-  temporary_zoom_levels_.erase(key);
+  temporary_zoom_levels_.erase(rfh_id);
 }
 
-double HostZoomMapImpl::GetTemporaryZoomLevel(int render_process_id,
-                                              int render_view_id) const {
+double HostZoomMapImpl::GetTemporaryZoomLevel(
+    const GlobalRenderFrameHostId& rfh_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderViewKey key(render_process_id, render_view_id);
-  const auto it = temporary_zoom_levels_.find(key);
+  const auto it = temporary_zoom_levels_.find(rfh_id);
+
   return it != temporary_zoom_levels_.end() ? it->second : 0;
 }
 
-void HostZoomMapImpl::SetTemporaryZoomLevel(int render_process_id,
-                                            int render_view_id,
-                                            double level) {
+void HostZoomMapImpl::SetTemporaryZoomLevel(
+    const GlobalRenderFrameHostId& rfh_id,
+    double level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RenderViewKey key(render_process_id, render_view_id);
-  temporary_zoom_levels_[key] = level;
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
+  DCHECK(rfh == rfh->GetOutermostMainFrame());
 
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(WebContents::FromRenderViewHost(
-          RenderViewHost::FromID(render_process_id, render_view_id)));
+  temporary_zoom_levels_[rfh_id] = level;
+
+  WebContentsImpl* web_contents = WebContentsImpl::FromRenderFrameHostImpl(rfh);
   web_contents->UpdateZoom();
 
   HostZoomMap::ZoomLevelChange change;
   change.mode = HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM;
-  change.host = GetHostFromProcessView(render_process_id, render_view_id);
+  change.host = GetHostFromProcessFrame(rfh);
   change.zoom_level = level;
 
   zoom_level_changed_callbacks_.Notify(change);
@@ -459,18 +449,16 @@ void HostZoomMapImpl::ClearZoomLevels(base::Time delete_begin,
   }
 }
 
-void HostZoomMapImpl::ClearTemporaryZoomLevel(int render_process_id,
-                                              int render_view_id) {
+void HostZoomMapImpl::ClearTemporaryZoomLevel(
+    const GlobalRenderFrameHostId& rfh_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderViewKey key(render_process_id, render_view_id);
-  auto it = temporary_zoom_levels_.find(key);
+  auto it = temporary_zoom_levels_.find(rfh_id);
   if (it == temporary_zoom_levels_.end())
     return;
 
   temporary_zoom_levels_.erase(it);
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(WebContents::FromRenderViewHost(
-          RenderViewHost::FromID(render_process_id, render_view_id)));
+  WebContentsImpl* web_contents = WebContentsImpl::FromRenderFrameHostImpl(
+      RenderFrameHostImpl::FromID(rfh_id));
   web_contents->UpdateZoom();
 }
 
@@ -487,12 +475,10 @@ void HostZoomMapImpl::SendZoomLevelChange(const std::string& scheme,
     if (GetForWebContents(web_contents) != this)
       continue;
 
-    int render_process_id =
-        web_contents->GetRenderViewHost()->GetProcess()->GetID();
-    int render_view_id = web_contents->GetRenderViewHost()->GetRoutingID();
-
-    if (!UsesTemporaryZoomLevel(render_process_id, render_view_id))
+    if (!UsesTemporaryZoomLevel(
+            web_contents->GetPrimaryMainFrame()->GetGlobalId())) {
       web_contents->UpdateZoomIfNecessary(scheme, host);
+    }
   }
 }
 
@@ -502,12 +488,6 @@ void HostZoomMapImpl::SendErrorPageZoomLevelRefresh() {
   std::string host = net::GetHostOrSpecFromURL(error_url);
 
   SendZoomLevelChange(std::string(), host);
-}
-
-void HostZoomMapImpl::WillCloseRenderView(int render_process_id,
-                                          int render_view_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ClearTemporaryZoomLevel(render_process_id, render_view_id);
 }
 
 HostZoomMapImpl::~HostZoomMapImpl() {
@@ -537,9 +517,8 @@ void JNI_HostZoomMapImpl_SetZoomLevel(
   WebContents* web_contents = WebContents::FromJavaWebContents(j_web_contents);
   DCHECK(web_contents);
 
-  int render_process_id =
-      web_contents->GetRenderViewHost()->GetProcess()->GetID();
-  int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
+  GlobalRenderFrameHostId rfh_id =
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
 
   // We want to set and save the new zoom level, but we want to actually render
   // the adjusted level.
@@ -547,8 +526,7 @@ void JNI_HostZoomMapImpl_SetZoomLevel(
 
   HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
       HostZoomMap::GetForWebContents(web_contents));
-  host_zoom_map->SetTemporaryZoomLevel(render_process_id, routing_id,
-                                       adjusted_zoom_level);
+  host_zoom_map->SetTemporaryZoomLevel(rfh_id, adjusted_zoom_level);
 
   // We must now remove this webcontents from the list of temporary zoom levels,
   // this is so that any future request will continue to update the underlying
@@ -556,8 +534,7 @@ void JNI_HostZoomMapImpl_SetZoomLevel(
   // i.e. once temporary is set for a web_contents, the call to
   // SetZoomLevelForWebContents will keep updating what is rendered, but will no
   // longer call SetZoomLevelForHost, which saves the choice for that host.
-  host_zoom_map->SetNoLongerUsesTemporaryZoomLevel(render_process_id,
-                                                   routing_id);
+  host_zoom_map->SetNoLongerUsesTemporaryZoomLevel(rfh_id);
 }
 
 jdouble JNI_HostZoomMapImpl_GetZoomLevel(

@@ -221,9 +221,7 @@ void ChromeKeyboardWebContents::RenderFrameCreated(
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetDefaultForBrowserContext(
           frame_host->GetBrowserContext());
-  zoom_map->SetTemporaryZoomLevel(
-      frame_host->GetProcess()->GetID(),
-      frame_host->GetRenderViewHost()->GetRoutingID(), 0 /* level */);
+  zoom_map->SetTemporaryZoomLevel(frame_host->GetGlobalId(), 0 /* level */);
 }
 
 void ChromeKeyboardWebContents::DidStopLoading() {

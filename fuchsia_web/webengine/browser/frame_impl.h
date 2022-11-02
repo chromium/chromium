@@ -227,8 +227,8 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   void MaybeStartCastStreaming(content::NavigationHandle* navigation_handle);
 #endif
 
-  // Updates zoom level for the specified |render_view_host|.
-  void UpdateRenderViewZoomLevel(content::RenderViewHost* render_view_host);
+  // Updates zoom level for the specified |render_frame_host|.
+  void UpdateRenderFrameZoomLevel(content::RenderFrameHost* render_frame_host);
 
   // Helper method for connecting to AccessibilityBridge on
   // |accessibility_bridge_|.
@@ -348,8 +348,8 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
   void DidFirstVisuallyNonEmptyPaint() override;
   void ResourceLoadComplete(
       content::RenderFrameHost* render_frame_host,

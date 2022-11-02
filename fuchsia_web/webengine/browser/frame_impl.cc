@@ -39,7 +39,6 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
@@ -739,15 +738,15 @@ void FrameImpl::MaybeStartCastStreaming(
 }
 #endif
 
-void FrameImpl::UpdateRenderViewZoomLevel(
-    content::RenderViewHost* render_view_host) {
+void FrameImpl::UpdateRenderFrameZoomLevel(
+    content::RenderFrameHost* render_frame_host) {
   float page_scale = content_area_settings_.has_page_scale()
                          ? content_area_settings_.page_scale()
                          : 1.0;
   content::HostZoomMap* host_zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents_.get());
   host_zoom_map->SetTemporaryZoomLevel(
-      render_view_host->GetProcess()->GetID(), render_view_host->GetRoutingID(),
+      render_frame_host->GetGlobalId(),
       blink::PageZoomFactorToZoomLevel(page_scale));
 }
 
@@ -1204,7 +1203,7 @@ void FrameImpl::SetContentAreaSettings(
     if (!(content_area_settings_.has_page_scale() &&
           (settings.page_scale() == content_area_settings_.page_scale()))) {
       content_area_settings_.set_page_scale(settings.page_scale());
-      UpdateRenderViewZoomLevel(web_contents_->GetRenderViewHost());
+      UpdateRenderFrameZoomLevel(web_contents_->GetPrimaryMainFrame());
     }
   }
 
@@ -1214,7 +1213,7 @@ void FrameImpl::SetContentAreaSettings(
 void FrameImpl::ResetContentAreaSettings() {
   content_area_settings_ = fuchsia::web::ContentAreaSettings();
   web_contents_->OnWebPreferencesChanged();
-  UpdateRenderViewZoomLevel(web_contents_->GetRenderViewHost());
+  UpdateRenderFrameZoomLevel(web_contents_->GetPrimaryMainFrame());
 }
 
 void FrameImpl::OverrideWebPreferences(
@@ -1494,12 +1493,13 @@ void FrameImpl::RenderFrameCreated(content::RenderFrameHost* frame_host) {
   }
 }
 
-void FrameImpl::RenderViewHostChanged(content::RenderViewHost* old_host,
-                                      content::RenderViewHost* new_host) {
-  // UpdateRenderViewZoomLevel() sets temporary zoom level for the current
-  // RenderView. It needs to be called again whenever main RenderView is
+void FrameImpl::RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                                       content::RenderFrameHost* new_host) {
+  // UpdateRenderFrameZoomLevel() sets temporary zoom level for the current
+  // RenderFrame. It needs to be called again whenever main RenderFrame is
   // changed.
-  UpdateRenderViewZoomLevel(new_host);
+  if (new_host->IsInPrimaryMainFrame())
+    UpdateRenderFrameZoomLevel(new_host);
 }
 
 void FrameImpl::DidFirstVisuallyNonEmptyPaint() {

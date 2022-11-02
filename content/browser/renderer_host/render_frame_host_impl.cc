@@ -3612,6 +3612,11 @@ void RenderFrameHostImpl::RenderFrameDeleted() {
   }
   TearDownMojoConnection();
 
+#if !BUILDFLAG(IS_ANDROID)
+  HostZoomMap* host_zoom_map = HostZoomMap::Get(GetSiteInstance());
+  host_zoom_map->ClearTemporaryZoomLevel(GetGlobalId());
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   if (web_ui_) {
     web_ui_->RenderFrameDeleted();
     web_ui_->TearDownMojoConnection();
@@ -6140,8 +6145,7 @@ void RenderFrameHostImpl::MainDocumentElementAvailable(
 #if !BUILDFLAG(IS_ANDROID)
   HostZoomMapImpl* host_zoom_map =
       static_cast<HostZoomMapImpl*>(HostZoomMap::Get(GetSiteInstance()));
-  host_zoom_map->SetTemporaryZoomLevel(GetProcess()->GetID(),
-                                       render_view_host()->GetRoutingID(),
+  host_zoom_map->SetTemporaryZoomLevel(GetGlobalId(),
                                        host_zoom_map->GetDefaultZoomLevel());
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

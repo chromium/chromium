@@ -67,11 +67,7 @@ ExtensionViewHost::ExtensionViewHost(const Extension* extension,
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetForWebContents(host_contents());
     zoom_map->SetTemporaryZoomLevel(
-        host_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-        host_contents()
-            ->GetPrimaryMainFrame()
-            ->GetRenderViewHost()
-            ->GetRoutingID(),
+        host_contents()->GetPrimaryMainFrame()->GetGlobalId(),
         zoom_map->GetDefaultZoomLevel());
   }
 }

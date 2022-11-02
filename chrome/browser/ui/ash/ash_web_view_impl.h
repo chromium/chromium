@@ -70,6 +70,8 @@ class AshWebViewImpl : public ash::AshWebView,
   void OnFocusChangedInPage(content::FocusedNodeDetails* details) override;
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
   void NavigationEntriesDeleted() override;
 
  private:
