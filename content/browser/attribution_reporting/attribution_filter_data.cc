@@ -4,17 +4,14 @@
 
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 
-#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 
 namespace content {
@@ -49,35 +46,6 @@ bool IsValidForSource(const AttributionFilterValues& filter_values) {
 }
 
 }  // namespace
-
-// static
-absl::optional<AttributionFilterData> AttributionFilterData::Deserialize(
-    const std::string& string) {
-  proto::AttributionFilterData msg;
-  if (!msg.ParseFromString(string))
-    return absl::nullopt;
-
-  AttributionFilterValues::container_type filter_values;
-  filter_values.reserve(msg.filter_values().size());
-
-  for (google::protobuf::MapPair<std::string, proto::AttributionFilterValues>&
-           entry : *msg.mutable_filter_values()) {
-    // Serialized source filter data can only contain this key due to DB
-    // corruption or deliberate modification.
-    if (entry.first == kSourceTypeFilterKey)
-      continue;
-
-    google::protobuf::RepeatedPtrField<std::string>* values =
-        entry.second.mutable_values();
-
-    filter_values.emplace_back(
-        entry.first,
-        std::vector<std::string>(std::make_move_iterator(values->begin()),
-                                 std::make_move_iterator(values->end())));
-  }
-
-  return Create(std::move(filter_values));
-}
 
 // static
 absl::optional<AttributionFilterData> AttributionFilterData::Create(
@@ -185,24 +153,6 @@ AttributionFilterData& AttributionFilterData::operator=(
 
 AttributionFilterData& AttributionFilterData::operator=(
     AttributionFilterData&&) = default;
-
-std::string AttributionFilterData::Serialize() const {
-  proto::AttributionFilterData msg;
-
-  for (const auto& [filter, values] : filter_values_) {
-    proto::AttributionFilterValues filter_values_msg;
-    filter_values_msg.mutable_values()->Reserve(values.size());
-    for (std::string value : values) {
-      filter_values_msg.mutable_values()->Add(std::move(value));
-    }
-    (*msg.mutable_filter_values())[filter] = std::move(filter_values_msg);
-  }
-
-  std::string string;
-  bool success = msg.SerializeToString(&string);
-  DCHECK(success);
-  return string;
-}
 
 // static
 absl::optional<AttributionFilters> AttributionFilters::Create(

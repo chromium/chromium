@@ -30,8 +30,6 @@ class CONTENT_EXPORT AttributionFilterData {
  public:
   static constexpr char kSourceTypeFilterKey[] = "source_type";
 
-  static absl::optional<AttributionFilterData> Deserialize(const std::string&);
-
   // Filter data is not allowed to contain a `source_type` filter.
   static absl::optional<AttributionFilterData> Create(AttributionFilterValues);
 
@@ -52,8 +50,6 @@ class CONTENT_EXPORT AttributionFilterData {
   const AttributionFilterValues& filter_values() const {
     return filter_values_;
   }
-
-  std::string Serialize() const;
 
  private:
   explicit AttributionFilterData(AttributionFilterValues);

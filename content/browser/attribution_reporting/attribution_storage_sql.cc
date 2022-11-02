@@ -11,6 +11,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -33,6 +34,7 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
@@ -256,6 +258,87 @@ url::Origin DeserializePotentiallyTrustworthyOrigin(const std::string& string) {
   return origin;
 }
 
+std::string SerializeFilterData(const AttributionFilterData& filter_data) {
+  proto::AttributionFilterData msg;
+
+  for (const auto& [filter, values] : filter_data.filter_values()) {
+    proto::AttributionFilterValues filter_values_msg;
+    filter_values_msg.mutable_values()->Reserve(values.size());
+    for (std::string value : values) {
+      filter_values_msg.mutable_values()->Add(std::move(value));
+    }
+    (*msg.mutable_filter_values())[filter] = std::move(filter_values_msg);
+  }
+
+  std::string string;
+  bool success = msg.SerializeToString(&string);
+  DCHECK(success);
+  return string;
+}
+
+absl::optional<AttributionFilterData> DeserializeFilterData(
+    const std::string& string) {
+  proto::AttributionFilterData msg;
+  if (!msg.ParseFromString(string))
+    return absl::nullopt;
+
+  AttributionFilterValues::container_type filter_values;
+  filter_values.reserve(msg.filter_values().size());
+
+  for (google::protobuf::MapPair<std::string, proto::AttributionFilterValues>&
+           entry : *msg.mutable_filter_values()) {
+    // Serialized source filter data can only contain this key due to DB
+    // corruption or deliberate modification.
+    if (entry.first == AttributionFilterData::kSourceTypeFilterKey)
+      continue;
+
+    google::protobuf::RepeatedPtrField<std::string>* values =
+        entry.second.mutable_values();
+
+    filter_values.emplace_back(
+        entry.first,
+        std::vector<std::string>(std::make_move_iterator(values->begin()),
+                                 std::make_move_iterator(values->end())));
+  }
+
+  return AttributionFilterData::Create(std::move(filter_values));
+}
+
+std::string SerializeAggregationKeys(const AttributionAggregationKeys& keys) {
+  proto::AttributionAggregatableSource msg;
+
+  for (const auto& [id, key] : keys.keys()) {
+    proto::AttributionAggregationKey key_msg;
+    key_msg.set_high_bits(absl::Uint128High64(key));
+    key_msg.set_low_bits(absl::Uint128Low64(key));
+    (*msg.mutable_keys())[id] = std::move(key_msg);
+  }
+
+  std::string str;
+  bool success = msg.SerializeToString(&str);
+  DCHECK(success);
+  return str;
+}
+
+absl::optional<AttributionAggregationKeys> DeserializeAggregationKeys(
+    const std::string& str) {
+  proto::AttributionAggregatableSource msg;
+  if (!msg.ParseFromString(str))
+    return absl::nullopt;
+
+  AttributionAggregationKeys::Keys::container_type keys;
+  keys.reserve(msg.keys().size());
+
+  for (const auto& [id, key] : msg.keys()) {
+    if (!key.has_high_bits() || !key.has_low_bits())
+      return absl::nullopt;
+
+    keys.emplace_back(id, absl::MakeUint128(key.high_bits(), key.low_bits()));
+  }
+
+  return AttributionAggregationKeys::FromKeys(std::move(keys));
+}
+
 absl::optional<StoredSource::ActiveState> GetSourceActiveState(
     bool event_level_active,
     bool aggregatable_active) {
@@ -324,7 +407,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   int num_conversions = statement.ColumnInt(col++);
   int64_t aggregatable_budget_consumed = statement.ColumnInt64(col++);
   absl::optional<AttributionAggregationKeys> aggregation_keys =
-      AttributionAggregationKeys::Deserialize(statement.ColumnString(col++));
+      DeserializeAggregationKeys(statement.ColumnString(col++));
 
   if (source_origin.opaque() || destination_origin.opaque() ||
       reporting_origin.opaque() || !source_type.has_value() ||
@@ -334,7 +417,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   }
 
   absl::optional<AttributionFilterData> filter_data =
-      AttributionFilterData::Deserialize(statement.ColumnString(col++));
+      DeserializeFilterData(statement.ColumnString(col++));
   if (!filter_data)
     return absl::nullopt;
 
@@ -586,8 +669,9 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       GetSourceActiveState(event_level_active, aggregatable_active);
   DCHECK(active_state.has_value());
 
-  statement.BindBlob(15, common_info.aggregation_keys().Serialize());
-  statement.BindBlob(16, common_info.filter_data().Serialize());
+  statement.BindBlob(15,
+                     SerializeAggregationKeys(common_info.aggregation_keys()));
+  statement.BindBlob(16, SerializeFilterData(common_info.filter_data()));
 
   if (!statement.Run())
     return StoreSourceResult(StorableSource::Result::kInternalError);

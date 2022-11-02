@@ -7,14 +7,12 @@
 #include <string>
 #include <utility>
 
-#include "base/check.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 
@@ -85,26 +83,6 @@ AttributionAggregationKeys::FromJSON(const base::Value* value) {
   return AttributionAggregationKeys(Keys(base::sorted_unique, std::move(keys)));
 }
 
-// static
-absl::optional<AttributionAggregationKeys>
-AttributionAggregationKeys::Deserialize(const std::string& str) {
-  proto::AttributionAggregatableSource msg;
-  if (!msg.ParseFromString(str))
-    return absl::nullopt;
-
-  Keys::container_type keys;
-  keys.reserve(msg.keys().size());
-
-  for (const auto& [id, key] : msg.keys()) {
-    if (!key.has_high_bits() || !key.has_low_bits())
-      return absl::nullopt;
-
-    keys.emplace_back(id, absl::MakeUint128(key.high_bits(), key.low_bits()));
-  }
-
-  return FromKeys(std::move(keys));
-}
-
 AttributionAggregationKeys::AttributionAggregationKeys(Keys keys)
     : keys_(std::move(keys)) {}
 
@@ -123,21 +101,5 @@ AttributionAggregationKeys& AttributionAggregationKeys::operator=(
 
 AttributionAggregationKeys& AttributionAggregationKeys::operator=(
     AttributionAggregationKeys&&) = default;
-
-std::string AttributionAggregationKeys::Serialize() const {
-  proto::AttributionAggregatableSource msg;
-
-  for (const auto& [id, key] : keys_) {
-    proto::AttributionAggregationKey key_msg;
-    key_msg.set_high_bits(absl::Uint128High64(key));
-    key_msg.set_low_bits(absl::Uint128Low64(key));
-    (*msg.mutable_keys())[id] = std::move(key_msg);
-  }
-
-  std::string str;
-  bool success = msg.SerializeToString(&str);
-  DCHECK(success);
-  return str;
-}
 
 }  // namespace content

@@ -31,10 +31,6 @@ class CONTENT_EXPORT AttributionAggregationKeys {
                         attribution_reporting::mojom::SourceRegistrationError>
   FromJSON(const base::Value*);
 
-  // Deserializes `str`, if valid. Returns `absl::nullopt` if not.
-  static absl::optional<AttributionAggregationKeys> Deserialize(
-      const std::string& str);
-
   AttributionAggregationKeys();
   ~AttributionAggregationKeys();
 
@@ -45,8 +41,6 @@ class CONTENT_EXPORT AttributionAggregationKeys {
   AttributionAggregationKeys& operator=(AttributionAggregationKeys&&);
 
   const Keys& keys() const { return keys_; }
-
-  std::string Serialize() const;
 
  private:
   explicit AttributionAggregationKeys(Keys keys);

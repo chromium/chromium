@@ -9,9 +9,11 @@
 #include <functional>
 #include <limits>
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -20,7 +22,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -40,6 +44,7 @@ namespace {
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Pair;
 using ::testing::SizeIs;
 
 struct AggregatableReportMetadataRecord {
@@ -60,6 +65,24 @@ struct AggregatableContributionRecord {
   int64_t key_low_bits;
   int64_t value;
 };
+
+std::string CreateSerializedFilterData(
+    const AttributionFilterValues& filter_values) {
+  proto::AttributionFilterData msg;
+
+  for (const auto& [filter, values] : filter_values) {
+    proto::AttributionFilterValues filter_values_msg;
+    for (std::string value : values) {
+      filter_values_msg.mutable_values()->Add(std::move(value));
+    }
+    (*msg.mutable_filter_values())[filter] = std::move(filter_values_msg);
+  }
+
+  std::string string;
+  bool success = msg.SerializeToString(&string);
+  CHECK(success);
+  return string;
+}
 
 class AttributionStorageSqlTest : public testing::Test {
  public:
@@ -181,8 +204,6 @@ class AttributionStorageSqlTest : public testing::Test {
   std::unique_ptr<AttributionStorage> storage_;
   raw_ptr<ConfigurableStorageDelegate> delegate_ = nullptr;
 };
-
-}  // namespace
 
 TEST_F(AttributionStorageSqlTest,
        DatabaseInitialized_TablesAndIndexesLazilyInitialized) {
@@ -1075,4 +1096,34 @@ TEST_F(AttributionStorageSqlTest, CreateReport_DeactivatesAttributedSources) {
   ExpectImpressionRows(2);
 }
 
+// Tests that a "source_type" filter present in the serialized data is
+// removed.
+TEST_F(AttributionStorageSqlTest,
+       DeserializeFilterData_RemovesSourceTypeFilter) {
+  {
+    OpenDatabase();
+    storage()->StoreSource(SourceBuilder().Build());
+    CloseDatabase();
+  }
+
+  {
+    sql::Database raw_db;
+    ASSERT_TRUE(raw_db.Open(db_path()));
+
+    static constexpr char kUpdateSql[] = "UPDATE sources SET filter_data=?";
+    sql::Statement statement(raw_db.GetUniqueStatement(kUpdateSql));
+    statement.BindBlob(0, CreateSerializedFilterData(
+                              {{"source_type", {"abc"}}, {"x", {"y"}}}));
+    ASSERT_TRUE(statement.Run());
+  }
+
+  OpenDatabase();
+
+  std::vector<StoredSource> sources = storage()->GetActiveSources();
+  ASSERT_EQ(sources.size(), 1u);
+  ASSERT_THAT(sources.front().common_info().filter_data().filter_values(),
+              ElementsAre(Pair("x", ElementsAre("y"))));
+}
+
+}  // namespace
 }  // namespace content
