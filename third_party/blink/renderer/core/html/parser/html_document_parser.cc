@@ -1652,24 +1652,30 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
       .WithArgs(source);
 }
 
+// static
 void HTMLDocumentParser::AddPreloadDataOnBackgroundThread(
+    CrossThreadWeakPersistent<HTMLDocumentParser> weak_parser,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<PendingPreloadData> preload_data) {
   DCHECK(!IsMainThread());
+  auto parser = weak_parser.Lock();
+  if (!parser)
+    return;
+
   bool should_post_task = false;
   {
-    base::AutoLock lock(pending_preload_lock_);
+    base::AutoLock lock(parser->pending_preload_lock_);
     // Only post a task if the preload data is empty. Otherwise, a task has
     // already been posted and will consume the new data.
-    should_post_task = pending_preload_data_.empty();
-    pending_preload_data_.push_back(std::move(preload_data));
+    should_post_task = parser->pending_preload_data_.empty();
+    parser->pending_preload_data_.push_back(std::move(preload_data));
   }
 
   if (should_post_task) {
     PostCrossThreadTask(
         *task_runner, FROM_HERE,
         CrossThreadBindOnce(&HTMLDocumentParser::FlushPendingPreloads,
-                            WrapCrossThreadPersistent(this)));
+                            std::move(parser)));
   }
 }
 
