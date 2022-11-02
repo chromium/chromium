@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openNewRegularTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openNewIncognitoTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openNewWindow;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_openNewIncognitoWindow;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_reopenLastClosedTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openFindInPage;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_findNextStringInPage;

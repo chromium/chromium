@@ -59,6 +59,9 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
          IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
   Verify(UIKeyCommand.cr_openNewWindow, @"⌥⌘N", @"keyCommand_openNewWindow",
          IDS_IOS_KEYBOARD_NEW_WINDOW);
+  Verify(UIKeyCommand.cr_openNewIncognitoWindow, @"⌥⇧⌘N",
+         @"keyCommand_openNewIncognitoWindow",
+         IDS_IOS_KEYBOARD_NEW_INCOGNITO_WINDOW);
   Verify(UIKeyCommand.cr_reopenLastClosedTab, @"⇧⌘T",
          @"keyCommand_reopenLastClosedTab", IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB);
   Verify(UIKeyCommand.cr_openFindInPage, @"⌘F", @"keyCommand_openFindInPage",

@@ -1300,6 +1300,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_NEXT_TAB" desc="Title of the keyboard shortcut to switch to the next tab in the tab strip." meaning="Used as a command title in the iPad command menu.">
         Go to Next Tab
       </message>
+      <message name="IDS_IOS_KEYBOARD_NEW_INCOGNITO_WINDOW" desc="The title of the keyboard shortcut to open a new Incognito window." meaning="Used as a command title in the iPad command menu.">
+        New Incognito Window
+      </message>
       <message name="IDS_IOS_KEYBOARD_NEW_WINDOW" desc="The title of the keyboard shortcut to open a new window." meaning="Used as a command title in the iPad command menu.">
         New Window
       </message>

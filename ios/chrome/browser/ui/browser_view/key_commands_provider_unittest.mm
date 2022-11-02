@@ -104,6 +104,7 @@ TEST_F(KeyCommandsProviderTest, ImplementsActions) {
   [provider_ keyCommand_openNewRegularTab];
   [provider_ keyCommand_openNewIncognitoTab];
   [provider_ keyCommand_openNewWindow];
+  [provider_ keyCommand_openNewIncognitoWindow];
   [provider_ keyCommand_reopenLastClosedTab];
   [provider_ keyCommand_openFindInPage];
   [provider_ keyCommand_findNextStringInPage];

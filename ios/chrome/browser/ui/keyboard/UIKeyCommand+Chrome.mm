@@ -66,6 +66,13 @@ NSString* Delete(void) {
                            titleID:IDS_IOS_KEYBOARD_NEW_WINDOW];
 }
 
++ (UIKeyCommand*)cr_openNewIncognitoWindow {
+  return [self cr_commandWithInput:@"n"
+                     modifierFlags:AltShiftCommand
+                            action:@selector(keyCommand_openNewIncognitoWindow)
+                           titleID:IDS_IOS_KEYBOARD_NEW_INCOGNITO_WINDOW];
+}
+
 + (UIKeyCommand*)cr_reopenLastClosedTab {
   return [self cr_commandWithInput:@"t"
                      modifierFlags:ShiftCommand

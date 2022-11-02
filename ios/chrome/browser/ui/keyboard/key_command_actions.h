@@ -15,6 +15,7 @@
 - (void)keyCommand_openNewRegularTab;
 - (void)keyCommand_openNewIncognitoTab;
 - (void)keyCommand_openNewWindow;
+- (void)keyCommand_openNewIncognitoWindow;
 - (void)keyCommand_reopenLastClosedTab;
 - (void)keyCommand_openFindInPage;
 - (void)keyCommand_findNextStringInPage;

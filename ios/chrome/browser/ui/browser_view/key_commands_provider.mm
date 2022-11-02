@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
+#import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -227,6 +228,14 @@
   [_dispatcher openNewWindowWithActivity:ActivityToLoadURL(
                                              WindowActivityKeyCommandOrigin,
                                              GURL(kChromeUINewTabURL))];
+}
+
+- (void)keyCommand_openNewIncognitoWindow {
+  [_dispatcher
+      openNewWindowWithActivity:ActivityToLoadURL(
+                                    WindowActivityKeyCommandOrigin,
+                                    GURL(kChromeUINewTabURL), web::Referrer(),
+                                    /* in_incognito */ true)];
 }
 
 - (void)keyCommand_reopenLastClosedTab {

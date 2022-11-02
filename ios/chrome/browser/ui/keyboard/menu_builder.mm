@@ -23,6 +23,7 @@
     UIKeyCommand.cr_openNewTab,
     UIKeyCommand.cr_openNewIncognitoTab,
     UIKeyCommand.cr_openNewWindow,
+    UIKeyCommand.cr_openNewIncognitoWindow,
     UIKeyCommand.cr_focusOmnibox,
     UIKeyCommand.cr_closeTab,
     UIKeyCommand.cr_startVoiceSearch,
