@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reporting/metrics/fake_event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/fakes/fake_event_driven_telemetry_sampler_pool.h"
 
 #include <vector>
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_REPORTING_METRICS_FAKE_SAMPLER_H_
-#define COMPONENTS_REPORTING_METRICS_FAKE_SAMPLER_H_
+#ifndef COMPONENTS_REPORTING_METRICS_FAKES_FAKE_SAMPLER_H_
+#define COMPONENTS_REPORTING_METRICS_FAKES_FAKE_SAMPLER_H_
 
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -77,4 +77,4 @@ class FakeMetricEventObserver : public MetricEventObserver {
 }  // namespace test
 }  // namespace reporting
 
-#endif  // COMPONENTS_REPORTING_METRICS_FAKE_SAMPLER_H_
+#endif  // COMPONENTS_REPORTING_METRICS_FAKES_FAKE_SAMPLER_H_

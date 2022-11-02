@@ -23,7 +23,7 @@
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "components/reporting/metrics/fake_sampler.h"
+#include "components/reporting/metrics/fakes/fake_sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_REPORTING_METRICS_FAKE_METRIC_REPORT_QUEUE_H_
-#define COMPONENTS_REPORTING_METRICS_FAKE_METRIC_REPORT_QUEUE_H_
+#ifndef COMPONENTS_REPORTING_METRICS_FAKES_FAKE_METRIC_REPORT_QUEUE_H_
+#define COMPONENTS_REPORTING_METRICS_FAKES_FAKE_METRIC_REPORT_QUEUE_H_
 
 #include <memory>
 #include <vector>
@@ -48,4 +48,4 @@ class FakeMetricReportQueue : public MetricReportQueue {
 }  // namespace test
 }  // namespace reporting
 
-#endif  // COMPONENTS_REPORTING_METRICS_FAKE_METRIC_REPORT_QUEUE_H_
+#endif  // COMPONENTS_REPORTING_METRICS_FAKES_FAKE_METRIC_REPORT_QUEUE_H_

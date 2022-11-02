@@ -31,29 +31,6 @@ static_library("metrics_data_collection") {
   ]
 }
 
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "fake_event_driven_telemetry_sampler_pool.cc",
-    "fake_event_driven_telemetry_sampler_pool.h",
-    "fake_metric_report_queue.cc",
-    "fake_metric_report_queue.h",
-    "fake_reporting_settings.cc",
-    "fake_reporting_settings.h",
-    "fake_sampler.cc",
-    "fake_sampler.h",
-  ]
-  deps = [
-    ":metrics_data_collection",
-    "//base",
-    "//components/reporting/client:report_queue",
-    "//components/reporting/proto:metric_data_proto",
-    "//components/reporting/proto:record_constants",
-    "//components/reporting/util:status",
-    "//testing/gtest",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -67,11 +44,11 @@ source_set("unit_tests") {
   ]
   deps = [
     ":metrics_data_collection",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/reporting/client:report_queue",
     "//components/reporting/client:test_support",
+    "//components/reporting/metrics/fakes:test_support",
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/util:status",

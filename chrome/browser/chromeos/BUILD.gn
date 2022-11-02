@@ -2154,7 +2154,7 @@ source_set("unit_tests") {
     "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/renderer_context_menu",
-    "//components/reporting/metrics:test_support",
+    "//components/reporting/metrics/fakes:test_support",
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/storage:missive_storage_module",
     "//components/resources",

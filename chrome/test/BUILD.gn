@@ -7721,7 +7721,7 @@ test("unit_tests") {
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",
       "//components/reporting/metrics:metrics_data_collection",
-      "//components/reporting/metrics:test_support",
+      "//components/reporting/metrics/fakes:test_support",
     ]
   }
 

@@ -10,8 +10,8 @@
 
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
-#include "components/reporting/metrics/fake_reporting_settings.h"
-#include "components/reporting/metrics/fake_sampler.h"
+#include "components/reporting/metrics/fakes/fake_reporting_settings.h"
+#include "components/reporting/metrics/fakes/fake_sampler.h"
 #include "components/reporting/metrics/sampler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

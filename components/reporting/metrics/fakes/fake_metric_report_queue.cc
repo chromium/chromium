@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reporting/metrics/fake_metric_report_queue.h"
+#include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
 
 #include <memory>
 #include <vector>

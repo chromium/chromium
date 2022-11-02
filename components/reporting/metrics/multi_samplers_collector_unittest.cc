@@ -7,7 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/reporting/metrics/fake_sampler.h"
+#include "components/reporting/metrics/fakes/fake_sampler.h"
 #include "components/reporting/metrics/multi_samplers_collector.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

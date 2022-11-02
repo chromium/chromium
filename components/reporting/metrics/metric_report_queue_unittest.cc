@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/reporting/client/mock_report_queue.h"
-#include "components/reporting/metrics/fake_reporting_settings.h"
+#include "components/reporting/metrics/fakes/fake_reporting_settings.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reporting/metrics/fake_reporting_settings.h"
+#include "components/reporting/metrics/fakes/fake_reporting_settings.h"
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
