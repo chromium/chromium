@@ -102,4 +102,12 @@ void MockShoppingService::SetUnsubscribeCallbackValue(
 
 void MockShoppingService::ScheduleSavedProductUpdate() {}
 
+bool MockShoppingService::IsShoppingListEligible() {
+  return is_shopping_list_eligible_;
+}
+
+void MockShoppingService::SetIsShoppingListEligible(bool eligible) {
+  is_shopping_list_eligible_ = eligible;
+}
+
 }  // namespace commerce

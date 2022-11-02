@@ -39,6 +39,7 @@ class MockShoppingService : public commerce::ShoppingService {
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback) override;
   void ScheduleSavedProductUpdate() override;
+  bool IsShoppingListEligible() override;
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
@@ -48,6 +49,7 @@ class MockShoppingService : public commerce::ShoppingService {
       absl::optional<commerce::MerchantInfo> merchant_info);
   void SetSubscribeCallbackValue(bool subscribe_should_succeed);
   void SetUnsubscribeCallbackValue(bool unsubscribe_should_succeed);
+  void SetIsShoppingListEligible(bool enabled);
 
  private:
   absl::optional<commerce::ProductInfo> product_info_;
@@ -55,6 +57,7 @@ class MockShoppingService : public commerce::ShoppingService {
   absl::optional<commerce::MerchantInfo> merchant_info_;
   bool subscribe_callback_value_{true};
   bool unsubscribe_callback_value_{true};
+  bool is_shopping_list_eligible_{true};
 };
 
 }  // namespace commerce

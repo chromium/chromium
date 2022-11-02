@@ -149,31 +149,4 @@ TEST_F(CommerceFeatureListTest, TestNoDiscountMerchant) {
   ASSERT_FALSE(
       commerce::IsNoDiscountMerchant(GURL("https://www.qux.com/corge")));
 }
-
-TEST_F(CommerceFeatureListTest, TestShoppingListEnabledWithPolicy) {
-  features_.InitAndEnableFeature(commerce::kShoppingList);
-
-  TestingPrefServiceSimple prefs;
-  commerce::RegisterPrefs(prefs.registry());
-
-  commerce::SetShoppingListEnterprisePolicyPref(&prefs, true);
-  ASSERT_TRUE(commerce::IsShoppingListEnabled(&prefs));
-
-  commerce::SetShoppingListEnterprisePolicyPref(&prefs, false);
-  ASSERT_FALSE(commerce::IsShoppingListEnabled(&prefs));
-}
-
-TEST_F(CommerceFeatureListTest,
-       TestShoppingListEnabledWithPolicy_FeatureDisabled) {
-  features_.InitAndDisableFeature(commerce::kShoppingList);
-
-  TestingPrefServiceSimple prefs;
-  commerce::RegisterPrefs(prefs.registry());
-
-  commerce::SetShoppingListEnterprisePolicyPref(&prefs, true);
-  ASSERT_FALSE(commerce::IsShoppingListEnabled(&prefs));
-
-  commerce::SetShoppingListEnterprisePolicyPref(&prefs, false);
-  ASSERT_FALSE(commerce::IsShoppingListEnabled(&prefs));
-}
 #endif  //! BUILDFLAG(IS_ANDROID)

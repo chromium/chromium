@@ -271,6 +271,9 @@ TEST_P(PriceTrackingViewFeatureFlagTest, PriceTrackingViewCreation) {
   mock_shopping_service->SetResponseForGetProductInfoForUrl(
       commerce::ProductInfo());
 
+  const bool is_feature_enabled = GetParam();
+  mock_shopping_service->SetIsShoppingListEligible(is_feature_enabled);
+
   MockShoppingListUiTabHelper::CreateForWebContents(
       browser()->tab_strip_model()->GetActiveWebContents());
   auto* mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
@@ -285,7 +288,6 @@ TEST_P(PriceTrackingViewFeatureFlagTest, PriceTrackingViewCreation) {
 
   auto* price_tracking_view = GetPriceTrackingView();
 
-  const bool is_feature_enabled = GetParam();
   if (is_feature_enabled) {
     EXPECT_TRUE(price_tracking_view);
   } else {
