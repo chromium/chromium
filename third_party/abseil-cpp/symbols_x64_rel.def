@@ -139,6 +139,7 @@ EXPORTS
     ??0Condition@absl@@QEAA@P6A_NPEAX@Z0@Z
     ??0Condition@absl@@QEAA@PEB_N@Z
     ??0Cord@absl@@AEAA@Vstring_view@1@W4MethodIdentifier@CordzUpdateTracker@cord_internal@1@@Z
+    ??0Cord@absl@@QEAA@AEBV01@@Z
     ??0CordzHandle@cord_internal@absl@@IEAA@_N@Z
     ??0CordzInfo@cord_internal@absl@@AEAA@PEAUCordRep@12@PEBV012@W4MethodIdentifier@CordzUpdateTracker@12@@Z
     ??0GraphCycles@synchronization_internal@absl@@QEAA@XZ
@@ -311,7 +312,7 @@ EXPORTS
     ?CalculateBase64EscapedLenInternal@strings_internal@absl@@YA_K_K_N@Z
     ?CallVoidPtrFunction@Condition@absl@@CA_NPEBV12@@Z
     ?CancelledError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
-    ?CappedDamerauLevenshteinDistance@strings_internal@absl@@YA_KVstring_view@2@0E@Z
+    ?CappedDamerauLevenshteinDistance@strings_internal@absl@@YAEVstring_view@2@0E@Z
     ?CatPieces@strings_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@V?$initializer_list@Vstring_view@absl@@@5@@Z
     ?Ceil@absl@@YA?AVDuration@1@V21@0@Z
     ?CheckInvariants@GraphCycles@synchronization_internal@absl@@QEBA_NXZ
@@ -679,7 +680,6 @@ EXPORTS
     ?Ptr@GraphCycles@synchronization_internal@absl@@QEAAPEAXUGraphId@23@@Z
     ?PushDead@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AEAAXPEAUHashtablezInfo@container_internal@3@@Z
     ?PutPaddedString@FormatSinkImpl@str_format_internal@absl@@QEAA_NVstring_view@3@HH_N@Z
-    ?PutPaddedString@StringifySink@strings_internal@absl@@QEAA_NVstring_view@3@HH_N@Z
     ?RawLog@raw_log_internal@absl@@YAXW4LogSeverity@2@PEBDH1ZZ
     ?RawLoggingFullySupported@raw_log_internal@absl@@YA_NXZ
     ?Read@CordRepBtreeNavigator@cord_internal@absl@@QEAA?AUReadResult@123@_K0@Z

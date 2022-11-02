@@ -797,15 +797,22 @@ size_t SelectBucketCountForIterRange(InputIter first, InputIter last,
   return 0;
 }
 
-#define ABSL_INTERNAL_ASSERT_IS_FULL(ctrl, msg) \
-  ABSL_HARDENING_ASSERT((ctrl != nullptr && IsFull(*ctrl)) && msg)
+#define ABSL_INTERNAL_ASSERT_IS_FULL(ctrl, operation)                         \
+  do {                                                                        \
+    ABSL_HARDENING_ASSERT(                                                    \
+        (ctrl != nullptr) && operation                                        \
+        " called on invalid iterator. The iterator might be an end() "        \
+        "iterator or may have been default constructed.");                    \
+    ABSL_HARDENING_ASSERT(                                                    \
+        (IsFull(*ctrl)) && operation                                          \
+        " called on invalid iterator. The element might have been erased or " \
+        "the table might have rehashed.");                                    \
+  } while (0)
 
 inline void AssertIsValid(ctrl_t* ctrl) {
-  ABSL_HARDENING_ASSERT(
-      (ctrl == nullptr || IsFull(*ctrl)) &&
-      "Invalid operation on iterator. The element might have "
-      "been erased, the table might have rehashed, or this may "
-      "be an end() iterator.");
+  ABSL_HARDENING_ASSERT((ctrl == nullptr || IsFull(*ctrl)) &&
+                        "Invalid operation on iterator. The element might have "
+                        "been erased or the table might have rehashed.");
 }
 
 struct FindInfo {
@@ -1034,22 +1041,19 @@ class raw_hash_set {
 
     // PRECONDITION: not an end() iterator.
     reference operator*() const {
-      ABSL_INTERNAL_ASSERT_IS_FULL(ctrl_,
-                                   "operator*() called on invalid iterator.");
+      ABSL_INTERNAL_ASSERT_IS_FULL(ctrl_, "operator*()");
       return PolicyTraits::element(slot_);
     }
 
     // PRECONDITION: not an end() iterator.
     pointer operator->() const {
-      ABSL_INTERNAL_ASSERT_IS_FULL(ctrl_,
-                                   "operator-> called on invalid iterator.");
+      ABSL_INTERNAL_ASSERT_IS_FULL(ctrl_, "operator->");
       return &operator*();
     }
 
     // PRECONDITION: not an end() iterator.
     iterator& operator++() {
-      ABSL_INTERNAL_ASSERT_IS_FULL(ctrl_,
-                                   "operator++ called on invalid iterator.");
+      ABSL_INTERNAL_ASSERT_IS_FULL(ctrl_, "operator++");
       ++ctrl_;
       ++slot_;
       skip_empty_or_deleted();
@@ -1081,7 +1085,7 @@ class raw_hash_set {
     // Fixes up `ctrl_` to point to a full by advancing it and `slot_` until
     // they reach one.
     //
-    // If a sentinel is reached, we null both of them out instead.
+    // If a sentinel is reached, we null `ctrl_` out instead.
     void skip_empty_or_deleted() {
       while (IsEmptyOrDeleted(*ctrl_)) {
         uint32_t shift = Group{ctrl_}.CountLeadingEmptyOrDeleted();
@@ -1601,8 +1605,7 @@ class raw_hash_set {
   // This overload is necessary because otherwise erase<K>(const K&) would be
   // a better match if non-const iterator is passed as an argument.
   void erase(iterator it) {
-    ABSL_INTERNAL_ASSERT_IS_FULL(it.ctrl_,
-                                 "erase() called on invalid iterator.");
+    ABSL_INTERNAL_ASSERT_IS_FULL(it.ctrl_, "erase()");
     PolicyTraits::destroy(&alloc_ref(), it.slot_);
     erase_meta_only(it);
   }
@@ -1636,8 +1639,7 @@ class raw_hash_set {
   }
 
   node_type extract(const_iterator position) {
-    ABSL_INTERNAL_ASSERT_IS_FULL(position.inner_.ctrl_,
-                                 "extract() called on invalid iterator.");
+    ABSL_INTERNAL_ASSERT_IS_FULL(position.inner_.ctrl_, "extract()");
     auto node =
         CommonAccess::Transfer<node_type>(alloc_ref(), position.inner_.slot_);
     erase_meta_only(position);

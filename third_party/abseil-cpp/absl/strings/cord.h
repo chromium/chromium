@@ -926,6 +926,13 @@ class Cord {
     void set_inline_size(size_t size) { data_.set_inline_size(size); }
     size_t inline_size() const { return data_.inline_size(); }
 
+    // Empty cords that carry a checksum have a CordRepCrc node with a null
+    // child node. The code can avoid lots of special cases where it would
+    // otherwise transition from tree to inline storage if we just remove the
+    // CordRepCrc node before mutations. Must never be called inside a
+    // CordzUpdateScope since it untracks the cordz info.
+    void MaybeRemoveEmptyCrcNode();
+
     cord_internal::InlineData data_;
   };
   InlineRep contents_;
@@ -1236,6 +1243,18 @@ inline void Cord::InlineRep::CopyToArray(char* dst) const {
   cord_internal::SmallMemmove(dst, data_.as_chars(), n);
 }
 
+inline void Cord::InlineRep::MaybeRemoveEmptyCrcNode() {
+  CordRep* rep = tree();
+  if (rep == nullptr || ABSL_PREDICT_TRUE(rep->length > 0)) {
+    return;
+  }
+  assert(rep->IsCrc());
+  assert(rep->crc()->child == nullptr);
+  CordzInfo::MaybeUntrackCord(cordz_info());
+  CordRep::Unref(rep);
+  ResetToEmpty();
+}
+
 constexpr inline Cord::Cord() noexcept {}
 
 inline Cord::Cord(absl::string_view src)
@@ -1285,7 +1304,7 @@ inline size_t Cord::size() const {
   return contents_.size();
 }
 
-inline bool Cord::empty() const { return contents_.empty(); }
+inline bool Cord::empty() const { return size() == 0; }
 
 inline size_t Cord::EstimatedMemoryUsage(
     CordMemoryAccounting accounting_method) const {
@@ -1411,7 +1430,11 @@ inline Cord::ChunkIterator::ChunkIterator(cord_internal::CordRep* tree) {
 inline Cord::ChunkIterator::ChunkIterator(const Cord* cord) {
   if (CordRep* tree = cord->contents_.tree()) {
     bytes_remaining_ = tree->length;
-    InitTree(tree);
+    if (ABSL_PREDICT_TRUE(bytes_remaining_ != 0)) {
+      InitTree(tree);
+    } else {
+      current_chunk_ = {};
+    }
   } else {
     bytes_remaining_ = cord->contents_.inline_size();
     current_chunk_ = {cord->contents_.data(), bytes_remaining_};
@@ -1580,7 +1603,7 @@ inline void Cord::ForEachChunk(
   if (rep == nullptr) {
     callback(absl::string_view(contents_.data(), contents_.size()));
   } else {
-    return ForEachChunkAux(rep, callback);
+    ForEachChunkAux(rep, callback);
   }
 }
 

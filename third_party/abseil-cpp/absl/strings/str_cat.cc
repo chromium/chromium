@@ -30,39 +30,6 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
-namespace strings_internal {
-void StringifySink::Append(size_t count, char ch) { buffer_.append(count, ch); }
-
-void StringifySink::Append(string_view v) {
-  buffer_.append(v.data(), v.size());
-}
-
-bool StringifySink::PutPaddedString(string_view v, int width, int precision,
-                                    bool left) {
-  size_t space_remaining = 0;
-
-  if (width >= 0) space_remaining = static_cast<size_t>(width);
-
-  size_t n = v.size();
-
-  if (precision >= 0) n = (std::min)(n, static_cast<size_t>(precision));
-
-  string_view shown(v.data(), n);
-
-  if (shown.size() < space_remaining) {
-    space_remaining = space_remaining - shown.size();
-  } else {
-    space_remaining = 0;
-  }
-
-  if (!left) Append(space_remaining, ' ');
-  Append(shown);
-  if (left) Append(space_remaining, ' ');
-  return true;
-}
-
-}  // namespace strings_internal
-
 AlphaNum::AlphaNum(Hex hex) {
   static_assert(numbers_internal::kFastToBufferSize >= 32,
                 "This function only works when output buffer >= 32 bytes long");

@@ -31,8 +31,6 @@ class StringifySink {
 
   void Append(string_view v);
 
-  bool PutPaddedString(string_view v, int width, int precision, bool left);
-
   // Support `absl::Format(&sink, format, args...)`.
   friend void AbslFormatFlush(StringifySink* sink, absl::string_view v) {
     sink->Append(v);

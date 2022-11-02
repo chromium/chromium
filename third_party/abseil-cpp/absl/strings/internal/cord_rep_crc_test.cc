@@ -27,13 +27,10 @@ namespace {
 
 using ::absl::cordrep_testing::MakeFlat;
 using ::testing::Eq;
+using ::testing::IsNull;
 using ::testing::Ne;
 
 #if !defined(NDEBUG) && GTEST_HAS_DEATH_TEST
-
-TEST(CordRepCrc, NewWithNullPtr) {
-  EXPECT_DEATH(CordRepCrc::New(nullptr, 0), "");
-}
 
 TEST(CordRepCrc, RemoveCrcWithNullptr) {
   EXPECT_DEATH(RemoveCrcNode(nullptr), "");
@@ -80,6 +77,16 @@ TEST(CordRepCrc, NewExistingCrcShared) {
 
   CordRep::Unref(crc);
   CordRep::Unref(new_crc);
+}
+
+TEST(CordRepCrc, NewEmpty) {
+  CordRepCrc* crc = CordRepCrc::New(nullptr, 12345);
+  EXPECT_TRUE(crc->refcount.IsOne());
+  EXPECT_THAT(crc->child, IsNull());
+  EXPECT_THAT(crc->length, Eq(0u));
+  EXPECT_THAT(crc->crc, Eq(12345u));
+  EXPECT_TRUE(crc->refcount.IsOne());
+  CordRepCrc::Destroy(crc);
 }
 
 TEST(CordRepCrc, RemoveCrcNotCrc) {

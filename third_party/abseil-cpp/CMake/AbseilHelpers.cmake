@@ -32,35 +32,6 @@ else()
   set(ABSL_INTERNAL_INCLUDE_WARNING_GUARD "")
 endif()
 
-function(_absl_target_compile_features_if_available TARGET TYPE FEATURE)
-  if(FEATURE IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-    target_compile_features(${TARGET} ${TYPE} ${FEATURE})
-  else()
-    message(WARNING "Feature ${FEATURE} is unknown for the CXX compiler")
-  endif()
-endfunction()
-
-include(CheckCXXSourceCompiles)
-
-check_cxx_source_compiles(
-  [==[
-#ifdef _MSC_VER
-#  if _MSVC_LANG < 201700L
-#    error "The compiler defaults or is configured for C++ < 17"
-#  endif
-#elif __cplusplus < 201700L
-#  error "The compiler defaults or is configured for C++ < 17"
-#endif
-int main() { return 0; }
-]==]
-  ABSL_INTERNAL_AT_LEAST_CXX17)
-
-if(ABSL_INTERNAL_AT_LEAST_CXX17)
-  set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_17)
-else()
-  set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_14)
-endif()
-
 # absl_cc_library()
 #
 # CMake function to imitate Bazel's cc_library rule.
@@ -297,9 +268,9 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
     endif()
 
     if(ABSL_PROPAGATE_CXX_STD)
-      # Abseil libraries require C++14 as the current minimum standard.
-      # Top-level application CMake projects should ensure a consistent C++
-      # standard for all compiled sources by setting CMAKE_CXX_STANDARD.
+      # Abseil libraries require C++14 as the current minimum standard. When
+      # compiled with C++17 (either because it is the compiler's default or
+      # explicitly requested), then Abseil requires C++17.
       _absl_target_compile_features_if_available(${_NAME} PUBLIC ${ABSL_INTERNAL_CXX_STD_FEATURE})
     else()
       # Note: This is legacy (before CMake 3.8) behavior. Setting the

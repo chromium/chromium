@@ -31,8 +31,8 @@ namespace strings_internal {
 // detected.
 // When the distance is larger than cutoff, or one of the strings has more
 // than MAX_SIZE=100 characters, the code returns min(MAX_SIZE, cutoff) + 1.
-size_t CappedDamerauLevenshteinDistance(absl::string_view s1,
-                                        absl::string_view s2, uint8_t cutoff) {
+uint8_t CappedDamerauLevenshteinDistance(absl::string_view s1,
+                                         absl::string_view s2, uint8_t cutoff) {
   const uint8_t MAX_SIZE = 100;
   const uint8_t _cutoff = std::min(MAX_SIZE, cutoff);
   const uint8_t cutoff_plus_1 = static_cast<uint8_t>(_cutoff + 1);
@@ -42,7 +42,7 @@ size_t CappedDamerauLevenshteinDistance(absl::string_view s1,
     return cutoff_plus_1;
 
   if (s1.empty())
-    return std::min(static_cast<size_t>(cutoff_plus_1), s2.size());
+    return static_cast<uint8_t>(s2.size());
 
   // Lower diagonal bound: y = x - lower_diag
   const uint8_t lower_diag =

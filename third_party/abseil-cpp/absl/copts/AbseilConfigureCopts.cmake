@@ -67,7 +67,6 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch64")
     message(WARNING "Value of CMAKE_SIZEOF_VOID_P (${CMAKE_SIZEOF_VOID_P}) is not supported.")
   endif()
 else()
-  message(WARNING "Value of CMAKE_SYSTEM_PROCESSOR (${CMAKE_SYSTEM_PROCESSOR}) is unknown and cannot be used to set ABSL_RANDOM_RANDEN_COPTS")
   set(ABSL_RANDOM_RANDEN_COPTS "")
 endif()
 

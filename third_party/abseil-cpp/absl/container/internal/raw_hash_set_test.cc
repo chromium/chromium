@@ -2036,20 +2036,59 @@ TEST(Table, UnstablePointers) {
   EXPECT_NE(old_ptr, addr(0));
 }
 
-// Confirm that we assert if we try to erase() end().
-TEST(TableDeathTest, EraseOfEndAsserts) {
+bool IsAssertEnabled() {
   // Use an assert with side-effects to figure out if they are actually enabled.
   bool assert_enabled = false;
   assert([&]() {  // NOLINT
     assert_enabled = true;
     return true;
   }());
-  if (!assert_enabled) return;
+  return assert_enabled;
+}
+
+TEST(TableDeathTest, InvalidIteratorAsserts) {
+  if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
 
   IntTable t;
   // Extra simple "regexp" as regexp support is highly varied across platforms.
-  constexpr char kDeathMsg[] = "erase.. called on invalid iterator";
-  EXPECT_DEATH_IF_SUPPORTED(t.erase(t.end()), kDeathMsg);
+  EXPECT_DEATH_IF_SUPPORTED(
+      t.erase(t.end()),
+      "erase.* called on invalid iterator. The iterator might be an "
+      "end.*iterator or may have been default constructed.");
+  typename IntTable::iterator iter;
+  EXPECT_DEATH_IF_SUPPORTED(
+      ++iter,
+      "operator.* called on invalid iterator. The iterator might be an "
+      "end.*iterator or may have been default constructed.");
+  t.insert(0);
+  iter = t.begin();
+  t.erase(iter);
+  EXPECT_DEATH_IF_SUPPORTED(
+      ++iter,
+      "operator.* called on invalid iterator. The element might have been "
+      "erased or .*the table might have rehashed.");
+}
+
+TEST(TableDeathTest, IteratorInvalidAssertsEqualityOperator) {
+  if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
+
+  IntTable t;
+  t.insert(1);
+  t.insert(2);
+  t.insert(3);
+  auto iter1 = t.begin();
+  auto iter2 = std::next(iter1);
+  ASSERT_NE(iter1, t.end());
+  ASSERT_NE(iter2, t.end());
+  t.erase(iter1);
+  // Extra simple "regexp" as regexp support is highly varied across platforms.
+  const char* const kDeathMessage =
+      "Invalid operation on iterator. The element might have .*been erased or "
+      "the table might have rehashed.";
+  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(void(iter2 != iter1), kDeathMessage);
+  t.erase(iter2);
+  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kDeathMessage);
 }
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)

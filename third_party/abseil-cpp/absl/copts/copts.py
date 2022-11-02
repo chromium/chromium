@@ -29,6 +29,7 @@ LLVM_TEST_DISABLE_WARNINGS_FLAGS = [
     "-Wno-shorten-64-to-32",
     "-Wno-sign-compare",
     "-Wno-sign-conversion",
+    "-Wno-unreachable-code-loop-increment",
     "-Wno-unused-function",
     "-Wno-unused-member-function",
     "-Wno-unused-parameter",

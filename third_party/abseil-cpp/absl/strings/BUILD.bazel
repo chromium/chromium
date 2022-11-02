@@ -43,6 +43,7 @@ cc_library(
         "internal/stl_type_traits.h",
         "internal/str_join_internal.h",
         "internal/str_split_internal.h",
+        "internal/stringify_sink.cc",
         "internal/stringify_sink.h",
         "match.cc",
         "numbers.cc",

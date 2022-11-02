@@ -44,6 +44,7 @@ absl_cc_library(
     "internal/memutil.cc"
     "internal/memutil.h"
     "internal/stringify_sink.h"
+    "internal/stringify_sink.cc"
     "internal/stl_type_traits.h"
     "internal/str_join_internal.h"
     "internal/str_split_internal.h"

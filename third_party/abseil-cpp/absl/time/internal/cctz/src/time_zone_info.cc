@@ -502,9 +502,9 @@ bool TimeZoneInfo::Load(ZoneInfoSource* zip) {
   // encoded zoneinfo. The ttisstd/ttisgmt indicators only apply when
   // interpreting a POSIX spec that does not include start/end rules, and
   // that isn't the case here (see "zic -p").
-  bp += (8 + 4) * hdr.leapcnt;  // leap-time + TAI-UTC
-  bp += 1 * hdr.ttisstdcnt;     // UTC/local indicators
-  bp += 1 * hdr.ttisutcnt;      // standard/wall indicators
+  bp += (time_len + 4) * hdr.leapcnt;  // leap-time + TAI-UTC
+  bp += 1 * hdr.ttisstdcnt;            // UTC/local indicators
+  bp += 1 * hdr.ttisutcnt;             // standard/wall indicators
   assert(bp == tbuf.data() + tbuf.size());
 
   future_spec_.clear();
@@ -533,8 +533,8 @@ bool TimeZoneInfo::Load(ZoneInfoSource* zip) {
 
   // Trim redundant transitions. zic may have added these to work around
   // differences between the glibc and reference implementations (see
-  // zic.c:dontmerge) and the Qt library (see zic.c:WORK_AROUND_QTBUG_53071).
-  // For us, they just get in the way when we do future_spec_ extension.
+  // zic.c:dontmerge) or to avoid bugs in old readers. For us, they just
+  // get in the way when we do future_spec_ extension.
   while (hdr.timecnt > 1) {
     if (!EquivTransitions(transitions_[hdr.timecnt - 1].type_index,
                           transitions_[hdr.timecnt - 2].type_index)) {

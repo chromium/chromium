@@ -241,6 +241,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/internal/stl_type_traits.h"
   "strings/internal/string_constant.h"
   "strings/internal/stringify_sink.h"
+  "strings/internal/stringify_sink.cc"
   "strings/match.cc"
   "strings/match.h"
   "strings/numbers.cc"
@@ -473,6 +474,35 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "variant"
 )
 
+function(_absl_target_compile_features_if_available TARGET TYPE FEATURE)
+  if(FEATURE IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    target_compile_features(${TARGET} ${TYPE} ${FEATURE})
+  else()
+    message(WARNING "Feature ${FEATURE} is unknown for the CXX compiler")
+  endif()
+endfunction()
+
+include(CheckCXXSourceCompiles)
+
+check_cxx_source_compiles(
+  [==[
+#ifdef _MSC_VER
+#  if _MSVC_LANG < 201700L
+#    error "The compiler defaults or is configured for C++ < 17"
+#  endif
+#elif __cplusplus < 201700L
+#  error "The compiler defaults or is configured for C++ < 17"
+#endif
+int main() { return 0; }
+]==]
+  ABSL_INTERNAL_AT_LEAST_CXX17)
+
+if(ABSL_INTERNAL_AT_LEAST_CXX17)
+  set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_17)
+else()
+  set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_14)
+endif()
+
 function(absl_internal_dll_contains)
   cmake_parse_arguments(ABSL_INTERNAL_DLL
     ""
@@ -552,6 +582,25 @@ function(absl_make_dll)
       ${ABSL_CC_LIB_DEFINES}
       ABSL_CONSUME_DLL
   )
+
+  if(ABSL_PROPAGATE_CXX_STD)
+    # Abseil libraries require C++14 as the current minimum standard. When
+    # compiled with C++17 (either because it is the compiler's default or
+    # explicitly requested), then Abseil requires C++17.
+    _absl_target_compile_features_if_available(${_NAME} PUBLIC ${ABSL_INTERNAL_CXX_STD_FEATURE})
+  else()
+    # Note: This is legacy (before CMake 3.8) behavior. Setting the
+    # target-level CXX_STANDARD property to ABSL_CXX_STANDARD (which is
+    # initialized by CMAKE_CXX_STANDARD) should have no real effect, since
+    # that is the default value anyway.
+    #
+    # CXX_STANDARD_REQUIRED does guard against the top-level CMake project
+    # not having enabled CMAKE_CXX_STANDARD_REQUIRED (which prevents
+    # "decaying" to an older standard if the requested one isn't available).
+    set_property(TARGET ${_NAME} PROPERTY CXX_STANDARD ${ABSL_CXX_STANDARD})
+    set_property(TARGET ${_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
+  endif()
+
   install(TARGETS abseil_dll EXPORT ${PROJECT_NAME}Targets
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

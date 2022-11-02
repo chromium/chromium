@@ -24,76 +24,76 @@ namespace {
 using absl::strings_internal::CappedDamerauLevenshteinDistance;
 
 TEST(Distance, TestDistances) {
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("ab", "ab", 6), 0u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("a", "b", 6), 1u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("ca", "abc", 6), 3u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "ad", 6), 2u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "cadb", 6), 4u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "bdac", 6), 4u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("ab", "ab", 0), 0u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("", "", 0), 0u);
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("ab", "ab", 6), uint8_t{0});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("a", "b", 6), uint8_t{1});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("ca", "abc", 6), uint8_t{3});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "ad", 6), uint8_t{2});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "cadb", 6), uint8_t{4});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "bdac", 6), uint8_t{4});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("ab", "ab", 0), uint8_t{0});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("", "", 0), uint8_t{0});
   // combinations for 3-character strings:
   // 1, 2, 3 removals, insertions or replacements and transpositions
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("abc", "abc", 6), 0u);
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("abc", "abc", 6), uint8_t{0});
   for (auto res :
        {"", "ca", "efg", "ea", "ce", "ceb", "eca", "cae", "cea", "bea"}) {
-    EXPECT_THAT(CappedDamerauLevenshteinDistance("abc", res, 6), 3u);
-    EXPECT_THAT(CappedDamerauLevenshteinDistance(res, "abc", 6), 3u);
+    EXPECT_THAT(CappedDamerauLevenshteinDistance("abc", res, 6), uint8_t{3});
+    EXPECT_THAT(CappedDamerauLevenshteinDistance(res, "abc", 6), uint8_t{3});
   }
   for (auto res :
        {"a",   "b",   "c",   "ba",  "cb",  "bca", "cab", "cba", "ace",
         "efc", "ebf", "aef", "ae",  "be",  "eb",  "ec",  "ecb", "bec",
         "bce", "cbe", "ace", "eac", "aeb", "bae", "eab", "eba"}) {
-    EXPECT_THAT(CappedDamerauLevenshteinDistance("abc", res, 6), 2u);
-    EXPECT_THAT(CappedDamerauLevenshteinDistance(res, "abc", 6), 2u);
+    EXPECT_THAT(CappedDamerauLevenshteinDistance("abc", res, 6), uint8_t{2});
+    EXPECT_THAT(CappedDamerauLevenshteinDistance(res, "abc", 6), uint8_t{2});
   }
   for (auto res : {"ab", "ac", "bc", "acb", "bac", "ebc", "aec", "abe"}) {
-    EXPECT_THAT(CappedDamerauLevenshteinDistance("abc", res, 6), 1u);
-    EXPECT_THAT(CappedDamerauLevenshteinDistance(res, "abc", 6), 1u);
+    EXPECT_THAT(CappedDamerauLevenshteinDistance("abc", res, 6), uint8_t{1});
+    EXPECT_THAT(CappedDamerauLevenshteinDistance(res, "abc", 6), uint8_t{1});
   }
 }
 
 TEST(Distance, TestCutoff) {
   // Returing cutoff + 1 if the value is larger than cutoff or string longer
   // than MAX_SIZE.
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "a", 3), 3u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "a", 2), 3u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "a", 1), 2u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcdefg", "a", 2), 3u);
-  EXPECT_THAT(CappedDamerauLevenshteinDistance("a", "abcde", 2), 3u);
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "a", 3), uint8_t{3});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "a", 2), uint8_t{3});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcd", "a", 1), uint8_t{2});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("abcdefg", "a", 2), uint8_t{3});
+  EXPECT_THAT(CappedDamerauLevenshteinDistance("a", "abcde", 2), uint8_t{3});
   EXPECT_THAT(CappedDamerauLevenshteinDistance(std::string(102, 'a'),
                                                std::string(102, 'a'), 105),
-              101u);
+              uint8_t{101});
   EXPECT_THAT(CappedDamerauLevenshteinDistance(std::string(100, 'a'),
                                                std::string(100, 'a'), 100),
-              0u);
+              uint8_t{0});
   EXPECT_THAT(CappedDamerauLevenshteinDistance(std::string(100, 'a'),
                                                std::string(100, 'b'), 100),
-              100u);
+              uint8_t{100});
   EXPECT_THAT(CappedDamerauLevenshteinDistance(std::string(100, 'a'),
                                                std::string(99, 'a'), 2),
-              1u);
+              uint8_t{1});
   EXPECT_THAT(CappedDamerauLevenshteinDistance(std::string(100, 'a'),
                                                std::string(101, 'a'), 2),
-              3u);
+              uint8_t{3});
   EXPECT_THAT(CappedDamerauLevenshteinDistance(std::string(100, 'a'),
                                                std::string(101, 'a'), 2),
-              3u);
+              uint8_t{3});
   EXPECT_THAT(CappedDamerauLevenshteinDistance(std::string(UINT8_MAX + 1, 'a'),
                                                std::string(UINT8_MAX + 1, 'b'),
                                                UINT8_MAX),
-              101u);
+              uint8_t{101});
   EXPECT_THAT(CappedDamerauLevenshteinDistance(std::string(UINT8_MAX - 1, 'a'),
                                                std::string(UINT8_MAX - 1, 'b'),
                                                UINT8_MAX),
-              101u);
+              uint8_t{101});
   EXPECT_THAT(
       CappedDamerauLevenshteinDistance(std::string(UINT8_MAX, 'a'),
                                        std::string(UINT8_MAX, 'b'), UINT8_MAX),
-      101u);
+      uint8_t{101});
   EXPECT_THAT(CappedDamerauLevenshteinDistance(std::string(UINT8_MAX - 1, 'a'),
                                                std::string(UINT8_MAX - 1, 'a'),
                                                UINT8_MAX),
-              101u);
+              uint8_t{101});
 }
 }  // namespace

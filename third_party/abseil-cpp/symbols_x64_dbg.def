@@ -1624,7 +1624,7 @@ EXPORTS
     ?CallVoidPtrFunction@Condition@absl@@CA_NPEBV12@@Z
     ?CancelledError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?Capacity@CordRepFlat@cord_internal@absl@@QEBA_KXZ
-    ?CappedDamerauLevenshteinDistance@strings_internal@absl@@YA_KVstring_view@2@0E@Z
+    ?CappedDamerauLevenshteinDistance@strings_internal@absl@@YAEVstring_view@2@0E@Z
     ?CatPieces@strings_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@V?$initializer_list@Vstring_view@absl@@@5@@Z
     ?Ceil@absl@@YA?AVDuration@1@V21@0@Z
     ?CheckInvariants@GraphCycles@synchronization_internal@absl@@QEBA_NXZ
@@ -2133,6 +2133,7 @@ EXPORTS
     ?MaskEmptyOrDeleted@GroupSse2Impl@container_internal@absl@@QEBA?AV?$NonIterableBitMask@I$0BA@$0A@@23@XZ
     ?MatchesConversions@ParsedFormatBase@str_format_internal@absl@@AEBA_N_NV?$initializer_list@W4FormatConversionCharSet@absl@@@std@@@Z
     ?MaxFlatLength@CordTestAccess@strings_internal@absl@@SA_KXZ
+    ?MaybeRemoveEmptyCrcNode@InlineRep@Cord@absl@@AEAAXXZ
     ?MaybeTrackCordImpl@CordzInfo@cord_internal@absl@@CAXAEAVInlineData@23@AEBV423@W4MethodIdentifier@CordzUpdateTracker@23@@Z
     ?MergeTrees@CordRepBtree@cord_internal@absl@@CAPEAV123@PEAV123@0@Z
     ?Min@string_view@absl@@CA_K_K0@Z
@@ -2243,7 +2244,6 @@ EXPORTS
     ?PushDead@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AEAAXPEAUHashtablezInfo@container_internal@3@@Z
     ?PushNew@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AEAAXPEAUHashtablezInfo@container_internal@3@@Z
     ?PutPaddedString@FormatSinkImpl@str_format_internal@absl@@QEAA_NVstring_view@3@HH_N@Z
-    ?PutPaddedString@StringifySink@strings_internal@absl@@QEAA_NVstring_view@3@HH_N@Z
     ?PutTwoDigits@numbers_internal@absl@@YAX_KPEAD@Z
     ?RandomSeed@container_internal@absl@@YA_KXZ
     ?RawLog@raw_log_internal@absl@@YAXW4LogSeverity@2@PEBDH1ZZ
@@ -3053,7 +3053,6 @@ EXPORTS
     ?empty@?$vector@UTransitionType@cctz@time_internal@absl@@V?$allocator@UTransitionType@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEBA_NXZ
     ?empty@?$vector@UViableSubstitution@strings_internal@absl@@V?$allocator@UViableSubstitution@strings_internal@absl@@@Cr@std@@@Cr@std@@QEBA_NXZ
     ?empty@Cord@absl@@QEBA_NXZ
-    ?empty@InlineRep@Cord@absl@@QEBA_NXZ
     ?empty@string_view@absl@@QEBA_NXZ
     ?end@?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@absl@@QEAAPEAUPayload@status_internal@2@XZ
     ?end@?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@absl@@QEBAPEBUPayload@status_internal@2@XZ
