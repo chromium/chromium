@@ -150,10 +150,8 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void InitChildWidget();
 
   // Sets the state of all child views to be re-shown, then shows the view.
-  // |preferred_state| - The initial app list view state. It may be overridden
-  // depending on device state. For example, peeking state is not supported in
-  // tablet mode, or for side shelf.
-  void Show(AppListViewState preferred_state, bool is_side_shelf);
+  // |preferred_state| - The initial app list view state.
+  void Show(AppListViewState preferred_state);
 
   // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop
   // operations outside the application list. This has to be called after
@@ -284,8 +282,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   bool is_tablet_mode() const { return delegate_->IsInTabletMode(); }
 
-  bool is_side_shelf() const { return is_side_shelf_; }
-
   void SetShelfHasRoundedCorners(bool shelf_has_rounded_corners);
 
   bool shelf_has_rounded_corners() const { return shelf_has_rounded_corners_; }
@@ -409,9 +405,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // The time the AppListView was requested to be shown. Used for metrics.
   absl::optional<base::Time> time_shown_;
-
-  // Whether the shelf is oriented on the side.
-  bool is_side_shelf_ = false;
 
   // Whether the shelf has rounded corners.
   bool shelf_has_rounded_corners_ = false;

@@ -221,9 +221,7 @@ class AppListViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  void Show(bool is_side_shelf = false) {
-    view_->Show(AppListViewState::kFullscreenAllApps, is_side_shelf);
-  }
+  void Show() { view_->Show(AppListViewState::kFullscreenAllApps); }
 
   void Initialize(bool is_tablet_mode) {
     delegate_ = std::make_unique<AppListTestViewDelegate>();
@@ -596,9 +594,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->SetState(state);
   }
 
-  void Show() {
-    view_->Show(AppListViewState::kFullscreenAllApps, /*is_side_shelf=*/false);
-  }
+  void Show() { view_->Show(AppListViewState::kFullscreenAllApps); }
 
   SearchResultListView* GetSearchResultListView() {
     return contents_view()
@@ -1146,8 +1142,7 @@ TEST_F(AppListViewFocusTest, HittingEnterWhenFocusOnSearchBox) {
 
 // Tests that search box becomes focused when it is activated.
 TEST_F(AppListViewFocusTest, SetFocusOnSearchboxWhenActivated) {
-  app_list_view()->Show(AppListViewState::kFullscreenAllApps,
-                        /*is_side_shelf=*/false);
+  app_list_view()->Show(AppListViewState::kFullscreenAllApps);
 
   // Press tab several times to move focus out of the search box.
   SimulateKeyPress(ui::VKEY_TAB, false);
@@ -1363,7 +1358,7 @@ TEST_F(AppListViewTest, EscapeKeySideShelfSearchToFullscreen) {
   // Put into fullscreen using side-shelf.
   Initialize(/*is_tablet_mode=*/true);
 
-  Show(true /*is_side_shelf*/);
+  Show();
   SetTextInSearchBox(u"kitty");
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 

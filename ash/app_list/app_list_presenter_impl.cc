@@ -87,19 +87,6 @@ void DidPresentCompositorFrame(base::TimeTicks event_time_stamp,
   }
 }
 
-// Whether the shelf is oriented on the side, not on the bottom.
-bool IsSideShelf(Shelf* shelf) {
-  switch (shelf->alignment()) {
-    case ShelfAlignment::kBottom:
-    case ShelfAlignment::kBottomLocked:
-      return false;
-    case ShelfAlignment::kLeft:
-    case ShelfAlignment::kRight:
-      return true;
-  }
-  return false;
-}
-
 // Whether the shelf background type indicates that shelf has rounded corners.
 bool IsShelfBackgroundTypeWithRoundedCorners(
     ShelfBackgroundType background_type) {
@@ -319,7 +306,7 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   }
   layer->SetOpacity(initial_opacity);
 
-  view_->Show(preferred_state, IsSideShelf(shelf));
+  view_->Show(preferred_state);
 
   if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
     // If there was no aborted dismiss animation before - set the initial value,

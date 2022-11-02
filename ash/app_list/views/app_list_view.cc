@@ -497,10 +497,9 @@ void AppListView::InitChildWidget() {
   GetViewAccessibility().OverridePreviousFocus(search_box_widget);
 }
 
-void AppListView::Show(AppListViewState preferred_state, bool is_side_shelf) {
+void AppListView::Show(AppListViewState preferred_state) {
   if (!time_shown_.has_value())
     time_shown_ = base::Time::Now();
-  is_side_shelf_ = is_side_shelf;
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   AddAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_NONE));
@@ -638,11 +637,6 @@ void AppListView::UpdatePageResetTimer(bool app_list_visibility) {
 }
 
 gfx::Insets AppListView::GetMainViewInsetsForShelf() const {
-  if (is_side_shelf()) {
-    // Set both horizontal insets so the app list remains centered on the
-    // screen.
-    return gfx::Insets::VH(0, delegate_->GetShelfSize());
-  }
   return gfx::Insets::TLBR(0, 0, delegate_->GetShelfSize(), 0);
 }
 
@@ -725,15 +719,7 @@ void AppListView::SetChildViewsForStateTransition(
   // Do not update the contents view state on closing.
   if (target_state != AppListViewState::kClosed) {
     app_list_main_view_->contents_view()->SetActiveState(
-        AppListState::kStateApps, !is_side_shelf_);
-  }
-
-  if (target_state == AppListViewState::kClosed && is_side_shelf_ &&
-      !app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
-    // Reset the search box to be shown again. This is done after the
-    // animation is complete normally, but there is no animation when
-    // |is_side_shelf_|.
-    search_box_view_->ClearSearchAndDeactivateSearchBox();
+        AppListState::kStateApps, /*animate=*/true);
   }
 }
 
@@ -1052,8 +1038,8 @@ void AppListView::OnAppListVisibilityChanged(bool shown) {
 
 base::TimeDelta AppListView::GetStateTransitionAnimationDuration(
     AppListViewState target_state) {
-  if (is_side_shelf_ || (target_state == AppListViewState::kClosed &&
-                         delegate_->ShouldDismissImmediately())) {
+  if (target_state == AppListViewState::kClosed &&
+      delegate_->ShouldDismissImmediately()) {
     return base::Milliseconds(kAppListAnimationDurationImmediateMs);
   }
 
@@ -1082,14 +1068,6 @@ void AppListView::StartAnimationForState(AppListViewState target_state) {
 
 void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
                                        base::TimeDelta duration_ms) {
-  if (is_side_shelf_) {
-    // There is no animation in side shelf.
-    // Mark the state transition as complete directly, as no animations that
-    // for `state_transition_notifier_` to observe are run in this case.
-    state_transition_notifier_->SetTransitionDone();
-    return;
-  }
-
   gfx::Rect target_bounds = GetPreferredWidgetBoundsForState(target_state);
 
   // When closing the view should animate to the shelf bounds. The workspace
@@ -1402,12 +1380,8 @@ int AppListView::GetPreferredWidgetYForState(AppListViewState state) const {
     case AppListViewState::kClosed:
       if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled())
         return fullscreen_height;
-      // Align the widget y with shelf y to avoid flicker in show animation. In
-      // side shelf mode, the widget y is the top of work area because the
-      // widget does not animate.
-      return (is_side_shelf_ ? work_area_bounds.y()
-                             : work_area_bounds.bottom()) -
-             display.bounds().y();
+      // Align the widget y with shelf y to avoid flicker in show animation.
+      return work_area_bounds.bottom() - display.bounds().y();
   }
 }
 
