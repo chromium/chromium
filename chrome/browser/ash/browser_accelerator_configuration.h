@@ -30,8 +30,6 @@ class ASH_EXPORT BrowserAcceleratorConfiguration
   ~BrowserAcceleratorConfiguration() override;
 
   // AcceleratorConfiguration:
-  const std::vector<mojom::AcceleratorLayoutInfoPtr>&
-  GetAcceleratorLayoutInfos() override;
   const std::vector<ui::Accelerator>& GetAcceleratorsForAction(
       AcceleratorActionId action_id) override;
   bool IsMutable() const override;

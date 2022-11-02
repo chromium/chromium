@@ -32,10 +32,11 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   ~AshAcceleratorConfiguration() override;
 
   // AcceleratorConfiguration::
-  const std::vector<mojom::AcceleratorLayoutInfoPtr>&
-  GetAcceleratorLayoutInfos() override;
   const std::vector<ui::Accelerator>& GetAcceleratorsForAction(
       AcceleratorActionId action_id) override;
+  // Whether the source is mutable and shortcuts can be changed. If this returns
+  // false then any of the Add/Remove/Replace class will DCHECK. The two Restore
+  // methods will be no-ops.
   bool IsMutable() const override;
   // Return true if the accelerator is deprecated.
   bool IsDeprecated(const ui::Accelerator& accelerator) const override;
@@ -96,8 +97,6 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
 
   void InitializeDeprecatedAccelerators();
 
-  void AddLayoutInfo(const AcceleratorData& data);
-
   void AddAccelerators(base::span<const AcceleratorData> accelerators);
 
   std::vector<ui::Accelerator> accelerators_;
@@ -114,7 +113,6 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   // A map from accelerators to the AcceleratorAction values, which are used in
   // the implementation.
   AcceleratorActionMap accelerator_to_id_;
-  std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 };
 
 }  // namespace ash

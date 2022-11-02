@@ -66,10 +66,6 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
 
   void RemoveAcceleratorsUpdatedCallback(AcceleratorsUpdatedCallback callback);
 
-  // Get all AcceleratorLayoutInfos for an accelerator configuration provider.
-  virtual const std::vector<mojom::AcceleratorLayoutInfoPtr>&
-  GetAcceleratorLayoutInfos() = 0;
-
   // Get the accelerators for a single action.
   virtual const std::vector<ui::Accelerator>& GetAcceleratorsForAction(
       AcceleratorActionId action_id) = 0;

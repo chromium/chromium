@@ -41,4 +41,11 @@ interface AcceleratorConfigurationProvider {
   // Registers an observer that will be notified whenever there is an update
   // to either the accelerator mapping or on keyboard device connected event.
   AddObserver(pending_remote<AcceleratorsUpdatedObserver> observer);
+
+  // Get a list of all shortcuts with their corresponding category,
+  // sub-category, styling, description, source and action. The order of the
+  // layoutInfos are tied to its accelerator order representation in the app.
+  // The app uses this to generate the layout structure.
+  GetAcceleratorLayoutInfos()
+      => (array<ash.mojom.AcceleratorLayoutInfo> layout_infos);
 };

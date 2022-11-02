@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
@@ -126,6 +127,39 @@ void ExpectMojomAcceleratorsEqual(
     }
   }
   ExpectAllAcceleratorsEqual(expected, actual_infos);
+}
+
+// Validates that the passed in layout infos have matching accelerator layouts
+// in `kAcceleratorLayouts`. If this throws an expectation error it means that
+// the there is a inconsistency between the layouts in `kAcceleratorLayouts` and
+// the data provided by `AcceleratorConfigurationProvider`.
+void ValidateAcceleratorLayouts(
+    const std::vector<ash::mojom::AcceleratorLayoutInfoPtr>&
+        actual_layout_infos,
+    mojom::AcceleratorSource expected_source) {
+  for (const auto& actual : actual_layout_infos) {
+    EXPECT_TRUE(ash::kAcceleratorLayouts.contains(actual->action));
+
+    const ash::AcceleratorLayoutDetails& expected =
+        ash::kAcceleratorLayouts.at(actual->action);
+
+    EXPECT_EQ(expected.category, actual->category);
+    EXPECT_EQ(expected.sub_category, actual->sub_category);
+    EXPECT_EQ(expected.layout_style, actual->style);
+    EXPECT_EQ(expected_source, actual->source);
+  }
+}
+
+void ValidateLayoutsHaveMatchingStrings(
+    const std::vector<ash::mojom::AcceleratorLayoutInfoPtr>&
+        actual_layout_infos) {
+  for (const auto& layout : actual_layout_infos) {
+    // kAcceleratorActionToStringIdMap should contain all actions in
+    // AcceleratorAction. Adding a new accelerator must add a new entry to this
+    // map.
+    EXPECT_TRUE(ash::kAcceleratorActionToStringIdMap.contains(layout->action))
+        << "Unknown accelerator action id: " << layout->action;
+  }
 }
 
 }  // namespace
@@ -296,6 +330,35 @@ TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
   base::RunLoop().RunUntilIdle();
   // Adding a new keyboard should trigger the UpdatedAccelerators observer.
   EXPECT_EQ(1, observer.num_times_notified());
+}
+
+TEST_F(AcceleratorConfigurationProviderTest,
+       ValidateAllLayoutsHaveMatchingStrings) {
+  // Initialize with all default accelerators.
+  Shell::Get()->ash_accelerator_configuration()->Initialize();
+  base::RunLoop().RunUntilIdle();
+
+  // Get all default accelerator layout infos and verify that they correctly
+  // mapped the ash::kAcceleratorActionToStringIdMap. This makes sure the map
+  // won't be out of date.
+  provider_->GetAcceleratorLayoutInfos(base::BindLambdaForTesting(
+      [&](std::vector<mojom::AcceleratorLayoutInfoPtr> actual_layout_infos) {
+        ValidateLayoutsHaveMatchingStrings(actual_layout_infos);
+      }));
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
+  // Initialize with all default accelerators.
+  Shell::Get()->ash_accelerator_configuration()->Initialize();
+  base::RunLoop().RunUntilIdle();
+
+  // Get all default accelerator layout infos and verify that they have the
+  // correctly mapped layout details
+  provider_->GetAcceleratorLayoutInfos(base::BindLambdaForTesting(
+      [&](std::vector<mojom::AcceleratorLayoutInfoPtr> actual_layout_infos) {
+        ValidateAcceleratorLayouts(actual_layout_infos,
+                                   mojom::AcceleratorSource::kAsh);
+      }));
 }
 
 }  // namespace shortcut_ui

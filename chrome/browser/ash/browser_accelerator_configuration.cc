@@ -14,11 +14,6 @@ BrowserAcceleratorConfiguration::BrowserAcceleratorConfiguration()
 
 BrowserAcceleratorConfiguration::~BrowserAcceleratorConfiguration() = default;
 
-const std::vector<mojom::AcceleratorLayoutInfoPtr>&
-BrowserAcceleratorConfiguration::GetAcceleratorLayoutInfos() {
-  return layout_infos_;
-}
-
 const std::vector<ui::Accelerator>&
 BrowserAcceleratorConfiguration::GetAcceleratorsForAction(
     AcceleratorActionId action_id) {

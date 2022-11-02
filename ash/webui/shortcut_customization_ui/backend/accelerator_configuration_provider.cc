@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/shell.h"
@@ -16,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 
@@ -36,6 +38,22 @@ mojom::AcceleratorInfoPtr AcceleratorInfoToMojom(
   return info_mojom;
 }
 
+mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
+    AcceleratorActionId action_id,
+    AcceleratorLayoutDetails layout_details) {
+  mojom::AcceleratorLayoutInfoPtr layout_info =
+      mojom::AcceleratorLayoutInfo::New();
+  layout_info->category = layout_details.category;
+  layout_info->sub_category = layout_details.sub_category;
+  layout_info->description =
+      l10n_util::GetStringUTF16(kAcceleratorActionToStringIdMap.at(action_id));
+  layout_info->style = layout_details.layout_style;
+  layout_info->source = mojom::AcceleratorSource::kAsh;
+  layout_info->action = static_cast<uint32_t>(action_id);
+
+  return layout_info;
+}
+
 }  // namespace
 
 namespace shortcut_ui {
@@ -52,6 +70,12 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
           weak_ptr_factory_.GetWeakPtr()));
 
   UpdateKeyboards();
+
+  // Create LayoutInfos from kAcceleratorLayouts map. LayoutInfos are static
+  // data that provides additional details for the app for styling.
+  for (const auto& [action_id, layout_details] : kAcceleratorLayouts) {
+    layout_infos_.push_back(LayoutInfoToMojom(action_id, layout_details));
+  }
 }
 
 AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
@@ -89,6 +113,11 @@ void AcceleratorConfigurationProvider::OnInputDeviceConfigurationChanged(
   if (input_device_types & (ui::InputDeviceEventObserver::kKeyboard)) {
     UpdateKeyboards();
   }
+}
+
+void AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos(
+    GetAcceleratorLayoutInfosCallback callback) {
+  std::move(callback).Run(mojo::Clone(layout_infos_));
 }
 
 void AcceleratorConfigurationProvider::BindInterface(

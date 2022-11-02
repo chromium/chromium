@@ -42,11 +42,6 @@ AshAcceleratorConfiguration::~AshAcceleratorConfiguration() = default;
 
 // TODO(jimmyxgong): Implement all functions below as these are only stubs.
 
-const std::vector<mojom::AcceleratorLayoutInfoPtr>&
-AshAcceleratorConfiguration::GetAcceleratorLayoutInfos() {
-  return layout_infos_;
-}
-
 const std::vector<ui::Accelerator>&
 AshAcceleratorConfiguration::GetAcceleratorsForAction(
     AcceleratorActionId action_id) {
@@ -57,6 +52,7 @@ AshAcceleratorConfiguration::GetAcceleratorsForAction(
 }
 
 bool AshAcceleratorConfiguration::IsMutable() const {
+  // TODO(longbowei): Implement this function as this is only stub for now.
   return false;
 }
 
@@ -187,7 +183,6 @@ void AshAcceleratorConfiguration::AddAccelerators(
     id_to_accelerators_[static_cast<uint32_t>(data.action)].push_back(
         accelerator);
     accelerators_.push_back(accelerator);
-    AddLayoutInfo(data);
   }
   UpdateAccelerators(id_to_accelerators_);
 }
@@ -200,24 +195,6 @@ AshAcceleratorConfiguration::GetDeprecatedAcceleratorData(
     return nullptr;
   }
   return it->second;
-}
-
-void AshAcceleratorConfiguration::AddLayoutInfo(const AcceleratorData& data) {
-  const auto* layout_iter = kAcceleratorLayouts.find(data.action);
-  DCHECK(layout_iter != kAcceleratorLayouts.end());
-  const AcceleratorLayoutDetails& layout_details = layout_iter->second;
-
-  mojom::AcceleratorLayoutInfoPtr layout_info =
-      mojom::AcceleratorLayoutInfo::New();
-  layout_info->category = layout_details.category;
-  layout_info->sub_category = layout_details.sub_category;
-  layout_info->description = l10n_util::GetStringUTF16(
-      kAcceleratorActionToStringIdMap.at(data.action));
-  layout_info->style = layout_details.layout_style;
-  layout_info->source = mojom::AcceleratorSource::kAsh;
-  layout_info->action = static_cast<uint32_t>(data.action);
-
-  layout_infos_.push_back(std::move(layout_info));
 }
 
 }  // namespace ash

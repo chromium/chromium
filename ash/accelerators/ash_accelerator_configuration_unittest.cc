@@ -47,25 +47,6 @@ void ExpectAllAcceleratorsEqual(
   }
 }
 
-// Validates that the passed in layouts have matching accelerator layouts in
-// `kAcceleratorLayouts`. If this throws an expectation error it means that
-// the there is a inconsistency between the layouts in `kAcceleratorLayouts` and
-// the data provided by `AshAcceleratorConfiguration`.
-void ValidateAcceleratorLayouts(
-    const std::vector<ash::mojom::AcceleratorLayoutInfoPtr>& actual_layouts) {
-  for (const auto& actual : actual_layouts) {
-    EXPECT_TRUE(ash::kAcceleratorLayouts.contains(actual->action));
-
-    const ash::AcceleratorLayoutDetails& expected =
-        ash::kAcceleratorLayouts.at(actual->action);
-
-    EXPECT_EQ(expected.category, actual->category);
-    EXPECT_EQ(expected.sub_category, actual->sub_category);
-    EXPECT_EQ(expected.layout_style, actual->style);
-    EXPECT_EQ(ash::mojom::AcceleratorSource::kAsh, actual->source);
-  }
-}
-
 }  // namespace
 
 namespace ash {
@@ -173,30 +154,4 @@ TEST_F(AshAcceleratorConfigurationTest, DeprecatedAccelerators) {
   EXPECT_FALSE(config_->IsDeprecated(active_accelerator));
 }
 
-TEST_F(AshAcceleratorConfigurationTest, ValidateAllAcceleratorLayouts) {
-  // Initialize with all default accelerators.
-  config_->Initialize();
-  const std::vector<mojom::AcceleratorLayoutInfoPtr>& actual_layouts =
-      config_->GetAcceleratorLayoutInfos();
-
-  // Verify that all default accelerators have the correctly mapped layout
-  // details.
-  ValidateAcceleratorLayouts(actual_layouts);
-}
-
-TEST_F(AshAcceleratorConfigurationTest,
-       ValidatekAcceleratorActionToStringIdMap) {
-  // Initialize with all default accelerators.
-  config_->Initialize();
-  const std::vector<mojom::AcceleratorLayoutInfoPtr>& layouts =
-      config_->GetAcceleratorLayoutInfos();
-
-  for (const auto& layout : layouts) {
-    // kAcceleratorActionToStringIdMap should contain all actions in
-    // AcceleratorAction. Adding a new accelerator must add a new entry to this
-    // map.
-    EXPECT_TRUE(ash::kAcceleratorActionToStringIdMap.contains(layout->action))
-        << "Unknown accelerator action id: " << layout->action;
-  }
-}
 }  // namespace ash

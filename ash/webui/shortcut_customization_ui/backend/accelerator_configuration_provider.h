@@ -46,6 +46,8 @@ class AcceleratorConfigurationProvider
   void AddObserver(mojo::PendingRemote<
                    shortcut_customization::mojom::AcceleratorsUpdatedObserver>
                        observer) override;
+  void GetAcceleratorLayoutInfos(
+      GetAcceleratorLayoutInfosCallback callback) override;
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
@@ -70,6 +72,8 @@ class AcceleratorConfigurationProvider
   AcceleratorConfigurationMap CreateConfigurationMap();
 
   std::vector<AcceleratorInfo> accelerator_infos_;
+
+  std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 
   std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
       id_to_accelerator_info_;
