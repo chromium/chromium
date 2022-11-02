@@ -54,7 +54,7 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
 
     // Called when the |location| UI view displayed |results|, but the user
     // launched a result in a different UI view. This can only happen when
-    // |location| is kList or kTile.
+    // |location| is kContinue or kRecentApps.
     virtual void OnIgnore(Location location,
                           const std::vector<Result>& results,
                           const std::u16string& query) {}
