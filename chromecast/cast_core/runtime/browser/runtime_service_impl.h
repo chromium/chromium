@@ -32,10 +32,10 @@ class RuntimeServiceImpl final
     : public RuntimeApplicationDispatcherBase<RuntimeApplicationServiceImpl>,
       public CastRuntimeMetricsRecorder::EventBuilderFactory {
  public:
-  // |application_client| is expected to persist for the lifetime of this
-  // instance.
+  // |application_client| and |web_service| are expected to persist for the
+  // lifetime of this instance.
   RuntimeServiceImpl(cast_receiver::ApplicationClient& application_client,
-                     CastWebService* web_service,
+                     CastWebService& web_service,
                      std::string runtime_id,
                      std::string runtime_service_endpoint);
   ~RuntimeServiceImpl() override;
@@ -107,6 +107,8 @@ class RuntimeServiceImpl final
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  base::raw_ref<CastWebService> const web_service_;
 
   // Allows metrics, histogram, action recording, which can be reported by
   // CastRuntimeMetricsRecorderService if Cast Core starts it.

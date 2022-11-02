@@ -151,7 +151,14 @@ CastRuntimeContentBrowserClient::GetNetworkContextGetter() {
 
 void CastRuntimeContentBrowserClient::InitializeCoreComponents(
     CastWebService* web_service) {
-  app_dispatcher_ = RuntimeApplicationDispatcher::Create(*this, web_service);
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  std::string runtime_id =
+      command_line->GetSwitchValueASCII(cast::core::kCastCoreRuntimeIdSwitch);
+  std::string runtime_service_path =
+      command_line->GetSwitchValueASCII(cast::core::kRuntimeServicePathSwitch);
+
+  app_dispatcher_ = std::make_unique<RuntimeServiceImpl>(
+      *this, *web_service, runtime_id, runtime_service_path);
 }
 
 }  // namespace chromecast

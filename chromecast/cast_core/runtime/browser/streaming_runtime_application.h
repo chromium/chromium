@@ -26,7 +26,6 @@ class StreamingRuntimeApplication final
   StreamingRuntimeApplication(
       std::string cast_session_id,
       cast::common::ApplicationConfig app_config,
-      CastWebService* web_service,
       cast_receiver::ApplicationClient& application_client);
   ~StreamingRuntimeApplication() override;
 

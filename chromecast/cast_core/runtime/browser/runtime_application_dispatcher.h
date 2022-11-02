@@ -5,25 +5,12 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_H_
 
-#include <memory>
-
 #include "components/cast_receiver/common/public/status.h"
-
-namespace cast_receiver {
-class ApplicationClient;
-}
 
 namespace chromecast {
 
-class CastWebService;
-
 class RuntimeApplicationDispatcher {
  public:
-  // Creates an instance of |RuntimeApplicationDispatcher|.
-  static std::unique_ptr<RuntimeApplicationDispatcher> Create(
-      cast_receiver::ApplicationClient& application_client,
-      CastWebService* web_service);
-
   // |application_client| is expected to persist for the lifetime of this
   // instance.
   virtual ~RuntimeApplicationDispatcher();

@@ -12,9 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromecast/browser/cast_content_window.h"
-#include "chromecast/browser/cast_web_view.h"
+#include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
-#include "components/cast_receiver/common/public/status.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 #include "third_party/cast_core/public/src/proto/common/application_state.pb.h"
@@ -27,7 +26,6 @@ class WebUIControllerFactory;
 namespace chromecast {
 
 class CastWebContents;
-class CastWebService;
 class MessagePortService;
 
 // This class is for sharing code between Web and streaming RuntimeApplication
@@ -65,6 +63,14 @@ class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
     // Creates a new platform-specific WebUIControllerFactory.
     virtual std::unique_ptr<content::WebUIControllerFactory>
     CreateWebUIControllerFactory(std::vector<std::string> hosts) = 0;
+
+    // Returns the WebContents this application should use.
+    virtual content::WebContents* GetWebContents() = 0;
+
+    // Returns the CastContentWindow associated with this application.
+    //
+    // TODO(crbug.com/1359559): Remove this function.
+    virtual CastContentWindow* GetCastContentWindow() = 0;
   };
 
   ~RuntimeApplicationBase() override;
@@ -94,6 +100,21 @@ class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
   // Sets touch input.
   void SetTouchInput(cast::common::TouchInput::Type touch_input);
 
+  // Returns if current session is enabled for dev.
+  //
+  // TODO(crbug.com/1359587): Remove this function.
+  bool GetEnabledForDev() const;
+
+  // Returns if remote control mode is enabled.
+  //
+  // TODO(crbug.com/1359587): Remove this function.
+  bool GetIsRemoteControlMode() const;
+
+  // Returns the type of Renderer to be used for this application.
+  //
+  // TODO(crbug.com/1359587): Remove this function.
+  mojom::RendererType GetRendererType() const;
+
   // Called to launch the application. The |callback| will be called indicating
   // if the operation succeeded or not.
   virtual void Launch(StatusCallback callback) = 0;
@@ -112,8 +133,7 @@ class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
   // |web_service| is expected to exist for the lifetime of this instance.
   RuntimeApplicationBase(std::string cast_session_id,
                          cast::common::ApplicationConfig app_config,
-                         mojom::RendererType renderer_type_used,
-                         CastWebService* web_service);
+                         mojom::RendererType renderer_type);
 
   // Stops the running application. Must be called before destruction of any
   // instance of the implementing object.
@@ -122,11 +142,6 @@ class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
 
   scoped_refptr<base::SequencedTaskRunner> task_runner() {
     return task_runner_;
-  }
-
-  CastWebContents* cast_web_contents() {
-    DCHECK(cast_web_view_);
-    return cast_web_view_->cast_web_contents();
   }
 
   Delegate& delegate() { return *delegate_; }
@@ -140,9 +155,6 @@ class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
   // Returns if app is audio only.
   bool GetIsAudioOnly() const;
 
-  // Returns if remote control mode is enabled.
-  bool GetIsRemoteControlMode() const;
-
   // Returns if feature permissions are enforced.
   bool GetEnforceFeaturePermissions() const;
 
@@ -151,9 +163,6 @@ class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
 
   // Returns additional feature permission origins.
   std::vector<std::string> GetAdditionalFeaturePermissionOrigins() const;
-
-  // Returns if current session is enabled for dev.
-  bool GetEnabledForDev() const;
 
   // Loads the page at the given |url| in the CastWebContents.
   void LoadPage(const GURL& url);
@@ -165,25 +174,18 @@ class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
   // CastContentWindow::Observer implementation:
   void OnVisibilityChange(VisibilityType visibility_type) override;
 
-  // Creates the root CastWebView for this Cast session.
-  CastWebView::Scoped CreateCastWebView();
-
   const std::string cast_session_id_;
   const cast::common::ApplicationConfig app_config_;
+
   // Renderer type used by this application.
   mojom::RendererType renderer_type_;
-  // The |web_service_| used to create |cast_web_view_|.
-  CastWebService* const web_service_;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::raw_ptr<Delegate> delegate_{nullptr};
   // Cached mojom rules that are set iff |cast_web_view_| is not created before
   // SetUrlRewriteRules is called.
   url_rewrite::mojom::UrlRequestRewriteRulesPtr cached_mojom_rules_{nullptr};
-
-  // The WebView associated with the window in which the Cast application is
-  // displayed.
-  CastWebView::Scoped cast_web_view_;
 
   // Flags whether the application is running or stopped.
   bool is_application_running_ = false;

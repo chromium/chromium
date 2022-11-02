@@ -24,11 +24,10 @@ namespace chromecast {
 template <typename TRuntimeApplicationPlatform>
 class RuntimeApplicationDispatcherBase : public RuntimeApplicationDispatcher {
  public:
-  // |application_client| and |web_service| are expected to persist for the
-  // lifetime of this instance.
-  RuntimeApplicationDispatcherBase(
-      cast_receiver::ApplicationClient& application_client,
-      CastWebService* web_service);
+  // |application_client| is expected to persist for the lifetime of this
+  // instance.
+  explicit RuntimeApplicationDispatcherBase(
+      cast_receiver::ApplicationClient& application_client);
   ~RuntimeApplicationDispatcherBase() override = default;
 
  protected:
@@ -55,12 +54,9 @@ class RuntimeApplicationDispatcherBase : public RuntimeApplicationDispatcher {
     return *application_client_;
   }
 
-  CastWebService& cast_web_service() { return *web_service_; }
-
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   base::raw_ref<cast_receiver::ApplicationClient> const application_client_;
-  base::raw_ptr<CastWebService> const web_service_;
 
   base::flat_map<std::string, std::unique_ptr<TRuntimeApplicationPlatform>>
       loaded_apps_;
@@ -69,11 +65,8 @@ class RuntimeApplicationDispatcherBase : public RuntimeApplicationDispatcher {
 template <typename TRuntimeApplicationPlatform>
 RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::
     RuntimeApplicationDispatcherBase(
-        cast_receiver::ApplicationClient& application_client,
-        CastWebService* web_service)
-    : application_client_(application_client), web_service_(web_service) {
-  DCHECK(web_service_);
-}
+        cast_receiver::ApplicationClient& application_client)
+    : application_client_(application_client) {}
 
 template <typename TRuntimeApplicationPlatform>
 TRuntimeApplicationPlatform*
@@ -86,10 +79,10 @@ RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::
   std::unique_ptr<RuntimeApplicationBase> app;
   if (openscreen::cast::IsCastStreamingReceiverAppId(app_config.app_id())) {
     app = std::make_unique<StreamingRuntimeApplication>(
-        session_id, std::move(app_config), web_service_, *application_client_);
+        session_id, std::move(app_config), *application_client_);
   } else {
-    app = std::make_unique<WebRuntimeApplication>(
-        session_id, std::move(app_config), web_service_);
+    app = std::make_unique<WebRuntimeApplication>(session_id,
+                                                  std::move(app_config));
   }
 
   // TODO(b/232140331): Call this only when foreground app changes.

@@ -20,12 +20,10 @@ namespace chromecast {
 
 WebRuntimeApplication::WebRuntimeApplication(
     std::string cast_session_id,
-    cast::common::ApplicationConfig config,
-    CastWebService* web_service)
+    cast::common::ApplicationConfig config)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(config),
-                             mojom::RendererType::MOJO_RENDERER,
-                             web_service),
+                             mojom::RendererType::MOJO_RENDERER),
       app_url_(RuntimeApplicationBase::config().cast_web_app_config().url()) {}
 
 WebRuntimeApplication::~WebRuntimeApplication() {
@@ -73,7 +71,8 @@ void WebRuntimeApplication::InnerWebContentsCreated(
 
   CastWebContents* inner_cast_contents =
       CastWebContents::FromWebContents(inner_web_contents);
-  CastWebContents* outer_cast_contents = cast_web_contents();
+  CastWebContents* outer_cast_contents =
+      CastWebContents::FromWebContents(delegate().GetWebContents());
   DCHECK(inner_cast_contents);
   DCHECK(outer_cast_contents);
 
@@ -125,15 +124,14 @@ void WebRuntimeApplication::OnAllBindingsReceived(
     return;
   }
 
-  content::WebContentsObserver::Observe(cast_web_contents()->web_contents());
-  cast_receiver::PageStateObserver::Observe(
-      cast_web_contents()->web_contents());
+  content::WebContentsObserver::Observe(delegate().GetWebContents());
+  cast_receiver::PageStateObserver::Observe(delegate().GetWebContents());
   bindings_manager_ = std::make_unique<BindingsManagerWebRuntime>(
       *this, delegate().CreateMessagePortService());
   for (auto& binding : bindings) {
     bindings_manager_->AddBinding(std::move(binding));
   }
-  bindings_manager_->ConfigureWebContents(cast_web_contents()->web_contents());
+  bindings_manager_->ConfigureWebContents(delegate().GetWebContents());
 
   // Application is initialized now - we can load the URL.
   LoadPage(app_url_);

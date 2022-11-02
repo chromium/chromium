@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "chromecast/browser/cast_content_window.h"
+#include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
@@ -22,12 +24,15 @@
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace content {
+class WebContents;
 class WebUIControllerFactory;
 }
 
 namespace chromecast {
 
+class CastContentWindow;
 class MessagePortService;
+class RuntimeApplicationBase;
 
 class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
  public:
@@ -35,10 +40,9 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
 
   RuntimeApplicationServiceImpl(
       std::unique_ptr<RuntimeApplicationBase> runtime_application,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      CastWebService& web_service);
   ~RuntimeApplicationServiceImpl() override;
-
-  const std::string& app_id() const { return runtime_application_->GetAppId(); }
 
   void Load(const cast::runtime::LoadApplicationRequest& request,
             StatusCallback callback);
@@ -47,7 +51,9 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
   void Stop(const cast::runtime::StopApplicationRequest& request,
             StatusCallback callback);
 
-  // RuntimeApplicationBase::Delegate implementation:
+  const std::string& app_id() { return runtime_application_->GetAppId(); }
+
+  // RuntimeApplication::Delegate implementation:
   void NotifyApplicationStarted() override;
   void NotifyApplicationStopped(cast::common::StopReason::Type stop_reason,
                                 int32_t net_error_code) override;
@@ -56,9 +62,14 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
   std::unique_ptr<MessagePortService> CreateMessagePortService() override;
   std::unique_ptr<content::WebUIControllerFactory> CreateWebUIControllerFactory(
       std::vector<std::string> hosts) override;
+  content::WebContents* GetWebContents() override;
+  CastContentWindow* GetCastContentWindow() override;
 
  private:
-  // RuntimeApplicationBase handlers:
+  // Creates the root CastWebView for this Cast session.
+  CastWebView::Scoped CreateCastWebView();
+
+  // RuntimeApplicationService handlers:
   void HandleSetUrlRewriteRules(
       cast::v2::SetUrlRewriteRulesRequest request,
       cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
@@ -87,6 +98,12 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
 
   std::unique_ptr<RuntimeApplicationBase> const runtime_application_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  base::raw_ref<CastWebService> web_service_;
+
+  // The WebView associated with the window in which the Cast application is
+  // displayed.
+  CastWebView::Scoped cast_web_view_;
 
   absl::optional<cast::utils::GrpcServer> grpc_server_;
   absl::optional<cast::v2::CoreApplicationServiceStub> core_app_stub_;

@@ -15,7 +15,6 @@
 namespace chromecast {
 
 class BindingsManagerWebRuntime;
-class CastWebService;
 
 class WebRuntimeApplication final : public RuntimeApplicationBase,
                                     public content::WebContentsObserver,
@@ -24,8 +23,7 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   WebRuntimeApplication(std::string cast_session_id,
-                        cast::common::ApplicationConfig app_config,
-                        CastWebService* web_service);
+                        cast::common::ApplicationConfig app_config);
   ~WebRuntimeApplication() override;
 
  private:

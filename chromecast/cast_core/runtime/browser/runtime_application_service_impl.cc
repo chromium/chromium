@@ -5,18 +5,23 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 
 #include "base/task/bind_post_task.h"
+#include "chromecast/browser/cast_web_service.h"
+#include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
 #include "chromecast/cast_core/runtime/browser/grpc_webui_controller_factory.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service_grpc.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 
 namespace chromecast {
 
 RuntimeApplicationServiceImpl::RuntimeApplicationServiceImpl(
     std::unique_ptr<RuntimeApplicationBase> runtime_application,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    CastWebService& web_service)
     : runtime_application_(std::move(runtime_application)),
-      task_runner_(std::move(task_runner)) {
+      task_runner_(std::move(task_runner)),
+      web_service_(web_service) {
   DCHECK(runtime_application_);
   DCHECK(task_runner_);
 
@@ -84,6 +89,7 @@ void RuntimeApplicationServiceImpl::Load(
           request.url_rewrite_rules());
   runtime_application_->SetUrlRewriteRules(std::move(mojom_rules));
 
+  cast_web_view_ = CreateCastWebView();
   runtime_application_->Load(std::move(callback));
 }
 
@@ -146,6 +152,21 @@ void RuntimeApplicationServiceImpl::HandlePostMessage(
     reactor->Write(
         grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to post message"));
   }
+}
+
+CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
+  params->renderer_type = runtime_application_->GetRendererType();
+  params->handle_inner_contents = true;
+  params->session_id = runtime_application_->GetCastSessionId();
+  params->is_remote_control_mode =
+      runtime_application_->GetIsRemoteControlMode();
+  params->activity_id = params->is_remote_control_mode
+                            ? params->session_id
+                            : runtime_application_->GetAppId();
+  params->enabled_for_dev = runtime_application_->GetEnabledForDev();
+  return web_service_->CreateWebViewInternal(std::move(params));
 }
 
 void RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules(
@@ -292,6 +313,22 @@ RuntimeApplicationServiceImpl::CreateWebUIControllerFactory(
   DCHECK(core_app_stub_);
   return std::make_unique<GrpcWebUiControllerFactory>(std::move(hosts),
                                                       &core_app_stub_.value());
+}
+
+content::WebContents* RuntimeApplicationServiceImpl::GetWebContents() {
+  if (!cast_web_view_) {
+    return nullptr;
+  }
+
+  return cast_web_view_->web_contents();
+}
+
+CastContentWindow* RuntimeApplicationServiceImpl::GetCastContentWindow() {
+  if (!cast_web_view_) {
+    return nullptr;
+  }
+
+  return cast_web_view_->window();
 }
 
 void RuntimeApplicationServiceImpl::OnAllBindingsReceived(
