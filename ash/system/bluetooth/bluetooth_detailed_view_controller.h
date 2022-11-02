@@ -66,6 +66,10 @@ class ASH_EXPORT BluetoothDetailedViewController
   // Bluetooth state has changed.
   void BluetoothEnabledStateChanged();
 
+  // Adds fake devices for manual testing to `previously_connected_devices_`
+  // and `connected_devices_`.
+  void AddFakeBluetoothDevices();
+
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
