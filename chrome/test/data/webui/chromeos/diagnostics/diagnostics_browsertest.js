@@ -86,7 +86,7 @@ const tests = [
 
 tests.forEach(([testName, module, condition, caseName]) => {
   const className =
-      `DiagnosticsApp${condition ? `with${condition}` : ''}_${testName}`;
+      `DiagnosticsApp${condition ? `With${condition}` : ''}_${testName}`;
 
   let classToExtend = DiagnosticsApp;
   if (condition === 'Input') {
