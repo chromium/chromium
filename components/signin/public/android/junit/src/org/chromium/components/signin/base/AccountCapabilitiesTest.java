@@ -44,6 +44,8 @@ public final class AccountCapabilitiesTest {
     public static @Tribool int getCapability(
             String capabilityName, AccountCapabilities capabilities) {
         switch (capabilityName) {
+            case AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME:
+                return capabilities.canHaveEmailAddressDisplayed();
             case AccountCapabilitiesConstants.CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME:
                 return capabilities.canOfferExtendedSyncPromos();
             case AccountCapabilitiesConstants.CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME:
@@ -77,6 +79,10 @@ public final class AccountCapabilitiesTest {
      */
     public static class CapabilitiesTestParams implements ParameterProvider {
         private static List<ParameterSet> sCapabilties = Arrays.asList(
+                new ParameterSet()
+                        .name("CanHaveEmailAddressDisplayed")
+                        .value(AccountCapabilitiesConstants
+                                        .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME),
                 new ParameterSet()
                         .name("CanRunChromePrivacySandboxTrials")
                         .value(AccountCapabilitiesConstants

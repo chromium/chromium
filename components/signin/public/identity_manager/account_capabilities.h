@@ -38,6 +38,9 @@ class AccountCapabilities {
       JNIEnv* env) const;
 #endif
 
+  // Chrome can display the email address for accounts with this capability.
+  signin::Tribool can_have_email_address_displayed() const;
+
   // Chrome can offer extended promos for turning on Sync to accounts with this
   // capability.
   signin::Tribool can_offer_extended_chrome_sync_promos() const;

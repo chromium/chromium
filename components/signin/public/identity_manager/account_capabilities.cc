@@ -59,6 +59,10 @@ signin::Tribool AccountCapabilities::GetCapabilityByName(
   return iterator->second ? signin::Tribool::kTrue : signin::Tribool::kFalse;
 }
 
+signin::Tribool AccountCapabilities::can_have_email_address_displayed() const {
+  return GetCapabilityByName(kCanHaveEmailAddressDisplayedCapabilityName);
+}
+
 signin::Tribool AccountCapabilities::can_offer_extended_chrome_sync_promos()
     const {
   return GetCapabilityByName(kCanOfferExtendedChromeSyncPromosCapabilityName);

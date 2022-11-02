@@ -88,6 +88,14 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canHaveEmailAddressDisplayed capability value.
+     */
+    public @Tribool int canHaveEmailAddressDisplayed() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME);
+    }
+
+    /**
      * @return canRunChromePrivacySandboxTrials capability value.
      */
     public @Tribool int canRunChromePrivacySandboxTrials() {

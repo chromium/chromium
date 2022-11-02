@@ -16,6 +16,12 @@ AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames() {
   return AccountCapabilities::GetSupportedAccountCapabilityNames();
 }
 
+void AccountCapabilitiesTestMutator::set_can_have_email_address_displayed(
+    bool value) {
+  capabilities_
+      ->capabilities_map_[kCanHaveEmailAddressDisplayedCapabilityName] = value;
+}
+
 void AccountCapabilitiesTestMutator::set_can_offer_extended_chrome_sync_promos(
     bool value) {
   capabilities_

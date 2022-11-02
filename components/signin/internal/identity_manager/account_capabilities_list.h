@@ -24,6 +24,10 @@ ACCOUNT_CAPABILITY(kIsAllowedForMachineLearningCapabilityName,
                    IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,
                    "accountcapabilities/g42tslldmfya")
 
+ACCOUNT_CAPABILITY(kCanHaveEmailAddressDisplayedCapabilityName,
+                   CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
+                   "accountcapabilities/haytqlldmfya")
+
 ACCOUNT_CAPABILITY(kCanOfferExtendedChromeSyncPromosCapabilityName,
                    CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
                    "accountcapabilities/gi2tklldmfya")

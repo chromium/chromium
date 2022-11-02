@@ -18,6 +18,7 @@ class AccountCapabilitiesTestMutator {
   static const std::vector<std::string>& GetSupportedAccountCapabilityNames();
 
   // Exposes setters for the supported capabilities.
+  void set_can_have_email_address_displayed(bool value);
   void set_can_offer_extended_chrome_sync_promos(bool value);
   void set_can_run_chrome_privacy_sandbox_trials(bool value);
   void set_can_stop_parental_supervision(bool value);

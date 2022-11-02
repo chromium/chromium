@@ -13,6 +13,21 @@
 
 class AccountCapabilitiesTest : public testing::Test {};
 
+TEST_F(AccountCapabilitiesTest, CanHaveEmailAddressDisplayed) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_have_email_address_displayed(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_have_email_address_displayed(true);
+  EXPECT_EQ(capabilities.can_have_email_address_displayed(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_have_email_address_displayed(false);
+  EXPECT_EQ(capabilities.can_have_email_address_displayed(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, CanOfferExtendedChromeSyncPromos) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_offer_extended_chrome_sync_promos(),
