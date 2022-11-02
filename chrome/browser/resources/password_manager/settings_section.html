@@ -77,18 +77,15 @@
       [[getBlockedSitesDescription_(blockedSites_)]]
     </div>
   </div>
-  <iron-list id="blockedSitesList" preserve-focus items="[[blockedSites_]]"
-      class="hr" risk-selection hidden$="[[!blockedSites_.length]]">
-    <template>
+  <div id="blockedSitesList" class="hr" hidden="[[!blockedSites_.length]]">
+    <template is="dom-repeat" items="[[blockedSites_]]">
       <div class="flex-centered">
         <site-favicon class="favicon" url="[[item.urls.link]]"></site-favicon>
         <div class="blocked-site-content flex-centered" first$="[[!index]]">
-          <div class="label site-url">
-            [[item.urls.shown]]
-          </div>
+          <div class="label site-url">[[item.urls.shown]]</div>
           <cr-icon-button class="icon-clear"></cr-icon-button>
         </div>
       </div>
     </template>
-  </iron-list>
+  </div>
 </div>

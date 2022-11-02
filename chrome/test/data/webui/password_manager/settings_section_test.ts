@@ -5,13 +5,30 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {PasswordManagerImpl, PrefsBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
-import {createExceptionEntry, makePasswordManagerPrefs} from './test_util.js';
+import {createBlockedSiteEntry, makePasswordManagerPrefs} from './test_util.js';
+
+/**
+ * Helper method that validates a that elements in the exception list match
+ * the expected data.
+ * @param nodes The nodes that will be checked.
+ * @param blockedSiteList The expected data.
+ */
+function assertBlockedSiteList(
+    nodes: NodeListOf<HTMLElement>,
+    blockedSiteList: chrome.passwordsPrivate.ExceptionEntry[]) {
+  assertEquals(blockedSiteList.length, nodes.length);
+  for (let index = 0; index < blockedSiteList.length; ++index) {
+    const node = nodes[index]!;
+    const blockedSite = blockedSiteList[index]!;
+    assertEquals(blockedSite.urls.shown, node.textContent!.trim());
+  }
+}
 
 suite('SettingsSectionTest', function() {
   let prefsProxy: TestPrefsBrowserProxy;
@@ -63,23 +80,20 @@ suite('SettingsSectionTest', function() {
     assertFalse(settings.$.autosigninToggle.checked);
   });
 
-  test('settings section shows exceptions', async function() {
+  test('settings section shows blockedSites', async function() {
+    passwordManager.data.blockedSites = [
+      createBlockedSiteEntry('test.com', 0),
+      createBlockedSiteEntry('test2.com', 1),
+    ];
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
     await flushTasks();
-
-    // List is hidden as there are no exceptions.
-    assertFalse(isVisible(settings.$.blockedSitesList));
-
-    const exceptions = [
-      createExceptionEntry('test.com', 0),
-      createExceptionEntry('test2.com', 1),
-    ];
-    assertTrue(!!passwordManager.listeners.blockedSitesListChangedListener);
-    passwordManager.listeners.blockedSitesListChangedListener!(exceptions);
-    await flushTasks();
+    await passwordManager.whenCalled('getBlockedSitesList');
 
     assertTrue(isVisible(settings.$.blockedSitesList));
-    assertDeepEquals(exceptions, settings.$.blockedSitesList.items);
+    assertBlockedSiteList(
+        settings.$.blockedSitesList.querySelectorAll<HTMLElement>(
+            '.blocked-site-content'),
+        passwordManager.data.blockedSites);
   });
 });

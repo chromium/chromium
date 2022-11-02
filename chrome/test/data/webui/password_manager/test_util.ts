@@ -70,11 +70,11 @@ export function createPasswordEntry(params?: PasswordEntryParams):
 }
 
 /**
- * Creates a single item for the list of password exceptions. If no |id| is
+ * Creates a single item for the list of password blockedSites. If no |id| is
  * passed, it is set to a default, value so this should probably not be done in
  * tests with multiple entries (|id| is unique).
  */
-export function createExceptionEntry(
+export function createBlockedSiteEntry(
     url?: string, id?: number): chrome.passwordsPrivate.ExceptionEntry {
   url = url || 'www.foo.com';
   id = id || 42;

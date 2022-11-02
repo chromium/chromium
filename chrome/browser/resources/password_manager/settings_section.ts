@@ -9,7 +9,6 @@ import './prefs/pref_toggle_button.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BlockedSite, BlockedSitesListChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
@@ -19,7 +18,7 @@ import {getTemplate} from './settings_section.html.js';
 export interface SettingsSectionElement {
   $: {
     autosigninToggle: PrefToggleButtonElement,
-    blockedSitesList: IronListElement,
+    blockedSitesList: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
   };
 }
