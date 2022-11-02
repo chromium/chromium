@@ -56,15 +56,6 @@ class MockDate {
 
 // Set up the test components.
 export function setUp() {
-  // Mock LoadTimeData strings.
-  window.loadTimeData.resetForTesting({
-    COPY_FILE_NAME: 'Copying $1...',
-    COPY_TARGET_EXISTS_ERROR: '$1 is already exists.',
-    COPY_FILESYSTEM_ERROR: 'Copy filesystem error: $1',
-    FILE_ERROR_GENERIC: 'File error generic.',
-    COPY_UNEXPECTED_ERROR: 'Copy unexpected error: $1',
-  });
-
   // Create mock items needed for FileOperationHandler.
   fileOperationManager = new MockFileOperationManager();
   progressCenter = new MockProgressCenter();

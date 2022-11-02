@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
-import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -53,41 +51,6 @@ metrics.recordEnum = function(name, value, opt_validValues) {};
 const TOTAL_FILTER_BUTTON_COUNT = 5;
 
 export function setUp() {
-  // Mock loadTimeData strings.
-  loadTimeData.resetForTesting({
-    MEDIA_VIEW_ALL_ROOT_LABEL: 'All',
-    MEDIA_VIEW_AUDIO_ROOT_LABEL: 'Audio',
-    MEDIA_VIEW_IMAGES_ROOT_LABEL: 'Images',
-    MEDIA_VIEW_VIDEOS_ROOT_LABEL: 'Videos',
-    MEDIA_VIEW_DOCUMENTS_ROOT_LABEL: 'Documents',
-    RECENT_VIEW_FILTER_ON: 'on',
-    RECENT_VIEW_FILTER_OFF: 'off',
-    RECENT_VIEW_FILTER_RESET: 'reset',
-    FILTERS_IN_RECENTS_V2_ENABLED: true,
-  });
-
-  /**
-   * Mock chrome APIs.
-   * @type {!Object}
-   */
-  const mockChrome = {
-    fileManagerPrivate: {
-      SourceRestriction: {
-        ANY_SOURCE: 'any_source',
-        NATIVE_SOURCE: 'native_source',
-      },
-      RecentFileType: {
-        ALL: 'all',
-        AUDIO: 'audio',
-        IMAGE: 'image',
-        VIDEO: 'video',
-        DOCUMENT: 'document',
-      },
-    },
-  };
-
-  installMockChrome(mockChrome);
-
   class MockDirectoryModel extends EventTarget {
     constructor() {
       super();

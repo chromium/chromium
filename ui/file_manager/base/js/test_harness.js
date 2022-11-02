@@ -5,6 +5,8 @@
 // Mark the test as fully loaded. The Browser Test reads this.
 window.__TEST_LOADED__ = false;
 
+import 'chrome://webui-test/strings.m.js';
+
 async function run() {
   // Grab the JS module to test from the GET params.
   const params = new URLSearchParams(window.location.search);

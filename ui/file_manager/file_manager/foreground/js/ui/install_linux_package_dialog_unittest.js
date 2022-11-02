@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {InstallLinuxPackageDialog} from './install_linux_package_dialog.js';
@@ -12,10 +11,6 @@ export function testInstallButtonHiddenUntilInfoReady() {
   // Polyfill chrome.app.window.current().
   /** @suppress {checkTypes,const} */
   chrome.app = {window: {current: () => null}};
-
-  // Mock loadTimeData.
-  loadTimeData.getString = id => id;
-  loadTimeData.data = {};
 
   let getInfoCallback;
   /** @suppress {checkTypes,const} */

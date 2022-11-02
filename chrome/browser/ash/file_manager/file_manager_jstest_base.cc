@@ -9,6 +9,7 @@
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/lazy_instance.h"
 #include "base/path_service.h"
+#include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,6 +22,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
 #include "ui/file_manager/grit/file_manager_resources_map.h"
+
 namespace {
 
 // WebUIProvider to attach the URLDataSource for the test URL during tests.
@@ -54,6 +56,11 @@ class TestWebUIProvider
                                             kFileManagerGenResources,
                                             kFileManagerGenResourcesSize);
 
+    dict_ = GetFileManagerStrings();
+    AddFileManagerFeatureStrings("en-US", Profile::FromWebUI(web_ui), &dict_);
+    files_swa_source->AddLocalizedStrings(dict_);
+    files_swa_source->UseStringsJs();
+
     content::WebUIDataSource::Add(profile, files_swa_source);
 
     return std::make_unique<content::WebUIController>(web_ui);
@@ -80,7 +87,14 @@ class TestWebUIProvider
 
     // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
     source->DisableTrustedTypesCSP();
+
+    DCHECK(!dict_.empty()) << "The translation should be fully loaded";
+    source->AddLocalizedStrings(dict_);
+    source->UseStringsJs();
   }
+
+ private:
+  base::Value::Dict dict_;
 };
 
 base::LazyInstance<TestWebUIProvider>::DestructorAtExit test_webui_provider_ =
