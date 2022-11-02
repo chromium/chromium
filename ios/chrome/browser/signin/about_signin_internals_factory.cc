@@ -22,6 +22,7 @@ AboutSigninInternalsFactory::AboutSigninInternalsFactory()
     : BrowserStateKeyedServiceFactory(
           "AboutSigninInternals",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(AccountReconcilorFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SigninClientFactory::GetInstance());
   DependsOn(SigninErrorControllerFactory::GetInstance());

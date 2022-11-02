@@ -71,6 +71,7 @@ BookmarkModelFactory::BookmarkModelFactory()
     : BrowserStateKeyedServiceFactory(
           "BookmarkModel",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(ios::BookmarkSyncServiceFactory::GetInstance());
   DependsOn(ios::BookmarkUndoServiceFactory::GetInstance());
   DependsOn(ManagedBookmarkServiceFactory::GetInstance());
 }
