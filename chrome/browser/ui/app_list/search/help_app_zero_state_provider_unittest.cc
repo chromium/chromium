@@ -10,10 +10,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/app_list/app_list_notifier_impl.h"
-#include "chrome/browser/ui/app_list/app_list_notifier_impl_old.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
@@ -47,8 +45,7 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
  public:
   HelpAppZeroStateProviderTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kReleaseNotesSuggestionChip,
-                              ash::features::kProductivityLauncher},
+        /*enabled_features=*/{chromeos::features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{});
   }
   ~HelpAppZeroStateProviderTest() override = default;

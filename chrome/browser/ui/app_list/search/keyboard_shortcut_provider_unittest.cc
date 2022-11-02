@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_provider.h"
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
@@ -21,15 +19,9 @@ namespace {
 constexpr double kResultRelevanceThreshold = 0.89;
 }
 
-// Parameterized by feature ProductivityLauncher.
-class KeyboardShortcutProviderTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<bool> {
+class KeyboardShortcutProviderTest : public testing::Test {
  public:
-  KeyboardShortcutProviderTest() {
-    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
-                                       GetParam());
-  }
+  KeyboardShortcutProviderTest() = default;
 
  protected:
   void SetUp() override {
@@ -56,7 +48,6 @@ class KeyboardShortcutProviderTest
     search_controller_->StartSearch(query);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<Profile> profile_;
@@ -64,14 +55,10 @@ class KeyboardShortcutProviderTest
   KeyboardShortcutProvider* provider_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         KeyboardShortcutProviderTest,
-                         testing::Bool());
-
 // Make search queries which yield shortcut results with shortcut key
 // combinations of differing length and format. Check that the top result has a
 // high relevance score, and correctly set title and accessible name.
-TEST_P(KeyboardShortcutProviderTest, Search) {
+TEST_F(KeyboardShortcutProviderTest, Search) {
   // Result format: Single Key
   StartSearch(u"overview mode");
   Wait();
