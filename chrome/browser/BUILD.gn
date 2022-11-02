@@ -3566,6 +3566,7 @@ static_library("browser") {
       "apps/app_service/app_icon/app_icon_loader.h",
       "apps/app_service/app_icon/app_icon_source.cc",
       "apps/app_service/app_icon/app_icon_source.h",
+      "apps/app_service/app_icon/app_icon_util.h",
       "apps/app_service/app_icon/dip_px_util.cc",
       "apps/app_service/app_icon/dip_px_util.h",
       "apps/app_service/app_icon/icon_key_util.cc",
