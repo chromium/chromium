@@ -296,17 +296,6 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           /*ui_name=*/"", /*privacy_policy=*/"",
           /*display_globally=*/false,
           /*display_countries=*/{}, LoggingLevel::kNormal),
-      new DohProviderEntry(
-          "Switch",
-          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-              DohProviderSwitch, base::FEATURE_DISABLED_BY_DEFAULT),
-          /*provider_id_for_histogram=*/absl::nullopt,
-          {"130.59.31.251", "130.59.31.248", "2001:620:0:ff::2",
-           "2001:620:0:ff::3"},
-          /*dns_over_tls_hostnames=*/{"dns.switch.ch"},
-          "https://dns.switch.ch/dns-query", /*ui_name=*/"",
-          /*privacy_policy=*/"", /*display_globally=*/false,
-          /*display_countries=*/{}, LoggingLevel::kNormal),
   }};
   return *providers;
 }

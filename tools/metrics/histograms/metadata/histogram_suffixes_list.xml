@@ -2423,7 +2423,6 @@ chromium-metrics-reviews@google.com.
       label="Charter Communications/Spectrum DoH endpoint1."/>
   <suffix name="Spectrum2"
       label="Charter Communications/Spectrum DoH endpoint2."/>
-  <suffix name="Switch" label="SWITCH Public DNS."/>
   <affected-histogram name="Net.DNS.DnsTransaction.Insecure.FailureTime"/>
   <affected-histogram name="Net.DNS.DnsTransaction.Insecure.SuccessTime"/>
   <affected-histogram
