@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 
 #include <memory>
 #include <string>
@@ -19,7 +19,11 @@
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
+#include "components/named_mojo_ipc_server/testing.test-mojom.h"
+#include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -27,12 +31,10 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "remoting/host/mojo_ipc/mojo_ipc_test_util.h"
-#include "remoting/host/mojom/testing.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
 namespace {
 
@@ -55,10 +57,10 @@ void SendEchoAndVerifyResponse(mojo::Remote<test::mojom::Echo>& echo_remote) {
 
 }  // namespace
 
-class MojoIpcServerTest : public testing::Test, public test::mojom::Echo {
+class NamedMojoIpcServerTest : public testing::Test, public test::mojom::Echo {
  public:
-  MojoIpcServerTest();
-  ~MojoIpcServerTest() override;
+  NamedMojoIpcServerTest();
+  ~NamedMojoIpcServerTest() override;
 
   void SetUp() override;
 
@@ -68,7 +70,9 @@ class MojoIpcServerTest : public testing::Test, public test::mojom::Echo {
       mojo::IsolatedConnection& client_connection);
   void WaitForInvitationSent();
 
-  std::unique_ptr<MojoIpcServer<test::mojom::Echo>> ipc_server_;
+  base::Thread ipc_thread_{"ipc!"};
+  std::unique_ptr<NamedMojoIpcServer<test::mojom::Echo>> ipc_server_;
+
   mojo::ReceiverId last_echo_string_receiver_id_ = 0u;
 
   // If this is set, EchoString() will run this callback instead of responding
@@ -81,50 +85,58 @@ class MojoIpcServerTest : public testing::Test, public test::mojom::Echo {
 
   void OnInvitationSent();
 
+  std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
   mojo::NamedPlatformChannel::ServerName test_server_name_;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
 
-  // Run loops that wait for MojoIpcServerBase::ObserverForTesting methods to
-  // be called.
+  // Run loops that wait for NamedMojoIpcServerBase::ObserverForTesting methods
+  // to be called.
   std::unique_ptr<base::RunLoop> on_invitation_sent_run_loop_;
 };
 
-MojoIpcServerTest::MojoIpcServerTest() {
+NamedMojoIpcServerTest::NamedMojoIpcServerTest() {
+  ipc_thread_.StartWithOptions(
+      base::Thread::Options(base::MessagePumpType::IO, 0));
+  ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
+      ipc_thread_.task_runner(),
+      mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
+
   test_server_name_ = test::GenerateRandomServerName();
-  ipc_server_ = std::make_unique<MojoIpcServer<test::mojom::Echo>>(
+  ipc_server_ = std::make_unique<NamedMojoIpcServer<test::mojom::Echo>>(
       test_server_name_, this,
       base::BindRepeating([](base::ProcessId) { return true; }));
   ipc_server_->set_on_invitation_sent_callback_for_testing(base::BindRepeating(
-      &MojoIpcServerTest::OnInvitationSent, base::Unretained(this)));
+      &NamedMojoIpcServerTest::OnInvitationSent, base::Unretained(this)));
   on_invitation_sent_run_loop_ = std::make_unique<base::RunLoop>();
 }
 
-MojoIpcServerTest::~MojoIpcServerTest() = default;
+NamedMojoIpcServerTest::~NamedMojoIpcServerTest() = default;
 
-void MojoIpcServerTest::SetUp() {
+void NamedMojoIpcServerTest::SetUp() {
   ipc_server_->StartServer();
   WaitForInvitationSent();
 }
 
-mojo::PlatformChannelEndpoint MojoIpcServerTest::ConnectToTestServer() {
+mojo::PlatformChannelEndpoint NamedMojoIpcServerTest::ConnectToTestServer() {
   return mojo::NamedPlatformChannel::ConnectToServer(test_server_name_);
 }
 
-mojo::Remote<test::mojom::Echo> MojoIpcServerTest::ConnectAndCreateEchoRemote(
+mojo::Remote<test::mojom::Echo>
+NamedMojoIpcServerTest::ConnectAndCreateEchoRemote(
     mojo::IsolatedConnection& client_connection) {
   return mojo::Remote<test::mojom::Echo>(mojo::PendingRemote<test::mojom::Echo>(
       client_connection.Connect(ConnectToTestServer()), /* version= */ 0));
 }
 
-void MojoIpcServerTest::WaitForInvitationSent() {
+void NamedMojoIpcServerTest::WaitForInvitationSent() {
   on_invitation_sent_run_loop_->Run();
   on_invitation_sent_run_loop_ = std::make_unique<base::RunLoop>();
 }
 
-void MojoIpcServerTest::EchoString(const std::string& input,
-                                   EchoStringCallback callback) {
+void NamedMojoIpcServerTest::EchoString(const std::string& input,
+                                        EchoStringCallback callback) {
   if (echo_string_handler_) {
     echo_string_handler_.Run(input, std::move(callback));
     return;
@@ -135,17 +147,17 @@ void MojoIpcServerTest::EchoString(const std::string& input,
   ASSERT_EQ(base::GetCurrentProcId(), ipc_server_->current_peer_pid());
 }
 
-void MojoIpcServerTest::OnInvitationSent() {
+void NamedMojoIpcServerTest::OnInvitationSent() {
   on_invitation_sent_run_loop_->Quit();
 }
 
-TEST_F(MojoIpcServerTest, SendEcho) {
+TEST_F(NamedMojoIpcServerTest, SendEcho) {
   mojo::IsolatedConnection client_connection;
   auto echo_remote = ConnectAndCreateEchoRemote(client_connection);
   SendEchoAndVerifyResponse(echo_remote);
 }
 
-TEST_F(MojoIpcServerTest, DeleteMojoServer_NoLingeringInvitations) {
+TEST_F(NamedMojoIpcServerTest, DeleteNamedMojoServer_NoLingeringInvitations) {
   ipc_server_.reset();
   base::RunLoop().RunUntilIdle();
   // For posix, the socket doesn't seem to be closed immediately after the
@@ -157,7 +169,7 @@ TEST_F(MojoIpcServerTest, DeleteMojoServer_NoLingeringInvitations) {
   ASSERT_FALSE(endpoint.is_valid());
 }
 
-TEST_F(MojoIpcServerTest, DisconnectHandler) {
+TEST_F(NamedMojoIpcServerTest, DisconnectHandler) {
   base::RunLoop disconnect_run_loop;
   base::MockCallback<base::RepeatingClosure> disconnect_handler;
   EXPECT_CALL(disconnect_handler, Run()).WillOnce([&]() {
@@ -177,7 +189,7 @@ TEST_F(MojoIpcServerTest, DisconnectHandler) {
   disconnect_run_loop.Run();
 }
 
-TEST_F(MojoIpcServerTest, DeleteMojoServer_RemoteDisconnected) {
+TEST_F(NamedMojoIpcServerTest, DeleteNamedMojoServer_RemoteDisconnected) {
   mojo::IsolatedConnection client_connection;
   auto echo_remote = ConnectAndCreateEchoRemote(client_connection);
   SendEchoAndVerifyResponse(echo_remote);
@@ -188,7 +200,7 @@ TEST_F(MojoIpcServerTest, DeleteMojoServer_RemoteDisconnected) {
   disconnect_run_loop.Run();
 }
 
-TEST_F(MojoIpcServerTest, StopServer_RemoteDisconnected) {
+TEST_F(NamedMojoIpcServerTest, StopServer_RemoteDisconnected) {
   mojo::IsolatedConnection client_connection;
   auto echo_remote = ConnectAndCreateEchoRemote(client_connection);
   SendEchoAndVerifyResponse(echo_remote);
@@ -199,7 +211,7 @@ TEST_F(MojoIpcServerTest, StopServer_RemoteDisconnected) {
   disconnect_run_loop.Run();
 }
 
-TEST_F(MojoIpcServerTest, CloseReceiver_RemoteDisconnected) {
+TEST_F(NamedMojoIpcServerTest, CloseReceiver_RemoteDisconnected) {
   mojo::IsolatedConnection client_connection;
   auto echo_remote = ConnectAndCreateEchoRemote(client_connection);
   SendEchoAndVerifyResponse(echo_remote);
@@ -212,13 +224,13 @@ TEST_F(MojoIpcServerTest, CloseReceiver_RemoteDisconnected) {
   ASSERT_EQ(0u, ipc_server_->GetNumberOfActiveConnectionsForTesting());
 }
 
-TEST_F(MojoIpcServerTest, CloseNonexistentReceiver_NoCrash) {
+TEST_F(NamedMojoIpcServerTest, CloseNonexistentReceiver_NoCrash) {
   ASSERT_EQ(0u, ipc_server_->GetNumberOfActiveConnectionsForTesting());
   ipc_server_->Close(1u);
   ASSERT_EQ(0u, ipc_server_->GetNumberOfActiveConnectionsForTesting());
 }
 
-TEST_F(MojoIpcServerTest, RemoteDisconnected_ConnectionRemoved) {
+TEST_F(NamedMojoIpcServerTest, RemoteDisconnected_ConnectionRemoved) {
   mojo::IsolatedConnection client_connection;
   auto echo_remote = ConnectAndCreateEchoRemote(client_connection);
   SendEchoAndVerifyResponse(echo_remote);
@@ -231,7 +243,8 @@ TEST_F(MojoIpcServerTest, RemoteDisconnected_ConnectionRemoved) {
   ASSERT_EQ(0u, ipc_server_->GetNumberOfActiveConnectionsForTesting());
 }
 
-TEST_F(MojoIpcServerTest, RemoteDisconnectedBeforeBound_NewInvitationIsSent) {
+TEST_F(NamedMojoIpcServerTest,
+       RemoteDisconnectedBeforeBound_NewInvitationIsSent) {
   mojo::IsolatedConnection client_connection;
   auto handle = client_connection.Connect(ConnectToTestServer());
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -239,13 +252,13 @@ TEST_F(MojoIpcServerTest, RemoteDisconnectedBeforeBound_NewInvitationIsSent) {
   WaitForInvitationSent();
 }
 
-TEST_F(MojoIpcServerTest, RemoteConnectsAndHangs_NewInvitationIsSent) {
+TEST_F(NamedMojoIpcServerTest, RemoteConnectsAndHangs_NewInvitationIsSent) {
   mojo::IsolatedConnection client_connection;
   auto handle = client_connection.Connect(ConnectToTestServer());
   WaitForInvitationSent();
 }
 
-TEST_F(MojoIpcServerTest, ParallelIpcs) {
+TEST_F(NamedMojoIpcServerTest, ParallelIpcs) {
   base::RunLoop echo_response_run_loop;
   base::MockCallback<EchoStringCallback> echo_mock_callback;
   EXPECT_CALL(echo_mock_callback, Run(_))
@@ -278,4 +291,4 @@ TEST_F(MojoIpcServerTest, ParallelIpcs) {
   echo_response_run_loop.Run();
 }
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server

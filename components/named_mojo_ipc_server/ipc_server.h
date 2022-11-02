@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_MOJO_IPC_IPC_SERVER_H_
-#define REMOTING_HOST_MOJO_IPC_IPC_SERVER_H_
+#ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_IPC_SERVER_H_
+#define COMPONENTS_NAMED_MOJO_IPC_SERVER_IPC_SERVER_H_
 
 #include "base/callback.h"
 #include "base/process/process_handle.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
 // An interface for MojoIpcServer to allow mocking in unittests.
 class IpcServer {
@@ -41,6 +41,6 @@ class IpcServer {
   virtual base::ProcessId current_peer_pid() const = 0;
 };
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server
 
-#endif  // REMOTING_HOST_MOJO_IPC_IPC_SERVER_H_
+#endif  // COMPONENTS_NAMED_MOJO_IPC_SERVER_IPC_SERVER_H_

@@ -13,7 +13,6 @@ mojom("mojom") {
     "remote_support.mojom",
     "remote_url_opener.mojom",
     "remoting_host.mojom",
-    "testing.mojom",
     "webauthn_proxy.mojom",
     "webrtc_types.mojom",
     "wrapped_primitives.mojom",

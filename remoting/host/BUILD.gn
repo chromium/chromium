@@ -124,9 +124,9 @@ source_set("ipc_constants") {
   ]
   deps = [
     "//base",
+    "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
     "//remoting/host/base",
-    "//remoting/host/mojo_ipc",
   ]
 }
 
@@ -350,8 +350,8 @@ static_library("common") {
     "it2me_desktop_environment.h",
     "keyboard_layout_monitor.cc",
     "keyboard_layout_monitor.h",
-    "mojo_caller_security_checker.h",
     "mojo_caller_security_checker.cc",
+    "mojo_caller_security_checker.h",
     "mouse_cursor_monitor_proxy.cc",
     "mouse_cursor_monitor_proxy.h",
     "mouse_shape_pump.cc",
@@ -409,6 +409,7 @@ static_library("common") {
     "//base:i18n",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/named_mojo_ipc_server",
     "//components/policy/core/common",
     "//components/webrtc:thread_wrapper",
     "//crypto",
@@ -419,7 +420,6 @@ static_library("common") {
     "//remoting/base:authorization",
     "//remoting/host/file_transfer:common",
     "//remoting/host/input_monitor",
-    "//remoting/host/mojo_ipc",
     "//remoting/host/mojom",
     "//remoting/host/remote_open_url:common",
     "//remoting/host/security_key",
@@ -800,6 +800,8 @@ source_set("unit_tests") {
     ":test_support",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/named_mojo_ipc_server",
+    "//components/named_mojo_ipc_server:test_support",
     "//net:test_support",
     "//remoting/codec:encoder",
     "//remoting/host/base",
@@ -807,9 +809,6 @@ source_set("unit_tests") {
     "//remoting/host/input_monitor:input_monitor",
     "//remoting/host/it2me:common",
     "//remoting/host/it2me:constants",
-    "//remoting/host/mojo_ipc",
-    "//remoting/host/mojo_ipc:test_support",
-    "//remoting/host/mojo_ipc:unit_tests",
     "//remoting/host/mojom",
     "//remoting/host/native_messaging",
     "//remoting/host/remote_open_url:test_support",

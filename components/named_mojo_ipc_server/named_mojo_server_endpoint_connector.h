@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_MOJO_IPC_MOJO_SERVER_ENDPOINT_CONNECTOR_H_
-#define REMOTING_HOST_MOJO_IPC_MOJO_SERVER_ENDPOINT_CONNECTOR_H_
+#ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_H_
+#define COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_H_
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
 // Interface to allow platform-specific implementations to establish connection
 // between the server endpoint and the client. mojo::IsolatedConnection can
@@ -24,7 +24,7 @@ namespace remoting {
 // 2. Observing the client process' PID without passing it via IPC, which
 //    wouldn't be feasible with the alternative approach, since mojo doesn't
 //    expose the underlying socket/named pipe.
-class MojoServerEndpointConnector {
+class NamedMojoServerEndpointConnector {
  public:
   class Delegate {
    public:
@@ -45,19 +45,19 @@ class MojoServerEndpointConnector {
 
   // Creates the platform-specific MojoServerEndpointConnector. |delegate| must
   // outlives the created object.
-  static std::unique_ptr<MojoServerEndpointConnector> Create(
+  static std::unique_ptr<NamedMojoServerEndpointConnector> Create(
       Delegate* delegate);
 
-  virtual ~MojoServerEndpointConnector() = default;
+  virtual ~NamedMojoServerEndpointConnector() = default;
 
   // Connects to |server_endpoint|; invokes the delegate when it's connected or
   // failed to connect. Note that only one pending server endpoint is allowed.
   virtual void Connect(mojo::PlatformChannelServerEndpoint server_endpoint) = 0;
 
  protected:
-  MojoServerEndpointConnector() = default;
+  NamedMojoServerEndpointConnector() = default;
 };
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server
 
-#endif  // REMOTING_HOST_MOJO_IPC_MOJO_SERVER_ENDPOINT_CONNECTOR_H_
+#endif  // COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_H_

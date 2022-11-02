@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc/mojo_ipc_test_util.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
 
 #include <inttypes.h>
 
@@ -13,7 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 namespace test {
 
 mojo::NamedPlatformChannel::ServerName GenerateRandomServerName() {
@@ -34,4 +34,4 @@ mojo::NamedPlatformChannel::ServerName GenerateRandomServerName() {
 }
 
 }  // namespace test
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server

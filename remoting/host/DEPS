@@ -1,6 +1,7 @@
 include_rules = [
   "+ash",
   "+cc/output",
+  "+components/named_mojo_ipc_server",
   "+components/policy/core/common",
   "+components/viz/common",
   "+components/webrtc",

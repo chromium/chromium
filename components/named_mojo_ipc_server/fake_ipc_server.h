@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_MOJO_IPC_FAKE_IPC_SERVER_H_
-#define REMOTING_HOST_MOJO_IPC_FAKE_IPC_SERVER_H_
+#ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_FAKE_IPC_SERVER_H_
+#define COMPONENTS_NAMED_MOJO_IPC_SERVER_FAKE_IPC_SERVER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "remoting/host/mojo_ipc/ipc_server.h"
+#include "components/named_mojo_ipc_server/ipc_server.h"
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
 class FakeIpcServer final : public IpcServer {
  public:
@@ -40,6 +40,6 @@ class FakeIpcServer final : public IpcServer {
   raw_ptr<TestState> test_state_;
 };
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server
 
-#endif  // REMOTING_HOST_MOJO_IPC_FAKE_IPC_SERVER_H_
+#endif  // COMPONENTS_NAMED_MOJO_IPC_SERVER_FAKE_IPC_SERVER_H_

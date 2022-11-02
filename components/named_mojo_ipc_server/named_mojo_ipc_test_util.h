@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_MOJO_IPC_MOJO_IPC_TEST_UTIL_H_
-#define REMOTING_HOST_MOJO_IPC_MOJO_IPC_TEST_UTIL_H_
+#ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_TEST_UTIL_H_
+#define COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_TEST_UTIL_H_
 
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
-namespace remoting {
-namespace test {
+namespace named_mojo_ipc_server::test {
 
 // Generates a random server name for unittests.
 mojo::NamedPlatformChannel::ServerName GenerateRandomServerName();
 
-}  // namespace test
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server::test
 
-#endif  // REMOTING_HOST_MOJO_IPC_MOJO_IPC_TEST_UTIL_H_
+#endif  // COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_TEST_UTIL_H_

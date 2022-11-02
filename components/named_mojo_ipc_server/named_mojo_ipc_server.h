@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_MOJO_IPC_MOJO_IPC_SERVER_H_
-#define REMOTING_HOST_MOJO_IPC_MOJO_IPC_SERVER_H_
+#ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_SERVER_H_
+#define COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_SERVER_H_
 
 #include <memory>
 #include <utility>
@@ -18,25 +18,26 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "components/named_mojo_ipc_server/ipc_server.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "remoting/host/mojo_ipc/ipc_server.h"
-#include "remoting/host/mojo_ipc/mojo_server_endpoint_connector.h"
 
 namespace mojo {
 class IsolatedConnection;
 }
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
 // Template-less base class to keep implementations in the .cc file. For usage,
 // see MojoIpcServer.
-class MojoIpcServerBase : public IpcServer,
-                          public MojoServerEndpointConnector::Delegate {
+class NamedMojoIpcServerBase
+    : public IpcServer,
+      public NamedMojoServerEndpointConnector::Delegate {
  public:
   using IsTrustedMojoEndpointCallback =
       base::RepeatingCallback<bool(base::ProcessId)>;
@@ -60,9 +61,10 @@ class MojoIpcServerBase : public IpcServer,
   }
 
  protected:
-  MojoIpcServerBase(const mojo::NamedPlatformChannel::ServerName& server_name,
-                    IsTrustedMojoEndpointCallback is_trusted_endpoint_callback);
-  ~MojoIpcServerBase() override;
+  NamedMojoIpcServerBase(
+      const mojo::NamedPlatformChannel::ServerName& server_name,
+      IsTrustedMojoEndpointCallback is_trusted_endpoint_callback);
+  ~NamedMojoIpcServerBase() override;
 
   void SendInvitation();
 
@@ -102,13 +104,13 @@ class MojoIpcServerBase : public IpcServer,
   // A task runner to run blocking jobs.
   scoped_refptr<base::SequencedTaskRunner> io_sequence_;
 
-  std::unique_ptr<MojoServerEndpointConnector> endpoint_connector_;
+  std::unique_ptr<NamedMojoServerEndpointConnector> endpoint_connector_;
   ActiveConnectionMap active_connections_;
   base::OneShotTimer resent_invitation_on_error_timer_;
 
   base::RepeatingClosure on_invitation_sent_callback_for_testing_;
 
-  base::WeakPtrFactory<MojoIpcServerBase> weak_factory_{this};
+  base::WeakPtrFactory<NamedMojoIpcServerBase> weak_factory_{this};
 };
 
 // A helper that uses a NamedPlatformChannel to send out mojo invitations and
@@ -146,24 +148,25 @@ class MojoIpcServerBase : public IpcServer,
 //         base::BindRepeating(&MyInterfaceImpl::IsTrustedMojoEndpoint)};
 //   };
 template <typename Interface>
-class MojoIpcServer final : public MojoIpcServerBase {
+class NamedMojoIpcServer final : public NamedMojoIpcServerBase {
  public:
   // server_name: The server name to start the NamedPlatformChannel.
   // is_trusted_endpoint_callback: A predicate which returns true if the process
   // referred to by the caller PID is a trusted mojo endpoint.
-  MojoIpcServer(const mojo::NamedPlatformChannel::ServerName& server_name,
-                Interface* interface_impl,
-                IsTrustedMojoEndpointCallback is_trusted_endpoint_callback)
-      : MojoIpcServerBase(server_name, std::move(is_trusted_endpoint_callback)),
+  NamedMojoIpcServer(const mojo::NamedPlatformChannel::ServerName& server_name,
+                     Interface* interface_impl,
+                     IsTrustedMojoEndpointCallback is_trusted_endpoint_callback)
+      : NamedMojoIpcServerBase(server_name,
+                               std::move(is_trusted_endpoint_callback)),
         interface_impl_(interface_impl) {
     receiver_set_.set_disconnect_handler(base::BindRepeating(
-        &MojoIpcServer::OnIpcDisconnected, base::Unretained(this)));
+        &NamedMojoIpcServer::OnIpcDisconnected, base::Unretained(this)));
   }
 
-  ~MojoIpcServer() override = default;
+  ~NamedMojoIpcServer() override = default;
 
-  MojoIpcServer(const MojoIpcServer&) = delete;
-  MojoIpcServer& operator=(const MojoIpcServer&) = delete;
+  NamedMojoIpcServer(const NamedMojoIpcServer&) = delete;
+  NamedMojoIpcServer& operator=(const NamedMojoIpcServer&) = delete;
 
   void set_disconnect_handler(base::RepeatingClosure handler) override {
     disconnect_handler_ = handler;
@@ -178,7 +181,7 @@ class MojoIpcServer final : public MojoIpcServerBase {
   }
 
  private:
-  // MojoIpcServerBase implementation.
+  // NamedMojoIpcServerBase implementation.
   mojo::ReceiverId TrackMessagePipe(mojo::ScopedMessagePipeHandle message_pipe,
                                     base::ProcessId peer_pid) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -200,6 +203,6 @@ class MojoIpcServer final : public MojoIpcServerBase {
   mojo::ReceiverSet<Interface, base::ProcessId> receiver_set_;
 };
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server
 
-#endif  // REMOTING_HOST_MOJO_IPC_MOJO_IPC_SERVER_H_
+#endif  // COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_SERVER_H_

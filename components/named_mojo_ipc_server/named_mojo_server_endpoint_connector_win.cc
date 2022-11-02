@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc/mojo_server_endpoint_connector_win.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector_win.h"
 
 #include <string.h>
 #include <windows.h>
@@ -23,9 +23,9 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
-MojoServerEndpointConnectorWin::MojoServerEndpointConnectorWin(
+NamedMojoServerEndpointConnectorWin::NamedMojoServerEndpointConnectorWin(
     Delegate* delegate)
     : delegate_(delegate),
       client_connected_event_(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -33,11 +33,11 @@ MojoServerEndpointConnectorWin::MojoServerEndpointConnectorWin(
   DCHECK(delegate_);
 }
 
-MojoServerEndpointConnectorWin::~MojoServerEndpointConnectorWin() {
+NamedMojoServerEndpointConnectorWin::~NamedMojoServerEndpointConnectorWin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void MojoServerEndpointConnectorWin::Connect(
+void NamedMojoServerEndpointConnectorWin::Connect(
     mojo::PlatformChannelServerEndpoint server_endpoint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(server_endpoint.is_valid());
@@ -68,7 +68,7 @@ void MojoServerEndpointConnectorWin::Connect(
       client_connection_watcher_.StartWatching(
           &client_connected_event_,
           base::BindOnce(
-              &MojoServerEndpointConnectorWin::OnConnectedEventSignaled,
+              &NamedMojoServerEndpointConnectorWin::OnConnectedEventSignaled,
               base::Unretained(this)),
           base::SequencedTaskRunnerHandle::Get());
       return;
@@ -79,7 +79,7 @@ void MojoServerEndpointConnectorWin::Connect(
   }
 }
 
-void MojoServerEndpointConnectorWin::OnConnectedEventSignaled(
+void NamedMojoServerEndpointConnectorWin::OnConnectedEventSignaled(
     base::WaitableEvent* event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(&client_connected_event_, event);
@@ -87,7 +87,7 @@ void MojoServerEndpointConnectorWin::OnConnectedEventSignaled(
   OnReady();
 }
 
-void MojoServerEndpointConnectorWin::OnReady() {
+void NamedMojoServerEndpointConnectorWin::OnReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::ProcessId peer_pid;
@@ -111,7 +111,7 @@ void MojoServerEndpointConnectorWin::OnReady() {
                                        std::move(message_pipe), peer_pid);
 }
 
-void MojoServerEndpointConnectorWin::OnError() {
+void NamedMojoServerEndpointConnectorWin::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ResetConnectionObjects();
@@ -119,12 +119,12 @@ void MojoServerEndpointConnectorWin::OnError() {
 }
 
 // static
-std::unique_ptr<MojoServerEndpointConnector>
-MojoServerEndpointConnector::Create(Delegate* delegate) {
-  return std::make_unique<MojoServerEndpointConnectorWin>(delegate);
+std::unique_ptr<NamedMojoServerEndpointConnector>
+NamedMojoServerEndpointConnector::Create(Delegate* delegate) {
+  return std::make_unique<NamedMojoServerEndpointConnectorWin>(delegate);
 }
 
-void MojoServerEndpointConnectorWin::ResetConnectionObjects() {
+void NamedMojoServerEndpointConnectorWin::ResetConnectionObjects() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   client_connection_watcher_.StopWatching();
@@ -132,4 +132,4 @@ void MojoServerEndpointConnectorWin::ResetConnectionObjects() {
   pending_named_pipe_handle_.Close();
 }
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server

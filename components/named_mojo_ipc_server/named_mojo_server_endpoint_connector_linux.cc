@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc/mojo_server_endpoint_connector_linux.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector_linux.h"
 
 #include <sys/socket.h>
 
@@ -13,19 +13,20 @@
 #include "base/logging.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
-MojoServerEndpointConnectorLinux::MojoServerEndpointConnectorLinux(
+NamedMojoServerEndpointConnectorLinux::NamedMojoServerEndpointConnectorLinux(
     Delegate* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
 }
 
-MojoServerEndpointConnectorLinux::~MojoServerEndpointConnectorLinux() {
+NamedMojoServerEndpointConnectorLinux::
+    ~NamedMojoServerEndpointConnectorLinux() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void MojoServerEndpointConnectorLinux::Connect(
+void NamedMojoServerEndpointConnectorLinux::Connect(
     mojo::PlatformChannelServerEndpoint server_endpoint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(server_endpoint.is_valid());
@@ -35,11 +36,11 @@ void MojoServerEndpointConnectorLinux::Connect(
   read_watcher_controller_ = base::FileDescriptorWatcher::WatchReadable(
       pending_server_endpoint_.platform_handle().GetFD().get(),
       base::BindRepeating(
-          &MojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking,
+          &NamedMojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking,
           weak_factory_.GetWeakPtr()));
 }
 
-void MojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
+void NamedMojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int fd = pending_server_endpoint_.platform_handle().GetFD().get();
@@ -82,9 +83,9 @@ void MojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
 }
 
 // static
-std::unique_ptr<MojoServerEndpointConnector>
-MojoServerEndpointConnector::Create(Delegate* delegate) {
-  return std::make_unique<MojoServerEndpointConnectorLinux>(delegate);
+std::unique_ptr<NamedMojoServerEndpointConnector>
+NamedMojoServerEndpointConnector::Create(Delegate* delegate) {
+  return std::make_unique<NamedMojoServerEndpointConnectorLinux>(delegate);
 }
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server

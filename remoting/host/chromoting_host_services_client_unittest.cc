@@ -16,9 +16,10 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
+#include "remoting/host/chromoting_host.h"
 #include "remoting/host/mojo_caller_security_checker.h"
-#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
-#include "remoting/host/mojo_ipc/mojo_ipc_test_util.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,7 +42,9 @@ class ChromotingHostServicesClientTest : public testing::Test,
   void SetRemoteDisconnectCallback(base::OnceClosure callback);
 
   std::unique_ptr<ChromotingHostServicesClient> client_;
-  std::unique_ptr<MojoIpcServer<mojom::ChromotingHostServices>> ipc_server_;
+  std::unique_ptr<
+      named_mojo_ipc_server::NamedMojoIpcServer<mojom::ChromotingHostServices>>
+      ipc_server_;
   std::vector<mojo::PendingReceiver<mojom::ChromotingSessionServices>>
       receivers_;
 
@@ -60,14 +63,15 @@ class ChromotingHostServicesClientTest : public testing::Test,
 };
 
 ChromotingHostServicesClientTest::ChromotingHostServicesClientTest() {
-  auto test_server_name = test::GenerateRandomServerName();
+  auto test_server_name =
+      named_mojo_ipc_server::test::GenerateRandomServerName();
   auto environment = base::Environment::Create();
   environment_ = environment.get();
   client_ = base::WrapUnique(new ChromotingHostServicesClient(
       std::move(environment), test_server_name));
-  ipc_server_ = std::make_unique<MojoIpcServer<mojom::ChromotingHostServices>>(
-      test_server_name, this,
-      base::BindRepeating(&IsTrustedMojoEndpoint));
+  ipc_server_ = std::make_unique<
+      named_mojo_ipc_server::NamedMojoIpcServer<mojom::ChromotingHostServices>>(
+      test_server_name, this, base::BindRepeating(&IsTrustedMojoEndpoint));
   ipc_server_->set_on_invitation_sent_callback_for_testing(
       base::BindRepeating(&ChromotingHostServicesClientTest::OnInvitationSent,
                           base::Unretained(this)));

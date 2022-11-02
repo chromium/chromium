@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_MOJO_IPC_MOJO_SERVER_ENDPOINT_CONNECTOR_WIN_H_
-#define REMOTING_HOST_MOJO_IPC_MOJO_SERVER_ENDPOINT_CONNECTOR_WIN_H_
+#ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_WIN_H_
+#define COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_WIN_H_
 
 #include <windows.h>
 
@@ -14,20 +14,20 @@
 #include "base/thread_annotations.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
-#include "remoting/host/mojo_ipc/mojo_server_endpoint_connector.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
-// Windows implementation for MojoServerEndpointConnector.
-class MojoServerEndpointConnectorWin final
-    : public MojoServerEndpointConnector {
+// Windows implementation for NamedMojoServerEndpointConnector.
+class NamedMojoServerEndpointConnectorWin final
+    : public NamedMojoServerEndpointConnector {
  public:
-  explicit MojoServerEndpointConnectorWin(Delegate* delegate);
-  MojoServerEndpointConnectorWin(const MojoServerEndpointConnectorWin&) =
-      delete;
-  MojoServerEndpointConnectorWin& operator=(
-      const MojoServerEndpointConnectorWin&) = delete;
-  ~MojoServerEndpointConnectorWin() override;
+  explicit NamedMojoServerEndpointConnectorWin(Delegate* delegate);
+  NamedMojoServerEndpointConnectorWin(
+      const NamedMojoServerEndpointConnectorWin&) = delete;
+  NamedMojoServerEndpointConnectorWin& operator=(
+      const NamedMojoServerEndpointConnectorWin&) = delete;
+  ~NamedMojoServerEndpointConnectorWin() override;
 
   void Connect(mojo::PlatformChannelServerEndpoint server_endpoint) override;
 
@@ -58,6 +58,6 @@ class MojoServerEndpointConnectorWin final
   OVERLAPPED connect_overlapped_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server
 
-#endif  // REMOTING_HOST_MOJO_IPC_MOJO_SERVER_ENDPOINT_CONNECTOR_WIN_H_
+#endif  // COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_WIN_H_

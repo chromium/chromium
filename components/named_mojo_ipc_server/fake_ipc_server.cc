@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc/fake_ipc_server.h"
+#include "components/named_mojo_ipc_server/fake_ipc_server.h"
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
 FakeIpcServer::TestState::TestState() = default;
 
@@ -38,4 +38,4 @@ base::ProcessId FakeIpcServer::current_peer_pid() const {
   return test_state_->current_peer_pid;
 }
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server

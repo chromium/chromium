@@ -2,14 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("mojo_ipc") {
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("testing_mojom") {
+  testonly = true
+  sources = [ "testing.test-mojom" ]
+  deps = [ "//mojo/public/mojom/base" ]
+}
+
+static_library("named_mojo_ipc_server") {
   sources = [
     "ipc_server.h",
-    "mojo_ipc_server.cc",
-    "mojo_ipc_server.h",
-    "mojo_ipc_util.cc",
-    "mojo_ipc_util.h",
-    "mojo_server_endpoint_connector.h",
+    "named_mojo_ipc_server.cc",
+    "named_mojo_ipc_server.h",
+    "named_mojo_ipc_util.cc",
+    "named_mojo_ipc_util.h",
+    "named_mojo_server_endpoint_connector.h",
   ]
   deps = [
     "//base",
@@ -19,16 +27,16 @@ static_library("mojo_ipc") {
   ]
   if (is_linux) {
     sources += [
-      "mojo_server_endpoint_connector_linux.cc",
-      "mojo_server_endpoint_connector_linux.h",
+      "named_mojo_server_endpoint_connector_linux.cc",
+      "named_mojo_server_endpoint_connector_linux.h",
     ]
   } else if (is_win) {
     sources += [
-      "mojo_server_endpoint_connector_win.cc",
-      "mojo_server_endpoint_connector_win.h",
+      "named_mojo_server_endpoint_connector_win.cc",
+      "named_mojo_server_endpoint_connector_win.h",
     ]
   } else {
-    sources += [ "mojo_server_endpoint_connector_unsupported.cc" ]
+    sources += [ "named_mojo_server_endpoint_connector_unsupported.cc" ]
   }
 }
 
@@ -38,11 +46,12 @@ static_library("test_support") {
   sources = [
     "fake_ipc_server.cc",
     "fake_ipc_server.h",
-    "mojo_ipc_test_util.cc",
-    "mojo_ipc_test_util.h",
+    "named_mojo_ipc_test_util.cc",
+    "named_mojo_ipc_test_util.h",
   ]
   deps = [
-    ":mojo_ipc",
+    ":named_mojo_ipc_server",
+    ":testing_mojom",
     "//base",
     "//mojo/public/cpp/platform",
   ]
@@ -55,11 +64,12 @@ source_set("unit_tests") {
 
   # Disable MojoIpcServerTest on unsupported platforms (i.e. Mac).
   if (is_linux || is_win) {
-    sources += [ "mojo_ipc_server_unittest.cc" ]
+    sources += [ "named_mojo_ipc_server_unittest.cc" ]
   }
   deps = [
-    ":mojo_ipc",
+    ":named_mojo_ipc_server",
     ":test_support",
+    ":testing_mojom",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",

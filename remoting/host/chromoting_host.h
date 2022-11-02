@@ -27,20 +27,23 @@
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/session_manager.h"
+#include "remoting/protocol/transport_context.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
+namespace named_mojo_ipc_server {
+class IpcServer;
+}
+
 namespace remoting {
 
 namespace protocol {
 class InputStub;
-class TransportContext;
 }  // namespace protocol
 
 class DesktopEnvironmentFactory;
-class IpcServer;
 
 // A class to implement the functionality of a host process.
 //
@@ -195,7 +198,7 @@ class ChromotingHost : public ClientSession::EventHandler,
 
   // IPC server that runs the CRD host service API. Non-null if the server name
   // is set and the host is started.
-  std::unique_ptr<IpcServer> ipc_server_;
+  std::unique_ptr<named_mojo_ipc_server::IpcServer> ipc_server_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

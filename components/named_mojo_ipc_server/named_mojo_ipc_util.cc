@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc/mojo_ipc_util.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_util.h"
 
 #include <string>
 
@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #endif
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
 mojo::NamedPlatformChannel::ServerName
 WorkingDirectoryIndependentServerNameFromUTF8(base::StringPiece name) {
@@ -35,4 +35,4 @@ WorkingDirectoryIndependentServerNameFromUTF8(base::StringPiece name) {
   return mojo::NamedPlatformChannel::ServerNameFromUTF8(name);
 }
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module remoting.test.mojom;
+module named_mojo_ipc_server.test.mojom;
 
 // A simple mojo interface for testing.
 interface Echo {

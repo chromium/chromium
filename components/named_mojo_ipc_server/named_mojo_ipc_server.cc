@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 
 #include <memory>
 
@@ -14,14 +14,14 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "remoting/host/mojo_ipc/mojo_server_endpoint_connector.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/stringprintf.h"
 #include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-namespace remoting {
+namespace named_mojo_ipc_server {
 
 namespace {
 
@@ -55,7 +55,7 @@ mojo::PlatformChannelServerEndpoint CreateServerEndpointOnIoSequence(
 
 }  // namespace
 
-MojoIpcServerBase::MojoIpcServerBase(
+NamedMojoIpcServerBase::NamedMojoIpcServerBase(
     const mojo::NamedPlatformChannel::ServerName& server_name,
     IsTrustedMojoEndpointCallback is_trusted_endpoint_callback)
     : server_name_(server_name),
@@ -64,22 +64,22 @@ MojoIpcServerBase::MojoIpcServerBase(
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 }
 
-MojoIpcServerBase::~MojoIpcServerBase() {
+NamedMojoIpcServerBase::~NamedMojoIpcServerBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void MojoIpcServerBase::StartServer() {
+void NamedMojoIpcServerBase::StartServer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (server_started_) {
     return;
   }
-  endpoint_connector_ = MojoServerEndpointConnector::Create(this);
+  endpoint_connector_ = NamedMojoServerEndpointConnector::Create(this);
   server_started_ = true;
   SendInvitation();
 }
 
-void MojoIpcServerBase::StopServer() {
+void NamedMojoIpcServerBase::StopServer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!server_started_) {
@@ -91,7 +91,7 @@ void MojoIpcServerBase::StopServer() {
   active_connections_.clear();
 }
 
-void MojoIpcServerBase::Close(mojo::ReceiverId id) {
+void NamedMojoIpcServerBase::Close(mojo::ReceiverId id) {
   UntrackMessagePipe(id);
   auto it = active_connections_.find(id);
   if (it != active_connections_.end()) {
@@ -99,24 +99,24 @@ void MojoIpcServerBase::Close(mojo::ReceiverId id) {
   }
 }
 
-void MojoIpcServerBase::SendInvitation() {
+void NamedMojoIpcServerBase::SendInvitation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   io_sequence_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&CreateServerEndpointOnIoSequence, server_name_),
-      base::BindOnce(&MojoIpcServerBase::OnServerEndpointCreated,
+      base::BindOnce(&NamedMojoIpcServerBase::OnServerEndpointCreated,
                      weak_factory_.GetWeakPtr()));
 }
 
-void MojoIpcServerBase::OnIpcDisconnected() {
+void NamedMojoIpcServerBase::OnIpcDisconnected() {
   if (disconnect_handler_) {
     disconnect_handler_.Run();
   }
   Close(current_receiver());
 }
 
-void MojoIpcServerBase::OnServerEndpointCreated(
+void NamedMojoIpcServerBase::OnServerEndpointCreated(
     mojo::PlatformChannelServerEndpoint endpoint) {
   if (!server_started_) {
     // A server endpoint might be created on |io_sequence_| after StopServer()
@@ -133,7 +133,7 @@ void MojoIpcServerBase::OnServerEndpointCreated(
   endpoint_connector_->Connect(std::move(endpoint));
 }
 
-void MojoIpcServerBase::OnServerEndpointConnected(
+void NamedMojoIpcServerBase::OnServerEndpointConnected(
     std::unique_ptr<mojo::IsolatedConnection> connection,
     mojo::ScopedMessagePipeHandle message_pipe,
     base::ProcessId peer_pid) {
@@ -148,10 +148,10 @@ void MojoIpcServerBase::OnServerEndpointConnected(
   SendInvitation();
 }
 
-void MojoIpcServerBase::OnServerEndpointConnectionFailed() {
-  resent_invitation_on_error_timer_.Start(FROM_HERE,
-                                          kResentInvitationOnErrorDelay, this,
-                                          &MojoIpcServerBase::SendInvitation);
+void NamedMojoIpcServerBase::OnServerEndpointConnectionFailed() {
+  resent_invitation_on_error_timer_.Start(
+      FROM_HERE, kResentInvitationOnErrorDelay, this,
+      &NamedMojoIpcServerBase::SendInvitation);
 }
 
-}  // namespace remoting
+}  // namespace named_mojo_ipc_server
