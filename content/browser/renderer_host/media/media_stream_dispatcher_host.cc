@@ -349,7 +349,6 @@ MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread(
         generate_salt_and_origin_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1342071): Add tests for |request_all_screens| being true.
   if (request_all_screens &&
       !CheckRequestAllScreensAllowed(render_process_id, render_frame_id)) {
     return {.request_allowed = false,
@@ -460,9 +459,11 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
 
   // TODO(crbug.com/1337580): Cover this block by a browser test.
   if (!ui_check_result.request_allowed) {
-    ReceivedBadMessage(
-        render_process_id_,
-        bad_message::MSDH_REQUEST_ALL_SCREENS_NOT_ALLOWED_FOR_ORIGIN);
+    std::move(callback).Run(
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+        /*label=*/std::string(),
+        /*stream_devices_set=*/nullptr,
+        /*pan_tilt_zoom_allowed=*/false);
     return;
   }
 
