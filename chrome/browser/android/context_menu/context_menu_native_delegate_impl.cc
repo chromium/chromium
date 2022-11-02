@@ -174,7 +174,7 @@ void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
   auto* thumbnail_capturer_proxy = chrome_render_frame.get();
   thumbnail_capturer_proxy->RequestImageForContextNode(
       max_width_px * max_height_px, gfx::Size(max_width_px, max_height_px),
-      image_format,
+      image_format, chrome::mojom::kDefaultQuality,
       base::BindOnce(
           std::move(retrieve_callback), std::move(chrome_render_frame),
           base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));

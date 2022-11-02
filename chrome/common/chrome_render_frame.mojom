@@ -10,6 +10,8 @@ import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
+const int32 kDefaultQuality = 90;
+
 enum ImageFormat {
   JPEG,
   PNG,
@@ -33,12 +35,16 @@ interface ChromeRenderFrame {
   // selected or there's an error capturing the image, |image_data| will be
   // empty. If the image area is larger than |image_min_area_pixels| it will be
   // downscaled to fit within |image_max_size_pixels|.
-  // If |image_format| is ORIGINAL, return orinal image data except image
+  // If |image_format| is ORIGINAL, return original image data except image
   // larger than size specified as a parameter. In that case, returns a resized
-  // JPEG static image.
+  // JPEG static image. |quality| is an integer between 0-100 where 100
+  // is the highest quality. Higher encoding quality results in a better visual
+  // image, but takes longer to encode and yields a larger image.
+  // |quality| only affects lossy |image_formats| (aka JPEG/WebP).
   RequestImageForContextNode(int32 image_min_area_pixels,
-                                 gfx.mojom.Size image_max_size_pixels,
-                                 ImageFormat image_format)
+                             gfx.mojom.Size image_max_size_pixels,
+                             ImageFormat image_format,
+                             int32 quality)
       => (array<uint8> image_data, gfx.mojom.Size original_size,
       string encoded_extension, array<lens.mojom.LatencyLog> log_data);
 

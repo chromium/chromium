@@ -386,6 +386,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
     int32_t thumbnail_min_area_pixels,
     const gfx::Size& thumbnail_max_size_pixels,
     chrome::mojom::ImageFormat image_format,
+    int32_t quality,
     RequestImageForContextNodeCallback callback) {
   WebNode context_node = render_frame()->GetWebFrame()->ContextMenuImageNode();
   std::vector<uint8_t> image_data;
@@ -448,7 +449,6 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
     }
   }
 
-  constexpr int kDefaultQuality = 90;
   std::vector<unsigned char> data;
   if (image_format == chrome::mojom::ImageFormat::ORIGINAL) {
     // ORIGINAL will only fall back to here if the image needs to downscale.
@@ -474,7 +474,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
       }
       break;
     case chrome::mojom::ImageFormat::WEBP:
-      if (gfx::WebpCodec::Encode(bitmap, kDefaultQuality, &data)) {
+      if (gfx::WebpCodec::Encode(bitmap, quality, &data)) {
         image_data.swap(data);
         image_extension = kWebpExtension;
       }
@@ -482,7 +482,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
     case chrome::mojom::ImageFormat::ORIGINAL:
     // Any format other than PNG and JPEG fall back to here.
     case chrome::mojom::ImageFormat::JPEG:
-      if (gfx::JPEGCodec::Encode(bitmap, kDefaultQuality, &data)) {
+      if (gfx::JPEGCodec::Encode(bitmap, quality, &data)) {
         image_data.swap(data);
         image_extension = kJpgExtension;
       }

@@ -92,6 +92,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       int32_t thumbnail_min_area_pixels,
       const gfx::Size& thumbnail_max_size_pixels,
       chrome::mojom::ImageFormat image_format,
+      int32_t quality,
       RequestImageForContextNodeCallback callback) override;
   void RequestReloadImageForContextNode() override;
 #if BUILDFLAG(IS_ANDROID)
