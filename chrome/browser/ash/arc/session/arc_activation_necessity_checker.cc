@@ -10,6 +10,8 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/adb_sideloading_availability_delegate.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 
 namespace arc {
 
@@ -43,7 +45,17 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
     return;
   }
 
-  // TOOD(b/247044798): Check the list of installed packages.
+  // Activate ARC if there is an app which was not pre-installed.
+  ArcAppListPrefs* app_list = ArcAppListPrefs::Get(profile_);
+  DCHECK(app_list);
+  auto package_names = app_list->GetPackagesFromPrefs();
+  for (const auto& package_name : package_names) {
+    auto package = app_list->GetPackage(package_name);
+    if (package && !package->preinstalled) {
+      std::move(callback).Run(true);
+      return;
+    }
+  }
 
   // If ADB sideloading is enabled, activate ARC. Otherwise, no need to
   // activate.
