@@ -229,6 +229,7 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
   std::unique_ptr<PrefetchFromStringURLLoader> url_loader =
       std::make_unique<PrefetchFromStringURLLoader>(
           prefetch_container->ReleasePrefetchedResponse(),
+          prefetch_container->GetPrefetchResponseSizes(),
           tenative_resource_request);
   scoped_refptr<SingleRequestURLLoaderFactory>
       single_request_url_loader_factory =

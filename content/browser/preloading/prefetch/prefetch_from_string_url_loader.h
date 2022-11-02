@@ -28,11 +28,13 @@ class StringIOBuffer;
 namespace content {
 
 class PrefetchedMainframeResponseContainer;
+struct PrefetchResponseSizes;
 
 class PrefetchFromStringURLLoader : public network::mojom::URLLoader {
  public:
   PrefetchFromStringURLLoader(
       std::unique_ptr<PrefetchedMainframeResponseContainer> prefetched_response,
+      const absl::optional<PrefetchResponseSizes>& response_sizes,
       const network::ResourceRequest& tenative_resource_request);
   ~PrefetchFromStringURLLoader() override;
 
@@ -98,6 +100,8 @@ class PrefetchFromStringURLLoader : public network::mojom::URLLoader {
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
+
+  const absl::optional<PrefetchResponseSizes>& response_sizes_;
 
   base::WeakPtrFactory<PrefetchFromStringURLLoader> weak_ptr_factory_{this};
 };

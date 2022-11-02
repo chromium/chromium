@@ -73,9 +73,9 @@ PrefetchContainer::~PrefetchContainer() {
       prefetch_status_.value_or(PrefetchStatus::kPrefetchNotStarted)));
   builder.SetLinkClicked(navigated_to_);
 
-  if (data_length_) {
-    builder.SetDataLength(
-        ukm::GetExponentialBucketMinForBytes(data_length_.value()));
+  if (prefetch_response_sizes_) {
+    builder.SetDataLength(ukm::GetExponentialBucketMinForBytes(
+        prefetch_response_sizes_->encoded_data_length));
   }
 
   if (fetch_duration_) {
@@ -246,8 +246,13 @@ void PrefetchContainer::OnPrefetchComplete() {
 void PrefetchContainer::UpdatePrefetchRequestMetrics(
     const absl::optional<network::URLLoaderCompletionStatus>& completion_status,
     const network::mojom::URLResponseHead* head) {
-  if (completion_status)
-    data_length_ = completion_status->encoded_data_length;
+  if (completion_status) {
+    prefetch_response_sizes_ = {
+        .encoded_data_length = completion_status->encoded_data_length,
+        .encoded_body_length = completion_status->encoded_body_length,
+        .decoded_body_length = completion_status->decoded_body_length,
+    };
+  }
 
   if (head)
     header_latency_ =

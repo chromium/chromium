@@ -36,6 +36,17 @@ class PrefetchService;
 class PrefetchedMainframeResponseContainer;
 class ProxyLookupClientImpl;
 
+// Holds the relevant size information of the prefetched response. The struct is
+// installed onto `PrefetchContainer`, and gets passed into
+// `PrefetchFromStringURLLoader` to notify the associated `URLLoaderClient` of
+// the actual size of the response, as `PrefetchFromStringURLLoader` is not
+// aware of the prefetched request.
+struct PrefetchResponseSizes {
+  int64_t encoded_data_length;
+  int64_t encoded_body_length;
+  int64_t decoded_body_length;
+};
+
 // This class contains the state for a request to prefetch a specific URL.
 class CONTENT_EXPORT PrefetchContainer {
  public:
@@ -182,6 +193,11 @@ class CONTENT_EXPORT PrefetchContainer {
     return devtools_observer_;
   }
 
+  const absl::optional<PrefetchResponseSizes>& GetPrefetchResponseSizes()
+      const {
+    return prefetch_response_sizes_;
+  }
+
  protected:
   friend class PrefetchContainerTest;
 
@@ -247,8 +263,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   ukm::SourceId ukm_source_id_;
 
-  // The size of the prefetched response.
-  absl::optional<int> data_length_;
+  // The sizes information of the prefetched response.
+  absl::optional<PrefetchResponseSizes> prefetch_response_sizes_;
 
   // The amount  of time it took for the prefetch to complete.
   absl::optional<base::TimeDelta> fetch_duration_;
