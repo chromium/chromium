@@ -236,6 +236,7 @@ component("gpu") {
       "windows/mf_audio_encoder.h",
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
+      "windows/video_rate_control_wrapper.h",
     ]
     if (enable_hevc_parser_and_hw_decoder) {
       sources += [
