@@ -64,8 +64,7 @@ void TailoredSecurityUrlObserver::OnTailoredSecurityBitChanged(
   profile->GetPrefs()->SetBoolean(
       prefs::kAccountTailoredSecurityShownNotification, true);
 
-  if (base::Time::Now() - previous_update <=
-      base::Minutes(kThresholdForInFlowNotificationMinutes)) {
+  if (base::Time::Now() - previous_update <= kThresholdForInFlowNotification) {
 #if BUILDFLAG(IS_ANDROID)
     message_ = std::make_unique<TailoredSecurityUnconsentedMessageAndroid>(
         web_contents(),

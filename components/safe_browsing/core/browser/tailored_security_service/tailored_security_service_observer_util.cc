@@ -13,8 +13,6 @@
 
 namespace safe_browsing {
 
-const int kThresholdForInFlowNotificationMinutes = 5;
-
 bool CanQueryTailoredSecurityForUrl(GURL url) {
   return url.DomainIs("google.com") || url.DomainIs("youtube.com");
 }

@@ -59,18 +59,20 @@ WEB_STATE_USER_DATA_KEY_IMPL(TailoredSecurityTabHelper)
 void TailoredSecurityTabHelper::OnTailoredSecurityBitChanged(
     bool enabled,
     base::Time previous_update) {
+  if (!enabled || !web_state_->IsVisible()) {
+    return;
+  }
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
-  if (!enabled || !safe_browsing::CanShowUnconsentedTailoredSecurityDialog(
-                      identity_manager, browser_state->GetPrefs()))
+  if (!safe_browsing::CanShowUnconsentedTailoredSecurityDialog(
+          identity_manager, browser_state->GetPrefs())) {
     return;
+  }
 
   if (base::Time::Now() - previous_update <=
-          base::Minutes(
-              safe_browsing::kThresholdForInFlowNotificationMinutes) &&
-      web_state_->IsVisible()) {
+      safe_browsing::kThresholdForInFlowNotification) {
     browser_state->GetPrefs()->SetBoolean(
         prefs::kAccountTailoredSecurityShownNotification, true);
     ShowInfoBar(safe_browsing::TailoredSecurityServiceMessageState::
