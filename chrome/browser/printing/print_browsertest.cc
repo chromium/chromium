@@ -3001,11 +3001,17 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // There are no callbacks for tracking in-browser printing.  The only
-  // message is to wait for the one print job to be destroyed to ensure
-  // printing finished cleanly before completing the test.  So only need
-  // to override the number of expected messages for OOP.
-  if (GetParam() != PrintBackendFeatureVariation::kInBrowserProcess) {
+  if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
+    // There are no callbacks for print stages with in-browser printing.  So
+    // the print job is started, but that fails, and there is no capturing of
+    // that result.
+    // The rest of the test sequence for this is:
+    // - An error dialog is shown.
+    // - Wait for the one print job to be destroyed, to ensure printing
+    //   finished cleanly before completing the test.
+    // This results in a total of 2 calls.
+    SetNumExpectedMessages(/*num=*/2);
+  } else {
     // The test sequence for this is:
     // - A print job is started, but that fails.
     // - An error dialog is shown.
@@ -3018,11 +3024,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
-  // TODO(crbug.com/1375018)  Update once in-browser failure is fixed to notify
-  // user of error.
-  EXPECT_EQ(
-      error_dialog_shown_count(),
-      GetParam() == PrintBackendFeatureVariation::kInBrowserProcess ? 0u : 1u);
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
@@ -3367,10 +3369,12 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     // pipeline, so the test sequence for this is:
     // - Gets default settings.
     // - Asks user for settings.
+    // - A print job is started, but that fails.  There is no override to
+    //   this notice directly.  This does cause an error dialog to be shown.
     // - Wait for the one print job to be destroyed, to ensure printing
     //   finished cleanly before completing the test.
-    // This results in a total of 3 calls.
-    SetNumExpectedMessages(/*num=*/3);
+    // This results in a total of 4 calls.
+    SetNumExpectedMessages(/*num=*/4);
   } else {
     // The test sequence for this is:
     // - Gets default settings.
@@ -3388,11 +3392,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   WaitUntilCallbackReceived();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
-  // TODO(crbug.com/1375018)  Update once in-browser failure is fixed to notify
-  // user of error.
-  EXPECT_EQ(
-      error_dialog_shown_count(),
-      GetParam() == PrintBackendFeatureVariation::kInBrowserProcess ? 0u : 1u);
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 

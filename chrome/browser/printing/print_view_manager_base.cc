@@ -764,6 +764,11 @@ void PrintViewManagerBase::OnJobDone() {
 }
 
 void PrintViewManagerBase::OnFailed() {
+#if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
+  if (!canceling_job_)
+    ShowPrintErrorDialog();
+#endif
+
   TerminatePrintJob(true);
 }
 
@@ -871,6 +876,8 @@ void PrintViewManagerBase::TerminatePrintJob(bool cancel) {
     return;
 
   if (cancel) {
+    canceling_job_ = true;
+
     // We don't need the metafile data anymore because the printing is canceled.
     print_job_->Cancel();
     quit_inner_loop_.Reset();

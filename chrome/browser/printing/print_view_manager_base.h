@@ -324,6 +324,9 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // Indication of success of the print job.
   bool printing_succeeded_ = false;
 
+  // Indication that the job is getting canceled.
+  bool canceling_job_ = false;
+
   // Set while running an inner message loop inside RenderAllMissingPagesNow().
   // This means we are _blocking_ until all the necessary pages have been
   // rendered or the print settings are being loaded.
