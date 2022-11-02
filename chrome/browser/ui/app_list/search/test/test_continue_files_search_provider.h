@@ -11,10 +11,10 @@ namespace app_list {
 
 // Test specific search provider that publishes certain number of continue
 // section file results. Published results will have ID/title in format
-// "continue_task_<index>".
+// "continue_task_<for_drive_files>_<index>".
 class TestContinueFilesSearchProvider : public SearchProvider {
  public:
-  TestContinueFilesSearchProvider();
+  explicit TestContinueFilesSearchProvider(bool for_drive_files);
 
   TestContinueFilesSearchProvider(const TestContinueFilesSearchProvider&) =
       delete;
@@ -30,6 +30,7 @@ class TestContinueFilesSearchProvider : public SearchProvider {
   void set_count(size_t count) { count_ = count; }
 
  private:
+  const bool for_drive_files_;
   // Number of results returned by the test provider.
   size_t count_ = 0;
 };

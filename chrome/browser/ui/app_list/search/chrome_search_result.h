@@ -41,7 +41,6 @@ class ChromeSearchResult {
   using Tags = ash::SearchResultTags;
   using Action = ash::SearchResultAction;
   using Actions = ash::SearchResultActions;
-  using DisplayIndex = ash::SearchResultDisplayIndex;
   using IconInfo = ash::SearchResultIconInfo;
   using IconShape = ash::SearchResultIconShape;
   using TextItem = ash::SearchResultTextItem;
@@ -96,8 +95,6 @@ class ChromeSearchResult {
     return metadata_->result_type;
   }
   MetricsType metrics_type() const { return metadata_->metrics_type; }
-  DisplayIndex display_index() const { return metadata_->display_index; }
-  float position_priority() const { return metadata_->position_priority; }
   const Actions& actions() const { return metadata_->actions; }
   double display_score() const { return metadata_->display_score; }
   bool is_recommendation() const { return metadata_->is_recommendation; }
@@ -131,8 +128,6 @@ class ChromeSearchResult {
   void SetDisplayType(DisplayType display_type);
   void SetResultType(ResultType result_type);
   void SetMetricsType(MetricsType metrics_type);
-  void SetDisplayIndex(DisplayIndex display_index);
-  void SetPositionPriority(float position_priority);
   void SetDisplayScore(double display_score);
   void SetActions(const Actions& actions);
   void SetIsOmniboxSearch(bool is_omnibox_search);

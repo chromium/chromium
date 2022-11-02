@@ -12,6 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -214,6 +215,27 @@ void SearchControllerImplNew::AddProvider(
       base::BindRepeating(&SearchControllerImplNew::OnResultsChangedWithType,
                           base::Unretained(this), provider->ResultType()));
   providers_.emplace_back(std::move(provider));
+}
+
+size_t SearchControllerImplNew::ReplaceProvidersForResultTypeForTest(
+    ash::AppListSearchResultType result_type,
+    std::unique_ptr<SearchProvider> new_provider) {
+  DCHECK_EQ(result_type, new_provider->ResultType());
+
+  size_t removed_providers = base::EraseIf(
+      providers_, [&](const std::unique_ptr<SearchProvider>& provider) {
+        return provider->ResultType() == result_type;
+      });
+  if (!removed_providers)
+    return 0u;
+  DCHECK_EQ(1u, removed_providers);
+
+  if (ash::IsZeroStateResultType(result_type))
+    total_zero_state_blockers_ -= removed_providers;
+
+  // Note that `group_id` is not used by this search controller implementation.
+  AddProvider(/*group_id=*/-1, std::move(new_provider));
+  return removed_providers;
 }
 
 void SearchControllerImplNew::SetResults(const SearchProvider* provider,

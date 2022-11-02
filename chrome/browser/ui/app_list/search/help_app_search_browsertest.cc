@@ -72,6 +72,15 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
     results_waiter.Wait();
   }
 
+  // Returns the first published continue section result.
+  const ChromeSearchResult* FindLeadingContinueSectionResult() {
+    for (const auto* result : PublishedResults()) {
+      if (result->display_type() == ash::SearchResultDisplayType::kContinue)
+        return result;
+    }
+    return nullptr;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -86,21 +95,34 @@ class HelpAppSearchBrowserTest : public HelpAppSearchBrowserTestBase {
 
     AppListClientImpl::GetInstance()->UpdateProfile();
 
+    app_list::SearchController* search_controller =
+        AppListClientImpl::GetInstance()->search_controller();
+
     // For release note chips to show in productivity launcher, continue section
     // needs to be visible, which will only be the case if other continue
     // results exist - create search provider to inject continue section
     // results.
-    auto continue_section_provider =
-        std::make_unique<TestContinueFilesSearchProvider>();
-    continue_section_provider_ = continue_section_provider.get();
-    app_list::SearchController* search_controller =
-        AppListClientImpl::GetInstance()->search_controller();
-    size_t group_id = search_controller->AddGroup(10);
-    search_controller->AddProvider(group_id,
-                                   std::move(continue_section_provider));
+    // Adds providers for both local and drive files to test that results
+    // provided by help app are ranked before both types of files.
+    auto local_continue_section_provider =
+        std::make_unique<TestContinueFilesSearchProvider>(
+            /*for_drive_files=*/false);
+    local_continue_section_provider_ = local_continue_section_provider.get();
+    EXPECT_EQ(1u, search_controller->ReplaceProvidersForResultTypeForTest(
+                      local_continue_section_provider_->ResultType(),
+                      std::move(local_continue_section_provider)));
+
+    auto drive_continue_section_provider =
+        std::make_unique<TestContinueFilesSearchProvider>(
+            /*for_drive_files=*/true);
+    drive_continue_section_provider_ = drive_continue_section_provider.get();
+    EXPECT_EQ(1u, search_controller->ReplaceProvidersForResultTypeForTest(
+                      drive_continue_section_provider_->ResultType(),
+                      std::move(drive_continue_section_provider)));
   }
 
-  TestContinueFilesSearchProvider* continue_section_provider_ = nullptr;
+  TestContinueFilesSearchProvider* local_continue_section_provider_ = nullptr;
+  TestContinueFilesSearchProvider* drive_continue_section_provider_ = nullptr;
 };
 
 // Test that Help App shows up as Release notes if pref shows we have some times
@@ -119,9 +141,26 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
   EXPECT_EQ(result->title(), l10n_util::GetStringUTF16(
                                  IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE));
   EXPECT_EQ(result->metrics_type(), ash::HELP_APP_UPDATES);
-  // Displayed in first position.
-  EXPECT_EQ(result->position_priority(), 1.0f);
   EXPECT_EQ(result->display_type(), DisplayType::kContinue);
+}
+
+// Tests that Help App release notes chip is shown before other continue section
+// items.
+IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest, ReleaseNoteChipRankedFirst) {
+  ash::SystemWebAppManager::GetForTest(GetProfile())
+      ->InstallSystemAppsForTesting();
+  GetProfile()->GetPrefs()->SetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
+
+  local_continue_section_provider_->set_count(5);
+  drive_continue_section_provider_->set_count(5);
+
+  ShowAppListAndWaitForHelpAppZeroStateResults();
+
+  auto* result = FindResult("help-app://updates");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->display_type(), DisplayType::kContinue);
+  EXPECT_EQ(FindLeadingContinueSectionResult(), result);
 }
 
 // Test that the number of times the suggestion chip should show decreases when
@@ -135,8 +174,8 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
   ash::AppListTestApi app_list_test_api;
   app_list_test_api.SetContinueSectionPrivacyNoticeAccepted();
 
-  if (continue_section_provider_)
-    continue_section_provider_->set_count(10);
+  local_continue_section_provider_->set_count(5);
+  drive_continue_section_provider_->set_count(5);
 
   ShowAppListAndWaitForHelpAppZeroStateResults();
 
@@ -160,8 +199,8 @@ IN_PROC_BROWSER_TEST_F(
   ash::AppListTestApi app_list_test_api;
   app_list_test_api.SetContinueSectionPrivacyNoticeAccepted();
 
-  if (continue_section_provider_)
-    continue_section_provider_->set_count(10);
+  local_continue_section_provider_->set_count(5);
+  drive_continue_section_provider_->set_count(5);
 
   SearchResultsChangedWaiter results_waiter(
       GetClient()->search_controller(),
@@ -258,8 +297,6 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   EXPECT_EQ(base::UTF16ToASCII(result->title()), "Fix connection problems");
   EXPECT_EQ(base::UTF16ToASCII(result->details()), "Help");
-  // No priority for position.
-  EXPECT_EQ(result->position_priority(), 0);
   EXPECT_EQ(result->display_type(), DisplayType::kList);
 
   // Open the search result. This should open the help app at the expected url
@@ -310,8 +347,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
   ASSERT_TRUE(result);
   // Has regular app name as title.
   EXPECT_EQ(base::UTF16ToASCII(result->title()), "Explore");
-  // No priority for position.
-  EXPECT_EQ(result->position_priority(), 0);
 }
 
 IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
