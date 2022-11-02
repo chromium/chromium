@@ -7,9 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
@@ -26,10 +24,7 @@ using ::test::TestAppListControllerDelegate;
 
 class SearchControllerImplTest : public ChromeAshTestBase {
  public:
-  SearchControllerImplTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kProductivityLauncher);
-  }
+  SearchControllerImplTest() = default;
   SearchControllerImplTest(const SearchControllerImplTest&) = delete;
   SearchControllerImplTest& operator=(const SearchControllerImplTest&) = delete;
   ~SearchControllerImplTest() override = default;
@@ -44,7 +39,6 @@ class SearchControllerImplTest : public ChromeAshTestBase {
   TestAppListControllerDelegate& list_controller() { return list_controller_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile profile_;
   TestAppListControllerDelegate list_controller_;
   std::unique_ptr<SearchControllerImpl> search_controller_;
