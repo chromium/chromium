@@ -31,9 +31,13 @@ IpczResult Close(IpczHandle handle, uint32_t flags, const void* options) {
 IpczResult CreateNode(const IpczDriver* driver,
                       IpczDriverHandle driver_node,
                       IpczCreateNodeFlags flags,
-                      const void* options,
+                      const IpczCreateNodeOptions* options,
                       IpczHandle* node) {
   if (!node || !driver || driver->size < sizeof(IpczDriver)) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (options && options->size < sizeof(IpczCreateNodeOptions)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
@@ -61,7 +65,7 @@ IpczResult CreateNode(const IpczDriver* driver,
   auto node_ptr = ipcz::MakeRefCounted<ipcz::Node>(
       (flags & IPCZ_CREATE_NODE_AS_BROKER) != 0 ? ipcz::Node::Type::kBroker
                                                 : ipcz::Node::Type::kNormal,
-      *driver, driver_node);
+      *driver, driver_node, options);
   *node = ipcz::Node::ReleaseAsHandle(std::move(node_ptr));
   return IPCZ_RESULT_OK;
 }

@@ -60,6 +60,12 @@ class NodeLinkMemory : public RefCounted {
   static Ref<NodeLinkMemory> Create(Ref<Node> node,
                                     DriverMemoryMapping primary_buffer_memory);
 
+  // Returns true if and only if new parcels are allowed to try allocating their
+  // data buffer through this NodeLinkMemory.
+  bool allow_parcel_data_allocation() const {
+    return allow_parcel_data_allocation_;
+  }
+
   // Returns a new BufferId which should still be unused by any buffer in this
   // NodeLinkMemory's BufferPool, or that of its peer NodeLinkMemory. When
   // allocating new a buffer to add to the BufferPool, its BufferId should be
@@ -162,6 +168,7 @@ class NodeLinkMemory : public RefCounted {
       const Fragment& fragment);
 
   const Ref<Node> node_;
+  const bool allow_parcel_data_allocation_;
 
   // The underlying BufferPool. Note that this object is itself thread-safe, so
   // access to it is not synchronized by NodeLinkMemory.

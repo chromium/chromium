@@ -15,6 +15,7 @@
 #include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_name.h"
+#include "ipcz/parcel.h"
 #include "reference_drivers/sync_reference_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "util/ref_counted.h"
@@ -26,29 +27,45 @@ const IpczDriver& kTestDriver = reference_drivers::kSyncReferenceDriver;
 
 constexpr NodeName kTestBrokerName(1, 2);
 constexpr NodeName kTestNonBrokerName(2, 3);
+constexpr NodeName kOtherTestNonBrokerName(3, 5);
 
 class NodeLinkMemoryTest : public testing::Test {
  public:
+  const Ref<Node>& node_a() const { return node_a_; }
+
   NodeLinkMemory& memory_a() { return link_a_->memory(); }
   NodeLinkMemory& memory_b() { return link_b_->memory(); }
 
-  void SetUp() override {
+  // Connects a broker to a non-broker and returns their respective NodeLinks.
+  static std::pair<Ref<NodeLink>, Ref<NodeLink>> ConnectNodes(
+      Ref<Node> broker,
+      Ref<Node> non_broker) {
+    std::pair<Ref<NodeLink>, Ref<NodeLink>> links;
     auto transports = DriverTransport::CreatePair(kTestDriver);
     DriverMemoryWithMapping buffer =
         NodeLinkMemory::AllocateMemory(kTestDriver);
-    link_a_ = NodeLink::CreateInactive(
-        node_a_, LinkSide::kA, kTestBrokerName, kTestNonBrokerName,
-        Node::Type::kNormal, 0, transports.first,
-        NodeLinkMemory::Create(node_a_, std::move(buffer.mapping)));
-    link_b_ = NodeLink::CreateInactive(
-        node_b_, LinkSide::kB, kTestNonBrokerName, kTestBrokerName,
-        Node::Type::kBroker, 0, transports.second,
-        NodeLinkMemory::Create(node_b_, buffer.memory.Map()));
-    node_a_->AddConnection(kTestNonBrokerName, {.link = link_a_});
-    node_b_->AddConnection(kTestBrokerName,
-                           {.link = link_b_, .broker = link_a_});
-    link_a_->Activate();
-    link_b_->Activate();
+    links.first = NodeLink::CreateInactive(
+        broker, LinkSide::kA, broker->GetAssignedName(),
+        non_broker->GetAssignedName(), Node::Type::kNormal, 0, transports.first,
+        NodeLinkMemory::Create(broker, std::move(buffer.mapping)));
+    links.second = NodeLink::CreateInactive(
+        non_broker, LinkSide::kB, non_broker->GetAssignedName(),
+        broker->GetAssignedName(), Node::Type::kBroker, 0, transports.second,
+        NodeLinkMemory::Create(non_broker, buffer.memory.Map()));
+    broker->AddConnection(non_broker->GetAssignedName(), {.link = links.first});
+    non_broker->AddConnection(broker->GetAssignedName(),
+                              {.link = links.second, .broker = links.first});
+    links.first->Activate();
+    links.second->Activate();
+    return links;
+  }
+
+  void SetUp() override {
+    node_a_->SetAssignedName(kTestBrokerName);
+    node_b_->SetAssignedName(kTestNonBrokerName);
+    auto links = ConnectNodes(node_a_, node_b_);
+    link_a_ = std::move(links.first);
+    link_b_ = std::move(links.second);
   }
 
   void TearDown() override {
@@ -223,6 +240,39 @@ TEST_F(NodeLinkMemoryTest, NewBlockSizes) {
   // And as with other cases, the new capacity should have already been shared
   // with the other NodeLinkMemory.
   EXPECT_TRUE(memory_b().FreeFragment(fragment));
+}
+
+TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
+  // NodeLinkMemory can in general be used by Parcel instances to allocate data
+  // buffers; but this can also be disabled when configuring a new node.
+
+  const IpczCreateNodeOptions options = {
+      .size = sizeof(options),
+      .disable_shared_memory_parcel_data = true,
+  };
+  const Ref<Node> node_c{MakeRefCounted<Node>(
+      Node::Type::kNormal, kTestDriver, IPCZ_INVALID_DRIVER_HANDLE, &options)};
+  node_c->SetAssignedName(kOtherTestNonBrokerName);
+  auto links = ConnectNodes(node_a(), node_c);
+
+  // We use a small enough size that this is guaranteed to allocate within
+  // NodeLinkMemory unless parcel allocation is disabled.
+  constexpr size_t kParcelSize = 32;
+  Parcel parcel_from_a_to_c;
+  parcel_from_a_to_c.AllocateData(kParcelSize, /*allow_partial=*/false,
+                                  &links.first->memory());
+  EXPECT_FALSE(parcel_from_a_to_c.data_fragment().is_null());
+  EXPECT_GE(parcel_from_a_to_c.data_fragment().size(), kParcelSize);
+
+  // But when allocated from the `node_c` side, we should never get a memory
+  // fragment for parcel data.
+  Parcel parcel_from_c_to_a;
+  parcel_from_c_to_a.AllocateData(kParcelSize, /*allow_partial=*/false,
+                                  &links.second->memory());
+  EXPECT_TRUE(parcel_from_c_to_a.data_fragment().is_null());
+  EXPECT_EQ(parcel_from_c_to_a.data_size(), kParcelSize);
+
+  node_c->Close();
 }
 
 }  // namespace

@@ -168,6 +168,8 @@ struct IPCZ_ALIGN(8) NodeLinkMemory::PrimaryBuffer {
 NodeLinkMemory::NodeLinkMemory(Ref<Node> node,
                                DriverMemoryMapping primary_buffer_memory)
     : node_(std::move(node)),
+      allow_parcel_data_allocation_(
+          !node_->options().disable_shared_memory_parcel_data),
       primary_buffer_memory_(primary_buffer_memory.bytes()),
       primary_buffer_(
           *reinterpret_cast<PrimaryBuffer*>(primary_buffer_memory_.data())) {

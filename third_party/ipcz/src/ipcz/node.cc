@@ -24,6 +24,25 @@
 
 namespace ipcz {
 
+namespace {
+
+// Returns a copy of the structure pointed to by `options` if non-null;
+// otherwise returns a default set of options. This function will also adapt
+// to newer or older versions of the input options on input, coercing them into
+// the current implementation's version if needed.
+IpczCreateNodeOptions CopyOrUseDefaultOptions(
+    const IpczCreateNodeOptions* options) {
+  IpczCreateNodeOptions copied_options = {0};
+  if (options) {
+    memcpy(&copied_options, options,
+           std::min(options->size, sizeof(copied_options)));
+  }
+  copied_options.size = sizeof(copied_options);
+  return copied_options;
+}
+
+}  // namespace
+
 // A pending introduction tracks progress of one or more outstanding
 // introduction requests for a single node in the system.
 class Node::PendingIntroduction {
@@ -70,8 +89,14 @@ class Node::PendingIntroduction {
   std::vector<EstablishLinkCallback> callbacks_;
 };
 
-Node::Node(Type type, const IpczDriver& driver, IpczDriverHandle driver_node)
-    : type_(type), driver_(driver), driver_node_(driver_node) {
+Node::Node(Type type,
+           const IpczDriver& driver,
+           IpczDriverHandle driver_node,
+           const IpczCreateNodeOptions* options)
+    : type_(type),
+      driver_(driver),
+      driver_node_(driver_node),
+      options_(CopyOrUseDefaultOptions(options)) {
   if (type_ == Type::kBroker) {
     // Only brokers assign their own names.
     assigned_name_ = GenerateRandomName();

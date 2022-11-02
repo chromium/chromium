@@ -75,7 +75,7 @@ void Parcel::AllocateData(size_t num_bytes,
   ABSL_ASSERT(data_view_.empty());
 
   Fragment fragment;
-  if (memory && num_bytes > 0) {
+  if (num_bytes > 0 && memory && memory->allow_parcel_data_allocation()) {
     const size_t requested_fragment_size = num_bytes + sizeof(FragmentHeader);
     if (allow_partial) {
       fragment = memory->AllocateFragmentBestEffort(requested_fragment_size);

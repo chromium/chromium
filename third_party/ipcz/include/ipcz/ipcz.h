@@ -501,6 +501,17 @@ struct IPCZ_ALIGN(8) IpczDriver {
 }  // extern "C"
 #endif
 
+// Options given to CreateNode() to configure the new node's behavior.
+struct IPCZ_ALIGN(8) IpczCreateNodeOptions {
+  // The exact size of this structure in bytes. Must be set accurately before
+  // passing the structure to CreateNode().
+  size_t size;
+
+  // If set to true, this node will not attempt to allocate parcel data storage
+  // within shared memory.
+  bool disable_shared_memory_parcel_data;
+};
+
 // See CreateNode() and the IPCZ_CREATE_NODE_* flag descriptions below.
 typedef uint32_t IpczCreateNodeFlags;
 
@@ -900,11 +911,11 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        from operating correctly. For example, the is returned if ipcz was
   //        built against a std::atomic implementation which does not provide
   //        lock-free 32-bit and 64-bit atomics.
-  IpczResult(IPCZ_API* CreateNode)(const struct IpczDriver* driver,  // in
-                                   IpczDriverHandle driver_node,     // in
-                                   IpczCreateNodeFlags flags,        // in
-                                   const void* options,              // in
-                                   IpczHandle* node);                // out
+  IpczResult(IPCZ_API* CreateNode)(const struct IpczDriver* driver,       // in
+                                   IpczDriverHandle driver_node,          // in
+                                   IpczCreateNodeFlags flags,             // in
+                                   const IpczCreateNodeOptions* options,  // in
+                                   IpczHandle* node);                     // out
 
   // Connects `node` to another node in the system using an application-provided
   // driver transport handle in `driver_transport` for communication. If this
