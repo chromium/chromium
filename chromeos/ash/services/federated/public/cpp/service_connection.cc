@@ -19,9 +19,6 @@ namespace ash {
 namespace federated {
 
 namespace {
-BASE_FEATURE(kShouldFederatedScheduleTasks,
-             "ShouldFederatedScheduleTasks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 ServiceConnection* g_fake_service_connection_for_testing = nullptr;
 
@@ -99,10 +96,6 @@ void ServiceConnectionImpl::BindFederatedServiceIfNeeded() {
       platform_channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD(),
       base::BindOnce(&ServiceConnectionImpl::OnBootstrapMojoConnectionResponse,
                      base::Unretained(this)));
-
-  if (base::FeatureList::IsEnabled(kShouldFederatedScheduleTasks)) {
-    federated_service_->StartScheduling();
-  }
 }
 
 void ServiceConnectionImpl::OnMojoDisconnect() {
