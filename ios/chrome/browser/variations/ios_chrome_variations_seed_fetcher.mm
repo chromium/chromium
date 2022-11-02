@@ -50,7 +50,7 @@ static BOOL g_seed_fetching_in_progress = NO;
 }
 
 // Whether the current binary should fetch Finch seed for experiment purpose.
-@property(nonatomic, readonly) BOOL fetchingEnabled;
+@property(nonatomic, assign) BOOL fetchingEnabled;
 
 // The URL of the variations server, including query parameters that identifies
 // the request initiator.
@@ -133,8 +133,8 @@ static BOOL g_seed_fetching_in_progress = NO;
 
     if (base::StartsWith(arg, url_switch)) {
       _variationsDomain = arg.substr(url_switch.size());
-      if (!_fetchingEnabled && !_variationsDomain.empty()) {
-        _fetchingEnabled = YES;
+      if (!self.fetchingEnabled && !_variationsDomain.empty()) {
+        self.fetchingEnabled = YES;
       }
     } else if (base::StartsWith(arg, channel_switch)) {
       _forcedChannel = arg.substr(channel_switch.size());
