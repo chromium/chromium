@@ -7497,16 +7497,20 @@
                 {
                     "name": "AndroidExperiments",
                     "params": {
+                        "MaxNumRepeatableQueries": "4",
                         "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15",
                         "OmniboxLocalZeroSuggestAgeThreshold": "90",
                         "OmniboxMaxURLMatches": "8",
                         "PrefixSuggestIgnoreDuplicateVisits": "true",
+                        "PrivilegeRepeatableQueries": "true",
+                        "ScaleRepeatableQueriesScore": "true",
                         "UIMaxAutocompleteMatches": "10",
                         "ZeroSuggestIgnoreDuplicateVisits": "false"
                     },
                     "enable_features": [
                         "AndroidAuxiliarySearch",
                         "LocalHistorySuggestRevamp",
+                        "NewTabPageTilesTitleWrapAround",
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxHeaderPaddingUpdate",
@@ -7515,10 +7519,12 @@
                         "OmniboxMostVisitedTilesDynamicSpacing",
                         "OmniboxMostVisitedTilesFadingOnTablet",
                         "OmniboxMostVisitedTilesOnSrp",
+                        "OmniboxMostVisitedTilesTitleWrapAround",
                         "OmniboxRemoveSuggestionHeaderCapitalization",
                         "OmniboxRemoveSuggestionHeaderChevron",
                         "OmniboxRetainSuggestionsWithHeaders",
-                        "OmniboxUIExperimentMaxAutocompleteMatches"
+                        "OmniboxUIExperimentMaxAutocompleteMatches",
+                        "OrganicRepeatableQueries"
                     ]
                 }
             ]
