@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 static_library("common") {
   sources = [
     "aliases.h",
@@ -135,4 +137,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+fuzzer_test("autofill_autocomplete_parsing_util_fuzzer") {
+  sources = [ "autocomplete_parsing_util_fuzzer.cc" ]
+  deps = [ ":common" ]
 }
