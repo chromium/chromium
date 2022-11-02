@@ -353,24 +353,6 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest,
   SequentialNavigationSkipCheck(@"type='checkbox'", YES);
 }
 
-// Special test for a condition where the closeKeyboard script would cause an
-// illegal JS recursion if a blur event results in an event that triggers a
-// crwebinvoke:// back, such as a page change.
-TEST_F(SuggestionControllerJavaScriptFeatureTest, CloseKeyboardSafetyTest) {
-  web::test::LoadHtml(@"<select id='select'>Select</select>", web_state());
-  web::test::ExecuteJavaScript(
-      @"select.onblur = function(){window.location.href = '#test'}",
-      web_state());
-  web::test::ExecuteJavaScript(@"select.focus()", web_state());
-  // In the failure condition the app will crash during the next line.
-  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-      ->CloseKeyboardForFrame(GetMainFrame());
-  // TODO(crbug.com/661624): add a check for the keyboard actually being
-  // dismissed; unfortunately it is not known how to adapt
-  // WaitForBackgroundTasks to yield for events wrapped with window.setTimeout()
-  // or other deferred events.
-}
-
 // Test fixture to test
 // `FetchPreviousAndNextElementsPresenceInFrameWithID`.
 class FetchPreviousAndNextExceptionTest

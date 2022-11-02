@@ -135,9 +135,4 @@ void SuggestionControllerJavaScriptFeature::
       base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
-void SuggestionControllerJavaScriptFeature::CloseKeyboardForFrame(
-    web::WebFrame* frame) {
-  CallJavaScriptFunction(frame, "suggestion.blurActiveElement", {});
-}
-
 }  // namespace autofill

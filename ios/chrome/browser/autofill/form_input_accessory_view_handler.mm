@@ -282,24 +282,17 @@ NSArray* FindDescendantToolbarItemsForActionName(
 
 #pragma mark - Private
 
-// Tries to close the keyboard sendind an action to the default accessory bar
-// if that fails, fallbacks on JavaScript. Logs metrics if loggingButtonPressed
-// is YES.
+// Tries to close the keyboard sending an action to the default accessory bar.
+// If that fails, fallbacks on the view to resign the first responder status.
+// Logs metrics if loggingButtonPressed is YES.
 - (void)closeKeyboardLoggingButtonPressed:(BOOL)loggingButtonPressed {
   NSString* actionName = kFormSuggestionAssistButtonDone;
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
-  if (!performedAction && [_lastFocusFormActivityWebFrameID length] &&
-      _webState) {
-    // We could not find the built-in form assist controls, so try to focus
-    // the next or previous control using JavaScript.
-    web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
-        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
-
-    if (frame) {
-      autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-          ->CloseKeyboardForFrame(frame);
-    }
+  if (!performedAction && _webState) {
+    UIView* view = _webState->GetView();
+    DCHECK(view);
+    [view endEditing:YES];
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnCloseButtonPressed();

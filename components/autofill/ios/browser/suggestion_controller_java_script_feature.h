@@ -64,9 +64,6 @@ class SuggestionControllerJavaScriptFeature : public web::JavaScriptFeature {
       const std::string& field_name,
       base::OnceCallback<void(bool, bool)> completion_handler);
 
-  // Closes the keyboard and defocuses the active input element in |frame|.
-  void CloseKeyboardForFrame(web::WebFrame* frame);
-
  private:
   friend class base::NoDestructor<SuggestionControllerJavaScriptFeature>;
 
