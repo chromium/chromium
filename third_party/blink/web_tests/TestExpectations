@@ -192,13 +192,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor-iframe.html [ Failure ]
 crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor.html [ Failure ]
 
-# These tests block fixes done in V8. The tests run on the V8 bots as well.
-crbug.com/v8/12227 external/wpt/wasm/jsapi/interface.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/interface.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/idlharness.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/idlharness.any.worker.html [ Failure Pass ]
-
-
 # --- Skia roll test suppressions
 
 crbug.com/1354678 compositing/reflections/nested-reflection-transformed.html [ Failure Pass ]
@@ -3502,20 +3495,6 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/interfaces/WebSocket/bu
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/interfaces/WebSocket/send/009.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.window.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Win ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 [ Win ] virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
 crbug.com/626703 [ Win11 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Win11 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Failure Timeout ]
@@ -3585,12 +3564,6 @@ crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribut
 crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/enabled-on-self-origin-by-feature-policy.https.sub.html [ Timeout ]
-crbug.com/626703 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Timeout ]
-crbug.com/626703 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Timeout ]
-crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html [ Timeout ]
-crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentative.html [ Timeout ]
-crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Timeout ]
-crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker.tentative.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/resource-timing/object-not-found-adds-entry.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/webrtc/RTCDataChannel-bufferedAmount.html [ Crash ]
@@ -4140,7 +4113,13 @@ crbug.com/660384 external/wpt/webmessaging/with-options/broken-origin.html [ Fai
 # Added 2016-12-12
 crbug.com/610835 http/tests/security/XFrameOptions/x-frame-options-deny-multiple-clients.html [ Failure Pass ]
 
+crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success-and-failure.html [ Timeout ]
+crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success.html [ Timeout ]
+
 crbug.com/892212 http/tests/wasm/wasm_remote_postMessage_test.https.html [ Failure Pass Timeout ]
+
+crbug.com/1380554 external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
+crbug.com/1380554 virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
 
 # ====== Random order flaky tests from here ======
 # These tests are flaky when run in random order, which is the default on Linux & Mac since since 2016-12-16.
@@ -4211,9 +4190,6 @@ crbug.com/1194557 fast/beacon/beacon-basic.html [ Failure Pass ]
 # Restore set-breakpoint-while-blocking-main-thread.js test to previous state [ Pass ] with
 # crbug.com/1194557 annotation as soon as crbug.com/1270207 has been fixed.
 crbug.com/1270207 virtual/portals/http/tests/devtools/portals/portals-sources-activate.js [ Skip ]
-
-crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success-and-failure.html [ Timeout ]
-crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success.html [ Timeout ]
 
 crbug.com/831509 external/wpt/service-workers/service-worker/skip-waiting-installed.https.html [ Failure Pass ]
 
@@ -7720,6 +7696,14 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/vid
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/video/readyState/readyState_during_canplaythrough.html [ Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/video/readyState/readyState_during_loadeddata.html [ Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/video/readyState/readyState_during_playing.html [ Skip ]
+
+# WebAssembly ESM integration is not yet implemented.
+crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Skip ]
+crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Skip ]
+crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html [ Skip ]
+crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentative.html [ Skip ]
+crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Skip ]
+crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/worker.tentative.html [ Skip ]
 
 # Sheriff 2022-10-19
 crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.html [ Failure ]
