@@ -37,6 +37,7 @@
 -AccessCodeCastHandlerBrowserTest.ExpectNetworkErrorWhenNoNetwork
 -AccessCodeCastHandlerBrowserTest.ReturnSuccessfulResponse
 -AmbientAuthenticationTestWithPolicy.GuestAndRegular
+-AmbientAuthenticationTestWithPolicy.IncognitoAndRegular
 -AmbientAuthenticationTestWithPolicy.RegularOnly
 -AttemptRestartTest.AttemptRestartWithOTRProfiles/1
 -AutomationApiTest.ForceLayout
@@ -116,6 +117,7 @@
 -HistoryRoutingWithQueryParamTest.All
 -HttpsOnlyModeBrowserTest.BadHttpsFollowedByGoodHttps
 -IdleServiceTest.Basic
+-IdleServiceTest.MultiProfileWithDifferentThresholds
 -InlineLoginHelperBrowserTest.UntrustedSigninDialogCancel
 -InspectUIFencedFrameTest.FencedFrameInFrontEnd
 -InspectUITest.LaunchUIDevtools
