@@ -51,7 +51,7 @@ by a child template that "extends" this file.
               android:exported="true"
               tools:ignore="ExportedService">
               <meta-data
-                  android:name="SET_DATA_DIRECTORY_SUFFIX:DEV"
+                  android:name="STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX"
                   android:value="true"/>
             </service>
             <!-- WebView Developer UI Activities. If you change these Activities, please update
