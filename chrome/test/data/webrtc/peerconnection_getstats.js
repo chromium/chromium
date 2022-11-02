@@ -474,6 +474,8 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   consentRequestsSent: 'number',
   packetsDiscardedOnSend: 'number',
   bytesDiscardedOnSend: 'number',
+  lastPacketReceivedTimestamp: 'number',
+  lastPacketSentTimestamp: 'number',
 });
 addRTCStatsToAllowlist(
     Presence.MANDATORY, 'candidate-pair', kRTCIceCandidatePairStats);
