@@ -74,14 +74,6 @@ ErrorForReportingForASCredentialIdentityStoreErrorCode(
   return CredentialIdentityStoreErrorForReporting::kUnknownError;
 }
 
-// Return if the feature flag for the favicon is enabled.
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
-bool IsFaviconEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kEnableFaviconForPasswords);
-}
-
 BOOL ShouldSyncAllCredentials() {
   NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
   DCHECK(user_defaults);
@@ -255,13 +247,10 @@ void CredentialProviderService::AddCredentials(
   const bool sync_enabled = sync_service_->IsSyncFeatureEnabled();
 
   for (const auto& form : forms) {
-    NSString* favicon_key = nil;
-    if (IsFaviconEnabled()) {
-      favicon_key = GetFaviconFileKey(form->url);
-      // Fetch the favicon and save it to the storage.
-      FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key,
-                               should_skip_max_verification, sync_enabled);
-    }
+    NSString* favicon_key = GetFaviconFileKey(form->url);
+    // Fetch the favicon and save it to the storage.
+    FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key,
+                             should_skip_max_verification, sync_enabled);
 
     ArchivableCredential* credential =
         [[ArchivableCredential alloc] initWithPasswordForm:*form

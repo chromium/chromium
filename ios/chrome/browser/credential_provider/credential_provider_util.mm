@@ -173,25 +173,8 @@ void SetFaviconsLastSyncDate(base::Time sync_time) {
 void CleanUpFavicons(NSSet* excess_favicons_filenames) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-
-  // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag
-  // is removed.
   NSFileManager* file_manager = [NSFileManager defaultManager];
   NSString* path = app_group::SharedFaviconAttributesFolder().path;
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnableFaviconForPasswords)) {
-    // Remove repo.
-    if ([file_manager fileExistsAtPath:path]) {
-      [file_manager removeItemAtPath:path error:nil];
-    }
-
-    // Remove last sync date when the flag is disabled.
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:kFaviconsLastSyncDatePrefKey];
-
-    return;
-  }
-
   NSArray* filename_list = [file_manager contentsOfDirectoryAtPath:path
                                                              error:nil];
   if (!filename_list || [filename_list count] == 0) {
@@ -230,15 +213,6 @@ void CleanUpFavicons(NSSet* excess_favicons_filenames) {
 }
 
 void UpdateFaviconsStorage(FaviconLoader* favicon_loader, bool sync_enabled) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnableFaviconForPasswords)) {
-    // Call clean up to remove the repo when the flag is off.
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&CleanUpFavicons, [[NSMutableSet alloc] init]));
-    return;
-  }
-
   // Verify if the app group storage for favicons needs to be synced and
   // cleaned up by checking the last sync date.
   const base::TimeDelta time_elapsed_since_last_sync =

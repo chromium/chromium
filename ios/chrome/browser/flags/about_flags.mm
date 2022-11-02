@@ -983,11 +983,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableWebPageAnnotationsName,
      flag_descriptions::kEnableWebPageAnnotationsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableWebPageAnnotations)},
-    {"enable-favicon-passwords",
-     flag_descriptions::kEnableFaviconForPasswordsName,
-     flag_descriptions::kEnableFaviconForPasswordsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kEnableFaviconForPasswords)},
     {"enable-password-grouping", flag_descriptions::kPasswordsGroupingName,
      flag_descriptions::kPasswordsGroupingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordsGrouping)},

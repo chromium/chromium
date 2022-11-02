@@ -279,14 +279,6 @@ const char kEnableFREDefaultBrowserPromoScreenDescription[] =
     "Display the FRE default browser screen and other default browser promo "
     "depending on experiment.";
 
-const char kEnableFaviconForPasswordsName[] =
-    "Enable favicons for the Password Manager and for the Credential Provider "
-    "Extension";
-const char kEnableFaviconForPasswordsDescription[] =
-    "Show favicons in the Password Manager settings for the Saved Passwords "
-    "and Never Saved sections and also for the AutoFill Passwords for the "
-    "Credential Provider.";
-
 const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =
     "If Enabled the Feed will be removed from the NTP";

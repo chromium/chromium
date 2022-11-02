@@ -47,11 +47,6 @@ BASE_FEATURE(kForceEnablePasswordDomainCapabilities,
              "ForceEnablePasswordDomainCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables favicons in Password Manager.
-BASE_FEATURE(kEnableFaviconForPasswords,
-             "EnableFaviconForPasswords",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
 BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,

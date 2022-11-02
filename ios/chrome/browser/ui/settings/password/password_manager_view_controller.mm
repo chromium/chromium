@@ -117,14 +117,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeAddPasswordButton,
 };
 
-// Return if the feature flag for the favicon is enabled.
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
-bool IsFaviconEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kEnableFaviconForPasswords);
-}
-
 // Returns true if settings (e.g., "Offer To Save Passwords") should be visible
 // in this UI, or false if they should be behind a link to a submenu.
 bool ShouldShowSettingsUI() {
@@ -136,14 +128,6 @@ bool ShouldShowSettingsUI() {
 NSInteger kTrailingSymbolSize = 18;
 
 }  // namespace
-
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
-@interface LegacyPasswordFormContentItem : TableViewDetailTextItem
-@property(nonatomic) password_manager::CredentialUIEntry credential;
-@end
-@implementation LegacyPasswordFormContentItem
-@end
 
 @interface PasswordFormContentItem : TableViewURLItem
 @property(nonatomic) password_manager::CredentialUIEntry credential;
@@ -285,13 +269,6 @@ NSInteger kTrailingSymbolSize = 18;
 // Stores the PasswordFormContentItem which has form attribute's username and
 // site equivalent to that of `mostRecentlyUpdatedPassword`.
 @property(nonatomic, weak) PasswordFormContentItem* mostRecentlyUpdatedItem;
-
-// Stores the PasswordFormContentItem which has form attribute's username and
-// site equivalent to that of `legacyMostRecentlyUpdatedItem`.
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
-@property(nonatomic, weak)
-    LegacyPasswordFormContentItem* legacyMostRecentlyUpdatedItem;
 
 // YES, if the user has tapped on the "Check Now" button.
 @property(nonatomic, assign) BOOL shouldFocusAccessibilityOnPasswordCheckStatus;
@@ -456,9 +433,7 @@ NSInteger kTrailingSymbolSize = 18;
   [super viewWillDisappear:animated];
 
   // Record favicons metrics only if the feature is enabled.
-  if (IsFaviconEnabled()) {
-    [self logMetricsForFavicons];
-  }
+  [self logMetricsForFavicons];
 
   // Restore to default origin offset for cancel button proxy style.
   UIBarButtonItem* cancelButton = [UIBarButtonItem
@@ -994,45 +969,6 @@ NSInteger kTrailingSymbolSize = 18;
   return passwordItem;
 }
 
-- (LegacyPasswordFormContentItem*)
-    legacySavedFormItemWithText:(NSString*)text
-                  andDetailText:(NSString*)detailText
-                  forCredential:
-                      (const password_manager::CredentialUIEntry&)credential {
-  DCHECK(!IsFaviconEnabled());
-  LegacyPasswordFormContentItem* passwordItem =
-      [[LegacyPasswordFormContentItem alloc]
-          initWithType:ItemTypeSavedPassword];
-  passwordItem.text = text;
-  passwordItem.credential = credential;
-  passwordItem.detailText = detailText;
-  passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  if (self.mostRecentlyUpdatedPassword) {
-    if (self.mostRecentlyUpdatedPassword->username == credential.username &&
-        self.mostRecentlyUpdatedPassword->GetFirstSignonRealm() ==
-            credential.GetFirstSignonRealm()) {
-      self.legacyMostRecentlyUpdatedItem = passwordItem;
-      self.mostRecentlyUpdatedPassword = absl::nullopt;
-    }
-  }
-  return passwordItem;
-}
-
-- (LegacyPasswordFormContentItem*)
-    legacyBlockedFormItemWithText:(NSString*)text
-                    forCredential:
-                        (const password_manager::CredentialUIEntry&)credential {
-  DCHECK(!IsFaviconEnabled());
-  LegacyPasswordFormContentItem* passwordItem =
-      [[LegacyPasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
-  passwordItem.text = text;
-  passwordItem.credential = credential;
-  passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  return passwordItem;
-}
-
 #pragma mark - PopoverLabelViewControllerDelegate
 
 - (void)didTapLinkURL:(NSURL*)URL {
@@ -1540,13 +1476,9 @@ NSInteger kTrailingSymbolSize = 18;
           ![detailText localizedCaseInsensitiveContainsString:searchTerm];
       if (hidden)
         continue;
-      [model addItem:(IsFaviconEnabled()
-                          ? [self savedFormItemWithText:text
-                                          andDetailText:detailText
-                                          forCredential:credential]
-                          : [self legacySavedFormItemWithText:text
-                                                andDetailText:detailText
-                                                forCredential:credential])
+      [model addItem:[self savedFormItemWithText:text
+                                   andDetailText:detailText
+                                   forCredential:credential]
           toSectionWithIdentifier:SectionIdentifierSavedPasswords];
     }
   }
@@ -1560,10 +1492,7 @@ NSInteger kTrailingSymbolSize = 18;
                     ![text localizedCaseInsensitiveContainsString:searchTerm];
       if (hidden)
         continue;
-      [model addItem:(IsFaviconEnabled()
-                          ? [self blockedSiteItem:credential]
-                          : [self legacyBlockedFormItemWithText:text
-                                                  forCredential:credential])
+      [model addItem:[self blockedSiteItem:credential]
           toSectionWithIdentifier:SectionIdentifierBlocked];
     }
   }
@@ -1855,13 +1784,9 @@ NSInteger kTrailingSymbolSize = 18;
 
   for (NSIndexPath* indexPath in indexPaths) {
     password_manager::CredentialUIEntry credential =
-        IsFaviconEnabled()
-            ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
-                  [self.tableViewModel itemAtIndexPath:indexPath])
-                  .credential
-            : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
-                  [self.tableViewModel itemAtIndexPath:indexPath])
-                  .credential;
+        base::mac::ObjCCastStrict<PasswordFormContentItem>(
+            [self.tableViewModel itemAtIndexPath:indexPath])
+            .credential;
     // Only form items are editable.
     NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
@@ -1941,14 +1866,6 @@ NSInteger kTrailingSymbolSize = 18;
                           atScrollPosition:UITableViewScrollPositionTop
                                   animated:NO];
     self.mostRecentlyUpdatedItem = nil;
-  } else if (self.legacyMostRecentlyUpdatedItem) {
-    DCHECK(!IsFaviconEnabled());
-    NSIndexPath* indexPath = [self.tableViewModel
-        indexPathForItem:self.legacyMostRecentlyUpdatedItem];
-    [self.tableView scrollToRowAtIndexPath:indexPath
-                          atScrollPosition:UITableViewScrollPositionTop
-                                  animated:NO];
-    self.legacyMostRecentlyUpdatedItem = nil;
   }
 }
 
@@ -2041,13 +1958,9 @@ NSInteger kTrailingSymbolSize = 18;
       DCHECK_EQ(SectionIdentifierSavedPasswords,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
       password_manager::CredentialUIEntry credential =
-          IsFaviconEnabled()
-              ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
-                    [model itemAtIndexPath:indexPath])
-                    .credential
-              : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
-                    [model itemAtIndexPath:indexPath])
-                    .credential;
+          base::mac::ObjCCastStrict<PasswordFormContentItem>(
+              [model itemAtIndexPath:indexPath])
+              .credential;
       [self.handler showDetailedViewForCredential:credential];
       break;
     }
@@ -2055,14 +1968,9 @@ NSInteger kTrailingSymbolSize = 18;
       DCHECK_EQ(SectionIdentifierBlocked,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
       password_manager::CredentialUIEntry credential =
-          IsFaviconEnabled()
-              ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
-                    [model itemAtIndexPath:indexPath])
-                    .credential
-              : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
-                    [model itemAtIndexPath:indexPath])
-
-                    .credential;
+          base::mac::ObjCCastStrict<PasswordFormContentItem>(
+              [model itemAtIndexPath:indexPath])
+              .credential;
       [self.handler showDetailedViewForCredential:credential];
       break;
     }
@@ -2206,17 +2114,11 @@ NSInteger kTrailingSymbolSize = 18;
     }
     case ItemTypeSavedPassword:
     case ItemTypeBlocked: {
-      if (IsFaviconEnabled()) {
-        TableViewURLCell* urlCell =
-            base::mac::ObjCCastStrict<TableViewURLCell>(cell);
-        urlCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
-        // Load the favicon from cache.
-        [self loadFaviconAtIndexPath:indexPath forCell:cell];
-      } else {
-        TableViewDetailTextCell* textCell =
-            base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
-        textCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
-      }
+      TableViewURLCell* urlCell =
+          base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+      urlCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+      // Load the favicon from cache.
+      [self loadFaviconAtIndexPath:indexPath forCell:cell];
       break;
     }
   }

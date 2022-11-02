@@ -256,11 +256,6 @@ extern const char kEnableDiscoverFeedGhostCardsDescription[];
 extern const char kEnableDiscoverFeedStaticResourceServingName[];
 extern const char kEnableDiscoverFeedStaticResourceServingDescription[];
 
-// Title and description for the flag to enable favicon for the Password
-// Manager.
-extern const char kEnableFaviconForPasswordsName[];
-extern const char kEnableFaviconForPasswordsDescription[];
-
 // Title and description for the flag to remove the Feed from the NTP.
 extern const char kEnableFeedAblationName[];
 extern const char kEnableFeedAblationDescription[];

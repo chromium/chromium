@@ -441,12 +441,6 @@ id<GREYMatcher> EditDoneButton() {
     config.features_disabled.push_back(
         syncer::kSyncTrustedVaultPassphrasePromo);
   }
-  if ([self isRunningTest:@selector(testLogFaviconsForPasswordsMetrics)] ||
-      [self isRunningTest:@selector
-            (testLogFaviconsForPasswordsMetricsNoPassword)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kEnableFaviconForPasswords);
-  }
 
   return config;
 }

@@ -31,7 +31,6 @@ BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 BASE_DECLARE_FEATURE(kDetectFormSubmissionOnFormClear);
 BASE_DECLARE_FEATURE(kForceEnablePasswordDomainCapabilities);
-BASE_DECLARE_FEATURE(kEnableFaviconForPasswords);
 BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 BASE_DECLARE_FEATURE(kEnablePasswordGenerationForClearTextFields);

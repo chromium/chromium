@@ -57,25 +57,6 @@ UIColor* BackgroundColor() {
 
 @end
 
-// This cell just adds a simple hover pointer interaction to the TableViewCell.
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
-@interface LegacyCredentialListCell : UITableViewCell
-@end
-
-@implementation LegacyCredentialListCell
-
-- (instancetype)initWithStyle:(UITableViewCellStyle)style
-              reuseIdentifier:(NSString*)reuseIdentifier {
-  self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-  if (self) {
-    [self addInteraction:[[ViewPointerInteraction alloc] init]];
-  }
-  return self;
-}
-
-@end
-
 @interface CredentialListViewController () <UITableViewDataSource,
                                             UISearchResultsUpdating>
 
@@ -232,7 +213,6 @@ UIColor* BackgroundColor() {
   UITableViewCell* cell =
       [tableView dequeueReusableCellWithIdentifier:kCredentialCellIdentifier];
 
-  if (IsFaviconEnabled()) {
     if (!cell) {
       cell =
           [[CredentialListCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -267,23 +247,6 @@ UIColor* BackgroundColor() {
     [credentialCell.faviconView
         configureWithAttributes:self.defaultWorldIconAttributes];
     return credentialCell;
-  } else {
-    if (!cell) {
-      cell = [[LegacyCredentialListCell alloc]
-            initWithStyle:UITableViewCellStyleSubtitle
-          reuseIdentifier:kCredentialCellIdentifier];
-      cell.accessoryView = [self infoIconButton];
-    }
-
-    cell.textLabel.text = credential.serviceName;
-    cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    cell.detailTextLabel.text = credential.user;
-    cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-    cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    cell.accessibilityTraits |= UIAccessibilityTraitButton;
-    return cell;
-  }
 }
 
 // Asynchronously loads favicon for given index path. The loads are cancelled

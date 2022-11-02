@@ -6,8 +6,6 @@
 
 #import <UIKit/UIKit.h>
 #import "base/mac/foundation_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/ui/settings/password/legacy_password_issue_content_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_issue_content_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_presenter.h"
@@ -31,14 +29,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader = kItemTypeEnumZero,
   ItemTypePassword,  // This is a repeated item type.
 };
-
-// Return if the feature flag for the favicon is enabled.
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
-bool IsFaviconEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kEnableFaviconForPasswords);
-}
 
 }  // namespace
 
@@ -78,17 +68,10 @@ bool IsFaviconEnabled() {
   [model setHeader:[self compromisedPasswordsDescriptionItem]
       forSectionWithIdentifier:SectionIdentifierContent];
 
-  if (IsFaviconEnabled()) {
     for (PasswordIssue* password in self.passwords) {
       [model addItem:[self passwordIssueItem:password]
           toSectionWithIdentifier:SectionIdentifierContent];
     }
-  } else {
-    for (PasswordIssue* password in self.passwords) {
-      [model addItem:[self legacyPasswordIssueItem:password]
-          toSectionWithIdentifier:SectionIdentifierContent];
-    }
-  }
 }
 
 #pragma mark - Items
@@ -109,17 +92,6 @@ bool IsFaviconEnabled() {
   return passwordItem;
 }
 
-- (LegacyPasswordIssueContentItem*)legacyPasswordIssueItem:
-    (PasswordIssue*)password {
-  DCHECK(!IsFaviconEnabled());
-  LegacyPasswordIssueContentItem* passwordItem =
-      [[LegacyPasswordIssueContentItem alloc] initWithType:ItemTypePassword];
-  passwordItem.password = password;
-  passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  return passwordItem;
-}
-
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -133,17 +105,10 @@ bool IsFaviconEnabled() {
     case ItemTypeHeader:
       break;
     case ItemTypePassword: {
-      if (IsFaviconEnabled()) {
-        PasswordIssueContentItem* passwordIssue =
-            base::mac::ObjCCastStrict<PasswordIssueContentItem>(
-                [model itemAtIndexPath:indexPath]);
-        [self.presenter presentPasswordIssueDetails:passwordIssue.password];
-      } else {
-        LegacyPasswordIssueContentItem* passwordIssue =
-            base::mac::ObjCCastStrict<LegacyPasswordIssueContentItem>(
-                [model itemAtIndexPath:indexPath]);
-        [self.presenter presentPasswordIssueDetails:passwordIssue.password];
-      }
+      PasswordIssueContentItem* passwordIssue =
+          base::mac::ObjCCastStrict<PasswordIssueContentItem>(
+              [model itemAtIndexPath:indexPath]);
+      [self.presenter presentPasswordIssueDetails:passwordIssue.password];
       break;
     }
   }
@@ -157,17 +122,11 @@ bool IsFaviconEnabled() {
                      cellForRowAtIndexPath:indexPath];
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case ItemTypePassword: {
-      if (IsFaviconEnabled()) {
-        TableViewURLCell* urlCell =
-            base::mac::ObjCCastStrict<TableViewURLCell>(cell);
-        urlCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
-        // Load the favicon from cache.
-        [self loadFaviconAtIndexPath:indexPath forCell:cell];
-      } else {
-        TableViewDetailTextCell* textCell =
-            base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
-        textCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
-      }
+      TableViewURLCell* urlCell =
+          base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+      urlCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+      // Load the favicon from cache.
+      [self loadFaviconAtIndexPath:indexPath forCell:cell];
       break;
     }
   }

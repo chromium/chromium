@@ -17,7 +17,6 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -373,50 +372,6 @@ TEST_F(PasswordManagerViewControllerTest, TestBlockedPasswordsOrder) {
                          GetSectionIndex(SectionIdentifierSavedPasswords), 0);
   CheckURLCellEmptyTitle(@"secret2.com",
                          GetSectionIndex(SectionIdentifierSavedPasswords), 1);
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
-}
-
-// Tests the order in which the saved passwords are displayed.
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
-TEST_F(PasswordManagerViewControllerTest, TestSavedPasswordsOrderLegacy) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kEnableFaviconForPasswords);
-
-  AddSavedForm2();
-
-  CheckTextCellTextAndDetailText(
-      @"example2.com", @"test@egmail.com",
-      GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-
-  AddSavedForm1();
-  CheckTextCellTextAndDetailText(
-      @"example.com", @"test@egmail.com",
-      GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-  CheckTextCellTextAndDetailText(
-      @"example2.com", @"test@egmail.com",
-      GetSectionIndex(SectionIdentifierSavedPasswords), 1);
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
-}
-
-// Tests the order in which the blocked passwords are displayed.
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
-TEST_F(PasswordManagerViewControllerTest, TestBlockedPasswordsOrderLegacy) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kEnableFaviconForPasswords);
-
-  AddBlockedForm2();
-  CheckTextCellText(@"secret2.com",
-                    GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-
-  AddBlockedForm1();
-  CheckTextCellText(@"secret.com",
-                    GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-  CheckTextCellText(@"secret2.com",
-                    GetSectionIndex(SectionIdentifierSavedPasswords), 1);
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
