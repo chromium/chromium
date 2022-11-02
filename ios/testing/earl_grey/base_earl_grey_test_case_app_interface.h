@@ -18,6 +18,10 @@
 // Adjusts the speed property of CALayer to 100 to speed up XCUITests.
 + (void)enableFastAnimation;
 
+// Calls _terminateWithStatus and exit. This causes UIKit to call
+// applicationWillTerminate, which is a more realistic termination.
++ (void)gracefulTerminate;
+
 @end
 
 #endif  // IOS_TESTING_EARL_GREY_BASE_EARL_GREY_TEST_CASE_APP_INTERFACE_H_

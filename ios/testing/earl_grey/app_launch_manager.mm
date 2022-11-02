@@ -151,8 +151,21 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
     if (gracefullyKill) {
       GREYAssertTrue([EarlGrey backgroundApplication],
                      @"Failed to background application.");
+
+      if (self.runningApplication.state ==
+          XCUIApplicationStateRunningBackgroundSuspended) {
+        [self.runningApplication terminate];
+      } else {
+        [BaseEarlGreyTestCaseAppInterface gracefulTerminate];
+        if (![self.runningApplication
+                waitForState:XCUIApplicationStateNotRunning
+                     timeout:5]) {
+          [self.runningApplication terminate];
+        }
+      }
     }
 
+    // No-op if already terminated above.
     [self.runningApplication terminate];
 
     // Can't use EG conditionals here since the app is terminated.

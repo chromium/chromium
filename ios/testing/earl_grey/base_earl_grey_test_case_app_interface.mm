@@ -13,6 +13,10 @@
 #error "This file requires ARC support."
 #endif
 
+@interface UIApplication (Testing)
+- (void)_terminateWithStatus:(int)status;
+@end
+
 @implementation BaseEarlGreyTestCaseAppInterface
 
 + (void)logMessage:(NSString*)message {
@@ -23,6 +27,14 @@
   for (UIWindow* window in [UIApplication sharedApplication].windows) {
     [[window layer] setSpeed:100];
   }
+}
+
++ (void)gracefulTerminate {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIApplication* application = UIApplication.sharedApplication;
+    [application _terminateWithStatus:0];
+    exit(0);
+  });
 }
 
 @end
