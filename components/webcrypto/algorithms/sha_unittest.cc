@@ -26,8 +26,7 @@ TEST_F(WebCryptoShaTest, DigestSampleSets) {
   for (const auto& test_value : tests) {
     SCOPED_TRACE(&test_value - &tests[0]);
     ASSERT_TRUE(test_value.is_dict());
-    const base::DictionaryValue* test =
-        &base::Value::AsDictionaryValue(test_value);
+    const base::Value::Dict& test = test_value.GetDict();
 
     blink::WebCryptoAlgorithm test_algorithm =
         GetDigestAlgorithm(test, "algorithm");

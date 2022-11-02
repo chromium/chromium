@@ -67,10 +67,6 @@ std::vector<uint8_t> Corrupted(const std::vector<uint8_t>& input);
 
 std::vector<uint8_t> HexStringToBytes(const std::string& hex);
 
-// Deprecated; do not add new uses of this function, since base::DictionaryValue
-// itself is deprecated.
-std::vector<uint8_t> MakeJsonVector(const base::DictionaryValue& dict);
-
 // Serialize |value| to json, then return that json as a byte vector.
 std::vector<uint8_t> MakeJsonVector(const base::ValueView& value);
 
@@ -86,13 +82,13 @@ base::Value::List ReadJsonTestFileAsList(const char* test_file_name);
 // (which can include periods for nested dictionaries). Interprets the
 // string as a hex encoded string and converts it to a bytes list.
 //
-// Returns empty vector on failure or if |dict| is not a dictionary.
-std::vector<uint8_t> GetBytesFromHexString(const base::Value* dict,
+// Returns empty vector on failure.
+std::vector<uint8_t> GetBytesFromHexString(const base::Value::Dict& dict,
                                            const std::string& property_name);
 
 // Reads a string property with path "property_name" and converts it to a
-// WebCryptoAlgorith. Returns null algorithm on failure.
-blink::WebCryptoAlgorithm GetDigestAlgorithm(const base::DictionaryValue* dict,
+// WebCryptoAlgorithm. Returns null algorithm on failure.
+blink::WebCryptoAlgorithm GetDigestAlgorithm(const base::Value::Dict& dict,
                                              const char* property_name);
 
 // Returns true if any of the vectors in the input list have identical content.
@@ -129,15 +125,6 @@ void ImportRsaKeyPair(const std::vector<uint8_t>& spki_der,
                       blink::WebCryptoKey* private_key);
 
 Status ImportKeyJwkFromDict(const base::ValueView& dict,
-                            const blink::WebCryptoAlgorithm& algorithm,
-                            bool extractable,
-                            blink::WebCryptoKeyUsageMask usages,
-                            blink::WebCryptoKey* key);
-
-// Obsolete compatibility overload, do not add new uses. This is only present
-// because base::DictionaryValue requires explicit conversion to
-// base::ValueView.
-Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
                             const blink::WebCryptoAlgorithm& algorithm,
                             bool extractable,
                             blink::WebCryptoKeyUsageMask usages,
@@ -193,17 +180,17 @@ Status GenerateKeyPair(const blink::WebCryptoAlgorithm& algorithm,
 // Reads a key format string as used in some JSON test files and converts it to
 // a WebCryptoKeyFormat.
 blink::WebCryptoKeyFormat GetKeyFormatFromJsonTestCase(
-    const base::DictionaryValue* test);
+    const base::Value::Dict& test);
 
 // Extracts the key data bytes from |test| as used insome JSON test files.
 std::vector<uint8_t> GetKeyDataFromJsonTestCase(
-    const base::DictionaryValue* test,
+    const base::Value::Dict& test,
     blink::WebCryptoKeyFormat key_format);
 
 // Reads the "crv" string from a JSON test case and returns it as a
 // WebCryptoNamedCurve.
 blink::WebCryptoNamedCurve GetCurveNameFromDictionary(
-    const base::DictionaryValue* dict);
+    const base::Value::Dict& dict);
 
 blink::WebCryptoNamedCurve CurveNameToCurve(const std::string& name);
 
