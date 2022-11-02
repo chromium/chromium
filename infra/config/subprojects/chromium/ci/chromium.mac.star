@@ -6,7 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "goma", "os", "reclient", "sheriff_rotations", "xcode")
+load("//lib/builders.star", "cpu", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -14,10 +14,11 @@ ci.defaults.set(
     builder_group = "chromium.mac",
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
     main_console_view = "main",
     os = os.MAC_DEFAULT,
     pool = ci.DEFAULT_POOL,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     thin_tester_cores = 8,
@@ -107,9 +108,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     os = os.MAC_ANY,
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -138,9 +136,6 @@ ci.builder(
     ),
     cpu = cpu.ARM64,
     os = os.MAC_DEFAULT,
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -166,9 +161,6 @@ ci.builder(
         short_name = "bld",
     ),
     os = os.MAC_DEFAULT,
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.thin_tester(
@@ -424,9 +416,6 @@ ios_builder(
             short_name = "ctl",
         ),
     ],
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ios_builder(
@@ -459,11 +448,6 @@ ios_builder(
             short_name = "dev",
         ),
     ],
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    # We don't have necessary capacity to run this configuration in CQ, but it
-    # is part of the main waterfall
 )
 
 ios_builder(
@@ -501,9 +485,6 @@ ios_builder(
         ),
     ],
     cq_mirrors_console_view = "mirrors",
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ios_builder(
@@ -541,9 +522,6 @@ ios_builder(
         ),
     ],
     cq_mirrors_console_view = "mirrors",
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ios_builder(
@@ -579,7 +557,4 @@ ios_builder(
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
     xcode = xcode.x14main,
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
 )
