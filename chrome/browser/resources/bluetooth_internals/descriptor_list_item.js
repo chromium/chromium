@@ -4,12 +4,12 @@
 
 import './expandable_list_item.js';
 import './object_fieldset.js';
+import './value_control.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './descriptor_list_item.html.js';
 import {DescriptorInfo} from './device.mojom-webui.js';
-import {ValueControl} from './value_control.js';
 
 /** Property names for the DescriptorInfo fieldset */
 const INFO_PROPERTY_NAMES = {
@@ -33,9 +33,6 @@ export class DescriptorListItemElement extends CustomElement {
     this.serviceId_ = '';
     /** @private {string} */
     this.characteristicId_ = '';
-
-    /** @private {!ValueControl} */
-    this.valueControl_ = new ValueControl();
   }
 
   connectedCallback() {
@@ -55,21 +52,20 @@ export class DescriptorListItemElement extends CustomElement {
     });
     fieldSet.hidden = false;
 
-    this.valueControl_.load({
+    const valueControl = this.shadowRoot.querySelector('value-control');
+    valueControl.dataset.options = JSON.stringify({
       deviceAddress: this.deviceAddress_,
       serviceId: this.serviceId_,
       characteristicId: this.characteristicId_,
       descriptorId: this.info.id,
     });
+    valueControl.hidden = false;
 
     const descriptorHeaderValue =
         this.shadowRoot.querySelector('.header-value');
     descriptorHeaderValue.textContent = this.info.uuid.uuid;
 
     const infoDiv = this.shadowRoot.querySelector('.info-container');
-    infoDiv.insertBefore(
-        this.valueControl_,
-        this.shadowRoot.querySelector('characteristic-list'));
   }
 }
 

@@ -9,7 +9,7 @@ import {BluetoothInternalsHandler} from 'chrome://bluetooth-internals/bluetooth_
 import {connectedDevices} from 'chrome://bluetooth-internals/device_broker.js';
 import {dismissSnackbar, getSnackbarStateForTest, showSnackbar} from 'chrome://bluetooth-internals/snackbar.js';
 import {UUID} from 'chrome://bluetooth-internals/uuid.mojom-webui.js';
-import {ValueControl, ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
+import {ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {$} from 'chrome://resources/js/util.js';
@@ -603,60 +603,73 @@ suite('BluetoothInternalsUnitTests', function() {
   let valueControl = null;
 
   setup(function() {
-    valueControl = new ValueControl();
-    valueControl.load(device1.address, service1.id, characteristic1);
-    valueControl.typeSelect_.value = ValueDataType.HEXADECIMAL;
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    valueControl = document.createElement('value-control');
+    document.body.appendChild(valueControl);
+    valueControl.dataset.options = JSON.stringify({
+      deviceAddress: device1.address,
+      serviceId: service1.id,
+      characteristicId: characteristic1,
+    });
+    valueControl.shadowRoot.querySelector('select').value =
+        ValueDataType.HEXADECIMAL;
   });
 
   test('ValueControl_SetValue_Hexadecimal_EmptyArray', function() {
-    valueControl.setValue([]);
-    assertEquals('', valueControl.valueInput_.value);
+    valueControl.dataset.value = JSON.stringify([]);
+    assertEquals('', valueControl.shadowRoot.querySelector('input').value);
   });
 
   test('ValueControl_SetValue_Hexadecimal_OneValue', function() {
-    valueControl.setValue([aCode]);
-    assertEquals('0x61', valueControl.valueInput_.value);
+    valueControl.dataset.value = JSON.stringify([aCode]);
+    assertEquals('0x61', valueControl.shadowRoot.querySelector('input').value);
   });
 
   test('ValueControl_SetValue_Hexadecimal_ThreeValues', function() {
-    valueControl.setValue([aCode, bCode, cCode]);
-    assertEquals('0x616263', valueControl.valueInput_.value);
+    valueControl.dataset.value = JSON.stringify([aCode, bCode, cCode]);
+    assertEquals(
+        '0x616263', valueControl.shadowRoot.querySelector('input').value);
   });
 
   test('ValueControl_SetValue_UTF8_EmptyArray', function() {
-    valueControl.typeSelect_.value = ValueDataType.UTF8;
-    valueControl.setValue([]);
-    assertEquals('', valueControl.valueInput_.value);
+    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
+    valueControl.dataset.value = JSON.stringify([]);
+    assertEquals('', valueControl.shadowRoot.querySelector('input').value);
   });
 
   test('ValueControl_SetValue_UTF8_OneValue', function() {
-    valueControl.typeSelect_.value = ValueDataType.UTF8;
-    valueControl.setValue([aCode]);
-    assertEquals('a', valueControl.valueInput_.value);
+    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
+    valueControl.dataset.value = JSON.stringify([aCode]);
+    assertEquals('a', valueControl.shadowRoot.querySelector('input').value);
   });
 
   test('ValueControl_SetValue_UTF8_ThreeValues', function() {
-    valueControl.typeSelect_.value = ValueDataType.UTF8;
-    valueControl.setValue([aCode, bCode, cCode]);
-    assertEquals('abc', valueControl.valueInput_.value);
+    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
+    valueControl.dataset.value = JSON.stringify([aCode, bCode, cCode]);
+    assertEquals('abc', valueControl.shadowRoot.querySelector('input').value);
   });
 
   test('ValueControl_SetValue_Decimal_EmptyArray', function() {
-    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
-    valueControl.setValue([]);
-    assertEquals('', valueControl.valueInput_.value);
+    valueControl.shadowRoot.querySelector('select').value =
+        ValueDataType.DECIMAL;
+    valueControl.dataset.value = JSON.stringify([]);
+    assertEquals('', valueControl.shadowRoot.querySelector('input').value);
   });
 
   test('ValueControl_SetValue_Decimal_OneValue', function() {
-    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
-    valueControl.setValue([aCode]);
-    assertEquals(String(aCode), valueControl.valueInput_.value);
+    valueControl.shadowRoot.querySelector('select').value =
+        ValueDataType.DECIMAL;
+    valueControl.dataset.value = JSON.stringify([aCode]);
+    assertEquals(
+        String(aCode), valueControl.shadowRoot.querySelector('input').value);
   });
 
   test('ValueControl_SetValue_Decimal_ThreeValues', function() {
-    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
-    valueControl.setValue([aCode, bCode, cCode]);
-    assertEquals('97-98-99', valueControl.valueInput_.value);
+    valueControl.shadowRoot.querySelector('select').value =
+        ValueDataType.DECIMAL;
+    valueControl.dataset.value = JSON.stringify([aCode, bCode, cCode]);
+    assertEquals(
+        '97-98-99', valueControl.shadowRoot.querySelector('input').value);
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_EmptyString', function() {
@@ -676,25 +689,27 @@ suite('BluetoothInternalsUnitTests', function() {
   });
 
   test('ValueControl_ConvertValue_UTF8_EmptyString', function() {
-    valueControl.typeSelect_.value = ValueDataType.UTF8;
+    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
     valueControl.value_.setAs(ValueDataType.UTF8, '');
     assertEquals(0, valueControl.value_.getArray().length);
   });
 
   test('ValueControl_ConvertValue_UTF8_ThreeValues', function() {
-    valueControl.typeSelect_.value = ValueDataType.UTF8;
+    valueControl.shadowRoot.querySelector('select').value = ValueDataType.UTF8;
     valueControl.value_.setAs(ValueDataType.UTF8, 'abc');
     assertDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
   });
 
   test('ValueControl_ConvertValue_Decimal_EmptyString', function() {
-    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
+    valueControl.shadowRoot.querySelector('select').value =
+        ValueDataType.DECIMAL;
     valueControl.value_.setAs(ValueDataType.DECIMAL, '');
     assertEquals(0, valueControl.value_.getArray().length);
   });
 
   test('ValueControl_ConvertValue_Decimal_ThreeValues_Fail', function() {
-    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
+    valueControl.shadowRoot.querySelector('select').value =
+        ValueDataType.DECIMAL;
 
     assertThrows(function() {
       valueControl.value_.setAs(ValueDataType.DECIMAL, '97-+-99' /* a-+-c */);
@@ -702,7 +717,8 @@ suite('BluetoothInternalsUnitTests', function() {
   });
 
   test('ValueControl_ConvertValue_Decimal_ThreeValues', function() {
-    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
+    valueControl.shadowRoot.querySelector('select').value =
+        ValueDataType.DECIMAL;
     valueControl.value_.setAs(ValueDataType.DECIMAL, '97-98-99' /* abc */);
     assertDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
   });

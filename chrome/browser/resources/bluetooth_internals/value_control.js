@@ -7,11 +7,12 @@
  */
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {GattResult, Property} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {showSnackbar, SnackbarType} from './snackbar.js';
+import {getTemplate} from './value_control.html.js';
 
 /**
  * @typedef {{
@@ -205,19 +206,21 @@ export class Value {
  * @constructor
  * @extends {HTMLDivElement}
  */
-export const ValueControl = crUiDefine('div');
+export class ValueControlElement extends CustomElement {
+  static get is() {
+    return 'value-control';
+  }
 
-ValueControl.prototype = {
-  __proto__: HTMLDivElement.prototype,
+  static get template() {
+    return getTemplate();
+  }
 
-  /**
-   * Decorates the element as a ValueControl. Creates the layout for the value
-   * control by creating a text input, select element, and two buttons for
-   * read/write requests. Event handlers are attached and references to these
-   * elements are stored for later use.
-   */
-  decorate() {
-    this.classList.add('value-control');
+  static get observedAttributes() {
+    return ['data-value', 'data-options'];
+  }
+
+  constructor() {
+    super();
 
     /** @private {!Value} */
     this.value_ = new Value([]);
@@ -231,11 +234,21 @@ ValueControl.prototype = {
     this.descriptorId_ = null;
     /** @private {number} */
     this.properties_ = Number.MAX_SAFE_INTEGER;
+    /** @private {!HTMLInputElement} */
+    this.valueInput_ = this.shadowRoot.querySelector('input');
+    /** @private {!HTMLSelectElement} */
+    this.typeSelect_ = this.shadowRoot.querySelector('select');
+    /** @private {!HTMLButtonElement} */
+    this.writeBtn_ = this.shadowRoot.querySelector('button.write');
+    /** @private {!HTMLButtonElement} */
+    this.readBtn_ = this.shadowRoot.querySelector('button.read');
+    /** @private {!HTMLElement} */
+    this.unavailableMessage_ = this.shadowRoot.querySelector('h3');
+  }
 
-    this.unavailableMessage_ = document.createElement('h3');
-    this.unavailableMessage_.textContent = 'Value cannot be read or written.';
+  connectedCallback() {
+    this.classList.add('value-control');
 
-    this.valueInput_ = document.createElement('input');
     this.valueInput_.addEventListener('change', function() {
       try {
         this.value_.setAs(this.typeSelect_.value, this.valueInput_.value);
@@ -244,57 +257,43 @@ ValueControl.prototype = {
       }
     }.bind(this));
 
-    this.typeSelect_ = document.createElement('select');
-
-    Object.keys(ValueDataType).forEach(function(key) {
-      const type = ValueDataType[key];
-      const option = document.createElement('option');
-      option.value = type;
-      option.text = type;
-      this.typeSelect_.add(option);
-    }, this);
-
     this.typeSelect_.addEventListener('change', this.redraw.bind(this));
 
-    const inputDiv = document.createElement('div');
-    inputDiv.appendChild(this.valueInput_);
-    inputDiv.appendChild(this.typeSelect_);
-
-    this.readBtn_ = document.createElement('button');
-    this.readBtn_.textContent = 'Read';
     this.readBtn_.addEventListener('click', this.readValue_.bind(this));
 
-    this.writeBtn_ = document.createElement('button');
-    this.writeBtn_.textContent = 'Write';
     this.writeBtn_.addEventListener('click', this.writeValue_.bind(this));
 
-    const buttonsDiv = document.createElement('div');
-    buttonsDiv.appendChild(this.readBtn_);
-    buttonsDiv.appendChild(this.writeBtn_);
-
-    this.appendChild(this.unavailableMessage_);
-    this.appendChild(inputDiv);
-    this.appendChild(buttonsDiv);
-  },
+    this.redraw();
+  }
 
   /**
    * Sets the settings used by the value control and redraws the control to
    * match the read/write settings in |options.properties|. If properties
    * are not provided, no restrictions on reading/writing are applied.
-   * @param {!ValueLoadOptions} options
    */
-  load(options) {
-    this.deviceAddress_ = options.deviceAddress;
-    this.serviceId_ = options.serviceId;
-    this.characteristicId_ = options.characteristicId;
-    this.descriptorId_ = options.descriptorId;
+  attributeChangedCallback(name, oldValue, newValue) {
+    assert(name === 'data-value' || name === 'data-options');
 
-    if (options.properties) {
-      this.properties_ = options.properties;
+    if (oldValue === newValue) {
+      return;
+    }
+
+    if (name === 'data-options') {
+      const options = JSON.parse(newValue);
+      this.deviceAddress_ = options.deviceAddress;
+      this.serviceId_ = options.serviceId;
+      this.characteristicId_ = options.characteristicId;
+      this.descriptorId_ = options.descriptorId;
+
+      if (options.properties) {
+        this.properties_ = options.properties;
+      }
+    } else {
+      this.value_.setArray(JSON.parse(newValue));
     }
 
     this.redraw();
-  },
+  }
 
   /**
    * Redraws the value control with updated layout depending on the
@@ -315,7 +314,7 @@ ValueControl.prototype = {
     }
 
     this.valueInput_.value = this.value_.getAs(this.typeSelect_.value);
-  },
+  }
 
   /**
    * Sets the value of the control.
@@ -324,7 +323,7 @@ ValueControl.prototype = {
   setValue(value) {
     this.value_.setArray(value);
     this.redraw();
-  },
+  }
 
   /**
    * Gets an error string describing the given |result| code.
@@ -337,7 +336,7 @@ ValueControl.prototype = {
     return Object.keys(GattResult).find(function(key) {
       return GattResult[key] === result;
     });
-  },
+  }
 
   /**
    * Called when the read button is pressed. Connects to the device and
@@ -374,7 +373,7 @@ ValueControl.prototype = {
               this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
               'Retry', this.readValue_.bind(this));
         }.bind(this));
-  },
+  }
 
   /**
    * Called when the write button is pressed. Connects to the device and
@@ -412,5 +411,7 @@ ValueControl.prototype = {
               this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
               'Retry', this.writeValue_.bind(this));
         }.bind(this));
-  },
-};
+  }
+}
+
+customElements.define('value-control', ValueControlElement);

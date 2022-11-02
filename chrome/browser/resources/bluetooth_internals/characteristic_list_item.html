@@ -4,22 +4,9 @@
   }
 
   .info-container > h4,
-  .info-container > div {
+  .info-container > object-field-set,
+  .info-container > value-control {
     margin: 1em;
-  }
-
-  /* Value Control */
-  .value-control > div {
-    display: flex;
-    margin: 4px 0;
-  }
-
-  .value-control > div > input {
-    flex-grow: 1;
-  }
-
-  .value-control > div:nth-of-type(2) {
-    justify-content: flex-end;
   }
 
   button.show-all-properties {
@@ -59,12 +46,6 @@
     /* OVERRIDE */
     transition: border-color 200ms;
   }
-
-  h3 {
-    font-weight: normal;
-    line-height: 1;
-    user-select: none;
-  }
 </style>
 <expandable-list-item>
   <div slot="brief-content">
@@ -76,8 +57,9 @@
     <object-field-set class="characteristics" show-all></object-field-set>
     <h4>Properties<button class="show-all-properties">Show All</button></h4>
     <object-field-set class="properties"></object-field-set>
+    <h4>Value</h4>
+    <value-control hidden></value-control>
     <h4>Descriptors</h4>
     <descriptor-list></descriptor-list>
-    <h4>Value</h4>
   </div>
 </expandable-list-item>

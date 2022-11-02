@@ -345,7 +345,7 @@
     "includes": [2160],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/bluetooth_internals/resources.grd": {
-    "META": {"sizes": {"includes": [30],}},
+    "META": {"sizes": {"includes": [50],}},
     "includes": [2180],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/audio/resources.grd": {
