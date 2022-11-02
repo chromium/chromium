@@ -134,7 +134,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         let quadCopyTexIdx = 0;
         let backgroundTexture = null;
         let readPixelBuf = null;
-        let alreadyDoingMarkerDetection = false;
+        let readPixelsStarted = false;
+        let readPixelsDone = false;
+        let pendingMarkerDetection = null;
         let frameNum = 0;
 
         let arc = null;
@@ -143,6 +145,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         // If requested, use DOM overlay to provide information about the read color:
         const use_dom_overlay = QueryArgs.getBool('useDomOverlay', true);
+
+        // Optionally, enable time traces for use with chrome://tracing . This
+        // is off by default since it spams the console log with timing data.
+        const use_timers = QueryArgs.getBool('useTimers', false);
 
         const textOverlayElement = document.querySelector("#text-overlay");
         if (!textOverlayElement) {
@@ -286,7 +292,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             lastTime = 0;
             readback_pixels = null;
             backgroundTexture = null;
-            alreadyDoingMarkerDetection = false;
+            readPixelsStarted = false;
+            readPixelsDone = false;
+            pendingMarkerDetection = null;
             markersInFrame = [];
         }
 
@@ -335,12 +343,22 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
                 if (frameTimes.length >= frameTimeMax - 1) {
                     const fps = Math.round(1000 * frameTimeMax / frameTimes.reduce((sum, v) => sum + v));
-                   const msg = '' + fps + ' fps';
+                    const msg = '' + fps + ' fps';
                     console.debug(msg);
-                    document.getElementById('text-info').innerText = msg;
+                    if (use_dom_overlay) {
+                      document.getElementById('text-info').innerText = msg;
+                    }
                 }
             }
             lastTime = timestamp;
+        }
+
+        function consoleTimeStart(name) {
+          if (use_timers) console.time(name);
+        }
+
+        function consoleTimeEnd(name) {
+          if (use_timers) console.timeEnd(name);
         }
 
         function onXRFrame(frameTimestamp, frame) {
@@ -353,59 +371,84 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             for (let view of pose.views) {
                 let viewport = session.renderState.baseLayer.getViewport(view);
 
-                let asyncRead = document.getElementById('asyncRead').checked; if (asyncRead) {
+                let asyncRead = document.getElementById('asyncRead').checked;
+                if (asyncRead) {
                     // Use asynchronous readPixels and draw the augmented scene based on the
                     // last-detected marker poses, effectively adding a frame of delay to the
                     // session. If the scene also had elements that are based on poses from the XR
                     // session, such as hit test results, those poses would also need to be saved
                     // to match the marker poses.
 
-                    // Draw the scene based on the last-available camera image (if available) and
-                    // marker poses.
+                    // WebXR rAF for frame N
+                    //   start async readPixels for frame N
+                    //   run marker detection for frame N-1
+                    //   draw scene for frame N-1
+                    //
+                    // WebXR rAF for frame N+1
+                    //   start async readPixels for frame N+1
+                    //   run marker detection for frame N
+                    //   draw scene for frame N
+                    //
+                    // ... etc. There may be be rAF calls where the async readPixels for the
+                    // previous frame hasn't completed yet. In that case, just re-draw the
+                    // scene based on the last-available marker poses, reusing the corresponding
+                    // old camera image as background as appropriate.
+
+                    if (pendingMarkerDetection) {
+                       // We have read the pixels for a previous frame, but haven't started marker
+                       // detection on it yet. It's now time to grab a fresh frame. Marker processing
+                       // will start below.
+                      readPixelsDone = false;
+                    }
+
+                    if (!readPixelsStarted && !readPixelsDone) {
+                      // We're not currently running marker detection. Copy the camera frame and kick
+                      // off the asynchronous readPixels + marker detection for it.
+                      console.debug('start frame ' + frameNum + ' readPixels');
+                      if (!view.camera) return;
+                      if (!copyCameraTexture(view)) return;
+                      readPixelsAndScheduleMarkerDetectionAsync(view);
+                      readPixelsStarted = true;
+
+                      // Update the FPS counter whenever we start processing a fresh image.
+                      showFps(frameTimestamp);
+                    }
+
+                    if (pendingMarkerDetection) {
+                       // Run marker detection on the previous frame synchronously, while the
+                       // asynchronous readPixels for the current frame is happening in the
+                       // background.
+                       pendingMarkerDetection();
+                       pendingMarkerDetection = null;
+                    }
+
+                    // Draw the scene based on the last-available camera image and marker poses.
                     console.debug('draw frame ' + frameNum);
                     const delayImage = document.getElementById('delayImage').checked;
                     drawMarkerScene(session, viewport, view, delayImage);
-
-                    // If we're already running marker detection, ignore this camera frame. The
-                    // marker poses will be updated once the currently-running detection finishes.
-                    if (alreadyDoingMarkerDetection) {
-                        console.debug('skip frame ' + frameNum + ', already doing marker detection');
-                        // Exit early so that we don't update the FPS counter.
-                        // That's supposed to only count frames with updated
-                        // marker pose data.
-                        return;
-                    }
-
-                    // We're not currently running marker detection. Copy the camera frame and run
-                    // asynchronous marker detection on it.
-                    console.debug('start frame ' + frameNum + ' new marker detection');
-                    if (!view.camera) return;
-
-                    if (!copyCameraTexture(view)) return;
-
-                    readPixelsAndDetectMarkersAsync(view);
-                    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
                 } else {
                     // Simple version - copy the camera texture, readPixels, detect markers, draw them.
 
                     if (!view.camera) return;
                     if (!copyCameraTexture(view)) return;
 
+                    consoleTimeStart("readPixelsSync");
                     gl.readPixels(0, 0, scaledWidth, scaledHeight,
                                   gl.RGBA, gl.UNSIGNED_BYTE, readback_pixels);
                     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+                    consoleTimeEnd("readPixelsSync");
 
                     detectMarkers(new Uint8ClampedArray(readback_pixels.buffer),
                                   scaledWidth, scaledHeight, view);
 
                     drawMarkerScene(session, viewport, view, false);
+
+                    // Update the FPS counter. This is the simple case, there's one processed camera frame
+                    // per rAF callback.
+                    showFps(frameTimestamp);
                 }
             }
 
-            // If we get here, update the FPS counter. This is skipped in case the drawing loop
-            // above did an early return, so we're only counting frames where the image was actually
-            // processed.
-            showFps(frameTimestamp);
 
             // Once per session, check for GL errors and report them. Then turn
             // off this expensive check.
@@ -433,7 +476,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                                   0, gl.RGBA, gl.UNSIGNED_BYTE, null);
                 }
             }
-            readback_pixels.fill(0);
 
             console.debug('frame ' + frameNum + ' update texture ' + quadCopyTexIdx);
             gl.bindTexture(gl.TEXTURE_2D, quadCopyTextures[quadCopyTexIdx]);
@@ -455,27 +497,39 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             return true;
         }
 
-        function readPixelsAndDetectMarkersAsync(view) {
-            alreadyDoingMarkerDetection = true;
+        function readPixelsAndScheduleMarkerDetectionAsync(view) {
             const subtaskFrameNum = frameNum;
+            const subtaskQuadCopyTexIdx = quadCopyTexIdx;
 
+            consoleTimeStart("readPixelsAsync");
+            //readback_pixels.fill(0);
             readPixelsAsync(gl, 0, 0, scaledWidth, scaledHeight, gl.RGBA, gl.UNSIGNED_BYTE,
                             readback_pixels, readPixelBuf).then(() => {
+                consoleTimeEnd("readPixelsAsync");
+                console.debug('finished frame ' + subtaskFrameNum + ' readPixels');
+
+                readPixelsStarted = false;
+                readPixelsDone = true;
+
                 // session ended?
                 if (!readback_pixels) return;
 
-                console.debug('async do frame ' + subtaskFrameNum + ' marker detection, texture ' + quadCopyTexIdx);
-                detectMarkers(new Uint8ClampedArray(readback_pixels.buffer),
-                              scaledWidth, scaledHeight, view);
+                pendingMarkerDetection = () => {
+                  console.debug('async do frame ' + subtaskFrameNum + ' marker detection, texture ' + subtaskQuadCopyTexIdx);
+                  detectMarkers(new Uint8ClampedArray(readback_pixels.buffer),
+                                scaledWidth, scaledHeight, view);
 
-                alreadyDoingMarkerDetection = false;
-                backgroundTexture = quadCopyTextures[quadCopyTexIdx];
-                console.debug('finished frame ' + subtaskFrameNum + ' marker detection, new background texture ' + quadCopyTexIdx);
-                quadCopyTexIdx = (quadCopyTexIdx + 1) % quadCopyTextures.length;
+                  backgroundTexture = quadCopyTextures[subtaskQuadCopyTexIdx];
+                  console.debug('finished frame ' + subtaskFrameNum + ' marker detection, new background texture ' + subtaskQuadCopyTexIdx);
+                };
             });
+            quadCopyTexIdx = (quadCopyTexIdx + 1) % quadCopyTextures.length;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         }
 
         function drawMarkerScene(session, viewport, view, drawBackground) {
+            consoleTimeStart("drawMarkerScene");
+
             gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
             gl.clearColor(0, 0, 0, 0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -509,6 +563,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 drawCube(pose, gl, programInfo, buffers, view, markerColor);
             }
             gl.disable(gl.BLEND);
+            consoleTimeEnd("drawMarkerScene");
         }
 
         let markerImage = null;
@@ -530,6 +585,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         }
 
         function detectMarkers(rawData, scaledWidth, scaledHeight, view) {
+            consoleTimeStart("detectMarkers");
             const debugOpenCV = document.getElementById('debugOpenCV').checked;
 
             const img = new cv.Mat(scaledHeight, scaledWidth, cv.CV_8UC4);
@@ -592,7 +648,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 // Apply the tvec translation.
                 mat4.translate(m, m, tvecs.doublePtr(0, i));
                 // Rotate the cube based on rvec's length and axis.
-                mat4.rotate(m, m, vec3.length(rvecs.doublePtr(0, i)), rvecs.doublePtr(0, 0))
+                mat4.rotate(m, m, vec3.length(rvecs.doublePtr(0, i)), rvecs.doublePtr(0, i))
                 // Resize the cube to match the marker size.
                 mat4.scale(m, m, [markerSize / 2, markerSize / 2, markerSize / 2]);
                 // The drawn cube has a 2 unit (meter) edge length. Translate it so that
@@ -607,6 +663,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 cv.imshow('out-canvas', img);
             }
             img.delete();
+            consoleTimeEnd("detectMarkers");
         }
 
 // This GL rendering code is adapted from a publicly provided code sample found at
