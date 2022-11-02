@@ -192,7 +192,7 @@ absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   if (!options()->enable_resource_scheduler)
     command_line->AppendSwitch(::switches::kDisableResourceScheduler);
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // The headless backend is automatically chosen for a headless build, but also
   // adding it here allows us to run in a non-headless build too.
   command_line->AppendSwitchASCII(::switches::kOzonePlatform, "headless");
