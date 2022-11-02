@@ -141,6 +141,15 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     a11yMessagesEvent = await a11yMessagesEventPromise;
     assertTrue(a11yMessagesEvent.detail.messages.includes(
         bluetoothDevicesSubpage.i18n('bluetoothEnabledA11YLabel')));
+
+    // Mock systemState becoming unavailable.
+    a11yMessagesEventPromise =
+        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+    bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
+
+    a11yMessagesEvent = await a11yMessagesEventPromise;
+    assertTrue(a11yMessagesEvent.detail.messages.includes(
+        bluetoothDevicesSubpage.i18n('bluetoothDisabledA11YLabel')));
   });
 
   test('Toggle button states', async function() {
@@ -189,6 +198,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     // Mock systemState becoming unavailable.
     bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
     await flushAsync();
+    assertToggleEnabledState(/*enabled=*/ false);
     assertTrue(enableBluetoothToggle.disabled);
   });
 
@@ -251,6 +261,14 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertTrue(!!getDeviceList(/*connected=*/ false));
     assertEquals(getDeviceList(/*connected=*/ false).devices.length, 2);
     assertFalse(!!getNoDeviceText());
+
+    // Mock systemState becoming unavailable.
+    bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
+    await flushAsync();
+
+    assertFalse(!!getDeviceList(/*connected=*/ true));
+    assertFalse(!!getDeviceList(/*connected=*/ false));
+    assertTrue(!!getNoDeviceText());
   });
 
   test(

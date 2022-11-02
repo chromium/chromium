@@ -194,9 +194,6 @@ class SettingsBluetoothDevicesSubpageElement extends
 
   /** @private */
   onSystemPropertiesChanged_() {
-    if (this.isToggleDisabled_()) {
-      return;
-    }
     this.isBluetoothToggleOn_ =
         this.systemProperties.systemState === BluetoothSystemState.kEnabled ||
         this.systemProperties.systemState === BluetoothSystemState.kEnabling;
@@ -250,8 +247,13 @@ class SettingsBluetoothDevicesSubpageElement extends
     if (oldValue === undefined) {
       return;
     }
-    getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
-    this.annouceBluetoothStateChange_();
+    // If the toggle value changed but the toggle is disabled, the change came
+    // from CrosBluetoothConfig, not the user. Don't attempt to update the
+    // enabled state.
+    if (!this.isToggleDisabled_()) {
+      getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
+    }
+    this.announceBluetoothStateChange_();
   }
 
   /**
@@ -295,7 +297,7 @@ class SettingsBluetoothDevicesSubpageElement extends
   }
 
   /** @private */
-  annouceBluetoothStateChange_() {
+  announceBluetoothStateChange_() {
     getAnnouncerInstance().announce(
         this.isBluetoothToggleOn_ ? this.i18n('bluetoothEnabledA11YLabel') :
                                     this.i18n('bluetoothDisabledA11YLabel'));

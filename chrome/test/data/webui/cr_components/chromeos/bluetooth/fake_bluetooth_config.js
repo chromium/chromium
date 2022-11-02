@@ -455,8 +455,18 @@ export class FakeBluetoothConfig {
    * Notifies the observer list that systemProperties_ has changed.
    */
   notifyObserversPropertiesUpdated_() {
+    const systemProperties =
+        /**
+         * @type {!BluetoothSystemProperties}
+         */
+        (Object.assign({}, this.systemProperties_));
+
+    // Don't provide paired devices if the system state is unavailable.
+    if (systemProperties.systemState === BluetoothSystemState.kUnavailable) {
+      systemProperties.pairedDevices = [];
+    }
     this.system_properties_observers_.forEach(
-        o => o.onPropertiesUpdated(this.systemProperties_));
+        o => o.onPropertiesUpdated(systemProperties));
   }
 
   /**
