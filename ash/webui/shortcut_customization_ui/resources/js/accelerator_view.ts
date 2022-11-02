@@ -232,6 +232,13 @@ export class AcceleratorViewElement extends PolymerElement {
     this.set(
         'pendingAcceleratorInfo_.accelerator', this.keystrokeToAccelerator_(e));
 
+    if (this.isModifierKey_(e)) {
+      // Reset the keyDisplay property if the key is a modifier.
+      this.set('pendingAcceleratorInfo_.keyDisplay', '');
+    } else {
+      this.set('pendingAcceleratorInfo_.keyDisplay', e.key);
+    }
+
     // New shortcut matches the current shortcut, end capture.
     if (areAcceleratorsEqual(
             this.pendingAcceleratorInfo_.accelerator,
@@ -312,7 +319,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * Converts a keystroke event to an Accelerator Object.
    */
   private keystrokeToAccelerator_(e: KeyboardEvent): Accelerator {
-    const output: Accelerator = {modifiers: 0, key: 0, keyDisplay: ''};
+    const output: Accelerator = {modifiers: 0, keyCode: 0};
     if (e.metaKey) {
       output.modifiers = output.modifiers | Modifier.COMMAND;
     }
@@ -330,8 +337,7 @@ export class AcceleratorViewElement extends PolymerElement {
 
     // Only add non-modifier keys as the pending key.
     if (!this.isModifierKey_(e)) {
-      output.keyDisplay = e.key;
-      output.key = e.keyCode;
+      output.keyCode = e.keyCode;
     }
 
     return output;
@@ -383,7 +389,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * Returns the specified CSS state of the pending key element.
    */
   protected getPendingKeyState_(): string {
-    if (this.pendingAcceleratorInfo_.accelerator.keyDisplay != '') {
+    if (this.pendingAcceleratorInfo_.keyDisplay != '') {
       return KeyState.ALPHANUMERIC;
     }
     return KeyState.NOT_SELECTED;
@@ -393,8 +399,8 @@ export class AcceleratorViewElement extends PolymerElement {
    * Returns the specified key to display.
    */
   protected getPendingKey_(): string {
-    if (this.pendingAcceleratorInfo_.accelerator.keyDisplay != '') {
-      return this.pendingAcceleratorInfo_.accelerator.keyDisplay.toLowerCase();
+    if (this.pendingAcceleratorInfo_.keyDisplay != '') {
+      return this.pendingAcceleratorInfo_.keyDisplay.toLowerCase();
     }
     // TODO(jimmyxgong): Reset to a localized default empty state.
     return 'key';
@@ -411,8 +417,7 @@ export class AcceleratorViewElement extends PolymerElement {
 
   private isValidDefaultAccelerator_(accelInfo: AcceleratorInfo): boolean {
     // A valid default accelerator is on that has modifier(s) and a key.
-    return accelInfo.accelerator.modifiers > 0 &&
-        accelInfo.accelerator.keyDisplay !== '';
+    return accelInfo.accelerator.modifiers > 0 && accelInfo.keyDisplay !== '';
   }
 
   private showEditView_(): boolean {

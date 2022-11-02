@@ -122,8 +122,7 @@ suite('acceleratorLookupManagerTest', function() {
 
       const expectedNewAccel: Accelerator = {
         modifiers: Modifier.CONTROL,
-        key: 79,
-        keyDisplay: 'o',
+        keyCode: 79,
       };
 
       // Sanity check that new accel is not in the reverse lookup.
@@ -148,8 +147,7 @@ suite('acceleratorLookupManagerTest', function() {
       // Replace the new accelerator with the "ALT + ]" default accelerator.
       const expectedNewDefaultAccel: Accelerator = {
         modifiers: Modifier.ALT,
-        key: 221,
-        keyDisplay: ']',
+        keyCode: 221,
       };
 
       // Sanity check that new accel is not in the reverse lookup.
@@ -226,8 +224,7 @@ suite('acceleratorLookupManagerTest', function() {
 
       const expectedNewAccel: Accelerator = {
         modifiers: Modifier.CONTROL,
-        key: 79,
-        keyDisplay: 'o',
+        keyCode: 79,
       };
 
       // Sanity check that new accel is not in the reverse lookup.
@@ -337,8 +334,7 @@ suite('acceleratorLookupManagerTest', function() {
 
       const expectedNewAccel: Accelerator = {
         modifiers: Modifier.CONTROL,
-        key: 79,
-        keyDisplay: 'o',
+        keyCode: 79,
       };
 
       // Sanity check that new accel is not in the reverse lookup.

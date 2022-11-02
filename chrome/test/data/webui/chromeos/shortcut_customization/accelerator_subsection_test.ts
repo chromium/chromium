@@ -13,7 +13,7 @@ import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/sh
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createUserAccelerator} from './shortcut_customization_test_util.js';
+import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
 suite('acceleratorSubsectionTest', function() {
   let sectionElement: AcceleratorSubsectionElement|null = null;
@@ -40,12 +40,12 @@ suite('acceleratorSubsectionTest', function() {
   // TODO(jimmyxgong): Update this test after retrieving accelerators is
   // implemented for a subsection.
   test('LoadsBasicSection', async () => {
-    const acceleratorInfo1 = createUserAccelerator(
+    const acceleratorInfo1 = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*keyDisplay=*/ 'g');
 
-    const acceleratorInfo2 = createUserAccelerator(
+    const acceleratorInfo2 = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 67,
         /*keyDisplay=*/ 'c');

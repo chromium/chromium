@@ -59,7 +59,7 @@ export class AcceleratorLookupManager {
    */
   private getKeyForLookup(accelerator: Accelerator): string {
     return JSON.stringify(
-        {keyCode: accelerator.key, modifiers: accelerator.modifiers});
+        {keyCode: accelerator.keyCode, modifiers: accelerator.modifiers});
   }
 
   getAcceleratorInfos(source: number|string, action: number|string):

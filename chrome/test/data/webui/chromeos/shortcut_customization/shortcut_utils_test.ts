@@ -23,21 +23,18 @@ suite('shortcutUtilsTest', function() {
   test('AreAcceleratorsEqual', async () => {
     const accelShiftC: Accelerator = {
       modifiers: Modifier.SHIFT,
-      key: 67,
-      keyDisplay: 'c',
+      keyCode: 67,  // c
     };
     const accelShiftCCopy: Accelerator = {
       ...accelShiftC,
     };
     const accelAltC: Accelerator = {
       modifiers: Modifier.ALT,
-      key: 67,
-      keyDisplay: 'c',
+      keyCode: 67,  // c
     };
     const accelShiftD: Accelerator = {
       modifiers: Modifier.SHIFT,
-      key: 68,
-      keyDisplay: 'd',
+      keyCode: 68,  // d
     };
 
     // Compare the same accelerator.

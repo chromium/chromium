@@ -22,12 +22,14 @@ export const createEmptyAccelInfoFromAccel =
     (accel: Accelerator): AcceleratorInfo => {
       return {
         accelerator: accel,
-        type: AcceleratorType.kUser,
-        state: AcceleratorState.kEnabled,
+        hasKeyEvent: true,
+        keyDisplay: '',
         locked: false,
+        state: AcceleratorState.kEnabled,
+        type: AcceleratorType.kUser,
       };
     };
 
 export const createEmptyAcceleratorInfo = (): AcceleratorInfo => {
-  return createEmptyAccelInfoFromAccel({modifiers: 0, key: 0, keyDisplay: ''});
+  return createEmptyAccelInfoFromAccel({modifiers: 0, keyCode: 0});
 };

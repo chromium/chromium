@@ -28,15 +28,16 @@ declare global {
 
 const accelerator: Accelerator = {
   modifiers: 0,
-  key: 0,
-  keyDisplay: '',
+  keyCode: 0,
 };
 
 const defaultAcceleratorInfoState: AcceleratorInfo = {
   accelerator,
-  type: AcceleratorType.kDefault,
-  state: AcceleratorState.kEnabled,
+  hasKeyEvent: true,
+  keyDisplay: '',
   locked: false,
+  state: AcceleratorState.kEnabled,
+  type: AcceleratorType.kDefault,
 };
 
 /**

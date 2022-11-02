@@ -14,7 +14,7 @@ import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/acc
 import {AcceleratorInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {createUserAccelerator} from './shortcut_customization_test_util.js';
+import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
 suite('acceleratorEditDialogTest', function() {
   let viewElement: AcceleratorEditDialogElement|null = null;
@@ -30,12 +30,12 @@ suite('acceleratorEditDialogTest', function() {
   });
 
   test('LoadsBasicDialog', async () => {
-    const acceleratorInfo1: AcceleratorInfo = createUserAccelerator(
+    const acceleratorInfo1: AcceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*keyDisplay=*/ 'g');
 
-    const acceleratorInfo2: AcceleratorInfo = createUserAccelerator(
+    const acceleratorInfo2: AcceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL,
         /*key=*/ 67,
         /*keyDisplay=*/ 'c');
@@ -89,12 +89,12 @@ suite('acceleratorEditDialogTest', function() {
   });
 
   test('AddShortcut', async () => {
-    const acceleratorInfo1: AcceleratorInfo = createUserAccelerator(
+    const acceleratorInfo1: AcceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*keyDisplay=*/ 'g');
 
-    const acceleratorInfo2: AcceleratorInfo = createUserAccelerator(
+    const acceleratorInfo2: AcceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 67,
         /*keyDisplay=*/ 'c');

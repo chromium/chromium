@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as AcceleratorTypes from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
+
 import * as AcceleratorInfoTypes from '../mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.js';
 
 /**
@@ -52,18 +54,25 @@ export enum AcceleratorConfigResult {
   DUPLICATE,
 }
 
-export interface Accelerator {
-  modifiers: number;
-  key: number;
-  keyDisplay: string;
-}
+/**
+ * Type alias for Accelerator.
+ *
+ * The Pick utility type is used here because only `keyCode` and `modifiers`
+ * are necessary for this app.
+ */
+export type Accelerator =
+    Pick<AcceleratorTypes.Accelerator, 'keyCode'|'modifiers'>;
 
-export interface AcceleratorInfo {
-  accelerator: Accelerator;
-  type: AcceleratorType;
-  state: AcceleratorState;
-  locked: boolean;
-}
+/**
+ * Type alias for AcceleratorInfo.
+ *
+ * The utility type Omit and the intersection type operator (&) are used here
+ * to replace the types of `accelerator` and `keyDisplay` with more accurate
+ * types.
+ */
+export type AcceleratorInfo =
+    Omit<AcceleratorInfoTypes.AcceleratorInfo, 'accelerator'|'keyDisplay'>&
+    {accelerator: Accelerator, keyDisplay: string};
 
 /**
  * Type alias for AcceleratorConfig. This is a two level map, with the top
