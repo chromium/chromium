@@ -113,6 +113,9 @@ void UiMetricsRecorder::ReportEventLatency(
                       cc::EventMetrics::GetTypeName(latency.event_type),
                       ".TotalLatency"}),
         latency.total_latency, base::Milliseconds(1), base::Seconds(5), 100);
+    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.EventLatency.TotalLatency",
+                               latency.total_latency, base::Milliseconds(1),
+                               base::Seconds(5), 100);
   }
 }
 }  // namespace ash

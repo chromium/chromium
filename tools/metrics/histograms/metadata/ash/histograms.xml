@@ -2341,6 +2341,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.EventLatency.TotalLatency" units="microseconds"
+    expires_after="2023-10-27">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Tracks total latency of all types of event for ash UI, from when the user
+    input causing the event is generated until the frame caused by the event is
+    submitted by the GPU service and presented successfully on the screen.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Ash.EventLatency.{EventType}.TotalLatency"
     units="microseconds" expires_after="2023-10-06">
   <owner>xiyuan@chromium.org</owner>
