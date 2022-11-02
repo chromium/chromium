@@ -20,7 +20,7 @@ typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowShared
   readonly attribute VideoPixelFormat? format;
 
   // Presentation timestamp, in microseconds.
-  readonly attribute long long? timestamp;
+  readonly attribute long long timestamp;
   // Presentation duration, in microseconds.
   readonly attribute unsigned long long? duration;
 

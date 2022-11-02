@@ -92,14 +92,14 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   VideoFrame* blink_frame =
       CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
 
-  EXPECT_EQ(1000u, blink_frame->timestamp().value());
+  EXPECT_EQ(1000u, blink_frame->timestamp());
   EXPECT_EQ(112u, blink_frame->codedWidth());
   EXPECT_EQ(208u, blink_frame->codedHeight());
   EXPECT_EQ(media_frame, blink_frame->frame());
 
   blink_frame->close();
 
-  EXPECT_FALSE(blink_frame->timestamp().has_value());
+  EXPECT_EQ(1000u, blink_frame->timestamp());
   EXPECT_EQ(0u, blink_frame->codedWidth());
   EXPECT_EQ(0u, blink_frame->codedHeight());
   EXPECT_EQ(nullptr, blink_frame->frame());

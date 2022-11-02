@@ -77,7 +77,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   absl::optional<V8VideoPixelFormat> format() const;
 
-  absl::optional<int64_t> timestamp() const;
+  int64_t timestamp() const;
   absl::optional<uint64_t> duration() const;
 
   uint32_t codedWidth() const;

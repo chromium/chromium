@@ -483,7 +483,6 @@ VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
   DCHECK(frame);
   handle_ = base::MakeRefCounted<VideoFrameHandle>(
       frame, std::move(sk_image), context, std::move(monitoring_source_id));
-
   external_allocated_memory_ =
       media::VideoFrame::AllocationSize(frame->format(), frame->coded_size());
   context->GetIsolate()->AdjustAmountOfExternalAllocatedMemory(
@@ -974,19 +973,14 @@ uint32_t VideoFrame::displayHeight() const {
   return local_frame->natural_size().width();
 }
 
-absl::optional<int64_t> VideoFrame::timestamp() const {
-  auto local_frame = handle_->frame();
-  if (!local_frame || local_frame->timestamp() == media::kNoTimestamp)
-    return absl::nullopt;
-  return local_frame->timestamp().InMicroseconds();
+int64_t VideoFrame::timestamp() const {
+  return handle_->timestamp().InMicroseconds();
 }
 
 absl::optional<uint64_t> VideoFrame::duration() const {
-  auto local_frame = handle_->frame();
-  // TODO(sandersd): Can a duration be kNoTimestamp?
-  if (!local_frame || !local_frame->metadata().frame_duration.has_value())
-    return absl::nullopt;
-  return local_frame->metadata().frame_duration->InMicroseconds();
+  if (auto duration = handle_->duration())
+    return duration->InMicroseconds();
+  return absl::nullopt;
 }
 
 VideoColorSpace* VideoFrame::colorSpace() {

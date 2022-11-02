@@ -202,7 +202,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   for (wtf_size_t i = 1; i <= buffer_size; ++i) {
     VideoFrame* video_frame =
         ReadObjectFromStream<VideoFrame>(v8_scope, reader);
-    EXPECT_EQ(base::Microseconds(*video_frame->timestamp()), base::Seconds(i));
+    EXPECT_EQ(base::Microseconds(video_frame->timestamp()), base::Seconds(i));
   }
 
   // Pulling causes a pending pull since there are no frames available for

@@ -95,6 +95,9 @@ class MODULES_EXPORT VideoFrameHandle
       WebGPUExternalTextureExpireCallback
           webgpu_external_texture_expire_callback);
 
+  base::TimeDelta timestamp() const { return timestamp_; }
+  absl::optional<base::TimeDelta> duration() const { return duration_; }
+
  private:
   friend class WTF::ThreadSafeRefCounted<VideoFrameHandle>;
   ~VideoFrameHandle();
@@ -119,6 +122,12 @@ class MODULES_EXPORT VideoFrameHandle
   Vector<WebGPUExternalTextureExpireCallback>
       webgpu_external_texture_expire_callbacks_;
   std::string monitoring_source_id_;
+
+  // Timestamp and duration must remain valid after close(). If the timestamp or
+  // duration of the underlying media::VideoFrame are modified after
+  // blink::VideoFrame construction, those updates won't appear here.
+  const base::TimeDelta timestamp_;
+  const absl::optional<base::TimeDelta> duration_;
 };
 
 }  // namespace blink

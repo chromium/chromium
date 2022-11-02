@@ -17,7 +17,9 @@ VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
                                    ExecutionContext* context,
                                    std::string monitoring_source_id)
     : frame_(std::move(frame)),
-      monitoring_source_id_(std::move(monitoring_source_id)) {
+      monitoring_source_id_(std::move(monitoring_source_id)),
+      timestamp_(frame_->timestamp()),
+      duration_(frame_->metadata().frame_duration) {
   DCHECK(frame_);
   DCHECK(context);
 
@@ -45,7 +47,9 @@ VideoFrameHandle::VideoFrameHandle(
     : sk_image_(std::move(sk_image)),
       frame_(std::move(frame)),
       close_auditor_(std::move(close_auditor)),
-      monitoring_source_id_(std::move(monitoring_source_id)) {
+      monitoring_source_id_(std::move(monitoring_source_id)),
+      timestamp_(frame_->timestamp()),
+      duration_(frame_->metadata().frame_duration) {
   DCHECK(frame_);
   DCHECK(close_auditor_);
   MaybeMonitorOpenFrame();
@@ -56,7 +60,9 @@ VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
                                    std::string monitoring_source_id)
     : sk_image_(std::move(sk_image)),
       frame_(std::move(frame)),
-      monitoring_source_id_(std::move(monitoring_source_id)) {
+      monitoring_source_id_(std::move(monitoring_source_id)),
+      timestamp_(frame_->timestamp()),
+      duration_(frame_->metadata().frame_duration) {
   DCHECK(frame_);
   MaybeMonitorOpenFrame();
 }
