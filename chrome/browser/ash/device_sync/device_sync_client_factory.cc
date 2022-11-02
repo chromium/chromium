@@ -105,6 +105,7 @@ class DeviceSyncClientHolder : public KeyedService {
 
 DeviceSyncClientFactory::DeviceSyncClientFactory()
     : ProfileKeyedServiceFactory("DeviceSyncClient") {
+  DependsOn(ClientAppMetadataProviderServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
 

@@ -28,6 +28,7 @@
 
 PasswordScriptsFetcherFactory::PasswordScriptsFetcherFactory()
     : ProfileKeyedServiceFactory("PasswordScriptsFetcher") {
+  DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
 }

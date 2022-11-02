@@ -57,6 +57,9 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 #endif
+#if BUILDFLAG(IS_ANDROID)
+  DependsOn(TemplateURLServiceFactory::GetInstance());
+#endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(extensions::ContentSettingsService::GetFactoryInstance());
 #endif

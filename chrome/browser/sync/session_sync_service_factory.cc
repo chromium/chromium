@@ -143,6 +143,7 @@ bool SessionSyncServiceFactory::ShouldSyncURLForTesting(const GURL& url) {
 
 SessionSyncServiceFactory::SessionSyncServiceFactory()
     : ProfileKeyedServiceFactory("SessionSyncService") {
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());

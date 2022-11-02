@@ -43,7 +43,7 @@ StandaloneBrowserExtensionAppsFactoryForApp::
           ProfileSelections::Builder()
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
-  DependsOn(apps::AppServiceProxyFactory::GetInstance());
+  DependsOn(AppServiceProxyFactory::GetInstance());
 }
 
 KeyedService*
@@ -88,7 +88,7 @@ StandaloneBrowserExtensionAppsFactoryForExtension::
           ProfileSelections::Builder()
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
-  DependsOn(apps::AppServiceProxyFactory::GetInstance());
+  DependsOn(AppServiceProxyFactory::GetInstance());
 }
 
 KeyedService*

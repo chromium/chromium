@@ -54,6 +54,7 @@ KeyedService* WebHistoryServiceFactory::BuildServiceInstanceFor(
 WebHistoryServiceFactory::WebHistoryServiceFactory()
     : ProfileKeyedServiceFactory("WebHistoryServiceFactory") {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 WebHistoryServiceFactory::~WebHistoryServiceFactory() {

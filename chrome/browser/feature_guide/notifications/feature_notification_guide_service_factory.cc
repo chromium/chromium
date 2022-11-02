@@ -89,6 +89,7 @@ FeatureNotificationGuideServiceFactory::GetForProfile(Profile* profile) {
 FeatureNotificationGuideServiceFactory::FeatureNotificationGuideServiceFactory()
     : ProfileKeyedServiceFactory("FeatureNotificationGuideService") {
   DependsOn(NotificationScheduleServiceFactory::GetInstance());
+  DependsOn(feature_engagement::TrackerFactory::GetInstance());
   DependsOn(
       segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
 }

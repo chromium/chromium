@@ -79,6 +79,8 @@ class MultiDeviceSetupClientHolder : public KeyedService {
 MultiDeviceSetupClientFactory::MultiDeviceSetupClientFactory()
     : ProfileKeyedServiceFactory("MultiDeviceSetupClient") {
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
+  // The MultiDeviceSetupServiceFactory dependency is omitted here, see the
+  // comment in the MultiDeviceSetupClientHolder constructor.
 }
 
 MultiDeviceSetupClientFactory::~MultiDeviceSetupClientFactory() = default;

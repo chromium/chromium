@@ -98,6 +98,7 @@ ProfileInvalidationProviderFactory::ProfileInvalidationProviderFactory()
     : ProfileKeyedServiceFactory("InvalidationService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
+  DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
 }
 
 ProfileInvalidationProviderFactory::~ProfileInvalidationProviderFactory() =

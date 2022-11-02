@@ -28,7 +28,7 @@ NoStatePrefetchLinkManagerFactory::NoStatePrefetchLinkManagerFactory()
     : ProfileKeyedServiceFactory(
           "NoStatePrefetchLinkManager",
           ProfileSelections::BuildForRegularAndIncognito()) {
-  DependsOn(prerender::NoStatePrefetchManagerFactory::GetInstance());
+  DependsOn(NoStatePrefetchManagerFactory::GetInstance());
 }
 
 KeyedService* NoStatePrefetchLinkManagerFactory::BuildServiceInstanceFor(

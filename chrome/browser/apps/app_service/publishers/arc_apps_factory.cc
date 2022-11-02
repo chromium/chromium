@@ -33,9 +33,9 @@ void ArcAppsFactory::ShutDownForTesting(content::BrowserContext* context) {
 }
 
 ArcAppsFactory::ArcAppsFactory() : ProfileKeyedServiceFactory("ArcApps") {
+  DependsOn(AppServiceProxyFactory::GetInstance());
   DependsOn(ArcAppListPrefsFactory::GetInstance());
   DependsOn(arc::ArcIntentHelperBridge::GetFactory());
-  DependsOn(apps::AppServiceProxyFactory::GetInstance());
 }
 
 KeyedService* ArcAppsFactory::BuildServiceInstanceFor(

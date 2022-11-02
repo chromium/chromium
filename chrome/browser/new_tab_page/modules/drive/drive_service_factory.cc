@@ -24,6 +24,7 @@ DriveServiceFactory* DriveServiceFactory::GetInstance() {
 DriveServiceFactory::DriveServiceFactory()
     : ProfileKeyedServiceFactory("DriveService") {
   DependsOn(CookieSettingsFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 DriveServiceFactory::~DriveServiceFactory() = default;

@@ -35,6 +35,7 @@ AccuracyServiceFactory* AccuracyServiceFactory::GetInstance() {
 
 AccuracyServiceFactory::AccuracyServiceFactory()
     : ProfileKeyedServiceFactory("AccuracyServiceFactory") {
+  DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 

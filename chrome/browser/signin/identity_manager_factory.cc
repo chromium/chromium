@@ -71,6 +71,8 @@ IdentityManagerFactory::IdentityManagerFactory()
       base::BindRepeating([](content::BrowserContext* context) {
         return GetForProfile(Profile::FromBrowserContext(context));
       }));
+  // TODO(crbug.com/1380593): This should declare a dependency to
+  // CookieSettingsFactory but this causes a hang for some reason.
 }
 
 IdentityManagerFactory::~IdentityManagerFactory() {
