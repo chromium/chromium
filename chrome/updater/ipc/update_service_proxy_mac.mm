@@ -336,7 +336,11 @@ void UpdateServiceProxy::GetAppStates(
 
   auto reply = ^(CRUAppStatesWrapper* wrapper) {
     callback_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(block_callback), wrapper.states));
+        FROM_HERE,
+        base::BindOnce(std::move(block_callback),
+                       wrapper
+                           ? wrapper.states
+                           : std::vector<updater::UpdateService::AppState>()));
   };
   [client_ getAppStatesWithReply:reply];
 }

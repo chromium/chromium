@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 
 #import <Foundation/Foundation.h>
-#import <ServiceManagement/ServiceManagement.h>
 
 #include <string>
 #include <utility>
@@ -33,7 +32,6 @@
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
-#include "chrome/browser/updater/browser_updater_helper_client_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -107,20 +105,32 @@ VersionUpdaterMac::~VersionUpdaterMac() {}
 void VersionUpdaterMac::CheckForUpdate(StatusCallback status_callback,
                                        PromoteCallback promote_callback) {
   if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetUpdaterScope),
+    EnsureUpdater(
+        base::BindOnce(
+            [](PromoteCallback prompt) {
+              prompt.Run(PromotionState::PROMOTE_ENABLED);
+            },
+            promote_callback),
         base::BindOnce(
             [](base::RepeatingCallback<void(
-                   updater::UpdaterScope,
-                   const updater::UpdateService::UpdateState&)> status_callback,
-               updater::UpdaterScope scope) {
-              BrowserUpdaterClient::Create(scope)->CheckForUpdate(
-                  base::BindRepeating(status_callback, scope));
+                   const updater::UpdateService::UpdateState&)>
+                   status_callback) {
+              base::ThreadPool::PostTaskAndReplyWithResult(
+                  FROM_HERE, {base::MayBlock()},
+                  base::BindOnce(&GetUpdaterScope),
+                  base::BindOnce(
+                      [](base::RepeatingCallback<void(
+                             const updater::UpdateService::UpdateState&)>
+                             status_callback,
+                         updater::UpdaterScope scope) {
+                        BrowserUpdaterClient::Create(scope)->CheckForUpdate(
+                            status_callback);
+                      },
+                      status_callback));
             },
             base::BindRepeating(
                 &VersionUpdaterMac::UpdateStatusFromChromiumUpdater,
-                weak_factory_.GetWeakPtr(), status_callback,
-                promote_callback)));
+                weak_factory_.GetWeakPtr(), status_callback)));
   } else {
     status_callback_ = std::move(status_callback);
     promote_callback_ = std::move(promote_callback);
@@ -163,39 +173,7 @@ void VersionUpdaterMac::CheckForUpdate(StatusCallback status_callback,
 
 void VersionUpdaterMac::PromoteUpdater() {
   if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
-    NSString* prompt = l10n_util::GetNSStringFWithFixup(
-        IDS_PROMOTE_AUTHENTICATION_PROMPT,
-        l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-    base::mac::ScopedAuthorizationRef authorization(
-        base::mac::AuthorizationCreateToRunAsRoot(
-            base::mac::NSToCFCast(prompt)));
-    if (!authorization.get()) {
-      VLOG(0) << "Could not get authorization to run as root.";
-      return;
-    }
-
-    base::ScopedCFTypeRef<CFErrorRef> error;
-    Boolean result =
-        SMJobBless(kSMDomainSystemLaunchd,
-                   base::SysUTF8ToCFStringRef(kPrivilegedHelperName),
-                   authorization, error.InitializeInto());
-    if (!result) {
-      base::ScopedCFTypeRef<CFStringRef> desc(CFErrorCopyDescription(error));
-      VLOG(0) << "Could not bless the privileged helper. Resulting error: "
-              << base::SysCFStringRefToUTF8(desc);
-    }
-
-    if (!update_helper_client_) {
-      update_helper_client_ =
-          base::MakeRefCounted<BrowserUpdaterHelperClientMac>();
-    }
-
-    update_helper_client_->SetupSystemUpdater(base::BindOnce([](int result) {
-      VLOG_IF(1, result != 0)
-          << "There was a problem with performing the system "
-             "updater tasks. Result: "
-          << result;
-    }));
+    SetupSystemUpdater();
   } else {
     // Tell Keystone to make software updates available for all users.
     [[KeystoneGlue defaultKeystoneGlue] promoteTicket];
@@ -359,21 +337,17 @@ void VersionUpdaterMac::UpdateShowPromoteButton() {
 
 void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
     VersionUpdater::StatusCallback status_callback,
-    VersionUpdater::PromoteCallback promote_callback,
-    updater::UpdaterScope scope,
     const updater::UpdateService::UpdateState& update_state) {
   VersionUpdater::Status status = VersionUpdater::Status::CHECKING;
   int progress = 0;
   std::string version;
   std::string err_message;
-  bool enable_promote_button = true;
 
   switch (update_state.state) {
     case updater::UpdateService::UpdateState::State::kCheckingForUpdates:
       [[fallthrough]];
     case updater::UpdateService::UpdateState::State::kUpdateAvailable:
       status = VersionUpdater::Status::CHECKING;
-      enable_promote_button = false;
       break;
     case updater::UpdateService::UpdateState::State::kDownloading:
       progress = GetDownloadProgress(update_state.downloaded_bytes,
@@ -381,7 +355,6 @@ void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
       [[fallthrough]];
     case updater::UpdateService::UpdateState::State::kInstalling:
       status = VersionUpdater::Status::UPDATING;
-      enable_promote_button = false;
       break;
     case updater::UpdateService::UpdateState::State::kUpdated:
       status = VersionUpdater::Status::NEARLY_UPDATED;
@@ -404,43 +377,4 @@ void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
 
   status_callback.Run(status, progress, false, false, version, 0,
                       base::UTF8ToUTF16(err_message));
-
-  // Updater should be promoted if it meets the following criteria:
-  //    1) When browser is owned by root and updater is not yet installed.
-  //    2) When effective user is root and browser is not owned by root.
-  //    3) When effective user is not the owner of the browser and is an
-  //    administrator.
-  // To check whether the system level updater is installed or not, reset the
-  // update_clent with system scope and attempt to get version. If the version
-  // is empty, then the updater can be assumed to not be installed. If the
-  // version returns a value, then the updater is installed.
-  if (promote_callback) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce(&ShouldPromoteUpdater),
-        base::BindOnce(
-            [](base::OnceCallback<void(const base::Version&)> promotion,
-               bool should_promote) {
-              if (should_promote) {
-                BrowserUpdaterClient::Create(updater::UpdaterScope::kSystem)
-                    ->GetUpdaterVersion(std::move(promotion));
-              }
-            },
-            base::BindOnce(
-                &VersionUpdaterMac::UpdatePromotionStatusFromChromiumUpdater,
-                weak_factory_.GetWeakPtr(), promote_callback, scope,
-                enable_promote_button)));
-  }
-}
-
-void VersionUpdaterMac::UpdatePromotionStatusFromChromiumUpdater(
-    VersionUpdater::PromoteCallback promote_callback,
-    updater::UpdaterScope scope,
-    bool enable_promote_button,
-    const base::Version& version) {
-  promote_callback.Run(
-      version.IsValid() && scope == updater::UpdaterScope::kSystem
-          ? VersionUpdater::PROMOTED  // Successfully communicated with the
-                                      // system updater.
-          : (enable_promote_button ? VersionUpdater::PROMOTE_ENABLED
-                                   : VersionUpdater::PROMOTE_DISABLED));
 }

@@ -36,7 +36,8 @@ class BrowserUpdaterClient
   // When registration is completed, it will call RegistrationCompleted().
   // A ref to this object is held until the registration completes. Must be
   // called on the sequence on which the BrowserUpdateClient was created.
-  void Register();
+  // `complete` will be called after registration on the same sequence.
+  void Register(base::OnceClosure complete);
 
   // Triggers an on-demand update from the Chromium updater, reporting status
   // updates to the callback. A ref to this object is held until the update
@@ -57,6 +58,12 @@ class BrowserUpdaterClient
   void GetUpdaterVersion(
       base::OnceCallback<void(const base::Version&)> callback);
 
+  // Returns whether the browser is registered with the updater. A ref to the
+  // BrowserUpdaterClient is held until the callback is invoked. Must be called
+  // on the sequence on which the BrowserUpdaterClient was created. `callback`
+  // will be run on the same sequence.
+  void IsBrowserRegistered(base::OnceCallback<void(bool)> callback);
+
  protected:
   friend class base::RefCountedThreadSafe<BrowserUpdaterClient>;
   virtual ~BrowserUpdaterClient();
@@ -67,13 +74,16 @@ class BrowserUpdaterClient
   updater::RegistrationRequest GetRegistrationRequest();
   std::string GetAppId();
 
-  void RegistrationCompleted(int result);
+  void RegistrationCompleted(base::OnceClosure complete, int result);
   void GetUpdaterVersionCompleted(
       base::OnceCallback<void(const base::Version&)> callback,
       const base::Version& version);
   void UpdateCompleted(updater::UpdateService::StateChangeCallback callback,
                        updater::UpdateService::Result result);
   void RunPeriodicTasksCompleted(base::OnceClosure callback);
+  void IsBrowserRegisteredCompleted(
+      base::OnceCallback<void(bool)> callback,
+      const std::vector<updater::UpdateService::AppState>& apps);
 
   scoped_refptr<updater::UpdateService> update_service_;
 };

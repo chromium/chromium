@@ -4,6 +4,7 @@
 
 #include "chrome/browser/updater/browser_updater_client.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -26,7 +27,7 @@ BrowserUpdaterClient::BrowserUpdaterClient(
 
 BrowserUpdaterClient::~BrowserUpdaterClient() = default;
 
-void BrowserUpdaterClient::Register() {
+void BrowserUpdaterClient::Register(base::OnceClosure complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -39,16 +40,18 @@ void BrowserUpdaterClient::Register() {
           },
           base::BindPostTask(
               base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindOnce(&BrowserUpdaterClient::RegistrationCompleted,
-                             this)),
+              base::BindOnce(&BrowserUpdaterClient::RegistrationCompleted, this,
+                             std::move(complete))),
           update_service_));
 }
 
-void BrowserUpdaterClient::RegistrationCompleted(int result) {
+void BrowserUpdaterClient::RegistrationCompleted(base::OnceClosure complete,
+                                                 int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result != updater::kRegistrationSuccess) {
     VLOG(1) << "Updater registration error: " << result;
   }
+  std::move(complete).Run();
 }
 
 void BrowserUpdaterClient::GetUpdaterVersion(
@@ -116,6 +119,27 @@ void BrowserUpdaterClient::RunPeriodicTasksCompleted(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run();
+}
+
+void BrowserUpdaterClient::IsBrowserRegistered(
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  update_service_->GetAppStates(base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&BrowserUpdaterClient::IsBrowserRegisteredCompleted, this,
+                     std::move(callback))));
+}
+
+void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
+    base::OnceCallback<void(bool)> callback,
+    const std::vector<updater::UpdateService::AppState>& apps) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const std::string app_id = GetAppId();
+  std::move(callback).Run(
+      std::find_if(apps.begin(), apps.end(),
+                   [&](const updater::UpdateService::AppState& app) {
+                     return app.app_id == app_id;
+                   }) != apps.end());
 }
 
 scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create(

@@ -16,12 +16,6 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 
-namespace base {
-class Version;
-}
-
-class BrowserUpdaterHelperClientMac;
-
 @class KeystoneObserver;
 
 // OS X implementation of version update functionality, used by the WebUI
@@ -56,15 +50,7 @@ class VersionUpdaterMac : public VersionUpdater {
   // Updates the status from the Chromium Updater.
   void UpdateStatusFromChromiumUpdater(
       VersionUpdater::StatusCallback status_callback,
-      VersionUpdater::PromoteCallback promote_callback,
-      updater::UpdaterScope scope,
       const updater::UpdateService::UpdateState& update_state);
-
-  void UpdatePromotionStatusFromChromiumUpdater(
-      VersionUpdater::PromoteCallback promote_callback,
-      updater::UpdaterScope scope,
-      bool enable_promote_button,
-      const base::Version& version);
 
   // Callback used to communicate update status to the client.
   StatusCallback status_callback_;
@@ -78,7 +64,6 @@ class VersionUpdaterMac : public VersionUpdater {
   // The observer that will receive keystone status updates.
   base::scoped_nsobject<KeystoneObserver> keystone_observer_;
 
-  scoped_refptr<BrowserUpdaterHelperClientMac> update_helper_client_;
   base::WeakPtrFactory<VersionUpdaterMac> weak_factory_{this};
 };
 

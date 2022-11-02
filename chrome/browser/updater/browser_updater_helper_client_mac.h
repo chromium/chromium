@@ -25,7 +25,9 @@ class BrowserUpdaterHelperClientMac
 
   // Calls on the privileged helper to set up the system-level updater. Upon
   // setup completion, an integer return code will be sent back in a callback.
-  void SetupSystemUpdater(base::OnceCallback<void(int)> result);
+  // `callback` is called on the same sequence. A ref to the
+  // BrowserUpdaterHelperClientMac is held throughout the operation.
+  void SetupSystemUpdater(base::OnceCallback<void(int)> callback);
 
  protected:
   friend class base::RefCountedThreadSafe<BrowserUpdaterHelperClientMac>;
@@ -33,8 +35,10 @@ class BrowserUpdaterHelperClientMac
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   base::scoped_nsobject<NSXPCConnection> xpc_connection_;
+
+  void SetupSystemUpdaterDone(base::OnceCallback<void(int)> callback,
+                              int result);
 };
 
 #endif  // CHROME_BROWSER_UPDATER_BROWSER_UPDATER_HELPER_CLIENT_MAC_H_

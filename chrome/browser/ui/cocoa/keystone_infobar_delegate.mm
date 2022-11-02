@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
@@ -88,7 +91,11 @@ std::u16string KeystonePromotionInfoBarDelegate::GetButtonLabel(
 }
 
 bool KeystonePromotionInfoBarDelegate::Accept() {
-  [[KeystoneGlue defaultKeystoneGlue] promoteTicket];
+  if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
+    SetupSystemUpdater();
+  } else {
+    [[KeystoneGlue defaultKeystoneGlue] promoteTicket];
+  }
   return true;
 }
 
@@ -135,20 +142,33 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
     return;
   }
 
-  // Stay alive as long as needed.  This is balanced by a release in
-  // -updateStatus:.
-  [self retain];
-
-  AutoupdateStatus recentStatus = [keystoneGlue recentStatus];
-  if (recentStatus == kAutoupdateNone ||
-      recentStatus == kAutoupdateRegistering) {
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    [center addObserver:self
-               selector:@selector(updateStatus:)
-                   name:kAutoupdateStatusNotification
-                 object:nil];
+  if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
+    EnsureUpdater(base::BindOnce([]() {
+                    Browser* browser = chrome::GetLastActiveBrowser();
+                    if (browser) {
+                      content::WebContents* webContents =
+                          browser->tab_strip_model()->GetActiveWebContents();
+                      if (webContents)
+                        KeystonePromotionInfoBarDelegate::Create(webContents);
+                    }
+                  }),
+                  base::DoNothing());
   } else {
-    [self updateStatus:[keystoneGlue recentNotification]];
+    // Stay alive as long as needed.  This is balanced by a release in
+    // -updateStatus:.
+    [self retain];
+
+    AutoupdateStatus recentStatus = [keystoneGlue recentStatus];
+    if (recentStatus == kAutoupdateNone ||
+        recentStatus == kAutoupdateRegistering) {
+      NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+      [center addObserver:self
+                 selector:@selector(updateStatus:)
+                     name:kAutoupdateStatusNotification
+                   object:nil];
+    } else {
+      [self updateStatus:[keystoneGlue recentNotification]];
+    }
   }
 }
 

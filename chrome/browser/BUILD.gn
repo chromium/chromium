@@ -6252,8 +6252,6 @@ static_library("browser") {
       "mac/initial_prefs.mm",
       "mac/install_from_dmg.h",
       "mac/install_from_dmg.mm",
-      "mac/install_updater.h",
-      "mac/install_updater.mm",
       "mac/key_window_notifier.cc",
       "mac/key_window_notifier.h",
       "mac/mac_startup_profiler.cc",

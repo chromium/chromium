@@ -26,10 +26,10 @@
 #include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
-#include "chrome/browser/mac/install_updater.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/mac/mac_startup_profiler.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
+#include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/browser/updater/scheduler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -82,7 +82,7 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
 
 #if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
-    InstallUpdaterAndRegisterBrowser();
+    EnsureUpdater(base::DoNothing(), base::DoNothing());
   } else {
     // This is a no-op if the KeystoneRegistration framework is not present.
     // The framework is only distributed with branded Google Chrome builds.
