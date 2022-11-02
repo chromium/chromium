@@ -23,6 +23,7 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace base {
@@ -157,6 +158,11 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     // from within this method.  UnblockSuspend() must be called once the
     // observer is ready for suspend.
     virtual void DarkSuspendImminent() {}
+
+    // Called when the browser is about to request system restart. Restart is
+    // deferred until all observers' implementations of this method have
+    // finished running.
+    virtual void RestartRequested(power_manager::RequestRestartReason reason) {}
 
     // Called when the browser is about to request shutdown. Shutdown is
     // deferred until all observers' implementations of this method have

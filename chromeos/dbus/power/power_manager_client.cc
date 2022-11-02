@@ -381,6 +381,8 @@ class PowerManagerClientImpl : public PowerManagerClient {
                       const std::string& description) override {
     POWER_LOG(USER) << "RequestRestart: " << reason << " (" << description
                     << ")";
+    for (auto& observer : observers_)
+      observer.RestartRequested(reason);
     dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
                                  power_manager::kRequestRestartMethod);
     dbus::MessageWriter writer(&method_call);
