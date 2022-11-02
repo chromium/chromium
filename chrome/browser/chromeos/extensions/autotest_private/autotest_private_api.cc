@@ -616,6 +616,8 @@ chromeos::WindowStateType GetExpectedWindowState(
       return chromeos::WindowStateType::kPrimarySnapped;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPRIGHT:
       return chromeos::WindowStateType::kSecondarySnapped;
+    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTFLOAT:
+      return chromeos::WindowStateType::kFloated;
     default:
       NOTREACHED();
       return chromeos::WindowStateType::kNormal;
@@ -636,6 +638,8 @@ ash::WMEventType ToWMEventType(api::autotest_private::WMEventType event_type) {
       return ash::WMEventType::WM_EVENT_SNAP_PRIMARY;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPRIGHT:
       return ash::WMEventType::WM_EVENT_SNAP_SECONDARY;
+    case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTFLOAT:
+      return ash::WMEventType::WM_EVENT_FLOAT;
     default:
       NOTREACHED();
       return ash::WMEventType::WM_EVENT_NORMAL;
@@ -666,6 +670,8 @@ api::autotest_private::WindowStateType ToWindowStateType(
           WINDOW_STATE_TYPE_RIGHTSNAPPED;
     case chromeos::WindowStateType::kPip:
       return api::autotest_private::WindowStateType::WINDOW_STATE_TYPE_PIP;
+    case chromeos::WindowStateType::kFloated:
+      return api::autotest_private::WindowStateType::WINDOW_STATE_TYPE_FLOATED;
     default:
       NOTREACHED();
       return api::autotest_private::WindowStateType::WINDOW_STATE_TYPE_NONE;

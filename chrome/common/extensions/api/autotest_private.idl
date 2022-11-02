@@ -78,7 +78,8 @@ namespace autotestPrivate {
     Fullscreen,
     LeftSnapped,
     RightSnapped,
-    PIP
+    PIP,
+    Floated
   };
 
   // A subset of WM event types in ash::WMEventType. We may add more in the
@@ -89,7 +90,8 @@ namespace autotestPrivate {
     WMEventMinimize,
     WMEventFullscreen,
     WMEventSnapLeft,
-    WMEventSnapRight
+    WMEventSnapRight,
+    WMEventFloat
   };
 
   // Display orientation type.
