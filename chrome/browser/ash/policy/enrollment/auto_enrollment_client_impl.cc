@@ -693,11 +693,10 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
     if (parsed_response.license_type.has_value())
       state.Set(kDeviceStateLicenseType, *parsed_response.license_type);
 
+    // Store the enrollment state obtained from the server to local state.
+    // Depending on the value, this can be used later to trigger enrollment or
+    // to disable the device.
     local_state_->SetDict(prefs::kServerBackedDeviceState, std::move(state));
-
-    // TODO(https://crbug.com/1344737) This seems unnecessary (we are not
-    // shutting down, for instance).
-    local_state_->CommitPendingWrite();
 
     device_state_available_ = true;
     RunCallback(ServerStateRetrievalResult::kSuccess);
