@@ -5488,21 +5488,6 @@
             ]
         }
     ],
-    "IOSEnableUnrealizedWebStates": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableUnrealizedWebStates"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSExpKitCalendar": [
         {
             "platforms": [
