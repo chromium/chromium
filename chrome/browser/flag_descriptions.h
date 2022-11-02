@@ -2273,6 +2273,9 @@ extern const char kRequestDesktopSiteExceptionsDowngradeDescription[];
 extern const char kRequestDesktopSiteForTabletsName[];
 extern const char kRequestDesktopSiteForTabletsDescription[];
 
+extern const char kRequestDesktopSiteZoomName[];
+extern const char kRequestDesktopSiteZoomDescription[];
+
 extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
 extern const char
     kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[];

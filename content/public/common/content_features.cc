@@ -1381,6 +1381,12 @@ BASE_FEATURE(kRequestDesktopSiteExceptions,
              "RequestDesktopSiteExceptions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Request Desktop Site zoom for Android. Apply a pre-defined page zoom level
+// when desktop user agent is used.
+BASE_FEATURE(kRequestDesktopSiteZoom,
+             "RequestDesktopSiteZoom",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Screen Capture API support for Android
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",
