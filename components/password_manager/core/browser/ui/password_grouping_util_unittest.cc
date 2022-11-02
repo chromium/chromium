@@ -18,7 +18,7 @@ namespace password_manager {
 
 TEST(PasswordGroupingUtilTest, GetAffiliatedGroupsWithGroupingInfo) {
   PasswordForm form;
-  form.url = GURL("https://test.com");
+  form.url = GURL("https://test.com/");
   form.signon_realm = form.url.spec();
   form.username_value = u"username";
   form.password_value = u"password";
@@ -30,7 +30,7 @@ TEST(PasswordGroupingUtilTest, GetAffiliatedGroupsWithGroupingInfo) {
   blocked_form.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm federated_form;
-  federated_form.signon_realm = "https://federated.com";
+  federated_form.signon_realm = "https://federated.com/";
   federated_form.username_value = u"example@gmail.com";
   federated_form.federation_origin =
       url::Origin::Create(GURL(u"federatedOrigin.com"));
@@ -62,7 +62,7 @@ TEST(PasswordGroupingUtilTest, GetAffiliatedGroupsWithGroupingInfo) {
 
 TEST(PasswordGroupingUtilTest, GroupPasswords) {
   PasswordForm form;
-  form.url = GURL("https://test.com");
+  form.url = GURL("https://test.com/");
   form.signon_realm = form.url.spec();
   form.username_value = u"username";
   form.password_value = u"password";
@@ -76,13 +76,13 @@ TEST(PasswordGroupingUtilTest, GroupPasswords) {
   form2.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm blocked_form;
-  blocked_form.url = GURL("https://test2.com");
+  blocked_form.url = GURL("https://test2.com/");
   blocked_form.signon_realm = blocked_form.url.spec();
   blocked_form.blocked_by_user = true;
   blocked_form.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm federated_form;
-  federated_form.signon_realm = "https://federated.com";
+  federated_form.signon_realm = "https://federated.com/";
   federated_form.username_value = u"example@gmail.com";
   federated_form.federation_origin =
       url::Origin::Create(GURL(u"federatedOrigin.com"));
@@ -146,7 +146,7 @@ TEST(PasswordGroupingUtilTest, GroupPasswords) {
 
 TEST(PasswordGroupingUtilTest, GroupPasswordsWithoutAffiliation) {
   PasswordForm form;
-  form.url = GURL("https://test.com");
+  form.url = GURL("https://test.com/");
   form.signon_realm = form.url.spec();
   form.username_value = u"username";
   form.password_value = u"password";
@@ -160,13 +160,13 @@ TEST(PasswordGroupingUtilTest, GroupPasswordsWithoutAffiliation) {
   form2.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm blocked_form;
-  blocked_form.url = GURL("https://test2.com");
+  blocked_form.url = GURL("https://test2.com/");
   blocked_form.signon_realm = blocked_form.url.spec();
   blocked_form.blocked_by_user = true;
   blocked_form.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm federated_form;
-  federated_form.signon_realm = "https://federated.com";
+  federated_form.signon_realm = "https://federated.com/";
   federated_form.username_value = u"example@gmail.com";
   federated_form.federation_origin =
       url::Origin::Create(GURL(u"federatedOrigin.com"));
@@ -209,6 +209,40 @@ TEST(PasswordGroupingUtilTest, GroupPasswordsWithoutAffiliation) {
   EXPECT_THAT(password_grouping_info.map_group_id_to_forms,
               expected_password_grouping_info.map_group_id_to_forms);
   EXPECT_THAT(password_grouping_info.blocked_sites, expected_blocked_sites);
+}
+
+TEST(PasswordGroupingUtilTest, HttpCredentialsGrouped) {
+  PasswordForm form;
+  form.url = GURL("http://test.com/");
+  form.signon_realm = form.url.spec();
+  form.username_value = u"username";
+  form.password_value = u"password";
+  form.in_store = PasswordForm::Store::kProfileStore;
+
+  // Create grouped facets vector for test.
+  std::vector<password_manager::GroupedFacets> grouped_facets_vect;
+
+  // Create sort_key_to_password_forms object for test.
+  std::multimap<std::string, PasswordForm> sort_key_to_password_forms;
+  sort_key_to_password_forms.insert(std::make_pair("test_key1", form));
+
+  // Create map_group_id_to_forms object for test.
+  std::map<GroupId, std::map<UsernamePasswordKey, std::vector<PasswordForm>>>
+      map_group_id_to_forms;
+  // Form, form 2, are grouped together in the same affiliated group and
+  // federated form is in different affiliated group. These are created by
+  // default when there is no grouped facets linked to them.
+  GroupId group_id1(1);
+  UsernamePasswordKey test_key1(CreateUsernamePasswordSortKey(form));
+  map_group_id_to_forms[group_id1][test_key1].push_back(form);
+
+  PasswordGroupingInfo expected_password_grouping_info;
+  expected_password_grouping_info.map_group_id_to_forms = map_group_id_to_forms;
+
+  PasswordGroupingInfo password_grouping_info =
+      GroupPasswords(grouped_facets_vect, sort_key_to_password_forms);
+  EXPECT_EQ(password_grouping_info.map_group_id_to_forms,
+            expected_password_grouping_info.map_group_id_to_forms);
 }
 
 }  // namespace password_manager
