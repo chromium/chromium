@@ -405,7 +405,14 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   ExpectVersionNotActive(kUpdaterVersion);
   ExpectVersionNotActive("0.0.0.0");
 
-  Uninstall();
+  // Do not call `Uninstall()` since the outdated updater uninstalled itself.
+  // Additional clean up is needed because of how this test is set up. After
+  // the outdated instance uninstalls, a few files are left in the product
+  // directory: prefs.json, updater.log, and overrides.json. These files are
+  // owned by the active instance of the updater but in this case there is
+  // no active instance left; therefore, explicit clean up is required.
+  PrintLog();
+  CopyLog();
   Clean();
 }
 
@@ -434,7 +441,6 @@ TEST_F(IntegrationTest, QualifyUpdater) {
   ExpectVersionActive(kUpdaterVersion);
 
   Uninstall();
-  Clean();
 }
 
 TEST_F(IntegrationTest, SelfUpdate) {
@@ -450,7 +456,6 @@ TEST_F(IntegrationTest, SelfUpdate) {
   ExpectAppVersion(kUpdaterAppId, next_version);
 
   Uninstall();
-  Clean();
 }
 
 TEST_F(IntegrationTest, ReportsActive) {
@@ -513,7 +518,6 @@ TEST_F(IntegrationTest, UpdateApp) {
   ExpectLastStarted();
 
   Uninstall();
-  Clean();
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -539,7 +543,6 @@ TEST_F(IntegrationTest, ForceInstallApp) {
   ExpectAppVersion(kAppId, v1);
 
   Uninstall();
-  Clean();
 }
 #endif  // BUILDFLAG(IS_WIN)
 
