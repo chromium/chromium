@@ -14,8 +14,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
@@ -36,10 +34,6 @@ import java.io.File;
  */
 @JNINamespace("paint_preview")
 public class PaintPreviewTabService implements NativePaintPreviewServiceProvider {
-    public static final BooleanCachedFieldTrialParameter ALLOW_SRP =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP, "allow_srp", false);
-
     private static final long AUDIT_START_DELAY_MS = 2 * 60 * 1000; // Two minutes;
     private static boolean sIsAccessibilityEnabledForTesting;
 
@@ -98,8 +92,6 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         }
 
         private boolean allowIfSrp(Tab tab) {
-            if (ALLOW_SRP.getValue()) return true;
-
             return !UrlUtilitiesJni.get().isGoogleSearchUrl(tab.getUrl().getSpec());
         }
     }

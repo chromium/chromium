@@ -5489,11 +5489,6 @@
     "expiry_milestone": 111
   },
   {
-    "name": "paint-preview-startup",
-    "owners": [ "ckitagawa", "fredmello", "chrome-fdt@google.com" ],
-    "expiry_milestone": 109
-  },
-  {
     "name": "partial-split",
     "owners": [ "sophiewen", "chromeos-wmp-eng@google.com" ],
     "expiry_milestone": 110

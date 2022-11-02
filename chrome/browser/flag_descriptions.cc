@@ -6523,12 +6523,6 @@ const char kPaintPreviewDemoName[] = "Paint Preview Demo";
 const char kPaintPreviewDemoDescription[] =
     "If enabled a menu item is added to the Android main menu to demo paint "
     "previews.";
-const char kPaintPreviewStartupName[] = "Paint Preview Startup";
-const char kPaintPreviewStartupDescription[] =
-    "If enabled, paint previews for each tab are captured when a tab is hidden "
-    "and are deleted when a tab is closed. If a paint preview was captured for "
-    "the tab to be restored on startup, the paint preview will be shown "
-    "instead.";
 #endif  // ENABLE_PAINT_PREVIEW && BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
