@@ -1587,6 +1587,11 @@ uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
       return V4L2_PIX_FMT_VP9_FRAME;
     else
       return V4L2_PIX_FMT_VP9;
+  } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
+    if (slice_based)
+      return V4L2_PIX_FMT_AV1_FRAME;
+    else
+      return V4L2_PIX_FMT_AV1;
   } else {
     DVLOGF(1) << "Unsupported profile: " << GetProfileName(profile);
     return 0;
@@ -1631,6 +1636,18 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
           return VP9PROFILE_PROFILE2;
       }
       break;
+#if BUILDFLAG(IS_CHROMEOS)
+    case VideoCodec::kAV1:
+      switch (v4l2_profile) {
+        case V4L2_MPEG_VIDEO_AV1_PROFILE_MAIN:
+          return AV1PROFILE_PROFILE_MAIN;
+        case V4L2_MPEG_VIDEO_AV1_PROFILE_HIGH:
+          return AV1PROFILE_PROFILE_HIGH;
+        case V4L2_MPEG_VIDEO_AV1_PROFILE_PROFESSIONAL:
+          return AV1PROFILE_PROFILE_PRO;
+      }
+      break;
+#endif
     default:
       VLOGF(2) << "Unsupported codec: " << GetCodecName(codec);
   }
@@ -1656,6 +1673,11 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
       case VideoCodec::kVP9:
         query_id = V4L2_CID_MPEG_VIDEO_VP9_PROFILE;
         break;
+#if BUILDFLAG(IS_CHROMEOS)
+      case VideoCodec::kAV1:
+        query_id = V4L2_CID_MPEG_VIDEO_AV1_PROFILE;
+        break;
+#endif
       default:
         return false;
     }
@@ -1706,6 +1728,14 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
         DLOG(WARNING) << "Driver doesn't support QUERY VP9 profiles, "
                       << "use default values, Profile0";
         profiles = {VP9PROFILE_PROFILE0};
+      }
+      break;
+    case V4L2_PIX_FMT_AV1:
+    case V4L2_PIX_FMT_AV1_FRAME:
+      if (!get_supported_profiles(VideoCodec::kAV1, &profiles)) {
+        DLOG(WARNING) << "Driver doesn't support QUERY AV1 profiles, "
+                      << "use default values, Main";
+        profiles = {AV1PROFILE_PROFILE_MAIN};
       }
       break;
     default:

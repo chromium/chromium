@@ -15,6 +15,12 @@
 #include <queue>
 #include <vector>
 
+// build_config.h must come before BUILDFLAG()
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include <linux/media/av1-ctrls.h>
+#endif
 #include <linux/videodev2.h>
 
 #include "base/containers/flat_map.h"
@@ -47,6 +53,33 @@
 #endif
 #ifndef V4L2_CID_JPEG_CHROMA_QUANTIZATION
 #define V4L2_CID_JPEG_CHROMA_QUANTIZATION (V4L2_CID_JPEG_CLASS_BASE + 6)
+#endif
+
+// TODO(b/255770680): Remove this once V4L2 header is updated.
+// https://patchwork.linuxtv.org/project/linux-media/patch/20210810220552.298140-2-daniel.almeida@collabora.com/
+#ifndef V4L2_PIX_FMT_AV1
+#define V4L2_PIX_FMT_AV1 v4l2_fourcc('A', 'V', '0', '1') /* AV1 */
+#endif
+#ifndef V4L2_PIX_FMT_AV1_FRAME
+#define V4L2_PIX_FMT_AV1_FRAME                        \
+  v4l2_fourcc('A', 'V', '1', 'F') /* AV1 parsed frame \
+                                   */
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#ifndef V4L2_CID_MPEG_VIDEO_AV1_PROFILE
+#define V4L2_CID_MPEG_VIDEO_AV1_PROFILE V4L2_CID_STATELESS_AV1_PROFILE
+#endif
+#ifndef V4L2_MPEG_VIDEO_AV1_PROFILE_MAIN
+#define V4L2_MPEG_VIDEO_AV1_PROFILE_MAIN V4L2_STATELESS_AV1_PROFILE_MAIN
+#endif
+#ifndef V4L2_MPEG_VIDEO_AV1_PROFILE_HIGH
+#define V4L2_MPEG_VIDEO_AV1_PROFILE_HIGH V4L2_STATELESS_AV1_PROFILE_HIGH
+#endif
+#ifndef V4L2_MPEG_VIDEO_AV1_PROFILE_PROFESSIONAL
+#define V4L2_MPEG_VIDEO_AV1_PROFILE_PROFESSIONAL \
+  V4L2_STATELESS_AV1_PROFILE_PROFESSIONAL
+#endif
 #endif
 
 // TODO(b/132589320): remove this once V4L2 header is updated.

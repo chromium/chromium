@@ -25,6 +25,7 @@
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_av1.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
@@ -664,6 +665,7 @@ bool V4L2StatelessVideoDecoderBackend::IsSupportedProfile(
         V4L2_PIX_FMT_H264_SLICE,
         V4L2_PIX_FMT_VP8_FRAME,
         V4L2_PIX_FMT_VP9_FRAME,
+        V4L2_PIX_FMT_AV1_FRAME,
     };
     scoped_refptr<V4L2Device> device = V4L2Device::Create();
     VideoDecodeAccelerator::SupportedProfiles profiles =
@@ -695,6 +697,12 @@ bool V4L2StatelessVideoDecoderBackend::CreateDecoder() {
     decoder_ = std::make_unique<VP9Decoder>(
         std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
         profile_, color_space_);
+#if BUILDFLAG(IS_CHROMEOS)
+  } else if (profile_ >= AV1PROFILE_MIN && profile_ <= AV1PROFILE_MAX) {
+    decoder_ = std::make_unique<AV1Decoder>(
+        std::make_unique<V4L2VideoDecoderDelegateAV1>(this, device_.get()),
+        profile_, color_space_);
+#endif
   } else {
     VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
     return false;
