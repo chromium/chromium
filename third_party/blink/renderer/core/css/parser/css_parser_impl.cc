@@ -1523,16 +1523,16 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
     if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
         MayContainNestedRules(lazy_state_->SheetText(), block_start_offset,
                               block_length)) {
-      CSSTokenizer tokenizer(lazy_state_->SheetText(), block_start_offset);
+      CSSTokenizer tokenizer(lazy_state_->SheetText(), block_start_offset + 1);
       CSSParserTokenStream block_stream(tokenizer);
-      return ConsumeStyleRuleContents(std::move(selector_vector), block_stream);
+      return ConsumeStyleRuleContents(selector_vector, block_stream);
     }
 
     return StyleRule::Create(selector_vector,
                              MakeGarbageCollected<CSSLazyPropertyParserImpl>(
                                  block_start_offset, lazy_state_));
   }
-  return ConsumeStyleRuleContents(std::move(selector_vector), stream);
+  return ConsumeStyleRuleContents(selector_vector, stream);
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
