@@ -335,13 +335,11 @@ void NativeWidgetAura::FrameTypeChanged() {
 }
 
 Widget* NativeWidgetAura::GetWidget() {
-  DCHECK(delegate_);
-  return delegate_->AsWidget();
+  return delegate_ ? delegate_->AsWidget() : nullptr;
 }
 
 const Widget* NativeWidgetAura::GetWidget() const {
-  DCHECK(delegate_);
-  return delegate_->AsWidget();
+  return delegate_ ? delegate_->AsWidget() : nullptr;
 }
 
 gfx::NativeView NativeWidgetAura::GetNativeView() const {
@@ -957,28 +955,26 @@ base::WeakPtr<internal::NativeWidgetPrivate> NativeWidgetAura::GetWeakPtr() {
 // NativeWidgetAura, aura::WindowDelegate implementation:
 
 gfx::Size NativeWidgetAura::GetMinimumSize() const {
-  DCHECK(delegate_);
-  return delegate_->GetMinimumSize();
+  return delegate_ ? delegate_->GetMinimumSize() : gfx::Size();
 }
 
 gfx::Size NativeWidgetAura::GetMaximumSize() const {
   // Do no check maximizability as EXO clients can have maximum size and be
   // maximizable at the same time.
-  DCHECK(delegate_);
-  return delegate_->GetMaximumSize();
+  return delegate_ ? delegate_->GetMaximumSize() : gfx::Size();
 }
 
 void NativeWidgetAura::OnBoundsChanged(const gfx::Rect& old_bounds,
                                        const gfx::Rect& new_bounds) {
-  DCHECK(delegate_);
   // Assume that if the old bounds was completely empty a move happened. This
   // handles the case of a maximize animation acquiring the layer (acquiring a
   // layer results in clearing the bounds).
-  if (old_bounds.origin() != new_bounds.origin() ||
-      (old_bounds == gfx::Rect(0, 0, 0, 0) && !new_bounds.IsEmpty())) {
+  if (delegate_ &&
+      (old_bounds.origin() != new_bounds.origin() ||
+       (old_bounds == gfx::Rect(0, 0, 0, 0) && !new_bounds.IsEmpty()))) {
     delegate_->OnNativeWidgetMove();
   }
-  if (old_bounds.size() != new_bounds.size())
+  if (delegate_ && (old_bounds.size() != new_bounds.size()))
     delegate_->OnNativeWidgetSizeChanged(new_bounds.size());
 }
 
@@ -987,16 +983,15 @@ gfx::NativeCursor NativeWidgetAura::GetCursor(const gfx::Point& point) {
 }
 
 int NativeWidgetAura::GetNonClientComponent(const gfx::Point& point) const {
-  DCHECK(delegate_);
-  return delegate_->GetNonClientComponent(point);
+  return delegate_ ? delegate_->GetNonClientComponent(point) : 0;
 }
 
 bool NativeWidgetAura::ShouldDescendIntoChildForEventHandling(
     aura::Window* child,
     const gfx::Point& location) {
-  DCHECK(delegate_);
-  return delegate_->ShouldDescendIntoChildForEventHandling(
-      window_->layer(), child, child->layer(), location);
+  return delegate_ ? delegate_->ShouldDescendIntoChildForEventHandling(
+                         window_->layer(), child, child->layer(), location)
+                   : false;
 }
 
 bool NativeWidgetAura::CanFocus() {
@@ -1009,8 +1004,8 @@ void NativeWidgetAura::OnCaptureLost() {
 }
 
 void NativeWidgetAura::OnPaint(const ui::PaintContext& context) {
-  DCHECK(delegate_);
-  delegate_->OnNativeWidgetPaint(context);
+  if (delegate_)
+    delegate_->OnNativeWidgetPaint(context);
 }
 
 void NativeWidgetAura::OnDeviceScaleFactorChanged(
@@ -1048,23 +1043,23 @@ void NativeWidgetAura::OnWindowDestroyed(aura::Window* window) {
 }
 
 void NativeWidgetAura::OnWindowTargetVisibilityChanged(bool visible) {
-  DCHECK(delegate_);
-  delegate_->OnNativeWidgetVisibilityChanged(visible);
+  if (delegate_)
+    delegate_->OnNativeWidgetVisibilityChanged(visible);
 }
 
 bool NativeWidgetAura::HasHitTestMask() const {
-  DCHECK(delegate_);
-  return delegate_->HasHitTestMask();
+  return delegate_ ? delegate_->HasHitTestMask() : false;
 }
 
 void NativeWidgetAura::GetHitTestMask(SkPath* mask) const {
-  DCHECK(mask && delegate_);
-  delegate_->GetHitTestMask(mask);
+  DCHECK(mask);
+  if (delegate_)
+    delegate_->GetHitTestMask(mask);
 }
 
 void NativeWidgetAura::UpdateVisualState() {
-  DCHECK(delegate_);
-  delegate_->LayoutRootViewIfNecessary();
+  if (delegate_)
+    delegate_->LayoutRootViewIfNecessary();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1073,52 +1068,52 @@ void NativeWidgetAura::UpdateVisualState() {
 void NativeWidgetAura::OnWindowPropertyChanged(aura::Window* window,
                                                const void* key,
                                                intptr_t old) {
-  DCHECK(delegate_);
-  if (key == aura::client::kShowStateKey)
+  if (delegate_ && key == aura::client::kShowStateKey)
     delegate_->OnNativeWidgetWindowShowStateChanged();
 
-  if (key == aura::client::kWindowWorkspaceKey)
+  if (delegate_ && key == aura::client::kWindowWorkspaceKey)
     delegate_->OnNativeWidgetWorkspaceChanged();
 }
 
 void NativeWidgetAura::OnResizeLoopStarted(aura::Window* window) {
-  DCHECK(delegate_);
-  delegate_->OnNativeWidgetBeginUserBoundsChange();
+  if (delegate_)
+    delegate_->OnNativeWidgetBeginUserBoundsChange();
 }
 
 void NativeWidgetAura::OnResizeLoopEnded(aura::Window* window) {
-  DCHECK(delegate_);
-  delegate_->OnNativeWidgetEndUserBoundsChange();
+  if (delegate_)
+    delegate_->OnNativeWidgetEndUserBoundsChange();
 }
 
 void NativeWidgetAura::OnWindowAddedToRootWindow(aura::Window* window) {
-  DCHECK(delegate_);
-  delegate_->OnNativeWidgetAddedToCompositor();
+  if (delegate_)
+    delegate_->OnNativeWidgetAddedToCompositor();
 }
 
 void NativeWidgetAura::OnWindowRemovingFromRootWindow(aura::Window* window,
                                                       aura::Window* new_root) {
-  DCHECK(delegate_);
-  delegate_->OnNativeWidgetRemovingFromCompositor();
+  if (delegate_)
+    delegate_->OnNativeWidgetRemovingFromCompositor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetAura, ui::EventHandler implementation:
 
 void NativeWidgetAura::OnKeyEvent(ui::KeyEvent* event) {
-  DCHECK(window_ && delegate_);
+  DCHECK(window_);
   // Renderer may send a key event back to us if the key event wasn't handled,
   // and the window may be invisible by that time.
   if (!window_->IsVisible())
     return;
 
-  delegate_->OnKeyEvent(event);
+  if (delegate_)
+    delegate_->OnKeyEvent(event);
 }
 
 void NativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
-  DCHECK(window_ && delegate_);
+  DCHECK(window_);
   DCHECK(window_->IsVisible());
-  if (event->type() == ui::ET_MOUSEWHEEL) {
+  if (delegate_ && event->type() == ui::ET_MOUSEWHEEL) {
     delegate_->OnMouseEvent(event);
     return;
   }
@@ -1126,26 +1121,28 @@ void NativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
   if (tooltip_manager_.get())
     tooltip_manager_->UpdateTooltip();
   TooltipManagerAura::UpdateTooltipManagerForCapture(this);
-  delegate_->OnMouseEvent(event);
+
+  if (delegate_)
+    delegate_->OnMouseEvent(event);
 }
 
 void NativeWidgetAura::OnScrollEvent(ui::ScrollEvent* event) {
-  DCHECK(delegate_);
-  delegate_->OnScrollEvent(event);
+  if (delegate_)
+    delegate_->OnScrollEvent(event);
 }
 
 void NativeWidgetAura::OnGestureEvent(ui::GestureEvent* event) {
-  DCHECK(window_ && delegate_);
+  DCHECK(window_);
   DCHECK(window_->IsVisible() || event->IsEndingEvent());
-  delegate_->OnGestureEvent(event);
+  if (delegate_)
+    delegate_->OnGestureEvent(event);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetAura, wm::ActivationDelegate implementation:
 
 bool NativeWidgetAura::ShouldActivate() const {
-  DCHECK(delegate_);
-  return delegate_->CanActivate();
+  return delegate_ ? delegate_->CanActivate() : false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1155,15 +1152,15 @@ void NativeWidgetAura::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  DCHECK(delegate_);
   DCHECK(window_ == gained_active || window_ == lost_active);
-  if (GetWidget()->GetFocusManager()) {
+  if (GetWidget() && GetWidget()->GetFocusManager()) {
     if (window_ == gained_active)
       GetWidget()->GetFocusManager()->RestoreFocusedView();
     else if (window_ == lost_active)
       GetWidget()->GetFocusManager()->StoreFocusedView(true);
   }
-  delegate_->OnNativeWidgetActivationChanged(window_ == gained_active);
+  if (delegate_)
+    delegate_->OnNativeWidgetActivationChanged(window_ == gained_active);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1171,10 +1168,9 @@ void NativeWidgetAura::OnWindowActivated(
 
 void NativeWidgetAura::OnWindowFocused(aura::Window* gained_focus,
                                        aura::Window* lost_focus) {
-  DCHECK(delegate_);
-  if (window_ == gained_focus)
+  if (delegate_ && window_ == gained_focus)
     delegate_->OnNativeFocus();
-  else if (window_ == lost_focus)
+  else if (delegate_ && window_ == lost_focus)
     delegate_->OnNativeBlur();
 }
 
@@ -1213,8 +1209,8 @@ aura::client::DragDropDelegate::DropCallback NativeWidgetAura::GetDropCallback(
 // NativeWidgetAura, wm::TransientWindowObserver implementation:
 
 void NativeWidgetAura::OnTransientParentChanged(aura::Window* new_parent) {
-  DCHECK(delegate_);
-  delegate_->OnNativeWidgetParentChanged(new_parent);
+  if (delegate_)
+    delegate_->OnNativeWidgetParentChanged(new_parent);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
