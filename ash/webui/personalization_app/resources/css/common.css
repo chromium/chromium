@@ -282,8 +282,8 @@ cr-button[aria-selected=true] {
 .preview-text-placeholder > .placeholder:first-child {
   /* Each row is 83 ms after the prior element. */
   --animation-delay: calc(1s + 83ms);
-  width: 20%;
   height: 20px;
+  width: 20%;
 }
 
 .preview-text-container > span:nth-child(2) {
@@ -293,8 +293,8 @@ cr-button[aria-selected=true] {
 
 .preview-text-placeholder > .placeholder:nth-child(2) {
   --animation-delay: calc(1s + 83ms * 2);
-  width: 75%;
   height: 24px;
+  width: 75%;
 }
 
 .preview-text-container > span:nth-child(n+3) {
@@ -304,8 +304,8 @@ cr-button[aria-selected=true] {
 
 .preview-text-placeholder > .placeholder:nth-child(n+3) {
   --animation-delay: calc(1s + 83ms * 3);
-  width: 33%;
   height: 20px;
+  width: 33%;
 }
 
 .ambient-subpage-element-title {
