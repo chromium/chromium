@@ -1096,6 +1096,7 @@ mojom("mojom") {
     "network_quality_estimator_manager.mojom",
     "network_service.mojom",
     "network_service_test.mojom",
+    "oblivious_http_request.mojom",
     "proxy_lookup_client.mojom",
     "proxy_resolving_socket.mojom",
     "reporting_service.mojom",

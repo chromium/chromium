@@ -47,6 +47,7 @@
 #include "services/network/http_cache_data_counter.h"
 #include "services/network/http_cache_data_remover.h"
 #include "services/network/network_qualities_pref_delegate.h"
+#include "services/network/oblivious_http_request_handler.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/transferable_directory.h"
@@ -240,6 +241,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
       mojom::URLLoaderFactoryParamsPtr params) override;
   void ResetURLLoaderFactories() override;
+  void GetViaObliviousHttp(
+      mojom::ObliviousHttpRequestPtr request,
+      mojo::PendingRemote<mojom::ObliviousHttpClient> client) override;
   void GetCookieManager(
       mojo::PendingReceiver<mojom::CookieManager> receiver) override;
   void GetRestrictedCookieManager(
@@ -902,6 +906,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   WebBundleManager web_bundle_manager_;
 
   std::unique_ptr<NetworkServiceMemoryCache> memory_cache_;
+
+  ObliviousHttpRequestHandler ohttp_handler_;
 
   // Whether all external consumers are expected to provide a non-empty
   // NetworkAnonymizationKey with all requests. When set, enabled a variety of

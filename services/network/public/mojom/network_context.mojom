@@ -32,6 +32,7 @@ import "services/network/public/mojom/mutable_network_traffic_annotation_tag.moj
 import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/network_anonymization_key.mojom";
+import "services/network/public/mojom/oblivious_http_request.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
@@ -863,6 +864,11 @@ interface NetworkContext {
   // This should be called if there is a change to the proxies which should be
   // used on URLLoaders.
   ResetURLLoaderFactories();
+
+  // Uses Oblivious HTTP to indirectly perform the request. Specification at
+  // https://ietf-wg-ohai.github.io/oblivious-http/draft-ietf-ohai-ohttp.html
+  GetViaObliviousHttp(ObliviousHttpRequest request,
+                      pending_remote<ObliviousHttpClient> client);
 
   // Gets the CookieManager associated with this network context.
   //

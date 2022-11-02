@@ -28,6 +28,7 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/oblivious_http_request.mojom.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -275,6 +276,9 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojo::PendingReceiver<mojom::MdnsResponder> responder_receiver) override {
   }
   void ResetURLLoaderFactories() override {}
+  void GetViaObliviousHttp(
+      mojom::ObliviousHttpRequestPtr request,
+      mojo::PendingRemote<mojom::ObliviousHttpClient>) override {}
   void ForceReloadProxyConfig(
       ForceReloadProxyConfigCallback callback) override {}
   void ClearBadProxiesCache(ClearBadProxiesCacheCallback callback) override {}

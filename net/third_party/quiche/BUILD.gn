@@ -68,6 +68,8 @@ component("quiche") {
     "overrides/quiche_platform_impl/quiche_time_utils_impl.h",
     "overrides/quiche_platform_impl/quiche_url_utils_impl.cc",
     "overrides/quiche_platform_impl/quiche_url_utils_impl.h",
+    "src/quiche/binary_http/binary_http_message.cc",
+    "src/quiche/binary_http/binary_http_message.h",
     "src/quiche/common/platform/api/quiche_bug_tracker.h",
     "src/quiche/common/platform/api/quiche_client_stats.h",
     "src/quiche/common/platform/api/quiche_containers.h",
@@ -1382,6 +1384,7 @@ bundle_data("test_data") {
 source_set("quiche_tests") {
   testonly = true
   sources = [
+    "src/quiche/binary_http/binary_http_message_test.cc",
     "src/quiche/common/platform/api/quiche_file_utils_test.cc",
     "src/quiche/common/platform/api/quiche_hostname_utils_test.cc",
     "src/quiche/common/platform/api/quiche_mem_slice_test.cc",

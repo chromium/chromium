@@ -1,0 +1,44 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/isolation_info.mojom";
+import
+ "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+import "services/network/public/mojom/trust_tokens.mojom";
+import "url/mojom/url.mojom";
+
+// The body and content-type of the request. The size of the content is used as
+// the content length when constructing headers.
+struct ObliviousHttpRequestBody {
+  string content;
+  string content_type;
+};
+
+struct ObliviousHttpRequest {
+  url.mojom.Url relay_url;
+  MutableNetworkTrafficAnnotationTag traffic_annotation;
+
+  // The key config contains the public key of the `resource_url` server, which
+  // is the only reassurance we have that we are talking to the `resource_url`
+  // server, so care should be taken when getting the key config.
+  string key_config;
+
+  url.mojom.Url resource_url;
+
+  // The request method: GET, POST, etc.
+  string method;
+
+  // An optional HTTP request body.
+  ObliviousHttpRequestBody? request_body;
+};
+
+// Callback interface for Oblivious HTTP Requests.
+interface ObliviousHttpClient {
+  // Called when the OHTTP request completes. `net_error` indicates the
+  // net::Error code for the operation. `response_body` will contain the body
+  // of the response.
+  OnCompleted(string? response_body, int32 net_error);
+};
