@@ -82444,6 +82444,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Failed to initialize schema"/>
 </enum>
 
+<enum name="PrivacySandboxPrivateAggregationHostSendHistogramReportResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="API disabled in settings"/>
+  <int value="2" label="Too many contributions"/>
+  <int value="3" label="Debug key present but debug mode not enabled"/>
+  <int value="4" label="Report request creation failed"/>
+</enum>
+
 <enum name="PrivacySandboxReferrer">
   <int value="0" label="Privacy Settings"/>
   <int value="1" label="Cookie Settings Snackbar"/>

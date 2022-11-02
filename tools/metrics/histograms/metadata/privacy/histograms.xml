@@ -428,6 +428,21 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.PrivateAggregation.Host.SendHistogramReportResult"
+    enum="PrivacySandboxPrivateAggregationHostSendHistogramReportResult"
+    expires_after="M117">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records whether a call to PrivateAggregationHost::SendHistogramReport()
+    successfully resulted in a report request being forwarded to the manager
+    and, if not, the reason for failure. Note that, even if successfully
+    forwarded, the report may still be rejected by the budgeter or in the
+    aggregation_service layer. Recorded for every call.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

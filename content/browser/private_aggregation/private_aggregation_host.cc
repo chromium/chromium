@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -42,6 +43,13 @@ namespace {
 base::Time GetScheduledReportTime(base::Time report_issued_time) {
   return report_issued_time + base::Minutes(10) +
          base::RandDouble() * base::Minutes(50);
+}
+
+void RecordSendHistogramReportResultHistogram(
+    PrivateAggregationHost::SendHistogramReportResult result) {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.PrivateAggregation.Host.SendHistogramReportResult",
+      result);
 }
 
 }  // namespace
@@ -97,6 +105,8 @@ void PrivateAggregationHost::SendHistogramReport(
   if (!GetContentClient()->browser()->IsPrivateAggregationAllowed(
           &*browser_context_, receiver_set_.current_context().top_frame_origin,
           reporting_origin)) {
+    RecordSendHistogramReportResultHistogram(
+        SendHistogramReportResult::kApiDisabledInSettings);
     return;
   }
 
@@ -111,6 +121,8 @@ void PrivateAggregationHost::SendHistogramReport(
     // TODO(crbug.com/1323324): Add histograms for monitoring failures here,
     // possibly broken out by failure reason.
     mojo::ReportBadMessage("Too many contributions");
+    RecordSendHistogramReportResultHistogram(
+        SendHistogramReportResult::kTooManyContributions);
     return;
   }
 
@@ -150,6 +162,8 @@ void PrivateAggregationHost::SendHistogramReport(
   if (!debug_mode_details->debug_key.is_null()) {
     if (!debug_mode_details->is_enabled) {
       mojo::ReportBadMessage("Debug key present but debug mode is not enabled");
+      RecordSendHistogramReportResultHistogram(
+          SendHistogramReportResult::kDebugKeyPresentWithoutDebugMode);
       return;
     }
     debug_key = debug_mode_details->debug_key->value;
@@ -163,6 +177,8 @@ void PrivateAggregationHost::SendHistogramReport(
     // TODO(crbug.com/1323324): Add histograms for monitoring failures here,
     // possibly broken out by failure reason.
     mojo::ReportBadMessage("Invalid report request parameters");
+    RecordSendHistogramReportResultHistogram(
+        SendHistogramReportResult::kReportRequestCreationFailed);
     return;
   }
 
@@ -176,6 +192,7 @@ void PrivateAggregationHost::SendHistogramReport(
 
   on_report_request_received_.Run(std::move(report_request.value()),
                                   std::move(budget_key.value()));
+  RecordSendHistogramReportResultHistogram(SendHistogramReportResult::kSuccess);
 }
 
 }  // namespace content
