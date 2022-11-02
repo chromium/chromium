@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/ui_base_features.h"
@@ -21,7 +22,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -311,7 +312,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, SetBoundsWithUnchangedSize) {
 
 TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
   bool context_is_also_parent = false;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   if (ui::OzonePlatform::GetInstance()
           ->GetPlatformProperties()
           .set_parent_for_non_top_level_windows) {

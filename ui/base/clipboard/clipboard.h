@@ -407,11 +407,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   static base::PlatformThreadId GetAndValidateThreadID();
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Returns whether the selection buffer is available.  This is true for some
   // Linux platforms.
   virtual bool IsSelectionBufferAvailable() const = 0;
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   // A list of allowed threads. By default, this is empty and no thread checking
   // is done (in the unit test case), but a user (like content) can set which

@@ -77,7 +77,7 @@
 #include "ui/base/cocoa/text_services_context_menu.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/events/ozone/layout/keyboard_layout_engine_test_utils.h"
 #endif
 
@@ -414,7 +414,7 @@ void TextfieldTest::SetUp() {
       std::make_unique<ui::TestClipboard>());
   ViewsTestBase::SetUp();
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // TODO(crbug.com/1209477): Wayland bots use Weston with Headless backend that
   // sets up XkbKeyboardLayoutEngine differently. When that is fixed, remove the
   // workaround below.

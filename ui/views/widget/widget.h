@@ -434,7 +434,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // widget.
     ui::PropertyHandler init_properties_container;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     // Only used by Wayland for root level windows. Specifies whether this
     // window should request the wayland compositor to send key events,
     // even if it matches with the compositor's keyboard shortcuts.

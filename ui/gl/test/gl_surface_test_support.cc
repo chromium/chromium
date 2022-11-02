@@ -18,7 +18,7 @@
 #include "ui/platform_window/common/platform_window_defaults.h"  // nogncheck
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -29,7 +29,7 @@ namespace {
 GLDisplay* InitializeOneOffHelper(bool init_extensions) {
   DCHECK_EQ(kGLImplementationNone, GetGLImplementation());
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
@@ -109,7 +109,7 @@ GLDisplay* GLSurfaceTestSupport::InitializeOneOffImplementation(
 
 // static
 GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithMockBindings() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
@@ -121,7 +121,7 @@ GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithMockBindings() {
 
 // static
 GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithStubBindings() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);

@@ -21,7 +21,7 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_initializer.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif

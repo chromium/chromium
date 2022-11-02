@@ -67,7 +67,7 @@
 #include "ui/views/examples/examples_skia_gold_pixel_diff.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -100,7 +100,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
 
   mojo::core::Init();
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);

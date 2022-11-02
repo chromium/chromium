@@ -38,7 +38,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/events/ozone/layout/keyboard_layout_engine_test_utils.h"
 #endif
 
@@ -141,7 +141,7 @@ class EditableComboboxTest : public ViewsTestBase {
 void EditableComboboxTest::SetUp() {
   ViewsTestBase::SetUp();
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // TODO(crbug.com/1209477): Wayland bots use Weston with Headless backend that
   // sets up XkbKeyboardLayoutEngine differently. When that is fixed, remove the
   // workaround below.

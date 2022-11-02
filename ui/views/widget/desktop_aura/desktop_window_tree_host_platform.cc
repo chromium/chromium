@@ -143,7 +143,7 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
   if (params.parent && params.parent->GetHost())
     properties.parent_widget = params.parent->GetHost()->GetAcceleratedWidget();
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   if (ui::OzonePlatform::GetInstance()
           ->GetPlatformProperties()
           .set_parent_for_non_top_level_windows) {
@@ -366,7 +366,7 @@ void DesktopWindowTreeHostPlatform::CloseNow() {
   if (!platform_window())
     return;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   SetWmDropHandler(platform_window(), nullptr);
 #endif
 

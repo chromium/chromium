@@ -144,7 +144,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   absl::optional<std::string> restore_window_id_source;
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Specifies whether the current window requests key-events that matches
   // system shortcuts.
   bool inhibit_keyboard_shortcuts = false;

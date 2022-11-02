@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -88,9 +89,9 @@ class TestClipboard : public Clipboard {
                 std::string* result) const override;
   base::Time GetLastModifiedTime() const override;
   void ClearLastModifiedTime() override;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   bool IsSelectionBufferAvailable() const override;
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
   void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,

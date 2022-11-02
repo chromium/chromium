@@ -72,7 +72,7 @@
 #include "ui/aura/window_delegate.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -115,7 +115,7 @@ bool AcceleratorShouldCancelMenu(const ui::Accelerator& accelerator) {
 #endif
 
 bool ShouldIgnoreScreenBoundsForMenus() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Some platforms, such as Wayland, disallow client applications to manipulate
   // global screen coordinates, requiring menus to be positioned relative to
   // their parent windows. See comment in ozone_platform_wayland.cc.

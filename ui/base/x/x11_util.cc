@@ -747,7 +747,7 @@ bool IsSyncExtensionAvailable() {
 // builds as long as our EGL impl for Ozone/X11 is not mature enough and we do
 // not receive swap completions on time, which results in weird resize behaviour
 // as X Server waits for the XSyncCounter changes.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_OZONE)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_OZONE)
   return false;
 #else
   static bool result =

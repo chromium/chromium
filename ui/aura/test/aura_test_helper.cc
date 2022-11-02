@@ -43,7 +43,7 @@
 #include "ui/aura/native_window_occlusion_tracker_win.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/events/ozone/events_ozone.h"
 #endif
 
@@ -67,7 +67,7 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
   ui::test::EnableTestConfigForPlatformWindows();
 #endif
 
-#if defined(USE_OZONE) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_CHROMEOS_ASH)
   ui::DisableNativeUiEventDispatchForTest();
 #endif
 

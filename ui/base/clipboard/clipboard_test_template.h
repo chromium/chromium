@@ -523,7 +523,7 @@ TYPED_TEST(ClipboardTest, URLTest) {
 // TODO(tonikitoo, msisov): enable back for ClipboardOzone implements
 // selection support. https://crbug.com/911992
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(USE_OZONE)
+    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_OZONE)
   ascii_text.clear();
   this->clipboard().ReadAsciiText(ClipboardBuffer::kSelection,
                                   /* data_dst = */ nullptr, &ascii_text);

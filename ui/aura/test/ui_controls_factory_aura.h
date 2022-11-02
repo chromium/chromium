@@ -5,6 +5,7 @@
 #ifndef UI_AURA_TEST_UI_CONTROLS_FACTORY_AURA_H_
 #define UI_AURA_TEST_UI_CONTROLS_FACTORY_AURA_H_
 
+#include "build/build_config.h"
 #include "ui/base/test/ui_controls_aura.h"
 
 namespace aura {
@@ -14,7 +15,7 @@ namespace test {
 
 ui_controls::UIControlsAura* CreateUIControlsAura(WindowTreeHost* host);
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 // Callback from Window Service with the result of posting an event. |result|
 // is true if event successfully processed and |closure| is an optional closure
 // to run when done (used in client code to wait for ack).

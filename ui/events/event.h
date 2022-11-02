@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/gestures/gesture_types.h"
@@ -869,13 +870,13 @@ class EVENTS_EXPORT KeyEvent : public Event {
   // events in an EventRewriter.
   void set_key_code(KeyboardCode key_code) { key_code_ = key_code; }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // The scan code of the physical key. This is used to perform the mapping
   // of top row keys from Actions back to F-Keys on new Chrome OS keyboards
   // that supply the mapping via the kernel.
   uint32_t scan_code() const { return scan_code_; }
   void set_scan_code(uint32_t scan_code) { scan_code_ = scan_code; }
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   // Returns the same value as key_code(), except that located codes are
   // returned in place of non-located ones (e.g. VKEY_LSHIFT or VKEY_RSHIFT
@@ -926,10 +927,10 @@ class EVENTS_EXPORT KeyEvent : public Event {
 
   KeyboardCode key_code_;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // The scan code of the physical key on Chrome OS.
   uint32_t scan_code_ = 0;
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   // DOM KeyboardEvent |code| (e.g. DomCode::US_A, DomCode::SPACE).
   // http://www.w3.org/TR/DOM-Level-3-Events-code/
@@ -956,7 +957,7 @@ class EVENTS_EXPORT KeyEvent : public Event {
   mutable DomKey key_ = DomKey::NONE;
 
   static KeyEvent* last_key_event_;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   static KeyEvent* last_ibus_key_event_;
 #endif
 

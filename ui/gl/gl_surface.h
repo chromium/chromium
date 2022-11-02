@@ -30,7 +30,7 @@
 #include "ui/gl/gl_surface_format.h"
 #include "ui/gl/gpu_preference.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/gfx/native_pixmap.h"
 #endif
 
@@ -64,7 +64,7 @@ class GLImage;
 class EGLTimestampClient;
 
 // OverlayImage is a platform specific type for overlay plane image data.
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 using OverlayImage = scoped_refptr<gfx::NativePixmap>;
 #elif BUILDFLAG(IS_MAC)
 using OverlayImage = gfx::ScopedIOSurface;

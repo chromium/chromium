@@ -158,7 +158,7 @@ TEST_F(MenuRunnerTest, AsynchronousKeyEventHandling) {
 // Tests that a key press on a US keyboard layout activates the correct menu
 // item.
 // This test is flaky on ozone (https://crbug.com/1197217).
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #define MAYBE_LatinMnemonic DISABLED_LatinMnemonic
 #else
 #define MAYBE_LatinMnemonic LatinMnemonic

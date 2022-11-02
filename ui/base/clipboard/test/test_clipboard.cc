@@ -286,11 +286,11 @@ void TestClipboard::ClearLastModifiedTime() {
   last_modified_time_ = base::Time();
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 bool TestClipboard::IsSelectionBufferAvailable() const {
   return true;
 }
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 void TestClipboard::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,

@@ -84,7 +84,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
@@ -5410,7 +5410,7 @@ TEST_F(DesktopWidgetTest, StackAboveTest) {
 namespace {
 
 bool CanHaveCompositingManager() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   auto* const egl_utility =
       ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
   return (egl_utility != nullptr) && egl_utility->HasVisualManager();

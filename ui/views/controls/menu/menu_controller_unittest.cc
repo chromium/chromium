@@ -63,7 +63,7 @@
 #include "ui/views/controls/menu/menu_pre_target_handler.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
 #if BUILDFLAG(OZONE_PLATFORM_X11)
@@ -86,7 +86,7 @@ namespace {
 using ::ui::mojom::DragOperation;
 
 bool ShouldIgnoreScreenBoundsForMenus() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Some platforms, such as Wayland, disallow client applications to manipulate
   // global screen coordinates, requiring menus to be positioned relative to
   // their parent windows. See comment in ozone_platform_wayland.cc.

@@ -8,12 +8,13 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/half_float.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "base/run_loop.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -36,7 +37,7 @@ void rgb_to_yuv(uint8_t r, uint8_t g, uint8_t b, T* y, T* u, T* v) {
 // static
 GLDisplay* GLImageTestSupport::InitializeGL(
     absl::optional<GLImplementationParts> prefered_impl) {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
@@ -52,7 +53,7 @@ GLDisplay* GLImageTestSupport::InitializeGL(
 
   GLDisplay* display =
       GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Make sure all the tasks posted to the current task runner by the
   // initialization functions are run before running the tests.
   base::RunLoop().RunUntilIdle();

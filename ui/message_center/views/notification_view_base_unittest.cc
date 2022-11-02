@@ -503,7 +503,7 @@ TEST_F(NotificationViewBaseTest, TestActionButtonClick) {
 }
 
 // TODO(crbug.com/1232197): Test failing on linux-lacros-tester-rel and ozone.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_OZONE)
 #define MAYBE_TestInlineReply DISABLED_TestInlineReply
 #else
 #define MAYBE_TestInlineReply TestInlineReply

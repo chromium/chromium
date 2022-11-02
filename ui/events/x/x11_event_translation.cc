@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
@@ -172,11 +173,11 @@ std::unique_ptr<TouchEvent> CreateTouchEvent(EventType type,
   auto event = std::make_unique<TouchEventX11>(
       type, EventLocationFromXEvent(xev), EventTimeFromXEvent(xev),
       GetTouchPointerDetailsFromXEvent(xev));
-#if defined(USE_OZONE)
-    // Touch events don't usually have |root_location| set differently than
-    // |location|, since there is a touch device to display association, but
-    // this doesn't happen in Ozone X11.
-    event->set_root_location(EventSystemLocationFromXEvent(xev));
+#if BUILDFLAG(IS_OZONE)
+  // Touch events don't usually have |root_location| set differently than
+  // |location|, since there is a touch device to display association, but
+  // this doesn't happen in Ozone X11.
+  event->set_root_location(EventSystemLocationFromXEvent(xev));
 #endif
   return event;
 }

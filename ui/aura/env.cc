@@ -31,7 +31,7 @@
 #include "ui/base/win/win_cursor_factory.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -242,7 +242,7 @@ Env::Env()
 }
 
 bool Env::Init() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // The ozone platform can provide its own event source. So initialize the
   // platform before creating the default event source
   ui::OzonePlatform::InitParams params;

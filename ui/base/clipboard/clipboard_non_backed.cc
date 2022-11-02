@@ -23,6 +23,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -807,7 +808,7 @@ void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
 #endif
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 bool ClipboardNonBacked::IsSelectionBufferAvailable() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
@@ -815,7 +816,7 @@ bool ClipboardNonBacked::IsSelectionBufferAvailable() const {
   return true;
 #endif
 }
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 void ClipboardNonBacked::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,

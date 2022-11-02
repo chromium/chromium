@@ -29,7 +29,7 @@
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -69,7 +69,7 @@ void WindowTreeHostPlatform::CreateAndSetPlatformWindow(
   // end up propagating unneeded bounds change event when it is first notified
   // through OnBoundsChanged, which may lead to unneeded re-layouts, etc.
   size_in_pixels_ = properties.bounds.size();
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   platform_window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
       this, std::move(properties));
 #elif BUILDFLAG(IS_WIN)
@@ -156,7 +156,7 @@ bool WindowTreeHostPlatform::IsKeyLocked(ui::DomCode dom_code) {
 
 base::flat_map<std::string, std::string>
 WindowTreeHostPlatform::GetKeyboardLayoutMap() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   return ui::GenerateDomKeyboardLayoutMap();
 #else
   NOTIMPLEMENTED();

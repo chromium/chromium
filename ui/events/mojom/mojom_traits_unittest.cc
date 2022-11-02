@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,7 +17,7 @@
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"  // nogncheck
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"  // nogncheck
 #endif
@@ -389,7 +390,7 @@ TEST(StructTraitsTest, UnserializedTouchEventFields) {
             output->AsTouchEvent()->unique_event_id());
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 
 // Test KeyboardLayoutEngine implementation that always returns 'x'.
 class FixedKeyboardLayoutEngine : public StubKeyboardLayoutEngine {

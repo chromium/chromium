@@ -24,7 +24,7 @@ class Event;
 namespace ui {
 
 // Cross platform typedefs for native event types.
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 using PlatformEvent = ui::Event*;
 #elif BUILDFLAG(IS_WIN)
 using PlatformEvent = CHROME_MSG;

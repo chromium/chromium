@@ -14,7 +14,7 @@
 #include "base/test/mock_chrome_application_mac.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "base/command_line.h"
 #include "mojo/core/embedder/embedder.h"  // nogncheck
 #include "ui/base/ui_base_features.h"
@@ -43,7 +43,7 @@ class GlTestSuite : public base::TestSuite {
     task_environment_ = std::make_unique<base::test::TaskEnvironment>(
         base::test::TaskEnvironment::MainThreadType::UI);
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     // Make Ozone run in single-process mode, where it doesn't expect a GPU
     // process and it spawns and starts its own DRM thread. Note that this mode
     // still requires a mojo pipe for in-process communication between the host
@@ -68,7 +68,7 @@ class GlTestSuite : public base::TestSuite {
 }  // namespace
 
 int main(int argc, char** argv) {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   mojo::core::Init();
 #endif
 

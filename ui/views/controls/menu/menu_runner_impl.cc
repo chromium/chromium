@@ -22,7 +22,7 @@
 #include "ui/events/win/system_event_state_lookup.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -46,7 +46,7 @@ void FireFocusAfterMenuClose(base::WeakPtr<Widget> widget) {
   }
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 bool IsAltPressed() {
   if (const auto* const platorm_menu_utils =
           ui::OzonePlatform::GetInstance()->GetPlatformMenuUtils()) {
@@ -55,7 +55,7 @@ bool IsAltPressed() {
   }
   return false;
 }
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 }  // namespace
 
@@ -259,7 +259,7 @@ bool MenuRunnerImpl::ShouldShowMnemonics(int32_t run_types) {
   // Show mnemonics if the button has focus or alt is pressed.
 #if BUILDFLAG(IS_WIN)
   show_mnemonics |= ui::win::IsAltPressed();
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
   show_mnemonics |= IsAltPressed();
 #elif BUILDFLAG(IS_MAC)
   show_mnemonics = false;

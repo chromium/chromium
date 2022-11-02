@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "build/build_config.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace ui {
@@ -107,9 +108,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
   void ReadData(const ClipboardFormatType& format,
                 const DataTransferEndpoint* data_dst,
                 std::string* result) const override;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   bool IsSelectionBufferAvailable() const override;
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
   void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,

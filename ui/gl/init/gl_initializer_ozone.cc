@@ -10,12 +10,9 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
-
-#if defined(USE_OZONE)
 #include "ui/gl/init/gl_display_egl_util_ozone.h"
 #include "ui/gl/init/ozone_util.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
 
 namespace gl {
 namespace init {

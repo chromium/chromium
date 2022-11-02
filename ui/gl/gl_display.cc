@@ -31,9 +31,9 @@
 #include "ui/gl/glx_util.h"
 #endif  // defined(USE_GLX)
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/buildflags.h"
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_ANDROID)
 #include <android/native_window_jni.h>
@@ -359,14 +359,14 @@ EGLDisplay GetDisplayFromType(
       extra_display_attribs.push_back(EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE);
       extra_display_attribs.push_back(
           EGL_PLATFORM_ANGLE_DEVICE_TYPE_SWIFTSHADER_ANGLE);
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(OZONE_PLATFORM_X11)
       extra_display_attribs.push_back(
           EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE);
       extra_display_attribs.push_back(
           EGL_PLATFORM_VULKAN_DISPLAY_MODE_HEADLESS_ANGLE);
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
       return GetPlatformANGLEDisplay(
           display, EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE, enabled_angle_features,
           disabled_angle_features, extra_display_attribs);

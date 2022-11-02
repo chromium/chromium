@@ -86,7 +86,7 @@
 #include "ui/base/cocoa/secure_password_input.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_gl_egl_utility.h"
@@ -177,11 +177,10 @@ bool IsValidCharToInsert(const char16_t& ch) {
 }
 
 bool CanUseTransparentBackgroundForDragImage() {
-#if defined(USE_OZONE)
-    const auto* const egl_utility =
-        ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-    return egl_utility ? egl_utility->IsTransparentBackgroundSupported()
-                       : false;
+#if BUILDFLAG(IS_OZONE)
+  const auto* const egl_utility =
+      ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
+  return egl_utility ? egl_utility->IsTransparentBackgroundSupported() : false;
 #else
   // Other platforms allow this.
   return true;

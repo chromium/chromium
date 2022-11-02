@@ -46,7 +46,7 @@
 #include "ui/display/win/dpi.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -163,7 +163,7 @@ void RunRunLoopUntilOnHostCloseRequested(aura::WindowTreeHost* host) {
 }
 
 int DemoMain() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForUI(params);

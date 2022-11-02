@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_display.h"
@@ -94,7 +95,7 @@ GL_INIT_EXPORT scoped_refptr<GLSurface> CreateViewGLSurface(
     GLDisplay* display,
     gfx::AcceleratedWidget window);
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 // Creates a GL surface that renders directly into a window with surfaceless
 // semantics - there is no default framebuffer and the primary surface must
 // be presented as an overlay. If surfaceless mode is not supported or
@@ -102,7 +103,7 @@ GL_INIT_EXPORT scoped_refptr<GLSurface> CreateViewGLSurface(
 GL_INIT_EXPORT scoped_refptr<GLSurface> CreateSurfacelessViewGLSurface(
     GLDisplay* display,
     gfx::AcceleratedWidget window);
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 // Creates a GL surface used for offscreen rendering.
 GL_INIT_EXPORT scoped_refptr<GLSurface> CreateOffscreenGLSurface(
