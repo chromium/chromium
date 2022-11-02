@@ -39,6 +39,9 @@ class AboutThisSiteSidePanelView
 
   void OpenUrl(const content::OpenURLParams& params);
 
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
  private:
   // Remove parameters that shouldn't be passed to the main browser.
   GURL CleanUpQueryParams(const GURL& url);

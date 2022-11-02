@@ -51,6 +51,11 @@ AboutThisSiteSidePanelView::AboutThisSiteSidePanelView(
     BrowserView* browser_view) {
   browser_view_ = browser_view;
   auto* browser_context = browser_view->GetProfile();
+
+  // Allow view to be focusable in order to receive focus when side panel is
+  // opened.
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+
   // Align views vertically top to bottom.
   SetOrientation(views::LayoutOrientation::kVertical);
   SetMainAxisAlignment(views::LayoutAlignment::kStart);
@@ -170,6 +175,11 @@ GURL AboutThisSiteSidePanelView::CleanUpQueryParams(const GURL& url) {
 void AboutThisSiteSidePanelView::SetContentVisible(bool visible) {
   web_view_->SetVisible(visible);
   loading_indicator_web_view_->SetVisible(!visible);
+}
+
+void AboutThisSiteSidePanelView::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  return static_cast<View*>(web_view_)->GetAccessibleNodeData(node_data);
 }
 
 AboutThisSiteSidePanelView::~AboutThisSiteSidePanelView() = default;
