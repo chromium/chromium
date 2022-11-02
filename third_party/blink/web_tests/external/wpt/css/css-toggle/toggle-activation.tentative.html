@@ -432,4 +432,58 @@ test_action_and_all_cycles("[a b c d]", "d", "prev", "c", "c", "c");
 test_action_and_all_cycles("[a b c d]", "c", "prev 5", "d", "d", "a");
 test_action_and_all_cycles("[a b c d]", "extra-state", "prev", "d", "d", "d");
 
+// TODO(https://github.com/tabatkins/css-toggle/issues/39): This set of
+// tests is testing proposed behavior; the spec currently says something
+// that we agree is wrong.
+promise_test(async function() {
+  container.innerHTML = `
+    <button id="toggle" style="toggle: test"></button>
+  `;
+  let toggle = document.getElementById("toggle");
+  await wait_for_toggle_creation(toggle);
+  assert_true(!toggle.matches(`:toggle(test)`), "value before click");
+  toggle.click();
+  assert_true(toggle.matches(`:toggle(test)`), "value after click");
+}, "toggle activation on button with toggle-trigger (1)");
+promise_test(async function() {
+  container.innerHTML = `
+    <div id="toggle" style="toggle-root: test">
+      <button id="trigger" style="toggle-trigger: test"></button>
+    </div>
+  `;
+  let toggle = document.getElementById("toggle");
+  await wait_for_toggle_creation(toggle);
+  assert_true(!toggle.matches(`:toggle(test)`), "value before click");
+  document.getElementById("trigger").click();
+  assert_true(toggle.matches(`:toggle(test)`), "value after click");
+}, "toggle activation on button with toggle-trigger (2)");
+promise_test(async function() {
+  container.innerHTML = `
+    <div id="toggle" style="toggle: test">
+      <button id="button"></button>
+    </div>
+  `;
+  let toggle = document.getElementById("toggle");
+  await wait_for_toggle_creation(toggle);
+  assert_true(!toggle.matches(`:toggle(test)`), "value before click");
+  document.getElementById("button").click();
+  assert_true(!toggle.matches(`:toggle(test)`), "value after button click");
+  toggle.click();
+  assert_true(toggle.matches(`:toggle(test)`), "value after div click");
+}, "toggle activation on button inside element with toggle-trigger");
+promise_test(async function() {
+  container.innerHTML = `
+    <div id="toggle" style="toggle: test">
+      <div id="div"></div>
+    </div>
+  `;
+  let toggle = document.getElementById("toggle");
+  await wait_for_toggle_creation(toggle);
+  assert_true(!toggle.matches(`:toggle(test)`), "value before click");
+  document.getElementById("div").click();
+  assert_true(toggle.matches(`:toggle(test)`), "value after inner div click");
+  toggle.click();
+  assert_true(!toggle.matches(`:toggle(test)`), "value after outer div click");
+}, "toggle activation on div inside element with toggle-trigger");
+
 </script>

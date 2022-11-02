@@ -4684,9 +4684,22 @@ void Element::DefaultEventHandler(Event& event) {
     // GetComputedStyle(), but it's also potentially expensive and we only
     // want to call it if we have a toggle-trigger.
     if (const ComputedStyle* style_before_update = GetComputedStyle()) {
+      Node* target_node = event.target()->ToNode();
       if (style_before_update->ToggleTrigger() &&
           IsFocusableStyleAfterUpdate() &&
-          !IsClickableControl(event.target()->ToNode())) {
+          // TODO(https://github.com/tabatkins/css-toggle/issues/39):
+          // There seems to be agreement that the spec's current
+          // statement that toggles should not work on elements with
+          // activation behavior is too restrictive.  Pending a
+          // resolution for what the spec should say, this completely
+          // stops checking for activation behavior on the element with
+          // 'toggle-trigger', but continues to check on descendants.
+          // It's possible that we should be checking for *some*
+          // conditions (e.g., causing a navigation) on the element with
+          // 'toggle-trigger', although perhaps that's unnecessary since
+          // the page will navigate anyway.
+          (ElementTraversal::FirstAncestorOrSelf(*target_node) == this ||
+           !IsClickableControl(target_node))) {
         if (const ComputedStyle* style = GetComputedStyle()) {
           // FireToggleActivation might change style too, so hold a reference
           // to toggle_triggers.
