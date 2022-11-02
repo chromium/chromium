@@ -556,7 +556,7 @@ void DlpFilesController::CheckIfDownloadAllowed(
     return;
   }
 
-  FileDaemonInfo file_info({}, base::FilePath(""), download_url.spec());
+  FileDaemonInfo file_info({}, file_path, download_url.spec());
   IsFilesTransferRestricted(
       {std::move(file_info)}, DlpFileDestination(file_path.value()),
       FileAction::kDownload,

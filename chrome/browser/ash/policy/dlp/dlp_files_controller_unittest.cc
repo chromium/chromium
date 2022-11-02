@@ -1351,16 +1351,16 @@ INSTANTIATE_TEST_SUITE_P(
     DlpFilesExternalDestinationTest,
     ::testing::Values(
         std::make_tuple("android_files",
-                        "path/in/android",
+                        "path/in/android/filename",
                         DlpRulesManager::Component::kArc),
         std::make_tuple("removable",
-                        "MyUSB/path/in/removable",
+                        "MyUSB/path/in/removable/filename",
                         DlpRulesManager::Component::kUsb),
         std::make_tuple("crostini_test_termina_penguin",
-                        "path/in/crostini",
+                        "path/in/crostini/filename",
                         DlpRulesManager::Component::kCrostini),
         std::make_tuple("drivefs-84675c855b63e12f384d45f033826980",
-                        "root/path/in/mydrive",
+                        "root/path/in/mydrive/filename",
                         DlpRulesManager::Component::kDrive)));
 
 TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
@@ -1452,10 +1452,15 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
                                             cb.Get());
 
   ASSERT_EQ(events.size(), 1u);
-  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kExampleSourcePattern1, expected_component,
-                             DlpRulesManager::Restriction::kFiles,
-                             DlpRulesManager::Level::kBlock)));
+
+  auto event_builder = DlpPolicyEventBuilder::Event(
+      kExampleSourcePattern1, DlpRulesManager::Restriction::kFiles,
+      DlpRulesManager::Level::kBlock);
+
+  event_builder->SetDestinationComponent(expected_component);
+  event_builder->SetContentName(base::FilePath(path).BaseName().value());
+
+  EXPECT_THAT(events[0], IsDlpPolicyEvent(event_builder->Create()));
   EXPECT_TRUE(
       display_service_tester.GetNotification(kDownloadBlockedNotificationId));
 }
@@ -1607,25 +1612,34 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   EXPECT_CALL(*rules_manager_, GetReportingManager())
       .Times(::testing::AnyNumber());
 
+  const base::FilePath file_path("MyUSB/path/in/removable/filename");
+
   auto dst_url = mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(), "removable",
-      base::FilePath("MyUSB/path/in/removable"));
+      blink::StorageKey(), "removable", file_path);
   ASSERT_TRUE(dst_url.is_valid());
 
   files_controller_->CheckIfDownloadAllowed(GURL(kExampleUrl1), dst_url.path(),
                                             cb.Get());
 
+  auto CreateEvent =
+      [&](absl::optional<DlpRulesManager::Level> level) -> DlpPolicyEvent {
+    auto event_builder =
+        level.has_value()
+            ? DlpPolicyEventBuilder::Event(kExampleSourcePattern1,
+                                           DlpRulesManager::Restriction::kFiles,
+                                           level.value())
+            : DlpPolicyEventBuilder::WarningProceededEvent(
+                  kExampleSourcePattern1, DlpRulesManager::Restriction::kFiles);
+    event_builder->SetDestinationComponent(DlpRulesManager::Component::kUsb);
+    event_builder->SetContentName(file_path.BaseName().value());
+    return event_builder->Create();
+  };
+
   ASSERT_EQ(events.size(), 1u + (choice_result ? 1 : 0));
   EXPECT_THAT(events[0],
-              IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                  kExampleSourcePattern1, DlpRulesManager::Component::kUsb,
-                  DlpRulesManager::Restriction::kFiles,
-                  DlpRulesManager::Level::kWarn)));
+              IsDlpPolicyEvent(CreateEvent(DlpRulesManager::Level::kWarn)));
   if (choice_result) {
-    EXPECT_THAT(events[1],
-                IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                    kExampleSourcePattern1, DlpRulesManager::Component::kUsb,
-                    DlpRulesManager::Restriction::kFiles)));
+    EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateEvent(absl::nullopt)));
   } else {
     EXPECT_TRUE(
         display_service_tester.GetNotification(kDownloadBlockedNotificationId));
