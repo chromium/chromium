@@ -98,7 +98,7 @@ TEST(PolicyBundleTest, Get) {
   EXPECT_TRUE(IsEmpty(bundle));
 }
 
-TEST(PolicyBundleTest, SwapAndCopy) {
+TEST(PolicyBundleTest, CopyFrom) {
   PolicyBundle bundle0;
   PolicyBundle bundle1;
 
@@ -116,16 +116,7 @@ TEST(PolicyBundleTest, SwapAndCopy) {
   EXPECT_TRUE(bundle0.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,
                                           kExtension0)).Equals(policy));
 
-  bundle0.Swap(&bundle1);
-  EXPECT_TRUE(IsEmpty(bundle0));
-  EXPECT_FALSE(IsEmpty(bundle1));
-
-  EXPECT_TRUE(bundle1.Get(PolicyNamespace(POLICY_DOMAIN_CHROME,
-                                          std::string())).Equals(policy));
-  EXPECT_TRUE(bundle1.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,
-                                          kExtension0)).Equals(policy));
-
-  bundle0.CopyFrom(bundle1);
+  bundle1.CopyFrom(bundle0);
   EXPECT_FALSE(IsEmpty(bundle0));
   EXPECT_FALSE(IsEmpty(bundle1));
   EXPECT_TRUE(bundle0.Get(PolicyNamespace(POLICY_DOMAIN_CHROME,

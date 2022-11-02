@@ -93,7 +93,7 @@ void SchemaRegistryTrackingPolicyProvider::OnUpdatePolicy(
   PolicyBundle bundle;
   if (state_ == READY) {
     bundle.CopyFrom(delegate_->policies());
-    schema_map()->FilterBundle(&bundle,
+    schema_map()->FilterBundle(bundle,
                                /*drop_invalid_component_policies=*/true);
   } else {
     // Always pass on the Chrome policy, even if the components are not ready

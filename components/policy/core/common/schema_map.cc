@@ -35,9 +35,9 @@ const Schema* SchemaMap::GetSchema(const PolicyNamespace& ns) const {
   return it == map->end() ? nullptr : &it->second;
 }
 
-void SchemaMap::FilterBundle(PolicyBundle* bundle,
+void SchemaMap::FilterBundle(PolicyBundle& bundle,
                              bool drop_invalid_component_policies) const {
-  for (auto& bundle_item : *bundle) {
+  for (auto& bundle_item : bundle) {
     const PolicyNamespace& ns = bundle_item.first;
     PolicyMap& policy_map = bundle_item.second;
 

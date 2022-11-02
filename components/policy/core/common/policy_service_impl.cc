@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -390,7 +391,7 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 
   // Swap first, so that observers that call GetPolicies() see the current
   // values.
-  policy_bundle_.Swap(&bundle);
+  std::swap(policy_bundle_, bundle);
 
   // Only notify observers of namespaces that have been modified.
   const PolicyMap kEmpty;

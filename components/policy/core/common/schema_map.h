@@ -37,15 +37,15 @@ class POLICY_EXPORT SchemaMap : public base::RefCountedThreadSafe<SchemaMap> {
 
   const Schema* GetSchema(const PolicyNamespace& ns) const;
 
-  // Removes all the policies in |bundle| that don't match the known schemas.
+  // Removes all the policies in `bundle` that don't match the known schemas.
   // Unknown components are also dropped. Unknown fields in component policies
   // are removed.
-  // If |drop_invalid_component_policies| is true, invalid policies are removed.
-  // If |drop_invalid_component_policies| is false, they will merely be marked
+  // If `drop_invalid_component_policies` is true, invalid policies are removed.
+  // If `drop_invalid_component_policies` is false, they will merely be marked
   // invalid. They will still be filtered when accessing them via
   // PolicyMap::Get() or PolicyMap::GetValue(), but will be surfaced in
   // about:policy with an attached error.
-  void FilterBundle(PolicyBundle* bundle,
+  void FilterBundle(PolicyBundle& bundle,
                     bool drop_invalid_component_policies) const;
 
   // Returns true if this map contains at least one component of a domain other

@@ -93,7 +93,7 @@ void AsyncPolicyLoader::Reload(bool force) {
   }
 
   // Filter out mismatching policies.
-  schema_map_->FilterBundle(&bundle,
+  schema_map_->FilterBundle(bundle,
                             /*drop_invalid_component_policies=*/true);
 
   update_callback_.Run(std::move(bundle));
@@ -135,7 +135,7 @@ PolicyBundle AsyncPolicyLoader::InitialLoad(
   PolicyBundle bundle = Load();
   platform_management_trustworthiness_.reset();
   // Filter out mismatching policies.
-  schema_map_->FilterBundle(&bundle,
+  schema_map_->FilterBundle(bundle,
                             /*drop_invalid_component_policies=*/true);
   return bundle;
 }

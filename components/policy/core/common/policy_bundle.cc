@@ -36,10 +36,6 @@ const PolicyMap& PolicyBundle::Get(const PolicyNamespace& ns) const {
   return it == end() ? GetEmptyPolicyMap() : it->second;
 }
 
-void PolicyBundle::Swap(PolicyBundle* other) {
-  policy_bundle_.swap(other->policy_bundle_);
-}
-
 void PolicyBundle::CopyFrom(const PolicyBundle& other) {
   DCHECK_NE(this, &other);
 

@@ -287,7 +287,7 @@ void ComponentActiveDirectoryPolicyService::FilterAndInstallPolicy(
   policy_ = std::move(policy);
 
   // Remove policies that don't match the schema.
-  current_schema_map_->FilterBundle(policy_.get(),
+  current_schema_map_->FilterBundle(*policy_,
                                     /*drop_invalid_component_policies=*/true);
 
   DVLOG(1) << "Installed policy (count = "

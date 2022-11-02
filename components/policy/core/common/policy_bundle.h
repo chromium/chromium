@@ -35,9 +35,6 @@ class POLICY_EXPORT PolicyBundle {
   // empty map if no entry for `ns` is present.
   const PolicyMap& Get(const PolicyNamespace& ns) const;
 
-  // Swaps the internal representation of |this| with |other|.
-  void Swap(PolicyBundle* other);
-
   // |this| becomes a copy of |other|. Any existing PolicyMaps are dropped.
   void CopyFrom(const PolicyBundle& other);
 
