@@ -17,21 +17,10 @@ namespace permissions {
 
 constexpr char kExcludedKey[] = "exempted";
 constexpr char kDisplayedKey[] = "display_count";
+// The daily average is calculated over the past this many days.
+constexpr int kDays = 7;
 
 namespace {
-
-int GetDailyAverageNotificationCount(int notification_count) {
-  // Find day_of_week and calculate daily average count for that week.
-  base::Time date = base::Time::Now();
-  base::Time::Exploded date_exploded;
-  date.LocalExplode(&date_exploded);
-
-  // |day_of_week| returns 0 for Sunday, but NotificationEngagementService
-  // starts counting on Mondays. So here, setting Sunday as 7 to calculate
-  // average correctly and to prevent calculation errors.
-  int day_of_week = !date_exploded.day_of_week ? 7 : date_exploded.day_of_week;
-  return std::ceil(notification_count / day_of_week);
-}
 
 int ExtractNotificationCount(ContentSettingPatternSource item,
                              std::string date) {
@@ -42,6 +31,20 @@ int ExtractNotificationCount(ContentSettingPatternSource item,
   if (!bucket)
     return 0;
   return bucket->FindInt(kDisplayedKey).value_or(0);
+}
+
+int GetDailyAverageNotificationCount(ContentSettingPatternSource item) {
+  // Calculate daily average count for the past week.
+  base::Time date = base::Time::Now();
+  int notification_count_total = 0;
+
+  for (int day = 0; day < kDays; ++day) {
+    notification_count_total += ExtractNotificationCount(
+        item,
+        NotificationsEngagementService::GetBucketLabel(date - base::Days(day)));
+  }
+
+  return std::ceil(notification_count_total / kDays);
 }
 
 std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>>
@@ -72,17 +75,12 @@ GetNotificationCountMapPerPatternPair(
   ContentSettingsForOneType notification_count_list;
   hcsm->GetSettingsForOneType(ContentSettingsType::NOTIFICATION_INTERACTIONS,
                               &notification_count_list);
-  std::string date =
-      NotificationsEngagementService::GetBucketLabelForLastMonday(
-          base::Time::Now());
 
   std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
       result;
   for (auto& item : notification_count_list) {
-    int notification_count = ExtractNotificationCount(item, date);
-
     result[std::pair{item.primary_pattern, item.secondary_pattern}] =
-        GetDailyAverageNotificationCount(notification_count);
+        GetDailyAverageNotificationCount(item);
   }
 
   return result;

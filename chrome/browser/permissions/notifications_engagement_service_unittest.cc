@@ -49,9 +49,12 @@ TEST_F(NotificationsEngagementServiceTest,
   GURL hosts[] = {GURL("https://google.com/"),
                   GURL("https://www.youtube.com/")};
 
+  // Otherwise the test time and the service time will be out of sync and cause
+  // the tests to fail.
+  task_environment_.FastForwardBy(base::Days(2));
+
   // Record initial display date to enable comparing dictionaries.
-  std::string displayedDate =
-      service()->GetBucketLabelForLastMonday(base::Time::Now());
+  std::string displayedDate = service()->GetBucketLabel(base::Time::Now());
 
   ContentSettingsForOneType notifications_engagement_setting;
   HostContentSettingsMap* host_content_settings_map =
@@ -74,8 +77,7 @@ TEST_F(NotificationsEngagementServiceTest,
 
   // Advance time to set same URL entries in different dates.
   task_environment_.FastForwardBy(base::Days(8));
-  std::string displayedDateLater =
-      service()->GetBucketLabelForLastMonday(base::Time::Now());
+  std::string displayedDateLater = service()->GetBucketLabel(base::Time::Now());
 
   // Test that the same URL entry is not duplicated.
   service()->RecordNotificationDisplayed(hosts[0]);
@@ -135,11 +137,10 @@ TEST_F(NotificationsEngagementServiceTest,
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  // Test notifications sent within the same week constitute one date entry.
+  // Test notifications sent within the same day constitute one date entry.
 
+  task_environment_.FastForwardBy(base::Days(2));
   service()->RecordNotificationDisplayed(url1);
-
-  task_environment_.FastForwardBy(base::Days(1));
   service()->RecordNotificationDisplayed(url1);
 
   base::Value website_engagement_value1 =
@@ -152,13 +153,13 @@ TEST_F(NotificationsEngagementServiceTest,
 
   ASSERT_EQ(1U, website_engagement_dict1.size());
 
-  // Test notifications sent in different weeks constitute different entries.
+  // Test notifications sent in different days constitute different entries.
   service()->RecordNotificationDisplayed(url2);
 
   task_environment_.FastForwardBy(base::Days(14));
   service()->RecordNotificationDisplayed(url2);
 
-  task_environment_.FastForwardBy(base::Days(28));
+  task_environment_.FastForwardBy(base::Days(7));
   service()->RecordNotificationDisplayed(url2);
 
   base::Value website_engagement_value2 =
@@ -187,8 +188,7 @@ TEST_F(NotificationsEngagementServiceTest,
   base::Value::Dict& website_engagement_dict3 =
       website_engagement_value3.GetDict();
 
-  std::string displayedDate =
-      service()->GetBucketLabelForLastMonday(base::Time::Now());
+  std::string displayedDate = service()->GetBucketLabel(base::Time::Now());
   base::Value* entryForDate = website_engagement_dict3.Find(displayedDate);
 
   ASSERT_EQ(2, entryForDate->FindIntKey(kDisplayedKey).value());
@@ -198,10 +198,10 @@ TEST_F(NotificationsEngagementServiceTest,
 TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {
   GURL url("https://www.google.com/");
 
-  // Test that only entries older than 90 days are deleted.
+  // Test that only entries older than 30 days are deleted.
   task_environment_.FastForwardBy(base::Days(10950));
   service()->RecordNotificationDisplayed(url);
-  task_environment_.FastForwardBy(base::Days(91));
+  task_environment_.FastForwardBy(base::Days(31));
   service()->RecordNotificationDisplayed(url);
 
   task_environment_.FastForwardBy(base::Days(8));
@@ -223,67 +223,58 @@ TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {
   ASSERT_EQ(2u, website_engagement.size());
 }
 
-TEST_F(NotificationsEngagementServiceTest, GetBucketLabelForLastMonday) {
+TEST_F(NotificationsEngagementServiceTest, GetBucketLabel) {
   base::Time date1, date2, date3, date4;
-  base::Time expected_monday1, expected_monday2, expected_monday3,
-      expected_monday4;
+  base::Time expected_date1, expected_date2, expected_date3, expected_date4;
 
   ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:30 GMT", &date1));
   ASSERT_TRUE(
-      base::Time::FromString("2009-10-19 00:00:00.000 GMT", &expected_monday1));
-  ASSERT_EQ(NotificationsEngagementService::GetBucketLabelForLastMonday(date1),
-            base::NumberToString(expected_monday1.base::Time::ToTimeT()));
-  std::string label1 =
-      NotificationsEngagementService::GetBucketLabelForLastMonday(date1);
-  ASSERT_EQ(label1,
-            base::NumberToString(expected_monday1.base::Time::ToTimeT()));
+      base::Time::FromString("2009-10-23 00:00:00.000 GMT", &expected_date1));
+  ASSERT_EQ(NotificationsEngagementService::GetBucketLabel(date1),
+            base::NumberToString(expected_date1.base::Time::ToTimeT()));
+  std::string label1 = NotificationsEngagementService::GetBucketLabel(date1);
+  ASSERT_EQ(label1, base::NumberToString(expected_date1.base::Time::ToTimeT()));
   absl::optional<base::Time> begin1 =
       NotificationsEngagementService::ParsePeriodBeginFromBucketLabel(label1);
   ASSERT_TRUE(begin1.has_value());
-  EXPECT_EQ(label1, NotificationsEngagementService::GetBucketLabelForLastMonday(
-                        begin1.value()));
+  EXPECT_EQ(label1,
+            NotificationsEngagementService::GetBucketLabel(begin1.value()));
 
   ASSERT_TRUE(base::Time::FromString("Mon Oct 15 12:45 PDT 2007", &date2));
   ASSERT_TRUE(
-      base::Time::FromString("2007-10-15 00:00:00.000 GMT", &expected_monday2));
-  ASSERT_EQ(NotificationsEngagementService::GetBucketLabelForLastMonday(date2),
-            base::NumberToString(expected_monday2.base::Time::ToTimeT()));
-  std::string label2 =
-      NotificationsEngagementService::GetBucketLabelForLastMonday(date2);
-  ASSERT_EQ(label2,
-            base::NumberToString(expected_monday2.base::Time::ToTimeT()));
+      base::Time::FromString("2007-10-15 00:00:00.000 GMT", &expected_date2));
+  ASSERT_EQ(NotificationsEngagementService::GetBucketLabel(date2),
+            base::NumberToString(expected_date2.base::Time::ToTimeT()));
+  std::string label2 = NotificationsEngagementService::GetBucketLabel(date2);
+  ASSERT_EQ(label2, base::NumberToString(expected_date2.base::Time::ToTimeT()));
   absl::optional<base::Time> begin2 =
       NotificationsEngagementService::ParsePeriodBeginFromBucketLabel(label2);
   ASSERT_TRUE(begin2.has_value());
-  EXPECT_EQ(label2, NotificationsEngagementService::GetBucketLabelForLastMonday(
-                        begin2.value()));
+  EXPECT_EQ(label2,
+            NotificationsEngagementService::GetBucketLabel(begin2.value()));
 
-  ASSERT_TRUE(base::Time::FromString("Thu Jan 01 00:59:58 +0100 1970", &date3));
+  ASSERT_TRUE(base::Time::FromString("Mon Jan 01 13:59:58 +0100 1973", &date3));
   ASSERT_TRUE(
-      base::Time::FromString("1969-12-29 00:00:00.000 GMT", &expected_monday3));
-  ASSERT_EQ(NotificationsEngagementService::GetBucketLabelForLastMonday(date3),
-            base::NumberToString(expected_monday3.base::Time::ToTimeT()));
-  std::string label3 =
-      NotificationsEngagementService::GetBucketLabelForLastMonday(date3);
-  ASSERT_EQ(label3,
-            base::NumberToString(expected_monday3.base::Time::ToTimeT()));
+      base::Time::FromString("1973-01-01 00:00:00.000 GMT", &expected_date3));
+  ASSERT_EQ(NotificationsEngagementService::GetBucketLabel(date3),
+            base::NumberToString(expected_date3.base::Time::ToTimeT()));
+  std::string label3 = NotificationsEngagementService::GetBucketLabel(date3);
+  ASSERT_EQ(label3, base::NumberToString(expected_date3.base::Time::ToTimeT()));
   absl::optional<base::Time> begin3 =
       NotificationsEngagementService::ParsePeriodBeginFromBucketLabel(label3);
   ASSERT_TRUE(begin3.has_value());
-  EXPECT_EQ(label3, NotificationsEngagementService::GetBucketLabelForLastMonday(
-                        begin3.value()));
+  EXPECT_EQ(label3,
+            NotificationsEngagementService::GetBucketLabel(begin3.value()));
 
   ASSERT_TRUE(base::Time::FromString("Wed Mar 23 04:38:58 -1000 2022", &date4));
   ASSERT_TRUE(
-      base::Time::FromString("2022-03-21 00:00:00.000 GMT", &expected_monday4));
-  std::string label4 =
-      NotificationsEngagementService::GetBucketLabelForLastMonday(date4);
-  ASSERT_EQ(label4,
-            base::NumberToString(expected_monday4.base::Time::ToTimeT()));
+      base::Time::FromString("2022-03-23 00:00:00.000 GMT", &expected_date4));
+  std::string label4 = NotificationsEngagementService::GetBucketLabel(date4);
+  ASSERT_EQ(label4, base::NumberToString(expected_date4.base::Time::ToTimeT()));
   absl::optional<base::Time> begin4 =
       NotificationsEngagementService::ParsePeriodBeginFromBucketLabel(label4);
   ASSERT_TRUE(begin4.has_value());
-  EXPECT_EQ(label4, NotificationsEngagementService::GetBucketLabelForLastMonday(
-                        begin4.value()));
+  EXPECT_EQ(label4,
+            NotificationsEngagementService::GetBucketLabel(begin4.value()));
 }
 }  // namespace permissions

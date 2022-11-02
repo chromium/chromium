@@ -20,16 +20,13 @@ namespace {
 //   {"1644163200": {"display_count": 3},  # Implied click_count = 0.
 //    "1644768000": {"display_count": 6, "click_count": 1}}
 //
-// Where the value stored for  date_i  summarizes notification activity
-// for the time period between  date_i  and  date_i+1  (or today for the
-// last entry). Currently, the dates will be space one week apart, and
-// correspond to Monday midnights.
+// Currently, entries will be recorded daily.
 
 constexpr char kEngagementKey[] = "click_count";
 constexpr char kDisplayedKey[] = "display_count";
 
 // Entries in notifications engagement expire after they become this old.
-constexpr base::TimeDelta kMaxAge = base::Days(90);
+constexpr base::TimeDelta kMaxAge = base::Days(30);
 
 // Discards notification interactions stored in `engagement` for time
 // periods older than |kMaxAge|.
@@ -88,7 +85,7 @@ void NotificationsEngagementService::IncrementCounts(const GURL& url,
   if (engagement_as_value.is_dict())
     engagement = std::move(engagement_as_value).TakeDict();
 
-  std::string date = GetBucketLabelForLastMonday(base::Time::Now());
+  std::string date = GetBucketLabel(base::Time::Now());
   if (date == std::string())
     return;
 
@@ -114,26 +111,20 @@ void NotificationsEngagementService::IncrementCounts(const GURL& url,
 }
 
 // static
-std::string NotificationsEngagementService::GetBucketLabelForLastMonday(
-    base::Time date) {
-  // For human-readability, return the UTC Monday midnight on the same date as
+std::string NotificationsEngagementService::GetBucketLabel(base::Time date) {
+  // For human-readability, return the UTC midnight on the same date as
   // local midnight.
-  base::Time::Exploded date_exploded;
-  date.LocalExplode(&date_exploded);
-  base::Time local_monday =
-      (date - base::Days((date_exploded.day_of_week + 6) % 7)).LocalMidnight();
+  base::Time local_date = date.LocalMidnight();
 
-  base::Time::Exploded local_monday_exploded;
-  local_monday.LocalExplode(&local_monday_exploded);
+  base::Time::Exploded local_date_exploded;
+  local_date.LocalExplode(&local_date_exploded);
   // Intentionally converting a locally exploded time, to an UTC time, so that
-  // the Monday Midnight in UTC is on the same date the last Monday on local
-  // time.
-  base::Time last_monday;
-  bool converted =
-      base::Time::FromUTCExploded(local_monday_exploded, &last_monday);
+  // the Midnight in UTC is on the same date the date on local time.
+  base::Time last_date;
+  bool converted = base::Time::FromUTCExploded(local_date_exploded, &last_date);
 
   if (converted)
-    return base::NumberToString(last_monday.base::Time::ToTimeT());
+    return base::NumberToString(last_date.base::Time::ToTimeT());
 
   return std::string();
 }

@@ -294,18 +294,8 @@ class SiteSettingsHandlerTest : public testing::Test,
   void RecordNotification(permissions::NotificationsEngagementService* service,
                           GURL url,
                           int daily_avarage_count) {
-    base::Time date = base::Time::Now();
-    base::Time::Exploded date_exploded;
-    date.LocalExplode(&date_exploded);
-    // |day_of_week| returns 0 for Sunday, but NotificationEngagementService
-    // starts counting on Mondays. So here, setting Sunday as 7 to record
-    // notifications correctly and to prevent calculation errors.
-    int day_of_week =
-        !date_exploded.day_of_week ? 7 : date_exploded.day_of_week;
-
-    // Notification count holds in buckets for each monday. So to calculate
-    // necessary notification count, here the day_of_week is calculated.
-    int total_count = day_of_week * daily_avarage_count;
+    // This many notifications were recorded during the past week in total.
+    int total_count = daily_avarage_count * 7;
     service->RecordNotificationDisplayed(url, total_count);
   }
 
@@ -3356,8 +3346,7 @@ TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
   auto* notification_engagement_service =
       NotificationsEngagementServiceFactory::GetForProfile(profile());
   std::string displayedDate =
-      notification_engagement_service->GetBucketLabelForLastMonday(
-          base::Time::Now());
+      notification_engagement_service->GetBucketLabel(base::Time::Now());
 
   auto* site_engagement_service =
       site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
