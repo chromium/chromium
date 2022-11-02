@@ -115,9 +115,6 @@ class ScrollContentsView : public views::View {
     box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
     // NOTE: Pre-QsRevamp, insets are added in ViewHierarchyChanged().
-    if (features::IsQsRevampEnabled()) {
-      box_layout_->set_inside_border_insets(kQsScrollViewInsideBorderInsets);
-    }
   }
 
   ScrollContentsView(const ScrollContentsView&) = delete;

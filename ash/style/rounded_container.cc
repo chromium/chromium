@@ -10,6 +10,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
@@ -27,12 +28,18 @@ RoundedContainer::RoundedContainer(Behavior corner_behavior)
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
+  SetBorderInsets(kBorderInsets);
+
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(GetRoundedCorners());
   layer()->SetFillsBoundsOpaquely(false);
 }
 
 RoundedContainer::~RoundedContainer() = default;
+
+void RoundedContainer::SetBorderInsets(const gfx::Insets& insets) {
+  SetBorder(views::CreateEmptyBorder(insets));
+}
 
 void RoundedContainer::OnThemeChanged() {
   views::View::OnThemeChanged();

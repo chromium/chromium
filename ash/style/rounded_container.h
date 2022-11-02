@@ -6,6 +6,7 @@
 #define ASH_STYLE_ROUNDED_CONTAINER_H_
 
 #include "ash/ash_export.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -20,12 +21,18 @@ class ASH_EXPORT RoundedContainer : public views::View {
  public:
   METADATA_HEADER(RoundedContainer);
 
+  // The default empty border insets.
+  static constexpr gfx::Insets kBorderInsets = gfx::Insets::VH(8, 0);
+
   enum class Behavior { kNotRounded, kTopRounded, kBottomRounded, kAllRounded };
 
   explicit RoundedContainer(Behavior corner_behavior = Behavior::kAllRounded);
   RoundedContainer(const RoundedContainer& other) = delete;
   RoundedContainer& operator=(const RoundedContainer& other) = delete;
   ~RoundedContainer() override;
+
+  // Sets the empty border insets.
+  void SetBorderInsets(const gfx::Insets& insets);
 
  private:
   // views::View:

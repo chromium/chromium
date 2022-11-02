@@ -22,6 +22,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/rounded_container.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -81,10 +82,10 @@ gfx::Range GetImeListViewRange() {
   const int max_items = 5;
   const int min_items = 1;
   const int tray_item_height = kTrayPopupItemMinHeight;
-  // QsRevamp has insets at the top and bottom of the scroll view.
+  // QsRevamp has insets at the top and bottom of the RoundedContainer.
   const int insets = features::IsQsRevampEnabled()
-                         ? kQsScrollViewInsideBorderInsets.top() +
-                               kQsScrollViewInsideBorderInsets.bottom()
+                         ? RoundedContainer::kBorderInsets.top() +
+                               RoundedContainer::kBorderInsets.bottom()
                          : 0;
   return gfx::Range(tray_item_height * min_items + insets,
                     tray_item_height * max_items + insets);

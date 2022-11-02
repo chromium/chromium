@@ -30,9 +30,6 @@ constexpr int kTrayMenuWidth = 360;
 // The width of the revamped tray menu.
 constexpr int kRevampedTrayMenuWidth = 440;
 
-// The tray detailed view's scroll view has padding at the top and bottom.
-constexpr auto kQsScrollViewInsideBorderInsets = gfx::Insets::VH(8, 0);
-
 constexpr int kTrayPopupAutoCloseDelayInSeconds = 2;
 constexpr int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback = 5;
 constexpr int kTrayPopupPaddingHorizontal = 18;
