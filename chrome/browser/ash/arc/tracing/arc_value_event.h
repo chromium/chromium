@@ -60,10 +60,10 @@ struct ArcValueEvent {
 
 using ValueEvents = std::vector<ArcValueEvent>;
 
-// Serializes value events into |base::ListValue|.
-base::ListValue SerializeValueEvents(const ValueEvents& value_events);
+// Serializes value events into |base::Value::List|.
+base::Value::List SerializeValueEvents(const ValueEvents& value_events);
 
-// Loads value events from |base::ListValue|. Returns true in case value
+// Loads value events from |base::Value::List|. Returns true in case value
 // events were loaded successfully.
 bool LoadValueEvents(const base::Value* value, ValueEvents* value_events);
 

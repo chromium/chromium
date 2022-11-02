@@ -51,15 +51,15 @@ bool AddAllCpuEvent(AllCpuEvents* all_cpu_events,
                     ArcCpuEvent::Type type,
                     uint32_t tid);
 
-// Serializes CPU events into |base::ListValue|.
-base::ListValue SerializeCpuEvents(const CpuEvents& cpu_events);
-// Serializes all CPU events into |base::ListValue|.
-base::ListValue SerializeAllCpuEvents(const AllCpuEvents& all_cpu_events);
+// Serializes CPU events into |base::Value::List|.
+base::Value::List SerializeCpuEvents(const CpuEvents& cpu_events);
+// Serializes all CPU events into |base::Value::List|.
+base::Value::List SerializeAllCpuEvents(const AllCpuEvents& all_cpu_events);
 
-// Loads CPU events from |base::ListValue|. Returns true in case CPU events were
+// Loads CPU events from |base::Value::List|. Returns true in case CPU events were
 // loaded successfully.
 bool LoadCpuEvents(const base::Value* value, CpuEvents* cpu_events);
-// Loads all CPU events from |base::ListValue|. Returns true in case CPU events
+// Loads all CPU events from |base::Value::List|. Returns true in case CPU events
 // were loaded successfully.
 bool LoadAllCpuEvents(const base::Value* value, AllCpuEvents* all_cpu_events);
 

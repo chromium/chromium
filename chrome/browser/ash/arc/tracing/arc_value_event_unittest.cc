@@ -67,7 +67,7 @@ TEST_F(ArcValueEventTest, Serialize) {
       {103 /* timestamp */, ArcValueEvent::Type::kSwapWrite, 40 /* value */},
       {104 /* timestamp */, ArcValueEvent::Type::kSwapWait, 50 /* value */}};
 
-  const base::ListValue value = SerializeValueEvents(events);
+  const base::Value value = base::Value(SerializeValueEvents(events));
 
   ValueEvents loaded_events;
   EXPECT_TRUE(LoadValueEvents(&value, &loaded_events));

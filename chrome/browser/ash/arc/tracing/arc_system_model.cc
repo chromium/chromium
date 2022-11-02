@@ -47,15 +47,15 @@ bool LoadThreads(const base::Value* value,
   return true;
 }
 
-base::DictionaryValue SerializeThreads(
+base::Value::Dict SerializeThreads(
     const ArcSystemModel::ThreadMap& threads) {
-  base::DictionaryValue result;
+  base::Value::Dict result;
 
   for (auto& thread_info : threads) {
-    base::DictionaryValue entry;
-    entry.SetKey(kKeyPid, base::Value(thread_info.second.pid));
-    entry.SetKey(kKeyName, base::Value(thread_info.second.name));
-    result.SetKey(base::StringPrintf("%d", thread_info.first),
+    base::Value::Dict entry;
+    entry.Set(kKeyPid, base::Value(thread_info.second.pid));
+    entry.Set(kKeyName, base::Value(thread_info.second.name));
+    result.Set(base::StringPrintf("%d", thread_info.first),
                   std::move(entry));
   }
 
@@ -152,11 +152,11 @@ void ArcSystemModel::CopyFrom(const ArcSystemModel& other) {
   memory_events_ = other.memory_events_;
 }
 
-base::DictionaryValue ArcSystemModel::Serialize() const {
-  base::DictionaryValue result;
-  result.SetKey(kKeyThreads, SerializeThreads(thread_map_));
-  result.SetKey(kKeyCpu, SerializeAllCpuEvents(all_cpu_events_));
-  result.SetKey(kKeyMemory, SerializeValueEvents(memory_events_));
+base::Value::Dict ArcSystemModel::Serialize() const {
+  base::Value::Dict result;
+  result.Set(kKeyThreads, SerializeThreads(thread_map_));
+  result.Set(kKeyCpu, SerializeAllCpuEvents(all_cpu_events_));
+  result.Set(kKeyMemory, SerializeValueEvents(memory_events_));
   return result;
 }
 

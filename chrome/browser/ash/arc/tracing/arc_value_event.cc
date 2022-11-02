@@ -14,10 +14,10 @@ bool ArcValueEvent::operator==(const ArcValueEvent& other) const {
          value == other.value;
 }
 
-base::ListValue SerializeValueEvents(const ValueEvents& value_events) {
-  base::ListValue list;
+base::Value::List SerializeValueEvents(const ValueEvents& value_events) {
+  base::Value::List list;
   for (const auto& event : value_events) {
-    base::ListValue event_value;
+    base::Value::List event_value;
     event_value.Append(base::Value(static_cast<int>(event.type)));
     event_value.Append(base::Value(static_cast<double>(event.timestamp)));
     event_value.Append(base::Value(event.value));
