@@ -3148,11 +3148,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-tailored-security-desktop-notice",
-    "owners": ["jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com"],
-    "expiry_milestone": 107
-  },
-  {
     "name": "enable-tailored-security-integration",
     "owners": ["joemerramos", "ajuma", "bling-flags@google.com"],
     "expiry_milestone": 114

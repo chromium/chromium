@@ -1650,9 +1650,6 @@ extern const char kTabStripRedesignAndroidDescription[];
 extern const char kFoldableJankFixAndroidName[];
 extern const char kFoldableJankFixAndroidDescription[];
 
-extern const char kTailoredSecurityDesktopNoticeName[];
-extern const char kTailoredSecurityDesktopNoticeDescription[];
-
 extern const char kTextBasedAudioDescriptionName[];
 extern const char kTextBasedAudioDescriptionDescription[];
 

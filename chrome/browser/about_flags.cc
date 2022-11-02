@@ -9200,13 +9200,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"enable-tailored-security-desktop-notice",
-     flag_descriptions::kTailoredSecurityDesktopNoticeName,
-     flag_descriptions::kTailoredSecurityDesktopNoticeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(safe_browsing::kTailoredSecurityDesktopNotice)},
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
     {"screen-ai", flag_descriptions::kScreenAIName,
      flag_descriptions::kScreenAIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kScreenAI)},

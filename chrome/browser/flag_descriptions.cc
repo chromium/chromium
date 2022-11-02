@@ -2904,13 +2904,6 @@ const char kTabSearchFuzzySearchName[] = "Fuzzy search for Tab Search";
 const char kTabSearchFuzzySearchDescription[] =
     "Enable fuzzy search for Tab Search.";
 
-const char kTailoredSecurityDesktopNoticeName[] =
-    "Dialogs to notify the user of Safe Browsing Enhanced Protection";
-const char kTailoredSecurityDesktopNoticeDescription[] =
-    "Enable the use of dialogs to notify the user of Safe Browsing Enhanced "
-    "Protection within Chrome when they enable or disable Enhanced Protection "
-    "on their Account.";
-
 const char kTextInShelfName[] = "Internal test: text in shelf";
 const char kTextInShelfDescription[] =
     "Extend text in shelf timeout to learn about user education";
