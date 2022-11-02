@@ -213,8 +213,6 @@ std::vector<std::string> GenerateKernelCmdline(
       base::StringPrintf("androidboot.enable_notifications_refresh=%d",
                          start_params.enable_notifications_refresh),
       base::StringPrintf("androidboot.zram_size=%d", guest_zram_size),
-      base::StringPrintf("androidboot.update_o4c_list_via_a2c2=%d",
-                         start_params.update_o4c_list_via_a2c2),
   };
 
   const ArcVmUreadaheadMode mode =
@@ -443,6 +441,10 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   // Request guest memory locking, if configured.
   request.set_lock_guest_memory(base::FeatureList::IsEnabled(kLockGuestMemory));
+
+  // Add update_o4c_list_via_a2c2.
+  request.set_update_o4c_list_via_a2c2(
+      base::FeatureList::IsEnabled(kArcUpdateO4CListViaA2C2));
 
   // Specify VM Memory.
   if (base::FeatureList::IsEnabled(kVmMemorySize)) {

@@ -97,9 +97,6 @@ struct StartParams {
 
   // Flag to enable disable consumer auto update toggle as part of EU new deal.
   bool enable_consumer_auto_update_toggle = false;
-
-  // Flag to enable A2C2 feature for updating O4C list.
-  bool update_o4c_list_via_a2c2 = false;
 };
 
 }  // namespace arc

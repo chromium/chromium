@@ -466,8 +466,6 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
       base::FeatureList::IsEnabled(kEnableTTSCacheSetup);
   params.enable_consumer_auto_update_toggle = base::FeatureList::IsEnabled(
       ash::features::kConsumerAutoUpdateToggleAllowed);
-  params.update_o4c_list_via_a2c2 =
-      base::FeatureList::IsEnabled(kArcUpdateO4CListViaA2C2);
 
   // TODO (b/196460968): Remove after CTS run is complete.
   if (params.enable_notifications_refresh) {
