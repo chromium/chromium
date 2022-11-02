@@ -185,8 +185,11 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
 
   {
     test::ThemeServiceChangedWaiter waiter(theme_service);
-    InstallExtension(
-        test_data_dir_.AppendASCII("theme_test_toolbar_button_tint/"), 1);
+    // ThemeService::OnThemeBuiltFromExtension will disable the previous
+    // theme, thus the sum of enabled extensions remains unchanged even
+    // though this extension got successfully installed.
+    EXPECT_TRUE(InstallExtension(
+        test_data_dir_.AppendASCII("theme_test_toolbar_button_tint/"), 0));
     waiter.WaitForThemeChanged();
   }
 
