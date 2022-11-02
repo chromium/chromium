@@ -2209,7 +2209,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest,
   GURL test_page = embedded_test_server()->GetURL(kSlowResponse);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   ASSERT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ(u"onAuthRequired " + base::ASCIIToUTF16(test_page.spec()),
             console_observer.messages()[0].message);
