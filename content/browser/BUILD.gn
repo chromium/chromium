@@ -655,6 +655,8 @@ source_set("browser") {
     "buckets/bucket_manager.h",
     "buckets/bucket_manager_host.cc",
     "buckets/bucket_manager_host.h",
+    "buckets/bucket_utils.cc",
+    "buckets/bucket_utils.h",
     "byte_stream.cc",
     "byte_stream.h",
     "cache_storage/background_fetch_cache_entry_handler_impl.cc",

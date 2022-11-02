@@ -9,39 +9,13 @@
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "content/browser/buckets/bucket_manager.h"
+#include "content/browser/buckets/bucket_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
-
-namespace {
-
-bool IsValidBucketName(const std::string& name) {
-  // Details on bucket name validation and reasoning explained in
-  // https://github.com/WICG/storage-buckets/blob/gh-pages/explainer.md
-  if (name.empty() || name.length() >= 64)
-    return false;
-
-  // The name must only contain characters in a restricted set.
-  for (char ch : name) {
-    if (base::IsAsciiLower(ch))
-      continue;
-    if (base::IsAsciiDigit(ch))
-      continue;
-    if (ch == '_' || ch == '-')
-      continue;
-    return false;
-  }
-
-  // The first character in the name is more restricted.
-  if (name[0] == '_' || name[0] == '-')
-    return false;
-  return true;
-}
-
-}  // namespace
 
 BucketManagerHost::BucketManagerHost(BucketManager* manager,
                                      const blink::StorageKey& storage_key)
