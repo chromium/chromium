@@ -63,7 +63,7 @@ def _CheckPolicyTemplatesSyntax(input_api, output_api, legacy_policy_template):
     policy_warnings = []
     for affected_file in template_affected_files:
       path = affected_file.AbsoluteLocalPath()
-      filename = os.fsdecode(path)
+      filename = os.path.basename(path)
       filename_no_extension = os.path.splitext(filename)[0]
       if (filename == '.group.details.yaml' or
           filename == 'policy_atomic_groups.yaml'):
