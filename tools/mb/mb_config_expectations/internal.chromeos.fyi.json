@@ -9,8 +9,8 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
     }
   },
   "lacros-amd64-generic-chrome-fyi": {
@@ -26,7 +26,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -43,7 +43,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   }

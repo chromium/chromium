@@ -844,9 +844,9 @@
     },
 
     'internal.chromeos.fyi': {
-      'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks',
-      'lacros-amd64-generic-chrome-fyi': 'chromeos_amd64-generic_lacros_official_skylab',
-      'lacros-arm-generic-chrome-fyi': 'chromeos_arm-generic_lacros_official_skylab',
+      'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks_reclient',
+      'lacros-amd64-generic-chrome-fyi': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
+      'lacros-arm-generic-chrome-fyi': 'chromeos_arm-generic_lacros_official_skylab_reclient',
     },
 
     # Internal codesearch builders.
@@ -2037,6 +2037,9 @@
     'chromeos_amd64-generic_lacros_official_skylab': [
       'chromeos_amd64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
+    'chromeos_amd64-generic_lacros_official_skylab_reclient': [
+      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
+    ],
 
     'chromeos_amd64-generic_lacros_rel_dchecks': [
       'chromeos_amd64-generic-crostoolchain', 'lacros', 'release', 'dcheck_always_on',
@@ -2168,6 +2171,11 @@
 
     'chromeos_betty-pi-arc_dchecks': [
       'chromeos_device', 'betty-pi-arc', 'include_unwind_tables', 'official',
+      'use_fake_dbus_clients', 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_amd64',
+    ],
+    'chromeos_betty-pi-arc_dchecks_reclient': [
+      'chromeos_device_reclient', 'betty-pi-arc', 'include_unwind_tables', 'official',
       'use_fake_dbus_clients', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
