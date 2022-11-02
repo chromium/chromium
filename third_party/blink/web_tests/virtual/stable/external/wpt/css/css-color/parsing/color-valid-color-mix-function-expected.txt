@@ -1,5 +1,12 @@
 This is a testharness.js-based test.
-Found 430 tests; 0 PASS, 430 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 437 tests; 1 PASS, 436 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL e.style['color'] = "color-mix(in srgb, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color'] = "color-mix(in hsl, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color'] = "color-mix(in hsl, red calc(20%), blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['color'] = "color-mix(in hsl, red calc(var(--v)*1%), blue)" should set the property value
+FAIL e.style['color'] = "color-mix(in hsl, currentcolor, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color'] = "color-mix(in hsl, red 60%, blue 40%)" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color'] = "color-mix(in lch decreasing hue, red, hsl(120, 100%, 50%))" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['color'] = "color-mix(in hsl, hsl(120deg 10% 20%), hsl(30deg 30% 40%))" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['color'] = "color-mix(in hsl, hsl(120deg 10% 20%) 25%, hsl(30deg 30% 40%))" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['color'] = "color-mix(in hsl, 25% hsl(120deg 10% 20%), hsl(30deg 30% 40%))" should set the property value assert_not_equals: property should be set got disallowed value ""
