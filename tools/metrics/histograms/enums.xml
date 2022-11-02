@@ -14855,6 +14855,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="158774237" label="WebAuthn.removeCredential"/>
   <int value="159066111" label="WebAudio.getRealtimeData"/>
   <int value="169232265" label="Storage.clearTrustTokens"/>
+  <int value="171091294" label="InputDeviceSettingsSplit:disabled"/>
   <int value="174855927" label="DOMStorage.removeDOMStorageItem"/>
   <int value="177653395" label="Browser.setPermission"/>
   <int value="187560850" label="Emulation.setEmulatedMedia"/>
@@ -60409,6 +60410,7 @@ from previous Chrome versions.
   <int value="-360453785" label="LeftToRightUrls:disabled"/>
   <int value="-360038744" label="invert-viewport-scroll-order"/>
   <int value="-359886807" label="AppPreloadService:disabled"/>
+  <int value="-359331504" label="InputDeviceSettingsSplit:enabled"/>
   <int value="-357464687" label="SharingPreferVapid:enabled"/>
   <int value="-357250869"
       label="ActivateMetricsReportingEnabledPolicyAndroid:enabled"/>

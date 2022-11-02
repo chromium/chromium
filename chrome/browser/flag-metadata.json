@@ -2507,6 +2507,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "enable-input-device-settings-split",
+    "owners": ["dpad", "zentaro", "cros-peripherals@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-input-event-logging",
     "owners": [ "hcutts", "chromeos-tango@google.com" ],
     // Used to attach input device debugging information to feedback reports.

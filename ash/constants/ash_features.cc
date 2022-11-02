@@ -2137,6 +2137,11 @@ BASE_FEATURE(kDeviceForceScheduledReboot,
 const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay{
     &kDeviceForceScheduledReboot, "max-delay-in-seconds", 120};
 
+// Enables settings to be split per device.
+BASE_FEATURE(kInputDeviceSettingsSplit,
+             "InputDeviceSettingsSplit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables whether to store UMA logs per-user and whether metrics
 // consent is per-user.
 BASE_FEATURE(kPerUserMetrics,
@@ -2383,6 +2388,10 @@ bool IsDeprecateAssistantStylusFeaturesEnabled() {
 
 bool IsDeskTemplateSyncEnabled() {
   return base::FeatureList::IsEnabled(kDeskTemplateSync);
+}
+
+bool IsInputDeviceSettingsSplitEnabled() {
+  return base::FeatureList::IsEnabled(kInputDeviceSettingsSplit);
 }
 
 bool IsDisplayAlignmentAssistanceEnabled() {
