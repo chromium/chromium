@@ -600,6 +600,23 @@ const FeatureEntry::FeatureVariation
 };
 
 const FeatureEntry::FeatureParam
+    kContextualPageActionReaderMode_NoRateLimiting[] = {
+        {"reader_mode_session_rate_limiting", "false"},
+};
+const FeatureEntry::FeatureParam kContextualPageActionReaderMode_RateLimited[] =
+    {
+        {"reader_mode_session_rate_limiting", "true"},
+};
+
+const FeatureEntry::FeatureVariation
+    kContextualPageActionReaderModeVariations[] = {
+        {"Use rate limiting", kContextualPageActionReaderMode_RateLimited,
+         std::size(kContextualPageActionReaderMode_RateLimited), nullptr},
+        {"Don't rate limit", kContextualPageActionReaderMode_NoRateLimiting,
+         std::size(kContextualPageActionReaderMode_NoRateLimiting), nullptr},
+};
+
+const FeatureEntry::FeatureParam
     kOmniboxRemoveSuggestionHeaderChevron_DisallowCollapse[] = {
         {"allow_group_collapsed_state", "false"}};
 const FeatureEntry::FeatureVariation
@@ -4440,8 +4457,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-page-actions-reader-mode",
      flag_descriptions::kContextualPageActionsReaderModeName,
      flag_descriptions::kContextualPageActionsReaderModeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         segmentation_platform::features::kContextualPageActionReaderMode)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         segmentation_platform::features::kContextualPageActionReaderMode,
+         kContextualPageActionReaderModeVariations,
+         "ContextualPageActions")},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},
