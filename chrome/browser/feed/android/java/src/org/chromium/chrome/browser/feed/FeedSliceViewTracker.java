@@ -273,7 +273,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     }
 
     private int getVisibleArea(View childView) {
-        Rect rect = new Rect();
+        Rect rect = new Rect(0, 0, childView.getWidth(), childView.getHeight());
         if (!mRootView.getChildVisibleRect(childView, rect, null)) return 0;
         return rect.width() * rect.height();
     }
