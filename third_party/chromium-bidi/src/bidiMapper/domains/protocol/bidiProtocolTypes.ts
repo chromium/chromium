@@ -834,7 +834,7 @@ export namespace BrowsingContext {
 export namespace Log {
   export type LogEntry = GenericLogEntry | ConsoleLogEntry | JavascriptLogEntry;
   export type Event = LogEntryAddedEvent;
-  export type LogLevel = 'debug' | 'info' | 'warning' | 'error';
+  export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
   export type BaseLogEntry = {
     level: LogLevel;

@@ -156,9 +156,8 @@ async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
 
     # Assert method "error".
     assert event_response["method"] == "log.entryAdded"
-    # Method is `console.warn`, while the level is `warning`.
     assert event_response["params"]["method"] == "warn"
-    assert event_response["params"]["level"] == "warning"
+    assert event_response["params"]["level"] == "warn"
 
 
 @pytest.mark.asyncio
