@@ -5,12 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_TEST_SHELL_TEST_API_H_
 #define ASH_PUBLIC_CPP_TEST_SHELL_TEST_API_H_
 
-#include <memory>
-#include <vector>
-
 #include "ash/ash_export.h"
 #include "ash/public/cpp/overview_test_api.h"
-#include "base/callback_forward.h"
 
 namespace aura {
 class Window;
@@ -25,11 +21,9 @@ class Accelerator;
 }
 
 namespace ash {
-enum class AppListViewState;
 class DragDropController;
 class MessageCenterController;
 class NativeCursorManagerAsh;
-class PaginationModel;
 class PowerPrefs;
 class ScreenPositionController;
 class Shell;
@@ -94,40 +88,10 @@ class ASH_EXPORT ShellTestApi {
   // of on a device.
   void AddRemoveDisplay();
 
-  // Runs the callback when the WindowTreeHost of the primary display is no
-  // longer holding pointer events. See
-  // |aura::WindowTreeHost::holding_pointer_moves_| for details.
-  void WaitForNoPointerHoldLock();
-
-  // Runs the callback when the compositor of the primary display has presented
-  // a frame on screen.
-  void WaitForNextFrame(base::OnceClosure closure);
-
   // Runs the callback when the overview state becomes |state|.
   void WaitForOverviewAnimationState(OverviewAnimationState state);
 
-  // Runs the callback when the launcher state becomes |state| after
-  // state transition animation.
-  void WaitForLauncherAnimationState(AppListViewState state);
-
   void WaitForWindowFinishAnimating(aura::Window* window);
-
-  // Creates a closure that, when run, starts waiter for the window's current
-  // animator to finish animating.
-  // It can be used to wait for window animations when the window layer is
-  // recreated while the animation is set up (as is the case for window hide
-  // animations).
-  // Example usage:
-  //   base::OnceClosure waiter =
-  //   CreateWaiterForFinishingWindowAnimation(window);
-  //   aura::WindowState::Get(window)->Minimize();
-  //   std::move(waiter).Run();
-  base::OnceClosure CreateWaiterForFinishingWindowAnimation(
-      aura::Window* window);
-
-  // Returns the pagination model of the currently visible app-list view.
-  // It returns nullptr when app-list is not shown.
-  PaginationModel* GetAppListPaginationModel();
 
   // Returns true if the context menu associated with the primary root window is
   // shown.

@@ -5,14 +5,10 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 
 #include <memory>
-#include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerometer/accelerometer_reader.h"
-#include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/app_list_presenter_impl.h"
-#include "ash/app_list/views/app_list_view.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/public/cpp/autotest_private_api_utils.h"
@@ -30,9 +26,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "components/prefs/testing_pref_service.h"
-#include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
@@ -42,43 +36,6 @@
 
 namespace ash {
 namespace {
-
-// Wait for a WindowTreeHost to no longer be holding pointer events.
-class PointerMoveLoopWaiter : public ui::CompositorObserver {
- public:
-  explicit PointerMoveLoopWaiter(aura::WindowTreeHost* window_tree_host)
-      : window_tree_host_(window_tree_host) {
-    window_tree_host_->compositor()->AddObserver(this);
-  }
-
-  PointerMoveLoopWaiter(const PointerMoveLoopWaiter&) = delete;
-  PointerMoveLoopWaiter& operator=(const PointerMoveLoopWaiter&) = delete;
-
-  ~PointerMoveLoopWaiter() override {
-    window_tree_host_->compositor()->RemoveObserver(this);
-  }
-
-  void Wait() {
-    // Use a while loop as it's possible for releasing the lock to trigger
-    // processing events, which again grabs the lock.
-    while (window_tree_host_->holding_pointer_moves()) {
-      run_loop_ = std::make_unique<base::RunLoop>(
-          base::RunLoop::Type::kNestableTasksAllowed);
-      run_loop_->Run();
-      run_loop_.reset();
-    }
-  }
-
-  // ui::CompositorObserver:
-  void OnCompositingEnded(ui::Compositor* compositor) override {
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
- private:
-  aura::WindowTreeHost* window_tree_host_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
 
 class WindowAnimationWaiter : public ui::LayerAnimationObserver {
  public:
@@ -197,25 +154,6 @@ void ShellTestApi::AddRemoveDisplay() {
   shell_->display_manager()->AddRemoveDisplay();
 }
 
-void ShellTestApi::WaitForNoPointerHoldLock() {
-  aura::WindowTreeHost* primary_host =
-      Shell::GetPrimaryRootWindowController()->GetHost();
-  if (primary_host->holding_pointer_moves())
-    PointerMoveLoopWaiter(primary_host).Wait();
-}
-
-void ShellTestApi::WaitForNextFrame(base::OnceClosure closure) {
-  Shell::GetPrimaryRootWindowController()
-      ->GetHost()
-      ->compositor()
-      ->RequestPresentationTimeForNextFrame(base::BindOnce(
-          [](base::OnceClosure closure,
-             const gfx::PresentationFeedback& feedback) {
-            std::move(closure).Run();
-          },
-          std::move(closure)));
-}
-
 void ShellTestApi::WaitForOverviewAnimationState(OverviewAnimationState state) {
   auto* overview_controller = shell_->overview_controller();
   if (state == OverviewAnimationState::kEnterAnimationComplete &&
@@ -238,30 +176,9 @@ void ShellTestApi::WaitForOverviewAnimationState(OverviewAnimationState state) {
   run_loop.Run();
 }
 
-void ShellTestApi::WaitForLauncherAnimationState(
-    AppListViewState target_state) {
-  base::RunLoop run_loop;
-  WaitForLauncherState(target_state, run_loop.QuitWhenIdleClosure());
-  run_loop.Run();
-}
-
 void ShellTestApi::WaitForWindowFinishAnimating(aura::Window* window) {
   WindowAnimationWaiter waiter(window);
   waiter.Wait();
-}
-
-base::OnceClosure ShellTestApi::CreateWaiterForFinishingWindowAnimation(
-    aura::Window* window) {
-  auto waiter = std::make_unique<WindowAnimationWaiter>(window);
-  return base::BindOnce(&WindowAnimationWaiter::Wait, std::move(waiter));
-}
-
-PaginationModel* ShellTestApi::GetAppListPaginationModel() {
-  AppListView* view =
-      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
-  if (!view)
-    return nullptr;
-  return view->GetAppsPaginationModel();
 }
 
 bool ShellTestApi::IsContextMenuShown() const {

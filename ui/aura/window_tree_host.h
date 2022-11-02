@@ -299,8 +299,6 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // See VideoCaptureLock for details. This may return null.
   std::unique_ptr<VideoCaptureLock> CreateVideoCaptureLock();
 
-  bool holding_pointer_moves() const { return holding_pointer_moves_; }
-
 #if BUILDFLAG(IS_WIN)
   // Returns whether a host's window is on the current workspace or not,
   // absl::nullopt if the state is not known.
