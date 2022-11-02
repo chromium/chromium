@@ -10,6 +10,7 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/assistant/util/assistant_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/highlighter/highlighter_controller.h"
@@ -51,7 +52,10 @@ namespace ash {
 
 class PaletteTrayTest : public AshTestBase {
  public:
-  PaletteTrayTest() = default;
+  PaletteTrayTest() {
+    feature_list_.InitAndDisableFeature(
+        ash::features::kDeprecateAssistantStylusFeatures);
+  }
 
   PaletteTrayTest(const PaletteTrayTest&) = delete;
   PaletteTrayTest& operator=(const PaletteTrayTest&) = delete;
@@ -104,6 +108,8 @@ class PaletteTrayTest : public AshTestBase {
   PaletteTray* palette_tray_ = nullptr;  // not owned
 
   std::unique_ptr<PaletteTrayTestApi> test_api_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verify the palette tray button exists and but is not visible initially.

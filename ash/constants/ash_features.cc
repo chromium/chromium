@@ -576,7 +576,7 @@ BASE_FEATURE(kDemoModeSWA, "DemoModeSWA", base::FEATURE_DISABLED_BY_DEFAULT);
 // selection flow triggered by the stylus long press action.
 BASE_FEATURE(kDeprecateAssistantStylusFeatures,
              "DeprecateAssistantStylusFeatures",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Sync for desk templates on ChromeOS.
 BASE_FEATURE(kDeskTemplateSync,

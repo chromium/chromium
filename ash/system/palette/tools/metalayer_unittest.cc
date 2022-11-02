@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/highlighter/highlighter_controller_test_api.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
@@ -17,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,7 +32,10 @@ namespace {
 // Base class for all metalayer ash tests.
 class MetalayerToolTest : public AshTestBase {
  public:
-  MetalayerToolTest() = default;
+  MetalayerToolTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kDeprecateAssistantStylusFeatures);
+  }
 
   MetalayerToolTest(const MetalayerToolTest&) = delete;
   MetalayerToolTest& operator=(const MetalayerToolTest&) = delete;
@@ -63,6 +68,7 @@ class MetalayerToolTest : public AshTestBase {
   std::unique_ptr<HighlighterControllerTestApi> highlighter_test_api_;
   std::unique_ptr<MockPaletteToolDelegate> palette_tool_delegate_;
   std::unique_ptr<PaletteTool> tool_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
