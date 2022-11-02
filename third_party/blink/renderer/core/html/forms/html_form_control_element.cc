@@ -129,7 +129,7 @@ void HTMLFormControlElement::ParseAttribute(
     UseCounter::Count(GetDocument(), WebFeature::kFormAttribute);
   } else if (name == html_names::kReadonlyAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull()) {
-      UpdateWillValidateCache();
+      ReadonlyAttributeChanged();
       PseudoStateChanged(CSSSelector::kPseudoReadOnly);
       PseudoStateChanged(CSSSelector::kPseudoReadWrite);
       InvalidateIfHasEffectiveAppearance();

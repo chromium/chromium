@@ -235,6 +235,17 @@ void CustomElementDefinition::Upgrade(Element& element) {
 
   element.SetCustomElementDefinition(this);
 
+  // Setting the custom element definition changes the value of
+  // IsFormAssociatedCustomElement(), which impacts whether HTMLElement calls
+  // to the ListedElement when an attribute changes. Call the various change
+  // methods now to ensure ListedElements state is correct.
+  if (ListedElement* listed_element = ListedElement::From(element)) {
+    if (element.FastHasAttribute(html_names::kReadonlyAttr))
+      listed_element->ReadonlyAttributeChanged();
+    if (element.FastHasAttribute(html_names::kDisabledAttr))
+      listed_element->DisabledAttributeChanged();
+  }
+
   if (IsFormAssociated())
     To<HTMLElement>(element).EnsureElementInternals().DidUpgrade();
   AddDefaultStylesTo(element);

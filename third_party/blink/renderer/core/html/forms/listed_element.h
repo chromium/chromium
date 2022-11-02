@@ -230,6 +230,8 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   // Cache of IsValidElement().
   bool is_valid_ : 1;
   bool validity_is_dirty_ : 1;
+  bool is_element_disabled_ : 1;
+  bool is_readonly_ : 1;
 
   enum class AncestorDisabledState { kUnknown, kEnabled, kDisabled };
   mutable AncestorDisabledState ancestor_disabled_state_ =
