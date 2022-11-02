@@ -60,6 +60,18 @@ class NodeLinkMemoryTest : public testing::Test {
     return links;
   }
 
+  static void AddBlocksToMemory(NodeLinkMemory& memory, size_t block_size) {
+    constexpr size_t kNumBlocks = 32;
+    auto mapping = DriverMemory(kTestDriver, block_size * kNumBlocks).Map();
+
+    BlockAllocator allocator(mapping.bytes(),
+                             static_cast<uint32_t>(block_size));
+    allocator.InitializeRegion();
+
+    const BufferId id = memory.AllocateNewBufferId();
+    memory.AddBlockBuffer(id, block_size, std::move(mapping));
+  }
+
   void SetUp() override {
     node_a_->SetAssignedName(kTestBrokerName);
     node_b_->SetAssignedName(kTestNonBrokerName);
@@ -112,10 +124,21 @@ TEST_F(NodeLinkMemoryTest, MinimumSize) {
 }
 
 TEST_F(NodeLinkMemoryTest, RoundUpSize) {
+  AddBlocksToMemory(memory_a(), /*block_size=*/256);
+  AddBlocksToMemory(memory_a(), /*block_size=*/512);
+
   // Fragment sizes are rounded up to the nearest power of 2.
-  Fragment fragment = memory_a().AllocateFragment(250);
+  Fragment fragment = memory_a().AllocateFragment(32);
+  EXPECT_TRUE(fragment.is_addressable());
+  EXPECT_EQ(64u, fragment.size());
+
+  fragment = memory_a().AllocateFragment(250);
   EXPECT_TRUE(fragment.is_addressable());
   EXPECT_EQ(256u, fragment.size());
+
+  fragment = memory_a().AllocateFragment(257);
+  EXPECT_TRUE(fragment.is_addressable());
+  EXPECT_EQ(512u, fragment.size());
 }
 
 TEST_F(NodeLinkMemoryTest, SharedPrimaryBuffer) {
