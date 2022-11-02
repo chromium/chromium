@@ -119,7 +119,7 @@ class MockPersonalizationAppWallpaperProvider
                   ash::personalization_app::mojom::WallpaperProvider> receiver),
               (override));
   bool IsEligibleForGooglePhotos() override { return true; }
-  void GetWallpaperAsPngBytes(
+  void GetWallpaperAsJpegBytes(
       content::WebUIDataSource::GotDataCallback callback) override {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());
   }

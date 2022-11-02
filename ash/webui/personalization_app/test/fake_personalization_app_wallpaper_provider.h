@@ -39,7 +39,7 @@ class FakePersonalizationAppWallpaperProvider
       mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
           receiver) override;
 
-  void GetWallpaperAsPngBytes(
+  void GetWallpaperAsJpegBytes(
       content::WebUIDataSource::GotDataCallback callback) override;
 
   bool IsEligibleForGooglePhotos() override;

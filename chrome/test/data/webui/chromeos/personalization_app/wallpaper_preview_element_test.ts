@@ -87,7 +87,7 @@ suite('WallpaperPreviewTest', function() {
 
     const img = wallpaperPreviewElement.shadowRoot!.querySelector('img');
     assertEquals(
-        `chrome://personalization/wallpaper.png?key=${
+        `chrome://personalization/wallpaper.jpg?key=${
             wallpaperProvider.currentWallpaper.key}`,
         img!.src,
         'current wallpaper key is appended to url as query parameter');

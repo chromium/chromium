@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -72,6 +73,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_util.h"
 #include "url/gurl.h"
 
 namespace ash::personalization_app {
@@ -114,10 +116,19 @@ scoped_refptr<base::RefCountedMemory> ResizeAndEncodeWallpaperImage() {
   // changing wallpaper, and instead calling it in the thread pool.
   auto image = wallpaper_controller->GetWallpaperImage();
   image.MakeThreadSafe();
-  auto resized = GetResizedImage(image);
-  scoped_refptr<base::RefCountedMemory> png_bytes =
-      gfx::Image(resized).As1xPNGBytes();
-  return png_bytes;
+  auto resized = gfx::Image(GetResizedImage(image));
+  scoped_refptr<base::RefCountedMemory> jpg_bytes = new base::RefCountedBytes();
+  std::vector<uint8_t> jpg_buffer;
+  // Conversion quality between 0 - 100. Manually tested to use 90 for good
+  // performance with reasonable quality.
+  const int quality = 90;
+  if (gfx::JPEG1xEncodedDataFromImage(resized, quality, &jpg_buffer)) {
+    jpg_bytes = base::RefCountedBytes::TakeVector(&jpg_buffer);
+  } else {
+    // Cannot convert to JPEG, use PNG
+    jpg_bytes = resized.As1xPNGBytes();
+  }
+  return jpg_bytes;
 }
 
 std::string GetJpegDataUrl(const unsigned char* data, size_t size) {
@@ -164,9 +175,9 @@ void PersonalizationAppWallpaperProviderImpl::BindInterface(
   wallpaper_receiver_.Bind(std::move(receiver));
 }
 
-void PersonalizationAppWallpaperProviderImpl::GetWallpaperAsPngBytes(
+void PersonalizationAppWallpaperProviderImpl::GetWallpaperAsJpegBytes(
     content::WebUIDataSource::GotDataCallback callback) {
-  // |GetWallpaperAsPngBytes| is called in the hot path of switching wallpaper
+  // |GetWallpaperAsJpegBytes| is called in the hot path of switching wallpaper
   // on the UI thread right after user makes a new selection. Make sure to do
   // resizing and encoding on a task runner to avoid locking up the UI as the
   // user's wallpaper is being set.

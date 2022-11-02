@@ -58,6 +58,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 
 namespace ash::personalization_app {
@@ -484,31 +485,30 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest,
   ResetWallpaperProvider();
 }
 
-TEST_P(PersonalizationAppWallpaperProviderImplTest, GetWallpaperAsPngBytes) {
+TEST_P(PersonalizationAppWallpaperProviderImplTest, GetWallpaperAsJpegBytes) {
   test_wallpaper_controller()->ShowWallpaperImage(
       CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorRED));
 
-  scoped_refptr<base::RefCountedMemory> png_bytes;
+  scoped_refptr<base::RefCountedMemory> jpeg_bytes;
 
   base::RunLoop loop;
-  delegate()->GetWallpaperAsPngBytes(base::BindLambdaForTesting(
+  delegate()->GetWallpaperAsJpegBytes(base::BindLambdaForTesting(
       [quit = loop.QuitClosure(),
-       &png_bytes](scoped_refptr<base::RefCountedMemory> bytes) {
-        bytes.swap(png_bytes);
+       &jpeg_bytes](scoped_refptr<base::RefCountedMemory> bytes) {
+        bytes.swap(jpeg_bytes);
         std::move(quit).Run();
       }));
   loop.Run();
 
-  // Png bytes of a solid black image scaled up to 1024x1024.
-  scoped_refptr<base::RefCountedBytes> expected_png_bytes =
+  // Jpeg bytes of a solid black image scaled up to 1024x1024.
+  scoped_refptr<base::RefCountedBytes> expected_jpeg_bytes =
       base::MakeRefCounted<base::RefCountedBytes>();
-  gfx::PNGCodec::EncodeBGRASkBitmap(
-      CreateSolidImageSkia(1024, 1024, SK_ColorRED)
-          .GetRepresentation(/*scale=*/1)
-          .GetBitmap(),
-      /*discard_transparency=*/false, &expected_png_bytes->data());
+  gfx::JPEGCodec::Encode(CreateSolidImageSkia(1024, 1024, SK_ColorRED)
+                             .GetRepresentation(/*scale=*/1)
+                             .GetBitmap(),
+                         /*quality=*/90, &expected_jpeg_bytes->data());
 
-  EXPECT_TRUE(expected_png_bytes->Equals(png_bytes));
+  EXPECT_TRUE(expected_jpeg_bytes->Equals(jpeg_bytes));
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplTest,

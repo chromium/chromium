@@ -37,7 +37,7 @@ void FakePersonalizationAppWallpaperProvider::BindInterface(
   wallpaper_receiver_.Bind(std::move(receiver));
 }
 
-void FakePersonalizationAppWallpaperProvider::GetWallpaperAsPngBytes(
+void FakePersonalizationAppWallpaperProvider::GetWallpaperAsJpegBytes(
     content::WebUIDataSource::GotDataCallback callback) {
   std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());
 }

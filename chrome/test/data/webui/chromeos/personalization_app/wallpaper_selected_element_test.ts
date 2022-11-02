@@ -92,7 +92,7 @@ suite('WallpaperSelectedTest', function() {
 
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
     assertEquals(
-        `chrome://personalization/wallpaper.png?key=${
+        `chrome://personalization/wallpaper.jpg?key=${
             wallpaperProvider.currentWallpaper.key}`,
         img!.src, 'sets current wallpaper key appended to url');
 
@@ -146,7 +146,7 @@ suite('WallpaperSelectedTest', function() {
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img') as
         HTMLImageElement;
     assertEquals(
-        `chrome://personalization/wallpaper.png?key=${
+        `chrome://personalization/wallpaper.jpg?key=${
             wallpaperProvider.currentWallpaper.key}`,
         img!.src, 'sets current wallpaper key appended to url');
 
@@ -159,7 +159,7 @@ suite('WallpaperSelectedTest', function() {
     await waitAfterNextRender(wallpaperSelectedElement);
 
     assertEquals(
-        `chrome://personalization/wallpaper.png?key=new_key`, img.src,
+        `chrome://personalization/wallpaper.jpg?key=new_key`, img.src,
         'updates wallpaper key query parameter');
   });
 

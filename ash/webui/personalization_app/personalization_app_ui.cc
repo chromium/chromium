@@ -264,7 +264,7 @@ void AddStrings(content::WebUIDataSource* source) {
 }
 
 bool ShouldHandleWebUIRequest(const std::string& path) {
-  return base::StartsWith(path, "wallpaper.png");
+  return base::StartsWith(path, "wallpaper.jpg");
 }
 
 }  // namespace
@@ -374,7 +374,7 @@ void PersonalizationAppUI::HandleWebUIRequest(
     content::WebUIDataSource::GotDataCallback callback) {
   DCHECK(base::Contains(path, "?key="))
       << "wallpaper key must be provided to prevent browser cache collisions";
-  wallpaper_provider_->GetWallpaperAsPngBytes(std::move(callback));
+  wallpaper_provider_->GetWallpaperAsJpegBytes(std::move(callback));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)

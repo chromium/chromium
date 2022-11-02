@@ -81,7 +81,7 @@ class PersonalizationAppWallpaperProviderImpl
       mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
           receiver) override;
 
-  void GetWallpaperAsPngBytes(
+  void GetWallpaperAsJpegBytes(
       content::WebUIDataSource::GotDataCallback callback) override;
 
   // Not all users can see google photos. Requires a gaia account to be able to

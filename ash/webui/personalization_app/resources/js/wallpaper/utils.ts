@@ -135,5 +135,5 @@ export function getWallpaperSrc(image: CurrentWallpaper|null): string|null {
     return null;
   }
   // Add a key query parameter to cache bust when the image changes.
-  return `/wallpaper.png?key=${encodeURIComponent(image.key)}`;
+  return `/wallpaper.jpg?key=${encodeURIComponent(image.key)}`;
 }

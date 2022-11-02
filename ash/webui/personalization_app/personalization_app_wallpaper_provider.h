@@ -18,7 +18,7 @@ class PersonalizationAppWallpaperProvider : public mojom::WallpaperProvider {
   virtual void BindInterface(
       mojo::PendingReceiver<mojom::WallpaperProvider> receiver) = 0;
 
-  virtual void GetWallpaperAsPngBytes(
+  virtual void GetWallpaperAsJpegBytes(
       content::WebUIDataSource::GotDataCallback callback) = 0;
 
   // Not all users that can view the personalization app can also see google
