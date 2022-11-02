@@ -17,4 +17,11 @@ public interface AccountsChangeObserver {
      */
     @MainThread
     void onAccountsChanged();
+
+    /**
+     * Called after updating {@link org.chromium.components.signin.base.CoreAccountInfo} on every
+     * change to the accounts or to the error condition that occurred while getting accounts.
+     */
+    @MainThread
+    default void onCoreAccountInfosChanged() {}
 }

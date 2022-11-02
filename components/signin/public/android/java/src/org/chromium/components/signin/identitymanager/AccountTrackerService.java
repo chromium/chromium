@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  *
  * TODO(crbug/1176136): Move this class to components/signin/internal
  */
-public class AccountTrackerService {
+public class AccountTrackerService implements AccountsChangeObserver {
     /**
      * Observers the account seeding.
      */
@@ -72,7 +72,7 @@ public class AccountTrackerService {
     private final Queue<Runnable> mRunnablesWaitingForAccountsSeeding;
     private @AccountsSeedingStatus int mAccountsSeedingStatus;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private AccountsChangeObserver mAccountsChangeObserver;
+    private boolean mAccountsChangeObserverAdded;
     private boolean mExistsPendingSeedAccountsTask;
 
     @VisibleForTesting
@@ -119,14 +119,29 @@ public class AccountTrackerService {
         }
     }
 
+    /** Implements {@link AccountsChangeObserver}. */
+    @Override
+    public void onAccountsChanged() {
+        if (!AccountTrackerServiceJni.get().isGaiaIdInAMFEnabled()) {
+            onAccountsChangedInternal();
+        }
+    }
+
+    /** Implements {@link AccountsChangeObserver}. */
+    @Override
+    public void onCoreAccountInfosChanged() {
+        if (AccountTrackerServiceJni.get().isGaiaIdInAMFEnabled()) {
+            onAccountsChangedInternal();
+        }
+    }
+
     /**
-     * Implements {@link AccountsChangeObserver}.
-     * This is invoked when accounts change on device. When there is already a seeding in
+     * Invoked when accounts change on device. When there is already a seeding in
      * progress, the {@link #seedAccounts()} task will be added to the pending task list so
      * that we will seed the accounts again in the end of the current seeding to avoid
      * the race condition.
      */
-    public void onAccountsChanged() {
+    private void onAccountsChangedInternal() {
         if (mAccountsSeedingStatus == AccountsSeedingStatus.IN_PROGRESS) {
             mExistsPendingSeedAccountsTask = true;
         } else {
@@ -153,9 +168,9 @@ public class AccountTrackerService {
                 != AccountsSeedingStatus.IN_PROGRESS : "There is already a seeding in progress!";
         mAccountsSeedingStatus = AccountsSeedingStatus.IN_PROGRESS;
 
-        if (mAccountsChangeObserver == null) {
-            mAccountsChangeObserver = this::onAccountsChanged;
-            accountManagerFacade.addObserver(mAccountsChangeObserver);
+        if (!mAccountsChangeObserverAdded) {
+            mAccountsChangeObserverAdded = true;
+            accountManagerFacade.addObserver(this);
         }
 
         if (AccountTrackerServiceJni.get().isGaiaIdInAMFEnabled()) {

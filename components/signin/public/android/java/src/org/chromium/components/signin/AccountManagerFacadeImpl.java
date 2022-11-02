@@ -279,6 +279,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                     } else {
                         mCoreAccountInfosPromise.fulfill(coreAccountInfos);
                     }
+                    for (AccountsChangeObserver observer : mObservers) {
+                        observer.onCoreAccountInfosChanged();
+                    }
                 }
             }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         });
