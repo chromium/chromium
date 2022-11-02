@@ -69,13 +69,12 @@ struct ParseResult {
   storage::FileSystemURL fs_url;
   bool read_only = false;
 
-  // is_moniker_root is used for the special case where
-  // fusebox::kMonikerFileSystemURL (also known as "dummy://moniker", with no
-  // trailing slash) is passed to ReadDir. There is no FileSystemURL linked to
-  // that fs_url_as_string (there is no base::Token in the string), so
-  // ParseFileSystemURL (which returns a valid FileSystemURL on success) must
-  // return an error. However, ReadDir on "dummy://moniker" should succeed (but
-  // send an empty directory listing back over D-Bus).
+  // is_moniker_root is used for the special case where the server is passed
+  // fusebox::kMonikerSubdir (also known as "moniker"). There is no
+  // FileSystemURL registered for "moniker" (as opposed to for
+  // "moniker/1234etc"), so ParseFileSystemURL (which returns a valid
+  // FileSystemURL on success) must return an error. However, Stat or ReadDir2
+  // on "moniker" should succeed (but return an empty directory).
   bool is_moniker_root = false;
 };
 
@@ -444,8 +443,12 @@ void Server::ReadDir2(ReadDir2RequestProto request_proto,
                                   : 0;
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
-  if (common.is_moniker_root ||
-      (common.error_code != base::File::Error::FILE_OK)) {
+  if (common.is_moniker_root) {
+    ReadDir2ResponseProto response_proto;
+    response_proto.set_posix_error_code(0);
+    std::move(callback).Run(response_proto);
+    return;
+  } else if (common.error_code != base::File::Error::FILE_OK) {
     ReadDir2ResponseProto response_proto;
     response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
     std::move(callback).Run(response_proto);
@@ -493,7 +496,12 @@ void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
-  if (common.error_code != base::File::Error::FILE_OK) {
+  if (common.is_moniker_root) {
+    base::File::Info info;
+    info.is_directory = true;
+    std::move(callback).Run(0, info, false);
+    return;
+  } else if (common.error_code != base::File::Error::FILE_OK) {
     std::move(callback).Run(FileErrorToErrno(common.error_code),
                             base::File::Info(), false);
     return;
