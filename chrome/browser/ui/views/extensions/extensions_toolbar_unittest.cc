@@ -25,12 +25,11 @@
 
 namespace {
 
-std::unique_ptr<base::ListValue> ToListValue(
-    const std::vector<std::string>& permissions) {
+base::Value::List ToListValue(const std::vector<std::string>& permissions) {
   extensions::ListBuilder builder;
   for (const std::string& permission : permissions)
     builder.Append(permission);
-  return builder.Build();
+  return builder.BuildList();
 }
 
 }  // namespace

@@ -49,10 +49,10 @@ class ExternalProtocolHandlerSandboxBrowserTest
   // additional security check and ask the user, without displaying a message in
   // the console. Adopt Linux's behavior for the purpose of this test suite.
   void AllowCustomProtocol() {
-    base::ListValue allow_list;
+    base::Value::List allow_list;
     allow_list.Append("custom:*");
     browser()->profile()->GetPrefs()->Set(policy::policy_prefs::kUrlAllowlist,
-                                          allow_list);
+                                          base::Value(std::move(allow_list)));
   }
 
   content::RenderFrameHost* CreateIFrame(content::RenderFrameHost* document,

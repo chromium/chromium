@@ -241,7 +241,7 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   // The HaTS backend service accepts a list of preferred languages, although
   // only the application locale is provided here to ensure that the survey
   // matches the native UI language.
-  base::ListValue language_list;
+  base::Value::List language_list;
   language_list.Append(g_browser_process->GetApplicationLocale());
 
   std::string language_list_json;
