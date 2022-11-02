@@ -662,6 +662,12 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
         // comes before it.
         container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
                                                /* is_forced_break */ true);
+
+        // We're not ready to go back and lay out the spanner yet (see above),
+        // so we don't set a spanner path, but since we did find a spanner, make
+        // a note of it. This will make sure that we resolve our BFC block-
+        // offset, so that we don't incorrectly appear to be self-collapsing.
+        container_builder_.SetHasColumnSpanner(true);
         break;
       }
 
@@ -1970,6 +1976,9 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     }
 
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
+
+    // We stored this in a local variable, so it better not have changed.
+    DCHECK_EQ(layout_result->IsSelfCollapsing(), is_self_collapsing);
   }
 
   const absl::optional<LayoutUnit> line_box_bfc_block_offset =
