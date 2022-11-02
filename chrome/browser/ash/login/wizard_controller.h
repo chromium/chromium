@@ -254,6 +254,12 @@ class WizardController : public OobeUI::Observer {
   // will be started it will call `Show()` on the first screen.
   void HideCurrentScreen();
 
+  // Allows tests to call `GetAutoEnrollmentController` without making those
+  // tests friend classes with access to everything.
+  AutoEnrollmentController* GetAutoEnrollmentControllerForTesting() {
+    return GetAutoEnrollmentController();
+  }
+
  private:
   // Create BaseScreen instances. These are owned by `screen_manager_`.
   std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>>

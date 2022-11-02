@@ -22,25 +22,22 @@ namespace policy::psm {
 
 class RlweClientImpl : public RlweClient {
  public:
-  // A factory that creates |RlweClientImpl|s.
-  class FactoryImpl : public Factory {
-   public:
-    FactoryImpl();
+  // Creates PSM RLWE client that generates and holds a randomly generated
+  // key.
+  static std::unique_ptr<RlweClient> Create(
+      const std::vector<PlaintextId>& plaintext_ids);
 
-    // FactoryImpl is neither copyable nor copy assignable.
-    FactoryImpl(const FactoryImpl&) = delete;
-    FactoryImpl& operator=(const FactoryImpl&) = delete;
+  // In contrast to `Create` this creates a PSM RLWE client for testing with a
+  // fixed `ec_cipher_key` and `seed`.
+  static std::unique_ptr<RlweClient> CreateForTesting(
+      const std::string& ec_cipher_key,
+      const std::string& seed,
+      const std::vector<PlaintextId>& plaintext_ids);
 
-    ~FactoryImpl() override;
+  explicit RlweClientImpl(
+      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
+          psm_rlwe_client);
 
-    // Creates PSM RLWE client that generates and holds a randomly generated
-    // key.
-    ::rlwe::StatusOr<std::unique_ptr<RlweClient>> Create(
-        UseCase use_case,
-        const std::vector<PlaintextId>& plaintext_ids) override;
-  };
-
-  // RlweClientImpl is neither copyable nor copy assignable.
   RlweClientImpl(const RlweClientImpl&) = delete;
   RlweClientImpl& operator=(const RlweClientImpl&) = delete;
 
@@ -56,10 +53,6 @@ class RlweClientImpl : public RlweClient {
       const QueryResponse& query_response) override;
 
  private:
-  explicit RlweClientImpl(
-      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
-          psm_rlwe_client);
-
   const std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
       psm_rlwe_client_;
 };

@@ -16,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_id_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -36,34 +35,16 @@ namespace policy::psm {
 RlweDmserverClientImpl::RlweDmserverClientImpl(
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    RlweClient::Factory* psm_rlwe_client_factory,
-    RlweIdProvider* psm_rlwe_id_provider)
-    : random_device_id_(base::GenerateGUID()),
+    std::unique_ptr<RlweClient> psm_rlwe_client,
+    PlaintextId plaintext_id)
+    : psm_rlwe_client_(std::move(psm_rlwe_client)),
+      random_device_id_(base::GenerateGUID()),
       url_loader_factory_(url_loader_factory),
-      device_management_service_(device_management_service) {
-  CHECK(device_management_service);
-  CHECK(psm_rlwe_client_factory);
-  CHECK(psm_rlwe_id_provider);
-
-  psm_rlwe_id_ = psm_rlwe_id_provider->ConstructRlweId();
-
-  // Create PSM client for |psm_rlwe_id_| with use case as CROS_DEVICE_STATE.
-  std::vector<psm_rlwe::RlwePlaintextId> psm_ids = {psm_rlwe_id_};
-  auto status_or_client = psm_rlwe_client_factory->Create(
-      psm_rlwe::RlweUseCase::CROS_DEVICE_STATE, psm_ids);
-  if (!status_or_client.ok()) {
-    // If the PSM RLWE client hasn't been created successfully, then report
-    // the error and don't run the protocol.
-    LOG(ERROR) << "PSM error: unexpected internal logic error during creating "
-                  "PSM RLWE client";
-    last_psm_execution_result_ =
-        ResultHolder(RlweResult::kCreateRlweClientLibraryError);
-    base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_,
-                                  RlweResult::kCreateRlweClientLibraryError);
-    return;
-  }
-
-  psm_rlwe_client_ = std::move(status_or_client).value();
+      device_management_service_(device_management_service),
+      psm_rlwe_id_(plaintext_id) {
+  CHECK(psm_rlwe_client_);
+  CHECK(url_loader_factory_);
+  CHECK(device_management_service_);
 }
 
 RlweDmserverClientImpl::~RlweDmserverClientImpl() {

@@ -24,12 +24,11 @@ const int kHasNoMembership = 2;
 
 namespace policy::psm {
 
-::rlwe::StatusOr<std::unique_ptr<RlweClient>>
-FakeRlweClient::FactoryImpl::Create(
-    psm_rlwe::RlweUseCase use_case,
+// static
+std::unique_ptr<RlweClient> FakeRlweClient::Create(
     const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids) {
-  return absl::WrapUnique<RlweClient>(
-      new FakeRlweClient(use_case, plaintext_ids));
+  return std::make_unique<FakeRlweClient>(
+      private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE, plaintext_ids);
 }
 
 FakeRlweClient::~FakeRlweClient() = default;

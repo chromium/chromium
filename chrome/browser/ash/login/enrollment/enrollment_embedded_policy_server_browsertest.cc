@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/ash/policy/enrollment/psm/fake_rlwe_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -304,10 +305,6 @@ class InitialEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnrollmentEmbeddedPolicyServerBase::SetUpCommandLine(command_line);
-
-    // Enable usage of fake PSM (private set membership) RLWE client.
-    command_line->AppendSwitch(
-        switches::kEnterpriseUseFakePsmRlweClientForTesting);
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
@@ -1084,6 +1081,11 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
       test::kTestDomain);
 
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
+  WizardController::default_controller()
+      ->GetAutoEnrollmentControllerForTesting()
+      ->SetRlweClientFactoryForTesting(
+          base::BindRepeating(&policy::psm::FakeRlweClient::Create));
+
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
   // Expect PSM fields in DeviceRegisterRequest.
@@ -1121,6 +1123,11 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
       test::kTestDomain);
 
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
+  WizardController::default_controller()
+      ->GetAutoEnrollmentControllerForTesting()
+      ->SetRlweClientFactoryForTesting(
+          base::BindRepeating(&policy::psm::FakeRlweClient::Create));
+
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
   // First it tries with attestation auth and should fail.
@@ -1156,6 +1163,11 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
   policy_server_.SetUpdateDeviceAttributesPermission(true);
 
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
+  WizardController::default_controller()
+      ->GetAutoEnrollmentControllerForTesting()
+      ->SetRlweClientFactoryForTesting(
+          base::BindRepeating(&policy::psm::FakeRlweClient::Create));
+
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepDeviceAttributes);
   enrollment_ui_.SubmitDeviceAttributes(test::values::kAssetId,
                                         test::values::kLocation);

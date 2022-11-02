@@ -470,11 +470,6 @@ const char kEnterpriseEnableForcedReEnrollment[] =
 const char kEnterpriseEnableInitialEnrollment[] =
     "enterprise-enable-initial-enrollment";
 
-// Whether to use fake PSM (private set membership) RLWE client for testing
-// purposes.
-const char kEnterpriseUseFakePsmRlweClientForTesting[] =
-    "enterprise-use-fake-psm-rlwe-client-for-testing";
-
 // Enables the zero-touch enterprise enrollment flow.
 const char kEnterpriseEnableZeroTouchEnrollment[] =
     "enterprise-enable-zero-touch-enrollment";

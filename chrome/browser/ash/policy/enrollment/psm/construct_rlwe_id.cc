@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_id_provider_impl.h"
+#include "chrome/browser/ash/policy/enrollment/psm/construct_rlwe_id.h"
 
 #include <string>
 
@@ -15,7 +15,7 @@ namespace psm_rlwe = private_membership::rlwe;
 
 namespace policy::psm {
 
-psm_rlwe::RlwePlaintextId RlweIdProviderImpl::ConstructRlweId() {
+psm_rlwe::RlwePlaintextId ConstructRlweId() {
   // Retrieve the device's serial number and RLZ brand code.
   chromeos::system::StatisticsProvider* provider =
       chromeos::system::StatisticsProvider::GetInstance();

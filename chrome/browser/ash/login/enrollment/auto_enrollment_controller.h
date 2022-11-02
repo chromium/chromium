@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_id_provider_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,6 +31,9 @@ class AutoEnrollmentController {
  public:
   using ProgressCallbackList =
       base::RepeatingCallbackList<void(policy::AutoEnrollmentState)>;
+  using RlweClientFactory =
+      base::RepeatingCallback<std::unique_ptr<policy::psm::RlweClient>(
+          const std::vector<private_membership::rlwe::RlwePlaintextId>&)>;
 
   // State of the system clock.
   enum class SystemClockSyncState {
@@ -44,10 +47,6 @@ class AutoEnrollmentController {
     // The system clock is synchronized
     kSynchronized
   };
-
-  // Returns true if it is determined to use the fake PSM (private set
-  // membership) RLWE client based on command-line flags.
-  static bool ShouldUseFakePsmRlweClient();
 
   AutoEnrollmentController();
 
@@ -75,6 +74,10 @@ class AutoEnrollmentController {
       const {
     return auto_enrollment_check_type_;
   }
+
+  // Sets the factory function that will be used to create the
+  // `psm::RlweClient` for tests.
+  void SetRlweClientFactoryForTesting(RlweClientFactory test_factory);
 
   // Sets the factory that will be used to create the `AutoEnrollmentClient`.
   // Ownership is not transferred when calling this - the caller must ensure
@@ -163,11 +166,7 @@ class AutoEnrollmentController {
   // Constructs the PSM RLWE client. It will either create a fake or real
   // implementation of the client.
   // It is only used for PSM during creating the client for initial enrollment.
-  std::unique_ptr<policy::psm::RlweClient::Factory> psm_rlwe_client_factory_;
-
-  // Constructs the PSM RLWE device ID.
-  // For more information, see go/psm-rlwe-id-provider.
-  policy::psm::RlweIdProviderImpl psm_rlwe_id_provider_;
+  RlweClientFactory psm_rlwe_client_factory_;
 
   policy::AutoEnrollmentState state_ = policy::AUTO_ENROLLMENT_STATE_IDLE;
   ProgressCallbackList progress_callbacks_;

@@ -19,23 +19,28 @@ namespace psm_rlwe = private_membership::rlwe;
 
 namespace policy::psm {
 
-RlweClientImpl::FactoryImpl::FactoryImpl() = default;
-
-::rlwe::StatusOr<std::unique_ptr<RlweClient>>
-RlweClientImpl::FactoryImpl::Create(
-    psm_rlwe::RlweUseCase use_case,
+std::unique_ptr<RlweClient> RlweClientImpl::Create(
     const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids) {
-  auto status_or_client =
-      psm_rlwe::PrivateMembershipRlweClient::Create(use_case, plaintext_ids);
-  if (!status_or_client.ok()) {
-    return absl::InvalidArgumentError(status_or_client.status().message());
-  }
+  auto status_or_client = psm_rlwe::PrivateMembershipRlweClient::Create(
+      private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE, plaintext_ids);
+  DCHECK(status_or_client.ok()) << status_or_client.status().message();
 
-  return absl::WrapUnique<psm::RlweClient>(
-      new RlweClientImpl(std::move(status_or_client).value()));
+  return std::make_unique<psm::RlweClientImpl>(
+      std::move(status_or_client).value());
 }
 
-RlweClientImpl::FactoryImpl::~FactoryImpl() = default;
+std::unique_ptr<RlweClient> RlweClientImpl::CreateForTesting(
+    const std::string& ec_cipher_key,
+    const std::string& seed,
+    const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids) {
+  auto status_or_client =
+      psm_rlwe::PrivateMembershipRlweClient::CreateForTesting(
+          private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE,
+          plaintext_ids, ec_cipher_key, seed);
+  DCHECK(status_or_client.ok()) << status_or_client.status().message();
+
+  return std::make_unique<RlweClientImpl>(std::move(status_or_client).value());
+}
 
 RlweClientImpl::~RlweClientImpl() = default;
 

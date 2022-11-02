@@ -17,31 +17,16 @@ namespace policy::psm {
 
 class FakeRlweClient : public RlweClient {
  public:
-  // A factory that creates |FakeRlweClient|s.
-  class FactoryImpl : public Factory {
-   public:
-    FactoryImpl() = default;
+  // Creates a fake PSM RLWE client for testing purposes.
+  static std::unique_ptr<RlweClient> Create(
+      const std::vector<PlaintextId>& plaintext_ids);
 
-    // FactoryImpl is neither copyable nor copy assignable.
-    FactoryImpl(const FactoryImpl&) = delete;
-    FactoryImpl& operator=(const FactoryImpl&) = delete;
-
-    ~FactoryImpl() override = default;
-
-    // Creates a fake PSM RLWE client for testing purposes.
-    ::rlwe::StatusOr<std::unique_ptr<RlweClient>> Create(
-        UseCase use_case,
-        const std::vector<PlaintextId>& plaintext_ids) override;
-  };
-
-  // FakeRlweClient is neither copyable nor copy assignable.
+  FakeRlweClient(UseCase use_case, std::vector<PlaintextId> plaintext_ids);
   FakeRlweClient(const FakeRlweClient&) = delete;
   FakeRlweClient& operator=(const FakeRlweClient&) = delete;
-
   ~FakeRlweClient() override;
 
   // Mocks all function calls of RlweClient.
-
   ::rlwe::StatusOr<OprfRequest> CreateOprfRequest() override;
   ::rlwe::StatusOr<QueryRequest> CreateQueryRequest(
       const OprfResponse& oprf_response) override;
@@ -49,8 +34,6 @@ class FakeRlweClient : public RlweClient {
       const QueryResponse& query_response) override;
 
  private:
-  FakeRlweClient(UseCase use_case, std::vector<PlaintextId> plaintext_ids);
-
   const UseCase use_case_;
   const std::vector<PlaintextId> plaintext_ids_;
 };

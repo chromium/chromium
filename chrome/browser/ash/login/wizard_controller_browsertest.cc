@@ -1614,11 +1614,6 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WizardControllerDeviceStateTest::SetUpCommandLine(command_line);
 
-    // Enable usage of fake PSM (private set membership) RLWE client (for tests
-    // checking initial enrollment).
-    command_line->AppendSwitch(
-        switches::kEnterpriseUseFakePsmRlweClientForTesting);
-
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
         policy::AutoEnrollmentTypeChecker::kInitialEnrollmentAlways);
@@ -1735,6 +1730,11 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
                                                 "0");
 
   // TODO(igorcov): Change to /*check_fre=*/false when b/238592446 is fixed.
+  // At that point we might need to add
+  //   WizardController::default_controller()
+  //    ->GetAutoEnrollmentControllerForTesting()
+  //    ->SetRlweClientFactoryForTesting(
+  //        base::BindRepeating(&policy::psm::FakeRlweClient::Create));
   DoInitialEnrollment(/*check_fre=*/true);
 }
 

@@ -19,11 +19,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
-#include "chrome/browser/ash/policy/enrollment/psm/fake_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/psm/construct_rlwe_id.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_client_impl.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_id_provider_impl.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
@@ -170,24 +169,9 @@ void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
 
 }  // namespace
 
-// static
-bool AutoEnrollmentController::ShouldUseFakePsmRlweClient() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnterpriseUseFakePsmRlweClientForTesting);
-}
-
-AutoEnrollmentController::AutoEnrollmentController() {
-  // Create the PSM (private set membership) RLWE client factory depending on
-  // whether switches::kEnterpriseUseFakePsmRlweClient is set.
-  if (ShouldUseFakePsmRlweClient()) {
-    CHECK_IS_TEST();
-    psm_rlwe_client_factory_ =
-        std::make_unique<policy::psm::FakeRlweClient::FactoryImpl>();
-  } else {
-    psm_rlwe_client_factory_ =
-        std::make_unique<policy::psm::RlweClientImpl::FactoryImpl>();
-  }
-}
+AutoEnrollmentController::AutoEnrollmentController()
+    : psm_rlwe_client_factory_(
+          base::BindRepeating(&policy::psm::RlweClientImpl::Create)) {}
 
 AutoEnrollmentController::~AutoEnrollmentController() {}
 
@@ -284,6 +268,12 @@ base::CallbackListSubscription
 AutoEnrollmentController::RegisterProgressCallback(
     const ProgressCallbackList::CallbackType& callback) {
   return progress_callbacks_.Add(callback);
+}
+
+void AutoEnrollmentController::SetRlweClientFactoryForTesting(
+    RlweClientFactory test_factory) {
+  CHECK_IS_TEST();
+  psm_rlwe_client_factory_ = std::move(test_factory);
 }
 
 void AutoEnrollmentController::SetAutoEnrollmentClientFactoryForTesting(
@@ -433,6 +423,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
   CHECK(!serial_number.empty() && rlz_brand_code_found &&
         !rlz_brand_code.empty());
 
+  const auto plaintext_id = policy::psm::ConstructRlweId();
   client_ = GetAutoEnrollmentClientFactory()->CreateForInitialEnrollment(
       base::BindRepeating(&AutoEnrollmentController::UpdateState,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -444,7 +435,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
           service,
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory(),
-          psm_rlwe_client_factory_.get(), &psm_rlwe_id_provider_));
+          psm_rlwe_client_factory_.Run({plaintext_id}), plaintext_id));
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();

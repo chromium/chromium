@@ -18,10 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_id_provider.h"
-#include "chrome/browser/ash/policy/enrollment/psm/testing_rlwe_client.h"
-#include "chrome/browser/ash/policy/enrollment/psm/testing_rlwe_id_provider.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -114,13 +111,13 @@ class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
 
     psm_client_ = std::make_unique<RlweDmserverClientImpl>(
         service_.get(), shared_url_loader_factory_,
-        psm_rlwe_test_client_factory_.get(),
-        testing_psm_rlwe_id_provider_.get());
+        std::move(psm_rlwe_test_client_), psm_test_case_.plaintext_id());
   }
 
   void CreatePsmTestCase() {
     // Verify PSM test case index is valid.
     ASSERT_GE(GetPsmTestCaseIndex(), 0);
+    ASSERT_LT(GetPsmTestCaseIndex(), kNumberOfPsmTestCases);
 
     // Retrieve the PSM test case.
     base::FilePath src_root_dir;
@@ -138,18 +135,10 @@ class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
     EXPECT_EQ(test_data.test_cases_size(), kNumberOfPsmTestCases);
     psm_test_case_ = test_data.test_cases(GetPsmTestCaseIndex());
 
-    std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids{
-        psm_test_case_.plaintext_id()};
-
-    // Sets the PSM RLWE client factory to testing client.
-    psm_rlwe_test_client_factory_ =
-        std::make_unique<TestingRlweClient::FactoryImpl>(
-            psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
-            plaintext_ids);
-
-    // Sets the PSM RLWE ID.
-    testing_psm_rlwe_id_provider_ =
-        std::make_unique<TestingRlweIdProvider>(psm_test_case_.plaintext_id());
+    // Create PSM RLWE test client.
+    psm_rlwe_test_client_ = RlweClientImpl::CreateForTesting(
+        psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
+        {psm_test_case_.plaintext_id()});
   }
 
   // Start the `RlweDmserverClient` to retrieve the device state.
@@ -162,14 +151,10 @@ class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
   void VerifyResultHolder(PsmResultHolder expected_result_holder) {
     PsmResultHolder psm_params = future_result_holder_.Take();
     EXPECT_EQ(expected_result_holder.psm_result, psm_params.psm_result);
-    if (expected_result_holder.membership_result.has_value()) {
-      EXPECT_EQ(expected_result_holder.membership_result.value(),
-                psm_params.membership_result.value());
-    }
-    if (expected_result_holder.membership_determination_time.has_value()) {
-      EXPECT_EQ(expected_result_holder.membership_determination_time.value(),
-                psm_params.membership_determination_time.value());
-    }
+    EXPECT_EQ(expected_result_holder.membership_result,
+              psm_params.membership_result);
+    EXPECT_EQ(expected_result_holder.membership_determination_time,
+              psm_params.membership_determination_time);
   }
 
   void ServerWillReplyWithPsmOprfResponse() {
@@ -301,10 +286,7 @@ class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
 
   // Sets which PSM RLWE client will be created, depending on the factory. It
   // is only used for PSM during creating the client for initial enrollment.
-  std::unique_ptr<TestingRlweClient::FactoryImpl> psm_rlwe_test_client_factory_;
-
-  // Sets the PSM RLWE ID directly for testing.
-  std::unique_ptr<TestingRlweIdProvider> testing_psm_rlwe_id_provider_;
+  std::unique_ptr<RlweClient> psm_rlwe_test_client_;
 
   base::HistogramTester histogram_tester_;
   std::unique_ptr<FakeDeviceManagementService> service_;
