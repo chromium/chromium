@@ -663,7 +663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.Notification.PermissionRequestResult"
-    enum="ContentSetting" expires_after="2022-12-04">
+    enum="ContentSetting" expires_after="2023-11-01">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <owner>
