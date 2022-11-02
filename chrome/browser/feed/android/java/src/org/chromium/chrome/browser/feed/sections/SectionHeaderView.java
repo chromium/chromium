@@ -26,7 +26,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feed.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
@@ -447,13 +446,6 @@ public class SectionHeaderView extends LinearLayout {
                         })
                         .setHighlightParams(params)
                         .build());
-    }
-
-    public boolean shouldUseWebFeedAwarenessIPH() {
-        return ChromeFeatureList
-                .getFieldTrialParamByFeature(
-                        ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
-                .equals("IPH");
     }
 
     /** Shows an IPH on the feed section header title. */
