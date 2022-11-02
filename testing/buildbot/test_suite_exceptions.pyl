@@ -161,6 +161,10 @@
         ],
       },
     },
+    'remove_from': [
+      # TODO(crbug.com/1379748): Add the test back after it's fixed.
+      'chromeos-octopus-chrome',
+    ],
   },
   'bf_cache_content_browsertests': {
     'modifications': {
@@ -1946,9 +1950,11 @@
     },
   },
   'disk_usage_tast_test': {
-    # TODO(crbug.com/1077659): Add the test back after it's fixed.
     'remove_from': [
+      # TODO(crbug.com/1077659): Add the test back after it's fixed.
       'chromeos-kevin-rel',
+      # TODO(crbug.com/1379748): Add the test back after it's fixed.
+      'chromeos-octopus-chrome',
     ],
   },
   'exo_unittests': {
