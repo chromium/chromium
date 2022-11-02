@@ -1222,7 +1222,7 @@ void ShelfLayoutManager::OnWindowActivated(ActivationReason reason,
                                            aura::Window* lost_active) {
   if (!IsShelfWindow(gained_active) &&
       !(window_drag_controller_ &&
-        window_drag_controller_->during_window_restoration_callback())) {
+        window_drag_controller_->during_window_restoration())) {
     shelf_->hotseat_widget()->set_manually_extended(/*value=*/false);
   }
 
@@ -2146,7 +2146,7 @@ ShelfAutoHideState ShelfLayoutManager::CalculateAutoHideState(
     return *auto_hide_state_from_cursor;
 
   if (window_drag_controller_ &&
-      window_drag_controller_->during_window_restoration_callback()) {
+      window_drag_controller_->during_window_restoration()) {
     return SHELF_AUTO_HIDE_SHOWN;
   }
 

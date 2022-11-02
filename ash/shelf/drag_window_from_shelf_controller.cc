@@ -349,16 +349,6 @@ void DragWindowFromShelfController::OnWindowDestroying(aura::Window* window) {
   window_ = nullptr;
 }
 
-void DragWindowFromShelfController::AddObserver(
-    DragWindowFromShelfController::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void DragWindowFromShelfController::RemoveObserver(
-    DragWindowFromShelfController::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void DragWindowFromShelfController::OnDragStarted(
     const gfx::PointF& location_in_screen) {
   drag_started_ = true;
@@ -673,8 +663,8 @@ void DragWindowFromShelfController::ShowOverviewDuringOrAfterDrag() {
   show_overview_windows_ = true;
   overview_controller->overview_session()->SetVisibleDuringWindowDragging(
       /*visible=*/true, /*animate=*/true);
-  for (Observer& observer : observers_)
-    observer.OnOverviewVisibilityChanged(true);
+  if (on_overview_shown_callback_for_testing_)
+    std::move(on_overview_shown_callback_for_testing_).Run();
 }
 
 void DragWindowFromShelfController::HideOverviewDuringDrag() {
@@ -686,8 +676,6 @@ void DragWindowFromShelfController::HideOverviewDuringDrag() {
   overview_controller->overview_session()->SetVisibleDuringWindowDragging(
       /*visible=*/false,
       /*animate=*/false);
-  for (Observer& observer : observers_)
-    observer.OnOverviewVisibilityChanged(false);
 }
 
 void DragWindowFromShelfController::ScaleDownWindowAfterDrag() {
@@ -720,15 +708,15 @@ void DragWindowFromShelfController::ScaleUpToRestoreWindowAfterDrag() {
   (new WindowScaleAnimation(
        WindowScaleAnimation::WindowScaleType::kScaleUpToRestore,
        base::BindOnce(
-           &DragWindowFromShelfController::OnWindowRestoredToOrignalBounds,
+           &DragWindowFromShelfController::OnWindowRestoredToOriginalBounds,
            weak_ptr_factory_.GetWeakPtr(),
            /*should_end_overview=*/!started_in_overview_)))
       ->Start(window_);
 }
 
-void DragWindowFromShelfController::OnWindowRestoredToOrignalBounds(
+void DragWindowFromShelfController::OnWindowRestoredToOriginalBounds(
     bool end_overview) {
-  base::AutoReset<bool> auto_reset(&during_window_restoration_callback_, true);
+  base::AutoReset<bool> auto_reset(&during_window_restoration_, true);
   if (end_overview) {
     Shell::Get()->overview_controller()->EndOverview(
         OverviewEndAction::kDragWindowFromShelf,

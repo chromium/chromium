@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
+
+#include "ash/shelf/drag_window_from_shelf_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "base/run_loop.h"
 
 namespace ash {
 
@@ -19,20 +22,14 @@ void DragWindowFromShelfControllerTestApi::WaitUntilOverviewIsShown(
   DCHECK(window_drag_controller);
 
   if (!Shell::Get()->overview_controller()->InOverviewSession() ||
-      window_drag_controller->show_overview_windows()) {
+      window_drag_controller->show_overview_windows_) {
     return;
   }
 
-  window_drag_controller->AddObserver(this);
-  show_overview_waiter_ = std::make_unique<base::RunLoop>();
-  show_overview_waiter_->Run();
-  window_drag_controller->RemoveObserver(this);
-}
-
-void DragWindowFromShelfControllerTestApi::OnOverviewVisibilityChanged(
-    bool visible) {
-  if (visible && show_overview_waiter_)
-    show_overview_waiter_->Quit();
+  base::RunLoop run_loop;
+  window_drag_controller->on_overview_shown_callback_for_testing_ =
+      run_loop.QuitClosure();
+  run_loop.Run();
 }
 
 }  // namespace ash

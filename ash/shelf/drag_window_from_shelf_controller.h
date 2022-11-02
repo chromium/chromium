@@ -71,20 +71,11 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   // position. The value is different for standard or dense shelf.
   static float GetReturnToMaximizedThreshold();
 
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called when overview visibility is changed during or after window
-    // dragging.
-    virtual void OnOverviewVisibilityChanged(bool visible) {}
-  };
-
   DragWindowFromShelfController(aura::Window* window,
                                 const gfx::PointF& location_in_screen);
-
   DragWindowFromShelfController(const DragWindowFromShelfController&) = delete;
   DragWindowFromShelfController& operator=(
       const DragWindowFromShelfController&) = delete;
-
   ~DragWindowFromShelfController() override;
 
   // Called during swiping up on the shelf.
@@ -107,18 +98,13 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
   aura::Window* dragged_window() const { return window_; }
   bool drag_started() const { return drag_started_; }
-  bool show_overview_windows() const { return show_overview_windows_; }
-  bool during_window_restoration_callback() const {
-    return during_window_restoration_callback_;
-  }
+  bool during_window_restoration() const { return during_window_restoration_; }
 
  private:
   class WindowsHider;
+  friend class DragWindowFromShelfControllerTestApi;
 
   void OnDragStarted(const gfx::PointF& location_in_screen);
   void OnDragEnded(const gfx::PointF& location_in_screen,
@@ -180,7 +166,7 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
 
   // Callback function to be called after the window has been restored to its
   // original bounds after drag ends.
-  void OnWindowRestoredToOrignalBounds(bool end_overview);
+  void OnWindowRestoredToOriginalBounds(bool end_overview);
 
   // Called to do proper initialization in overview for the dragged window. The
   // function is supposed to be called with an active overview session.
@@ -207,9 +193,11 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   // A pending action from EndDrag() to be performed in FinalizeDraggedWindow().
   absl::optional<ShelfWindowDragResult> window_drag_result_;
 
-  base::ObserverList<Observer> observers_;
+  // True while we are restoring windows back to their original bounds after a
+  // drag (i.e. dragged tiny amount from shelf).
+  bool during_window_restoration_ = false;
 
-  bool during_window_restoration_callback_ = false;
+  base::OnceClosure on_overview_shown_callback_for_testing_;
 
   SplitViewController::SnapPosition initial_snap_position_ =
       SplitViewController::SnapPosition::kNone;
