@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #include <IOKit/IOKitLib.h>
+#include <MacTypes.h>
+#include <dlfcn.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <net/if_dl.h>
@@ -46,17 +48,26 @@ std::string GetSerialNumber() {
 }
 
 SettingValue GetScreenlockSecured() {
-  CFStringRef screen_saver_application = CFSTR("com.apple.screensaver");
-  CFStringRef ask_for_password_key = CFSTR("askForPassword");
-  base::ScopedCFTypeRef<CFTypeRef> ask_for_password(CFPreferencesCopyAppValue(
-      ask_for_password_key, screen_saver_application));
+  // Use the login private framework since there is no official way to
+  // obtain the screen lock value (at least for now).
+  using SACScreenLockEnabledType = Boolean (*)();
+  static const auto SACScreenLockEnabled = []() -> SACScreenLockEnabledType {
+    void* const login_framework = dlopen(
+        "/System/Library/PrivateFrameworks/login.framework/Versions/A/login",
+        RTLD_LAZY | RTLD_LOCAL);
+    if (!login_framework) {
+      return nullptr;
+    }
+    return reinterpret_cast<SACScreenLockEnabledType>(
+        dlsym(login_framework, "SACScreenLockEnabled"));
+  }();
 
-  if (!ask_for_password || !base::mac::CFCast<CFBooleanRef>(ask_for_password))
+  if (!SACScreenLockEnabled) {
     return SettingValue::UNKNOWN;
+  }
 
-  bool screen_lock_enabled =
-      base::mac::CFCastStrict<CFBooleanRef>(ask_for_password) == kCFBooleanTrue;
-  return screen_lock_enabled ? SettingValue::ENABLED : SettingValue::DISABLED;
+  return SACScreenLockEnabled() ? SettingValue::ENABLED
+                                : SettingValue::DISABLED;
 }
 
 SettingValue GetDiskEncrypted() {
