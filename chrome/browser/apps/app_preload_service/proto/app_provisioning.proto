@@ -54,8 +54,8 @@ message AppProvisioningResponse {
 
   enum Platform {
     // Default for deserialization when an unexpected value is encountered.
-    // Indicates to the client that the server has a new platform not supported
-    // by this version of the proto.
+    // Indicates to the client that the server has a new platform and needs
+    // the proto file updated.
     PLATFORM_UNKNOWN = 0;
 
     // A Web App.
@@ -63,6 +63,38 @@ message AppProvisioningResponse {
 
     // An Android app managed by Play.
     PLATFORM_ANDROID = 2;
+  }
+
+  enum InstallReason {
+    // Default for deserialization when an unexpected value is encountered.
+    // Indicates to the client that the server has a new reason and needs
+    // the proto file updated.
+    INSTALL_REASON_UNKNOWN = 0;
+
+    // A Default App.
+    INSTALL_REASON_DEFAULT = 1;
+
+    // An app installed for an OEM.
+    INSTALL_REASON_OEM = 2;
+  }
+
+  enum DisplayMode {
+    // Default for deserialization when an unexpected value is encountered.
+    // Indicates to the client that the server has a new mode and needs the
+    // proto file updated.
+    DISPLAY_MODE_UNKNOWN = 0;
+
+    // Full Screen.
+    DISPLAY_MODE_FULLSCREEN = 1;
+
+    // Standalone.
+    DISPLAY_MODE_STANDALONE = 2;
+
+    // Minimal UI.
+    DISPLAY_MODE_MINIMAL_UI = 3;
+
+    // Browser.
+    DISPLAY_MODE_BROWSER = 4;
   }
 
   message Icon {
@@ -95,6 +127,12 @@ message AppProvisioningResponse {
     // |start_url| and |manifest_id| uniquely identify each Web app.
     optional string start_url = 1;
     optional string manifest_id = 2;
+
+    // The navigation scope of the web app.
+    optional string scope = 3;
+
+    // The display mode of the web app.
+    optional DisplayMode display_mode = 4;
   }
 
   message App {
@@ -113,16 +151,19 @@ message AppProvisioningResponse {
     // contents of the extras.
     optional Platform platform = 4;
 
+    // The reason why this app is in the list.
+    optional InstallReason install_reason = 5;
+
     // Platform-specific information for installing this app.
     oneof extras {
-      AndroidExtras android_extras = 5;
-      WebExtras web_extras = 6;
+      AndroidExtras android_extras = 6;
+      WebExtras web_extras = 7;
     }
 
     // The shelf order for this app.
-    optional int32 shelf_order = 7;
+    optional int32 shelf_order = 8;
 
     // The launcher order for this app.
-    optional int32 launcher_order = 8;
+    optional int32 launcher_order = 9;
   }
 }

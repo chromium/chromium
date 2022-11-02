@@ -10,8 +10,30 @@ std::string PreloadAppDefinition::GetName() const {
   return app_proto_.name();
 }
 
+AppType PreloadAppDefinition::GetPlatform() const {
+  switch (app_proto_.platform()) {
+    case proto::AppProvisioningResponse_Platform::
+        AppProvisioningResponse_Platform_PLATFORM_UNKNOWN:
+      return AppType::kUnknown;
+    case proto::AppProvisioningResponse_Platform::
+        AppProvisioningResponse_Platform_PLATFORM_WEB:
+      return AppType::kWeb;
+    case proto::AppProvisioningResponse_Platform::
+        AppProvisioningResponse_Platform_PLATFORM_ANDROID:
+      return AppType::kArc;
+  }
+}
+
+bool PreloadAppDefinition::IsOemApp() const {
+  return app_proto_.install_reason() ==
+         proto::AppProvisioningResponse_InstallReason::
+             AppProvisioningResponse_InstallReason_INSTALL_REASON_OEM;
+}
+
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
   os << "- Name: " << app.GetName();
+  os << "- Platform: " << EnumToString(app.GetPlatform());
+  os << "- OEM: " << app.IsOemApp();
   return os;
 }
 

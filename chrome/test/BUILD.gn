@@ -7278,6 +7278,7 @@ test("unit_tests") {
       "../browser/apps/app_preload_service/app_preload_server_connector_unittest.cc",
       "../browser/apps/app_preload_service/app_preload_service_unittest.cc",
       "../browser/apps/app_preload_service/device_info_manager_unittest.cc",
+      "../browser/apps/app_preload_service/preload_app_definition_unittest.cc",
       "../browser/apps/app_service/file_utils_unittest.cc",
       "../browser/apps/app_service/metrics/app_platform_metrics_service_unittest.cc",
       "../browser/apps/app_service/publishers/arc_apps_unittest.cc",

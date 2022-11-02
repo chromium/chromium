@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_PRELOAD_APP_DEFINITION_H_
 
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace apps {
 
@@ -20,6 +21,8 @@ class PreloadAppDefinition {
   ~PreloadAppDefinition() = default;
 
   std::string GetName() const;
+  AppType GetPlatform() const;
+  bool IsOemApp() const;
 
  private:
   proto::AppProvisioningResponse_App app_proto_;
