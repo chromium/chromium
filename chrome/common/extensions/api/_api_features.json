@@ -519,7 +519,8 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://file-manager/*"
+      "chrome://file-manager/*",
+      "chrome://webui-test/*"
     ]
   }],
   "fileManagerPrivateInternal": [{
@@ -531,7 +532,8 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://file-manager/*"
+      "chrome://file-manager/*",
+      "chrome://webui-test/*"
     ]
   }],
   "fileSystemProvider": [{

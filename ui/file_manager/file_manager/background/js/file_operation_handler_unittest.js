@@ -4,8 +4,6 @@
 
 import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {installMockChrome} from '../../common/js/mock_chrome.js';
-
 import {FileOperationHandler} from './file_operation_handler.js';
 import {fileOperationUtil} from './file_operation_util.js';
 import {MockFileOperationManager} from './mock_file_operation_manager.js';
@@ -19,18 +17,6 @@ let progressCenter;
 
 /** @type {!FileOperationHandler} */
 let fileOperationHandler;
-
-/**
- * Mock chrome APIs.
- * @type {Object}
- */
-const mockChrome = {};
-
-mockChrome.fileManagerPrivate = {
-  onIOTaskProgressStatus: {
-    addListener: function(callback) {},
-  },
-};
 
 /**
  * Mock JS Date.
@@ -78,9 +64,6 @@ export function setUp() {
     FILE_ERROR_GENERIC: 'File error generic.',
     COPY_UNEXPECTED_ERROR: 'Copy unexpected error: $1',
   });
-
-  // Install mock chrome APIs.
-  installMockChrome(mockChrome);
 
   // Create mock items needed for FileOperationHandler.
   fileOperationManager = new MockFileOperationManager();

@@ -221,7 +221,6 @@ js_unittest("file_operation_handler_unittest") {
     ":mock_file_operation_manager",
     ":mock_progress_center",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
   ]
 }
 
