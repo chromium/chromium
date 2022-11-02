@@ -326,6 +326,13 @@ tast_disabled_tests_from_chrome_all = [
   "login.ChangePassword.auth_factor_experiment_on",
   "login.ChangePassword.auth_factor_experiment_off",
 
+  # https://crbug.com/1379756
+  "inputs.PhysicalKeyboardGrammarCheck",
+  "inputs.PhysicalKeyboardGrammarCheck.lacros",
+  "inputs.VirtualKeyboardTypingUserMode.guest",
+  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_docked_lacros",
+  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating_lacros",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
