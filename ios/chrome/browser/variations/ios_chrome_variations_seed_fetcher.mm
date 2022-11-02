@@ -22,6 +22,7 @@
 #endif
 
 namespace {
+
 // Maximum time allowed to fetch the seed before the request is cancelled.
 const base::TimeDelta kRequestTimeout = base::Seconds(2);
 
@@ -244,16 +245,14 @@ static BOOL g_seed_fetching_in_progress = NO;
 }
 
 // Notifies the delegate of the seed fetching result. Since the seed fetch
-// request is sent on the global queue instead of the main queue, this method
+// request is sent on the background instead of the main queue, this method
 // should explicitly dispatch the result back on the main queue.
 // TODO(crbug.com/3835653): Merge with `recordSeedFetchResult`.
 - (void)notifyDelegateSeedFetchResult:(BOOL)result {
-  if (self.delegate) {
-    __weak IOSChromeVariationsSeedFetcher* weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSelf.delegate didFetchSeedSuccess:result];
-    });
-  }
+  __weak IOSChromeVariationsSeedFetcher* weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf.delegate didFetchSeedSuccess:result];
+  });
 }
 
 // Invoked by the testing code to reset the fetching status after each test. DO
