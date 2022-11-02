@@ -21,7 +21,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
@@ -288,6 +287,11 @@ base::AutoReset<bool> ExtensionUpdater::GetScopedUseUpdateServiceForTesting() {
 void ExtensionUpdater::SetUpdatingStartedCallbackForTesting(
     base::RepeatingClosure callback) {
   updating_started_callback_ = callback;
+}
+
+void ExtensionUpdater::SetCrxInstallerResultCallbackForTesting(
+    CrxInstaller::InstallerResultCallback callback) {
+  installer_result_callback_for_testing_ = std::move(callback);
 }
 
 void ExtensionUpdater::DoCheckSoon() {
@@ -837,6 +841,10 @@ void ExtensionUpdater::OnInstallerDone(
   }
 
   running_crx_installs_.erase(iter);
+
+  if (installer_result_callback_for_testing_) {
+    std::move(installer_result_callback_for_testing_).Run(error);
+  }
 }
 
 void ExtensionUpdater::NotifyStarted() {

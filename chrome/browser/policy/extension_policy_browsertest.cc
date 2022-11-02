@@ -14,13 +14,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
-#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -94,6 +94,9 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #endif
 
+using base::test::TestFuture;
+using extensions::CrxInstallError;
+using extensions::TestExtensionRegistryObserver;
 using extensions::mojom::ManifestLocation;
 using testing::AtLeast;
 using testing::Sequence;
@@ -200,6 +203,39 @@ void PerformClick(content::WebContents* contents, int x, int y) {
       ->ForwardMouseEvent(click_event);
 }
 
+const extensions::Extension* InstallExtensionWithContext(
+    const base::FilePath::StringType& name,
+    content::BrowserContext* browser_context) {
+  base::FilePath extension_path(ui_test_utils::GetTestFilePath(
+      base::FilePath(kTestExtensionsDir), base::FilePath(name)));
+
+  extensions::ExtensionSystem* system =
+      extensions::ExtensionSystem::Get(browser_context);
+
+  scoped_refptr<extensions::CrxInstaller> installer =
+      extensions::CrxInstaller::CreateSilent(system->extension_service());
+  installer->set_allow_silent_install(true);
+  installer->set_install_cause(extension_misc::INSTALL_CAUSE_UPDATE);
+  installer->set_creation_flags(extensions::Extension::FROM_WEBSTORE);
+  installer->set_off_store_install_allow_reason(
+      extensions::CrxInstaller::OffStoreInstallAllowReason::
+          OffStoreInstallAllowedInTest);
+
+  TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+
+  installer->AddInstallerCallback(
+      installer_done_future
+          .GetCallback<const absl::optional<CrxInstallError>&>());
+  installer->InstallCrx(extension_path);
+
+  const absl::optional<CrxInstallError>& error = installer_done_future.Get();
+  if (error) {
+    return nullptr;
+  }
+
+  return installer->extension();
+}
+
 class ExtensionPolicyTest : public ExtensionPolicyTestBase {
  public:
   ExtensionPolicyTest() = default;
@@ -252,24 +288,7 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
 
   const extensions::Extension* InstallExtension(
       const base::FilePath::StringType& name) {
-    base::FilePath extension_path(ui_test_utils::GetTestFilePath(
-        base::FilePath(kTestExtensionsDir), base::FilePath(name)));
-    scoped_refptr<extensions::CrxInstaller> installer =
-        extensions::CrxInstaller::CreateSilent(extension_service());
-    installer->set_allow_silent_install(true);
-    installer->set_install_cause(extension_misc::INSTALL_CAUSE_UPDATE);
-    installer->set_creation_flags(extensions::Extension::FROM_WEBSTORE);
-    installer->set_off_store_install_allow_reason(
-        extensions::CrxInstaller::OffStoreInstallAllowReason::
-            OffStoreInstallAllowedInTest);
-
-    content::WindowedNotificationObserver observer(
-        extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-        content::NotificationService::AllSources());
-    installer->InstallCrx(extension_path);
-    observer.Wait();
-    content::Details<const extensions::Extension> details = observer.details();
-    return details.ptr();
+    return InstallExtensionWithContext(name, browser()->profile());
   }
 
   void UninstallExtension(const std::string& id, bool expect_success) {
@@ -798,21 +817,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   GURL url = embedded_test_server()->GetURL(
       "/extensions/good_v1_wrong_version_update_manifest.xml");
   PolicyMap policies;
+
+  TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+  extension_service()->updater()->SetCrxInstallerResultCallbackForTesting(
+      installer_done_future
+          .GetCallback<const absl::optional<CrxInstallError>&>());
+
   // Add an entry in the extension force list policy.
   AddExtensionToForceList(&policies, kGoodCrxId, url);
 
-  content::WindowedNotificationObserver observer(
-      extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      content::NotificationService::AllSources());
-
   // Updating the policy triggers the extension installation process.
   UpdateProviderPolicy(policies);
-  // Wait till the installer has finished by receiving the notification
-  // NOTIFICATION_CRX_INSTALLER_DONE.
-  observer.Wait();
-  content::Details<const extensions::Extension> details = observer.details();
+  // Wait till the installer has finished.
+  const absl::optional<CrxInstallError>& install_error =
+      installer_done_future.Get();
   // Check the extension is not installed.
-  EXPECT_FALSE(details.ptr());
+  EXPECT_TRUE(install_error);
   EXPECT_FALSE(registry->GetExtensionById(
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
   // Check the extension in not inserted in the cache.
@@ -878,37 +898,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   GURL url =
       embedded_test_server()->GetURL("/extensions/good2_update_manifest.xml");
   PolicyMap policies;
+
+  TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+  extension_service()->updater()->SetCrxInstallerResultCallbackForTesting(
+      installer_done_future
+          .GetCallback<const absl::optional<CrxInstallError>&>());
+
   // Add an entry in the extension force list policy.
   AddExtensionToForceList(&policies, kGoodCrxId, url);
 
-  // Observes notification for failed crx installation.
-  content::WindowedNotificationObserver failed_installation_observer(
-      extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      base::BindLambdaForTesting(
-          [&](const content::NotificationSource& source,
-              const content::NotificationDetails& details) {
-            return content::Details<const extensions::Extension>(details)
-                       .ptr() == nullptr;
-          }));
-  // Observes notification for passed crx installation.
-  content::WindowedNotificationObserver passed_installation_observer(
-      extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      base::BindLambdaForTesting(
-          [&](const content::NotificationSource& source,
-              const content::NotificationDetails& details) {
-            return content::Details<const extensions::Extension>(details)
-                       .ptr() != nullptr;
-          }));
+  TestExtensionRegistryObserver registry_observer(extension_registry());
+
   // Updating the policy triggers the extension installation process.
   UpdateProviderPolicy(policies);
   // Wait till extension entry is found in the cache and installation fails due
   // to version mismatch as the cache entry informs extension version as
   // "1.0.0.1" while the crx file it points to belongs to "1.0.0.0".
-  failed_installation_observer.Wait();
+  const absl::optional<CrxInstallError>& install_error =
+      installer_done_future.Get();
+  EXPECT_TRUE(install_error);
 
   // Wait till extension is freshly downloaded from the server and installation
   // succeeds.
-  passed_installation_observer.Wait();
+  ASSERT_TRUE(registry_observer.WaitForExtensionLoaded());
 
   EXPECT_TRUE(registry->GetExtensionById(
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
@@ -2439,36 +2451,6 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   }
 
  protected:
-  const extensions::Extension* InstallExtension(
-      const base::FilePath::StringType& path,
-      const base::FilePath::StringType& name,
-      content::BrowserContext* browser_context,
-      extensions::ExtensionService* extension_service,
-      extensions::ExtensionRegistry* extension_registry) {
-    base::FilePath extension_path(ui_test_utils::GetTestFilePath(
-        base::FilePath(path), base::FilePath(name)));
-    scoped_refptr<extensions::CrxInstaller> installer =
-        extensions::CrxInstaller::CreateSilent(extension_service);
-    installer->set_allow_silent_install(true);
-    installer->set_install_cause(extension_misc::INSTALL_CAUSE_AUTOMATION);
-    installer->set_creation_flags(extensions::Extension::FROM_WEBSTORE);
-    installer->set_off_store_install_allow_reason(
-        extensions::CrxInstaller::OffStoreInstallAllowReason::
-            OffStoreInstallAllowedInTest);
-
-    extensions::ChromeExtensionTestNotificationObserver observer(
-        browser_context);
-    observer.Watch(extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-                   content::Source<extensions::CrxInstaller>(installer.get()));
-    installer->InstallCrx(extension_path);
-    observer.Wait();
-    if (!observer.WaitForExtensionViewsToLoad())
-      return nullptr;
-    return extension_registry->GetExtensionById(
-        observer.last_loaded_extension_id(),
-        extensions::ExtensionRegistry::ENABLED);
-  }
-
   void SetTabSpecificPermissionsForURL(const extensions::Extension* extension,
                                        int tab_id,
                                        GURL& url,
@@ -2548,12 +2530,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest2Contexts,
   int tab_id = 1;
 
   const extensions::Extension* app1 =
-      InstallExtension(kTestExtensionsDir, kGoodCrxName, GetProfile1(),
-                       GetExtensionService1(), GetExtensionRegistry1());
+      InstallExtensionWithContext(kGoodCrxName, GetProfile1());
   ASSERT_TRUE(app1);
   const extensions::Extension* app2 =
-      InstallExtension(kTestExtensionsDir, kGoodCrxName, GetProfile2(),
-                       GetExtensionService2(), GetExtensionRegistry2());
+      InstallExtensionWithContext(kGoodCrxName, GetProfile2());
   ASSERT_TRUE(app2);
   SetTabSpecificPermissionsForURL(app1, tab_id, test_url,
                                   URLPattern::SCHEME_ALL);
