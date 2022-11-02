@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kAppServiceGetMenuWithoutMojom);
 COMPONENT_EXPORT(APP_TYPES)
 BASE_DECLARE_FEATURE(kAppServiceCapabilityAccessWithoutMojom);
 COMPONENT_EXPORT(APP_TYPES) BASE_DECLARE_FEATURE(kStopMojomAppService);
+COMPONENT_EXPORT(APP_TYPES) BASE_DECLARE_FEATURE(kUnifiedAppServiceIconLoading);
 
 }  // namespace apps
 
