@@ -15,6 +15,7 @@
 #include "net/test/cert_test_util.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
@@ -32,6 +33,8 @@
 namespace blink {
 
 namespace {
+
+using ::testing::ElementsAre;
 
 class UppercaseDecoder : public BodyTextDecoder {
   String Decode(const char* data, size_t length) override {
@@ -101,6 +104,12 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     MojoResult result = writer_->WriteData(buffer.c_str(), &size, kNone);
     ASSERT_EQ(MOJO_RESULT_OK, result);
     ASSERT_EQ(buffer.size(), size);
+  }
+
+  void WriteAndFlush(const std::string& buffer) {
+    Write(buffer);
+    To<NavigationBodyLoader>(loader_.get())
+        ->FlushOffThreadBodyReaderForTesting();
   }
 
   void Complete(int net_error) {
@@ -257,8 +266,7 @@ TEST_F(NavigationBodyLoaderTest, ProcessBackgroundData) {
   StartLoadingInBackground();
   // First flush data to the off thread reader. The background data callback
   // should not see this since it is not set yet.
-  Write("hello");
-  To<NavigationBodyLoader>(loader_.get())->FlushOffThreadBodyReaderForTesting();
+  WriteAndFlush("hello");
 
   String background_data = "";
   process_background_data_callback_ = CrossThreadBindRepeating(
@@ -506,6 +514,95 @@ TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
             WebString(Referrer::NoReferrer()));
   ASSERT_EQ(navigation_params.redirects[1].new_referrer,
             WebString::FromUTF8(second_redirect_url.spec()));
+}
+
+// A loader client which keeps track of chunks of data that are received in a
+// single PostTask.
+class ChunkingLoaderClient : public WebNavigationBodyLoader::Client {
+ public:
+  void BodyDataReceived(base::span<const char> data) override { NOTREACHED(); }
+  void DecodedBodyDataReceived(const WebString& data,
+                               const WebEncodingData& encoding_data,
+                               base::span<const char> encoded_data) override {
+    scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
+        FROM_HERE, base::BindOnce(&ChunkingLoaderClient::CreateNewChunk,
+                                  base::Unretained(this)));
+    chunks_.back() += data.Ascii();
+  }
+  void BodyLoadingFinished(base::TimeTicks completion_time,
+                           int64_t total_encoded_data_length,
+                           int64_t total_encoded_body_length,
+                           int64_t total_decoded_body_length,
+                           bool should_report_corb_blocking,
+                           const absl::optional<WebURLError>& error) override {
+    scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
+        FROM_HERE, run_loop_.QuitClosure());
+  }
+
+  void CreateNewChunk() {
+    if (!chunks_.back().empty())
+      chunks_.push_back("");
+  }
+
+  std::vector<std::string> TakeChunks() {
+    run_loop_.Run();
+    return std::move(chunks_);
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  std::vector<std::string> chunks_{""};
+};
+
+TEST_F(NavigationBodyLoaderTest, MaxDataSize1) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kThreadedBodyLoader, {{"max-data-to-process", "1"}});
+  CreateBodyLoader();
+  StartLoadingInBackground();
+  for (const char* s : {"a", "b", "c", "d", "e", "f", "g", "h"})
+    WriteAndFlush(std::string(s));
+
+  ChunkingLoaderClient client;
+  loader_->StartLoadingBody(&client);
+  Complete(net::OK);
+  writer_.reset();
+  // First chunk is doubled since we can't catch the first PostTask.
+  EXPECT_THAT(client.TakeChunks(),
+              ElementsAre("AB", "C", "D", "E", "F", "G", "H", ""));
+}
+
+TEST_F(NavigationBodyLoaderTest, MaxDataSize2) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kThreadedBodyLoader, {{"max-data-to-process", "2"}});
+  CreateBodyLoader();
+  StartLoadingInBackground();
+  for (const char* s : {"a", "b", "c", "d", "e", "f", "g", "h"})
+    WriteAndFlush(std::string(s));
+
+  ChunkingLoaderClient client;
+  loader_->StartLoadingBody(&client);
+  Complete(net::OK);
+  writer_.reset();
+  // First chunk is doubled since we can't catch the first PostTask.
+  EXPECT_THAT(client.TakeChunks(), ElementsAre("ABCD", "EF", "GH", ""));
+}
+
+TEST_F(NavigationBodyLoaderTest, MaxDataSizeAll) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kThreadedBodyLoader, {{"max-data-to-process", "0"}});
+  CreateBodyLoader();
+  StartLoadingInBackground();
+  for (const char* s : {"a", "b", "c", "d", "e", "f", "g", "h"})
+    WriteAndFlush(std::string(s));
+
+  ChunkingLoaderClient client;
+  loader_->StartLoadingBody(&client);
+  Complete(net::OK);
+  writer_.reset();
+  EXPECT_THAT(client.TakeChunks(), ElementsAre("ABCDEFGH", ""));
 }
 
 }  // namespace

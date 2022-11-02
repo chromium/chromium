@@ -42,6 +42,14 @@ bool ShouldSendDirectlyToPreloadScanner() {
   return kSendToScannerParam.Get();
 }
 
+// Returns the maximum data size to process in TakeData(). Returning 0 means
+// process all the data available.
+size_t GetMaxDataToProcessPerTask() {
+  static const base::FeatureParam<int> kMaxDataToProcessParam{
+      &features::kThreadedBodyLoader, "max-data-to-process", 0};
+  return kMaxDataToProcessParam.Get();
+}
+
 // A chunk of data read by the OffThreadBodyReader. This will be created on a
 // background thread and processed on the main thread.
 struct DataChunk {
@@ -132,10 +140,26 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
     DCHECK(reader_task_runner_->RunsTasksInCurrentSequence());
   }
 
-  std::vector<DataChunk> TakeData() {
+  std::vector<DataChunk> TakeData(size_t max_data_to_process) {
     DCHECK(IsMainThread());
     base::AutoLock lock(lock_);
-    return std::move(data_chunks_);
+    if (max_data_to_process == 0)
+      return std::move(data_chunks_);
+
+    std::vector<DataChunk> data;
+    size_t data_processed = 0;
+    while (!data_chunks_.empty() && data_processed < max_data_to_process) {
+      data.emplace_back(std::move(data_chunks_.front()));
+      data_processed += data.back().encoded_data_size;
+      data_chunks_.erase(data_chunks_.begin());
+    }
+    if (!data_chunks_.empty()) {
+      PostCrossThreadTask(
+          *main_thread_task_runner_, FROM_HERE,
+          CrossThreadBindOnce(&NavigationBodyLoader::ProcessOffThreadData,
+                              body_loader_));
+    }
+    return data;
   }
 
   void StoreProcessBackgroundDataCallback(Client* client) {
@@ -312,7 +336,8 @@ NavigationBodyLoader::NavigationBodyLoader(
           std::move(resource_load_info_notifier_wrapper)),
       original_url_(original_url),
       should_send_directly_to_preload_scanner_(
-          ShouldSendDirectlyToPreloadScanner()) {}
+          ShouldSendDirectlyToPreloadScanner()),
+      max_data_to_process_per_task_(GetMaxDataToProcessPerTask()) {}
 
 NavigationBodyLoader::~NavigationBodyLoader() {
   if (!has_received_completion_ || !has_seen_end_of_data_) {
@@ -449,7 +474,8 @@ void NavigationBodyLoader::ProcessOffThreadData() {
     return;
   }
 
-  auto chunks = off_thread_body_reader_->TakeData();
+  auto chunks =
+      off_thread_body_reader_->TakeData(max_data_to_process_per_task_);
   auto weak_self = weak_factory_.GetWeakPtr();
   for (const auto& chunk : chunks) {
     client_->DecodedBodyDataReceived(
@@ -467,10 +493,10 @@ void NavigationBodyLoader::ProcessOffThreadData() {
       break;
     }
   }
-  NotifyCompletionIfAppropriate();
-
   if (weak_self && should_send_directly_to_preload_scanner_)
     off_thread_body_reader_->StoreProcessBackgroundDataCallback(client_);
+
+  NotifyCompletionIfAppropriate();
 }
 
 void NavigationBodyLoader::ReadFromDataPipe() {
