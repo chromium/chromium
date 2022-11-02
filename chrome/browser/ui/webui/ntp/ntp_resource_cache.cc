@@ -308,6 +308,8 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   }
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
+  replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
+      IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(
       base::FeatureList::IsEnabled(
           features::kUpdateHistoryEntryPointsInIncognito)
@@ -394,6 +396,10 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
   localized_strings.Set("learnMore",
                         l10n_util::GetStringUTF16(guest_tab_link_ids));
   localized_strings.Set("learnMoreLink", guest_tab_link);
+  localized_strings.Set(
+      "learnMoreA11yLabel",
+      l10n_util::GetStringUTF16(
+          IDS_NEW_TAB_GUEST_SESSION_LEARN_MORE_ACCESSIBILITY_TEXT));
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);

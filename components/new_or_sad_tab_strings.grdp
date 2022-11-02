@@ -119,6 +119,10 @@
                desc="Title of the new incognito tab page, not to be confused with the action of opening a new incognito tab.">
         New Incognito Tab
       </message>
+      <message name="IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL"
+          desc="Accessibility label for a link labeled 'Learn more' that links to a help article about Incognito mode.">
+        Learn more about Incognito
+      </message>
       <if expr="not is_android">
         <message name="IDS_NEW_TAB_OTR_HEADING"
                  desc="Heading used when a person opens an OTR window">

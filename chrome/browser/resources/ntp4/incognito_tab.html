@@ -25,7 +25,8 @@ document.querySelector('#incognitothemecss').href =
   <p id="subtitle">
     <span>$i18n{incognitoTabDescription}</span>
     <a class="learn-more-button"
-        href="$i18n{learnMoreLink}">$i18n{learnMore}</a>
+        href="$i18n{learnMoreLink}"
+        aria-label="$i18nPolymer{learnMoreA11yLabel}">$i18n{learnMore}</a>
   </p>
   <div id="bulletpoints-wrapper">
     <div class="bulletpoints first">$i18nRaw{incognitoTabFeatures}</div>
@@ -46,7 +47,8 @@ document.querySelector('#incognitothemecss').href =
                aria-label="$i18n{cookieControlsTitle}"
                $i18n{cookieControlsToggleChecked} dark></cr-toggle>
   </div>
-  <a class="learn-more-button" href="$i18n{learnMoreLink}">$i18n{learnMore}</a>
+  <a class="learn-more-button" href="$i18n{learnMoreLink}"
+      aria-label="$i18nPolymer{learnMoreA11yLabel}">$i18n{learnMore}</a>
 </div>
 <script type="module" src="incognito_tab.js"></script>
 <!-- Lazy-load cr_elements to avoid performance penalty introduced by loading Polymer -->
