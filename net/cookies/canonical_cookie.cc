@@ -542,6 +542,12 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   ParsedCookie parsed_cookie(cookie_line, status);
 
+  // We record this metric before checking validity because when
+  // kExtraCookieValidityChecks is enabled the presence of an HTAB will
+  // invalidate the ParsedCookie.
+  UMA_HISTOGRAM_BOOLEAN("Cookie.NameOrValueHtab",
+                        parsed_cookie.HasInternalHtab());
+
   if (!parsed_cookie.IsValid()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "WARNING: Couldn't parse cookie";

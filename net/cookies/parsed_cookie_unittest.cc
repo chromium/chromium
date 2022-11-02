@@ -1409,4 +1409,22 @@ TEST(ParsedCookieTest, TruncatingCharInCookieLine) {
             TruncatingCharacterInCookieStringType::kTruncatingCharNone);
 }
 
+TEST(ParsedCookieTest, HtabInNameOrValue) {
+  std::string no_htab_string = "foo=bar";
+  ParsedCookie no_htab(no_htab_string);
+  EXPECT_FALSE(no_htab.HasInternalHtab());
+
+  std::string htab_leading_trailing_string = "\tfoo=bar\t";
+  ParsedCookie htab_leading_trailing(htab_leading_trailing_string);
+  EXPECT_FALSE(htab_leading_trailing.HasInternalHtab());
+
+  std::string htab_name_string = "f\too=bar";
+  ParsedCookie htab_name(htab_name_string);
+  EXPECT_TRUE(htab_name.HasInternalHtab());
+
+  std::string htab_value_string = "foo=b\tar";
+  ParsedCookie htab_value(htab_value_string);
+  EXPECT_TRUE(htab_value.HasInternalHtab());
+}
+
 }  // namespace net

@@ -544,6 +544,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.NameOrValueHtab" enum="BooleanValid"
+    expires_after="2023-05-01">
+  <owner>bingler@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
+  <summary>
+    Records whether or not a cookie has internal HTABs in either its name or
+    value. Leading and trailing HTABs are ignored.
+
+    This metric is recorded every time CanonicalCookie::Create is called,
+    regardless whether the cookie is successfully created or not.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.NumDomainPurgedKeys" units="keys"
     expires_after="2022-08-28">
   <owner>cfredric@chromium.org</owner>

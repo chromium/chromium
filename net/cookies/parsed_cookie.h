@@ -90,6 +90,7 @@ class NET_EXPORT ParsedCookie {
   bool IsSameParty() const { return same_party_index_ != 0; }
   bool IsPartitioned() const { return partitioned_index_ != 0; }
   bool HasTruncatedNameOrValue() const { return truncated_name_or_value_; }
+  bool HasInternalHtab() const { return internal_htab_; }
   TruncatingCharacterInCookieStringType
   GetTruncatingCharacterInCookieStringType() const {
     return truncating_char_in_cookie_string_type_;
@@ -225,6 +226,8 @@ class NET_EXPORT ParsedCookie {
   bool truncated_name_or_value_ = false;
   TruncatingCharacterInCookieStringType truncating_char_in_cookie_string_type_ =
       TruncatingCharacterInCookieStringType::kTruncatingCharNone;
+  // For metrics on cookie name/value internal HTABS
+  bool internal_htab_ = false;
 };
 
 }  // namespace net
