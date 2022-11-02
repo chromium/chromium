@@ -284,6 +284,8 @@ v8::Local<v8::Object> AccessibilityController::RootElement() {
 
 v8::Local<v8::Object> AccessibilityController::AccessibleElementById(
     const std::string& id) {
+  if (!IsInstalled())
+    return v8::Local<v8::Object>();
   ax_context_->UpdateAXForAllDocuments();
   blink::WebAXObject root_element = GetAccessibilityObjectForMainFrame();
 
