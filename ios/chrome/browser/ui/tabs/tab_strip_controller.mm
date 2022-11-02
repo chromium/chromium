@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
@@ -127,6 +128,8 @@ UIColor* BackgroundColor() {
   }
   return UIColor.blackColor;
 }
+
+const CGFloat kSymbolSize = 18;
 
 }  // namespace
 
@@ -479,9 +482,14 @@ UIColor* BackgroundColor() {
                                       UIViewAutoresizingFlexibleBottomMargin);
     _buttonNewTab.imageView.contentMode = UIViewContentModeCenter;
 
-    UIImage* buttonNewTabImage = [UIImage imageNamed:@"tabstrip_new_tab"];
-    buttonNewTabImage = [buttonNewTabImage
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* buttonNewTabImage;
+    if (UseSymbols()) {
+      buttonNewTabImage = DefaultSymbolWithPointSize(kPlusSymbol, kSymbolSize);
+    } else {
+      buttonNewTabImage = [UIImage imageNamed:@"tabstrip_new_tab"];
+      buttonNewTabImage = [buttonNewTabImage
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
     [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
     [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
 
