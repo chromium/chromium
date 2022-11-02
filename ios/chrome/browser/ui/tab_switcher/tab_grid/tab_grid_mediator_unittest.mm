@@ -30,11 +30,14 @@
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
@@ -48,6 +51,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -274,22 +278,26 @@ class TabGridMediatorTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               base::BindRepeating(BuildFakeTabRestoreService));
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
-
+        AuthenticationServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
     // Price Drops are only available to signed in MSBB users.
     browser_state_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-    fake_identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                                    gaiaID:@"foo1ID"
-                                                      name:@"Fake Foo 1"];
-    auth_service_ = static_cast<AuthenticationServiceFake*>(
+    id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+    ios::FakeChromeIdentityService* identity_service_ =
+        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+    identity_service_->AddIdentity(identity);
+    auth_service_ = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    auth_service_->SignIn(fake_identity_);
+    auth_service_->SignIn(identity);
 
     tab_restore_service_ =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
@@ -404,8 +412,7 @@ class TabGridMediatorTest : public PlatformTest {
   BrowserList* browser_list_;
   base::UserActionTester user_action_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  FakeSystemIdentity* fake_identity_ = nullptr;
-  AuthenticationServiceFake* auth_service_ = nullptr;
+  AuthenticationService* auth_service_ = nullptr;
 };
 
 #pragma mark - Consumer tests

@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,16 +27,17 @@ BookmarkIOSUnitTest::~BookmarkIOSUnitTest() {}
 void BookmarkIOSUnitTest::SetUp() {
   // Get a BookmarkModel from the test ChromeBrowserState.
   TestChromeBrowserState::Builder test_cbs_builder;
-
   test_cbs_builder.AddTestingFactory(
       AuthenticationServiceFactory::GetInstance(),
-      base::BindRepeating(
-          &AuthenticationServiceFake::CreateAuthenticationService));
+      AuthenticationServiceFactory::GetDefaultFactory());
   test_cbs_builder.AddTestingFactory(
       ios::BookmarkModelFactory::GetInstance(),
       ios::BookmarkModelFactory::GetDefaultFactory());
 
   chrome_browser_state_ = test_cbs_builder.Build();
+  AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+      chrome_browser_state_.get(),
+      std::make_unique<AuthenticationServiceDelegateFake>());
 
   bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
       chrome_browser_state_.get());

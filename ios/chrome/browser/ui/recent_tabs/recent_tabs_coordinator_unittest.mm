@@ -20,8 +20,8 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -118,10 +118,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
-    test_cbs_builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     test_cbs_builder.AddTestingFactory(
@@ -133,10 +129,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
-
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
   }
 
@@ -194,6 +188,9 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
       ON_CALL(open_tabs_ui_delegate_, GetAllForeignSessions(_))
           .WillByDefault(Return(hasForeignSessions));
     }
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        chrome_browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
   }
 
   void CreateController() {
