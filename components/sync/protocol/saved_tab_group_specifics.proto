@@ -62,6 +62,10 @@ message SavedTabGroupTab {
 
   // Tab Data used for constructing the tab.
   optional string url = 3;
+
+  // The displayed title of the tab, shown on the saved tab group button's
+  // context menu.
+  optional string title = 4;
 }
 
 message SavedTabGroupSpecifics {

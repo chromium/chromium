@@ -948,6 +948,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupTab& proto) {
   VISIT(position);
   VISIT(group_guid);
   VISIT(url);
+  VISIT(title);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SearchEngineSpecifics& proto) {
