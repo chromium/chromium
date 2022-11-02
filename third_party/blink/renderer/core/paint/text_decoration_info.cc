@@ -131,6 +131,7 @@ static enum StrokeStyle TextDecorationStyleToStrokeStyle(
 
 struct WavyParams {
   float resolved_thickness;
+  float effective_zoom;
   bool spelling_grammar;
   Color color;
   DISALLOW_NEW();
@@ -147,7 +148,7 @@ float WavyControlPointDistance(const WavyParams& params) {
   // height of the curve is based on this distance. Increases the curve's height
   // as strokeThickness increases to make the curve look better.
   if (params.spelling_grammar)
-    return 5;
+    return 5 * params.effective_zoom;
 
   return 3.5 * WavyDecorationSizing(params);
 }
@@ -157,7 +158,7 @@ float WavyStep(const WavyParams& params) {
   // points and end point (p2) along the axis of the decoration. Makes the curve
   // wider as strokeThickness increases to make the curve look better.
   if (params.spelling_grammar)
-    return 3;
+    return 3 * params.effective_zoom;
 
   return 2.5 * WavyDecorationSizing(params);
 }
@@ -527,6 +528,16 @@ void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
               paint_underline_offset);
 }
 
+bool TextDecorationInfo::ShouldAntialias() const {
+#if BUILDFLAG(IS_MAC)
+  if (line_data_.line == TextDecorationLine::kSpellingError ||
+      line_data_.line == TextDecorationLine::kGrammarError) {
+    return true;
+  }
+#endif
+  return antialias_;
+}
+
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
   if (IsSpellingOrGrammarError()) {
 #if BUILDFLAG(IS_MAC)
@@ -573,9 +584,9 @@ float TextDecorationInfo::ComputeThickness() const {
   if (HasSpellingOrGrammerError()) {
     // Spelling and grammar error thickness doesn't depend on the font size.
 #if BUILDFLAG(IS_MAC)
-    return 2.f;
+    return 2.f * decorating_box_style_->EffectiveZoom();
 #else
-    return 1.f;
+    return 1.f * decorating_box_style_->EffectiveZoom();
 #endif
   }
 
@@ -631,6 +642,8 @@ void TextDecorationInfo::ComputeWavyLineData(
   DEFINE_STATIC_LOCAL(absl::optional<WavyCache>, wavy_cache, (absl::nullopt));
 
   if (wavy_cache && wavy_cache->key.resolved_thickness == ResolvedThickness() &&
+      wavy_cache->key.effective_zoom ==
+          decorating_box_style_->EffectiveZoom() &&
       wavy_cache->key.spelling_grammar == IsSpellingOrGrammarError() &&
       wavy_cache->key.color == LineColor()) {
     pattern_rect = wavy_cache->pattern_rect;
@@ -638,8 +651,8 @@ void TextDecorationInfo::ComputeWavyLineData(
     return;
   }
 
-  WavyParams params{ResolvedThickness(), IsSpellingOrGrammarError(),
-                    LineColor()};
+  WavyParams params{ResolvedThickness(), decorating_box_style_->EffectiveZoom(),
+                    IsSpellingOrGrammarError(), LineColor()};
   Path stroke_path = PrepareWavyStrokePath(params);
   pattern_rect = ComputeWavyPatternRect(params, stroke_path);
   tile_record = PrepareWavyTileRecord(params, stroke_path, pattern_rect);

@@ -116,7 +116,6 @@ class CORE_EXPORT TextDecorationInfo {
   // It can be different from NGFragmentItem::SvgScalingFactor() if the
   // text works as a resource.
   float ScalingFactor() const { return scaling_factor_; }
-  bool ShouldAntialias() const { return antialias_; }
   float InkSkipClipUpper(float bounds_upper) const {
     return -TargetAscent() + bounds_upper - local_origin_.top.ToFloat();
   }
@@ -139,6 +138,7 @@ class CORE_EXPORT TextDecorationInfo {
   // SetLineData must be called before using the remaining methods.
   gfx::PointF StartPoint() const;
   float DoubleOffset() const;
+  bool ShouldAntialias() const;
 
   // Compute bounds for the given line and the current decoration.
   gfx::RectF Bounds() const;

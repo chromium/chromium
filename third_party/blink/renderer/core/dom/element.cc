@@ -3999,17 +3999,20 @@ void Element::PseudoStateChanged(
 
 bool Element::TryToSkipHighlightPseudos(const ComputedStyle* old_style,
                                         ComputedStyle& new_style) const {
-  // If we are a root element (our parent is a Document or ShadowRoot), we need
-  // to recalc if there are or were any non-UA highlight rules (regardless of
-  // whether or not they are non-universal). Otherwise we only need to recalc
-  // once for the UA highlight rules, since those won’t change. They could, if
-  // we ever changed the UA stylesheet dynamically, but we won’t.
+  // If we are a root element (our parent is a Document or ShadowRoot), we can
+  // skip highlight recalc if there neither are nor were any non-UA highlight
+  // rules (regardless of whether or not they are non-universal), and the root’s
+  // effective zoom (‘zoom’ × page zoom × device scale factor) did not change.
+  // In that case, we only need to calculate highlight styles once, because our
+  // UA styles only use type selectors and we never change them dynamically.
   if (parentNode() == ContainingTreeScope().RootNode()) {
     if (new_style.HasNonUaHighlightPseudoStyles())
       return false;
-    if (old_style && old_style->HasNonUaHighlightPseudoStyles())
-      return false;
     if (old_style) {
+      if (old_style->HasNonUaHighlightPseudoStyles())
+        return false;
+      if (old_style->EffectiveZoom() != new_style.EffectiveZoom())
+        return false;
       // Neither the new style nor the old style has any non-UA highlight rules,
       // so they will be equal. Let’s reuse the old styles for all highlights.
       new_style.SetHighlightData(old_style->HighlightData());
