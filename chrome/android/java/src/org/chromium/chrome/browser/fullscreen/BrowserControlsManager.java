@@ -20,7 +20,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -33,7 +32,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -42,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -131,8 +130,7 @@ public class BrowserControlsManager
                     || mControlContainer.getView().getVisibility() == visibility) {
                 return;
             } else if (visibility == View.VISIBLE && mContentViewScrolling
-                    && FeatureList.isInitialized()
-                    && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+                    && ToolbarFeatures.shouldSuppressCaptures()) {
                 // Don't make the controls visible until scrolling has stopped to avoid
                 // doing it more often than we need to. onContentViewScrollingStateChanged will
                 // schedule us again when scrolling ceases.
@@ -142,9 +140,7 @@ public class BrowserControlsManager
             try (TraceEvent e = TraceEvent.scoped(
                          "BrowserControlsManager.onAndroidVisibilityChanged")) {
                 mControlContainer.getView().setVisibility(visibility);
-                if (FeatureList.isInitialized()
-                        && !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+                if (!ToolbarFeatures.shouldSuppressCaptures()) {
                     // requestLayout is required to trigger a new gatherTransparentRegion(), which
                     // only occurs together with a layout and let's SurfaceFlinger trim overlays.
                     // This may be almost equivalent to using View.GONE, but we still use
@@ -248,8 +244,7 @@ public class BrowserControlsManager
 
             @Override
             public void onContentViewScrollingStateChanged(boolean scrolling) {
-                if (!scrolling && FeatureList.isInitialized()
-                        && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+                if (!scrolling && ToolbarFeatures.shouldSuppressCaptures()
                         && shouldShowAndroidControls()
                         && mControlContainer.getView().getVisibility() != View.VISIBLE) {
                     scheduleVisibilityUpdate();

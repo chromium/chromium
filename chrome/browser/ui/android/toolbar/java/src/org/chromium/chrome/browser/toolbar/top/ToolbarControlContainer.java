@@ -22,7 +22,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.BooleanSupplier;
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -309,8 +309,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 return false;
             }
 
-            if (FeatureList.isInitialized()
-                    && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+            if (ToolbarFeatures.shouldSuppressCaptures()) {
                 if (mConstraintsObserver != null && mTabSupplier != null) {
                     Tab tab = mTabSupplier.get();
 
@@ -407,9 +406,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         }
 
         private void onCompositorInMotionChange(Boolean compositorInMotion) {
-            boolean useSuppression = (FeatureList.isInitialized()
-                    && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES));
-            if (!useSuppression || mToolbar == null
+            if (!ToolbarFeatures.shouldSuppressCaptures() || mToolbar == null
                     || mBrowserStateBrowserControlsVisibilityDelegate == null
                     || mControlContainerIsVisibleSupplier == null) {
                 return;

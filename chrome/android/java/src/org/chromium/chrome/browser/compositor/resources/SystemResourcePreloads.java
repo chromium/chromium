@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.resources;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.ui.resources.SystemUIResourceType;
 
 /**
@@ -21,8 +21,6 @@ public class SystemResourcePreloads {
     }
 
     public static int[] getAsynchronousResources() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
-                ? sAsynchronousResources
-                : sEmptyList;
+        return ToolbarFeatures.shouldSuppressCaptures() ? sAsynchronousResources : sEmptyList;
     }
 }

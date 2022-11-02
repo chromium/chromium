@@ -1561,7 +1561,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SCROLL_ABLATION);
         } else if (mForceTextureCapture) {
             return CaptureReadinessResult.readyForced();
-        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+        } else if (ToolbarFeatures.shouldSuppressCaptures()) {
             return getReadinessStateWithSuppression();
         } else {
             return CaptureReadinessResult.unknown(!(urlHasFocus() || mUrlFocusChangeInProgress));

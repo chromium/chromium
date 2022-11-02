@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
@@ -55,7 +54,7 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                     return false;
                 }
 
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+                if (ToolbarFeatures.shouldSuppressCaptures()) {
                     // Dirty rect tracking will claim changes more often than token differences due
                     // to model changes. It is also cheaper to simply check a boolean, so do it
                     // first.

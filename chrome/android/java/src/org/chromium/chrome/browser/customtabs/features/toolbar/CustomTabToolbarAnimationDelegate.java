@@ -15,9 +15,8 @@ import android.widget.TextView;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 
-import org.chromium.base.FeatureList;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.omnibox.SecurityButtonAnimationDelegate;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
@@ -156,8 +155,7 @@ class CustomTabToolbarAnimationDelegate {
             mBrandingAnimationDelegate.updateDrawableResource(securityIconResource);
         } else {
             boolean isActualResourceChange = true;
-            if (FeatureList.isNativeInitialized()
-                    && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+            if (ToolbarFeatures.shouldSuppressCaptures()) {
                 isActualResourceChange = securityIconResource != mSecurityIconRes;
             }
             mSecurityButtonAnimationDelegate.updateSecurityButton(securityIconResource,

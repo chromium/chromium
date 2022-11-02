@@ -15,6 +15,8 @@ public final class ToolbarFeatures {
     // to the original ablation and controls.
     private static final String ALLOW_CAPTURES = "allow_captures";
 
+    private static Boolean sSuppressionEnabled;
+
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
 
@@ -33,5 +35,24 @@ public final class ToolbarFeatures {
         // Ablation is enabled, follow the param.
         return !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID, ALLOW_CAPTURES, false);
+    }
+
+    public static boolean shouldSuppressCaptures() {
+        if (Boolean.TRUE.equals(sSuppressionEnabled)) return true;
+        if (Boolean.FALSE.equals(sSuppressionEnabled)) return false;
+        if (!FeatureList.isInitialized()) return false;
+        if (FeatureList.hasTestFeature(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+            // Don't cache if the feature value is test-configured since it can change during the
+            // process lifetime.
+            return ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES);
+        }
+
+        if (FeatureList.isNativeInitialized()) {
+            sSuppressionEnabled =
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES);
+            return sSuppressionEnabled;
+        }
+
+        return false;
     }
 }

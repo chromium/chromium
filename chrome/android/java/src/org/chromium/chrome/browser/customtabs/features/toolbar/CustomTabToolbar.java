@@ -639,7 +639,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     public CaptureReadinessResult isReadyForTextureCapture() {
         if (ToolbarFeatures.shouldBlockCapturesForAblation()) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SCROLL_ABLATION);
-        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+        } else if (ToolbarFeatures.shouldSuppressCaptures()) {
             CaptureStateToken currentToken = generateCaptureStateToken();
             final @ToolbarSnapshotDifference int difference =
                     currentToken.getAnyDifference(mLastCaptureStateToken);
