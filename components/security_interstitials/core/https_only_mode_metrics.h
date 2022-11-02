@@ -34,7 +34,10 @@ enum class Event {
   // Navigation failed due to timing out.
   kUpgradeTimedOut = 5,
 
-  kMaxValue = kUpgradeTimedOut,
+  // A prerendered HTTP navigation was cancelled.
+  kPrerenderCancelled = 6,
+
+  kMaxValue = kPrerenderCancelled,
 };
 
 }  // namespace https_only_mode

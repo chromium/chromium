@@ -280,10 +280,13 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
     // If the tab is being prerendered, cancel the HTTP response.
     if (prerender_service_ &&
         prerender_service_->IsWebStatePrerendered(web_state())) {
-      prerender_service_->CancelPrerender();
+      RecordUMA(Event::kPrerenderCancelled);
       ResetState();
       std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Cancel());
+      prerender_service_->CancelPrerender();
+      // IMPORTANT: CancelPrerender() destroys the web state. Do not access
+      // it after here.
       return;
     }
     StopToUpgrade(url, item_pending->GetReferrer(), std::move(callback));
