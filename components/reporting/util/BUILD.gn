@@ -76,6 +76,15 @@ source_set("disconnectable_client") {
   ]
 }
 
+source_set("refcounted_closure_list") {
+  sources = [
+    "refcounted_closure_list.cc",
+    "refcounted_closure_list.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 # All unit tests are built as part of the //components:components_unittests
 # target.
 source_set("unit_tests") {
@@ -83,6 +92,7 @@ source_set("unit_tests") {
   sources = [
     "disconnectable_client_unittest.cc",
     "file_unittest.cc",
+    "refcounted_closure_list_unittest.cc",
     "status_macros_unittest.cc",
     "status_unittest.cc",
     "statusor_unittest.cc",
@@ -90,6 +100,7 @@ source_set("unit_tests") {
   deps = [
     ":disconnectable_client",
     ":file",
+    ":refcounted_closure_list",
     ":status",
     ":status_macros",
     ":task_runner_context",

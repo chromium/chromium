@@ -50,6 +50,7 @@ static_library("storage_queue") {
     "//components/reporting/proto:record_proto",
     "//components/reporting/resources:resource_interface",
     "//components/reporting/util:file",
+    "//components/reporting/util:refcounted_closure_list",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:task_runner_context",
