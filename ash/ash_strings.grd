@@ -3013,7 +3013,7 @@ Connect your device to power.
         IME menu button
       </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the select-to-speak menu icon in the status tray.">
-        Select-to-Speak button
+        Select-to-speak button
       </message>
       <message name="IDS_ASH_AUTOCLICK_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the automatic clicks menu icon in the status tray.">
         Automatic clicks button

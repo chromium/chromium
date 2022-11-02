@@ -330,7 +330,7 @@ AX_TEST_F('SelectToSpeakMouseSelectionTest', 'SystemUI', async function() {
       // Sometimes we get "Select-to-speak button" and sometimes
       // "Select-to-speak". Either is acceptable.
       this.assertEqualsCollapseWhitespace(
-          utterance.replace(/button/, ''), 'Select-to-speak');
+          utterance.replace(/button/, '').toLowerCase(), 'select-to-speak');
     })]);
 
     focusRingsCallback = this.newCallback((focusRings) => {
