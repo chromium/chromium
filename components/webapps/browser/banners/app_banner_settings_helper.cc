@@ -70,19 +70,18 @@ double gTotalEngagementToTrigger = kDefaultTotalEngagementToTrigger;
 unsigned int gDaysAfterDismissedToShow = kMinimumBannerBlockedToBannerShown;
 unsigned int gDaysAfterIgnoredToShow = kMinimumDaysBetweenBannerShows;
 
-std::unique_ptr<base::DictionaryValue> GetOriginAppBannerData(
-    HostContentSettingsMap* settings,
-    const GURL& origin_url) {
+base::Value::Dict GetOriginAppBannerData(HostContentSettingsMap* settings,
+                                         const GURL& origin_url) {
   if (!settings)
-    return std::make_unique<base::DictionaryValue>();
+    return base::Value::Dict();
 
-  std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
-      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
-          origin_url, origin_url, ContentSettingsType::APP_BANNER, nullptr)));
-  if (!dict)
-    return std::make_unique<base::DictionaryValue>();
+  base::Value dict = settings->GetWebsiteSetting(
+      origin_url, origin_url, ContentSettingsType::APP_BANNER, nullptr);
 
-  return dict;
+  if (!dict.is_dict())
+    return base::Value::Dict();
+
+  return std::move(dict.GetDict());
 }
 
 class AppPrefs {
@@ -99,34 +98,33 @@ class AppPrefs {
     settings_ =
         permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
     origin_dict_ = GetOriginAppBannerData(settings_, origin);
-    dict_ = origin_dict_->FindKeyOfType(package_name_or_start_url,
-                                        base::Value::Type::DICTIONARY);
+    dict_ = origin_dict_.FindDict(package_name_or_start_url);
     if (!dict_) {
       // Don't allow more than kMaxAppsPerSite dictionaries.
-      if (origin_dict_->DictSize() < kMaxAppsPerSite) {
+      if (origin_dict_.size() < kMaxAppsPerSite) {
         dict_ =
-            origin_dict_->SetKey(package_name_or_start_url,
-                                 base::Value(base::Value::Type::DICTIONARY));
+            origin_dict_.Set(package_name_or_start_url, base::Value::Dict())
+                ->GetIfDict();
       }
     }
   }
 
   HostContentSettingsMap* settings() { return settings_; }
-  base::Value* dict() { return dict_; }
+  base::Value::Dict* dict() { return dict_; }
 
   void Save() {
     DCHECK(dict_);
     dict_ = nullptr;
     settings_->SetWebsiteSettingDefaultScope(
         origin_, GURL(), ContentSettingsType::APP_BANNER,
-        content_settings::FromNullableUniquePtrValue(std::move(origin_dict_)));
+        base::Value(std::move(origin_dict_)));
   }
 
  private:
   const GURL& origin_;
   raw_ptr<HostContentSettingsMap> settings_ = nullptr;
-  std::unique_ptr<base::DictionaryValue> origin_dict_;
-  raw_ptr<base::Value> dict_ = nullptr;
+  base::Value::Dict origin_dict_;
+  raw_ptr<base::Value::Dict> dict_ = nullptr;
 };
 
 // Queries variations for the number of days which dismissing and ignoring the
@@ -215,18 +213,18 @@ absl::optional<NextInstallTextAnimation> NextInstallTextAnimation::Get(
   if (!app_prefs.dict())
     return NextInstallTextAnimation{base::Time::Max(), base::TimeDelta::Max()};
 
-  const base::Value* next_dict =
-      app_prefs.dict()->FindKey(kNextInstallTextAnimation);
-  if (!next_dict || !next_dict->is_dict())
+  const base::Value::Dict* next_dict =
+      app_prefs.dict()->FindDict(kNextInstallTextAnimation);
+  if (!next_dict)
     return absl::nullopt;
 
   absl::optional<base::Time> last_shown =
-      base::ValueToTime(next_dict->FindKey(kLastShownKey));
+      base::ValueToTime(next_dict->Find(kLastShownKey));
   if (!last_shown)
     return absl::nullopt;
 
   absl::optional<base::TimeDelta> delay =
-      base::ValueToTimeDelta(next_dict->FindKey(kDelayKey));
+      base::ValueToTimeDelta(next_dict->Find(kDelayKey));
   if (!delay)
     return absl::nullopt;
 
@@ -239,10 +237,10 @@ void NextInstallTextAnimation::RecordToPrefs(content::WebContents* web_contents,
   if (!app_prefs.dict())
     return;
 
-  base::Value next_dict(base::Value::Type::DICTIONARY);
-  next_dict.SetKey(kLastShownKey, base::TimeToValue(last_shown));
-  next_dict.SetKey(kDelayKey, base::TimeDeltaToValue(delay));
-  app_prefs.dict()->SetKey(kNextInstallTextAnimation, std::move(next_dict));
+  base::Value::Dict next_dict;
+  next_dict.Set(kLastShownKey, base::TimeToValue(last_shown));
+  next_dict.Set(kDelayKey, base::TimeDeltaToValue(delay));
+  app_prefs.dict()->Set(kNextInstallTextAnimation, std::move(next_dict));
   app_prefs.Save();
 }
 
@@ -303,10 +301,10 @@ void AppBannerSettingsHelper::RecordBannerEvent(
 
   if (event == APP_BANNER_EVENT_COULD_SHOW) {
     // Do not overwrite a could show event, as this is used for metrics.
-    if (app_prefs.dict()->FindKeyOfType(event_key, base::Value::Type::DOUBLE))
+    if (app_prefs.dict()->contains(event_key))
       return;
   }
-  app_prefs.dict()->SetKey(
+  app_prefs.dict()->Set(
       event_key, base::Value(static_cast<double>(time.ToInternalValue())));
 
   app_prefs.Save();
@@ -369,12 +367,10 @@ absl::optional<base::Time> AppBannerSettingsHelper::GetSingleBannerEvent(
   if (!app_prefs.dict())
     return absl::nullopt;
 
-  base::Value* internal_time = app_prefs.dict()->FindKeyOfType(
-      kBannerEventKeys[event], base::Value::Type::DOUBLE);
-  if (!internal_time)
-    return base::Time();
-
-  return base::Time::FromInternalValue(internal_time->GetDouble());
+  absl::optional<double> internal_time =
+      app_prefs.dict()->FindDouble(kBannerEventKeys[event]);
+  return internal_time ? base::Time::FromInternalValue(internal_time.value())
+                       : base::Time();
 }
 
 bool AppBannerSettingsHelper::HasSufficientEngagement(double total_engagement) {
@@ -405,26 +401,20 @@ bool AppBannerSettingsHelper::WasLaunchedRecently(
     base::Time now) {
   HostContentSettingsMap* settings =
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
-  std::unique_ptr<base::Value> origin_dict =
-      GetOriginAppBannerData(settings, origin_url);
-
-  if (!origin_dict)
-    return false;
+  base::Value::Dict origin_dict = GetOriginAppBannerData(settings, origin_url);
 
   // Iterate over everything in the content setting, which should be a set of
   // dictionaries per app path. If we find one that has been added to
   // homescreen recently, return true.
   base::TimeDelta recent_last_launch_in_days =
       base::Days(kRecentLastLaunchInDays);
-  for (auto path_dicts : origin_dict->DictItems()) {
-    if (path_dicts.second.is_dict()) {
-      base::Value* value = &path_dicts.second;
-
+  for (auto [key, value] : origin_dict) {
+    if (value.is_dict()) {
       // TODO(https://crbug.com/1338016): Delete stored Instant App data.
-      if (path_dicts.first == kInstantAppsKey)
+      if (key == kInstantAppsKey)
         continue;
 
-      absl::optional<double> internal_time = value->FindDoubleKey(
+      absl::optional<double> internal_time = value.GetDict().FindDouble(
           kBannerEventKeys[APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN]);
       if (!internal_time)
         continue;
