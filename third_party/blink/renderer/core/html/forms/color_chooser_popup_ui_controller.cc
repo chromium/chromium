@@ -158,9 +158,9 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   Vector<String> suggestion_values;
   for (auto& suggestion : client_->Suggestions()) {
     // TODO(https://crbug.com/1351544): ColorSuggestions be sent as Color or
-    // SkColor4f.
+    // SkColor4f and should be serialized as CSS colors.
     suggestion_values.push_back(
-        Color::FromRGBA32(suggestion->color).SerializeAsCSSColor());
+        Color::FromRGBA32(suggestion->color).SerializeAsCanvasColor());
   }
   gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreenDIPs(
       client_->ElementRectRelativeToLocalRoot(), frame_->View());
