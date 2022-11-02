@@ -206,6 +206,10 @@ base::TimeDelta MediaPlayerRenderer::GetMediaTime() {
   return media_player_->GetCurrentTime();
 }
 
+media::RendererType MediaPlayerRenderer::GetRendererType() {
+  return media::RendererType::kMediaPlayer;
+}
+
 media::MediaResourceGetter* MediaPlayerRenderer::GetMediaResourceGetter() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!media_resource_getter_.get()) {

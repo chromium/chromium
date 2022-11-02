@@ -88,6 +88,7 @@ class CourierRenderer final : public Renderer {
   void SetPlaybackRate(double playback_rate) final;
   void SetVolume(float volume) final;
   base::TimeDelta GetMediaTime() final;
+  RendererType GetRendererType() final;
 
  private:
   friend class CourierRendererTest;

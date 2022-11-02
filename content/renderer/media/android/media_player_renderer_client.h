@@ -64,6 +64,7 @@ class CONTENT_EXPORT MediaPlayerRendererClient
   void Initialize(media::MediaResource* media_resource,
                   media::RendererClient* client,
                   media::PipelineStatusCallback init_cb) override;
+  media::RendererType GetRendererType() override;
 
   // media::mojom::MediaPlayerRendererClientExtension implementation
   void OnDurationChange(base::TimeDelta duration) override;

@@ -293,6 +293,8 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return media::mojom::RendererType::kCastStreaming;
       case ::media::RendererType::kContentEmbedderDefined:
         return media::mojom::RendererType::kContentEmbedderDefined;
+      case ::media::RendererType::kTest:
+        return media::mojom::RendererType::kTest;
     }
 
     NOTREACHED();
@@ -333,6 +335,9 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return true;
       case media::mojom::RendererType::kContentEmbedderDefined:
         *output = ::media::RendererType::kContentEmbedderDefined;
+        return true;
+      case media::mojom::RendererType::kTest:
+        *output = ::media::RendererType::kTest;
         return true;
     }
 

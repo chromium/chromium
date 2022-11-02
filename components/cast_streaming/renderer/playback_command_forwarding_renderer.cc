@@ -138,6 +138,10 @@ base::TimeDelta PlaybackCommandForwardingRenderer::GetMediaTime() {
   return real_renderer_->GetMediaTime();
 }
 
+media::RendererType PlaybackCommandForwardingRenderer::GetRendererType() {
+  return media::RendererType::kCastStreaming;
+}
+
 void PlaybackCommandForwardingRenderer::OnRealRendererInitializationComplete(
     media::PipelineStatus status) {
   DCHECK(init_cb_);

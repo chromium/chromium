@@ -224,6 +224,10 @@ base::TimeDelta MojoRenderer::GetMediaTime() {
   return media_time_interpolator_.GetInterpolatedTime();
 }
 
+RendererType MojoRenderer::GetRendererType() {
+  return RendererType::kMojo;
+}
+
 void MojoRenderer::OnTimeUpdate(base::TimeDelta time,
                                 base::TimeDelta max_time,
                                 base::TimeTicks capture_time) {

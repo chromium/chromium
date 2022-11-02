@@ -399,6 +399,10 @@ base::TimeDelta End2EndTestRenderer::GetMediaTime() {
   return courier_renderer_->GetMediaTime();
 }
 
+RendererType End2EndTestRenderer::GetRendererType() {
+  return RendererType::kTest;
+}
+
 void End2EndTestRenderer::SendMessageToSink(
     const std::vector<uint8_t>& message) {
   media_remotee_->OnMessage(message);

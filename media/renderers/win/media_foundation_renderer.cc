@@ -806,6 +806,10 @@ base::TimeDelta MediaFoundationRenderer::GetMediaTime() {
   return media_time;
 }
 
+RendererType MediaFoundationRenderer::GetRendererType() {
+  return RendererType::kMediaFoundation;
+}
+
 void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status,
                                               HRESULT hr) {
   DVLOG_FUNC(1) << "status=" << status << ", hr=" << hr;

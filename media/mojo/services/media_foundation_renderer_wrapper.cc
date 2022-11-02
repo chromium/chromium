@@ -120,6 +120,10 @@ base::TimeDelta MediaFoundationRendererWrapper::GetMediaTime() {
   return renderer_->GetMediaTime();
 }
 
+RendererType MediaFoundationRendererWrapper::GetRendererType() {
+  return RendererType::kMediaFoundation;
+}
+
 void MediaFoundationRendererWrapper::GetDCOMPSurface(
     GetDCOMPSurfaceCallback callback) {
   if (has_get_dcomp_surface_called_) {

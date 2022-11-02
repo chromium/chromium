@@ -67,6 +67,10 @@ void MediaPlayerRendererClient::Initialize(
           weak_factory_.GetWeakPtr(), media_resource));
 }
 
+media::RendererType MediaPlayerRendererClient::GetRendererType() {
+  return media::RendererType::kMediaPlayer;
+}
+
 void MediaPlayerRendererClient::OnStreamTextureWrapperInitialized(
     media::MediaResource* media_resource,
     bool success) {

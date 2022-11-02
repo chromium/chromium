@@ -389,6 +389,10 @@ base::TimeDelta CastRenderer::GetMediaTime() {
   return pipeline_->GetMediaTime();
 }
 
+::media::RendererType CastRenderer::GetRendererType() {
+  return ::media::RendererType::kCast;
+}
+
 void CastRenderer::OnVideoResolutionPolicyChanged() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (!video_resolution_policy_)

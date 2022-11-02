@@ -154,6 +154,11 @@ void DecryptingRenderer::OnEnabledAudioTracksChanged(
                                          std::move(change_completed_cb));
 }
 
+RendererType DecryptingRenderer::GetRendererType() {
+  // DecryptingRenderer is a thin wrapping layer; return the underlying type.
+  return renderer_->GetRendererType();
+}
+
 void DecryptingRenderer::CreateAndInitializeDecryptingMediaResource() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(init_cb_);

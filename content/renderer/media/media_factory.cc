@@ -633,8 +633,6 @@ MediaFactory::CreateRendererFactorySelector(
 #else
     // The "default" MojoRendererFactory can be wrapped by a
     // DecryptingRendererFactory without changing any behavior.
-    // TODO(tguilbert/xhwang): Add "RendererType::DECRYPTING" if ever we need to
-    // distinguish between a "pure" and "decrypting" MojoRenderer.
     factory_selector->AddBaseFactory(
         RendererType::kMojo, std::make_unique<media::DecryptingRendererFactory>(
                                  media_log, CreateMojoRendererFactory()));

@@ -66,6 +66,7 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
   void OnEnabledAudioTracksChanged(
       const std::vector<DemuxerStream*>& enabled_tracks,
       base::OnceClosure change_completed_cb) override;
+  RendererType GetRendererType() override;
 
   bool HasDecryptingMediaResourceForTesting() const;
 

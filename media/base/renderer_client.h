@@ -7,6 +7,7 @@
 
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
+#include "media/base/media_export.h"
 #include "media/base/media_status.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/video_decoder_config.h"

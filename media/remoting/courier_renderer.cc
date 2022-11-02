@@ -265,6 +265,10 @@ base::TimeDelta CourierRenderer::GetMediaTime() {
   return current_media_time_;
 }
 
+RendererType CourierRenderer::GetRendererType() {
+  return RendererType::kCourier;
+}
+
 // static
 void CourierRenderer::OnDataPipeCreatedOnMainThread(
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,

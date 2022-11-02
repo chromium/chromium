@@ -117,6 +117,10 @@ base::TimeDelta FlingingRenderer::GetMediaTime() {
   return controller_->GetApproximateCurrentTime();
 }
 
+media::RendererType FlingingRenderer::GetRendererType() {
+  return media::RendererType::kFlinging;
+}
+
 void FlingingRenderer::SetExpectedPlayState(PlayState state) {
   DVLOG(3) << __func__ << " : state " << static_cast<int>(state);
   DCHECK(state == PlayState::PLAYING || state == PlayState::PAUSED);

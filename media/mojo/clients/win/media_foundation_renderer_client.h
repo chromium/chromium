@@ -90,6 +90,7 @@ class MediaFoundationRendererClient
       const std::vector<DemuxerStream*>& enabled_tracks,
       base::OnceClosure change_completed_cb) override;
   void OnExternalVideoFrameRequest() override;
+  RendererType GetRendererType() override;
 
   // RendererClient implementation.
   void OnError(PipelineStatus status) override;

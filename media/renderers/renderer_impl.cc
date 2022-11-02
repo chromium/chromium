@@ -1055,4 +1055,8 @@ void RendererImpl::OnEnabledAudioTracksChanged(
                                         &audio_ended_, &audio_playing_));
 }
 
+RendererType RendererImpl::GetRendererType() {
+  return RendererType::kDefault;
+}
+
 }  // namespace media

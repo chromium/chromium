@@ -68,10 +68,11 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   base::TimeDelta GetMediaTime() final;
   void OnSelectedVideoTracksChanged(
       const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) override;
+      base::OnceClosure change_completed_cb) final;
   void OnEnabledAudioTracksChanged(
       const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) override;
+      base::OnceClosure change_completed_cb) final;
+  RendererType GetRendererType() final;
 
   // Helper functions for testing purposes. Must be called before Initialize().
   void DisableUnderflowForTesting();

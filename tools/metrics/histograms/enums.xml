@@ -66925,6 +66925,7 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="kRemoting"/>
   <int value="9" label="kCastStreaming"/>
   <int value="10" label="kContentEmbedderDefined"/>
+  <int value="11" label="kTest"/>
 </enum>
 
 <enum name="MediaResponseCacheType">

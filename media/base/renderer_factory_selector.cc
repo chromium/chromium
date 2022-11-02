@@ -9,36 +9,6 @@
 
 namespace media {
 
-// WARNING: The returned names are used as part of UMA names. Do NOT change
-// existing return names.
-std::string GetRendererName(RendererType renderer_type) {
-  switch (renderer_type) {
-    case RendererType::kDefault:
-      return "RendererImpl";
-    case RendererType::kMojo:
-      return "MojoRenderer";
-    case RendererType::kMediaPlayer:
-      return "MediaPlayerRenderer";
-    case RendererType::kCourier:
-      return "CourierRenderer";
-    case RendererType::kFlinging:
-      return "FlingingRenderer";
-    case RendererType::kCast:
-      return "CastRenderer";
-    case RendererType::kMediaFoundation:
-      return "MediaFoundationRenderer";
-    case RendererType::kRemoting:
-      return "RemotingRenderer";  // media::remoting::Receiver
-    case RendererType::kCastStreaming:
-      return "CastStreamingRenderer";
-    case RendererType::kContentEmbedderDefined:
-      return "EmbedderDefined";
-    default:
-      NOTREACHED();
-      return "RendererType created through invalid static_cast";
-  }
-}
-
 RendererFactorySelector::RendererFactorySelector() = default;
 
 RendererFactorySelector::~RendererFactorySelector() = default;

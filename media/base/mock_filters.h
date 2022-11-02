@@ -526,6 +526,7 @@ class MockRenderer : public Renderer {
                void(std::vector<DemuxerStream*>, base::OnceClosure));
   MOCK_METHOD2(OnSelectedAudioTracksChanged,
                void(std::vector<DemuxerStream*>, base::OnceClosure));
+  RendererType GetRendererType() override { return RendererType::kTest; }
 };
 
 class MockRendererFactory : public RendererFactory {

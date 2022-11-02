@@ -37,6 +37,10 @@ void FlingingRendererClient::Initialize(media::MediaResource* media_resource,
   MojoRendererWrapper::Initialize(media_resource, client, std::move(init_cb));
 }
 
+media::RendererType FlingingRendererClient::GetRendererType() {
+  return media::RendererType::kFlinging;
+}
+
 void FlingingRendererClient::OnRemotePlayStateChange(
     media::MediaStatus::State state) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());

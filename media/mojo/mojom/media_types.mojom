@@ -507,7 +507,7 @@ enum InputStreamErrorCode {
   kDeviceInUse = 2,
 };
 
-// See media/base/renderer_factory_selector.h for description.
+// See media/base/renderer.h for description.
 enum RendererType {
   kDefault = 0,          // DefaultRendererFactory
   kMojo = 1,             // MojoRendererFactory
@@ -520,4 +520,5 @@ enum RendererType {
   kRemoting = 8,         // RemotingRendererFactory for remoting::Receiver
   kCastStreaming = 9,    // CastStreamingRendererFactory
   kContentEmbedderDefined = 10,  // Defined by the content embedder
+  kTest= 11,             // Renderer implementations used in tests
 };

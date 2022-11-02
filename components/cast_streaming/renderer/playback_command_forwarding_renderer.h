@@ -61,6 +61,7 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   void SetPlaybackRate(double playback_rate) override;
   void SetVolume(float volume) override;
   base::TimeDelta GetMediaTime() override;
+  media::RendererType GetRendererType() override;
 
  private:
   // Private namespace function not defined here because its details are not

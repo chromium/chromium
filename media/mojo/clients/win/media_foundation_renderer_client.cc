@@ -270,6 +270,10 @@ void MediaFoundationRendererClient::OnExternalVideoFrameRequest() {
   }
 }
 
+RendererType MediaFoundationRendererClient::GetRendererType() {
+  return RendererType::kMediaFoundation;
+}
+
 // RendererClient implementation.
 
 void MediaFoundationRendererClient::OnError(PipelineStatus status) {

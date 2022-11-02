@@ -109,6 +109,10 @@ base::TimeDelta Receiver::GetMediaTime() {
   return base::TimeDelta();
 }
 
+RendererType Receiver::GetRendererType() {
+  return RendererType::kRemoting;
+}
+
 void Receiver::SendRpcMessageOnMainThread(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
   // |rpc_messenger_| is owned by |receiver_controller_| which is a singleton

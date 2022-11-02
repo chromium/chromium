@@ -14,7 +14,7 @@
 #include "media/base/buffering_state.h"
 #include "media/base/decoder.h"
 #include "media/base/media_serializers_base.h"
-#include "media/base/renderer_factory_selector.h"
+#include "media/base/renderer.h"
 #include "media/base/status.h"
 #include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
