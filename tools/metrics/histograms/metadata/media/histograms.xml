@@ -1581,11 +1581,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioRendererImpl.SinkStatus" enum="OutputDeviceStatus"
-    expires_after="2022-12-12">
-  <owner>armax@chromium.org</owner>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
+    expires_after="2023-11-02">
   <owner>olka@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
   <summary>
     Status of audio sink used by AudioRendererImpl. If not OK, a NullAudioSink
     will be used for audio output instead. This is logged for every call to
