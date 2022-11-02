@@ -45,7 +45,7 @@ Example usage:
   import {fedcm_mojo_mock_test} from './support/fedcm-mojojs-helper.js';
 
   fedcm_mojo_mock_test(async (t, mock) => {
-    mock.returnToken("a_token");
+    mock.returnToken("https://idp.test/fedcm.json", "a_token");
     assert_equals("a_token", await navigator.credentials.get(options));
   }, "Successfully obtaining a token using mock.");
 </script>
