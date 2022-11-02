@@ -390,7 +390,6 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       ContentSettingsType::AUTOMATIC_DOWNLOADS,
       ContentSettingsType::BACKGROUND_SYNC,
       ContentSettingsType::CLIPBOARD_READ_WRITE,
-      ContentSettingsType::FILE_SYSTEM_READ_GUARD,
       ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
       ContentSettingsType::GEOLOCATION,
       ContentSettingsType::HID_GUARD,
