@@ -1,0 +1,154 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Class that formats the parsed output tree.
+ */
+import {OutputFormatParserObserver} from './output_format_parser.js';
+import {OutputInterface} from './output_interface.js';
+import * as outputTypes from './output_types.js';
+
+// TODO(anastasi): Move formatting logic to this class.
+/** @implements {OutputFormatParserObserver} */
+export class OutputFormatter {
+  /**
+   * @param {!OutputInterface} output
+   * @param {!outputTypes.OutputFormattingData} params
+   */
+  constructor(output, params) {
+    /** @private {outputTypes.OutputSpeechProperties|undefined} */
+    this.speechProps_ = params.opt_speechProps;
+    /** @private {!OutputInterface} */
+    this.output_ = output;
+    /** @private {!outputTypes.OutputFormattingData} */
+    this.params_ = params;
+  }
+
+  /** @override */
+  onTokenStart() {}
+
+  /** @override */
+  onNodeAttributeOrSpecialToken(token, tree, options) {
+    if (this.output_.shouldSuppress(token)) {
+      return true;
+    }
+
+    if (token === 'value') {
+      this.output_.formatValue_(this.params_, token, options);
+    } else if (token === 'name') {
+      this.output_.formatName_(this.params_, token, options);
+    } else if (token === 'description') {
+      this.output_.formatDescription_(this.params_, token, options);
+    } else if (token === 'urlFilename') {
+      this.output_.formatUrlFilename_(this.params_, token, options);
+    } else if (token === 'nameFromNode') {
+      this.output_.formatNameFromNode_(this.params_, token, options);
+    } else if (token === 'nameOrDescendants') {
+      // This token is similar to nameOrTextContent except it gathers
+      // rich output for descendants. It also lets name from contents
+      // override the descendants text if |node| has only static text
+      // children.
+      this.output_.formatNameOrDescendants_(this.params_, token, options);
+    } else if (token === 'indexInParent') {
+      this.output_.formatIndexInParent_(this.params_, token, tree, options);
+    } else if (token === 'restriction') {
+      this.output_.formatRestriction_(this.params_, token);
+    } else if (token === 'checked') {
+      this.output_.formatChecked_(this.params_, token);
+    } else if (token === 'pressed') {
+      this.output_.formatPressed_(this.params_, token);
+    } else if (token === 'state') {
+      this.output_.formatState_(this.params_, token);
+    } else if (token === 'find') {
+      this.output_.formatFind_(this.params_, token, tree);
+    } else if (token === 'descendants') {
+      this.output_.formatDescendants_(this.params_, token);
+    } else if (token === 'joinedDescendants') {
+      this.output_.formatJoinedDescendants_(this.params_, token, options);
+    } else if (token === 'role') {
+      if (localStorage['useVerboseMode'] === String(false)) {
+        return true;
+      }
+      if (this.output_.useAuralStyle) {
+        this.speechProps_ = new outputTypes.OutputSpeechProperties();
+        this.speechProps_.properties['relativePitch'] = -0.3;
+      }
+
+      this.output_.formatRole_(this.params_, token, options);
+    } else if (token === 'inputType') {
+      this.output_.formatInputType_(this.params_, token, options);
+    } else if (
+        token === 'tableCellRowIndex' || token === 'tableCellColumnIndex') {
+      this.output_.formatTableCellIndex_(this.params_, token, options);
+    } else if (token === 'cellIndexText') {
+      this.output_.formatCellIndexText_(this.params_, token, options);
+    } else if (token === 'node') {
+      this.output_.formatNode_(this.params_, token, tree, options);
+    } else if (token === 'nameOrTextContent' || token === 'textContent') {
+      this.output_.formatTextContent_(this.params_, token, options);
+    } else if (this.params_.node[token] !== undefined) {
+      this.output_.formatAsFieldAccessor_(this.params_, token, options);
+    } else if (outputTypes.OUTPUT_STATE_INFO[token]) {
+      this.output_.formatAsStateValue_(this.params_, token, options);
+    } else if (token === 'phoneticReading') {
+      this.output_.formatPhoneticReading_(this.params_);
+    } else if (token === 'listNestedLevel') {
+      this.output_.formatListNestedLevel_(this.params_);
+    } else if (token === 'precedingBullet') {
+      this.output_.formatPrecedingBullet_(this.params_);
+    } else if (tree.firstChild) {
+      this.output_.formatCustomFunction_(this.params_, token, tree, options);
+    }
+  }
+
+  /** @override */
+  onMessageToken(token, tree, options) {
+    this.params_.outputFormatLogger.write(' @');
+    if (this.output_.useAuralStyle) {
+      if (!this.speechProps_) {
+        this.speechProps_ = new outputTypes.OutputSpeechProperties();
+      }
+      this.speechProps_.properties['relativePitch'] = -0.2;
+    }
+    this.output_.formatMessage_(this.params_, token, tree, options);
+  }
+
+  /** @override */
+  onSpeechPropertyToken(token, tree, options) {
+    this.params_.outputFormatLogger.write(' ! ' + token + '\n');
+    this.speechProps_ = new outputTypes.OutputSpeechProperties();
+    this.speechProps_.properties[token] = true;
+    if (tree.firstChild) {
+      if (!this.output_.useAuralStyle) {
+        this.speechProps_ = undefined;
+        return true;
+      }
+
+      let value = tree.firstChild.value;
+
+      // Currently, speech params take either attributes or floats.
+      let float = 0;
+      if (float = parseFloat(value)) {
+        value = float;
+      } else {
+        value = parseFloat(this.params_.node[value]) / -10.0;
+      }
+      this.speechProps_.properties[token] = value;
+      return true;
+    }
+  }
+
+  /** @override */
+  onTokenEnd() {
+    const buff = this.params_.outputBuffer;
+
+    // Post processing.
+    if (this.speechProps_) {
+      if (buff.length > 0) {
+        buff[buff.length - 1].setSpan(this.speechProps_, 0, 0);
+        this.speechProps_ = null;
+      }
+    }
+  }
+}

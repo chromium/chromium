@@ -94,6 +94,8 @@ chromevox_es6_modules = [
   "background/output/output_ancestry_info.js",
   "background/output/output_format_parser.js",
   "background/output/output_format_tree.js",
+  "background/output/output_formatter.js",
+  "background/output/output_interface.js",
   "background/output/output_logger.js",
   "background/output/output_role_info.js",
   "background/output/output_rules.js",

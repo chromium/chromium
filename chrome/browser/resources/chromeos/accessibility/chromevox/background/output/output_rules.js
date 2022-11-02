@@ -76,11 +76,8 @@ export class OutputRule {
   get event() {
     return this.event_;
   }
-  /** @return {string} */
+  /** @return {string|undefined} */
   get role() {
-    if (!this.role_) {
-      throw new Error('Cannot get the value of role before it has been set');
-    }
     return this.role_;
   }
   /** @return {string|undefined} */
