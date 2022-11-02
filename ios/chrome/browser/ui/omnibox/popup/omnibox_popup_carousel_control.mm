@@ -34,6 +34,8 @@ const NSInteger kLabelNumLines = 2;
 
 // Corner radius of the context menu preview.
 const CGFloat kPreviewCornerRadius = 13.0f;
+// Corner radius of the icon's `backgroundView`.
+const CGFloat kBackgroundCornerRadius = 13.0f;
 
 // UILabel displaying text at the bottom of carousel item.
 UILabel* CarouselItemLabel() {
@@ -75,6 +77,23 @@ FaviconView* CarouselItemFaviconView() {
   return faviconView;
 }
 
+// CAGradientLayer for `backgroundView` when selected.
+CAGradientLayer* CarouselBackgroundGradientLayer() {
+  CAGradientLayer* gradientLayer = [[CAGradientLayer alloc] init];
+  gradientLayer.startPoint = CGPointMake(0, 0.5);
+  gradientLayer.endPoint = CGPointMake(1, 0.5);
+  UIColor* gradientStartColor =
+      [[UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"]
+          colorWithAlphaComponent:0.85];
+  UIColor* gradientEndColor =
+      [UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"];
+  gradientLayer.colors =
+      @[ (id)[gradientStartColor CGColor], (id)[gradientEndColor CGColor] ];
+  gradientLayer.cornerRadius = kBackgroundCornerRadius;
+  gradientLayer.cornerCurve = kCACornerCurveContinuous;
+  return gradientLayer;
+}
+
 }  // namespace
 
 @interface OmniboxPopupCarouselControl ()
@@ -85,6 +104,8 @@ FaviconView* CarouselItemFaviconView() {
 @property(nonatomic, strong) FaviconView* faviconView;
 // UILabel containing the text.
 @property(nonatomic, strong) UILabel* label;
+// Gradient layer for `backgroundView` when selected.
+@property(nonatomic, strong) CAGradientLayer* gradientLayer;
 
 @end
 
@@ -97,6 +118,7 @@ FaviconView* CarouselItemFaviconView() {
     _backgroundView = CarouselItemBackgroundView();
     _faviconView = CarouselItemFaviconView();
     _carouselItem = nil;
+    _gradientLayer = CarouselBackgroundGradientLayer();
   }
   return self;
 }
@@ -104,11 +126,15 @@ FaviconView* CarouselItemFaviconView() {
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
   if (selected) {
-    self.backgroundColor =
-        [UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"];
+    [self.backgroundView.layer addSublayer:self.gradientLayer];
   } else {
-    self.backgroundColor = UIColor.clearColor;
+    [self.gradientLayer removeFromSuperlayer];
   }
+}
+
+- (void)layoutSubviews {
+  self.gradientLayer.frame = self.backgroundView.bounds;
+  [super layoutSubviews];
 }
 
 - (void)addSubviews {
