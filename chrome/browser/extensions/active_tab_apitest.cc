@@ -48,7 +48,13 @@ class ExtensionActiveTabTest : public ExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1380627): Flaky on Mac.
+#define MAYBE_ActiveTab DISABLED_ActiveTab
+#else
+#define MAYBE_ActiveTab ActiveTab
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, MAYBE_ActiveTab) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   ExtensionTestMessageListener background_page_ready("ready");
