@@ -6,10 +6,8 @@ package org.chromium.webengine.interfaces;
 
 import android.os.Bundle;
 import org.chromium.webengine.interfaces.IWebFragmentDelegateClient;
-import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ITabListObserverDelegate;
-import org.chromium.webengine.interfaces.ITabProxy;
-import org.chromium.webengine.interfaces.ITabCallback;
+
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
 // Next value: 20
@@ -36,8 +34,5 @@ oneway interface IWebFragmentDelegate {
     void retrieveContentViewRenderView() = 12;
 
     // Tab operations.
-    void getActiveTab(ITabCallback callback) = 14;
     void setTabListObserverDelegate(ITabListObserverDelegate tabListObserverDelegate) = 15;
-    void tryNavigateBack(IBooleanCallback callback) = 17;
-    void createTab(ITabCallback callback) = 18;
 }

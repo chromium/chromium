@@ -28,6 +28,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.webengine.interfaces.ICookieManagerDelegate;
+import org.chromium.webengine.interfaces.ITabManagerDelegate;
 import org.chromium.webengine.interfaces.IWebFragmentDelegate;
 import org.chromium.webengine.interfaces.IWebFragmentDelegateClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
@@ -64,7 +65,11 @@ public class WebFragment extends Fragment {
         @Override
         public void onStarted(Bundle instanceState) {
             mInstanceState = instanceState;
-            mTabManager = new TabManager(mDelegate);
+        }
+
+        @Override
+        public void onTabManagerReady(ITabManagerDelegate delegate) {
+            mTabManager = new TabManager(delegate);
             mTabManagerCompleter.set(mTabManager);
         }
 

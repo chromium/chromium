@@ -18,8 +18,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.chromium.webengine.interfaces.ExceptionType;
 import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ITabCallback;
+import org.chromium.webengine.interfaces.ITabManagerDelegate;
 import org.chromium.webengine.interfaces.ITabParams;
-import org.chromium.webengine.interfaces.IWebFragmentDelegate;
 
 /**
  * Class for interaction with WebFragment Tabs.
@@ -28,7 +28,7 @@ import org.chromium.webengine.interfaces.IWebFragmentDelegate;
  * Access only via ListenableFuture through WebFragment.
  */
 public class TabManager {
-    private IWebFragmentDelegate mDelegate;
+    private ITabManagerDelegate mDelegate;
 
     private final class RequestNavigationCallback extends IBooleanCallback.Stub {
         private CallbackToFutureAdapter.Completer<Boolean> mCompleter;
@@ -66,7 +66,7 @@ public class TabManager {
         }
     };
 
-    TabManager(IWebFragmentDelegate delegate) {
+    TabManager(ITabManagerDelegate delegate) {
         mDelegate = delegate;
     }
 
