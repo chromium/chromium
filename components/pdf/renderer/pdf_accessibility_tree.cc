@@ -14,9 +14,9 @@
 #include "base/i18n/break_iterator.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
-#include "base/ranges/ranges.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
@@ -46,6 +46,41 @@
 namespace pdf {
 
 namespace ranges = base::ranges;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+// Handles the connection to the Screen AI Service which can perform OCR on
+// images.
+class PdfOcrService final {
+ public:
+  PdfOcrService(const ui::AXTreeID& parent_tree_id,
+                content::RenderFrame& render_frame)
+      : parent_tree_id_(parent_tree_id) {
+    if (features::IsPdfOcrEnabled()) {
+      render_frame.GetBrowserInterfaceBroker()->GetInterface(
+          screen_ai_annotator_.BindNewPipeAndPassReceiver());
+    }
+  }
+
+  PdfOcrService(const PdfOcrService&) = delete;
+  PdfOcrService& operator=(const PdfOcrService&) = delete;
+  ~PdfOcrService() = default;
+
+  // Sends the given image to the Screen AIService for processing.
+  bool ScheduleImageProcessing(
+      const chrome_pdf::AccessibilityImageInfo& image,
+      screen_ai::mojom::ScreenAIAnnotator::AnnotateCallback callback) {
+    if (!screen_ai_annotator_.is_bound())
+      return false;
+    screen_ai_annotator_->Annotate(image.image_data, parent_tree_id_,
+                                   std::move(callback));
+    return true;
+  }
+
+ private:
+  mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
+  const ui::AXTreeID parent_tree_id_;
+};
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace {
 
@@ -374,44 +409,6 @@ ax::mojom::Role GetRoleForButtonType(chrome_pdf::ButtonType button_type) {
   }
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-class PdfOcrService final {
- public:
-  using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeID&)>;
-
-  explicit PdfOcrService(const ui::AXTreeID& parent_tree_id)
-      : parent_tree_id_(parent_tree_id) {}
-
-  ~PdfOcrService() = default;
-
-  PdfOcrService(const PdfOcrService&) = delete;
-  PdfOcrService& operator=(const PdfOcrService&) = delete;
-
-  // Creates the connection with ScreenAI service.
-  void Initialize(content::RenderFrame& render_frame) {
-    DCHECK(!screen_ai_annotator_.is_bound());
-
-    render_frame.GetBrowserInterfaceBroker()->GetInterface(
-        screen_ai_annotator_.BindNewPipeAndPassReceiver());
-  }
-
-  // Sends the given image to ScreenAIService for processing.
-  bool ScheduleImageProcessing(const chrome_pdf::AccessibilityImageInfo& image,
-                               AnnotationCallback callback) {
-    if (!screen_ai_annotator_.is_bound())
-      return false;
-
-    screen_ai_annotator_->Annotate(image.image_data, parent_tree_id_,
-                                   std::move(callback));
-    return true;
-  }
-
- private:
-  mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
-  const ui::AXTreeID parent_tree_id_;
-};
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 class PdfAccessibilityTreeBuilder {
  public:
   PdfAccessibilityTreeBuilder(
@@ -422,14 +419,17 @@ class PdfAccessibilityTreeBuilder {
       const gfx::RectF& page_bounds,
       uint32_t page_index,
       ui::AXNodeData* page_node,
-      content::RenderFrame* render_frame,
       content::RenderAccessibility* render_accessibility,
-      const ui::AXTreeID& tree_id,
       std::vector<std::unique_ptr<ui::AXNodeData>>* nodes,
       std::map<int32_t, chrome_pdf::PageCharacterIndex>*
           node_id_to_page_char_index,
       std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>*
-          node_id_to_annotation_info)
+          node_id_to_annotation_info
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      ,
+      PdfOcrService* ocr_service
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      )
       : pdf_accessibility_tree_(std::move(pdf_accessibility_tree)),
         text_runs_(text_runs),
         chars_(chars),
@@ -448,7 +448,7 @@ class PdfAccessibilityTreeBuilder {
         node_id_to_annotation_info_(node_id_to_annotation_info)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
         ,
-        ocr_service_(tree_id)
+        ocr_service_(ocr_service)
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   {
     if (!text_runs.empty()) {
@@ -459,11 +459,6 @@ class PdfAccessibilityTreeBuilder {
                                           text_runs[i].len);
       }
     }
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    if (features::IsPdfOcrEnabled() && render_frame)
-      ocr_service_.Initialize(*render_frame);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   }
 
   PdfAccessibilityTreeBuilder(const PdfAccessibilityTreeBuilder&) = delete;
@@ -1147,9 +1142,8 @@ class PdfAccessibilityTreeBuilder {
       ui::AXNodeData* image_node = CreateImageNode(images_[i]);
       para_node->child_ids.push_back(image_node->id);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      if (features::IsPdfOcrEnabled() &&
-          !images_[i].image_data.drawsNothing()) {
-        ocr_service_.ScheduleImageProcessing(
+      if (!images_[i].image_data.drawsNothing() && ocr_service_) {
+        ocr_service_->ScheduleImageProcessing(
             images_[i], base::BindOnce(&PdfAccessibilityTree::OnOcrDataReceived,
                                        pdf_accessibility_tree_, image_node->id,
                                        images_[i].bounds, para_node->id));
@@ -1213,7 +1207,7 @@ class PdfAccessibilityTreeBuilder {
   float paragraph_spacing_threshold_ = 0;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  PdfOcrService ocr_service_;
+  PdfOcrService* ocr_service_ = nullptr;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
 
@@ -1228,6 +1222,16 @@ PdfAccessibilityTree::PdfAccessibilityTree(
   DCHECK(render_frame);
   DCHECK(action_handler_);
   MaybeHandleAccessibilityChange();
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsPdfOcrEnabled() && render_frame) {
+    content::RenderAccessibility* render_accessibility =
+        GetRenderAccessibilityIfEnabled();
+    DCHECK(render_accessibility);
+    ocr_service_ = std::make_unique<PdfOcrService>(
+        render_accessibility->GetTreeIDForPluginHost(), *render_frame);
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 PdfAccessibilityTree::~PdfAccessibilityTree() {
@@ -1528,9 +1532,13 @@ void PdfAccessibilityTree::AddPageContent(
   DCHECK(render_accessibility);
   PdfAccessibilityTreeBuilder tree_builder(
       GetWeakPtr(), text_runs, chars, page_objects, page_bounds, page_index,
-      page_node, render_frame_, render_accessibility,
-      render_accessibility->GetTreeIDForPluginHost(), &nodes_,
-      &node_id_to_page_char_index_, &node_id_to_annotation_info_);
+      page_node, render_accessibility, &nodes_, &node_id_to_page_char_index_,
+      &node_id_to_annotation_info_
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      ,
+      ocr_service_.get()
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  );
   tree_builder.BuildPageTree();
 }
 
@@ -1648,8 +1656,7 @@ PdfAccessibilityTree::GetRenderAccessibilityIfEnabled() {
   // If RenderAccessibility is unable to generate valid positive IDs,
   // we shouldn't use it. This can happen if Blink accessibility is disabled
   // after we started generating the accessible PDF.
-  base::WeakPtr<PdfAccessibilityTree> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<PdfAccessibilityTree> weak_this = GetWeakPtr();
   if (render_accessibility->GenerateAXID() <= 0)
     return nullptr;
 
@@ -1794,8 +1801,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   // page_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsAutoGenerated,
   // true);
   page_node->relative_bounds.bounds = image_bounds;
-  page_node->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                child_tree_id.ToString());
+  page_node->AddChildTreeId(child_tree_id);
 
   int num_erased = base::EraseIf(nodes_, [&image_node_id](const auto& node) {
     return node->id == image_node_id;
