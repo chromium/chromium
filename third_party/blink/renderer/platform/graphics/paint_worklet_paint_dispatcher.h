@@ -42,6 +42,7 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
   PaintWorkletPaintDispatcher(const PaintWorkletPaintDispatcher&) = delete;
   PaintWorkletPaintDispatcher& operator=(const PaintWorkletPaintDispatcher&) =
       delete;
+  virtual ~PaintWorkletPaintDispatcher() = default;
 
   // Dispatches a set of paint class instances - each represented by a
   // PaintWorkletInput - to the appropriate PaintWorklet threads, asynchronously
@@ -83,6 +84,9 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
   const PaintWorkletPainterToTaskRunnerMap& PainterMapForTesting() const {
     return painter_map_;
   }
+
+ protected:
+  virtual scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner();
 
  private:
   // Called when results are available for the previous call to

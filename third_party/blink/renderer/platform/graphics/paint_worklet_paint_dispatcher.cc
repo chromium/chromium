@@ -12,8 +12,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -80,7 +80,7 @@ void PaintWorkletPaintDispatcher::DispatchWorklets(
   ongoing_jobs_ = std::move(worklet_job_map);
 
   scoped_refptr<base::SingleThreadTaskRunner> runner =
-      Thread::Current()->GetDeprecatedTaskRunner();
+      GetCompositorTaskRunner();
   WTF::CrossThreadClosure on_done = CrossThreadBindRepeating(
       [](base::WeakPtr<PaintWorkletPaintDispatcher> dispatcher,
          scoped_refptr<base::SingleThreadTaskRunner> runner) {
@@ -144,6 +144,13 @@ void PaintWorkletPaintDispatcher::AsyncPaintDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("cc", "PaintWorkletPaintDispatcher::AsyncPaintDone");
   std::move(on_async_paint_complete_).Run(std::move(ongoing_jobs_));
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+PaintWorkletPaintDispatcher::GetCompositorTaskRunner() {
+  DCHECK(Thread::CompositorThread());
+  DCHECK(Thread::CompositorThread()->IsCurrentThread());
+  return Thread::CompositorThread()->GetTaskRunner();
 }
 
 }  // namespace blink
