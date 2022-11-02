@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.LacrosFre.WelcomeHasGivenName" enum="Boolean"
-    expires_after="M106">
+    expires_after="M111">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
