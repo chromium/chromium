@@ -41,4 +41,10 @@ class Jetstream2(press._PressBenchmark): # pylint: disable=protected-access
     return 'jetstream2'
 
   def CreateStorySet(self, options):
-    return page_sets.Jetstream2StorySet()
+    return page_sets.Jetstream2StorySet(options.test_list)
+
+  @classmethod
+  def AddBenchmarkCommandLineArgs(cls, parser):
+    parser.add_option('--test-list',
+                      type="string",
+                      help="Only run specific tests, seperated by commas.")

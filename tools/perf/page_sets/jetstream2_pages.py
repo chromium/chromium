@@ -10,8 +10,13 @@ class Jetstream2Story(press_story.PressStory):
   URL = 'http://browserbench.org/JetStream/'
   NAME = 'JetStream2'
 
-  def __init__(self, page_set):
+  def __init__(self, page_set, test_list):
     super(Jetstream2Story, self).__init__(page_set)
+    if test_list is not None:
+      assert not self.script_to_evaluate_on_commit
+      self.script_to_evaluate_on_commit = """
+          window.testList = "%s"
+      """ % (test_list)
 
   def ExecuteTest(self, action_runner):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
@@ -73,9 +78,9 @@ class Jetstream2Story(press_story.PressStory):
 
 
 class Jetstream2StorySet(story.StorySet):
-  def __init__(self):
+  def __init__(self, test_list=None):
     super(Jetstream2StorySet, self).__init__(
         archive_data_file='data/jetstream2.json',
         cloud_storage_bucket=story.INTERNAL_BUCKET)
 
-    self.AddStory(Jetstream2Story(self))
+    self.AddStory(Jetstream2Story(self, test_list))
