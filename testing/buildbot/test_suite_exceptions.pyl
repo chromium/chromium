@@ -1444,6 +1444,11 @@
     }
   },
   'chrome_public_unit_test_apk': {
+    'remove_from': [
+      'android-asan',  # https://crbug.com/964562
+      'android-code-coverage-native', # Does not generate profraw data.
+      'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
+    ],
     'modifications': {
       'android-12-x64-rel': {
         'args': [
