@@ -159,7 +159,7 @@ bool NSSDecryptor::ReadAndParseLogins(
   const base::Value* disabled_hosts =
       parsed_json->FindListKey("disabledHosts");
   if (disabled_hosts) {
-    for (const auto& value : disabled_hosts->GetListDeprecated()) {
+    for (const auto& value : disabled_hosts->GetList()) {
       if (!value.is_string())
         continue;
       forms->push_back(CreateBlockedPasswordForm(value.GetString()));
@@ -168,7 +168,7 @@ bool NSSDecryptor::ReadAndParseLogins(
 
   const base::Value* password_list = parsed_json->FindListKey("logins");
   if (password_list) {
-    for (const auto& value : password_list->GetListDeprecated()) {
+    for (const auto& value : password_list->GetList()) {
       if (!value.is_dict())
         continue;
 
