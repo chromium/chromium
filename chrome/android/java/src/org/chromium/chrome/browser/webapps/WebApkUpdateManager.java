@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Pair;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -379,7 +381,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     }
 
     /** Schedules update for when WebAPK is not running. */
-    private void scheduleUpdate() {
+    @VisibleForTesting
+    protected void scheduleUpdate() {
         WebApkUmaRecorder.recordUpdateRequestQueued(UpdateRequestQueued.TWICE);
         TaskInfo updateTask;
         if (mStorage.shouldForceUpdate()) {

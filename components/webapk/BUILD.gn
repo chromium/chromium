@@ -4,6 +4,17 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 proto_library("proto") {
   sources = [ "webapk.proto" ]
+}
+
+if (is_android) {
+  proto_java_library("proto_java") {
+    proto_path = "//"
+    sources = [ "webapk.proto" ]
+  }
 }

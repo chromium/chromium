@@ -1767,6 +1767,7 @@ if (current_toolchain == default_toolchain) {
       "//components/url_formatter/android:url_formatter_java",
       "//components/user_prefs/android:java",
       "//components/version_info/android:version_constants_java",
+      "//components/webapk:proto_java",
       "//components/webapk/android/libs/client:java",
       "//components/webapps/browser/android:java",
       "//components/webauthn/android:java",

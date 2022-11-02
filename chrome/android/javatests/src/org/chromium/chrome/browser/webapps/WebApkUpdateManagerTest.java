@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import android.content.Intent;
 
 import androidx.test.filters.MediumTest;
@@ -37,7 +40,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
+import org.chromium.components.webapk.proto.WebApkProto;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.components.webapps.WebApkUpdateReason;
 import org.chromium.components.webapps.WebappsIconUtils;
@@ -48,6 +53,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,6 +68,7 @@ import java.util.Map;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP})
+@EnableFeatures(ChromeFeatureList.WEB_APK_UNIQUE_ID)
 public class WebApkUpdateManagerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -114,6 +121,7 @@ public class WebApkUpdateManagerTest {
     private FeatureList.TestValues mTestValues;
 
     private List<Integer> mLastUpdateReasons;
+    private String mUpdateRequestPath;
 
     // Whether the dialog, to warn about icon/names changing, was shown.
     private boolean mIconOrNameUpdateDialogShown;
@@ -127,13 +135,17 @@ public class WebApkUpdateManagerTest {
      */
     private class TestWebApkUpdateManager extends WebApkUpdateManager {
         private CallbackHelper mWaiter;
+        private CallbackHelper mCompleteCallback;
         private boolean mAcceptDialogIfAppears;
 
-        public TestWebApkUpdateManager(CallbackHelper waiter, ActivityTabProvider tabProvider,
-                ActivityLifecycleDispatcher lifecycleDispatcher, boolean acceptDialogIfAppears) {
+        public TestWebApkUpdateManager(CallbackHelper waiter, CallbackHelper complete,
+                ActivityTabProvider tabProvider, ActivityLifecycleDispatcher lifecycleDispatcher,
+                boolean acceptDialogIfAppears) {
             super(tabProvider, lifecycleDispatcher);
             mWaiter = waiter;
+            mCompleteCallback = complete;
             mLastUpdateReasons = new ArrayList<>();
+            mUpdateRequestPath = null;
             mAcceptDialogIfAppears = acceptDialogIfAppears;
         }
 
@@ -150,6 +162,9 @@ public class WebApkUpdateManagerTest {
                 boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
                 Callback<Boolean> callback) {
             mLastUpdateReasons = updateReasons;
+            mUpdateRequestPath = updateRequestPath;
+            super.encodeIconsInBackground(updateRequestPath, info, primaryIconUrl, splashIconUrl,
+                    isManifestStale, isAppIdentityUpdateSupported, updateReasons, callback);
         }
 
         @Override
@@ -168,6 +183,11 @@ public class WebApkUpdateManagerTest {
         protected void onUserApprovedUpdate(int dismissalCause) {
             mUpdateRequested = dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
             super.onUserApprovedUpdate(dismissalCause);
+        }
+
+        @Override
+        protected void scheduleUpdate() {
+            if (mCompleteCallback != null) mCompleteCallback.notifyCalled();
         }
     }
 
@@ -231,12 +251,17 @@ public class WebApkUpdateManagerTest {
      /** Checks whether a WebAPK update is needed. */
     private boolean checkUpdateNeeded(
             final CreationData creationData, boolean acceptDialogIfAppears) throws Exception {
+        return checkUpdateNeeded(creationData, null, acceptDialogIfAppears);
+    }
+
+    private boolean checkUpdateNeeded(final CreationData creationData,
+            CallbackHelper completeCallback, boolean acceptDialogIfAppears) throws Exception {
         CallbackHelper waiter = new CallbackHelper();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TestWebApkUpdateManager updateManager =
-                    new TestWebApkUpdateManager(waiter, mActivity.getActivityTabProvider(),
-                            mActivity.getLifecycleDispatcher(), acceptDialogIfAppears);
+            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(waiter,
+                    completeCallback, mActivity.getActivityTabProvider(),
+                    mActivity.getLifecycleDispatcher(), acceptDialogIfAppears);
             WebappDataStorage storage =
                     WebappRegistry.getInstance().getWebappDataStorage(WEBAPK_ID);
             BrowserServicesIntentDataProvider intentDataProvider =
@@ -257,8 +282,21 @@ public class WebApkUpdateManagerTest {
         return !mLastUpdateReasons.isEmpty();
     }
 
+    /* Check that an update is needed and wait for it to complete. */
+    private void waitForUpdate(final CreationData creationData) throws Exception {
+        CallbackHelper waiter = new CallbackHelper();
+        Assert.assertTrue(
+                checkUpdateNeeded(creationData, waiter, true /* acceptDialogIfAppears */));
+        waiter.waitForCallback(0);
+    }
+
     private void assertUpdateReasonsEqual(@WebApkUpdateReason Integer... reasons) {
         Assert.assertEquals(Arrays.asList(reasons), mLastUpdateReasons);
+    }
+
+    private WebApkProto.WebApk parseRequestProto(String path) throws Exception {
+        FileInputStream requestFile = new FileInputStream(path);
+        return WebApkProto.WebApk.parseFrom(requestFile);
     }
 
     private void enableUpdateDialogForIcon(boolean enabled) {
@@ -625,5 +663,44 @@ public class WebApkUpdateManagerTest {
                 mTestServer, mTab, WEBAPK_MANIFEST_URL);
 
         Assert.assertFalse(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ false));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testUniqueIdUpdateFromLegacyApp() throws Exception {
+        CreationData legacyWebApkData = defaultCreationData();
+        legacyWebApkData.manifestId = null;
+        legacyWebApkData.backgroundColor -= 1;
+
+        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+                mTestServer, mTab, WEBAPK_MANIFEST_URL);
+        waitForUpdate(legacyWebApkData);
+
+        assertNotNull(mUpdateRequestPath);
+        WebApkProto.WebApk proto = parseRequestProto(mUpdateRequestPath);
+
+        assertEquals(proto.getAppKey(), mTestServer.getURL(WEBAPK_MANIFEST_URL));
+        assertEquals(proto.getManifest().getId(), mTestServer.getURL(WEBAPK_START_URL));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testUniqueIdUpdateKeepId() throws Exception {
+        CreationData creationData = defaultCreationData();
+        creationData.manifestId = mTestServer.getURL(WEBAPK_START_URL);
+        creationData.appKey = mTestServer.getURL("/appKey");
+        creationData.backgroundColor -= 1;
+
+        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+                mTestServer, mTab, WEBAPK_MANIFEST_URL);
+        waitForUpdate(creationData);
+
+        assertNotNull(mUpdateRequestPath);
+        WebApkProto.WebApk proto = parseRequestProto(mUpdateRequestPath);
+
+        assertEquals(proto.getAppKey(), creationData.appKey);
+        assertEquals(proto.getManifest().getId(), creationData.manifestId);
     }
 }

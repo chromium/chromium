@@ -8,6 +8,9 @@ option optimize_for = LITE_RUNTIME;
 
 package webapk;
 
+option java_package = "org.chromium.components.webapk.proto";
+option java_outer_classname = "WebApkProto";
+
 // Response after creating or updating a WebAPK.
 message WebApkResponse {
   // Package name to install WebAPK at.
