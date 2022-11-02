@@ -7758,3 +7758,7 @@ crbug.com/1380381 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-no-fallb
 
 # Investigate the flake.
 crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.window.html [ Failure Pass ]
+
+# Sheriff 2022-11-02
+crbug.com/1380762 [ Mac12-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Failure ]
+crbug.com/1380762 [ Mac12-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Failure ]
