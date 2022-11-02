@@ -222,13 +222,22 @@ TEST_F(ProjectorControllerTest, OnAudioNodesChanged) {
 }
 
 TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailabilityChanged) {
-  controller_->OnSpeechRecognitionAvailabilityChanged(
-      SpeechRecognitionAvailability::kAvailable);
-  EXPECT_TRUE(controller_->IsEligible());
-
+  EXPECT_CALL(mock_client_,
+              OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+                  NewScreencastPreconditionState::kDisabled,
+                  {NewScreencastPreconditionReason::
+                       kOnDeviceSpeechRecognitionNotSupported})));
   controller_->OnSpeechRecognitionAvailabilityChanged(
       SpeechRecognitionAvailability::kOnDeviceSpeechRecognitionNotSupported);
-  EXPECT_FALSE(controller_->IsEligible());
+
+  ON_CALL(mock_client_, IsDriveFsMounted())
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_CALL(mock_client_,
+              OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+                  NewScreencastPreconditionState::kEnabled, {})));
+  controller_->OnSpeechRecognitionAvailabilityChanged(
+      SpeechRecognitionAvailability::kAvailable);
 }
 
 TEST_F(ProjectorControllerTest, EnableAnnotatorTool) {

@@ -194,12 +194,6 @@ void ProjectorControllerImpl::OnSpeechRecognitionStopped() {
   MaybeWrapUpRecording();
 }
 
-bool ProjectorControllerImpl::IsEligible() const {
-  return speech_recognition_availability_ ==
-             SpeechRecognitionAvailability::kAvailable ||
-         ProjectorController::AreExtendedProjectorFeaturesDisabled();
-}
-
 NewScreencastPrecondition
 ProjectorControllerImpl::GetNewScreencastPrecondition() const {
   NewScreencastPrecondition result;

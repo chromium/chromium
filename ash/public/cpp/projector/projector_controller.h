@@ -71,11 +71,6 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   // Called when speech recognition stopped.
   virtual void OnSpeechRecognitionStopped() = 0;
 
-  // Returns true if Projector screen recording feature is available on the
-  // device. If on device speech recognition is not available on device, then
-  // Projector is not eligible.
-  virtual bool IsEligible() const = 0;
-
   // Returns true if we can start a new Projector session.
   virtual NewScreencastPrecondition GetNewScreencastPrecondition() const = 0;
 
