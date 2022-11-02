@@ -29,3 +29,5 @@ Local modifications:
 - 006-use-sandbox-hook-for-open-object-file.patch: use the sandbox hook for
   the exposed helper for opening object files. This patch should be upstreamed.
 - 007-clang-format.patch: apply clang-format to make PRESUBMIT.py happy.
+- 008-sys-types-h.patch: include <sys/types.h> to get ssize_t on non-glibc
+  platforms

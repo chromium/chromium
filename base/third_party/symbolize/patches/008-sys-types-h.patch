@@ -1,0 +1,13 @@
+diff --git a/base/third_party/symbolize/symbolize.h b/base/third_party/symbolize/symbolize.h
+index 2a55c688aedfb..987569fdde67f 100644
+--- a/base/third_party/symbolize/symbolize.h
++++ b/base/third_party/symbolize/symbolize.h
+@@ -54,6 +54,8 @@
+ #ifndef BASE_SYMBOLIZE_H_
+ #define BASE_SYMBOLIZE_H_
+ 
++#include <sys/types.h>  // for ssize_t
++
+ #include "utilities.h"
+ #include "config.h"
+ #include "glog/logging.h"
