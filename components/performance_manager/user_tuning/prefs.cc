@@ -26,7 +26,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHighEfficiencyModeEnabled, false);
   registry->RegisterIntegerPref(
       kBatterySaverModeState,
-      static_cast<int>(BatterySaverModeState::kDisabled));
+      static_cast<int>(BatterySaverModeState::kEnabledBelowThreshold));
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
