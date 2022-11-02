@@ -5,9 +5,6 @@ current code is more or less in maintenance mode.
 
 ## Code Changes
 
-* Code health, especially breaking dependencies on deprecated base::Value
-  APIs (https://crbug.com/1312496) and migrating indexed loops to range loops
-  where it makes sense (https://crbug.com/1313075)
 * Investigate whether CryptoThreadPool is necessary, whether it is necessary
   for all operations, and whether it can be use some existing more generic
   thread pool rather than requiring a dedicated worker thread
