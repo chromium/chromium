@@ -156,8 +156,9 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
                                           const history::URLRows& deleted_rows);
   bool RemoveExpiredPhishGuardVerdicts(
       LoginReputationClientRequest::TriggerType trigger_type,
-      base::Value* cache_dictionary);
-  bool RemoveExpiredRealTimeUrlCheckVerdicts(base::Value* cache_dictionary);
+      base::Value::Dict& cache_dictionary);
+  bool RemoveExpiredRealTimeUrlCheckVerdicts(
+      base::Value::Dict& cache_dictionary);
 
   size_t GetPhishGuardVerdictCountForURL(
       const GURL& url,
