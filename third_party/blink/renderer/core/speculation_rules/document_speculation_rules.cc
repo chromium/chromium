@@ -157,16 +157,18 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   if (!host || !execution_context)
     return;
 
-  network::mojom::ReferrerPolicy referrer_policy =
+  network::mojom::ReferrerPolicy document_referrer_policy =
       execution_context->GetReferrerPolicy();
   String outgoing_referrer = execution_context->OutgoingReferrer();
 
   Vector<mojom::blink::SpeculationCandidatePtr> candidates;
-  auto push_candidates = [&candidates, &referrer_policy, &outgoing_referrer,
-                          &execution_context](
+  auto push_candidates = [&candidates, &document_referrer_policy,
+                          &outgoing_referrer, &execution_context](
                              mojom::blink::SpeculationAction action,
                              const HeapVector<Member<SpeculationRule>>& rules) {
     for (SpeculationRule* rule : rules) {
+      network::mojom::ReferrerPolicy referrer_policy =
+          rule->referrer_policy().value_or(document_referrer_policy);
       for (const KURL& url : rule->urls()) {
         Referrer referrer = SecurityPolicy::GenerateReferrer(
             referrer_policy, url, outgoing_referrer);

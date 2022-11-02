@@ -44,6 +44,7 @@ namespace {
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Not;
+using ::testing::PrintToString;
 
 // Convenience matcher for list rules that sub-matches on their URLs.
 class ListRuleMatcher {
@@ -91,6 +92,18 @@ MATCHER(RequiresAnonymousClientIPWhenCrossOrigin,
         negation ? "doesn't require anonymous client IP when cross origin"
                  : "requires anonymous client IP when cross origin") {
   return arg->requires_anonymous_client_ip_when_cross_origin();
+}
+
+MATCHER(SetsReferrerPolicy,
+        std::string(negation ? "doesn't set" : "sets") + " a referrer policy") {
+  return arg->referrer_policy().has_value();
+}
+
+MATCHER_P(ReferrerPolicyIs,
+          policy,
+          std::string(negation ? "doesn't have" : "has") + " " +
+              PrintToString(policy) + " as the referrer policy") {
+  return arg->referrer_policy() == policy;
 }
 
 class SpeculationRuleSetTest : public ::testing::Test {
@@ -266,6 +279,9 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
 }
 
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
+  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
+      true};
+
   auto* rule_set = SpeculationRuleSet::Parse(
       R"({"prefetch": [)"
 
@@ -283,6 +299,16 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
 
       // A rule with an unrecognized requirement.
       R"({"source": "list", "urls": ["/"], "requires": ["more-vespene-gas"]},)"
+
+      // A rule with a referrer_policy of incorrect type.
+      R"({"source": "list", "urls": ["/"], "referrer_policy": 42},)"
+
+      // A rule with an unrecognized referrer_policy.
+      R"({"source": "list", "urls": ["/"],
+          "referrer_policy": "no-referrrrrrrer"},)"
+
+      // A rule with a legacy value for referrer_policy.
+      R"({"source": "list", "urls": ["/"], "referrer_policy": "never"},)"
 
       // Invalid URLs within a list rule should be discarded.
       // This includes totally invalid ones and ones with unacceptable schemes.
@@ -396,6 +422,32 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_CaseInsensitive) {
               ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
   EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
             mojom::blink::SpeculationTargetHint::kBlank);
+}
+
+TEST_F(SpeculationRuleSetTest, ReferrerPolicy) {
+  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
+      true};
+
+  auto* rule_set = SpeculationRuleSet::Parse(
+      R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/index2.html"],
+          "referrer_policy": "strict-origin"
+        }, {
+          "source": "list",
+          "urls": ["https://example.com/index3.html"]
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(AllOf(MatchesListOfURLs("https://example.com/index2.html"),
+                        ReferrerPolicyIs(
+                            network::mojom::ReferrerPolicy::kStrictOrigin)),
+                  AllOf(MatchesListOfURLs("https://example.com/index3.html"),
+                        Not(SetsReferrerPolicy()))));
 }
 
 TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {

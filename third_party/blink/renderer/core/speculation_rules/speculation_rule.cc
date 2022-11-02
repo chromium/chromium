@@ -13,11 +13,13 @@ SpeculationRule::SpeculationRule(
     Vector<KURL> urls,
     DocumentRulePredicate* predicate,
     RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip,
-    absl::optional<mojom::blink::SpeculationTargetHint> target_hint)
+    absl::optional<mojom::blink::SpeculationTargetHint> target_hint,
+    absl::optional<network::mojom::ReferrerPolicy> referrer_policy)
     : urls_(std::move(urls)),
       predicate_(predicate),
       requires_anonymous_client_ip_(requires_anonymous_client_ip),
-      target_browsing_context_name_hint_(target_hint) {}
+      target_browsing_context_name_hint_(target_hint),
+      referrer_policy_(referrer_policy) {}
 
 SpeculationRule::~SpeculationRule() = default;
 

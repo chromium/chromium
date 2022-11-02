@@ -902,7 +902,10 @@
     "bases": [ "external/wpt/speculation-rules/prerender",
                "wpt_internal/prerender",
                "http/tests/inspector-protocol/prerender"],
-    "args": [ "--enable-features=SameSiteCrossOriginForSpeculationRulesPrerender" ]
+    "args": [
+      "--enable-blink-features=SpeculationRulesReferrerPolicyKey",
+      "--enable-features=SameSiteCrossOriginForSpeculationRulesPrerender"
+    ]
   },
   {
     "prefix": "no-different-origin-dialogs",
@@ -1281,7 +1284,7 @@
       "http/tests/inspector-protocol/prefetch"
     ],
     "args": [
-      "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader",
+      "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesReferrerPolicyKey",
       "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--isolated-prerender-allow-all-domains"

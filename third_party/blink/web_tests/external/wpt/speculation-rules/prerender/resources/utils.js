@@ -183,7 +183,12 @@ function createFrame(url) {
     });
 }
 
-async function create_prerendered_page(t, opt = {}, init_opt = {}) {
+// `opt` provides additional query params for the prerendered URL.
+// `init_opt` provides additional query params for the page that triggers
+// the prerender.
+// `rule_extras` provides additional parameters for the speculation rule used
+// to trigger prerendering.
+async function create_prerendered_page(t, opt = {}, init_opt = {}, rule_extras = {}) {
   const baseUrl = '/speculation-rules/prerender/resources/exec.py';
   const init_uuid = token();
   const prerender_uuid = token();
@@ -205,16 +210,16 @@ async function create_prerendered_page(t, opt = {}, init_opt = {}) {
     params.set(p, opt[p]);
   const url = `${baseUrl}?${params.toString()}`;
 
-  await init_remote.execute_script(url => {
+  await init_remote.execute_script((url, rule_extras) => {
       const a = document.createElement('a');
       a.href = url;
       a.innerText = 'Activate';
       document.body.appendChild(a);
       const rules = document.createElement('script');
       rules.type = "speculationrules";
-      rules.text = JSON.stringify({prerender: [{source: 'list', urls: [url]}]});
+      rules.text = JSON.stringify({prerender: [{source: 'list', urls: [url], ...rule_extras}]});
       document.head.appendChild(rules);
-  }, [url]);
+  }, [url, rule_extras]);
 
   await Promise.any([
     prerender_remote.execute_script(() => {

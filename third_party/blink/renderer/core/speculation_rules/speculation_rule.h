@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_SPECULATION_RULE_H_
 
 #include "base/types/strong_alias.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -31,7 +32,8 @@ class CORE_EXPORT SpeculationRule final
       Vector<KURL>,
       DocumentRulePredicate*,
       RequiresAnonymousClientIPWhenCrossOrigin,
-      absl::optional<mojom::blink::SpeculationTargetHint> target_hint);
+      absl::optional<mojom::blink::SpeculationTargetHint> target_hint,
+      absl::optional<network::mojom::ReferrerPolicy>);
   ~SpeculationRule();
 
   const Vector<KURL>& urls() const { return urls_; }
@@ -43,6 +45,9 @@ class CORE_EXPORT SpeculationRule final
   target_browsing_context_name_hint() const {
     return target_browsing_context_name_hint_;
   }
+  absl::optional<network::mojom::ReferrerPolicy> referrer_policy() const {
+    return referrer_policy_;
+  }
 
   void Trace(Visitor*) const;
 
@@ -52,6 +57,7 @@ class CORE_EXPORT SpeculationRule final
   const RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip_;
   const absl::optional<mojom::blink::SpeculationTargetHint>
       target_browsing_context_name_hint_;
+  const absl::optional<network::mojom::ReferrerPolicy> referrer_policy_;
 };
 
 }  // namespace blink

@@ -273,6 +273,9 @@ crbug.com/1218540 external/wpt/shared-storage/* [ Skip ]
 crbug.com/1218540 virtual/shared-storage-fenced-frame-mparch/* [ Pass ]
 crbug.com/1218540 virtual/shared-storage-fenced-frame-shadow-dom/* [ Pass ]
 
+# These tests require flags enabled under the virtual/prerender/ suite.
+crbug.com/1355146 external/wpt/speculation-rules/prerender/referrer-policy-from-rules.html* [ Skip ]
+crbug.com/1355146 virtual/prerender/external/wpt/speculation-rules/prerender/referrer-policy-from-rules.html* [ Pass ]
 # This test is originally added with external/wpt/speculation-rules/prerender/* skipped and broken.
 # TODO(https://crbug.com/1356449): Fix the test.
 crbug.com/1356449 external/wpt/speculation-rules/prerender/credentialed-prerender-opt-in.html [ Skip ]
