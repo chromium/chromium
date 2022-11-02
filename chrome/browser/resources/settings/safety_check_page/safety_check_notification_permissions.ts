@@ -56,11 +56,14 @@ export class SettingsSafetyCheckNotificationPermissionsElement extends
       },
 
       headerString_: String,
+
+      buttonAriaLabel_: String,
     };
   }
 
   private iconStatus_: SafetyCheckIconStatus;
   private headerString_: string;
+  private buttonAriaLabel_: string;
   private sites_: NotificationPermission[] = [];
   private siteSettingsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
@@ -94,6 +97,10 @@ export class SettingsSafetyCheckNotificationPermissionsElement extends
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckNotificationPermissionReviewHeaderLabel',
             this.sites_.length);
+    this.buttonAriaLabel_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckNotificationPermissionReviewPrimaryLabel',
+            this.sites_!.length);
   }
 }
 
