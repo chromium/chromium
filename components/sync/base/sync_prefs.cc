@@ -311,6 +311,8 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
       return prefs::kSyncTabs;
     case UserSelectableType::kWifiConfigurations:
       return prefs::kSyncWifiConfigurations;
+    case UserSelectableType::kSavedTabGroups:
+      return prefs::kSyncSavedTabGroups;
   }
   NOTREACHED();
   return nullptr;

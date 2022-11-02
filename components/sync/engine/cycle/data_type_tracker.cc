@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 
@@ -53,6 +54,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       return kVeryBigLocalChangeNudgeDelay;
     case SESSIONS:
     case HISTORY:
+    case SAVED_TAB_GROUP:
       // Sessions is the type that causes the most commit traffic. It gets a
       // custom nudge delay, tuned for a reasonable trade-off between traffic
       // and freshness.
@@ -161,6 +163,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case OS_PRIORITY_PREFERENCES:
     case WORKSPACE_DESK:
     case NIGORI:
+    case SAVED_TAB_GROUP:
     case PROXY_TABS:
       return false;
     case UNSPECIFIED:

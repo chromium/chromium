@@ -54,6 +54,7 @@ inline constexpr char kSyncTabs[] = "sync.tabs";
 inline constexpr char kSyncThemes[] = "sync.themes";
 inline constexpr char kSyncTypedUrls[] = "sync.typed_urls";
 inline constexpr char kSyncWifiConfigurations[] = "sync.wifi_configurations";
+inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 
 // Boolean used by enterprise configuration management in order to lock down
 // sync.

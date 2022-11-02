@@ -52,6 +52,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".PRIORITY_PREFERENCE" summary="PRIORITY_PREFERENCE"/>
   <variant name=".PROXY_TABS" summary="PROXY_TABS"/>
   <variant name=".READING_LIST" summary="READING_LIST"/>
+  <variant name=".SAVED_TAB_GROUPS" summary="SAVED_TAB_GROUPS"/>
   <variant name=".SEARCH_ENGINE" summary="SEARCH_ENGINE"/>
   <variant name=".SECURITY_EVENT" summary="SECURITY_EVENT"/>
   <variant name=".SEGMENTATION" summary="SEGMENTATION"/>

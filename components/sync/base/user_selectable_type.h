@@ -35,7 +35,8 @@ enum class UserSelectableType {
   kReadingList,
   kTabs,
   kWifiConfigurations,
-  kLastType = kWifiConfigurations
+  kSavedTabGroups,
+  kLastType = kSavedTabGroups
 };
 
 using UserSelectableTypeSet = base::EnumSet<UserSelectableType,

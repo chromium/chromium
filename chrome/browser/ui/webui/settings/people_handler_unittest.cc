@@ -105,6 +105,8 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
              types.Has(syncer::UserSelectableType::kPreferences));
   result.Set("readingListSynced",
              types.Has(syncer::UserSelectableType::kReadingList));
+  result.Set("savedTabGroupsSynced",
+             types.Has(syncer::UserSelectableType::kSavedTabGroups));
   result.Set("tabsSynced", types.Has(syncer::UserSelectableType::kTabs));
   result.Set("themesSynced", types.Has(syncer::UserSelectableType::kThemes));
   result.Set("typedUrlsSynced",
@@ -155,6 +157,8 @@ void CheckConfigDataTypeArguments(const base::Value::Dict& dictionary,
                    types.Has(syncer::UserSelectableType::kPreferences));
   ExpectHasBoolKey(dictionary, "readingListSynced",
                    types.Has(syncer::UserSelectableType::kReadingList));
+  ExpectHasBoolKey(dictionary, "savedTabGroupsSynced",
+                   types.Has(syncer::UserSelectableType::kSavedTabGroups));
   ExpectHasBoolKey(dictionary, "tabsSynced",
                    types.Has(syncer::UserSelectableType::kTabs));
   ExpectHasBoolKey(dictionary, "themesSynced",

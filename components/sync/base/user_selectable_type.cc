@@ -34,9 +34,10 @@ constexpr char kAppsTypeName[] = "apps";
 constexpr char kReadingListTypeName[] = "readingList";
 constexpr char kTabsTypeName[] = "tabs";
 constexpr char kWifiConfigurationsTypeName[] = "wifiConfigurations";
+constexpr char kSavedTabGroupsTypeName[] = "savedTabGroups";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(43 == syncer::GetNumModelTypes(),
+  static_assert(44 == syncer::GetNumModelTypes(),
                 "Almost always when adding a new ModelType, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -97,6 +98,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
               WIFI_CONFIGURATIONS,
               {WIFI_CONFIGURATIONS}};
 #endif
+    case UserSelectableType::kSavedTabGroups:
+      return {kSavedTabGroupsTypeName, SAVED_TAB_GROUP, {SAVED_TAB_GROUP}};
   }
   NOTREACHED();
   return {nullptr, UNSPECIFIED, {}};
@@ -168,6 +171,9 @@ absl::optional<UserSelectableType> GetUserSelectableTypeFromString(
   }
   if (type == kWifiConfigurationsTypeName) {
     return UserSelectableType::kWifiConfigurations;
+  }
+  if (type == kSavedTabGroupsTypeName) {
+    return UserSelectableType::kSavedTabGroups;
   }
   return absl::nullopt;
 }

@@ -140,6 +140,9 @@ enum ModelType {
   PRINTERS_AUTHORIZATION_SERVERS,
   // Contact information from the Google Address Storage.
   CONTACT_INFO,
+  // A tab group saved by a user. Currently only supported on desktop platforms
+  // (Linux, Mac, Windows, ChromeOS).
+  SAVED_TAB_GROUP,
 
   // Proxy types are excluded from the sync protocol, but are still considered
   // real user types. By convention, we prefix them with 'PROXY_' to distinguish
@@ -241,7 +244,8 @@ enum class ModelTypeForHistograms {
   kContactInfo = 53,
   kAutofillWalletUsage = 54,
   kSegmentation = 55,
-  kMaxValue = kSegmentation
+  kSavedTabGroups = 56,
+  kMaxValue = kSavedTabGroups
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -258,14 +262,14 @@ constexpr ModelTypeSet ProtocolTypes() {
   return ModelTypeSet(
       BOOKMARKS, PREFERENCES, PASSWORDS, AUTOFILL_PROFILE, AUTOFILL,
       AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
-      AUTOFILL_WALLET_USAGE, THEMES, TYPED_URLS, EXTENSIONS,
-      SEARCH_ENGINES, SESSIONS, APPS, APP_SETTINGS, EXTENSION_SETTINGS,
+      AUTOFILL_WALLET_USAGE, THEMES, TYPED_URLS, EXTENSIONS, SEARCH_ENGINES,
+      SESSIONS, APPS, APP_SETTINGS, EXTENSION_SETTINGS,
       HISTORY_DELETE_DIRECTIVES, DICTIONARY, DEVICE_INFO, PRIORITY_PREFERENCES,
       SUPERVISED_USER_SETTINGS, APP_LIST, ARC_PACKAGE, PRINTERS, READING_LIST,
       USER_EVENTS, NIGORI, USER_CONSENTS, SEND_TAB_TO_SELF, SECURITY_EVENTS,
       WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES, OS_PRIORITY_PREFERENCES,
       SHARING_MESSAGE, WORKSPACE_DESK, HISTORY, PRINTERS_AUTHORIZATION_SERVERS,
-      CONTACT_INFO);
+      CONTACT_INFO, SAVED_TAB_GROUP);
 }
 
 // These are the normal user-controlled types. This is to distinguish from
