@@ -109,7 +109,8 @@ class ArcAppListPrefs : public KeyedService,
             bool need_fixup,
             absl::optional<uint64_t> app_size_in_bytes,
             absl::optional<uint64_t> data_size_in_bytes);
-    AppInfo(const AppInfo& other);
+    AppInfo(AppInfo&& other);
+    AppInfo& operator=(AppInfo&& other);
     ~AppInfo();
 
     std::string name;

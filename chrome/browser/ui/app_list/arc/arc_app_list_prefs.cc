@@ -2374,7 +2374,10 @@ ArcAppListPrefs::AppInfo::AppInfo(
   DCHECK(launchable || !show_in_launcher);
 }
 
-ArcAppListPrefs::AppInfo::AppInfo(const AppInfo& other) = default;
+ArcAppListPrefs::AppInfo::AppInfo(AppInfo&& other) = default;
+
+ArcAppListPrefs::AppInfo& ArcAppListPrefs::AppInfo::operator=(AppInfo&& other) =
+    default;
 
 // Need to add explicit destructor for chromium style checker error:
 // Complex class/struct needs an explicit out-of-line destructor
