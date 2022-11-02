@@ -2110,11 +2110,10 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 //
 // Disable these test on Windows, since they run slower, so tend to timout and
 // cause flake.
-//
-// For Fuchsia, see https://crbug.com/779645.
 #if !BUILDFLAG(IS_WIN) &&          \
     (!defined(ARCH_CPU_64_BITS) || \
-     (BUILDFLAG(IS_POSIX) && !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID))))
+     (BUILDFLAG(IS_POSIX) && !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)))) || \
+    BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_RepeatedAllocReturnNullDirect RepeatedAllocReturnNullDirect
 #define MAYBE_RepeatedReallocReturnNullDirect RepeatedReallocReturnNullDirect
 #define MAYBE_RepeatedTryReallocReturnNullDirect \
