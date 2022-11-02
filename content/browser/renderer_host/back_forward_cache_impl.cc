@@ -1437,8 +1437,8 @@ bool BackForwardCacheImpl::IsScreenReaderAllowed() {
 void BackForwardCacheImpl::VlogUnexpectedRendererToBrowserMessage(
     const char* interface_name,
     uint32_t message_name) {
-  VLOG(1) << "BackForwardCacheMessageFilter::WillDispatch bad_message"
-          << "interface_name" << interface_name << "message_name"
+  VLOG(1) << "BackForwardCacheMessageFilter::WillDispatch bad_message "
+          << "interface_name " << interface_name << "message_name "
           << message_name;
 }
 
