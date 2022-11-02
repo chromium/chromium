@@ -1901,7 +1901,7 @@
   {
     "name": "enable-critical-persisted-tab-data",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 120
   },
   {
     "name": "enable-cros-action-recorder",
