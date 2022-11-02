@@ -155,26 +155,6 @@ CGColorSpaceRef GetSystemColorSpace() {
   return g_system_color_space;
 }
 
-bool CheckLoginItemStatus(bool* is_hidden) {
-  LoginItemsFileList login_items;
-  if (!login_items.Initialize())
-    return false;
-
-  base::ScopedCFTypeRef<LSSharedFileListItemRef> item(
-      login_items.GetLoginItemForMainApp());
-  if (!item.get())
-    return false;
-
-  if (is_hidden)
-    *is_hidden = IsHiddenLoginItem(item);
-
-  return true;
-}
-
-void AddToLoginItems(bool hide_on_startup) {
-  AddToLoginItems(base::mac::MainBundlePath(), hide_on_startup);
-}
-
 void AddToLoginItems(const FilePath& app_bundle_file_path,
                      bool hide_on_startup) {
   LoginItemsFileList login_items;
@@ -213,10 +193,6 @@ void AddToLoginItems(const FilePath& app_bundle_file_path,
   if (!new_item.get()) {
     DLOG(ERROR) << "Couldn't insert current app into Login Items list.";
   }
-}
-
-void RemoveFromLoginItems() {
-  RemoveFromLoginItems(base::mac::MainBundlePath());
 }
 
 void RemoveFromLoginItems(const FilePath& app_bundle_file_path) {

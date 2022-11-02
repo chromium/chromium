@@ -24,7 +24,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -372,11 +371,6 @@ BackgroundModeManager::~BackgroundModeManager() {
 
 // static
 void BackgroundModeManager::RegisterPrefs(PrefRegistrySimple* registry) {
-#if BUILDFLAG(IS_MAC)
-  registry->RegisterBooleanPref(prefs::kUserRemovedLoginItem, false);
-  registry->RegisterBooleanPref(prefs::kChromeCreatedLoginItem, false);
-  registry->RegisterBooleanPref(prefs::kMigratedLoginItemPref, false);
-#endif
   registry->RegisterBooleanPref(prefs::kBackgroundModeEnabled, true);
 }
 
@@ -874,6 +868,8 @@ void BackgroundModeManager::UpdateEnableLaunchOnStartup() {
   EnableLaunchOnStartup(*launch_on_startup_enabled_);
 }
 
+namespace {
+
 // Gets the image for the status tray icon, at the correct size for the current
 // platform and display settings.
 gfx::ImageSkia GetStatusTrayIcon() {
@@ -905,6 +901,8 @@ gfx::ImageSkia GetStatusTrayIcon() {
   return gfx::ImageSkia();
 #endif
 }
+
+}  // namespace
 
 void BackgroundModeManager::CreateStatusTrayIcon() {
   // Only need status icons on windows/linux. ChromeOS doesn't allow exiting

@@ -775,6 +775,15 @@ const char kSuggestedContentInfoDismissedInLauncher[] =
     "ash.launcher.suggested_content_info_dismissed";
 #endif
 
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE) && BUILDFLAG(IS_MAC)
+// Deprecated 11/2022.
+const char kUserRemovedLoginItem[] = "background_mode.user_removed_login_item";
+const char kChromeCreatedLoginItem[] =
+    "background_mode.chrome_created_login_item";
+const char kMigratedLoginItemPref[] =
+    "background_mode.migrated_login_item_pref";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -836,6 +845,13 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Deprecated 09/2022
   registry->RegisterDictionaryPref(kUsersLastInputMethod);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 11/2022.
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE) && BUILDFLAG(IS_MAC)
+  registry->RegisterBooleanPref(kUserRemovedLoginItem, false);
+  registry->RegisterBooleanPref(kChromeCreatedLoginItem, false);
+  registry->RegisterBooleanPref(kMigratedLoginItemPref, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1742,6 +1758,13 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 09/2022
   local_state->ClearPref(kUsersLastInputMethod);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE) && BUILDFLAG(IS_MAC)
+  // Added 11/2022.
+  local_state->ClearPref(kUserRemovedLoginItem);
+  local_state->ClearPref(kChromeCreatedLoginItem);
+  local_state->ClearPref(kMigratedLoginItemPref);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

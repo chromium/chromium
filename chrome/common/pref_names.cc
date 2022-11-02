@@ -2804,20 +2804,6 @@ const char kCloudPrintSubmitEnabled[] = "cloud_print.submit_enabled";
 const char kMaxConnectionsPerProxy[] = "net.max_connections_per_proxy";
 
 #if BUILDFLAG(IS_MAC)
-// Set to true if the user removed our login item so we should not create a new
-// one when uninstalling background apps.
-const char kUserRemovedLoginItem[] = "background_mode.user_removed_login_item";
-
-// Set to true if Chrome already created a login item, so there's no need to
-// create another one.
-const char kChromeCreatedLoginItem[] =
-    "background_mode.chrome_created_login_item";
-
-// Set to true once we've initialized kChromeCreatedLoginItem for the first
-// time.
-const char kMigratedLoginItemPref[] =
-    "background_mode.migrated_login_item_pref";
-
 // A boolean that tracks whether to show a notification when trying to quit
 // while there are apps running.
 const char kNotifyWhenAppsKeepChromeAlive[] =

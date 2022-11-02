@@ -31,19 +31,6 @@ BASE_EXPORT CGColorSpaceRef GetGenericRGBColorSpace();
 // is a static value; do not release it!
 BASE_EXPORT CGColorSpaceRef GetSystemColorSpace();
 
-// Checks if the current application is set as a Login Item, so it will launch
-// on Login. If a non-NULL pointer to is_hidden is passed, the Login Item also
-// is queried for the 'hide on launch' flag.
-BASE_EXPORT bool CheckLoginItemStatus(bool* is_hidden);
-
-// Adds current application to the set of Login Items with specified "hide"
-// flag. This has the same effect as adding/removing the application in
-// SystemPreferences->Accounts->LoginItems or marking Application in the Dock
-// as "Options->Open on Login".
-// Does nothing if the application is already set up as Login Item with
-// specified hide flag.
-BASE_EXPORT void AddToLoginItems(bool hide_on_startup);
-
 // Adds the specified application to the set of Login Items with specified
 // "hide" flag. This has the same effect as adding/removing the application in
 // SystemPreferences->Accounts->LoginItems or marking Application in the Dock
@@ -53,10 +40,7 @@ BASE_EXPORT void AddToLoginItems(bool hide_on_startup);
 BASE_EXPORT void AddToLoginItems(const FilePath& app_bundle_file_path,
                                  bool hide_on_startup);
 
-// Removes the current application from the list Of Login Items.
-BASE_EXPORT void RemoveFromLoginItems();
-
-// Removes the specified application from the list Of Login Items.
+// Removes the specified application from the list of Login Items.
 BASE_EXPORT void RemoveFromLoginItems(const FilePath& app_bundle_file_path);
 
 // Returns true if the current process was automatically launched as a

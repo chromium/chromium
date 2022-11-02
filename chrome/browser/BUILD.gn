@@ -6850,7 +6850,7 @@ static_library("browser") {
       sources += [ "background/background_mode_manager_win.cc" ]
     }
     if (is_mac) {
-      sources += [ "background/background_mode_manager_mac.mm" ]
+      sources += [ "background/background_mode_manager_mac.cc" ]
     }
     if (is_chromeos_ash) {
       sources += [ "background/background_mode_manager_chromeos.cc" ]
