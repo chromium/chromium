@@ -1,0 +1,172 @@
+-- Find causes for CPUs powering up.
+--
+-- Copyright 2022 The Chromium Authors
+--
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- The scripts below analyse traces with the following tracing options
+-- enabled:
+--
+--  - Linux kernel:
+---    "power/*", "sched/*", "task/*",
+--  - Chromium:
+--      "toplevel", "toplevel.flow".
+
+-- Tables of note:
+--
+--   first_top_level_slice_after_cpu_power_up :: Top-level slices that ran
+--      after a CPU power-up.
+
+-- The CPU power transitions in the trace.
+--
+-- Schema:
+--   ts          : The timestamp at the start of the slice.
+--   dur         : The duration of the slice.
+--   cpu         : The CPU on which the transition occurred
+--   power_state : The power state that the CPU was in at time 'ts' for
+--                 duration 'dur'.
+--   previous_power_state : The power state that the CPU was previously in.
+--   power_slice_id       : A unique ID for the slice.
+--
+-- Power states are encoded as non-negative integers, with zero representing
+-- full-power operation and positive values representing increasingly deep
+-- sleep states.
+--
+-- On ARM systems, power state 1 represents the WFI (Wait For Interrupt) sleep
+-- state that the CPU enters while idle.
+DROP VIEW IF EXISTS cpu_power_slice;
+CREATE VIEW cpu_power_slice AS
+  WITH cpu_power_states AS (
+    SELECT
+      c.id AS id,
+      cct.cpu AS cpu,
+      c.ts AS ts,
+      -- Encode the 'value' field as a power state.
+      CAST((CASE c.value WHEN 4294967295 THEN 0 ELSE c.value + 1 END)
+        AS INT) AS power_state
+    FROM counter AS c
+    JOIN cpu_counter_track AS cct
+      ON c.track_id = cct.id
+    WHERE cct.name = 'cpuidle'
+  )
+  SELECT *
+  FROM (
+    SELECT
+      ts,
+      LEAD(ts) OVER (PARTITION BY cpu ORDER BY ts ASC) - ts
+        AS dur,
+      cpu,
+      power_state,
+      LAG(power_state) OVER (PARTITION BY cpu ORDER BY ts ASC)
+        AS previous_power_state,
+      id AS power_slice_id
+    FROM cpu_power_states
+  )
+  WHERE dur IS NOT NULL
+    AND previous_power_state IS NOT NULL
+    AND power_state = 0                      -- Track full-power states.
+    AND power_state != previous_power_state  -- Skip missing spans.
+    ORDER BY ts ASC;
+
+-- We do not want scheduler slices with utid = 0 (the 'swapper' kernel thread).
+DROP VIEW IF EXISTS valid_sched_slice;
+CREATE VIEW valid_sched_slice AS
+  SELECT *
+  FROM sched_slice
+  WHERE utid != 0;
+
+-- Join scheduler slices with the spans with CPU power slices.
+--
+-- There multiple scheduler slices could fall into one CPU power slice.
+--
+---  CPU Power:
+--   |----------------------------|....................|---------|
+--   A       <cpu active>         B     <cpu idling>   C         D
+
+--   Scheduler slices on that CPU:
+--     |-----T1-----| |....T2....|                      |---T3--|
+--     E            F G          H                      I       J
+--
+-- Here threads T1 and T2 executed in CPU power slice [A,B].  The
+-- time between F and G represents time between threads in the kernel.
+DROP TABLE IF EXISTS sched_and_power_slice;
+CREATE VIRTUAL TABLE sched_and_power_slice
+USING
+  SPAN_JOIN(cpu_power_slice PARTITIONED cpu,
+            valid_sched_slice PARTITIONED cpu);
+
+-- The Linux scheduler slices that executed immediately after a
+-- CPU power up.
+--
+-- Schema:
+--   ts         : The timestamp at the start of the slice.
+--   dur        : The duration of the slice.
+--   cpu        : The cpu on which the slice executed.
+--   sched_id   : Id for the sched_slice table.
+--   utid       : Unique id for the thread that ran within the slice.
+--   previous_power_state : The CPU's power state before this slice.
+DROP VIEW IF EXISTS first_sched_slice_after_cpu_power_up;
+CREATE VIEW first_sched_slice_after_cpu_power_up AS
+  SELECT
+    ts,
+    dur,
+    cpu,
+    id,
+    utid,
+    previous_power_state,
+    power_slice_id
+  FROM sched_and_power_slice
+  WHERE power_state = 0     -- Power-ups only.
+  GROUP BY cpu, power_slice_id
+  HAVING ts = MIN(ts)       -- There will only be one MIN sched slice per CPU.
+  ORDER BY ts ASC;
+
+-- A view joining thread tracks and top-level slices.
+--
+-- This view is intended to be intersected by time with the scheduler
+-- slices scheduled after a CPU power up.
+--
+-- Schema:
+--   utid     : Thread unique id.
+--   slice_id : The slice_id for the top-level slice.
+--   ts       : Starting timestamp for the slice.
+--   dur      : The duration for the slice.
+DROP VIEW IF EXISTS thread_slices;
+CREATE VIEW thread_slices AS
+  SELECT t.utid, s.id AS slice_id, s.ts AS ts, s.dur AS dur
+  FROM slice AS s
+  JOIN thread_track AS t
+    ON s.track_id = t.id
+  WHERE s.depth = 0
+  ORDER BY ts ASC;
+
+-- A table holding the slices that executed within the scheduler
+-- slice that ran on a CPU immediately after power-up.
+--
+-- Schema:
+--   ts       : Timestamp of the resulting slice
+--   dur      : Duration of the slice.
+--   cpu      : The CPU the sched slice ran on.
+--   utid     : Unique thread id for the slice.
+--   sched_id : 'id' field from the sched_slice table.
+--   type     : From the sched_slice table, always 'sched_slice'.
+--   end_state : The ending state for the sched_slice
+--   priority : The kernel thread priority
+--   slice_id : Id of the top-level slice for this (sched) slice.
+DROP TABLE IF EXISTS slices_after_cpu_power_up;
+CREATE VIRTUAL TABLE slices_after_cpu_power_up
+USING
+  SPAN_JOIN(first_sched_slice_after_cpu_power_up PARTITIONED utid,
+            thread_slices PARTITIONED utid);
+
+-- The first top-level slice that ran after a CPU power-up.
+DROP VIEW IF EXISTS first_top_level_slice_after_cpu_power_up;
+CREATE VIEW first_top_level_slice_after_cpu_power_up AS
+  SELECT slice_id, previous_power_state
+  FROM slices_after_cpu_power_up
+  GROUP BY cpu, power_slice_id
+  HAVING ts = MIN(ts)
+  ORDER BY ts ASC;
+
+SELECT "cpu_powerups"; -- Keep the Perfetto trace processor's |.read| happy.
