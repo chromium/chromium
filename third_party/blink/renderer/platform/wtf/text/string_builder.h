@@ -167,6 +167,7 @@ class WTF_EXPORT StringBuilder {
   String ToString();
   AtomicString ToAtomicString();
   String Substring(unsigned start, unsigned length) const;
+  StringView SubstringView(unsigned start, unsigned length) const;
 
   operator StringView() const {
     if (Is8Bit()) {

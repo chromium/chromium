@@ -132,8 +132,8 @@ static unsigned NextTextBreakPositionForContainer(
   return std::min(current_position + *length_limit, string_length);
 }
 
-static inline bool IsAllWhitespace(const String& string) {
-  return string.IsAllSpecialCharacters<IsHTMLSpace<UChar>>();
+static inline bool IsAllWhitespace(const StringView& string_view) {
+  return string_view.IsAllSpecialCharacters<IsHTMLSpace<UChar>>();
 }
 
 static inline void Insert(HTMLConstructionSiteTask& task) {
@@ -301,14 +301,17 @@ void HTMLConstructionSite::FlushPendingText() {
       // case, just keep the entire string.
       break_index = string.length();
     }
-    String substring =
-        string.Substring(current_position, break_index - current_position);
+    StringView substring_view =
+        string.SubstringView(current_position, break_index - current_position);
+    String substring = g_empty_string;
     // Strings composed entirely of whitespace are likely to be repeated. Turn
     // them into AtomicString so we share a single string for each.
     if (pending_text_.whitespace_mode == kAllWhitespace ||
         (pending_text_.whitespace_mode == kWhitespaceUnknown &&
-         IsAllWhitespace(substring))) {
-      substring = AtomicString(substring).GetString();
+         IsAllWhitespace(substring_view))) {
+      substring = substring_view.ToAtomicString().GetString();
+    } else {
+      substring = substring_view.ToString();
     }
 
     DCHECK_GT(break_index, current_position);
