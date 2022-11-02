@@ -12,9 +12,9 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -35,10 +35,12 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
 
-class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
+class FakeSignatureVerifier
+    : public web_package::SignedWebBundleSignatureVerifier {
  public:
   explicit FakeSignatureVerifier(
-      absl::optional<SignedWebBundleSignatureVerifier::Error> error)
+      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
+          error)
       : error_(error) {}
 
   void VerifySignatures(
@@ -50,7 +52,7 @@ class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
   }
 
  private:
-  absl::optional<SignedWebBundleSignatureVerifier::Error> error_;
+  absl::optional<web_package::SignedWebBundleSignatureVerifier::Error> error_;
 };
 
 }  // namespace
@@ -105,7 +107,7 @@ class SignedWebBundleReaderTest : public testing::Test {
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
           VerificationAction::ContinueAndVerifySignatures(),
-      absl::optional<SignedWebBundleSignatureVerifier::Error>
+      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
           signature_verifier_error = absl::nullopt,
       const std::string test_file_data = kResponseBody) {
     // Provide a buffer that contains the contents of just a single
@@ -272,7 +274,7 @@ TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockAndAbort) {
 class SignedWebBundleReaderSignatureVerificationErrorTest
     : public SignedWebBundleReaderTest,
       public ::testing::WithParamInterface<
-          SignedWebBundleSignatureVerifier::Error> {};
+          web_package::SignedWebBundleSignatureVerifier::Error> {};
 
 TEST_P(SignedWebBundleReaderSignatureVerificationErrorTest,
        SignatureVerificationError) {
@@ -289,7 +291,8 @@ TEST_P(SignedWebBundleReaderSignatureVerificationErrorTest,
   ASSERT_TRUE(parse_error.has_value());
 
   auto* error =
-      absl::get_if<SignedWebBundleSignatureVerifier::Error>(&*parse_error);
+      absl::get_if<web_package::SignedWebBundleSignatureVerifier::Error>(
+          &*parse_error);
   ASSERT_TRUE(error);
   EXPECT_EQ(error->message, GetParam().message);
   EXPECT_EQ(error->type, GetParam().type);
@@ -299,17 +302,17 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SignedWebBundleReaderSignatureVerificationErrorTest,
     ::testing::Values(
-        SignedWebBundleSignatureVerifier::Error::ForInternalError(
+        web_package::SignedWebBundleSignatureVerifier::Error::ForInternalError(
             "internal error"),
-        SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
-            "invalid signature")));
+        web_package::SignedWebBundleSignatureVerifier::Error::
+            ForInvalidSignature("invalid signature")));
 
 #if BUILDFLAG(IS_CHROMEOS)
 
 // Test that signatures are not verified when the
 // `integrity_block_callback` asks to skip signature verification and
-// thus the provided `SignedWebBundleSignatureVerifier::Error` is never
-// triggered.
+// thus the provided `web_package::SignedWebBundleSignatureVerifier::Error` is
+// never triggered.
 TEST_F(SignedWebBundleReaderTest,
        ReadIntegrityBlockAndSkipSignatureVerification) {
   base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
@@ -317,7 +320,7 @@ TEST_F(SignedWebBundleReaderTest,
   auto reader = CreateReaderAndInitialize(
       parse_error_future.GetCallback(),
       VerificationAction::ContinueAndSkipSignatureVerification(),
-      SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
+      web_package::SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
           "invalid signature"));
 
   parser_factory_->RunIntegrityBlockCallback(integrity_block_.Clone());

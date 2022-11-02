@@ -22,6 +22,8 @@ static_library("web_package") {
     "signed_web_bundles/signed_web_bundle_integrity_block.h",
     "signed_web_bundles/signed_web_bundle_signature_stack_entry.cc",
     "signed_web_bundles/signed_web_bundle_signature_stack_entry.h",
+    "signed_web_bundles/signed_web_bundle_signature_verifier.cc",
+    "signed_web_bundles/signed_web_bundle_signature_verifier.h",
     "signed_web_bundles/signed_web_bundle_utils.cc",
     "signed_web_bundles/signed_web_bundle_utils.h",
     "web_bundle_builder.cc",
@@ -48,12 +50,14 @@ static_library("web_package") {
 
 source_set("unit_tests") {
   testonly = true
+  data = [ "test/data/" ]
   sources = [
     "signed_web_bundles/ed25519_public_key_unittest.cc",
     "signed_web_bundles/ed25519_signature_unittest.cc",
     "signed_web_bundles/signed_web_bundle_id_unittest.cc",
     "signed_web_bundles/signed_web_bundle_integrity_block_unittest.cc",
     "signed_web_bundles/signed_web_bundle_signature_stack_entry_unittest.cc",
+    "signed_web_bundles/signed_web_bundle_signature_verifier_unittest.cc",
     "signed_web_bundles/signed_web_bundle_utils_unittest.cc",
     "web_bundle_builder_unittest.cc",
     "web_bundle_parser_factory_unittest.cc",

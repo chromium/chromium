@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 
 #include <vector>
 
@@ -22,7 +22,7 @@
 #include "crypto/secure_hash.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
-namespace web_app {
+namespace web_package {
 
 namespace {
 
@@ -31,14 +31,12 @@ std::vector<uint8_t> CreateIntegrityBlockCBOR() {
   std::vector<uint8_t> integrity_block;
   integrity_block.insert(
       integrity_block.end(),
-      std::begin(web_package::IntegrityBlockParser::kIntegrityBlockMagicBytes),
-      std::end(web_package::IntegrityBlockParser::kIntegrityBlockMagicBytes));
+      std::begin(IntegrityBlockParser::kIntegrityBlockMagicBytes),
+      std::end(IntegrityBlockParser::kIntegrityBlockMagicBytes));
   integrity_block.insert(
       integrity_block.end(),
-      std::begin(
-          web_package::IntegrityBlockParser::kIntegrityBlockVersionMagicBytes),
-      std::end(
-          web_package::IntegrityBlockParser::kIntegrityBlockVersionMagicBytes));
+      std::begin(IntegrityBlockParser::kIntegrityBlockVersionMagicBytes),
+      std::end(IntegrityBlockParser::kIntegrityBlockVersionMagicBytes));
 
   // Encode the length of the signature stack array, which is an empty array.
   integrity_block.push_back(static_cast<uint8_t>(0x80));
@@ -56,8 +54,8 @@ SignedWebBundleSignatureVerifier::~SignedWebBundleSignatureVerifier() {
 }
 
 void SignedWebBundleSignatureVerifier::VerifySignatures(
-    scoped_refptr<web_package::SharedFile> file,
-    web_package::SignedWebBundleIntegrityBlock integrity_block,
+    scoped_refptr<SharedFile> file,
+    SignedWebBundleIntegrityBlock integrity_block,
     SignatureVerificationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -81,7 +79,7 @@ base::expected<
     std::array<uint8_t, SignedWebBundleSignatureVerifier::kSHA512DigestLength>,
     std::string>
 SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
-    scoped_refptr<web_package::SharedFile> file,
+    scoped_refptr<SharedFile> file,
     int64_t web_bundle_chunk_size,
     int64_t integrity_block_size) {
   // No `DCHECK_CALLED_ON_VALID_SEQUENCE` annotation here since this runs on a
@@ -126,7 +124,7 @@ SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
 }
 
 void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
-    web_package::SignedWebBundleIntegrityBlock integrity_block,
+    SignedWebBundleIntegrityBlock integrity_block,
     SignatureVerificationCallback callback,
     base::expected<std::array<uint8_t, kSHA512DigestLength>, std::string>
         unsigned_web_bundle_hash) {
@@ -145,7 +143,7 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
     return;
   }
 
-  const web_package::SignedWebBundleSignatureStackEntry& signature_stack_entry =
+  const SignedWebBundleSignatureStackEntry& signature_stack_entry =
       integrity_block.signature_stack()[0];
 
   // The algorithm shown in [1] is a more abstract view of the verification
@@ -157,16 +155,16 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
   // empty integrity block, we create an empty integrity block here from
   // scratch. This is because we cannot do any CBOR parsing of untrusted input
   // (like the Signed Web Bundle) outside of the data decoder process due to the
-  // "Rule Of 2". Any CBOR parsing must occur in `web_package::WebBundleParser`.
+  // "Rule Of 2". Any CBOR parsing must occur in `WebBundleParser`.
   //
   // Similarly, magic bytes and version of the integrity block are read deep
-  // within the low-level `web_package::IntegrityBlockParser`. The code that
+  // within the low-level `IntegrityBlockParser`. The code that
   // checks that the signature stack entry attributes only contain the
   // `ed25519PublicKey` attribute also lives in that class.
   //
   // [1]
   // https://github.com/WICG/webpackage/blob/3f95ec365b87ed19d2cb5186e473ccc4d011e2af/explainers/integrity-signature.md
-  std::vector<uint8_t> payload_to_verify = web_package::CreateSignaturePayload({
+  std::vector<uint8_t> payload_to_verify = CreateSignaturePayload({
       .unsigned_web_bundle_hash = *unsigned_web_bundle_hash,
       .integrity_block_cbor = CreateIntegrityBlockCBOR(),
       .attributes_cbor = signature_stack_entry.attributes_cbor(),
@@ -182,4 +180,4 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
   std::move(callback).Run(absl::nullopt);
 }
 
-}  // namespace web_app
+}  // namespace web_package

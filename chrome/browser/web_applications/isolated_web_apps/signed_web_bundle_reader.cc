@@ -29,7 +29,8 @@ namespace web_app {
 
 SignedWebBundleReader::SignedWebBundleReader(
     const base::FilePath& web_bundle_path,
-    std::unique_ptr<SignedWebBundleSignatureVerifier> signature_verifier)
+    std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
+        signature_verifier)
     : web_bundle_path_(web_bundle_path),
       signature_verifier_(std::move(signature_verifier)) {}
 
@@ -43,7 +44,8 @@ SignedWebBundleReader::CreateAndStartReading(
     const base::FilePath& web_bundle_path,
     IntegrityBlockReadResultCallback integrity_block_result_callback,
     ReadErrorCallback read_error_callback,
-    std::unique_ptr<SignedWebBundleSignatureVerifier> signature_verifier) {
+    std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
+        signature_verifier) {
   // Using `new` to access a non-public constructor.
   auto reader = base::WrapUnique(new SignedWebBundleReader(
       web_bundle_path, std::move(signature_verifier)));
@@ -197,7 +199,7 @@ void SignedWebBundleReader::VerifySignatures(
 
 void SignedWebBundleReader::OnSignaturesVerified(
     ReadErrorCallback callback,
-    absl::optional<SignedWebBundleSignatureVerifier::Error>
+    absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
         verification_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);

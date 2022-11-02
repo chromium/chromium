@@ -17,9 +17,9 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,7 +41,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   explicit IsolatedWebAppReaderRegistry(
       std::unique_ptr<IsolatedWebAppValidator> validator,
       base::RepeatingCallback<
-          std::unique_ptr<SignedWebBundleSignatureVerifier>()>
+          std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
           signature_verifier_factory);
   ~IsolatedWebAppReaderRegistry() override;
 
@@ -230,7 +230,8 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   base::flat_set<base::FilePath> verified_files_;
 
   std::unique_ptr<IsolatedWebAppValidator> validator_;
-  base::RepeatingCallback<std::unique_ptr<SignedWebBundleSignatureVerifier>()>
+  base::RepeatingCallback<
+      std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
       signature_verifier_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);

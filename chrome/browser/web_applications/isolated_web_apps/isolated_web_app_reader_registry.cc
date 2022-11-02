@@ -14,9 +14,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -43,7 +43,8 @@ base::TimeDelta kCleanupInterval = base::Minutes(10);
 
 IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
     std::unique_ptr<IsolatedWebAppValidator> validator,
-    base::RepeatingCallback<std::unique_ptr<SignedWebBundleSignatureVerifier>()>
+    base::RepeatingCallback<
+        std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
         signature_verifier_factory)
     : validator_(std::move(validator)),
       signature_verifier_factory_(std::move(signature_verifier_factory)) {}
@@ -78,8 +79,8 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
     }
   }
 
-  std::unique_ptr<SignedWebBundleSignatureVerifier> signature_verifier =
-      signature_verifier_factory_.Run();
+  std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
+      signature_verifier = signature_verifier_factory_.Run();
   std::unique_ptr<SignedWebBundleReader> reader =
       SignedWebBundleReader::CreateAndStartReading(
           web_bundle_path,
@@ -179,7 +180,8 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
                   "Public keys of the Isolated Web App are untrusted: %s",
                   error.message.c_str());
             },
-            [](const SignedWebBundleSignatureVerifier::Error& error) {
+            [](const web_package::SignedWebBundleSignatureVerifier::Error&
+                   error) {
               return base::StringPrintf("Failed to verify signatures: %s",
                                         error.message.c_str());
             },

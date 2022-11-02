@@ -10,9 +10,9 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "content/public/common/content_features.h"
 
 namespace web_app {
@@ -43,7 +43,8 @@ KeyedService* IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new IsolatedWebAppReaderRegistry(
       std::make_unique<IsolatedWebAppValidator>(), base::BindRepeating([]() {
-        return std::make_unique<SignedWebBundleSignatureVerifier>();
+        return std::make_unique<
+            web_package::SignedWebBundleSignatureVerifier>();
       }));
 }
 

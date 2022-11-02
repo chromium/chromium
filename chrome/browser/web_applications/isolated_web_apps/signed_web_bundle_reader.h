@@ -12,10 +12,10 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/shared_file.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -106,7 +106,7 @@ class SignedWebBundleReader {
       // `integrity_block_result_callback`.
       AbortedByCaller,
       // Triggered when signature verification fails.
-      SignedWebBundleSignatureVerifier::Error,
+      web_package::SignedWebBundleSignatureVerifier::Error,
       // Triggered when metadata parsing fails.
       web_package::mojom::BundleMetadataParseErrorPtr>;
   using ReadErrorCallback =
@@ -123,8 +123,9 @@ class SignedWebBundleReader {
       const base::FilePath& web_bundle_path,
       IntegrityBlockReadResultCallback integrity_block_result_callback,
       ReadErrorCallback read_error_callback,
-      std::unique_ptr<SignedWebBundleSignatureVerifier> signature_verifier =
-          std::make_unique<SignedWebBundleSignatureVerifier>());
+      std::unique_ptr<
+          web_package::SignedWebBundleSignatureVerifier> signature_verifier =
+          std::make_unique<web_package::SignedWebBundleSignatureVerifier>());
 
   // This class internally transitions through the following states:
   //
@@ -209,7 +210,8 @@ class SignedWebBundleReader {
  private:
   explicit SignedWebBundleReader(
       const base::FilePath& web_bundle_path,
-      std::unique_ptr<SignedWebBundleSignatureVerifier> signature_verifier);
+      std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
+          signature_verifier);
 
   void Initialize(
       IntegrityBlockReadResultCallback integrity_block_result_callback,
@@ -242,7 +244,7 @@ class SignedWebBundleReader {
 
   void OnSignaturesVerified(
       ReadErrorCallback callback,
-      absl::optional<SignedWebBundleSignatureVerifier::Error>
+      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
           verification_error);
 
   void ReadMetadata(ReadErrorCallback callback);
@@ -274,7 +276,8 @@ class SignedWebBundleReader {
 
   bool is_disconnected_ = false;
   base::FilePath web_bundle_path_;
-  std::unique_ptr<SignedWebBundleSignatureVerifier> signature_verifier_;
+  std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
+      signature_verifier_;
 
   std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
   base::RepeatingClosure parser_disconnect_callback_for_testing_;

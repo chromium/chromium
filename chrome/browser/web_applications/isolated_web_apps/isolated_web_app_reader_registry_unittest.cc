@@ -19,10 +19,10 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
 #include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -59,10 +59,12 @@ class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
   absl::optional<std::string> integrity_block_error_;
 };
 
-class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
+class FakeSignatureVerifier
+    : public web_package::SignedWebBundleSignatureVerifier {
  public:
   explicit FakeSignatureVerifier(
-      absl::optional<SignedWebBundleSignatureVerifier::Error> error,
+      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
+          error,
       base::RepeatingClosure on_verify_signatures = base::DoNothing())
       : error_(error), on_verify_signatures_(on_verify_signatures) {}
 
@@ -76,7 +78,7 @@ class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
   }
 
  private:
-  absl::optional<SignedWebBundleSignatureVerifier::Error> error_;
+  absl::optional<web_package::SignedWebBundleSignatureVerifier::Error> error_;
   base::RepeatingClosure on_verify_signatures_;
 };
 
@@ -125,7 +127,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
         std::make_unique<IsolatedWebAppValidator>(),
         base::BindRepeating(
-            []() -> std::unique_ptr<SignedWebBundleSignatureVerifier> {
+            []() -> std::unique_ptr<
+                     web_package::SignedWebBundleSignatureVerifier> {
               return std::make_unique<FakeSignatureVerifier>(absl::nullopt);
             }));
 
@@ -297,7 +300,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
       std::make_unique<FakeIsolatedWebAppValidator>(absl::nullopt),
       base::BindLambdaForTesting(
-          [&]() -> std::unique_ptr<SignedWebBundleSignatureVerifier> {
+          [&]() -> std::unique_ptr<
+                    web_package::SignedWebBundleSignatureVerifier> {
             return std::make_unique<FakeSignatureVerifier>(
                 absl::nullopt, base::BindLambdaForTesting(
                                    [&]() { ++num_signature_verifications; }));
@@ -433,7 +437,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
       std::make_unique<FakeIsolatedWebAppValidator>("test error"),
       base::BindRepeating(
-          []() -> std::unique_ptr<SignedWebBundleSignatureVerifier> {
+          []() -> std::unique_ptr<
+                   web_package::SignedWebBundleSignatureVerifier> {
             return std::make_unique<FakeSignatureVerifier>(absl::nullopt);
           }));
 
@@ -454,7 +459,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
 class IsolatedWebAppReaderRegistrySignatureVerificationErrorTest
     : public IsolatedWebAppReaderRegistryTest,
       public ::testing::WithParamInterface<
-          SignedWebBundleSignatureVerifier::Error> {};
+          web_package::SignedWebBundleSignatureVerifier::Error> {};
 
 TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
        SignatureVerificationError) {
@@ -464,7 +469,8 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
       std::make_unique<FakeIsolatedWebAppValidator>(absl::nullopt),
       base::BindRepeating(
-          []() -> std::unique_ptr<SignedWebBundleSignatureVerifier> {
+          []() -> std::unique_ptr<
+                   web_package::SignedWebBundleSignatureVerifier> {
             return std::make_unique<FakeSignatureVerifier>(GetParam());
           }));
 
@@ -499,10 +505,10 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
     ::testing::Values(
-        SignedWebBundleSignatureVerifier::Error::ForInternalError(
+        web_package::SignedWebBundleSignatureVerifier::Error::ForInternalError(
             "internal error"),
-        SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
-            "invalid signature")));
+        web_package::SignedWebBundleSignatureVerifier::Error::
+            ForInvalidSignature("invalid signature")));
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadata) {
   network::ResourceRequest resource_request;

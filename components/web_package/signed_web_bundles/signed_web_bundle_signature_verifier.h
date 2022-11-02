@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_SIGNED_WEB_BUNDLE_SIGNATURE_VERIFIER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_SIGNED_WEB_BUNDLE_SIGNATURE_VERIFIER_H_
+#ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_SIGNATURE_VERIFIER_H_
+#define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_SIGNATURE_VERIFIER_H_
 
 #include <string>
 
@@ -15,11 +15,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
+
 class SharedFile;
 class SignedWebBundleIntegrityBlock;
-}
-
-namespace web_app {
 
 // This class can be used to verify the signatures contained in a Signed Web
 // Bundle's integrity block. Currently, only one signature is supported, as
@@ -59,10 +57,9 @@ class SignedWebBundleSignatureVerifier {
   // currently supported.
   //
   // TODO(crbug.com/1366303): Support more than one signature.
-  virtual void VerifySignatures(
-      scoped_refptr<web_package::SharedFile> file,
-      web_package::SignedWebBundleIntegrityBlock integrity_block,
-      SignatureVerificationCallback callback);
+  virtual void VerifySignatures(scoped_refptr<SharedFile> file,
+                                SignedWebBundleIntegrityBlock integrity_block,
+                                SignatureVerificationCallback callback);
 
  private:
   // We don't use `SHA512_DIGEST_LENGTH` here, because we don't want to include
@@ -72,12 +69,12 @@ class SignedWebBundleSignatureVerifier {
   // Calculate the SHA512 hash of the Signed Web Bundle excluding the integrity
   // block, i.e., the unsigned Web Bundle.
   static base::expected<std::array<uint8_t, kSHA512DigestLength>, std::string>
-  CalculateHashOfUnsignedWebBundle(scoped_refptr<web_package::SharedFile> file,
+  CalculateHashOfUnsignedWebBundle(scoped_refptr<SharedFile> file,
                                    int64_t web_bundle_chunk_size,
                                    int64_t integrity_block_size);
 
   void OnHashOfUnsignedWebBundleCalculated(
-      web_package::SignedWebBundleIntegrityBlock integrity_block,
+      SignedWebBundleIntegrityBlock integrity_block,
       SignatureVerificationCallback callback,
       base::expected<std::array<uint8_t, kSHA512DigestLength>, std::string>
           unsigned_web_bundle_hash);
@@ -89,6 +86,6 @@ class SignedWebBundleSignatureVerifier {
   base::WeakPtrFactory<SignedWebBundleSignatureVerifier> weak_factory_{this};
 };
 
-}  // namespace web_app
+}  // namespace web_package
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_SIGNED_WEB_BUNDLE_SIGNATURE_VERIFIER_H_
+#endif  // COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_SIGNATURE_VERIFIER_H_
