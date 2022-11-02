@@ -285,7 +285,11 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testDisableTabGroupsContinuation() {
+        // TabSelectionEditorV2 enables the menu, but not edit text for this test
+        // so needs to be disabled.
+
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -304,8 +308,12 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testEnableTabGroupsContinuation() {
+        // TabSelectionEditorV2 enables the menu. Ensure Tab Groups Continuation also enables the
+        // menu independently.
+
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -606,8 +614,11 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testSelectionEditorUngroup() throws ExecutionException {
+        // TabSelectionEditorV2 replaces this behavior.
+
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         assertTrue(cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                            instanceof TabGroupModelFilter);

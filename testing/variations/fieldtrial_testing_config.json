@@ -186,6 +186,21 @@
             ]
         }
     ],
+    "AndroidDiscardOccludedBitmaps": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DiscardOccludedBitmaps"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDynamicPerformanceFramework": [
         {
             "platforms": [
@@ -454,6 +469,25 @@
                     },
                     "enable_features": [
                         "NotificationPermissionVariant"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidTabSelectionEditorV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "enable_longpress_entry": "true",
+                        "enable_share": "true"
+                    },
+                    "enable_features": [
+                        "TabSelectionEditorV2"
                     ]
                 }
             ]
