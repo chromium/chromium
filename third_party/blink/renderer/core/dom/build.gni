@@ -110,6 +110,7 @@ blink_core_sources_dom = [
   "element_data.h",
   "element_rare_data.cc",
   "element_rare_data.h",
+  "element_rare_data_base.h",
   "element_traversal.h",
   "empty_node_list.cc",
   "empty_node_list.h",

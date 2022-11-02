@@ -88,7 +88,7 @@ class EditContext;
 class ElementAnimations;
 class ElementInternals;
 class ElementIntersectionObserverData;
-class ElementRareData;
+class ElementRareDataBase;
 class ExceptionState;
 class FocusOptions;
 class GetInnerHTMLOptions;
@@ -1495,8 +1495,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                             bool include_shadow_roots,
                             ExceptionState&);
 
-  ElementRareData* GetElementRareData() const;
-  ElementRareData& EnsureElementRareData();
+  ElementRareDataBase* GetElementRareData() const;
+  ElementRareDataBase& EnsureElementRareData();
 
   void RemoveAttrNodeList();
   void DetachAllAttrNodesFromElement();

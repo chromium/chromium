@@ -44,13 +44,13 @@
 
 namespace blink {
 
-struct SameSizeAsElementRareData : NodeRareData {
+struct SameSizeAsElementRareData : NodeRareData, ElementRareDataBase {
   gfx::Vector2dF scroll_offset;
   void* pointers_or_strings[4];
   Member<void*> members[22];
   FocusgroupFlags focusgroup_flags;
   HasInvalidationFlags has_invalidation_flags;
-  bool flags[1];
+  unsigned flags[1];
 };
 
 ElementRareData::ElementRareData(NodeRenderingData* node_layout_data)
@@ -131,7 +131,7 @@ AnchorScrollData& ElementRareData::EnsureAnchorScrollData(
   return *anchor_scroll_data_;
 }
 
-void ElementRareData::TraceAfterDispatch(blink::Visitor* visitor) const {
+void ElementRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(dataset_);
   visitor->Trace(shadow_root_);
   visitor->Trace(class_list_);
@@ -154,7 +154,7 @@ void ElementRareData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(popup_data_);
   visitor->Trace(toggle_map_);
   visitor->Trace(anchor_scroll_data_);
-  NodeRareData::TraceAfterDispatch(visitor);
+  NodeRareData::Trace(visitor);
 }
 
 ASSERT_SIZE(ElementRareData, SameSizeAsElementRareData);

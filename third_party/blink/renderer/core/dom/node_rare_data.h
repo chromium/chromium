@@ -86,8 +86,8 @@ class NodeData : public GarbageCollected<NodeData> {
     kLastType = kNodeRenderingData
   };
 
-  void Trace(Visitor*) const;
-  void TraceAfterDispatch(blink::Visitor*) const {}
+  virtual ~NodeData() = default;
+  virtual void Trace(Visitor*) const;
 
  protected:
   using BitField = WTF::ConcurrentlyReadBitField<uint16_t>;
@@ -163,7 +163,7 @@ class NodeRenderingData final : public NodeData {
   static NodeRenderingData& SharedEmptyData();
   bool IsSharedEmptyData() { return this == &SharedEmptyData(); }
 
-  void TraceAfterDispatch(Visitor* visitor) const;
+  void Trace(Visitor*) const override;
 
  private:
   Member<LayoutObject> layout_object_;
@@ -241,7 +241,7 @@ class NodeRareData : public NodeData {
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
 
-  void TraceAfterDispatch(blink::Visitor*) const;
+  void Trace(blink::Visitor*) const override;
 
  protected:
   NodeRareData(ClassType class_type, NodeRenderingData* node_layout_data)

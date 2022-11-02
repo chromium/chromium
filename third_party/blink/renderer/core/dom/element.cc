@@ -1001,7 +1001,7 @@ HeapVector<Member<Element>>* Element::GetElementArrayAttribute(
 }
 
 NamedNodeMap* Element::attributesForBindings() const {
-  ElementRareData& rare_data =
+  ElementRareDataBase& rare_data =
       const_cast<Element*>(this)->EnsureElementRareData();
   if (NamedNodeMap* attribute_map = rare_data.AttributeMap())
     return attribute_map;
@@ -1023,12 +1023,12 @@ Vector<AtomicString> Element::getAttributeNames() const {
   return attributesVector;
 }
 
-inline ElementRareData* Element::GetElementRareData() const {
+inline ElementRareDataBase* Element::GetElementRareData() const {
   DCHECK(HasRareData());
   return static_cast<ElementRareData*>(RareData());
 }
 
-inline ElementRareData& Element::EnsureElementRareData() {
+inline ElementRareDataBase& Element::EnsureElementRareData() {
   return static_cast<ElementRareData&>(EnsureRareData());
 }
 
@@ -1067,7 +1067,7 @@ ElementAnimations* Element::GetElementAnimations() const {
 }
 
 ElementAnimations& Element::EnsureElementAnimations() {
-  ElementRareData& rare_data = EnsureElementRareData();
+  ElementRareDataBase& rare_data = EnsureElementRareData();
   if (!rare_data.GetElementAnimations())
     rare_data.SetElementAnimations(MakeGarbageCollected<ElementAnimations>());
   return *rare_data.GetElementAnimations();
@@ -1318,7 +1318,7 @@ const ResizeObserverSize* Element::LastIntrinsicSize() const {
   if (!HasRareData())
     return nullptr;
   // If rare data exists, we are guaranteed that it's ElementRareData.
-  ElementRareData* data = GetElementRareData();
+  ElementRareDataBase* data = GetElementRareData();
   DCHECK(data);
   return data->LastIntrinsicSize();
 }
@@ -2161,7 +2161,7 @@ AccessibleNode* Element::accessibleNode() {
   if (!RuntimeEnabledFeatures::AccessibilityObjectModelEnabled())
     return nullptr;
 
-  ElementRareData& rare_data = EnsureElementRareData();
+  ElementRareDataBase& rare_data = EnsureElementRareData();
   return rare_data.EnsureAccessibleNode(this);
 }
 
@@ -2588,7 +2588,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     return kInsertionDone;
 
   if (isConnected() && HasRareData()) {
-    ElementRareData* rare_data = GetElementRareData();
+    ElementRareDataBase* rare_data = GetElementRareData();
     if (ElementIntersectionObserverData* observer_data =
             rare_data->IntersectionObserverData()) {
       observer_data->TrackWithController(
@@ -2701,7 +2701,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   ClearElementFlag(ElementFlags::kIsInCanvasSubtree);
 
   if (HasRareData()) {
-    ElementRareData* data = GetElementRareData();
+    ElementRareDataBase* data = GetElementRareData();
 
     data->ClearFocusgroupFlags();
     data->ClearRestyleFlags();
@@ -2854,7 +2854,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
 void Element::DetachLayoutTree(bool performing_reattach) {
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   if (HasRareData()) {
-    ElementRareData* data = GetElementRareData();
+    ElementRareDataBase* data = GetElementRareData();
     if (!performing_reattach) {
       data->ClearPseudoElements();
       data->ClearContainerQueryData();
@@ -3552,7 +3552,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
 
   if (!new_style && HasRareData()) {
-    ElementRareData* rare_data = GetElementRareData();
+    ElementRareDataBase* rare_data = GetElementRareData();
     if (ElementAnimations* element_animations =
             rare_data->GetElementAnimations()) {
       element_animations->CssAnimations().Cancel();
@@ -4079,7 +4079,7 @@ void Element::SetNeedsCompositingUpdate() {
 
 void Element::SetRegionCaptureCropId(
     std::unique_ptr<RegionCaptureCropId> crop_id) {
-  ElementRareData& rare_data = EnsureElementRareData();
+  ElementRareDataBase& rare_data = EnsureElementRareData();
 
   CHECK(!rare_data.GetRegionCaptureCropId());
 
@@ -6566,7 +6566,7 @@ Element* Element::closest(const AtomicString& selectors) {
 }
 
 DOMTokenList& Element::classList() {
-  ElementRareData& rare_data = EnsureElementRareData();
+  ElementRareDataBase& rare_data = EnsureElementRareData();
   if (!rare_data.GetClassList()) {
     auto* class_list =
         MakeGarbageCollected<DOMTokenList>(*this, html_names::kClassAttr);
@@ -6578,7 +6578,7 @@ DOMTokenList& Element::classList() {
 }
 
 DOMStringMap& Element::dataset() {
-  ElementRareData& rare_data = EnsureElementRareData();
+  ElementRareDataBase& rare_data = EnsureElementRareData();
   if (!rare_data.Dataset())
     rare_data.SetDataset(MakeGarbageCollected<DatasetDOMStringMap>(this));
   return *rare_data.Dataset();
@@ -7657,7 +7657,7 @@ DOMTokenList* Element::GetPart() const {
 }
 
 DOMTokenList& Element::part() {
-  ElementRareData& rare_data = EnsureElementRareData();
+  ElementRareDataBase& rare_data = EnsureElementRareData();
   DOMTokenList* part = rare_data.GetPart();
   if (!part) {
     part = MakeGarbageCollected<DOMTokenList>(*this, html_names::kPartAttr);

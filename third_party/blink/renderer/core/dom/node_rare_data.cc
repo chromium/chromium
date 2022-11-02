@@ -45,9 +45,8 @@
 
 namespace blink {
 
-struct SameSizeAsNodeRareData {
-  Member<void*> willbe_member_[5];
-  unsigned bitfields_;
+struct SameSizeAsNodeRareData : NodeData {
+  Member<void*> member_[5];
 };
 
 ASSERT_SIZE(NodeRareData, SameSizeAsNodeRareData);
@@ -79,19 +78,7 @@ void NodeMutationObserverData::RemoveRegistration(
   registry_.EraseAt(registry_.Find(registration));
 }
 
-void NodeData::Trace(Visitor* visitor) const {
-  switch (GetClassType()) {
-    case ClassType::kNodeRareData:
-      To<NodeRareData>(this)->TraceAfterDispatch(visitor);
-      break;
-    case ClassType::kElementRareData:
-      To<ElementRareData>(this)->TraceAfterDispatch(visitor);
-      break;
-    case ClassType::kNodeRenderingData:
-      To<NodeRenderingData>(this)->TraceAfterDispatch(visitor);
-      break;
-  }
-}
+void NodeData::Trace(Visitor* visitor) const {}
 
 NodeRenderingData::NodeRenderingData(
     LayoutObject* layout_object,
@@ -112,9 +99,9 @@ NodeRenderingData& NodeRenderingData::SharedEmptyData() {
       (MakeGarbageCollected<NodeRenderingData>(nullptr, nullptr)));
   return *shared_empty_data;
 }
-void NodeRenderingData::TraceAfterDispatch(Visitor* visitor) const {
+void NodeRenderingData::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object_);
-  NodeData::TraceAfterDispatch(visitor);
+  NodeData::Trace(visitor);
 }
 
 void NodeRareData::RegisterScrollTimeline(ScrollTimeline* timeline) {
@@ -128,13 +115,13 @@ void NodeRareData::UnregisterScrollTimeline(ScrollTimeline* timeline) {
   scroll_timelines_->erase(timeline);
 }
 
-void NodeRareData::TraceAfterDispatch(blink::Visitor* visitor) const {
+void NodeRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(mutation_observer_data_);
   visitor->Trace(flat_tree_node_data_);
   visitor->Trace(node_layout_data_);
   visitor->Trace(node_lists_);
   visitor->Trace(scroll_timelines_);
-  NodeData::TraceAfterDispatch(visitor);
+  NodeData::Trace(visitor);
 }
 
 void NodeRareData::IncrementConnectedSubframeCount() {
