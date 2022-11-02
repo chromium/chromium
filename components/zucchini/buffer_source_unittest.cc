@@ -279,7 +279,8 @@ TEST_F(BufferSourceTest, GetSleb128) {
   EXPECT_EQ(good(0x10000000, 5U), run("80 80 80 80 01"));
   EXPECT_EQ(good(0x10204081, 5U), run("81 81 81 81 01"));
   EXPECT_EQ(good(0x7FFFFFFF, 5U), run("FF FF FF FF 07"));
-  EXPECT_EQ(good(-static_cast<int32_t>(0x80000000), 5U), run("80 80 80 80 08"));
+  // Signed 0x80000000 is already negative.
+  EXPECT_EQ(good(static_cast<int32_t>(0x80000000), 5U), run("80 80 80 80 08"));
   EXPECT_EQ(good(-0x1, 5U), run("FF FF FF FF 0F"));  // Redundant code.
   EXPECT_EQ(kBad, run("FF FF FF FF 80"));            // Too long / out of data.
   EXPECT_EQ(good(0x0FFFFFFF, 5U), run("FF FF FF FF 10"));   // "1" discarded.
