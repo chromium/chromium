@@ -1,7 +1,7 @@
 <style include="cr-icons cr-hidden-style">
   :host {
     --back-button-size: 14px;
-    --label-border-color: var(--google-grey-300);
+    --border-color: var(--google-grey-300);
     --label-selected-color: var(--google-blue-50);
     --price-tracking-chip-background: var(--google-green-50);
     --price-tracking-discount-color: var(--google-green-800);
@@ -10,7 +10,7 @@
 
   @media (prefers-color-scheme: dark) {
     :host {
-      --label-border-color: var(--google-grey-700);
+      --border-color: var(--google-grey-700);
       --price-tracking-chip-background: var(--google-green-900);
       --price-tracking-discount-color: white;
       --price-tracking-original-color: var(--google-green-200);
@@ -46,6 +46,11 @@
     text-transform: uppercase;
   }
 
+  .bookmarks {
+    height: inherit;
+    overflow-y: auto;
+  }
+
   .chip-discounted {
     --power-bookmark-chip-background: var(--price-tracking-chip-background);
   }
@@ -53,6 +58,7 @@
   .column {
     display: flex;
     flex-direction: column;
+    height: 100%;
   }
 
   .dropdown-item {
@@ -65,6 +71,16 @@
     flex-direction: row;
     gap: 4px;
     margin: 14px;
+  }
+
+  .footer {
+    border-top: 1px solid var(--border-color);
+  }
+
+  .footer-button {
+    gap: 8px;
+    margin: 8px;
+    padding: 6px;
   }
 
   .icon-arrow-back {
@@ -84,7 +100,7 @@
   .label {
     align-items: center;
     background-color: transparent;
-    border: 1px solid var(--label-border-color);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     color: var(--cr-secondary-text-color);
     display: flex;
@@ -147,32 +163,40 @@
         aria-label="$i18n{sortMenuA11yLabel}"
         on-click="onShowSortMenuClicked_"></cr-icon-button>
   </div>
-  <template is="dom-repeat" items="[[shownBookmarks_]]">
-    <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-        description="[[getBookmarkDescription_(item, descriptions_.*)]]"
-        compact="[[compact_]]"
-        on-row-clicked="onRowClicked_">
-      <div slot="extra-content-container">
-        <template is="dom-if"
-            if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
-          <template is="dom-if" if="[[showDiscountedPrice_(item)]]" restamp>
-            <power-bookmark-chip class="chip-discounted">
-              <iron-icon icon="bookmarks:price-tracking"
-                  class="icon-discounted"></iron-icon>
-              <div class="price-discounted">[[getCurrentPrice_(item)]]</div>
-              <div class="price-original">[[getPreviousPrice_(item)]]</div>
-            </power-bookmark-chip>
+  <div class="bookmarks">
+    <template is="dom-repeat" items="[[shownBookmarks_]]">
+      <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
+          description="[[getBookmarkDescription_(item, descriptions_.*)]]"
+          compact="[[compact_]]"
+          on-row-clicked="onRowClicked_">
+        <div slot="extra-content-container">
+          <template is="dom-if"
+              if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
+            <template is="dom-if" if="[[showDiscountedPrice_(item)]]" restamp>
+              <power-bookmark-chip class="chip-discounted">
+                <iron-icon icon="bookmarks:price-tracking"
+                    class="icon-discounted"></iron-icon>
+                <div class="price-discounted">[[getCurrentPrice_(item)]]</div>
+                <div class="price-original">[[getPreviousPrice_(item)]]</div>
+              </power-bookmark-chip>
+            </template>
+            <template is="dom-if" if="[[!showDiscountedPrice_(item)]]" restamp>
+              <power-bookmark-chip>
+                <iron-icon icon="bookmarks:price-tracking"></iron-icon>
+                <div>[[getCurrentPrice_(item)]]</div>
+              </power-bookmark-chip>
+            </template>
           </template>
-          <template is="dom-if" if="[[!showDiscountedPrice_(item)]]" restamp>
-            <power-bookmark-chip>
-              <iron-icon icon="bookmarks:price-tracking"></iron-icon>
-              <div>[[getCurrentPrice_(item)]]</div>
-            </power-bookmark-chip>
-          </template>
-        </template>
-      </div>
-    </power-bookmark-row>
-  </template>
+        </div>
+      </power-bookmark-row>
+    </template>
+  </div>
+  <div class="footer">
+    <cr-button class="footer-button" on-click="onAddTabClicked_">
+      <iron-icon icon="bookmarks:add-tab" class="label-icon"></iron-icon>
+      $i18n{addCurrentTab}
+    </cr-button>
+  </div>
 </div>
 
 <cr-action-menu id="sortMenu">

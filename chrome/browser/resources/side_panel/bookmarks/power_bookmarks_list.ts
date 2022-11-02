@@ -8,6 +8,7 @@ import './icons.html.js';
 import './power_bookmark_chip.js';
 import './power_bookmark_row.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
@@ -346,6 +347,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.stopPropagation();
     this.$.sortMenu.close();
     this.activeSortIndex_ = event.model.index;
+  }
+
+  private onAddTabClicked_() {
+    // TODO: Implement this
   }
 
   /**
