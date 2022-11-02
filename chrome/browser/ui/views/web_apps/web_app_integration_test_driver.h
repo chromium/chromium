@@ -381,6 +381,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   bool IsFileHandledBySite(Site site, std::string file_extension);
   void SetFileHandlingEnabled(Site site, bool enabled);
+  void LaunchFile(Site site, FilesOptions files_options);
 
   void SetRunOnOsLoginMode(Site site, apps::RunOnOsLoginMode login_mode);
 

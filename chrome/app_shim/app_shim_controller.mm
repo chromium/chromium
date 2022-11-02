@@ -369,8 +369,10 @@ void AppShimController::SendBootstrapOnShimConnected(
   app_shim_info->app_id = params_.app_id;
   app_shim_info->app_url = params_.app_url;
   app_shim_info->launch_type =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          app_mode::kLaunchedByChromeProcessId)
+      (base::CommandLine::ForCurrentProcess()->HasSwitch(
+           app_mode::kLaunchedByChromeProcessId) &&
+       !base::CommandLine::ForCurrentProcess()->HasSwitch(
+           app_mode::kIsNormalLaunch))
           ? chrome::mojom::AppShimLaunchType::kRegisterOnly
           : chrome::mojom::AppShimLaunchType::kNormal;
   app_shim_info->files = launch_files_;

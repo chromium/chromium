@@ -35,6 +35,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -371,6 +372,32 @@ bool HasExistingExtensionShimForDifferentProfile(
   return false;
 }
 
+base::CommandLine BuildCommandLineForShimLaunch() {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(
+      app_mode::kLaunchedByChromeProcessId,
+      base::NumberToString(base::GetCurrentProcId()));
+  command_line.AppendSwitchPath(app_mode::kLaunchedByChromeBundlePath,
+                                base::mac::MainBundlePath());
+
+  // When running unbundled (e.g, when running browser_tests), the path
+  // returned by base::mac::FrameworkBundlePath will not include the version.
+  // Manually append it.
+  // https://crbug.com/1286681
+  const base::FilePath framework_bundle_path =
+      base::mac::AmIBundled() ? base::mac::FrameworkBundlePath()
+                              : base::mac::FrameworkBundlePath()
+                                    .Append("Versions")
+                                    .Append(version_info::GetVersionNumber());
+  command_line.AppendSwitchPath(app_mode::kLaunchedByChromeFrameworkBundlePath,
+                                framework_bundle_path);
+  command_line.AppendSwitchPath(
+      app_mode::kLaunchedByChromeFrameworkDylibPath,
+      framework_bundle_path.Append(chrome::kFrameworkExecutableName));
+
+  return command_line;
+}
+
 void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
                             ShimLaunchedCallback launched_callback,
                             ShimTerminatedCallback terminated_callback,
@@ -411,27 +438,7 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
     if (!base::PathExists(shim_path))
       continue;
 
-    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.AppendSwitchASCII(
-        app_mode::kLaunchedByChromeProcessId,
-        base::NumberToString(base::GetCurrentProcId()));
-    command_line.AppendSwitchPath(app_mode::kLaunchedByChromeBundlePath,
-                                  base::mac::MainBundlePath());
-
-    // When running unbundled (e.g, when running browser_tests), the path
-    // returned by base::mac::FrameworkBundlePath will not include the version.
-    // Manually append it.
-    // https://crbug.com/1286681
-    const base::FilePath framework_bundle_path =
-        base::mac::AmIBundled() ? base::mac::FrameworkBundlePath()
-                                : base::mac::FrameworkBundlePath()
-                                      .Append("Versions")
-                                      .Append(version_info::GetVersionNumber());
-    command_line.AppendSwitchPath(
-        app_mode::kLaunchedByChromeFrameworkBundlePath, framework_bundle_path);
-    command_line.AppendSwitchPath(
-        app_mode::kLaunchedByChromeFrameworkDylibPath,
-        framework_bundle_path.Append(chrome::kFrameworkExecutableName));
+    base::CommandLine command_line = BuildCommandLineForShimLaunch();
 
     if (launched_after_rebuild)
       command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
@@ -1405,6 +1412,69 @@ void LaunchShim(LaunchShimUpdateBehavior update_behavior,
                      std::move(launched_callback),
                      std::move(terminated_callback)),
       std::move(shortcut_info));
+}
+
+void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
+                          const std::vector<GURL> urls,
+                          ShimLaunchedCallback launched_callback,
+                          ShimTerminatedCallback terminated_callback) {
+  base::CommandLine command_line = BuildCommandLineForShimLaunch();
+  command_line.AppendSwitch(app_mode::kLaunchedForTest);
+  command_line.AppendSwitch(app_mode::kIsNormalLaunch);
+
+  std::vector<std::string> url_specs;
+  url_specs.reserve(urls.size());
+  for (const GURL& url : urls) {
+    url_specs.push_back(url.spec());
+  }
+
+  base::scoped_nsobject<NSRunningApplication> app;
+  if (urls.empty()) {
+    app.reset(
+        base::mac::OpenApplicationWithPath(
+            shim_path, command_line,
+            NSWorkspaceLaunchDefault | NSWorkspaceLaunchWithoutActivation),
+        base::scoped_policy::RETAIN);
+  } else {
+    app.reset(
+        base::mac::OpenApplicationWithPathAndURLs(
+            shim_path, command_line, url_specs,
+            NSWorkspaceLaunchDefault | NSWorkspaceLaunchWithoutActivation),
+        base::scoped_policy::RETAIN);
+  }
+  if (app) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&RunAppLaunchCallbacks, app,
+                                  std::move(launched_callback),
+                                  std::move(terminated_callback)));
+    return;
+  }
+  LOG(ERROR) << "Failed to open application with path: " << shim_path;
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(launched_callback), base::Process()));
+}
+
+void WaitForShimToQuitForTesting(const base::FilePath& shim_path,  // IN-TEST
+                                 const std::string& app_id) {
+  std::string bundle_id = GetBundleIdentifier(app_id);
+  NSArray<NSRunningApplication*>* apps = [NSRunningApplication
+      runningApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
+                                                  bundle_id)];
+  NSRunningApplication* matching_app = nil;
+  for (NSRunningApplication* app in apps) {
+    if (base::mac::NSURLToFilePath(app.bundleURL) == shim_path) {
+      matching_app = app;
+      break;
+    }
+  }
+  if (!matching_app)
+    return;
+
+  base::RunLoop loop;
+  [[TerminationObserver alloc] initWithRunningApplication:matching_app
+                                                 callback:loop.QuitClosure()];
+  loop.Run();
 }
 
 // Removes the app shim from the list of Login Items.

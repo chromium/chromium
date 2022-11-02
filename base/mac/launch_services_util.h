@@ -23,6 +23,18 @@ BASE_EXPORT NSRunningApplication* OpenApplicationWithPath(
     const CommandLine& command_line,
     NSWorkspaceLaunchOptions launch_options);
 
+// Launches the application bundle at |bundle_path|, passing argv[1..] from
+// |command_line| as command line arguments if the app isn't already running,
+// and passing |urls| to the application as URLs to open.
+// |launch_options| are passed directly to
+// -[NSWorkspace openURLs:withApplicationAtURL:options:configuration:error:].
+// Returns a non-nil NSRunningApplication if the app was successfully launched.
+BASE_EXPORT NSRunningApplication* OpenApplicationWithPathAndURLs(
+    const FilePath& bundle_path,
+    const CommandLine& command_line,
+    const std::vector<std::string>& url_specs,
+    NSWorkspaceLaunchOptions launch_options);
+
 }  // namespace base::mac
 
 #endif  // BASE_MAC_LAUNCH_SERVICES_UTIL_H_

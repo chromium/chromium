@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectDialog) {
   helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog) {
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog_Allow) {
   helper_.InstallOmniboxIcon(InstallableSite::kFileHandler);
   helper_.ClosePwa();
   // Open the file and set AskAgainOption to kRemember.
@@ -93,6 +93,23 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog) {
   // Open the file again.
   helper_.LaunchFileExpectNoDialog(Site::kFileHandler,
                                    FilesOptions::kOneTextFile);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog_Deny) {
+  helper_.InstallOmniboxIcon(InstallableSite::kFileHandler);
+  helper_.ClosePwa();
+  // Open the file and set AskAgainOption to kRemember.
+  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneTextFile,
+                                 AllowDenyOptions::kDeny,
+                                 AskAgainOptions::kRemember);
+
+  // Open the file again.
+  helper_.LaunchFileExpectNoDialog(Site::kFileHandler,
+                                   FilesOptions::kOneTextFile);
+  // Despite previous denial, a new window should still have been created. The
+  // only difference with the Allow case is that no files would have been passed
+  // to the launched app.
   helper_.CheckWindowCreated();
 }
 

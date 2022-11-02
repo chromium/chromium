@@ -152,6 +152,8 @@
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_mac.h"
 #endif
@@ -1203,16 +1205,9 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
                                        "FileHandlerLaunchDialogView");
   FileHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(
       ask_again == AskAgainOptions::kRemember);
-  std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
 
-  StartupBrowserCreator browser_creator;
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kAppId, app_id);
-  for (auto file_path : file_paths) {
-    command_line.AppendArgPath(file_path);
-  }
-  browser_creator.Start(command_line, profile()->GetPath(),
-                        {profile(), StartupProfileMode::kBrowserWindow}, {});
+  LaunchFile(site, files_options);
+
   BrowserAddedWaiter browser_added_waiter;
 
   // Check the file handling dialog shows up.
@@ -1247,27 +1242,18 @@ void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
     FilesOptions files_options) {
   BeforeStateChangeAction(__FUNCTION__);
   AppId app_id = GetAppIdBySiteMode(site);
-  std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
   BrowserAddedWaiter browser_added_waiter;
-  base::RunLoop run_loop;
+  LaunchFile(site, files_options);
 
-  web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
-  StartupBrowserCreator browser_creator;
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kAppId, app_id);
-  for (auto file_path : file_paths) {
-    command_line.AppendArgPath(file_path);
-  }
-  browser_creator.Start(command_line, profile()->GetPath(),
-                        {profile(), StartupProfileMode::kBrowserWindow}, {});
-  run_loop.Run();
+  // If the user previously denied access to open files with this app, a window
+  // is still opened for the app. The only difference is that no files would
+  // have been passed to the app. Either way, we should always wait for a
+  // browser to be added.
+  browser_added_waiter.Wait();
+  app_browser_ = browser_added_waiter.browser_added();
+  ActivateBrowserAndWait(app_browser_);
+  EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
 
-  // if the web app doesn't deny to open the file, wait for the app window.
-  if (!base::Contains(site_remember_deny_open_file, site)) {
-    app_browser_ = browser_added_waiter.browser_added();
-    ActivateBrowserAndWait(app_browser_);
-    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
-  }
   AfterStateChangeAction();
 }
 
@@ -1277,7 +1263,7 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
+
   WebAppRegistrar& app_registrar = provider()->registrar();
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
   if (display_mode == blink::mojom::DisplayMode::kBrowser) {
@@ -2672,12 +2658,14 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   DCHECK(executing_action_level_ > 0);
   --executing_action_level_;
 #if BUILDFLAG(IS_MAC)
+  std::map<AppId, size_t> open_browsers_per_app;
   for (auto* profile : GetAllProfiles()) {
     auto* provider = GetProviderForProfile(profile);
     if (!provider)
       continue;
     std::vector<AppId> app_ids = provider->registrar().GetAppIds();
     for (auto& app_id : app_ids) {
+      // Wait for any shims to finish connecting.
       auto* app_shim_manager = apps::AppShimManager::Get();
       AppShimHost* app_shim_host = app_shim_manager->FindHost(profile, app_id);
       if (app_shim_host && !app_shim_host->HasBootstrapConnected()) {
@@ -2685,7 +2673,22 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
         app_shim_host->SetOnShimConnectedForTesting(loop.QuitClosure());
         loop.Run();
       }
+
+      // But also wait for any shims for apps that don't have any browsers open
+      // anymore to finish quitting, as otherwise attempting to launch them
+      // again too soon could fail.
+      open_browsers_per_app[app_id] +=
+          provider->ui_manager().GetNumWindowsForApp(app_id);
     }
+  }
+  for (const auto& [app_id, open_browsers] : open_browsers_per_app) {
+    if (open_browsers != 0)
+      continue;
+    std::string app_name = provider()->registrar().GetAppShortName(app_id);
+    base::FilePath app_path = GetShortcutPath(
+        override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+        app_name, app_id);
+    WaitForShimToQuitForTesting(app_path, app_id);
   }
 #endif
   if (delegate_->IsSyncTest())
@@ -3199,6 +3202,42 @@ void WebAppIntegrationTestDriver::SetFileHandlingEnabled(Site site,
 #endif
 }
 
+void WebAppIntegrationTestDriver::LaunchFile(Site site,
+                                             FilesOptions files_options) {
+  AppId app_id = GetAppIdBySiteMode(site);
+  std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
+#if BUILDFLAG(IS_MAC)
+  std::string app_name = GetSiteConfiguration(site).app_name;
+  base::FilePath app_path = GetShortcutPath(
+      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+      app_name, app_id);
+
+  std::vector<GURL> urls;
+  urls.reserve(file_paths.size());
+  for (const base::FilePath& path : file_paths) {
+    urls.push_back(net::FilePathToFileURL(path));
+  }
+
+  base::RunLoop loop;
+  LaunchShimForTesting(
+      app_path, urls,
+      base::BindLambdaForTesting([&](base::Process process) { loop.Quit(); }),
+      base::DoNothing());
+  loop.Run();
+#else
+  StartupBrowserCreator browser_creator;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  command_line.AppendSwitchASCII(switches::kTestType, "browser");
+  for (auto file_path : file_paths) {
+    command_line.AppendArgPath(file_path);
+  }
+  browser_creator.Start(command_line, profile()->GetPath(),
+                        {profile(), StartupProfileMode::kBrowserWindow}, {});
+  content::RunAllTasksUntilIdle();
+#endif
+}
+
 void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
     Site site,
     apps::RunOnOsLoginMode login_mode) {
@@ -3213,6 +3252,10 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
 
 void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
     const AppId& app_id) {
+  // TODO(https://crbug.com/1232763): On Mac this should use logic similar to
+  // what is in LaunchFile, using LaunchShimForTesting. Actually making that
+  // change will also require updating all the tests that currently assert
+  // incorrect behavior following a launch.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
   command_line.AppendSwitchASCII(switches::kTestType, "browser");

@@ -27,6 +27,7 @@ const char kLaunchedByChromeFrameworkDylibPath[] =
     "launched-by-chrome-framework-dylib-path";
 const char kLaunchedForTest[] = "launched-for-test";
 const char kLaunchedAfterRebuild[] = "launched-after-rebuild";
+const char kIsNormalLaunch[] = "is-normal-launch";
 
 const char kAppShimError[] = "app-shim-error";
 

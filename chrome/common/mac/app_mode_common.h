@@ -70,6 +70,13 @@ extern const char kLaunchedForTest[];
 // it fails to launch again, don't trigger another rebuild.
 extern const char kLaunchedAfterRebuild[];
 
+// Indicates to the shim that even if `kLaunchedByChromeProcessId` was also
+// specified, this should still be considered a "normal" launch as opposed to a
+// "register only" launch. This is used by tests to launch a shim as if the user
+// launched it, while still making sure it connects to the correct chrome
+// process.
+extern const char kIsNormalLaunch[];
+
 // Path to an app shim bundle. Indicates to Chrome that this shim attempted to
 // launch but failed.
 extern const char kAppShimError[];
