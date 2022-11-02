@@ -26,6 +26,8 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ionotificationportref.h"
+#include "base/power_monitor/battery_level_provider.h"
+#include "base/power_monitor/iopm_power_source_sampling_event_source.h"
 #include "base/power_monitor/thermal_state_observer_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -132,11 +134,15 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   // Notifier reference for the |notification_port_|.
   io_object_t notifier_ = IO_OBJECT_NULL;
 
-  // Run loop source to observe power-source-change events.
-  ScopedCFTypeRef<CFRunLoopSourceRef> power_source_run_loop_source_;
+  // Generates power-source-change events.
+  IOPMPowerSourceSamplingEventSource power_source_event_source_;
+
+  std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
 
   // Observer of thermal state events: critical temperature etc.
   std::unique_ptr<ThermalStateObserverMac> thermal_state_observer_;
+
+  bool is_on_battery_ = false;
 #endif
 
 #if BUILDFLAG(IS_IOS)
