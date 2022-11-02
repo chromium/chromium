@@ -11,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -141,12 +140,6 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
         // phone number), it ranks lower than Profile[0] since its completeness score is lower.
         Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
                 "Marge Simpson"));
-
-        // Verify that no shipping fields is recorded since there is at least one complete
-        // suggestion.
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "PaymentRequest.MissingShippingFields"));
     }
 
     /**
@@ -207,12 +200,6 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
                 "Los Angeles"));
         Assert.assertFalse(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i).contains(
                 "Marge Simpson"));
-
-        // Verify that no missing fields is recorded for shipping since there is at least one
-        // complete suggestion.
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "PaymentRequest.MissingShippingFields"));
     }
 
     /**
@@ -307,89 +294,5 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
                 "Enter a valid address"));
         Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
                 "More information required"));
-
-        // Verify that the missing fields of the most complete suggestion has been recorded.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.MissingShippingFields",
-                        AutofillAddress.CompletionStatus.INVALID_PHONE_NUMBER));
-    }
-
-    /**
-     * Make sure the shipping address bit is recorded in missing fields when an incomplete profile
-     * with missing address is the most complete one.
-     */
-    @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
-    @Feature({"Payments"})
-    public void testMissingShippingAddressFieldRecorded() throws TimeoutException {
-        // Add a profile with invalid shipping address, and another one with both missing name and
-        // address.
-        mProfilesToAdd = new AutofillProfile[] {AUTOFILL_PROFILES[4], AUTOFILL_PROFILES[6]};
-        mCountsToSet = new int[] {5, 5};
-        mDatesToSet = new int[] {5000, 5000};
-
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
-        mPaymentRequestTestRule.clickInShippingAddressAndWait(
-                R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-
-        Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
-        // Verify that the missing fields of the most complete suggestion has been recorded.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.MissingShippingFields",
-                        AutofillAddress.CompletionStatus.INVALID_ADDRESS));
-    }
-
-    /**
-     * Make sure the name bit is recorded in missing fields when an incomplete profile with missing
-     * name is the most complete one.
-     */
-    @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
-    @Feature({"Payments"})
-    public void testMissingNameFieldRecorded() throws TimeoutException {
-        // Add a profile with invalid shipping address, and another one with missing name.
-        mProfilesToAdd = new AutofillProfile[] {AUTOFILL_PROFILES[4], AUTOFILL_PROFILES[5]};
-        mCountsToSet = new int[] {5, 5};
-        mDatesToSet = new int[] {5000, 5000};
-
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
-        mPaymentRequestTestRule.clickInShippingAddressAndWait(
-                R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-
-        Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
-        // Verify that the missing fields of the most complete suggestion has been recorded.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.MissingShippingFields",
-                        AutofillAddress.CompletionStatus.INVALID_RECIPIENT));
-    }
-
-    /**
-     * Make sure all fields are recorded when no profile exists.
-     */
-    @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
-    @Feature({"Payments"})
-    public void testAllMissingFieldsRecorded() throws TimeoutException {
-        // Don't add any profiles
-        mProfilesToAdd = new AutofillProfile[] {};
-        mCountsToSet = new int[] {};
-        mDatesToSet = new int[] {};
-
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
-
-        Assert.assertEquals(0, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
-        // Verify that the missing fields of the most complete suggestion has been recorded.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.MissingShippingFields",
-                        AutofillAddress.CompletionStatus.INVALID_RECIPIENT
-                                | AutofillAddress.CompletionStatus.INVALID_PHONE_NUMBER
-                                | AutofillAddress.CompletionStatus.INVALID_ADDRESS));
     }
 }

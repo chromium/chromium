@@ -136,19 +136,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.MissingContactFields"
-    enum="PaymentRequestMissingContactFields" expires_after="2022-10-30">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    A bitfield representing different missing fields of the contact section in
-    payment sheet. This only gets recorded when no complete contact profile is
-    available. In case of multiple partially complete profiles, this is only
-    recorded for the most complete one which is also the first profile in the
-    suggestion list.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.MissingPaymentFields"
     enum="PaymentRequestMissingPaymentFields" expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
@@ -159,19 +146,6 @@ chromium-metrics-reviews@google.com.
     instrument is available (SW based instruments are always considered as
     complete). In case of multiple partially complete cards this is only
     recorded for the first card in the suggestion list.
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.MissingShippingFields"
-    enum="PaymentRequestMissingShippingFields" expires_after="2022-10-30">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    A bitfield representing different missing fields of the shipping section in
-    the payment sheet. This only gets recorded when no complete shipping profile
-    is available. In case of multiple partially complete profiles, this is only
-    recorded for the most complete one which is also the first profile in the
-    suggestion list.
   </summary>
 </histogram>
 

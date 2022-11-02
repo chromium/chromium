@@ -11,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -164,12 +163,6 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(2));
         Assert.assertEquals("Homer Simpson\n555 123-4567\nEmail required",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(3));
-
-        // Verify that no record is logged since there is at least one complete suggested contact
-        // details.
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "PaymentRequest.MissingContactFields"));
     }
 
     /**
@@ -198,11 +191,6 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(2));
         Assert.assertEquals("Marge Simpson\nMore information required",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(3));
-
-        // Verify that the missing fields of the most complete suggestion has been recorded.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.MissingContactFields", ContactEditor.INVALID_PHONE_NUMBER));
     }
 
     /**
@@ -283,29 +271,5 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(0));
         Assert.assertEquals("Lisa Simpson\n555 123-4567\nlisa@simpson.com",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(1));
-    }
-
-    /**
-     * Make sure all fields are recorded when no profile exists.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    @DisabledTest(message = "https://crbug.com/1182644")
-    public void testContactDetailsAllMissingFieldsRecorded() throws TimeoutException {
-        // Don't add any profiles.
-        mProfilesToAdd = new AutofillProfile[] {};
-        mCountsToSet = new int[] {};
-        mDatesToSet = new int[] {};
-
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
-        Assert.assertEquals(0, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
-
-        // Verify that all contact fields are recorded as missing when no suggestion exists.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.MissingContactFields",
-                        ContactEditor.INVALID_NAME | ContactEditor.INVALID_PHONE_NUMBER
-                                | ContactEditor.INVALID_EMAIL));
     }
 }

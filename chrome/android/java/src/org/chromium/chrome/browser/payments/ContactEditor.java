@@ -31,9 +31,7 @@ import java.util.UUID;
  */
 public class ContactEditor extends EditorBase<AutofillContact> {
     // Bit field values are identical to ProfileFields in payments_profile_comparator.h.
-    // Please also modify payments_profile_comparator.h after changing these bits since
-    // missing fields on both Android and Desktop are recorded in the same UMA metric:
-    // PaymentRequest.MissingContactFields.
+    // Please also modify payments_profile_comparator.h after changing these bits.
     public @interface CompletionStatus {}
     /** Can be sent to the merchant as-is without editing first. */
     public static final int COMPLETE = 0;

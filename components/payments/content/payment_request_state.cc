@@ -562,10 +562,6 @@ void PaymentRequestState::SelectDefaultShippingAddressAndNotifyObservers() {
       profile_comparator()->IsShippingComplete(shipping_profiles_[0])) {
     selected_shipping_profile_ = shipping_profiles()[0];
   }
-  // Record the missing required fields (if any) of the most complete shipping
-  // profile.
-  profile_comparator()->RecordMissingFieldsOfShippingProfile(
-      shipping_profiles().empty() ? nullptr : shipping_profiles()[0]);
   UpdateIsReadyToPayAndNotifyObservers();
 }
 
@@ -656,11 +652,6 @@ void PaymentRequestState::SetDefaultProfileSelections() {
   if (!contact_profiles().empty() &&
       profile_comparator()->IsContactInfoComplete(contact_profiles_[0]))
     selected_contact_profile_ = contact_profiles()[0];
-
-  // Record the missing required fields (if any) of the most complete contact
-  // profile.
-  profile_comparator()->RecordMissingFieldsOfContactProfile(
-      contact_profiles().empty() ? nullptr : contact_profiles()[0]);
 
   // Sort apps.
   PaymentApp::SortApps(&available_apps_);

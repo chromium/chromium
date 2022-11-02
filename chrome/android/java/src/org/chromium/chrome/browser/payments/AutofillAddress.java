@@ -34,10 +34,7 @@ public class AutofillAddress extends EditableOption {
     /** The pattern for a valid region code. */
     private static final String REGION_CODE_PATTERN = "^[A-Z]{2}$";
 
-    // Bit field values are identical to ProfileFields in payments_profile_comparator.h. Please also
-    // modify payments_profile_comparator.h after changing these bits since missing fields on both
-    // Android and Desktop are recorded in the same UMA metric:
-    // PaymentRequest.MissingShippingFields.
+    // Bit field values are identical to ProfileFields in payments_profile_comparator.h.
     @IntDef({CompletionStatus.COMPLETE, CompletionStatus.INVALID_RECIPIENT,
             CompletionStatus.INVALID_PHONE_NUMBER, CompletionStatus.INVALID_ADDRESS})
     @Retention(RetentionPolicy.SOURCE)
@@ -344,11 +341,6 @@ public class AutofillAddress extends EditableOption {
         result.phone = mProfile.getPhoneNumber();
 
         return result;
-    }
-
-    /** @return The missing fields of the shipping profile. */
-    public int getMissingFieldsOfShippingProfile() {
-        return checkAddressCompletionStatus(mProfile, mCheckType);
     }
 
     private int calculateCompletenessScore() {

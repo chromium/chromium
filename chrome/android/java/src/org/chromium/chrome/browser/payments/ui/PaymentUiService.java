@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -1181,20 +1180,6 @@ public class PaymentUiService
         // complete.
         mJourneyLogger.setNumberOfSuggestionsShown(
                 Section.SHIPPING_ADDRESS, addresses.size(), hasCompleteShippingAddress);
-
-        int missingFields;
-        if (addresses.isEmpty()) {
-            // All fields are missing.
-            missingFields = AutofillAddress.CompletionStatus.INVALID_RECIPIENT
-                    | AutofillAddress.CompletionStatus.INVALID_PHONE_NUMBER
-                    | AutofillAddress.CompletionStatus.INVALID_ADDRESS;
-        } else {
-            missingFields = addresses.get(0).getMissingFieldsOfShippingProfile();
-        }
-        if (missingFields != 0) {
-            RecordHistogram.recordSparseHistogram(
-                    "PaymentRequest.MissingShippingFields", missingFields);
-        }
 
         mShippingAddressesSection = new SectionInformation(
                 PaymentRequestUI.DataType.SHIPPING_ADDRESSES, firstCompleteAddressIndex, addresses);

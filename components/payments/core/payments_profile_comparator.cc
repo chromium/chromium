@@ -178,36 +178,6 @@ bool PaymentsProfileComparator::IsShippingComplete(
            GetRequiredProfileFieldsForShipping());
 }
 
-void PaymentsProfileComparator::RecordMissingFieldsOfShippingProfile(
-    const autofill::AutofillProfile* profile) const {
-  // We should not record anything when no shipping fields is required.
-  if (GetRequiredProfileFieldsForShipping() == kNone)
-    return;
-
-  // Record any required fields that are missing.
-  PaymentsProfileComparator::ProfileFields missing_fields =
-      GetMissingProfileFields(profile) & GetRequiredProfileFieldsForShipping();
-  if (missing_fields != kNone) {
-    base::UmaHistogramSparse("PaymentRequest.MissingShippingFields",
-                             missing_fields);
-  }
-}
-
-void PaymentsProfileComparator::RecordMissingFieldsOfContactProfile(
-    const autofill::AutofillProfile* profile) const {
-  // We should not record anything when no contact fields is required.
-  if (GetRequiredProfileFieldsForContact() == kNone)
-    return;
-
-  // Record any required fields that are missing.
-  PaymentsProfileComparator::ProfileFields missing_fields =
-      GetMissingProfileFields(profile) & GetRequiredProfileFieldsForContact();
-  if (missing_fields != kNone) {
-    base::UmaHistogramSparse("PaymentRequest.MissingContactFields",
-                             missing_fields);
-  }
-}
-
 std::u16string PaymentsProfileComparator::GetStringForMissingContactFields(
     const autofill::AutofillProfile& profile) const {
   return GetStringForMissingFields(GetMissingProfileFields(&profile) &
