@@ -211,6 +211,9 @@ export function inputListTestSuite() {
 
     touchscreenTester.shadowRoot.dispatchEvent(new Event('fullscreenchange'));
     assertFalse(introDialog.open);
+    assertEquals(
+        /*expectedMoveAppBackToPreviousScreenCalled=*/ 1,
+        provider.getMoveAppBackToPreviousScreenCalled());
   });
 
   test('TouchscreenTesterShowAndCloseInTabletMode', async () => {

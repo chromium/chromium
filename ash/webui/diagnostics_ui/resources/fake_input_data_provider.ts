@@ -22,6 +22,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
       InternalDisplayPowerStateObserverRemote;
   private touchDevices_: TouchDeviceInfo[] = [];
   private moveAppToTestingScreenCalled: number = 0;
+  private moveAppBackToPreviousScreenCalled: number = 0;
   constructor() {
     this.registerMethods();
   }
@@ -33,6 +34,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
     this.keyboards_ = [];
     this.touchDevices_ = [];
     this.moveAppToTestingScreenCalled = 0;
+    this.moveAppBackToPreviousScreenCalled = 0;
 
     this.registerMethods();
   }
@@ -209,5 +211,20 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
    */
   getMoveAppToTestingScreenCalled(): number {
     return this.moveAppToTestingScreenCalled;
+  }
+
+  /**
+   * Fakes the function to move the Diagnostics app back to previous screen.
+   */
+  moveAppBackToPreviousScreen(): Promise<{isMoved: boolean}> {
+    this.moveAppBackToPreviousScreenCalled++;
+    return Promise.resolve({isMoved: true});
+  }
+
+  /**
+   * Returns the number of times moveAppBackToPreviousScreen function is called.
+   */
+  getMoveAppBackToPreviousScreenCalled(): number {
+    return this.moveAppBackToPreviousScreenCalled;
   }
 }

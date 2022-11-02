@@ -23,7 +23,6 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "ui/display/screen.h"
-#include "ui/display/types/display_constants.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 
@@ -197,7 +196,7 @@ void InputDataProvider::MoveAppToTestingScreen(
     uint32_t evdev_id,
     MoveAppToTestingScreenCallback callback) {
   aura::Window* window = widget_->GetNativeWindow();
-  int64_t origin_display_id =
+  int64_t current_display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
 
   // Find the testing touchscreen device.
@@ -213,10 +212,14 @@ void InputDataProvider::MoveAppToTestingScreen(
          ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
       // Only move if the app is not already in the correct display.
       if (device.name == it->second->name &&
-          origin_display_id != device.target_display_id &&
+          current_display_id != device.target_display_id &&
           device.target_display_id != display::kInvalidDisplayId) {
         if (window_util::MoveWindowToDisplay(window,
                                              device.target_display_id)) {
+          // Only if window is successfully moved, we record the
+          // `previous_display_id_` so that we can move the window back when the
+          // tester is closed.
+          previous_display_id_ = current_display_id;
           std::move(callback).Run(true);
           return;
         }
@@ -224,6 +227,22 @@ void InputDataProvider::MoveAppToTestingScreen(
     }
   }
 
+  std::move(callback).Run(false);
+}
+
+void InputDataProvider::MoveAppBackToPreviousScreen(
+    MoveAppBackToPreviousScreenCallback callback) {
+  if (previous_display_id_ != display::kInvalidDisplayId &&
+      window_util::MoveWindowToDisplay(widget_->GetNativeWindow(),
+                                       previous_display_id_)) {
+    previous_display_id_ = display::kInvalidDisplayId;
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // Always reset previous_display_id_ after MoveAppBackToPreviousScreen is
+  // called. So it won't affect next time the function is used.
+  previous_display_id_ = display::kInvalidDisplayId;
   std::move(callback).Run(false);
 }
 

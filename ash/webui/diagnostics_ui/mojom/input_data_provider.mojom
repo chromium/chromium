@@ -227,4 +227,9 @@ interface InputDataProvider {
   // testing touchscreen. The function returns a boolean indicating if the
   // app has been moved.
   MoveAppToTestingScreen(uint32 evdev_id) => (bool is_moved);
+
+  // When touchscreen tester is closed, the Diagnostics app should be moved
+  // back to previous screen, only if it was moved to a different screen when
+  // the tester was launched.
+  MoveAppBackToPreviousScreen() => (bool is_moved);
 };

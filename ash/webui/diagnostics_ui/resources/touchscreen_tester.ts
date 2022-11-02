@@ -121,11 +121,12 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    * 'fullscreenchange' event to handle this case.
    */
   private closeDialogWhenExitFullscreen(): void {
-    this.shadowRoot!.addEventListener('fullscreenchange', (e: Event) => {
+    this.shadowRoot!.addEventListener('fullscreenchange', async (e: Event) => {
       e.preventDefault();
       if (!document.fullscreenElement) {
         this.getDialog(DialogType.INTRO).close();
         this.getDialog(DialogType.CANVAS).close();
+        await this.inputDataProvider.moveAppBackToPreviousScreen();
         if (this.receiver_) {
           this.receiver_.$.close();
         }

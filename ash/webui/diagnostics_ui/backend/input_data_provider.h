@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_configurator.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -90,6 +91,9 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   void MoveAppToTestingScreen(uint32_t evdev_id,
                               MoveAppToTestingScreenCallback callback) override;
+
+  void MoveAppBackToPreviousScreen(
+      MoveAppBackToPreviousScreenCallback callback) override;
 
   // ui::DeviceEventObserver:
   void OnDeviceEvent(const ui::DeviceEvent& event) override;
@@ -159,6 +163,10 @@ class InputDataProvider : public mojom::InputDataProvider,
   // Whether the internal touchscreen is on, used to determine if the internal
   // display is testable or not.
   bool is_internal_display_on_ = true;
+
+  // Id of the previous display the Diagnostics app was in, used to move the app
+  // back to previous display when the touchscreen tester is closed.
+  int64_t previous_display_id_ = display::kInvalidDisplayId;
 
   // Map by evdev ids to information blocks.
   base::flat_map<int, mojom::KeyboardInfoPtr> keyboards_;

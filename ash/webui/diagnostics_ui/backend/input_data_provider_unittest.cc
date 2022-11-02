@@ -2354,5 +2354,70 @@ TEST_F(InputDataProviderTest, MoveAppToTestingScreen) {
   ASSERT_TRUE(moveAppToTestingScreenFuture.Take());
 }
 
+// Test the app can be moved back to original screen.
+TEST_F(InputDataProviderTest, MoveAppBackToPreviousScreen) {
+  // Construct a touchscreen. "/dev/input/event2" maps to a touchscreen.
+  ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                         ui::DeviceEvent::ActionType::ADD,
+                         base::FilePath("/dev/input/event2"));
+  provider_->OnDeviceEvent(event0);
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      getConnectedDevicesFuture;
+  provider_->GetConnectedDevices(getConnectedDevicesFuture.GetCallback());
+
+  const auto& keyboards = getConnectedDevicesFuture.Get<0>();
+  const auto& touch_devices = getConnectedDevicesFuture.Get<1>();
+
+  ASSERT_EQ(0ul, keyboards.size());
+  ASSERT_EQ(1ul, touch_devices.size());
+
+  // Set up two fake displays.
+  UpdateDisplay("500x400, 600x400");
+  display::Screen* screen = display::Screen::GetScreen();
+  const int64_t primary_display_id = screen->GetAllDisplays()[0].id();
+  const int64_t secondary_display_id = screen->GetAllDisplays()[1].id();
+
+  // Initialize one touchscreen in DeviceDataManager.
+  std::vector<ui::TouchscreenDevice> touchscreen_devices;
+  touchscreen_devices.push_back(ui::TouchscreenDevice(
+      kDeviceId1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      touch_devices[0]->name, /*size=*/gfx::Size(600, 400),
+      /*touch_points=*/0));
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(touchscreen_devices);
+
+  // Associate the touchscreen in DeviceDataManager to the fake display.
+  std::vector<ui::TouchDeviceTransform> touch_device_transforms(1);
+  touch_device_transforms[0].display_id = secondary_display_id;
+  touch_device_transforms[0].device_id = kDeviceId1;
+  ui::DeviceDataManager::GetInstance()->ConfigureTouchDevices(
+      touch_device_transforms);
+
+  // Before move: make sure the app is currently in the primary display.
+  aura::Window* window = widget_->GetNativeWindow();
+  ASSERT_EQ(primary_display_id, screen->GetDisplayNearestWindow(window).id());
+
+  // Call MoveAppToTestingScreen function with the touchscreen evdev id 2, which
+  // maps to the secondary display.
+  base::test::TestFuture<bool> moveAppToTestingScreenFuture;
+  provider_->MoveAppToTestingScreen(/*evdev_id=*/2,
+                                    moveAppToTestingScreenFuture.GetCallback());
+
+  // Confirm the app has been moved to the secondary display.
+  ASSERT_EQ(secondary_display_id, screen->GetDisplayNearestWindow(window).id());
+  ASSERT_TRUE(moveAppToTestingScreenFuture.Get());
+
+  // Call MoveAppBackToPreviousScreen to move the app back to original display.
+  base::test::TestFuture<bool> moveAppBackToPreviousScreenFuture;
+  provider_->MoveAppBackToPreviousScreen(
+      moveAppBackToPreviousScreenFuture.GetCallback());
+
+  // Confirm the app has been moved back to the original display.
+  ASSERT_EQ(primary_display_id, screen->GetDisplayNearestWindow(window).id());
+  ASSERT_TRUE(moveAppBackToPreviousScreenFuture.Get());
+}
+
 }  // namespace diagnostics
 }  // namespace ash
