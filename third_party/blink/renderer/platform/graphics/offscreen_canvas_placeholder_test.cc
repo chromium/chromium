@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -25,13 +26,15 @@ constexpr size_t kHeight = 10;
 
 class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
  public:
-  MockCanvasResourceDispatcher(unsigned placeholder_id)
-      : CanvasResourceDispatcher(/*client=*/nullptr,
-                                 base::ThreadTaskRunnerHandle::Get(),
-                                 kClientId,
-                                 kSinkId,
-                                 placeholder_id,
-                                 /*canvas_size=*/{kWidth, kHeight}) {}
+  explicit MockCanvasResourceDispatcher(unsigned placeholder_id)
+      : CanvasResourceDispatcher(
+            /*client=*/nullptr,
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            kClientId,
+            kSinkId,
+            placeholder_id,
+            /*canvas_size=*/{kWidth, kHeight}) {}
 
   MOCK_METHOD2(ReclaimResource,
                void(viz::ResourceId, scoped_refptr<CanvasResource>&&));

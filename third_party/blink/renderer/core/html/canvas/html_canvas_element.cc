@@ -416,7 +416,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
       return nullptr;
     SetNeedsUnbufferedInputEvents(true);
     frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
-        nullptr,
+        nullptr, GetDocument().GetTaskRunner(TaskType::kInternalDefault),
         GetPage()
             ->GetPageScheduler()
             ->GetAgentGroupScheduler()

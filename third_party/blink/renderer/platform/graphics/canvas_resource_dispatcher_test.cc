@@ -12,6 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
@@ -46,12 +47,15 @@ viz::ResourceId NextId(viz::ResourceId id) {
 class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
  public:
   MockCanvasResourceDispatcher()
-      : CanvasResourceDispatcher(nullptr /* client */,
-                                 base::ThreadTaskRunnerHandle::Get(),
-                                 kClientId,
-                                 kSinkId,
-                                 0 /* placeholder_canvas_id* */,
-                                 {kWidth, kHeight} /* canvas_size */) {}
+      : CanvasResourceDispatcher(
+            /*client=*/nullptr,
+            /*task_runner=*/scheduler::GetSingleThreadTaskRunnerForTesting(),
+            /*agent_group_scheduler_compositor_task_runner=*/
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            kClientId,
+            kSinkId,
+            /*placeholder_canvas_id=*/0,
+            /*canvas_size=*/{kWidth, kHeight}) {}
 
   MOCK_METHOD2(PostImageToPlaceholder,
                void(scoped_refptr<CanvasResource>&&,
