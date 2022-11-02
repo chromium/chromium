@@ -279,6 +279,13 @@ class OzonePlatformDrm : public OzonePlatform {
     }
   }
 
+  void PostCreateMainMessageLoop(base::OnceCallback<void()> shutdown_cb,
+                                 scoped_refptr<base::SingleThreadTaskRunner>
+                                     user_input_task_runner) override {
+    event_factory_ozone_->SetUserInputTaskRunner(
+        std::move(user_input_task_runner));
+  }
+
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
     DCHECK(has_initialized_ui() || has_initialized_gpu());
     return host_properties_;

@@ -38,6 +38,7 @@ class EventFactoryEvdevTest : public testing::Test {
  protected:
   EventFactoryEvdevTest() : event_factory_(nullptr, &device_manager_, nullptr) {
     scoped_feature_list_.InitAndEnableFeature(kEnableOrdinalMotion);
+    event_factory_.SetUserInputTaskRunner(base::ThreadTaskRunnerHandle::Get());
     event_factory_.Init();
     event_factory_.AddPlatformEventObserver(&event_observer_);
   }

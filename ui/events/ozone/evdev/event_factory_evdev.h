@@ -59,6 +59,10 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
 
   ~EventFactoryEvdev() override;
 
+  // Must be called before Init().
+  void SetUserInputTaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner> user_input_task_runner);
+
   // Initialize. Must be called with a valid message loop.
   void Init();
 
@@ -163,6 +167,8 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
 
   // Touch event id generator.
   SequentialIDGenerator touch_id_generator_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> user_input_task_runner_;
 
   // Support weak pointers for attach & detach callbacks.
   base::WeakPtrFactory<EventFactoryEvdev> weak_ptr_factory_{this};

@@ -289,7 +289,8 @@ class OzonePlatformX11 : public OzonePlatform,
   }
 
   void PostCreateMainMessageLoop(
-      base::OnceCallback<void()> shutdown_cb) override {
+      base::OnceCallback<void()> shutdown_cb,
+      scoped_refptr<base::SingleThreadTaskRunner>) override {
     // Installs the X11 error handlers for the UI process after the
     // main message loop has started. This will allow us to exit cleanly
     // if X exits before we do.

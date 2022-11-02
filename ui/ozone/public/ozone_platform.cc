@@ -182,7 +182,8 @@ OzonePlatform::GetPlatformUserInputMonitor(
 }
 
 void OzonePlatform::PostCreateMainMessageLoop(
-    base::OnceCallback<void()> shutdown_cb) {}
+    base::OnceCallback<void()> shutdown_cb,
+    scoped_refptr<base::SingleThreadTaskRunner> input_event_task_runner) {}
 
 void OzonePlatform::PostMainMessageLoopRun() {}
 

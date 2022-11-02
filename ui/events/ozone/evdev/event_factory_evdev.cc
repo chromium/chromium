@@ -219,10 +219,16 @@ EventFactoryEvdev::~EventFactoryEvdev() = default;
 
 void EventFactoryEvdev::Init() {
   DCHECK(!initialized_);
+  DCHECK(user_input_task_runner_);
 
   StartThread();
 
   initialized_ = true;
+}
+
+void EventFactoryEvdev::SetUserInputTaskRunner(
+    scoped_refptr<base::SingleThreadTaskRunner> user_input_task_runner) {
+  user_input_task_runner_ = std::move(user_input_task_runner);
 }
 
 std::unique_ptr<SystemInputInjector>
@@ -231,7 +237,7 @@ EventFactoryEvdev::CreateSystemInputInjector() {
   // directly. We cannot assume it is safe to (re-)enter ui::Event dispatch
   // synchronously from the injection point.
   std::unique_ptr<DeviceEventDispatcherEvdev> proxy_dispatcher(
-      new ProxyDeviceEventDispatcher(base::ThreadTaskRunnerHandle::Get(),
+      new ProxyDeviceEventDispatcher(user_input_task_runner_,
                                      weak_ptr_factory_.GetWeakPtr()));
   return std::make_unique<InputInjectorEvdev>(std::move(proxy_dispatcher),
                                               cursor_);
@@ -523,7 +529,7 @@ int EventFactoryEvdev::NextDeviceId() {
 void EventFactoryEvdev::StartThread() {
   // Set up device factory.
   std::unique_ptr<DeviceEventDispatcherEvdev> proxy_dispatcher(
-      new ProxyDeviceEventDispatcher(base::ThreadTaskRunnerHandle::Get(),
+      new ProxyDeviceEventDispatcher(user_input_task_runner_,
                                      weak_ptr_factory_.GetWeakPtr()));
   thread_.Start(std::move(proxy_dispatcher), cursor_,
                 base::BindOnce(&EventFactoryEvdev::OnThreadStarted,
