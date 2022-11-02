@@ -1064,8 +1064,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       IsProjectorAppEnabled(profile)) {
     return &NewWebUI<ash::TrustedProjectorAnnotatorUI>;
   }
-  if (url.host_piece() == chrome::kChromeUISetTimeHost)
-    return &NewWebUI<ash::SetTimeUI>;
   if (url.host_piece() == chrome::kChromeUISlowHost)
     return &NewWebUI<ash::SlowUI>;
   if (url.host_piece() == chrome::kChromeUISlowTraceHost)
