@@ -13,6 +13,5 @@ buildflag_header("buildflags") {
   flags = [
     "ENABLE_SPEECH_SERVICE=$enable_speech_service",
     "ENABLE_BROWSER_SPEECH_SERVICE=$enable_browser_speech_service",
-    "ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER=$enable_server_based_recognition",
   ]
 }

@@ -6111,10 +6111,6 @@ test("unit_tests") {
     "//v8",
   ]
 
-  if (enable_server_based_recognition) {
-    deps += [ "//chrome/services/speech/internal:unit_tests" ]
-  }
-
   public_deps = []
 
   if (is_win) {

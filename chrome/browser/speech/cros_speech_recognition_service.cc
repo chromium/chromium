@@ -4,26 +4,17 @@
 
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/types/optional_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
-#include "chrome/services/speech/buildflags/buildflags.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if BUILDFLAG(ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER)
-#include "chrome/services/speech/internal/server_based_recognition_recognizer.h"
-#endif  // BUILDFLAG(ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER)
 
 namespace speech {
 
@@ -103,91 +94,50 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
-  if (!options->is_server_based) {
-    base::FilePath binary_path, languagepack_path;
-    PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
-                      languagepack_path);
-
-    // CrosSpeechRecognitionService runs on browser UI thread.
-    // Create AudioSourceFetcher on browser IO thread to avoid UI jank.
-    // Note that its CrosSpeechRecognitionRecognizer must also run
-    // on the IO thread. If CrosSpeechRecognitionService is moved away from
-    // browser UI thread, we can call AudioSourceFetcherImpl::Create directly.
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &CrosSpeechRecognitionService::
-                CreateAudioSourceFetcherForOnDeviceRecognitionOnIOThread,
-            weak_factory_.GetWeakPtr(), std::move(fetcher_receiver),
-            std::move(client), std::move(options), binary_path,
-            languagepack_path));
-    std::move(callback).Run(
-        CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
-    return;
-  }
-#if BUILDFLAG(ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER)
-  if (!ash::features::IsInternalServerSideSpeechRecognitionEnabled()) {
-    // A request is made for a service that has not been enabled.
+  if (options->is_server_based) {
+    // TODO(b/245614967): when kInternalServerSideSpeechRecognition
+    // feature flag is enabled, create the appropriate recognition recognizer
+    // here.
     mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
     return;
   }
+
+  base::FilePath binary_path, languagepack_path;
+  PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
+                    languagepack_path);
+
+  // CrosSpeechRecognitionService runs on browser UI thread.
+  // Create AudioSourceFetcher on browser IO thread to avoid UI jank.
+  // Note that its CrosSpeechRecognitionRecognizer must also run
+  // on the IO thread. If CrosSpeechRecognitionService is moved away from
+  // browser UI thread, we can call AudioSourceFetcherImpl::Create directly.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &CrosSpeechRecognitionService::
-              CreateAudioSourceFetcherForServerBasedRecognitionOnIOThread,
+          &CrosSpeechRecognitionService::CreateAudioSourceFetcherOnIOThread,
           weak_factory_.GetWeakPtr(), std::move(fetcher_receiver),
-          std::move(client), std::move(options),
-          context()
-              ->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcessIOThread()));
-  std::move(callback).Run(/*is_multichannel_supported=*/false);
-  return;
-#else
-  mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
-#endif  // BUILDFLAG(ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER)
+          std::move(client), std::move(options), binary_path,
+          languagepack_path));
+  std::move(callback).Run(
+      CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
 
-void CrosSpeechRecognitionService::
-    CreateAudioSourceFetcherForOnDeviceRecognitionOnIOThread(
-        mojo::PendingReceiver<media::mojom::AudioSourceFetcher>
-            fetcher_receiver,
-        mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
-            client,
-        media::mojom::SpeechRecognitionOptionsPtr options,
-        const base::FilePath& binary_path,
-        const base::FilePath& languagepack_path) {
+void CrosSpeechRecognitionService::CreateAudioSourceFetcherOnIOThread(
+    mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options,
+    const base::FilePath& binary_path,
+    const base::FilePath& languagepack_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(!options->is_server_based);
+  // Cache `is_server_based` since it is used after `options` gets moved.
+  const bool is_server_based = options->is_server_based;
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
           std::move(client), std::move(options), binary_path,
           languagepack_path),
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported(),
-      /*is_server_based=*/false);
-}
-
-void CrosSpeechRecognitionService::
-    CreateAudioSourceFetcherForServerBasedRecognitionOnIOThread(
-        mojo::PendingReceiver<media::mojom::AudioSourceFetcher>
-            fetcher_receiver,
-        mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
-            client,
-        media::mojom::SpeechRecognitionOptionsPtr options,
-        std::unique_ptr<network::PendingSharedURLLoaderFactory>
-            pending_loader_factory) {
-#if BUILDFLAG(ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER)
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(options->is_server_based);
-  AudioSourceFetcherImpl::Create(
-      std::move(fetcher_receiver),
-      std::make_unique<ServerBasedRecognitionRecognizer>(
-          std::move(client), std::move(options),
-          network::SharedURLLoaderFactory::Create(
-              std::move(pending_loader_factory))),
-      /*is_multichannel_supported=*/false, /*is_server_based=*/true);
-#endif  // BUILDFLAG(ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER)
+      is_server_based);
 }
 
 }  // namespace speech

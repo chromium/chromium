@@ -40,9 +40,6 @@ class ChromeSpeechRecognitionService : public SpeechRecognitionService {
       mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
           receiver) override;
 
- protected:
-  content::BrowserContext* context() { return context_; }
-
  private:
   // Launches the speech recognition service in a sandboxed utility process.
   void LaunchIfNotRunning();
@@ -51,7 +48,7 @@ class ChromeSpeechRecognitionService : public SpeechRecognitionService {
   base::FilePath GetSodaConfigPath(PrefService* prefs);
 
   // The browser context associated with the keyed service.
-  raw_ptr<content::BrowserContext> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // The remote to the speech recognition service. The browser will not launch a
   // new speech recognition service process if this remote is already bound.
