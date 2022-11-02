@@ -60,7 +60,8 @@ constexpr net::NetworkTrafficAnnotationTag
 // callbacks are supposed to be on that thread.). For some reason this is does
 // not seem to be true sometimes on Android. So we forward the call to this
 // function to the correct thread to avoid a crash from a race condition.
-void CheckThreadAndMaybeForward(base::OnceClosure callback) {
+// Returns true if we are on the correct thread and should continue executing.
+bool CheckThreadAndMaybeForward(base::OnceClosure callback) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     // Only dump the first time, but always forward the call.
     static std::atomic<bool> dumped = false;
@@ -69,7 +70,9 @@ void CheckThreadAndMaybeForward(base::OnceClosure callback) {
     }
     content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
                                                  std::move(callback));
+    return false;
   }
+  return true;
 }
 
 }  // namespace
@@ -548,9 +551,11 @@ void KAnonymityTrustTokenGetter::OnFetchedTrustToken(
 void KAnonymityTrustTokenGetter::FailAllCallbacks() {
   // TODO(crbug.com/1376858): Remove this check once it is no longer needed.
   // Ensure we are in the right thread.
-  CheckThreadAndMaybeForward(
-      base::BindOnce(&KAnonymityTrustTokenGetter::FailAllCallbacks,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (!CheckThreadAndMaybeForward(
+          base::BindOnce(&KAnonymityTrustTokenGetter::FailAllCallbacks,
+                         weak_ptr_factory_.GetWeakPtr()))) {
+    return;
+  }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (!pending_callbacks_.empty())
@@ -560,9 +565,11 @@ void KAnonymityTrustTokenGetter::FailAllCallbacks() {
 void KAnonymityTrustTokenGetter::CompleteOneRequest() {
   // TODO(crbug.com/1376858): Remove this check once it is no longer needed.
   // Ensure we are in the right thread.
-  CheckThreadAndMaybeForward(
-      base::BindOnce(&KAnonymityTrustTokenGetter::CompleteOneRequest,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (!CheckThreadAndMaybeForward(
+          base::BindOnce(&KAnonymityTrustTokenGetter::CompleteOneRequest,
+                         weak_ptr_factory_.GetWeakPtr()))) {
+    return;
+  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!pending_callbacks_.empty());
   RecordTrustTokenGetterAction(
