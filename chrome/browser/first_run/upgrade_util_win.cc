@@ -77,7 +77,7 @@ bool InvokeGoogleUpdateForRename() {
     }
   }
 
-  ULONG_PTR process_handle;
+  ULONG_PTR process_handle = 0;
   {
     TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename LaunchCmdElevated");
     HRESULT hr = ipl->LaunchCmdElevated(
