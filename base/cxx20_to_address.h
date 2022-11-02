@@ -5,9 +5,23 @@
 #ifndef BASE_CXX20_TO_ADDRESS_H_
 #define BASE_CXX20_TO_ADDRESS_H_
 
+#include <memory>
 #include <type_traits>
 
 namespace base {
+
+namespace {
+
+template <typename Ptr, typename = void>
+struct has_std_to_address : std::false_type {};
+
+template <typename Ptr>
+struct has_std_to_address<
+    Ptr,
+    std::void_t<decltype(std::pointer_traits<Ptr>::to_address(
+        std::declval<Ptr>()))>> : std::true_type {};
+
+}  // namespace
 
 // Implementation of C++20's std::to_address.
 // Note: This does consider specializations of pointer_traits<>::to_address,
@@ -23,14 +37,12 @@ constexpr T* to_address(T* p) noexcept {
 }
 
 template <typename Ptr>
-constexpr auto to_address(const Ptr& p) noexcept
-    -> decltype(std::pointer_traits<Ptr>::to_address(p)) {
-  return std::pointer_traits<Ptr>::to_address(p);
-}
-
-template <typename Ptr, typename... None>
-constexpr auto to_address(const Ptr& p, None...) noexcept {
-  return base::to_address(p.operator->());
+constexpr auto to_address(const Ptr& p) noexcept {
+  if constexpr (has_std_to_address<Ptr>::value) {
+    return std::pointer_traits<Ptr>::to_address(p);
+  } else {
+    return base::to_address(p.operator->());
+  }
 }
 
 }  // namespace base
