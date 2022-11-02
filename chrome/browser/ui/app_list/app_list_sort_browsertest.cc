@@ -854,6 +854,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   // Transition to clamshell mode - verify that the bubble launcher does not
   // have undo toast, and that the order of apps is still sorted.
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  WaitForAppListTransitionAnimation();
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST, {});
@@ -1071,6 +1072,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  WaitForAppListTransitionAnimation();
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST, {});
   app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
