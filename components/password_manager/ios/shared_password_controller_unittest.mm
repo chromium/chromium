@@ -384,6 +384,41 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfNoneAreAvailable) {
   EXPECT_TRUE(completion_was_called);
 }
 
+// Tests that no suggestions are returned if the frame was destroyed.
+TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfFrameDestroyed) {
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+          uniqueFormID:autofill::FormRendererId(0)
+       fieldIdentifier:@"field"
+         uniqueFieldID:autofill::FieldRendererId(1)
+             fieldType:kPasswordFieldType  // Ensures this is a password form.
+                  type:@"focus"
+            typedValue:@""
+               frameID:kTestFrameID];
+
+  web::WebFrame* frame = nullptr;
+
+  [[[suggestion_helper_ expect] andReturn:@[]]
+      retrieveSuggestionsWithFormID:form_query.uniqueFormID
+                    fieldIdentifier:form_query.uniqueFieldID
+                            inFrame:frame
+                          fieldType:form_query.fieldType];
+
+  OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
+
+  __block BOOL completion_was_called = NO;
+  [controller_
+      retrieveSuggestionsForForm:form_query
+                        webState:&web_state_
+               completionHandler:^(NSArray<FormSuggestion*>* suggestions,
+                                   id<FormSuggestionProvider> delegate) {
+                 EXPECT_EQ(0UL, suggestions.count);
+                 EXPECT_EQ(delegate, controller_);
+                 completion_was_called = YES;
+               }];
+  EXPECT_TRUE(completion_was_called);
+}
+
 // Tests that suggestions are returned if PasswordSuggestionHelper has some.
 TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
