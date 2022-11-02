@@ -115,7 +115,6 @@ crbug.com/1294065 [ android android-shield-android-tv ] GpuProcess_visibility [ 
 crbug.com/1170840 [ mac amd renderer-skia-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
 
 # Fuchsia flakes.
-crbug.com/1207726 [ fuchsia ] GpuProcess_canvas2d [ RetryOnFailure ]
 
 # Started crashing with passthrough field trial.
 crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
