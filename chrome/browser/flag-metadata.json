@@ -5429,12 +5429,12 @@
   {
     "name": "page-info-about-this-page-description-placeholder",
     "owners": [ "dullweber", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "page-info-about-this-page-persistent-side-panel-entry",
     "owners": [ "dullweber", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "page-info-about-this-site",
@@ -5444,7 +5444,7 @@
   {
     "name": "page-info-cookies-subpage",
     "owners": [ "zsalata@google.com", "olesiamarukhno@google.com", "dullweber" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "page-info-hide-site-settings",
@@ -5466,12 +5466,12 @@
       "dullweber",
       "olesiamarukhno@google.com"
     ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "page-info-more-about-this-page",
     "owners": [ "dullweber", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "page-info-store-info",
