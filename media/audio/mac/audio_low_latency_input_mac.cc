@@ -55,13 +55,13 @@ const int kNumberOfBlocksBufferInFifo = 2;
 
 // Max length of sequence of TooManyFramesToProcessError errors.
 // The stream will be stopped as soon as this time limit is passed.
-const int kMaxErrorTimeoutInSeconds = 1;
+constexpr base::TimeDelta kMaxErrorTimeout = base::Seconds(1);
 
 // A one-shot timer is created and started in Start() and it triggers
 // CheckInputStartupSuccess() after this amount of time. UMA stats marked
 // Media.Audio.InputStartupSuccessMac is then updated where true is added
 // if input callbacks have started, and false otherwise.
-const int kInputCallbackStartTimeoutInSeconds = 5;
+constexpr base::TimeDelta kInputCallbackStartTimeout = base::Seconds(5);
 
 // Returns true if the format flags in |format_flags| has the "non-interleaved"
 // flag (kAudioFormatFlagIsNonInterleaved) cleared (set to 0).
@@ -663,9 +663,8 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
   // CheckInputStartupSuccess() will check if |input_callback_is_active_| is
   // true when the timer expires.
   input_callback_timer_ = std::make_unique<base::OneShotTimer>();
-  input_callback_timer_->Start(
-      FROM_HERE, base::Seconds(kInputCallbackStartTimeoutInSeconds), this,
-      &AUAudioInputStream::CheckInputStartupSuccess);
+  input_callback_timer_->Start(FROM_HERE, kInputCallbackStartTimeout, this,
+                               &AUAudioInputStream::CheckInputStartupSuccess);
   DCHECK(input_callback_timer_->IsRunning());
 }
 
@@ -1036,53 +1035,44 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
     TRACE_EVENT_END0("audio", "AudioUnitRender");
   }
 
-  if (result != noErr) {
-    TRACE_EVENT_INSTANT0("audio", "AudioUnitRender error",
-                         TRACE_EVENT_SCOPE_THREAD);
-    // Only upload UMA histograms for the case when AGC is enabled. The reason
-    // is that we want to compare these stats with others in this class and
-    // they are only stored for "AGC streams", e.g. WebRTC audio streams.
-    const bool add_uma_histogram = GetAutomaticGainControl();
-    if (add_uma_histogram) {
-      base::UmaHistogramSparse("Media.AudioInputCbErrorMac", result);
-    }
-    OSSTATUS_LOG(ERROR, result) << "AudioUnitRender() failed ";
-    if (result == kAudioUnitErr_TooManyFramesToProcess ||
-        result == kAudioUnitErr_CannotDoInCurrentContext) {
-      DCHECK(!last_success_time_.is_null());
-      // We delay stopping the stream for kAudioUnitErr_TooManyFramesToProcess
-      // since it has been observed that some USB headsets can cause this error
-      // but only for a few initial frames at startup and then then the stream
-      // returns to a stable state again. See b/19524368 for details.
-      // Instead, we measure time since last valid audio frame and call
-      // HandleError() only if a too long error sequence is detected. We do
-      // this to avoid ending up in a non recoverable bad core audio state.
-      // Also including kAudioUnitErr_CannotDoInCurrentContext since long
-      // sequences can be produced in combination with e.g. sample-rate changes
-      // for input devices.
-      base::TimeDelta time_since_last_success =
-          base::TimeTicks::Now() - last_success_time_;
-      if ((time_since_last_success >
-           base::Seconds(kMaxErrorTimeoutInSeconds))) {
-        const char* err = (result == kAudioUnitErr_TooManyFramesToProcess)
-                              ? "kAudioUnitErr_TooManyFramesToProcess"
-                              : "kAudioUnitErr_CannotDoInCurrentContext";
-        LOG(ERROR) << "Too long sequence of " << err << " errors!";
-        HandleError(result);
-      }
+  if (result == noErr) {
+    // Update time of successful call to AudioUnitRender().
+    last_success_time_ = base::TimeTicks::Now();
 
-    } else {
-      // We have also seen kAudioUnitErr_NoConnection in some cases. Bailing
-      // out for this error for now.
-      HandleError(result);
-    }
-    return result;
+    // Deliver recorded data to the consumer as a callback.
+    return Provide(number_of_frames, &audio_buffer_list_, time_stamp);
   }
-  // Update time of successful call to AudioUnitRender().
-  last_success_time_ = base::TimeTicks::Now();
 
-  // Deliver recorded data to the consumer as a callback.
-  return Provide(number_of_frames, &audio_buffer_list_, time_stamp);
+  TRACE_EVENT_INSTANT0("audio", "AudioUnitRender error",
+                       TRACE_EVENT_SCOPE_THREAD);
+  OSSTATUS_LOG(ERROR, result) << "AudioUnitRender() failed ";
+
+  if (result == kAudioUnitErr_TooManyFramesToProcess ||
+      result == kAudioUnitErr_CannotDoInCurrentContext) {
+    DCHECK(!last_success_time_.is_null());
+    // We delay stopping the stream for kAudioUnitErr_TooManyFramesToProcess
+    // since it has been observed that some USB headsets can cause this error
+    // but only for a few initial frames at startup and then then the stream
+    // returns to a stable state again. See b/19524368 for details.
+    // Instead, we measure time since last valid audio frame and call
+    // HandleError() only if a too long error sequence is detected. We do
+    // this to avoid ending up in a non recoverable bad core audio state.
+    // Also including kAudioUnitErr_CannotDoInCurrentContext since long
+    // sequences can be produced in combination with e.g. sample-rate changes
+    // for input devices.
+    if (base::TimeTicks::Now() - last_success_time_ <= kMaxErrorTimeout) {
+      // Skip error handling for now.
+      return result;
+    }
+
+    const char* err = (result == kAudioUnitErr_TooManyFramesToProcess)
+                          ? "kAudioUnitErr_TooManyFramesToProcess"
+                          : "kAudioUnitErr_CannotDoInCurrentContext";
+    LOG(ERROR) << "Too long sequence of " << err << " errors!";
+  }
+
+  HandleError(result);
+  return result;
 }
 
 OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,

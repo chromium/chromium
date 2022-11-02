@@ -1361,15 +1361,6 @@ chromium-metrics-reviews@google.com.
   <summary>Audio codec profile used in HTML5 media for AAC playback.</summary>
 </histogram>
 
-<histogram name="Media.AudioInputCbErrorMac" units="OSStatus"
-    expires_after="2023-07-29">
-  <owner>henrika@chromium.org</owner>
-  <owner>webrtc-audio@google.com</owner>
-  <summary>
-    Error codes that AudioUnitRender() returns in AUAudioInputStream on Mac.
-  </summary>
-</histogram>
-
 <histogram name="Media.AudioInputController" units="ms" expires_after="never">
 <!-- expires-never: Audio pipeline health metric. -->
 
@@ -3186,10 +3177,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.InputErrorMac" units="OSStatus" expires_after="never">
+<histogram name="Media.InputErrorMac" enum="OSStatus_Audio"
+    expires_after="never">
 <!-- expires-never: essential indicator for audio input stability in Chrome -->
 
-  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
+  <owner>henrika@hromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
     Error codes that we encounter while setting up an AUAudioInputStream on Mac.

@@ -75968,6 +75968,49 @@ Called by update_net_trust_anchors.py.-->
   <int value="1800" label="Kerberos Accounts V2"/>
 </enum>
 
+<enum name="OSStatus_Audio">
+  <int value="-1852797029" label="IllegalOperationError_ActiveStream"/>
+  <int value="-560947818" label="kAudioHardwareBadObjectError_ActiveStream"/>
+  <int value="-10879" label="kAudioUnitErr_InvalidProperty"/>
+  <int value="-10878" label="kAudioUnitErr_InvalidParameter"/>
+  <int value="-10877" label="kAudioUnitErr_InvalidElement"/>
+  <int value="-10876" label="kAudioUnitErr_NoConnection"/>
+  <int value="-10875" label="kAudioUnitErr_FailedInitialization"/>
+  <int value="-10874" label="kAudioUnitErr_TooManyFramesToProcess"/>
+  <int value="-10873" label="kAudioUnitErr_IllegalInstrument"/>
+  <int value="-10872" label="kAudioUnitErr_InstrumentTypeNotFound"/>
+  <int value="-10871" label="kAudioUnitErr_InvalidFile"/>
+  <int value="-10870" label="kAudioUnitErr_UnknownFileType"/>
+  <int value="-10869" label="kAudioUnitErr_FileNotSpecified"/>
+  <int value="-10868" label="kAudioUnitErr_FormatNotSupported"/>
+  <int value="-10867" label="kAudioUnitErr_Uninitialized"/>
+  <int value="-10866" label="kAudioUnitErr_InvalidScope"/>
+  <int value="-10865" label="kAudioUnitErr_PropertyNotWritable"/>
+  <int value="-10864" label="kAUGraphErr_InvalidAudioUnit"/>
+  <int value="-10863" label="Err_CannotDoInCurrentContext"/>
+  <int value="-10862" label="kAUGraphErr_OutputNodeErr"/>
+  <int value="10862" label="kAUGraphErr_OutputNodeErr_ActiveStream"/>
+  <int value="10863" label="Err_CannotDoInCurrentContext_ActiveStream"/>
+  <int value="10864" label="kAUGraphErr_InvalidAudioUnit_ActiveStream"/>
+  <int value="10865" label="kAudioUnitErr_PropertyNotWritable_ActiveStream"/>
+  <int value="10866" label="kAudioUnitErr_InvalidScope_ActiveStream"/>
+  <int value="10867" label="kAudioUnitErr_Uninitialized_ActiveStream"/>
+  <int value="10868" label="kAudioUnitErr_FormatNotSupported_ActiveStream"/>
+  <int value="10869" label="kAudioUnitErr_FileNotSpecified_ActiveStream"/>
+  <int value="10870" label="kAudioUnitErr_UnknownFileType_ActiveStream"/>
+  <int value="10871" label="kAudioUnitErr_InvalidFile_ActiveStream"/>
+  <int value="10872" label="kAudioUnitErr_InstrumentTypeNotFound_ActiveStream"/>
+  <int value="10873" label="kAudioUnitErr_IllegalInstrument_ActiveStream"/>
+  <int value="10874" label="kAudioUnitErr_TooManyFramesToProcess_ActiveStream"/>
+  <int value="10875" label="kAudioUnitErr_FailedInitialization_ActiveStream"/>
+  <int value="10876" label="kAudioUnitErr_NoConnection_ActiveStream"/>
+  <int value="10877" label="kAudioUnitErr_InvalidElement_ActiveStream"/>
+  <int value="10878" label="kAudioUnitErr_InvalidParameter_ActiveStream"/>
+  <int value="10879" label="kAudioUnitErr_InvalidProperty_ActiveStream"/>
+  <int value="560947818" label="kAudioHardwareBadObjectError"/>
+  <int value="1852797029" label="IllegalOperationError"/>
+</enum>
+
 <enum name="OsSuite">
   <int value="0" label="Windows Home Edition (or unknown)"/>
   <int value="1" label="Windows Professional/Ultimate Editions"/>
