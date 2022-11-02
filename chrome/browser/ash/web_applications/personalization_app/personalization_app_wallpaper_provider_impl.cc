@@ -109,13 +109,8 @@ const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
              : base::UnguessableToken::Create().ToString();
 }
 
-scoped_refptr<base::RefCountedMemory> ResizeAndEncodeWallpaperImage() {
-  auto* wallpaper_controller = ash::WallpaperController::Get();
-  // Get wallpaper image on worker thread for performance reasons. This avoids
-  // having to call |image.MakeThreadSafe| in a performance critical path while
-  // changing wallpaper, and instead calling it in the thread pool.
-  auto image = wallpaper_controller->GetWallpaperImage();
-  image.MakeThreadSafe();
+scoped_refptr<base::RefCountedMemory> ResizeAndEncodeWallpaperImage(
+    gfx::ImageSkia image) {
   auto resized = gfx::Image(GetResizedImage(image));
   scoped_refptr<base::RefCountedMemory> jpg_bytes = new base::RefCountedBytes();
   std::vector<uint8_t> jpg_buffer;
@@ -181,11 +176,15 @@ void PersonalizationAppWallpaperProviderImpl::GetWallpaperAsJpegBytes(
   // on the UI thread right after user makes a new selection. Make sure to do
   // resizing and encoding on a task runner to avoid locking up the UI as the
   // user's wallpaper is being set.
+  auto* wallpaper_controller = ash::WallpaperController::Get();
+  auto image = wallpaper_controller->GetWallpaperImage();
+  image.MakeThreadSafe();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ResizeAndEncodeWallpaperImage), std::move(callback));
+      base::BindOnce(&ResizeAndEncodeWallpaperImage, image),
+      std::move(callback));
 }
 
 bool PersonalizationAppWallpaperProviderImpl::IsEligibleForGooglePhotos() {
