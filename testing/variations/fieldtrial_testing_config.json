@@ -1342,15 +1342,12 @@
             ]
         }
     ],
-    "AutofillRetrieveOverallPredictionsFromCache": [
+    "AutofillRetrieveOverallPredictionsFromCacheV2": [
         {
             "platforms": [
-                "android_webview",
-                "android_weblayer",
                 "android",
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1358,8 +1355,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithCleanup",
                     "enable_features": [
+                        "AutofillDontPreserveAutofillState",
                         "AutofillRetrieveOverallPredictionsFromCache"
                     ]
                 }
