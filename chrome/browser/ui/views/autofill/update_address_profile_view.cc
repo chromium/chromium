@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
@@ -122,14 +123,7 @@ void AddValuesRow(views::TableLayoutView* layout_view,
   layout_view->AddChildView(CreateValuesView(diff, are_new_values, icon_color));
   if (are_new_values) {
     std::unique_ptr<views::ImageButton> edit_button =
-        views::CreateVectorImageButtonWithNativeTheme(
-            std::move(edit_button_callback), vector_icons::kEditIcon,
-            kIconSize);
-
-    edit_button->SetAccessibleName(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));
-    edit_button->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));
+        CreateEditButton(std::move(edit_button_callback));
     layout_view->AddChildView(std::move(edit_button));
   }
 }

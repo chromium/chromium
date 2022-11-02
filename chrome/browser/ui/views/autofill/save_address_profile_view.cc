@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
@@ -248,15 +249,9 @@ SaveAddressProfileView::SaveAddressProfileView(
           views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
           views::MaximumFlexSizeRule::kUnbounded));
 
-  edit_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-      base::BindRepeating(
-          &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
-          base::Unretained(controller_)),
-      vector_icons::kEditIcon, kIconSize));
-  edit_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));
-  edit_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));
+  edit_button_ = AddChildView(CreateEditButton(base::BindRepeating(
+      &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
+      base::Unretained(controller_))));
 
   address_components_view_
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
