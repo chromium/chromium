@@ -8,10 +8,12 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
@@ -50,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
@@ -679,6 +682,25 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     public int getOrientation() {
         return mOrientation;
+    }
+
+    public @ColorInt int getBackgroundColor() {
+        if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+            if (mIsIncognito) {
+                return Color.BLACK;
+            }
+            // @TODO(crbug.com/1373630): May change the color for night theme after finalizing the
+            // spec
+            return ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_2);
+        } else if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
+            if (mIsIncognito) {
+                // Use a non-dynamic dark background color for incognito, slightly greyer than
+                // Color.BLACK
+                return ChromeColors.getPrimaryBackgroundColor(mContext, mIsIncognito);
+            }
+            return ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_0);
+        }
+        return Color.BLACK;
     }
 
     /**

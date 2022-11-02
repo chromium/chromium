@@ -53,7 +53,8 @@ class TabStripSceneLayer : public SceneLayer {
                            jfloat width,
                            jfloat height,
                            jfloat y_offset,
-                           jboolean should_readd_background);
+                           jboolean should_readd_background,
+                           jint background_color);
 
   void UpdateStripScrim(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& jobj,

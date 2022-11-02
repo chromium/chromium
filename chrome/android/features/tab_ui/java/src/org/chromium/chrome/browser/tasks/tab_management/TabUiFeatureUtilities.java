@@ -309,10 +309,29 @@ public class TabUiFeatureUtilities {
         return ENABLE_LAUNCH_POLISH.getValue();
     }
 
+    private static boolean sFolioEnabledForTesting;
+    private static boolean sDetachedEnabledForTesting;
+    /**
+     * Set folio disabled/enabled for testing.
+     */
+    public static void setTabStripRedesignEnableFolioForTesting(boolean enabled) {
+        sFolioEnabledForTesting = enabled;
+    }
+
+    /**
+     * Set folio disabled/enabled for testing.
+     */
+    public static void setTabStripRedesignEnableDetachedForTesting(boolean enabled) {
+        sDetachedEnabledForTesting = enabled;
+    }
+
     /**
      * @return Whether Folio for tab strip redesign is enabled.
      */
     public static boolean isTabStripFolioEnabled() {
+        if (sFolioEnabledForTesting) {
+            return sFolioEnabledForTesting;
+        }
         return TAB_STRIP_REDESIGN_ENABLE_FOLIO.getValue();
     }
 
@@ -320,6 +339,9 @@ public class TabUiFeatureUtilities {
      * @return Whether Detached for tab strip redesign is enabled.
      */
     public static boolean isTabStripDetachedEnabled() {
+        if (sDetachedEnabledForTesting) {
+            return sDetachedEnabledForTesting;
+        }
         return TAB_STRIP_REDESIGN_ENABLE_DETACHED.getValue();
     }
 

@@ -49,12 +49,6 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
     scrollable_strip_layer_->AddChild(new_tab_button_);
   }
 
-  // Using kLtGray as a temporary background color for TabStripRedesign
-  if (!base::FeatureList::IsEnabled(chrome::android::kTabStripRedesign)) {
-    tab_strip_layer_->SetBackgroundColor(SkColors::kBlack);
-  } else {
-    tab_strip_layer_->SetBackgroundColor(SkColors::kLtGray);
-  }
   tab_strip_layer_->SetIsDrawable(true);
   tab_strip_layer_->AddChild(scrollable_strip_layer_);
 
@@ -118,11 +112,13 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              jfloat width,
                                              jfloat height,
                                              jfloat y_offset,
-                                             jboolean should_readd_background) {
+                                             jboolean should_readd_background,
+                                             jint background_color) {
   gfx::RectF content(0, y_offset, width, height);
   layer()->SetPosition(gfx::PointF(0, y_offset));
   tab_strip_layer_->SetBounds(gfx::Size(width, height));
   scrollable_strip_layer_->SetBounds(gfx::Size(width, height));
+  tab_strip_layer_->SetBackgroundColor(SkColor4f::FromColor(background_color));
 
   // Content tree should not be affected by tab strip scene layer visibility.
   if (content_tree_)
@@ -155,7 +151,6 @@ void TabStripSceneLayer::UpdateStripScrim(JNIEnv* env,
     scrim_layer_->SetIsDrawable(false);
     return;
   }
-
   scrim_layer_->SetIsDrawable(true);
   // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
   scrim_layer_->SetBackgroundColor(SkColor4f::FromColor(color));

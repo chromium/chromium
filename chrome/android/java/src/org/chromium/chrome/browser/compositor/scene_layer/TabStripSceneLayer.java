@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.compositor.scene_layer;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
@@ -29,6 +31,7 @@ import org.chromium.ui.resources.ResourceManager;
  */
 @JNINamespace("android")
 public class TabStripSceneLayer extends SceneOverlayLayer {
+    private static boolean sTestFlag;
     private long mNativePtr;
     private final float mDpToPx;
     private SceneLayer mChildSceneLayer;
@@ -39,12 +42,19 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         mDpToPx = context.getResources().getDisplayMetrics().density;
     }
 
+    public static void setTestFlag(boolean testFlag) {
+        sTestFlag = testFlag;
+    }
+
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
             mNativePtr = TabStripSceneLayerJni.get().init(TabStripSceneLayer.this);
         }
-        assert mNativePtr != 0;
+        // Set flag for testing
+        if (!sTestFlag) {
+            assert mNativePtr != 0;
+        }
     }
 
     @Override
@@ -114,7 +124,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         final float width = layoutHelper.getWidth() * mDpToPx;
         final float height = layoutHelper.getHeight() * mDpToPx;
         TabStripSceneLayerJni.get().updateTabStripLayer(mNativePtr, TabStripSceneLayer.this, width,
-                height, yOffset * mDpToPx, shouldReaddBackground(layoutHelper.getOrientation()));
+                height, yOffset * mDpToPx, shouldReaddBackground(layoutHelper.getOrientation()),
+                layoutHelper.getBackgroundColor());
 
         updateStripScrim(layoutHelper.getStripScrim());
 
@@ -193,13 +204,14 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(TabStripSceneLayer caller);
         void beginBuildingFrame(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
         void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
         void updateTabStripLayer(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
-                float width, float height, float yOffset, boolean shouldReadBackground);
+                float width, float height, float yOffset, boolean shouldReadBackground,
+                @ColorInt int backgroundColor);
         void updateStripScrim(long nativeTabStripSceneLayer, TabStripSceneLayer caller, float x,
                 float y, float width, float height, int color, float alpha);
         void updateNewTabButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
