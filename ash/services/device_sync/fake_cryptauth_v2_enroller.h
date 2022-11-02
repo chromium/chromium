@@ -7,9 +7,9 @@
 
 #include "ash/services/device_sync/cryptauth_enrollment_result.h"
 #include "ash/services/device_sync/cryptauth_v2_enroller.h"
-#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/callback.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

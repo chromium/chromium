@@ -15,10 +15,10 @@
 #include "ash/services/device_sync/cryptauth_gcm_manager.h"
 #include "ash/services/device_sync/cryptauth_scheduler.h"
 #include "ash/services/device_sync/cryptauth_v2_device_manager.h"
-#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;

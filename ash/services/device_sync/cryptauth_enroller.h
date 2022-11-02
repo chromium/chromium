@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/callback_forward.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace ash {
 

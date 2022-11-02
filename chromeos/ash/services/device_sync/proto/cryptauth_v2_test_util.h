@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_V2_TEST_UTIL_H_
-#define ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_V2_TEST_UTIL_H_
+#ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_V2_TEST_UTIL_H_
+#define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_V2_TEST_UTIL_H_
 
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {
@@ -75,4 +75,4 @@ const BetterTogetherDeviceMetadata& GetBetterTogetherDeviceMetadataForTest();
 
 }  // namespace cryptauthv2
 
-#endif  // ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_V2_TEST_UTIL_H_
+#endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_V2_TEST_UTIL_H_

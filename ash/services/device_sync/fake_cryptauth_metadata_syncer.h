@@ -11,10 +11,10 @@
 #include "ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "ash/services/device_sync/cryptauth_metadata_syncer.h"
 #include "ash/services/device_sync/cryptauth_metadata_syncer_impl.h"
-#include "ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;

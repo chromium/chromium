@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/linux_util.h"
@@ -25,6 +24,7 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/gcm_constants.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"

@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "ash/services/device_sync/cryptauth_device.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "ash/services/device_sync/remote_device_v2_loader_impl.h"
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::device_sync {

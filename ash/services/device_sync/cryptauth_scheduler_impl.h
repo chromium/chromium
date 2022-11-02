@@ -11,14 +11,14 @@
 #include "ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "ash/services/device_sync/cryptauth_enrollment_result.h"
 #include "ash/services/device_sync/cryptauth_scheduler.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;

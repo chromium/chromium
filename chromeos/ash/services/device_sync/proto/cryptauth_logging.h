@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_LOGGING_H_
-#define ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_LOGGING_H_
+#ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_LOGGING_H_
+#define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_LOGGING_H_
 
 #include <ostream>
 #include <string>
 
-#include "ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "base/values.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
 
 namespace cryptauthv2 {
 
@@ -90,4 +90,4 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace cryptauthv2
 
-#endif  // ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_LOGGING_H_
+#endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_CRYPTAUTH_LOGGING_H_

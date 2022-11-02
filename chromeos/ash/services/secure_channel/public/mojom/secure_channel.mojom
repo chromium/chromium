@@ -129,7 +129,7 @@ struct ConnectionMetadata {
   // bytes were publicly visible over BLE when the connection with the remote
   // device was being established. It is used by some clients for further
   // cryptographic communication.
-  // Defined by //ash/services/device_sync/proto/securemessage.proto.
+  // Defined by //chromeos/ash/services/device_sync/proto/securemessage.proto.
   string channel_binding_data;
 };
 

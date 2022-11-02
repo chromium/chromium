@@ -11,8 +11,8 @@
 #include "ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "ash/services/device_sync/cryptauth_group_private_key_sharer.h"
 #include "ash/services/device_sync/cryptauth_group_private_key_sharer_impl.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

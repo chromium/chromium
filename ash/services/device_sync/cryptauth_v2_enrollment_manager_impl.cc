@@ -9,7 +9,6 @@
 #include "ash/services/device_sync/cryptauth_task_metrics_logger.h"
 #include "ash/services/device_sync/cryptauth_v2_enroller_impl.h"
 #include "ash/services/device_sync/pref_names.h"
-#include "ash/services/device_sync/proto/cryptauth_logging.h"
 #include "ash/services/device_sync/value_string_encoding.h"
 #include "base/bind.h"
 #include "base/hash/hash.h"
@@ -19,6 +18,7 @@
 #include "base/time/clock.h"
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

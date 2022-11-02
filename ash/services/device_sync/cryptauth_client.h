@@ -57,9 +57,9 @@ namespace device_sync {
 // Implmentations shall only processes a single request, so create a new
 // instance for each request you make. DO NOT REUSE.
 // For documentation on each API call, see
-// ash/services/device_sync/proto/cryptauth_api.proto,
-// ash/services/device_sync/proto/cryptauth_enrollment.proto, and
-// ash/services/device_sync/proto/cryptauth_devicesync.proto.
+// chromeos/ash/services/device_sync/proto/cryptauth_api.proto,
+// chromeos/ash/services/device_sync/proto/cryptauth_enrollment.proto, and
+// chromeos/ash/services/device_sync/proto/cryptauth_devicesync.proto.
 class CryptAuthClient {
  public:
   typedef base::OnceCallback<void(NetworkRequestError)> ErrorCallback;

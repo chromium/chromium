@@ -22,7 +22,7 @@ const char kCryptAuthDeviceSyncLastSyncTimeSeconds[] =
 
 // (CryptAuth v1) The reason that the next device_sync is performed. This should
 // be one of the enum values of cryptauth::InvocationReason in
-// ash/services/device_sync/proto/cryptauth_api.proto.
+// chromeos/ash/services/device_sync/proto/cryptauth_api.proto.
 const char kCryptAuthDeviceSyncReason[] = "cryptauth.device_sync.reason";
 
 // (CryptAuth v1) A list of unlock keys (stored as dictionaries) synced from
@@ -43,7 +43,7 @@ const char kCryptAuthEnrollmentLastEnrollmentTimeSeconds[] =
 
 // (CryptAuth v1) The reason that the next enrollment is performed. This should
 // be one of the enum values of cryptauth::InvocationReason in
-// ash/services/device_sync/proto/cryptauth_api.proto.
+// chromeos/ash/services/device_sync/proto/cryptauth_api.proto.
 const char kCryptAuthEnrollmentReason[] = "cryptauth.enrollment.reason";
 
 // (CryptAuth v1 and during migration to v2) The public key of the user and

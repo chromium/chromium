@@ -9,9 +9,9 @@
 
 #include "ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "ash/services/device_sync/cryptauth_enrollment_result.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

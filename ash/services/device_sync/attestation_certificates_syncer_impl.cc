@@ -9,11 +9,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/cryptauth_scheduler.h"
 #include "ash/services/device_sync/pref_names.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

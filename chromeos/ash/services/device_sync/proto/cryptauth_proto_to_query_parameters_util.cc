@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/device_sync/proto/cryptauth_proto_to_query_parameters_util.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_proto_to_query_parameters_util.h"
 
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 
 namespace cryptauthv2 {
 

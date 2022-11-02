@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 
 class PrefRegistrySimple;
 

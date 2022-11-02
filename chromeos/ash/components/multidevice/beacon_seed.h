@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 
 namespace ash::multidevice {
 

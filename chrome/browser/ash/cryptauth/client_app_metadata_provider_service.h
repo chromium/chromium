@@ -7,11 +7,11 @@
 
 #include <list>
 
-#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/client_app_metadata_provider.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/keyed_service/core/keyed_service.h"

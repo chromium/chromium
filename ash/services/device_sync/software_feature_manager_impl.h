@@ -11,13 +11,13 @@
 
 #include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/device_sync/network_request_error.h"
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "ash/services/device_sync/software_feature_manager.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace ash {
 

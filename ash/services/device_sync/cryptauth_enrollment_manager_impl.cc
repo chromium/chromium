@@ -10,7 +10,6 @@
 
 #include "ash/services/device_sync/cryptauth_enroller.h"
 #include "ash/services/device_sync/pref_names.h"
-#include "ash/services/device_sync/proto/enum_util.h"
 #include "ash/services/device_sync/sync_scheduler_impl.h"
 #include "ash/services/device_sync/value_string_encoding.h"
 #include "base/bind.h"
@@ -20,6 +19,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate.h"
+#include "chromeos/ash/services/device_sync/proto/enum_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

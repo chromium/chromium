@@ -7,11 +7,11 @@
 #include <list>
 #include <memory>
 
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/secure_channel/session_keys.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"

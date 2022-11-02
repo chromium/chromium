@@ -11,7 +11,6 @@
 
 #include "ash/services/device_sync/fake_cryptauth_scheduler.h"
 #include "ash/services/device_sync/pref_names.h"
-#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "ash/services/device_sync/value_string_encoding.h"
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
@@ -19,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"

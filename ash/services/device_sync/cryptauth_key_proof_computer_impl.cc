@@ -7,11 +7,11 @@
 #include <vector>
 
 #include "ash/services/device_sync/cryptauth_key.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"
 #include "crypto/hkdf.h"

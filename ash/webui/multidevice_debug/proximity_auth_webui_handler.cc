@@ -9,7 +9,6 @@
 #include <sstream>
 #include <utility>
 
-#include "ash/services/device_sync/proto/enum_util.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -19,6 +18,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
+#include "chromeos/ash/services/device_sync/proto/enum_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"

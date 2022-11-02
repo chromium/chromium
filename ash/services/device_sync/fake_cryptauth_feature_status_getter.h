@@ -12,9 +12,9 @@
 #include "ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "ash/services/device_sync/cryptauth_feature_status_getter.h"
 #include "ash/services/device_sync/cryptauth_feature_status_getter_impl.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

@@ -7,7 +7,7 @@
 
 #include <ostream>
 
-#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

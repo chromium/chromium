@@ -5,8 +5,8 @@
 #ifndef ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_H_
 #define ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_H_
 
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/values.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

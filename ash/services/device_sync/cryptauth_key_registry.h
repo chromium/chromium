@@ -6,8 +6,8 @@
 #define ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_REGISTRY_H_
 
 #include "ash/services/device_sync/cryptauth_key_bundle.h"
-#include "ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
 #include "base/containers/flat_map.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
 
 namespace ash {
 

@@ -12,7 +12,6 @@
 #include "ash/services/device_sync/cryptauth_key_bundle.h"
 #include "ash/services/device_sync/cryptauth_task_metrics_logger.h"
 #include "ash/services/device_sync/device_sync_type_converters.h"
-#include "ash/services/device_sync/proto/cryptauth_logging.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,6 +19,7 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_logging.h"
 
 namespace ash {
 

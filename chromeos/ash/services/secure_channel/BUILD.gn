@@ -173,11 +173,11 @@ static_library("secure_channel") {
 
   deps = [
     "//ash/constants",
-    "//ash/services/device_sync/proto",
     "//base",
     "//chromeos",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/device_sync/proto",
     "//chromeos/ash/services/secure_channel/public/cpp/shared",
     "//chromeos/ash/services/secure_channel/public/mojom",
     "//crypto",

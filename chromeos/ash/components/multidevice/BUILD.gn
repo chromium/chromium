@@ -29,18 +29,18 @@ static_library("multidevice") {
   ]
 
   deps = [
-    "//ash/services/device_sync/proto:util",
     "//base",
     "//base:i18n",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/easy_unlock",
     "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/device_sync/proto:util",
     "//components/prefs",
   ]
 
   public_deps = [
-    "//ash/services/device_sync/proto",
     "//base",
+    "//chromeos/ash/services/device_sync/proto",
     "//third_party/securemessage/proto",
   ]
 }
@@ -54,8 +54,8 @@ static_library("stub_multidevice_util") {
   deps = [
     ":multidevice",
     "//ash/constants",
-    "//ash/services/device_sync/proto",
     "//base",
+    "//chromeos/ash/services/device_sync/proto",
   ]
 }
 
@@ -72,8 +72,8 @@ static_library("test_support") {
   public_deps = [ ":multidevice" ]
 
   deps = [
-    "//ash/services/device_sync/proto",
     "//base",
+    "//chromeos/ash/services/device_sync/proto",
   ]
 }
 
@@ -90,10 +90,10 @@ source_set("unit_tests") {
   deps = [
     ":multidevice",
     ":test_support",
-    "//ash/services/device_sync/proto",
     "//base/test:test_support",
     "//chromeos/ash/components/multidevice/logging:unit_tests",
     "//chromeos/ash/components/multidevice/mojom:unit_tests",
+    "//chromeos/ash/services/device_sync/proto",
     "//testing/gtest",
   ]
 }

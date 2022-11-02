@@ -160,11 +160,11 @@ static_library("device_sync") {
 
   deps = [
     "//ash/constants",
-    "//ash/services/device_sync/proto:util",
     "//base",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/services/device_sync/proto:util",
     "//chromeos/ash/services/device_sync/public/cpp",
     "//chromeos/ash/services/device_sync/public/mojom",
     "//components/gcm_driver",
@@ -246,8 +246,8 @@ static_library("test_support") {
 
   deps = [
     ":device_sync",
-    "//ash/services/device_sync/proto:test_support",
     "//base",
+    "//chromeos/ash/services/device_sync/proto:test_support",
     "//chromeos/ash/services/device_sync/public/cpp",
     "//chromeos/ash/services/device_sync/public/mojom",
     "//testing/gmock",
@@ -313,8 +313,6 @@ source_set("unit_tests") {
     ":feature_status_change",
     ":test_support",
     "//ash/constants",
-    "//ash/services/device_sync/proto:test_support",
-    "//ash/services/device_sync/proto:util",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus:test_support",
@@ -322,6 +320,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/services/device_sync/proto:test_support",
+    "//chromeos/ash/services/device_sync/proto:util",
     "//chromeos/ash/services/device_sync/public/cpp:prefs",
     "//chromeos/ash/services/device_sync/public/cpp:test_support",
     "//chromeos/ash/services/device_sync/public/cpp:unit_tests",

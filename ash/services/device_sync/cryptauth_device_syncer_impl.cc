@@ -16,8 +16,6 @@
 #include "ash/services/device_sync/cryptauth_key_registry.h"
 #include "ash/services/device_sync/cryptauth_metadata_syncer_impl.h"
 #include "ash/services/device_sync/cryptauth_task_metrics_logger.h"
-#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "ash/services/device_sync/synced_bluetooth_address_tracker.h"
 #include "ash/services/device_sync/value_string_encoding.h"
 #include "base/bind.h"
@@ -26,6 +24,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 
 namespace ash {
 

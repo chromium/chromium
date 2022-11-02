@@ -1,5 +1,5 @@
 include_rules = [
-  "+ash/services/device_sync/proto",
+  "+chromeos/ash/services/device_sync/proto",
   "+chromeos/ash/services/device_sync/public/cpp",
   "+chromeos/ash/services/multidevice_setup/public/mojom",
   "+device/bluetooth",

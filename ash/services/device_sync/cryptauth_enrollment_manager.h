@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

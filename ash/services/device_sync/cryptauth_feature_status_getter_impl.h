@@ -11,10 +11,10 @@
 #include "ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "ash/services/device_sync/cryptauth_feature_status_getter.h"
 #include "ash/services/device_sync/network_request_error.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 
 namespace ash {
 

@@ -11,10 +11,10 @@
 #include "ash/services/device_sync/cryptauth_enrollment_manager.h"
 #include "ash/services/device_sync/cryptauth_feature_type.h"
 #include "ash/services/device_sync/cryptauth_gcm_manager.h"
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "ash/services/device_sync/sync_scheduler.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;

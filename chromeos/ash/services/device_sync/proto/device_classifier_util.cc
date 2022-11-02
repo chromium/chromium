@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/device_sync/proto/device_classifier_util.h"
+#include "chromeos/ash/services/device_sync/proto/device_classifier_util.h"
 
 #include <vector>
 
-#include "ash/services/device_sync/proto/enum_util.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/version.h"
+#include "chromeos/ash/services/device_sync/proto/enum_util.h"
 #include "components/version_info/version_info.h"
 
 namespace ash {

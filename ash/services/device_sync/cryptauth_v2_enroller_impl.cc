@@ -13,12 +13,12 @@
 #include "ash/services/device_sync/cryptauth_key_proof_computer_impl.h"
 #include "ash/services/device_sync/cryptauth_key_registry.h"
 #include "ash/services/device_sync/cryptauth_task_metrics_logger.h"
-#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/gcm_constants.h"
 
 namespace ash {

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_DEVICE_SYNC_PROTO_ENUM_UTIL_H_
-#define ASH_SERVICES_DEVICE_SYNC_PROTO_ENUM_UTIL_H_
+#ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_ENUM_UTIL_H_
+#define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_ENUM_UTIL_H_
 
 #include <ostream>
 
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace ash {
 
@@ -60,4 +60,4 @@ std::string DeviceTypeEnumToString(cryptauth::DeviceType device_type);
 
 }  // namespace ash
 
-#endif  // ASH_SERVICES_DEVICE_SYNC_PROTO_ENUM_UTIL_H_
+#endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PROTO_ENUM_UTIL_H_

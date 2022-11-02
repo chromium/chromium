@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -38,6 +37,7 @@
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/proximity_auth/fake_lock_handler.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"

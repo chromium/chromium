@@ -4,7 +4,7 @@
 
 #include <utility>
 
-#include "ash/services/device_sync/proto/cryptauth_logging.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_logging.h"
 
 #include "base/base64url.h"
 #include "base/i18n/time_formatting.h"

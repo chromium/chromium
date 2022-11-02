@@ -13,9 +13,9 @@
 #include "ash/services/device_sync/cryptauth_ecies_encryptor.h"
 #include "ash/services/device_sync/cryptauth_group_private_key_sharer.h"
 #include "ash/services/device_sync/network_request_error.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 
 namespace ash {
 

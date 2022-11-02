@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/services/device_sync/proto/enum_util.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
@@ -15,6 +14,7 @@
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
+#include "chromeos/ash/services/device_sync/proto/enum_util.h"
 
 namespace ash {
 

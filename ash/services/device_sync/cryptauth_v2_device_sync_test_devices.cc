@@ -6,12 +6,12 @@
 
 #include "ash/services/device_sync/cryptauth_device.h"
 #include "ash/services/device_sync/fake_ecies_encryption.h"
-#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 
 namespace ash {
 

@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_DEVICE_INFO_PROVIDER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_DEVICE_INFO_PROVIDER_H_
 
-#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace ash {
 
