@@ -400,26 +400,6 @@ java_group("ui_full_java") {
   ]
 }
 
-android_library("ui_junit_test_support") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
-  sources = [
-    "junit/src/org/chromium/ui/shadows/ShadowAnimatedStateListDrawable.java",
-    "junit/src/org/chromium/ui/shadows/ShadowAppCompatResources.java",
-    "junit/src/org/chromium/ui/shadows/ShadowAsyncLayoutInflater.java",
-    "junit/src/org/chromium/ui/shadows/ShadowColorUtils.java",
-  ]
-  deps = [
-    ":ui_java",
-    "//base:base_java",
-    "//third_party/android_deps:robolectric_all_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
-    "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java",
-  ]
-}
-
 android_library("ui_java_test_support") {
   testonly = true
   sources = [
@@ -434,7 +414,6 @@ android_library("ui_java_test_support") {
     "javatests/src/org/chromium/ui/test/util/UiRestrictionSkipCheck.java",
     "javatests/src/org/chromium/ui/test/util/ViewUtils.java",
     "javatests/src/org/chromium/ui/test/util/modelutil/FakeViewProvider.java",
-    "junit/src/org/chromium/ui/base/TestActivity.java",
   ]
   deps = [
     ":ui_java",
@@ -455,78 +434,6 @@ android_library("ui_java_test_support") {
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
   ]
-}
-
-android_resources("ui_javatest_resources") {
-  testonly = true
-  sources = [
-    "junit/res/layout/inflated_view.xml",
-    "junit/res/layout/layout_view_builder_test.xml",
-    "junit/res/layout/main_view.xml",
-  ]
-  android_manifest = "junit/AndroidManifest.xml"
-}
-
-junit_binary("ui_junit_tests") {
-  sources = [
-    "junit/src/org/chromium/ui/AsyncViewProviderTest.java",
-    "junit/src/org/chromium/ui/AsyncViewStubTest.java",
-    "junit/src/org/chromium/ui/base/ApplicationViewportInsetSupplierTest.java",
-    "junit/src/org/chromium/ui/base/ClipboardTest.java",
-    "junit/src/org/chromium/ui/base/EventOffsetHandlerTest.java",
-    "junit/src/org/chromium/ui/base/LocalizationUtilsTest.java",
-    "junit/src/org/chromium/ui/base/MimeTypeUtilsTest.java",
-    "junit/src/org/chromium/ui/base/SelectFileDialogTest.java",
-    "junit/src/org/chromium/ui/dragdrop/DragAndDropDelegateImplUnitTest.java",
-    "junit/src/org/chromium/ui/dragdrop/DropDataAndroidUnitTest.java",
-    "junit/src/org/chromium/ui/dragdrop/DropDataContentProviderTest.java",
-    "junit/src/org/chromium/ui/drawable/AnimationLooperTest.java",
-    "junit/src/org/chromium/ui/drawable/StateListDrawableBuilderTest.java",
-    "junit/src/org/chromium/ui/modaldialog/ModalDialogManagerTest.java",
-    "junit/src/org/chromium/ui/modaldialog/PendingDialogContainerTest.java",
-    "junit/src/org/chromium/ui/modelutil/LazyConstructionPropertyMcpTest.java",
-    "junit/src/org/chromium/ui/modelutil/ListModelBaseTest.java",
-    "junit/src/org/chromium/ui/modelutil/ModelListAdapterTest.java",
-    "junit/src/org/chromium/ui/modelutil/PropertyListModelTest.java",
-    "junit/src/org/chromium/ui/modelutil/PropertyModelTest.java",
-    "junit/src/org/chromium/ui/modelutil/SimpleListObservableTest.java",
-    "junit/src/org/chromium/ui/modelutil/SimpleRecyclerViewAdapterTest.java",
-    "junit/src/org/chromium/ui/permissions/ActivityAndroidPermissionDelegateTest.java",
-    "junit/src/org/chromium/ui/resources/dynamics/BitmapDynamicResourceTest.java",
-    "junit/src/org/chromium/ui/resources/dynamics/ViewResourceAdapterTest.java",
-    "junit/src/org/chromium/ui/shadows/ShadowAppCompatResourcesTest.java",
-    "junit/src/org/chromium/ui/text/SpanApplierTest.java",
-    "junit/src/org/chromium/ui/util/TokenHolderTest.java",
-    "junit/src/org/chromium/ui/widget/AnchoredPopupWindowTest.java",
-    "junit/src/org/chromium/ui/widget/LoadingViewTest.java",
-    "junit/src/org/chromium/ui/widget/ViewLookupCachingFrameLayoutTest.java",
-    "junit/src/org/chromium/ui/widget/ViewRectProviderTest.java",
-  ]
-  deps = [
-    ":ui_java",
-    ":ui_java_test_support",
-    ":ui_javatest_resources",
-    ":ui_junit_test_support",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//base:base_junit_test_support",
-    "//base:jni_java",
-    "//base/test:test_support_java",
-    "//build/android:build_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
-    "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java",
-    "//third_party/androidx:androidx_core_core_java",
-    "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_ext_junit_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/mockito:mockito_java",
-    "//url:gurl_java",
-    "//url:gurl_junit_shadows",
-    "//url:gurl_junit_test_support",
-  ]
-  android_manifest = "junit/AndroidManifest.xml"
 }
 
 test("ui_android_unittests") {

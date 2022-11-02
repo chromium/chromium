@@ -376,7 +376,6 @@ group("gn_all") {
       "//tools/android/audio_focus_grabber:audio_focus_grabber_apk",
       "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
       "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
-      "//ui/android:ui_junit_tests",
       "//weblayer/public/java:client_aar",
       "//weblayer/shell/android:weblayer_shell_apk",
       "//weblayer/shell/android:weblayer_support_apk",
