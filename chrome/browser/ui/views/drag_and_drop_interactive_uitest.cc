@@ -1568,12 +1568,15 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
                    {"dragstart", "dragleave", "dragenter", "dragend"}));
 }
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
 // Also disable the test on Linux due to flaky: crbug.com/1164442
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+// TODO(crbug.com/1380803): Enable on ChromeOS ASAN once flakiness is fixed.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS) ||            \
+    (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 #define MAYBE_DragImageFromDisappearingFrame \
   DISABLED_DragImageFromDisappearingFrame
 #else
