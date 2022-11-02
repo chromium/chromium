@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_MESSAGE_CENTER_STACKED_NOTIFICATION_BAR_H_
-#define ASH_SYSTEM_MESSAGE_CENTER_STACKED_NOTIFICATION_BAR_H_
+#ifndef ASH_SYSTEM_NOTIFICATION_CENTER_STACKED_NOTIFICATION_BAR_H_
+#define ASH_SYSTEM_NOTIFICATION_CENTER_STACKED_NOTIFICATION_BAR_H_
 
-#include "ash/system/message_center/unified_message_center_view.h"
+#include "ash/system/notification_center/notification_center_view.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/views/view.h"
@@ -28,7 +28,7 @@ class StackedNotificationBar : public views::View,
                                public message_center::MessageCenterObserver {
  public:
   explicit StackedNotificationBar(
-      UnifiedMessageCenterView* message_center_view);
+      NotificationCenterView* notification_center_view);
 
   StackedNotificationBar(const StackedNotificationBar&) = delete;
   StackedNotificationBar& operator=(const StackedNotificationBar&) = delete;
@@ -43,7 +43,7 @@ class StackedNotificationBar : public views::View,
               std::vector<message_center::Notification*> stacked_notifications);
 
   // Sets the current animation state.
-  void SetAnimationState(UnifiedMessageCenterAnimationState animation_state);
+  void SetAnimationState(NotificationCenterAnimationState animation_state);
 
   // Set notification bar state to collapsed.
   void SetCollapsed();
@@ -62,7 +62,7 @@ class StackedNotificationBar : public views::View,
 
  private:
   class StackedNotificationBarIcon;
-  friend class UnifiedMessageCenterViewTest;
+  friend class NotificationCenterViewTest;
 
   // Clean up icon view after it's removal animation is complete, adds an icon
   // for `notification` if needed. Called from a callback registered in
@@ -100,10 +100,10 @@ class StackedNotificationBar : public views::View,
   int pinned_notification_count_ = 0;
   int stacked_notification_count_ = 0;
 
-  UnifiedMessageCenterAnimationState animation_state_ =
-      UnifiedMessageCenterAnimationState::IDLE;
+  NotificationCenterAnimationState animation_state_ =
+      NotificationCenterAnimationState::IDLE;
 
-  UnifiedMessageCenterView* const message_center_view_;
+  NotificationCenterView* const notification_center_view_;
   views::View* notification_icons_container_;
   views::Label* const count_label_;
   views::View* const spacer_;
@@ -116,4 +116,4 @@ class StackedNotificationBar : public views::View,
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_MESSAGE_CENTER_STACKED_NOTIFICATION_BAR_H_
+#endif  // ASH_SYSTEM_NOTIFICATION_CENTER_STACKED_NOTIFICATION_BAR_H_

@@ -19,10 +19,10 @@ class Widget;
 namespace ash {
 
 class UnifiedSystemTray;
-class UnifiedMessageCenterView;
+class NotificationCenterView;
 class SystemShadow;
 
-// Manages the bubble that contains UnifiedMessageCenterView.
+// Manages the bubble that contains `NotificationCenterView`.
 // Shows the bubble on `ShowBubble()`, and closes the bubble on the destructor.
 class ASH_EXPORT UnifiedMessageCenterBubble
     : public ScreenLayoutObserver,
@@ -43,9 +43,10 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   gfx::Rect GetBoundsInScreen() const;
 
   // We need the code to show the bubble explicitly separated from the
-  // contructor. This is to prevent trigerring the TrayEventFilter from within
-  // the constructor. Doing so can cause a crash when the TrayEventFilter tries
-  // to reference the message center bubble before it is fully instantiated.
+  // constructor. This is to prevent triggering the `TrayEventFilter` from
+  // within the constructor. Doing so can cause a crash when the
+  // `TrayEventFilter` tries to reference the message center bubble before it is
+  // fully instantiated.
   void ShowBubble();
 
   // Collapse the bubble to only have the notification bar visible.
@@ -58,7 +59,7 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   // widget whenever the quick settings widget is resized.
   void UpdatePosition();
 
-  // Inform `UnifiedMessageCenterView` of focus being acquired. The oldest
+  // Inform `NotificationCenterView` of focus being acquired. The oldest
   // notification should be focused if `reverse` is `true`. Otherwise, if
   // `reverse` is `false`, the newest notification should be focused.
   void FocusEntered(bool reverse);
@@ -97,8 +98,8 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   // ScreenLayoutObserver:
   void OnDisplayConfigurationChanged() override;
 
-  UnifiedMessageCenterView* message_center_view() {
-    return message_center_view_;
+  NotificationCenterView* notification_center_view() {
+    return notification_center_view_;
   }
 
  private:
@@ -113,13 +114,21 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   // TimeToClickRecorder::Delegate:
   void RecordTimeToClick() override;
 
+  // Owned by `StatusAreaWidget`.
   UnifiedSystemTray* const tray_;
+
+  // Unowned, the widget is created by a static function in
+  // `BubbleDialogDelegateView`.
+  views::Widget* bubble_widget_ = nullptr;
+
+  // Owned by `bubble_view_`
+  NotificationCenterView* notification_center_view_ = nullptr;
+
+  // Owned by `bubble_widget_`.
+  TrayBubbleView* bubble_view_ = nullptr;
+
   std::unique_ptr<Border> border_;
   std::unique_ptr<SystemShadow> shadow_;
-
-  views::Widget* bubble_widget_ = nullptr;
-  TrayBubbleView* bubble_view_ = nullptr;
-  UnifiedMessageCenterView* message_center_view_ = nullptr;
   std::unique_ptr<TimeToClickRecorder> time_to_click_recorder_;
 };
 

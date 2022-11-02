@@ -11,7 +11,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
-#include "ash/system/message_center/unified_message_center_view.h"
+#include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/command_line.h"
@@ -107,17 +107,17 @@ std::vector<message_center::Notification*> FindVisibleNotificationsByPrefixedId(
 // Returns the view for the specified |notification|.
 message_center::MessageView* FindViewForNotification(
     const message_center::Notification* notification) {
-  UnifiedMessageListView* unified_message_list_view =
+  NotificationListView* notification_list_view =
       FindStatusAreaWidget()
           ->unified_system_tray()
           ->message_center_bubble()
-          ->message_center_view()
-          ->message_list_view();
+          ->notification_center_view()
+          ->notification_list_view();
 
   // TODO(crbug/1335196): `FindDescendentsOfClass` returning empty list for
-  // `UnifiedMessageCenterView` even when `MessageView`s exist. Need to
+  // `NotificationCenterView` even when `MessageView`s exist. Need to
   // investigate and resolve.
-  return unified_message_list_view->GetMessageViewForNotificationId(
+  return notification_list_view->GetMessageViewForNotificationId(
       notification->id());
 }
 
