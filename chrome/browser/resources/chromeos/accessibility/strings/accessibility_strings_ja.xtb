@@ -329,6 +329,7 @@
 <translation id="309749186376891736">カーソルを移動</translation>
 <translation id="3103579948980282461">ミディアム バイオレット レッド</translation>
 <translation id="3104705064753753826">アラート ダイアログ</translation>
+<translation id="3105857328626674463">前の単語を選択</translation>
 <translation id="3109724472072898302">折りたたみ表示中</translation>
 <translation id="311015743332597320">4 本の指で右にスワイプします</translation>
 <translation id="3112457281078985179">ChromeVox をオンまたはオフにするには、Ctrl+Alt+Z キーを使用します。</translation>
@@ -357,6 +358,7 @@
 <translation id="3241052487511142956">前にアクセスしたリンク</translation>
 <translation id="3241638166094654466">各行のセル数:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">最後に移動</translation>
 <translation id="3260949043575829030">前の同様の項目</translation>
 <translation id="3270069636408109001">次の表はありません</translation>
 <translation id="3273791280096244679">ラベルを保存</translation>
@@ -949,6 +951,7 @@
 <translation id="743783356331413498">例</translation>
 <translation id="7439060726180460871">ディレクトリ</translation>
 <translation id="744163271241493234">パスワードを編集</translation>
+<translation id="7443479558101073378">次の単語を選択</translation>
 <translation id="7465123027577412805">自然な音声を使用しますか？</translation>
 <translation id="7491962110804786152">タブ</translation>
 <translation id="7492497529767769458">次のセクションに移動します。たとえばステータス トレイやランチャーなどです。</translation>

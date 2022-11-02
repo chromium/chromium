@@ -229,6 +229,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Unable to Create Link (Прављење линка није успело)</translation>
 <translation id="2786701870377699570">Претражујте картице на синхронизованим уређајима</translation>
+<translation id="2797029671965852011">Прикажи историју</translation>
 <translation id="2800683595868705743">Изађи из пребацивача картица</translation>
 <translation id="2815198996063984598">2. Додирните Подразумевана апликација за прегледање</translation>
 <translation id="2820289420301699633">Администратор има контролу над Chrome-ом и може да приступа његовим подацима</translation>
@@ -331,7 +332,9 @@
 <translation id="3530206579861815432">Брзо пронађите отворене и недавно затворене картице на синхронизованим уређајима.</translation>
 <translation id="3533202363250687977">Затвори све картице без архивирања</translation>
 <translation id="3533436815740441613">Нова картица</translation>
+<translation id="3540141921715814660">Додај у обележиваче</translation>
 <translation id="3551320343578183772">Затвори картицу</translation>
+<translation id="3565207542107370586">Обриши податке прегледања…</translation>
 <translation id="3575234738189584619">Претражујте помоћу Објектива</translation>
 <translation id="3581564640715911333">Понуди превод страница на другим језицима</translation>
 <translation id="3588820906588687999">Отвори слику на новој картици</translation>
@@ -350,6 +353,7 @@
 <translation id="37207012422556617">Претраге у тренду</translation>
 <translation id="3740397331642243698">Отвара унете URL-ове у Google Chrome-у у режиму без архивирања.</translation>
 <translation id="3762232513783804601">Направљено за iPad</translation>
+<translation id="3768725474733206671">Поново отвори последњу затворену картицу</translation>
 <translation id="3771033907050503522">Картице Без архивирања</translation>
 <translation id="3775743491439407556">Синхронизација не ради</translation>
 <translation id="3779810277399252432">Нема интернет везе.</translation>
@@ -361,9 +365,11 @@
 <translation id="3810973564298564668">Управљај</translation>
 <translation id="3818293389945649617">Проналази следеће</translation>
 <translation id="3819183753496523827">Офлајн сте. Проверите интернет везу и пробајте поново.</translation>
+<translation id="3835964409414434850">Иди на следећу картицу</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3861486700625780712">Опозови праћење</translation>
+<translation id="387280738075653372">Преузмите Chrome овде.</translation>
 <translation id="3892144330757387737">Овде ћете пронаћи историју</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3904829425754749514">Ваша организације је искључила синхронизацију. И даље можете да видите обележиваче, историју, лозинке и друга подешавања на овом уређају. Ако унесете промене, оне се неће синхронизовати са налогом.</translation>
@@ -550,6 +556,7 @@
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5339316356165661760">Укључи синхронизацију</translation>
+<translation id="536067926684072644">Прикажи обележиваче</translation>
 <translation id="5360976571138293719">Више подешавања у вези са приватношћу, безбедношћу и прикупљањем података потражите у одељку <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Овде ћете пронаћи сајтове које пратите</translation>
 <translation id="5388358297987318779">Отвори слику</translation>
@@ -582,6 +589,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5631164295104953411">Додај начина плаћања</translation>
 <translation id="5636282538000367086">Шта је ново у Chrome-у</translation>
 <translation id="5652623411397330904">Производи које пратите ће се приказивати овде.</translation>
+<translation id="5657859710142657190">Иди на мрежу са картицама</translation>
 <translation id="5659593005791499971">Имејл</translation>
 <translation id="5669335982068190158">Одјављени сте у склопу ресетовања iPhone-а. Додирните Настави у наставку да бисте се пријавили.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -598,6 +606,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5737974891429562743">Подаци за пријављивање на налог су застарели. Ажурирајте их да бисте започели синхронизацију.</translation>
 <translation id="5738385766833540397">Управљајте начином на који примате обавештења о снижењима за производе које пратите</translation>
 <translation id="5738887413654608789">Ово вам омогућава да откријете релевантне веб-странице на основу окружења.</translation>
+<translation id="5745916533876677730">Иди на претходну картицу</translation>
 <translation id="5758631781033351321">Овде ћете пронаћи листу за читање</translation>
 <translation id="5765456154762864099">Мени → Подешавања → Подразумевани прегледач</translation>
 <translation id="5782227691023083829">Превођење је у току...</translation>
@@ -614,6 +623,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5857090052475505287">Нови директоријум</translation>
 <translation id="5857675236236529683">Када будете спремни, овде пронађите листу за читање</translation>
 <translation id="5857770089550859117">За почетак синхронизације потребна је приступна фраза.</translation>
+<translation id="5859715514067755465">Напред</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5869029295770560994">Важи</translation>
 <translation id="5871497086027727873">1 ставка је премештена</translation>
@@ -658,6 +668,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6152406514676263192">Синхронизујте са најрелевантнијим садржајем на основу интересовања.</translation>
 <translation id="6159839020698489198">опционално</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
+<translation id="6170450281939467187">Превођење није успело</translation>
 <translation id="6177442314419606057">Претражите у Chrome-у</translation>
 <translation id="6184086493125982861">Прикажи картице</translation>
 <translation id="6187302354554850004">Последња синхрон.: <ph name="LAST_USED_TIME" /></translation>
@@ -693,6 +704,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6374469231428023295">Пробај поново</translation>
 <translation id="6377118281273296434">Безбедност сајта</translation>
 <translation id="6380866119319257197">Ако заборавите приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />ресетујте синхронизацију<ph name="END_LINK" /></translation>
+<translation id="6383719166112032471">Отвори локацију…</translation>
 <translation id="6387994324662817823">Лозинке се чувају у Google менаџеру лозинки само на овом уређају.</translation>
 <translation id="6389470377220713856">Име и презиме на картици</translation>
 <translation id="6403371459378431832">Синхронизујте податке на свим уређајима</translation>
@@ -704,6 +716,7 @@ Handoff треба да се омогући у одељку General (Опште)
 Подаци су шифровани помоћу приступне фразе за синхронизацију <ph name="TIME" />. Унесите је да бисте започели синхронизацију.</translation>
 <translation id="6418346271604475326">Припрема PDF датотеке</translation>
 <translation id="6434591244308415567">Дошло је до грешке. Пробајте поново касније.</translation>
+<translation id="6435236283694032571">Додај на Листу за читање</translation>
 <translation id="6439338047467462846">Све је дозвољено</translation>
 <translation id="6445051938772793705">Земља</translation>
 <translation id="6445981559479772097">Порука је послата.</translation>
@@ -869,6 +882,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7720410380936703141">ПРОБАЈ ПОНОВО</translation>
 <translation id="7726702057919861819">Мени → Историја → Обриши податке прегледања</translation>
+<translation id="7738120385185846461">Пријави проблем…</translation>
 <translation id="7741325291586284254">Нова страница на картици без архивирања</translation>
 <translation id="7756478488453921771">Мени → Подешавања → Начини плаћања</translation>
 <translation id="7765158879357617694">Премести</translation>
@@ -965,6 +979,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8459333855531264009">Није безбедан</translation>
 <translation id="8487667956631253959">Укључено</translation>
 <translation id="8487700953926739672">Доступно ван мреже</translation>
+<translation id="8488923644885757471">Нови прозор</translation>
 <translation id="8490978609246021741">Сачувај промене</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="850600235656508448">Отвори у режиму без архивирања</translation>
@@ -1018,6 +1033,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8881801611828450202">Претражи ову слику у <ph name="SEARCH_ENGINE" />-у</translation>
 <translation id="8891935667620843985">Можете да аутоматски отварате линкове у Chrome-у тако што ћете га подесити као подразумевану апликацију за прегледање.</translation>
 <translation id="8898822736010347272">Шаље Google-у URL-ове неких страница које посећујете, ограничене информације о систему и одређени садржај страница да би се откриле нове претње и заштитили сви широм веба.</translation>
+<translation id="890565330728586731">Назад</translation>
 <translation id="8909135823018751308">Дели...</translation>
 <translation id="8911759861431145525">Додирните Додај, па унесите информације</translation>
 <translation id="891658175948553296">Истакните текст на сајту</translation>

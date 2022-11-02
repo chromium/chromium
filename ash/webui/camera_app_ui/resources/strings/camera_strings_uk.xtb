@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Не вдається експортувати файл "<ph name="FILE" />"</translation>
 <translation id="1899697626337024495">Роздільна здатність фото</translation>
 <translation id="1925845977604399247">Перейти в Галерею</translation>
+<translation id="199526504800285197">Запис зупинено</translation>
+<translation id="1995951722691075581">На пристрої недостатньо пам’яті. Щоб записувати більше відео, звільніть місце.</translation>
 <translation id="2022953316617983419">QR-код</translation>
 <translation id="2036868001356139588">Тривалість таймера</translation>
 <translation id="2050339315714019657">Портретна</translation>
@@ -77,6 +79,7 @@
 <translation id="3810838688059735925">Відео</translation>
 <translation id="3838931309141338733">Сканувати штрих-код</translation>
 <translation id="3892148308691398805">Копіювати текст</translation>
+<translation id="4060608699153044055">На пристрої недостатньо пам’яті. Щоб почати запис, звільніть місце.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Мп</translation>
 <translation id="4118525110028899586">Призупинити запис</translation>
 <translation id="4121305183798804752">Виявлено документ</translation>
@@ -160,6 +163,7 @@
 <translation id="7748344063862150053">Верхній правий кут документа</translation>
 <translation id="7933675232020478311">Переміщення вниз і вправо</translation>
 <translation id="7983668134180549431">Виявлений текст.</translation>
+<translation id="8079255378695216066">Не вдається почати запис</translation>
 <translation id="8120146556401698679">Панорамування нахил масштаб</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8145038249676204903">Перейти в режим фотозйомки</translation>

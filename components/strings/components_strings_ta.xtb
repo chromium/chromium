@@ -1368,6 +1368,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate மூலம் இந்தப் பக்கத்தை மொழிபெயர்க்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="4514308731478712184">‘குறிப்பிட்ட தேடல் விவரங்கள்’ அம்சத்தை முடக்கு</translation>
 <translation id="4515275063822566619">கார்டுகளும் முகவரிகளும் Chromeமிலிருந்தும் <ph name="ACCOUNT_EMAIL" /> எனும் உங்கள் Google கணக்கிலிருந்தும் பெறப்பட்டவையாகும். <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> அவற்றை நிர்வகிக்கலாம்.</translation>
+<translation id="4520048001084013693">இந்த ஃபைலைப் பதிவிறக்குவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> மிமீ (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">என்வெலப் மோனார்க்</translation>
 <translation id="4521916730539354575">இடதுபுற டிரே</translation>
@@ -2358,6 +2359,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">இந்த முகவரிக்கு அனுப்ப முடியாது. வேறு முகவரியைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">பதிவேற்றம் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="7132939140423847331">இந்தத் தரவை நகலெடுப்பதை உங்கள் நிர்வாகி தடுத்துள்ளார்.</translation>
 <translation id="7135130955892390533">நிலையைக் காட்டு</translation>
 <translation id="7138472120740807366">டெலிவரி முறை</translation>
@@ -2588,6 +2590,7 @@
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7659327900411729175">என்வெலப் காகு 8</translation>
 <translation id="7659878911471462949">ஆனந்தக் கண்ணீர்</translation>
+<translation id="766014026101194726">{0,plural, =1{இந்த ஃபைலைப் பதிவேற்றுவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது}other{# ஃபைல்களைப் பதிவேற்றுவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது}}</translation>
 <translation id="7662298039739062396">அமைப்பை நீட்டிப்பு கட்டுப்படுத்துகிறது</translation>
 <translation id="7663736086183791259">சான்றிதழ் (<ph name="CERTIFICATE_VALIDITY" />)</translation>
 <translation id="7666397036351755929">மறைநிலையில் அனுமதிக்கப்படாது</translation>
@@ -2682,6 +2685,7 @@
 <translation id="7939744324936979484">நாட்டுப்புற &amp; பாரம்பரிய இசை</translation>
 <translation id="7941628148012649605">என்வெலப் சூ 4</translation>
 <translation id="7942349550061667556">சிவப்பு</translation>
+<translation id="7943397946612013052">பதிவிறக்கம் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="7943893128817522649">பல ஃபைல்களைத் தானாகப் பதிவிறக்க முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
 <translation id="7947285636476623132">காலாவதி ஆண்டைச் சரிபார்த்து, மீண்டும் முயலவும்</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அம்சங்கள் குறித்து அறிய Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>

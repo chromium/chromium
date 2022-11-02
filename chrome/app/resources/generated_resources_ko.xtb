@@ -918,7 +918,6 @@
 <translation id="1819721979226826163">앱 알림 &gt; Google Play 서비스를 탭합니다.</translation>
 <translation id="1820028137326691631">관리자가 제공한 비밀번호를 입력하세요.</translation>
 <translation id="1822140782238030981">이미 Chrome을 사용 중이신가요? 로그인하세요.</translation>
-<translation id="1823098433522728610">문서에 민감한 콘텐츠가 있습니다.</translation>
 <translation id="18245044880483936">백업 데이터는 자녀의 드라이브 스토리지 저장용량에 포함되지 않습니다.</translation>
 <translation id="1825565032302550710">포트 번호는 1024와 65535 사이여야 합니다.</translation>
 <translation id="182577151972096764">최근에 본 레시피</translation>
@@ -1956,7 +1955,6 @@
 <translation id="2743301740238894839">시작</translation>
 <translation id="2743387203779672305">클립보드로 복사</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2747266560080989517">민감하거나 위험한 콘텐츠가 있는 파일입니다. 소유자에게 수정을 요청하세요.</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />에 로그인</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">영문 철자 및 문법 검사</translation>
@@ -2551,7 +2549,6 @@
 <translation id="3317459757438853210">양면</translation>
 <translation id="3317678681329786349">카메라 및 마이크 차단됨</translation>
 <translation id="3320630259304269485">세이프 브라우징(위험한 사이트로부터 보호) 및 기타 보안 설정</translation>
-<translation id="3323295311852517824">{NUM_FILES,plural, =0{민감하거나 위험한 콘텐츠가 있는 데이터입니다. 콘텐츠를 삭제한 후 다시 시도해 보세요.}=1{민감하거나 위험한 콘텐츠가 있는 파일입니다. 콘텐츠를 삭제한 후 다시 시도해 보세요.}other{민감하거나 위험한 콘텐츠가 있는 파일입니다. 콘텐츠를 삭제한 후 다시 시도해 보세요.}}</translation>
 <translation id="3323521181261657960">보너스 기기 사용 시간이 추가되었습니다</translation>
 <translation id="3323577066981719144">여기에서 변경하는 사항은 Chrome 브라우저에만 적용됩니다. Lacros Chrome 브라우저 설정을 변경하려면 Lacros Chrome 브라우저를 열고 설정으로 이동하세요.</translation>
 <translation id="3325804108816646710">사용 가능한 프로필 찾는 중...</translation>
@@ -2685,7 +2682,6 @@
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
 <translation id="344630545793878684">다수의 웹사이트에서 데이터 읽기</translation>
-<translation id="3446650212859500694">민감한 콘텐츠가 있는 파일입니다.</translation>
 <translation id="3447644283769633681">모든 타사 쿠키 차단</translation>
 <translation id="3448492834076427715">계정 업데이트</translation>
 <translation id="3449393517661170867">새 탭 창</translation>
@@ -3916,7 +3912,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4602466770786743961"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 항상 허용</translation>
 <translation id="4606551464649945562">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하도록 허용하지 않음</translation>
 <translation id="4608500690299898628">찾기(&amp;F)...</translation>
-<translation id="4608703838363792434"><ph name="FILE_NAME" />에 민감한 콘텐츠가 있습니다.</translation>
 <translation id="4609987916561367134">자바스크립트 사용이 허용됨</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />에 오류가 발생했습니다</translation>
 <translation id="4610637590575890427"><ph name="SITE" />(으)로 이동하려고 하셨나요?</translation>
@@ -5889,7 +5884,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6492396476180293140">하드웨어 스위치로 인해 내장 카메라가 비활성화됨</translation>
 <translation id="6494327278868541139">향상된 보안 세부정보 표시</translation>
 <translation id="6494445798847293442">인증 기관이 아닙니다.</translation>
-<translation id="6497457470714179223">{NUM_FILES,plural, =0{민감하거나 위험한 콘텐츠가 있는 데이터입니다.}=1{민감하거나 위험한 콘텐츠가 있는 파일입니다.}other{민감하거나 위험한 콘텐츠가 있는 파일입니다.}}</translation>
 <translation id="6497548114956205206">에너지 절약 모드에 관해 자세히 알아보기</translation>
 <translation id="6497784818439587832">화면에 표시되는 항목을 축소하거나 확대하려면 디스플레이 크기를 변경하세요.</translation>
 <translation id="6497789971060331894">마우스 역방향 스크롤</translation>
@@ -6035,7 +6029,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6621391692573306628">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="6622980291894852883">이미지 계속 차단</translation>
 <translation id="6624036901798307345">태블릿 모드에서 탭 카운터 툴바 버튼을 탭하여 각 탭의 썸네일을 보여주는 새로운 탭 표시줄을 엽니다.</translation>
-<translation id="6624535038674360844"><ph name="FILE_NAME" /> 파일에 민감하거나 위험한 콘텐츠가 있습니다. 소유자에게 수정을 요청하세요.</translation>
 <translation id="6624687053722465643">달콤</translation>
 <translation id="6628328486509726751">업로드 시간: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">보안 강화</translation>
@@ -6418,7 +6411,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="697508444536771064">Linux 종료</translation>
 <translation id="6975361011348772931">읽기 및 변경 요청됨</translation>
 <translation id="6978121630131642226">검색엔진</translation>
-<translation id="6979041727349121225">에너지 절약</translation>
+<translation id="6979041727349121225">에너지 절약 모드</translation>
 <translation id="6979044105893951891">관리 게스트 세션 실행 및 종료</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">음소거(기본값)</translation>

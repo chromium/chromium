@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Δεν είναι δυνατή η εξαγωγή του αρχείου <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Ανάλυση φωτογραφίας</translation>
 <translation id="1925845977604399247">Μετάβαση στο Gallery</translation>
+<translation id="199526504800285197">Η εγγραφή διακόπηκε</translation>
+<translation id="1995951722691075581">Η εγγραφή σας διακόπηκε λόγω περιορισμένου αποθηκευτικού χώρου συσκευής. Για να εγγράψετε περισσότερα βίντεο, θα πρέπει να ελευθερώσετε χώρο στη συσκευή σας.</translation>
 <translation id="2022953316617983419">Κωδικός QR</translation>
 <translation id="2036868001356139588">Διάρκεια χρονομέτρου</translation>
 <translation id="2050339315714019657">Κάθετα</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Τραβήξτε φωτογραφίες και βίντεο με την κάμερά σας.</translation>
 <translation id="2517472476991765520">Σάρωση</translation>
 <translation id="2549985041256363841">Έναρξη εγγραφής</translation>
+<translation id="2577915835281444458">Η εγγραφή θα διακοπεί σύντομα. Μεταβείτε στον αποθηκευτικό χώρο της συσκευής για να ελευθερώσετε χώρο.</translation>
 <translation id="2599796128805996109">Πίσω κάμερα</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> δευτ.</translation>
 <translation id="2761536921376153655">Τύπος σάρωσης</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Βίντεο</translation>
 <translation id="3838931309141338733">Σάρωση γραμμωτού κώδικα</translation>
 <translation id="3892148308691398805">Αντιγραφή κειμένου</translation>
+<translation id="4060608699153044055">Δεν είναι δυνατή η εγγραφή λόγω περιορισμένου αποθηκευτικού χώρου συσκευής. Για να ξεκινήσετε την εγγραφή, θα πρέπει να ελευθερώσετε χώρο στη συσκευή σας.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Παύση εγγραφής</translation>
 <translation id="4121305183798804752">Εντοπίστηκε έγγραφο.</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">Επάνω δεξιά γωνία του εγγράφου</translation>
 <translation id="7933675232020478311">Μετακινείται με κατεύθυνση προς τα κάτω και δεξιά</translation>
 <translation id="7983668134180549431">Εντοπίστηκε κείμενο.</translation>
+<translation id="8079255378695216066">Δεν είναι δυνατή η έναρξη της εγγραφής</translation>
 <translation id="8120146556401698679">Μετακίνηση, κλίση και εστίαση</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8145038249676204903">Μετάβαση στη λειτουργία λήψης φωτογραφίας</translation>

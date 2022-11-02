@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">Αναζήτηση για ${searchPhrase} στο Chrome</translation>
 <translation id="1242044645101871359">Συνδεθείτε ξανά</translation>
 <translation id="1254117744268754948">Επιλογή φακέλου</translation>
+<translation id="1254424942107648268">Εύρεση προηγούμενου</translation>
 <translation id="1258491128795710625">Τι νέο υπάρχει</translation>
 <translation id="1265739287306757398">Μάθετε με ποιον τρόπο</translation>
 <translation id="1272079795634619415">Διακοπή</translation>
@@ -187,6 +188,7 @@
 <translation id="2473876017985765807">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Δεν έχει επιλεγεί</translation>
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
+<translation id="2496626742194544812">Μετάβαση στην πρώτη καρτέλα</translation>
 <translation id="2500374554657206846">Επιλογές για την αποθήκευση κωδικού πρόσβασης</translation>
 <translation id="2523363575747517183">Αυτός ο ιστότοπος προσπαθεί επανειλημμένως να ανοίξει κάποια άλλη εφαρμογή.</translation>
 <translation id="2529021024822217800">Άνοιγμα όλων</translation>
@@ -202,6 +204,7 @@
 <translation id="2647269890314209800">Χρησιμοποιούνται cookie</translation>
 <translation id="2648803196158606475">Διαγραφή αναγνωσμένων</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
+<translation id="2664621323652615289">Διακοπή</translation>
 <translation id="2671426118752779020">Μπορείτε να χρησιμοποιείτε τους κωδικούς πρόσβασης που αποθηκεύσατε στον Διαχειριστή κωδικών πρόσβασης Google σε άλλες εφαρμογές στο iPhone.</translation>
 <translation id="2690858294534178585">Η κάμερα χρησιμοποιείται</translation>
 <translation id="2691653761409724435">Μη διαθέσιμο εκτός σύνδεσης</translation>
@@ -356,6 +359,7 @@
 <translation id="380329542618494757">Όνομα</translation>
 <translation id="3803696231112616155">Πρόταση για μετάφραση αυτού του ιστοτόπου</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
+<translation id="3818293389945649617">Εύρεση επόμενου</translation>
 <translation id="3819183753496523827">Είστε εκτός σύνδεσης. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3858860766373142691">Όνομα</translation>
@@ -385,6 +389,7 @@
 <translation id="4049507953662678203">Βεβαιωθείτε ότι έχετε μια σύνδεση δικτύου και δοκιμάστε ξανά.</translation>
 <translation id="4063300985191096908">Μετάβαση στη Ροή</translation>
 <translation id="408404951701638773">Η πρόσβαση στη γραμμή αναζήτησης είναι πλέον πιο εύκολη</translation>
+<translation id="4092655288299341041">Εμφάνιση βοήθειας</translation>
 <translation id="4108998448622696017">Εντοπίζει και σας προειδοποιεί για επικίνδυνα συμβάντα, όταν αυτά εμφανίζονται.</translation>
 <translation id="411254640334432676">Αποτυχία λήψης.</translation>
 <translation id="4112644173421521737">Αναζήτηση</translation>
@@ -771,6 +776,7 @@
 <translation id="6859944681507688231">Για να σαρώσετε έναν κώδικα QR, ή μια πιστωτική κάρτα, ενεργοποιήστε την κάμερα από τις ρυθμίσεις.</translation>
 <translation id="6867369562105931222">κωδικός πρόσβασης</translation>
 <translation id="6869389390665537774">Μπορείτε να δείτε τις σελίδες που έχετε επισκεφτεί ή να τις διαγράψετε από το ιστορικό σας.</translation>
+<translation id="687135068089457384">Προβολή ρυθμίσεων</translation>
 <translation id="6873263987691478642">Προβολή διαχωρισμού οθόνης</translation>
 <translation id="6882836635272038266">Βασική προστασία από ιστοτόπους, λήψεις και επεκτάσεις που είναι γνωστό ότι είναι επικίνδυνα.</translation>
 <translation id="6888009575607455378">Είστε βέβαιοι ότι θέλετε να απορρίψετε τις αλλαγές σας;</translation>
@@ -876,11 +882,13 @@
 <translation id="7807060072011926525">Παρέχεται από την Google</translation>
 <translation id="7839985698273989086">Σελίδα εκτός σύνδεσης</translation>
 <translation id="7840771868269352570">Τα στοιχεία που επιλέξατε θα καταργηθούν.</translation>
+<translation id="7845466610722898">Εμφάνιση λίστας ανάγνωσης</translation>
 <translation id="784551991304901159">Για εμφάνιση περιεχομένου, από το μενού, επιλέξτε Ενεργοποίηση</translation>
 <translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7856733331829174190">Δεν ήταν δυνατή η λήψη</translation>
 <translation id="785938070103630874">Ανοίξτε τους κωδικούς πρόσβασης, τους τρόπους πληρωμής, τη διεύθυνση και άλλα</translation>
 <translation id="7859704718976024901">Ιστορικό περιήγησης</translation>
+<translation id="7879275349003161544">Εμφάνιση λήψεων</translation>
 <translation id="7884694604461143138">Ιστορικό αναζήτησης (Βρέθηκαν <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Προκειμένου να προστατεύσει το απόρρητό σας, το Chrome δεν θα συμπληρώνει αυτόματα αυτό το πεδίο.</translation>
 <translation id="7911190106180361398">Ο οργανισμός σας δεν σας επιτρέπει τον συγχρονισμό όλων των δεδομένων.</translation>
@@ -992,6 +1000,7 @@
 <translation id="8741995161408053644">Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Εδώ θα βρείτε τις καρτέλες σας</translation>
 <translation id="8756969031206844760">Ενημέρωση κωδικού πρόσβασης;</translation>
+<translation id="8763613688786959833">Μετάβαση στην τελευταία καρτέλα</translation>
 <translation id="8764015330924122850">Κατάργηση παρακολούθησης <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Μη έγκυρη διεύθ. URL</translation>
 <translation id="8787968206789828143">Αναζήτηση στον ιστό</translation>

@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">無法匯出「<ph name="FILE" />」</translation>
 <translation id="1899697626337024495">相片解析度</translation>
 <translation id="1925845977604399247">前往相片庫</translation>
+<translation id="199526504800285197">已停止錄影</translation>
+<translation id="1995951722691075581">裝置儲存空間不足，因此已停止錄影。如要錄製更多影片，請先釋出裝置空間。</translation>
 <translation id="2022953316617983419">QR 圖碼</translation>
 <translation id="2036868001356139588">計時器倒數時間</translation>
 <translation id="2050339315714019657">直向</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">影片</translation>
 <translation id="3838931309141338733">掃描條碼</translation>
 <translation id="3892148308691398805">複製文字</translation>
+<translation id="4060608699153044055">裝置儲存空間不足，因此無法錄影。如要開始錄影，請先釋出裝置空間。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> 百萬像素</translation>
 <translation id="4118525110028899586">暫停錄影</translation>
 <translation id="4121305183798804752">偵測到文件</translation>
@@ -161,6 +164,7 @@
 <translation id="7748344063862150053">文件右上角</translation>
 <translation id="7933675232020478311">向右下移動</translation>
 <translation id="7983668134180549431">偵測到文字。</translation>
+<translation id="8079255378695216066">無法開始錄影</translation>
 <translation id="8120146556401698679">平移 傾斜 縮放</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8145038249676204903">切換為拍照模式</translation>
