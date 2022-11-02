@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -81,6 +83,16 @@ source_set("unit_tests") {
     "//net:preload_decoder",
     "//testing/gtest",
     "//ui/gfx",
+    "//url",
+  ]
+}
+
+fuzzer_test("url_formatter_fixer_fuzzer") {
+  sources = [ "url_fixer_fuzzer.cc" ]
+  deps = [
+    ":url_formatter",
+    "//base",
+    "//base:i18n",
     "//url",
   ]
 }
