@@ -3388,6 +3388,10 @@ void Node::RemovedFromFlatTree() {
     DetachLayoutTree();
   }
   GetDocument().GetStyleEngine().RemovedFromFlatTree(*this);
+
+  // Ensure removal from accessibility cache even if it doesn't have layout.
+  if (GetDocument().HasAXObjectCache())
+    GetDocument().ExistingAXObjectCache()->Remove(this);
 }
 
 void Node::RegisterScrollTimeline(ScrollTimeline* timeline) {
