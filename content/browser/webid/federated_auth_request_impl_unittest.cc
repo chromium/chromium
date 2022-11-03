@@ -226,20 +226,6 @@ static const MockIdpInfo kDefaultIdentityProviderInfo{
 static const base::flat_map<const char*, MockIdpInfo> kSingleProviderInfo{
     {kProviderUrlFull, kDefaultIdentityProviderInfo}};
 
-constexpr char kProviderOneUrlFull[] = "https://idp1.example/fedcm.json";
-static const MockIdpInfo kProviderOneInfo{
-    {{kProviderOneUrlFull}},
-    {
-        {ParseStatus::kSuccess, net::HTTP_OK},
-        "https://idp1.example/accounts",
-        "https://idp1.example/token",
-        "https://idp1.example/client_metadata",
-        "https://idp1.example/revoke",
-    },
-    kDefaultClientMetadata,
-    {ParseStatus::kSuccess, net::HTTP_OK},
-    kAccounts};
-
 constexpr char kProviderTwoUrlFull[] = "https://idp2.example/fedcm.json";
 static const MockIdpInfo kProviderTwoInfo{
     {{kProviderTwoUrlFull}},
@@ -265,6 +251,21 @@ static const MockConfiguration kConfigurationValid{
 static const RequestExpectations kExpectationSuccess{
     RequestTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
     kProviderUrlFull, FETCH_ENDPOINT_ALL_REQUEST_TOKEN};
+
+static const RequestParameters kDefaultMultiIdpRequestParameters{
+    std::vector<IdentityProviderParameters>{
+        {kProviderUrlFull, kClientId, kNonce},
+        {kProviderTwoUrlFull, kClientId, kNonce}},
+    /*prefer_auto_sign_in=*/false};
+
+MockConfiguration kConfigurationMultiIdpValid{
+    kToken,
+    {{kProviderUrlFull, kDefaultIdentityProviderInfo},
+     {kProviderTwoUrlFull, kProviderTwoInfo}},
+    {ParseStatus::kSuccess, net::HTTP_OK},
+    false /* delay_token_response */,
+    false /* customized_dialog */,
+    true /* wait_for_callback */};
 
 url::Origin OriginFromString(const std::string& url_string) {
   return url::Origin::Create(GURL(url_string));
@@ -2385,17 +2386,11 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpError) {
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(features::kFedCmMultipleIdentityProviders);
 
-  RequestExpectations request_multiple_idps = {RequestTokenStatus::kError,
-                                               absl::nullopt, absl::nullopt, 0};
+  RequestExpectations expectations = {RequestTokenStatus::kError, absl::nullopt,
+                                      absl::nullopt, 0};
 
-  IdentityProviderParameters identity_provider{"https://idp1.com", kClientId,
-                                               kNonce};
-  IdentityProviderParameters other_identity_provider{"https://idp2.com",
-                                                     kClientId, kNonce};
-  RequestParameters parameters{std::vector<IdentityProviderParameters>{
-                                   identity_provider, other_identity_provider},
-                               /*prefer_auto_sign_in=*/false};
-  RunAuthTest(parameters, request_multiple_idps, kConfigurationValid);
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations,
+              kConfigurationMultiIdpValid);
 }
 
 // Test successful multi IDP FedCM request.
@@ -2403,31 +2398,8 @@ TEST_F(FederatedAuthRequestImplTest, AllSuccessfulMultiIdpRequest) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
 
-  IdentityProviderParameters identity_provider{kProviderOneUrlFull, kClientId,
-                                               kNonce};
-  IdentityProviderParameters other_identity_provider{kProviderTwoUrlFull,
-                                                     kClientId, kNonce};
-  RequestParameters parameters{std::vector<IdentityProviderParameters>{
-                                   identity_provider, other_identity_provider},
-                               /*prefer_auto_sign_in=*/false};
-
-  MockConfiguration configuration{kToken,
-                                  {{kProviderOneUrlFull, kProviderOneInfo},
-                                   {kProviderTwoUrlFull, kProviderTwoInfo}},
-                                  {ParseStatus::kSuccess, net::HTTP_OK},
-                                  false /* delay_token_response */,
-                                  false /* customized_dialog */,
-                                  true /* wait_for_callback */};
-
-  configuration.idp_info[kProviderOneUrlFull].manifest_list.provider_urls =
-      std::set<std::string>{"https://idp1.example/fedcm.json"};
-  configuration.idp_info[kProviderTwoUrlFull].manifest_list.provider_urls =
-      std::set<std::string>{"https://idp2.example/fedcm.json"};
-
-  RequestExpectations expectations = kExpectationSuccess;
-  expectations.selected_idp_config_url = kProviderOneUrlFull;
-
-  RunAuthTest(parameters, expectations, configuration);
+  RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess,
+              kConfigurationMultiIdpValid);
 }
 
 // Test some successful IDP and some failed IDP multi IDP FedCM request.
@@ -2435,37 +2407,21 @@ TEST_F(FederatedAuthRequestImplTest, PartiallySuccessfulMultiIdpRequest) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
 
-  IdentityProviderParameters identity_provider{kProviderOneUrlFull, kClientId,
-                                               kNonce};
-  IdentityProviderParameters other_identity_provider{kProviderTwoUrlFull,
-                                                     kClientId, kNonce};
-  RequestParameters parameters{std::vector<IdentityProviderParameters>{
-                                   identity_provider, other_identity_provider},
-                               /*prefer_auto_sign_in=*/false};
-
-  MockConfiguration configuration{kToken,
-                                  {{kProviderOneUrlFull, kProviderOneInfo},
-                                   {kProviderTwoUrlFull, kProviderTwoInfo}},
-                                  {ParseStatus::kSuccess, net::HTTP_OK},
-                                  false /* delay_token_response */,
-                                  true /* customized_dialog */,
-                                  true /* wait_for_callback */};
   EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _, _))
       .Times(0);
 
   // Intentionally fail the first provider's request by having an invalid
   // manifest list.
-  configuration.idp_info[kProviderOneUrlFull].manifest_list.provider_urls =
+  MockConfiguration configuration = kConfigurationMultiIdpValid;
+  configuration.idp_info[kProviderUrlFull].manifest_list.provider_urls =
       std::set<std::string>{"https://not-in-list.example"};
-  configuration.idp_info[kProviderTwoUrlFull].manifest_list.provider_urls =
-      std::set<std::string>{"https://idp2.example/fedcm.json"};
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError, absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::MANIFEST};
 
-  RunAuthTest(parameters, expectations, configuration);
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, configuration);
 }
 
 // Test multi IDP FedCM request with duplicate IDPs should throw an error.
@@ -2473,31 +2429,21 @@ TEST_F(FederatedAuthRequestImplTest, DuplicateIdpMultiIdpRequest) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
 
-  IdentityProviderParameters identity_provider{kProviderOneUrlFull, kClientId,
-                                               kNonce};
-  RequestParameters parameters{std::vector<IdentityProviderParameters>{
-                                   identity_provider, identity_provider},
-                               /*prefer_auto_sign_in=*/false};
+  RequestParameters request_parameters = kDefaultMultiIdpRequestParameters;
+  request_parameters.identity_providers =
+      std::vector<IdentityProviderParameters>{
+          request_parameters.identity_providers[0],
+          request_parameters.identity_providers[0]};
 
-  MockConfiguration configuration{kToken,
-                                  {{kProviderOneUrlFull, kProviderOneInfo},
-                                   {kProviderOneUrlFull, kProviderOneInfo}},
-                                  {ParseStatus::kSuccess, net::HTTP_OK},
-                                  false /* delay_token_response */,
-                                  true /* customized_dialog */,
-                                  true /* wait_for_callback */};
   EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _, _))
       .Times(0);
 
-  configuration.idp_info[kProviderOneUrlFull].manifest_list.provider_urls =
-      std::set<std::string>{"https://idp1.example/fedcm.json"};
-
   RequestExpectations expectations = {RequestTokenStatus::kError,
-                                      /*devtools_issue_status*/ absl::nullopt,
+                                      /*devtools_issue_status=*/absl::nullopt,
                                       /*selected_idp_config_url=*/absl::nullopt,
                                       /*fetched_endpoints=*/0};
 
-  RunAuthTest(parameters, expectations, configuration);
+  RunAuthTest(request_parameters, expectations, kConfigurationMultiIdpValid);
 }
 
 }  // namespace content
