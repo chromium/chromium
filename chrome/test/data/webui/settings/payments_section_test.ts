@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsPaymentsSectionElement, SettingsVirtualCardUnenrollDialogElement} from 'chrome://settings/lazy_load.js';
@@ -74,11 +75,11 @@ suite('PaymentsSection', function() {
   function createCreditCardDialog(
       creditCardItem: chrome.autofillPrivate.CreditCardEntry):
       SettingsCreditCardEditDialogElement {
-    const section = document.createElement('settings-credit-card-edit-dialog');
-    section.creditCard = creditCardItem;
-    document.body.appendChild(section);
+    const dialog = document.createElement('settings-credit-card-edit-dialog');
+    dialog.creditCard = creditCardItem;
+    document.body.appendChild(dialog);
     flush();
-    return section;
+    return dialog;
   }
 
   /**
@@ -468,14 +469,16 @@ suite('PaymentsSection', function() {
         .then(function() {
           const now = new Date();
           const maxYear = now.getFullYear() + 19;
-          const yearOptions = creditCardDialog.$.year.options;
+          const yearInput =
+              creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>(
+                  '#year');
+          const yearOptions = yearInput!.options;
 
           assertEquals('2015', yearOptions[0]!.textContent!.trim());
           assertEquals(
               maxYear.toString(),
               yearOptions[yearOptions.length - 1]!.textContent!.trim());
-          assertEquals(
-              creditCard.expirationYear, creditCardDialog.$.year.value);
+          assertEquals(creditCard.expirationYear, yearInput!.value);
         });
   });
 
@@ -491,7 +494,10 @@ suite('PaymentsSection', function() {
 
     return whenAttributeIs(creditCardDialog.$.dialog, 'open', '')
         .then(function() {
-          const yearOptions = creditCardDialog.$.year.options;
+          const yearInput =
+              creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>(
+                  '#year');
+          const yearOptions = yearInput!.options;
 
           assertEquals(
               now.getFullYear().toString(),
@@ -499,8 +505,7 @@ suite('PaymentsSection', function() {
           assertEquals(
               farFutureYear.toString(),
               yearOptions[yearOptions.length - 1]!.textContent!.trim());
-          assertEquals(
-              creditCard.expirationYear, creditCardDialog.$.year.value);
+          assertEquals(creditCard.expirationYear, yearInput!.value);
         });
   });
 
@@ -517,7 +522,10 @@ suite('PaymentsSection', function() {
 
     return whenAttributeIs(creditCardDialog.$.dialog, 'open', '')
         .then(function() {
-          const yearOptions = creditCardDialog.$.year.options;
+          const yearInput =
+              creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>(
+                  '#year');
+          const yearOptions = yearInput!.options;
 
           assertEquals(
               now.getFullYear().toString(),
@@ -525,8 +533,7 @@ suite('PaymentsSection', function() {
           assertEquals(
               maxYear.toString(),
               yearOptions[yearOptions.length - 1]!.textContent!.trim());
-          assertEquals(
-              creditCard.expirationYear, creditCardDialog.$.year.value);
+          assertEquals(creditCard.expirationYear, yearInput!.value);
         });
   });
 
@@ -538,20 +545,26 @@ suite('PaymentsSection', function() {
         .then(function() {
           // Not expired, but still can't be saved, because there's no
           // name.
-          const expiredError = creditCardDialog.$.expiredError;
-          assertEquals('hidden', getComputedStyle(expiredError).visibility);
-          assertTrue(creditCardDialog.$.saveButton.disabled);
+          const expiredError =
+              creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
+                  '#expiredError');
+          assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+
+          const saveButton =
+              creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+                  '#saveButton');
+          assertTrue(saveButton!.disabled);
 
           // Add a name.
           creditCardDialog.set('name_', 'Jane Doe');
           flush();
 
-          assertEquals('hidden', getComputedStyle(expiredError).visibility);
-          assertFalse(creditCardDialog.$.saveButton.disabled);
+          assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+          assertFalse(saveButton!.disabled);
 
           const savedPromise =
               eventToPromise('save-credit-card', creditCardDialog);
-          creditCardDialog.$.saveButton.click();
+          saveButton!.click();
           return savedPromise;
         })
         .then(function(event) {
@@ -571,7 +584,11 @@ suite('PaymentsSection', function() {
     creditCardDialog.set('cardNumber_', '0000000000001234');
     flush();
 
-    creditCardDialog.$.cancelButton.click();
+    const cancelButton =
+        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+            '#cancelButton');
+    cancelButton!.click();
+
     await eventToPromise('close', creditCardDialog);
 
     creditCardDialog = createCreditCardDialog(creditCard);
@@ -599,7 +616,10 @@ suite('PaymentsSection', function() {
         window.setTimeout(done, 100);
       });
 
-      creditCardDialog.$.cancelButton.click();
+      const cancelButton =
+          creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+              '#cancelButton');
+      cancelButton!.click();
     });
   });
 
@@ -1065,4 +1085,5 @@ suite('PaymentsSection', function() {
     // Wait for dialogs to open before finishing test.
     return whenAttributeIs(dialog.$.dialog, 'open', '');
   });
+
 });

@@ -108,14 +108,23 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
+    const nicknameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nicknameInput');
+    const nameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nameInput');
+    const numberInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#numberInput');
+
     // Verify the nickname input field is shown when nickname management is
     // enabled.
-    assertTrue(!!creditCardDialog.$.nicknameInput);
-    assertTrue(!!creditCardDialog.$.nameInput);
-
+    assertTrue(!!nicknameInput);
+    assertTrue(!!nameInput);
     // Verify the card number field is autofocused when nickname management is
     // enabled.
-    assertTrue(creditCardDialog.$.numberInput.matches(':focus-within'));
+    assertTrue(numberInput!.matches(':focus-within'));
   });
 
   test('save new card', async function() {
@@ -126,19 +135,36 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Fill in name, card number, expiration year and card nickname, and trigger
     // the on-input handler.
-    creditCardDialog.$.nameInput.value = 'Jane Doe';
-    creditCardDialog.$.numberInput.value = '4111111111111111';
-    typeInNickname(creditCardDialog.$.nicknameInput, 'Grocery Card');
-    creditCardDialog.$.year.value = nextYear();
-    creditCardDialog.$.year.dispatchEvent(new CustomEvent('change'));
+    const nameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nameInput');
+    const numberInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#numberInput');
+    const nicknameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nicknameInput');
+    const yearInput =
+        creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+    nameInput!.value = 'Jane Doe';
+    numberInput!.value = '4111111111111111';
+    typeInNickname(nicknameInput!, 'Grocery Card');
+    yearInput!.value = nextYear();
+    yearInput!.dispatchEvent(new CustomEvent('change'));
     flush();
 
-    const expiredError = creditCardDialog.$.expiredError;
-    assertEquals('hidden', getComputedStyle(expiredError).visibility);
-    assertFalse(creditCardDialog.$.saveButton.disabled);
+    const expiredError =
+        creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#expiredError');
+    assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+
+    const saveButton =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#saveButton');
+    assertFalse(saveButton!.disabled);
 
     const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
-    creditCardDialog.$.saveButton.click();
+    saveButton!.click();
     const saveEvent = await savedPromise;
 
     // Verify the input values are correctly passed to save-credit-card.
@@ -158,19 +184,36 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Set expiration year, fill in name, card number, and card nickname with
     // leading and trailing whitespaces, and trigger the on-input handler.
-    creditCardDialog.$.nameInput.value = '  Jane Doe  \n';
-    creditCardDialog.$.numberInput.value = ' 4111111111111111 ';
-    typeInNickname(creditCardDialog.$.nicknameInput, ' Grocery Card  ');
-    creditCardDialog.$.year.value = nextYear();
-    creditCardDialog.$.year.dispatchEvent(new CustomEvent('change'));
+    const nameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nameInput');
+    const numberInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#numberInput');
+    const nicknameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nicknameInput');
+    const yearInput =
+        creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+    nameInput!.value = '  Jane Doe  \n';
+    numberInput!.value = ' 4111111111111111 ';
+    typeInNickname(nicknameInput!, ' Grocery Card  ');
+    yearInput!.value = nextYear();
+    yearInput!.dispatchEvent(new CustomEvent('change'));
     flush();
 
-    const expiredError = creditCardDialog.$.expiredError;
-    assertEquals('hidden', getComputedStyle(expiredError).visibility);
-    assertFalse(creditCardDialog.$.saveButton.disabled);
+    const expiredError =
+        creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#expiredError');
+    assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+
+    const saveButton =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#saveButton');
+    assertFalse(saveButton!.disabled);
 
     const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
-    creditCardDialog.$.saveButton.click();
+    saveButton!.click();
     const saveEvent = await savedPromise;
 
     // Verify the input values are correctly passed to save-credit-card.
@@ -195,26 +238,43 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
     // For editing local card, verify displaying with existing value.
-    assertEquals(creditCardDialog.$.nameInput.value, 'Wrong name');
-    assertEquals(creditCardDialog.$.nicknameInput.value, 'Shopping Card');
-    assertEquals(creditCardDialog.$.numberInput.value, '4444333322221111');
-    assertEquals(creditCardDialog.$.year.value, nextYear());
+    const nameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nameInput');
+    const nicknameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nicknameInput');
+    const numberInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#numberInput');
+    const yearInput =
+        creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+    assertEquals(nameInput!.value, 'Wrong name');
+    assertEquals(nicknameInput!.value, 'Shopping Card');
+    assertEquals(numberInput!.value, '4444333322221111');
+    assertEquals(yearInput!.value, nextYear());
 
-    const expiredError = creditCardDialog.$.expiredError;
-    assertEquals('hidden', getComputedStyle(expiredError).visibility);
-    assertFalse(creditCardDialog.$.saveButton.disabled);
+    const expiredError =
+        creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#expiredError');
+    assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+
+    const saveButton =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#saveButton');
+    assertFalse(saveButton!.disabled);
 
     // Update cardholder name, card number, expiration year and nickname, and
     // trigger the on-input handler.
-    creditCardDialog.$.nameInput.value = 'Jane Doe';
-    creditCardDialog.$.numberInput.value = '4111111111111111';
-    typeInNickname(creditCardDialog.$.nicknameInput, 'Grocery Card');
-    creditCardDialog.$.year.value = farFutureYear();
-    creditCardDialog.$.year.dispatchEvent(new CustomEvent('change'));
+    nameInput!.value = 'Jane Doe';
+    numberInput!.value = '4111111111111111';
+    typeInNickname(nicknameInput!, 'Grocery Card');
+    yearInput!.value = farFutureYear();
+    yearInput!.dispatchEvent(new CustomEvent('change'));
     flush();
 
     const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
-    creditCardDialog.$.saveButton.click();
+    saveButton!.click();
     const saveEvent = await savedPromise;
 
     // Verify the updated values are correctly passed to save-credit-card.
@@ -232,9 +292,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
     // User clicks on nickname input.
-    const nicknameInput = creditCardDialog.$.nicknameInput;
+    const nicknameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nicknameInput');
     assertTrue(!!nicknameInput);
-    nicknameInput.focus();
+    nicknameInput!.focus();
 
     const validInputs = [
       '',
@@ -245,11 +307,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
       /* UTF-16 hex encoded credit card emoji */ 'Chase Freedom \uD83D\uDCB3',
     ];
     for (const nickname of validInputs) {
-      typeInNickname(nicknameInput, nickname);
-      assertFalse(nicknameInput.invalid);
+      typeInNickname(nicknameInput!, nickname);
+      assertFalse(nicknameInput!.invalid);
       // Error message is hidden for valid nickname input.
       assertEquals(
-          'hidden', getComputedStyle(nicknameInput.$.error).visibility);
+          'hidden', getComputedStyle(nicknameInput!.$.error).visibility);
     }
 
     // Verify invalid nickname inputs.
@@ -262,18 +324,19 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
       /* UTF-16 hex encoded digt 7 emoji */ 'Digit emoji: \u0037\uFE0F\u20E3',
     ];
     for (const nickname of invalidInputs) {
-      typeInNickname(nicknameInput, nickname);
-      assertTrue(nicknameInput.invalid);
-      assertNotEquals('', nicknameInput.errorMessage);
+      typeInNickname(nicknameInput!, nickname);
+      assertTrue(nicknameInput!.invalid);
+      assertNotEquals('', nicknameInput!.errorMessage);
       // Error message is shown for invalid nickname input.
       assertEquals(
-          'visible', getComputedStyle(nicknameInput.$.error).visibility);
+          'visible', getComputedStyle(nicknameInput!.$.error).visibility);
     }
     // The error message is still shown even when user does not focus on the
     // nickname field.
-    nicknameInput.blur();
-    assertTrue(nicknameInput.invalid);
-    assertEquals('visible', getComputedStyle(nicknameInput.$.error).visibility);
+    nicknameInput!.blur();
+    assertTrue(nicknameInput!.invalid);
+    assertEquals(
+        'visible', getComputedStyle(nicknameInput!.$.error).visibility);
   });
 
   test('disable save button when input nickname is invalid', async function() {
@@ -288,16 +351,21 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
     // Save button is enabled for existing card with no nickname.
-    assertFalse(creditCardDialog.$.saveButton.disabled);
-    const nicknameInput = creditCardDialog.$.nicknameInput;
+    const saveButton =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#saveButton');
+    assertFalse(saveButton!.disabled);
+    const nicknameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nicknameInput');
 
-    typeInNickname(nicknameInput, 'invalid: 123');
+    typeInNickname(nicknameInput!, 'invalid: 123');
     // Save button is disabled since the nickname is invalid.
-    assertTrue(creditCardDialog.$.saveButton.disabled);
+    assertTrue(saveButton!.disabled);
 
-    typeInNickname(nicknameInput, 'valid nickname');
+    typeInNickname(nicknameInput!, 'valid nickname');
     // Save button is back to enabled since user updates with a valid nickname.
-    assertFalse(creditCardDialog.$.saveButton.disabled);
+    assertFalse(saveButton!.disabled);
   });
 
   test('only show nickname character count when focused', async function() {
@@ -306,7 +374,9 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
-    const nicknameInput = creditCardDialog.$.nicknameInput;
+    const nicknameInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#nicknameInput');
     assertTrue(!!nicknameInput);
     const characterCount =
         creditCardDialog.shadowRoot!.querySelector<HTMLElement>('#charCount')!;
@@ -315,7 +385,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertFalse(isVisible(characterCount));
 
     // User clicks on nickname input.
-    nicknameInput.focus();
+    nicknameInput!.focus();
     // Character count is shown when nickname input field is focused.
     assertTrue(isVisible(characterCount));
     // For new card, the nickname is unset.
@@ -323,18 +393,18 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // User types in one character. Ensure the character count is dynamically
     // updated.
-    typeInNickname(nicknameInput, 'a');
+    typeInNickname(nicknameInput!, 'a');
     assertTrue(characterCount.textContent!.includes('1/25'));
     // User types in total 5 characters.
-    typeInNickname(nicknameInput, 'abcde');
+    typeInNickname(nicknameInput!, 'abcde');
     assertTrue(characterCount.textContent!.includes('5/25'));
 
     // User click outside of nickname input, the character count isn't shown.
-    nicknameInput.blur();
+    nicknameInput!.blur();
     assertFalse(isVisible(characterCount));
 
     // User clicks on nickname input again.
-    nicknameInput.focus();
+    nicknameInput!.focus();
     // Character count is shown when nickname input field is re-focused.
     assertTrue(isVisible(characterCount));
     assertTrue(characterCount.textContent!.includes('5/25'));
@@ -351,30 +421,40 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
     // Verify save button is disabled for expired credit card.
-    assertTrue(creditCardDialog.$.saveButton.disabled);
-    const expiredError = creditCardDialog.$.expiredError;
+    const saveButton =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#saveButton');
+    const expiredError =
+        creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#expiredError');
     // The expired error message is shown.
-    assertEquals('visible', getComputedStyle(expiredError).visibility);
+    assertEquals('visible', getComputedStyle(expiredError!).visibility);
     // Check a11y attributes added for correct error announcement.
-    assertEquals('alert', expiredError.getAttribute('role'));
-    for (const select of [creditCardDialog.$.month, creditCardDialog.$.year]) {
+    assertEquals('alert', expiredError!.getAttribute('role'));
+
+    const monthInput =
+        creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#month');
+    const yearInput =
+        creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+    for (const select of [monthInput!, yearInput!]) {
       assertEquals('true', select.getAttribute('aria-invalid'));
-      assertEquals(expiredError.id, select.getAttribute('aria-errormessage'));
+      assertEquals(expiredError!.id, select.getAttribute('aria-errormessage'));
     }
 
     // Update the expiration year to next year to avoid expired card.
-    creditCardDialog.$.year.value = nextYear();
-    creditCardDialog.$.year.dispatchEvent(new CustomEvent('change'));
+    yearInput!.value = nextYear();
+    yearInput!.dispatchEvent(new CustomEvent('change'));
     flush();
 
     // Expired error message is hidden for valid expiration date.
-    assertEquals('hidden', getComputedStyle(expiredError).visibility);
-    assertFalse(creditCardDialog.$.saveButton.disabled);
+    assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+    assertFalse(saveButton!.disabled);
     // Check a11y attributes for expiration error removed.
-    assertEquals(null, expiredError.getAttribute('role'));
-    for (const select of [creditCardDialog.$.month, creditCardDialog.$.year]) {
+    assertEquals(null, expiredError!.getAttribute('role'));
+    for (const select of [monthInput!, yearInput!]) {
       assertEquals('false', select.getAttribute('aria-invalid'));
       assertEquals(null, select.getAttribute('aria-errormessage'));
     }
   });
+
 });
