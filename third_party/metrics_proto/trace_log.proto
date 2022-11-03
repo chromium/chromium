@@ -18,9 +18,21 @@ package metrics;
 // //src/third_party/perfetto/protos/perfetto/trace/trace.proto
 
 // Wrapper for the uploaded trace data, and parsed trace as stored in the logs.
+// Next ID: 6
 message TraceLog {
   // Client uploads the trace data as a byte buffer.
   optional bytes raw_data = 1;
 
   reserved 3;
+
+  enum CompressionType {
+    COMPRESSION_TYPE_NONE = 0;
+    COMPRESSION_TYPE_ZLIB = 1;
+  }
+
+  // Some clients compress trace data before upload.
+  // If this field has a value other than COMPRESSION_TYPE_NONE, |raw_data|
+  // will contain the compressed trace.
+  optional CompressionType compression_type = 5
+      [default = COMPRESSION_TYPE_NONE];
 }
