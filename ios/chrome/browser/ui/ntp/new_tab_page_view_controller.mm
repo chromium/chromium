@@ -514,6 +514,10 @@
   }
 }
 
+- (void)updateStickyElements {
+  [self handleStickyElementsForScrollPosition:[self scrollPosition] force:YES];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {

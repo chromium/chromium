@@ -429,6 +429,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   // When the visible feed has been updated, recalculate the minimum NTP height.
   if (feedType == self.selectedFeed) {
     [self.ntpViewController updateFeedInsetsForMinimumHeight];
+    [self.ntpViewController updateStickyElements];
   }
 }
 
