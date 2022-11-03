@@ -50,7 +50,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
     return swap_chain_;
   }
 
-  DCLayerTree::VisualSubtree& visual_subtree() { return visual_subtree_; }
   const Microsoft::WRL::ComPtr<IUnknown>& content() const { return content_; }
 
   void SetFrameRate(float frame_rate);
@@ -262,12 +261,10 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // which we won't attempt to use decode swap chain again.
   bool failed_to_present_decode_swapchain_ = false;
 
-  // Contains the visuals for the overlay that uses this SwapChainPresenter.
-  DCLayerTree::VisualSubtree visual_subtree_;
-
   // The swap chain content, sometimes a IDCompositionSurface. This is updated
-  // during |PresentToSwapChain| and copied to |visual_subtree_| and set as the
-  // content of the content visual when the subtree is updated.
+  // during |PresentToSwapChain| and copied to VisualSubtree owned by
+  // DCLayerTree and set as the content of the content visual when the subtree
+  // is updated.
   Microsoft::WRL::ComPtr<IUnknown> content_;
 
   // GLImages that were presented in the last frame.

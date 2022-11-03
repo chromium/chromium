@@ -151,19 +151,25 @@ class DCLayerTree {
    public:
     VisualSubtree();
     ~VisualSubtree();
-    VisualSubtree(VisualSubtree&& other);
-    VisualSubtree& operator=(VisualSubtree&& other);
+    VisualSubtree(VisualSubtree&& other) = delete;
+    VisualSubtree& operator=(VisualSubtree&& other) = delete;
     VisualSubtree(const VisualSubtree&) = delete;
     VisualSubtree& operator=(VisualSubtree& other) = delete;
 
     // Returns true if something was changed.
     bool Update(IDCompositionDevice2* dcomp_device,
                 Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
+                uint64_t dcomp_surface_serial,
                 const gfx::Vector2d& quad_rect_offset,
                 const gfx::Transform& quad_to_root_transform,
                 const absl::optional<gfx::Rect>& clip_rect_in_root);
 
-    IDCompositionVisual2* visual() const { return clip_visual_.Get(); }
+    IDCompositionVisual2* container_visual() const {
+      return clip_visual_.Get();
+    }
+    IDCompositionVisual2* content_visual() const {
+      return content_visual_.Get();
+    }
 
     void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
                                           gfx::Point* offset,
@@ -179,6 +185,10 @@ class DCLayerTree {
     // The content to be placed at the leaf of the visual subtree. Either an
     // IDCompositionSurface or an IDXGISwapChain.
     Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content_;
+    // |dcomp_surface_serial_| is associated with |dcomp_visual_content_| of
+    // IDCompositionSurface type. New value indicates that dcomp surface data is
+    // updated.
+    uint64_t dcomp_surface_serial_ = 0;
 
     // Offset of the top left of the visual in quad space
     gfx::Vector2d offset_;
@@ -235,7 +245,6 @@ class DCLayerTree {
 
   // Set if root surface is using a direct composition surface currently.
   Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface_;
-  uint64_t root_dcomp_surface_serial_;
 
   // Direct composition visual for root surface.
   Microsoft::WRL::ComPtr<IDCompositionVisual2> root_surface_visual_;
@@ -248,6 +257,9 @@ class DCLayerTree {
 
   // List of swap chain presenters for previous frame.
   std::vector<std::unique_ptr<SwapChainPresenter>> video_swap_chains_;
+
+  // List of DCOMP visual subtrees for previous frame.
+  std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees_;
 
   // Number of frames per second.
   float frame_rate_ = 0.f;

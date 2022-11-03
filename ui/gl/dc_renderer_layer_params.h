@@ -20,6 +20,8 @@
 #include "ui/gl/gl_export.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <Unknwnbase.h>
+#include <wrl/client.h>
 #include "ui/gl/dcomp_surface_proxy.h"
 #endif
 
@@ -43,6 +45,11 @@ struct GL_EXPORT DCRendererLayerParams {
 #if BUILDFLAG(IS_WIN)
   // DCOMPSurfaceProxy corresponding to MF video renderer.
   scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy;
+  // |dcomp_surface_serial| is associated with |dcomp_visual_content| of
+  // IDCompositionSurface type. New value indicates that dcomp surface data is
+  // updated.
+  uint64_t dcomp_surface_serial = 0;
+  Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content;
 #endif
 
   // Stacking order relative to backbuffer which has z-order 0.
