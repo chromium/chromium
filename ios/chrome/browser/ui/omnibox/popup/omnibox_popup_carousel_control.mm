@@ -126,6 +126,7 @@ CAGradientLayer* CarouselBackgroundGradientLayer() {
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
   if (selected) {
+    [self.delegate carouselControlDidBecomeFocused:self];
     [self.backgroundView.layer addSublayer:self.gradientLayer];
   } else {
     [self.gradientLayer removeFromSuperlayer];
@@ -205,6 +206,14 @@ CAGradientLayer* CarouselBackgroundGradientLayer() {
                                  cornerRadius:kPreviewCornerRadius];
   return [[UITargetedPreview alloc] initWithView:self
                                       parameters:previewParameters];
+}
+
+#pragma mark - UIAccessibilityFocus
+
+- (void)accessibilityElementDidBecomeFocused {
+  // Element is focused by VoiceOver, informs its delegate so it can make it
+  // visible, in case it's hidden in the scroll view.
+  [self.delegate carouselControlDidBecomeFocused:self];
 }
 
 @end

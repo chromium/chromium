@@ -56,6 +56,9 @@ UIStackView* CarouselStackView() {
 @property(nonatomic, strong) UIScrollView* scrollView;
 // Horizontal UIStackView containing CarouselItems.
 @property(nonatomic, strong) UIStackView* suggestionsStackView;
+// The subset of controls that correspond to items that aren't hidden.
+@property(nonatomic, strong, readonly)
+    NSArray<OmniboxPopupCarouselControl*>* visibleControls;
 
 @end
 
@@ -73,6 +76,7 @@ UIStackView* CarouselStackView() {
       OmniboxPopupCarouselControl* control =
           [[OmniboxPopupCarouselControl alloc] init];
       [_suggestionsStackView addArrangedSubview:control];
+      control.delegate = self;
       [control addTarget:self
                     action:@selector(didTapCarouselControl:)
           forControlEvents:UIControlEventTouchUpInside];
@@ -111,10 +115,23 @@ UIStackView* CarouselStackView() {
   ]];
 }
 
+#pragma mark - Properties
+
+- (NSArray<OmniboxPopupCarouselControl*>*)visibleControls {
+  NSMutableArray* visibleControls = [[NSMutableArray alloc] init];
+  for (OmniboxPopupCarouselControl* control in self.suggestionsStackView
+           .arrangedSubviews) {
+    if (!control.hidden) {
+      [visibleControls addObject:control];
+    }
+  }
+  return visibleControls;
+}
+
 #pragma mark - Accessibility
 
 - (NSArray*)accessibilityElements {
-  return self.suggestionsStackView.arrangedSubviews;
+  return self.visibleControls;
 }
 
 #pragma mark - Public methods
@@ -152,7 +169,6 @@ UIStackView* CarouselStackView() {
   }
   control.hidden = hidden;
   control.selected = false;
-
   [self.delegate carouselCellDidChangeVisibleCount:self];
 }
 
@@ -274,6 +290,16 @@ UIStackView* CarouselStackView() {
   } else {
     [self highlightFirstTile];
   }
+}
+
+#pragma mark - OmniboxPopupCarouselControlDelegate
+
+- (void)carouselControlDidBecomeFocused:(OmniboxPopupCarouselControl*)control {
+  CGRect frameInScrollViewCoordinates = [control convertRect:control.bounds
+                                                      toView:self.scrollView];
+  CGRect frameWithPadding =
+      CGRectInset(frameInScrollViewCoordinates, -kStackSpacing * 2, 0);
+  [self.scrollView scrollRectToVisible:frameWithPadding animated:NO];
 }
 
 #pragma mark - Private methods

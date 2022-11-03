@@ -10,6 +10,15 @@
 @protocol AutocompleteSuggestion;
 @class CarouselItem;
 @protocol CarouselItemMenuProvider;
+@class OmniboxPopupCarouselControl;
+
+// Delegate for events happening in OmniboxPopupCarouselControl.
+@protocol OmniboxPopupCarouselControlDelegate <NSObject>
+
+// `control` became focused with accessibility of keyboard selection.
+- (void)carouselControlDidBecomeFocused:(OmniboxPopupCarouselControl*)control;
+
+@end
 
 // View inside the OmniboxCarouselCell that displays the icon and text of
 // `CarouselItem`.
@@ -19,6 +28,7 @@
 // Context menu provider for the carousel items.
 @property(nonatomic, weak) id<CarouselItemMenuProvider> menuProvider;
 @property(nonatomic, strong) CarouselItem* carouselItem;
+@property(nonatomic, weak) id<OmniboxPopupCarouselControlDelegate> delegate;
 
 @end
 

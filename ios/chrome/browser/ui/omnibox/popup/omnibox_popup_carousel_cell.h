@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control.h"
 
 @class OmniboxPopupCarouselCell;
 @protocol AutocompleteSuggestionGroup;
@@ -35,7 +36,9 @@ NSString* OmniboxPopupCarouselCellReuseIdentifier = @"OmniboxPopupCarouselCell";
 // Cell used in omnibox popup table view to display suggestions in a carousel
 // (horizontal scrolling list).
 @interface OmniboxPopupCarouselCell
-    : UITableViewCell <CarouselItemConsumer, OmniboxKeyboardDelegate>
+    : UITableViewCell <CarouselItemConsumer,
+                       OmniboxKeyboardDelegate,
+                       OmniboxPopupCarouselControlDelegate>
 
 // Fill the carousel with `carouselItems`.
 - (void)setupWithCarouselItems:(NSArray<CarouselItem*>*)carouselItems;
