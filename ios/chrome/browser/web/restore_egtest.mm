@@ -34,11 +34,11 @@ namespace {
 
 // Path to two test pages, page1 and page2 with associated contents and titles.
 const char kPageOnePath[] = "/page1.html";
-const char kPageOneContent[] = "page 1 content";
-const char kPageOneTitle[] = "page1";
+const char kPageOneContent[] = "This is the first page.";
+const char kPageOneTitle[] = "The first page title.";
 const char kPageTwoPath[] = "/page2.html";
-const char kPageTwoContent[] = "page 2 content";
-const char kPageTwoTitle[] = "page 2";
+const char kPageTwoContent[] = "This is the second page.";
+const char kPageTwoTitle[] = "The second page title.";
 
 // Path to a test page used to count each page load.
 const char kCountURL[] = "/countme.html";
