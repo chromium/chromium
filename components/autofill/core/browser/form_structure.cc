@@ -1870,21 +1870,16 @@ void FormStructure::ExtractParseableFieldLabels() {
 }
 
 void FormStructure::ExtractParseableFieldNames() {
-  // Create a vector of string pieces containing the field names.
   std::vector<base::StringPiece16> names;
   names.reserve(field_count());
-  for (const auto& field : *this) {
+  for (const auto& field : *this)
     names.emplace_back(field->name);
-  }
 
   // Determine the parseable names and write them into the corresponding field.
-  std::vector<base::StringPiece16> parseable_names =
-      GetParseableNamesAsStringPiece(&names);
-  DCHECK_EQ(parseable_names.size(), field_count());
+  ComputeParseableNames(names);
   size_t idx = 0;
-  for (auto& field : *this) {
-    field->set_parseable_name(std::u16string(parseable_names[idx++]));
-  }
+  for (auto& field : *this)
+    field->set_parseable_name(std::u16string(names[idx++]));
 }
 
 DenseSet<FormType> FormStructure::GetFormTypes() const {

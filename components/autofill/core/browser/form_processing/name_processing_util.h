@@ -5,32 +5,23 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_NAME_PROCESSING_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_NAME_PROCESSING_UTIL_H_
 
-#include <vector>
-
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
-#ifdef UNIT_TEST
+// Returns the length of the longest common prefix of the `strings`. The runtime
+// is O(strings.size() * length-of-longest-common-prefix).
 size_t FindLongestCommonPrefixLength(
-    const std::vector<base::StringPiece16>& strings);
+    base::span<const base::StringPiece16> strings);
 
-bool IsValidParseableName(base::StringPiece16 parseable_name);
-
-absl::optional<std::vector<base::StringPiece16>> RemoveCommonPrefixIfPossible(
-    const std::vector<base::StringPiece16>& field_names);
-#endif
-
-// Determines and returns the parseable names of `field_names`, by removing
-// long common prefixes. If the common prefix is too short or empty, the
-// original names in `field_names` are returned.
+// Removes long common prefixes from `field_names`. If the common prefix is too
+// short or empty, `field_names` are left unmodified.
 // While this function works on a general set of strings, it is solely used for
 // the purpose of "rationalizing" the names of `FormFieldData::name`. The result
 // is then referred to as the "parseable name" of the field. Hence the
 // terminology here.
-std::vector<base::StringPiece16> GetParseableNamesAsStringPiece(
-    const std::vector<base::StringPiece16>* field_names);
+void ComputeParseableNames(base::span<base::StringPiece16> field_names);
 
 }  // namespace autofill
 
