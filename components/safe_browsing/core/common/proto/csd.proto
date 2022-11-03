@@ -1978,10 +1978,21 @@ message ExtensionTelemetryReportRequest {
         // pages.
         optional uint32 count = 4;
       }
+      message RemoteHostData {
+        // This information represents a host that an extension contacted within
+        // a specific time window (currently 1 second) after a password-reuse
+        // event was detected on one of that extension's pages.
+        optional string remote_host_url = 1;
+        // Number of times the remote host was contacted.
+        optional uint32 count = 2;
+      }
       // The remote host(s) contacted within 1 second of at least one (but not
       // all) of the password reuse event(s) listed below.
       repeated RemoteHostInfo remote_hosts = 1;
       repeated PasswordReuseInfo reused_password_infos = 2;
+      // The remote host(s) contacted within 1 second of at least one (but not
+      // all) of the password reuse event(s) listed below.
+      repeated RemoteHostData remote_hosts_data = 3;
     }
 
     optional PotentialPasswordTheftInfo potential_password_theft_info = 5;
