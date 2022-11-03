@@ -560,7 +560,6 @@ TEST_F(IntegrationTest, MultipleWakesOneNetRequest) {
   RunWake(0);
 
   Uninstall();
-  Clean();
 }
 
 TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
@@ -573,7 +572,6 @@ TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
   UpdateAll();
 
   Uninstall();
-  Clean();
 }
 
 #if BUILDFLAG(IS_WIN)
