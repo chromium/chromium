@@ -218,7 +218,8 @@ source_set("ksadmin_lib") {
 
   deps = [
     "//base",
-    "//chrome/updater:base",
+    "//chrome/updater:base_app",
+    "//chrome/updater:ks_ticket",
     "//chrome/updater:version_header",
   ]
 
@@ -257,7 +258,7 @@ executable("ksinstall") {
 
   deps = [
     "//base",
-    "//chrome/updater:base",
+    "//chrome/updater:base_app",
     "//chrome/updater:constants_prod",
     "//chrome/updater:version_header",
   ]

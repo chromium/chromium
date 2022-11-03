@@ -7,10 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#include "chrome/updater/update_service.h"
-
 extern NSString* _Nonnull const kCRUTicketBrandKey;
 extern NSString* _Nonnull const kCRUTicketTagKey;
+
+namespace base {
+class FilePath;
+}
 
 @interface KSPathExistenceChecker : NSObject <NSSecureCoding>
 @property(nonnull, readonly) NSString* path;
@@ -42,8 +44,12 @@ extern NSString* _Nonnull const kCRUTicketTagKey;
 - (nullable NSString*)determineBrand;    // brand
 - (nullable NSString*)determineVersion;  // version
 
-- (nullable instancetype)initWithAppState:
-    (const updater::UpdateService::AppState&)state;
+- (nonnull instancetype)initWithAppId:(nonnull NSString*)appId
+                              version:(nullable const NSString*)version
+                                  ecp:(const base::FilePath&)ecp
+                                  tag:(nullable NSString*)tag
+                            brandCode:(nullable NSString*)brandCode
+                            brandPath:(const base::FilePath&)brandPath;
 
 @end
 

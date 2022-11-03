@@ -200,25 +200,28 @@ NSString* const kKSTicketCohortNameKey = @"CohortName";
   return self;
 }
 
-- (instancetype)initWithAppState:
-    (const updater::UpdateService::AppState&)state {
+- (instancetype)initWithAppId:(NSString*)appId
+                      version:(NSString*)version
+                          ecp:(const base::FilePath&)ecp
+                          tag:(NSString*)tag
+                    brandCode:(NSString*)brandCode
+                    brandPath:(const base::FilePath&)brandPath {
   if ((self = [super init])) {
-    productID_ = [base::SysUTF8ToNSString(state.app_id) retain];
-    version_ = [base::SysUTF8ToNSString(state.version.GetString()) retain];
-    if (!state.ecp.empty()) {
-      existenceChecker_ =
-          [[KSPathExistenceChecker alloc] initWithFilePath:state.ecp];
+    productID_ = [appId retain];
+    version_ = [version retain];
+    if (!ecp.empty()) {
+      existenceChecker_ = [[KSPathExistenceChecker alloc] initWithFilePath:ecp];
 
-      tagPath_ = [[NSString
-          stringWithFormat:@"%@/Contents/Info.plist",
-                           base::mac::FilePathToNSString(state.ecp)] retain];
+      tagPath_ = [[NSString stringWithFormat:@"%@/Contents/Info.plist",
+                                             base::mac::FilePathToNSString(ecp)]
+          retain];
       tagKey_ = [kCRUTicketTagKey retain];
     }
-    tag_ = [base::SysUTF8ToNSString(state.ap) retain];
+    tag_ = [tag retain];
 
-    brandCode_ = [base::SysUTF8ToNSString(state.brand_code) retain];
-    if (!state.brand_path.empty()) {
-      brandPath_ = [base::mac::FilePathToNSString(state.brand_path) retain];
+    brandCode_ = [brandCode retain];
+    if (!brandPath.empty()) {
+      brandPath_ = [base::mac::FilePathToNSString(brandPath) retain];
       brandKey_ = [kCRUTicketBrandKey retain];
     }
     serverURL_ = [[NSURL

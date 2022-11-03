@@ -36,7 +36,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/mac/setup/ks_tickets.h"
-#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
@@ -244,6 +243,8 @@ class KSAdminApp : public App {
   void DoPrintTag(UpdaterScope scope);
   void DoPrintTickets(UpdaterScope scope);
 
+  static KSTicket* TicketFromAppState(
+      const updater::UpdateService::AppState& state);
   int PrintKeystoneTag(const std::string& app_id) const;
   void PrintKeystoneTickets(const std::string& app_id) const;
 
@@ -260,6 +261,17 @@ class KSAdminApp : public App {
   scoped_refptr<UpdateService> system_service_proxy_;
   scoped_refptr<UpdateService> user_service_proxy_;
 };
+
+KSTicket* KSAdminApp::TicketFromAppState(
+    const updater::UpdateService::AppState& state) {
+  return [[[KSTicket alloc]
+      initWithAppId:base::SysUTF8ToNSString(state.app_id)
+            version:base::SysUTF8ToNSString(state.version.GetString())
+                ecp:state.ecp
+                tag:base::SysUTF8ToNSString(state.ap)
+          brandCode:base::SysUTF8ToNSString(state.brand_code)
+          brandPath:state.brand_path] autorelease];
+}
 
 scoped_refptr<UpdateService> KSAdminApp::ServiceProxy(
     UpdaterScope scope) const {
@@ -486,8 +498,7 @@ void KSAdminApp::DoPrintTag(UpdaterScope scope) {
                   return base::EqualsCaseInsensitiveASCII(state.app_id, app_id);
                 });
         if (it != std::end(states)) {
-          KSTicket* ticket =
-              [[[KSTicket alloc] initWithAppState:*it] autorelease];
+          KSTicket* ticket = TicketFromAppState(*it);
           printf("%s\n",
                  base::SysNSStringToUTF8([ticket determineTag]).c_str());
 
@@ -550,8 +561,7 @@ void KSAdminApp::DoPrintTickets(UpdaterScope scope) {
               !base::EqualsCaseInsensitiveASCII(app_id, state.app_id)) {
             continue;
           }
-          KSTicket* ticket =
-              [[[KSTicket alloc] initWithAppState:state] autorelease];
+          KSTicket* ticket = TicketFromAppState(state);
           printf("%s\n", base::SysNSStringToUTF8([ticket description]).c_str());
           ticket_printed = true;
         }
