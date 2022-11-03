@@ -8,8 +8,28 @@
     width: 512px;
   }
 
-  ::slotted([slot=content]) {
+  div#content {
     flex-grow: 1;
+  }
+
+  div#header-image {
+    background-color: var(--cros-highlight-color);
+    border-radius: 12px;
+    height: 200px;
+    width: 448px;
+  }
+
+  ::slotted([slot=title]) {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-display-6-font);
+    margin-block-start: 32px;
+  }
+
+  ::slotted([slot=body]) {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-2-font);
+    margin-block-end: 32px;
+    margin-block-start: 16px;
   }
 
   div#footer {
@@ -32,10 +52,15 @@
   div#dots > div.active {
     background-color: var(--cros-icon-color-prominent);
   }
-
 </style>
 
-<slot name="content"></slot>
+<div id="content">
+  <div id="header-image">
+    <slot name="header-image"></slot>
+  </div>
+  <slot name="title"></slot>
+  <slot name="body"></slot>
+</div>
 <div id="footer">
   <div id="dots"></div>
   <slot name="button-container"></slot>
