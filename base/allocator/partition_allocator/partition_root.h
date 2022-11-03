@@ -1654,8 +1654,8 @@ PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
   internal::ScopedSyscallTimer timer{this};
   bool ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
                                    accessibility_disposition);
-#if defined(PA_COMMIT_CHARGE_IS_LIMITED)
   if (PA_UNLIKELY(!ok)) {
+    // Decommit some memory and retry. The alternative is crashing.
     {
       ::partition_alloc::internal::ScopedGuard guard(lock_);
       DecommitEmptySlotSpans();
@@ -1663,7 +1663,6 @@ PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
     ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
                                 accessibility_disposition);
   }
-#endif  // defined(PA_COMMIT_CHARGE_IS_LIMITED)
 
   if (ok)
     IncreaseCommittedPages(length);
