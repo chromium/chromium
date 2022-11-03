@@ -232,42 +232,6 @@ enum AppShortcutItemType {
   kDynamic = 1,
 };
 
-[Extensible]
-enum AppReinstallState {
-    // Request and response successful.
-    REQUEST_SUCCESS = 0,
-    // Request Timeout
-    REQUEST_TIMEOUT = 1,
-    // No Account.
-    REQUEST_NO_ACCOUNT = 2,
-    // Null data from aidl.
-    REQUEST_NULL_DATA = 3,
-    // Data that can't be converted from aidl bundle to mojom struct.
-    REQUEST_BUNDLE_ERROR = 4,
-    // Request failure other reason.
-    REQUEST_UNKNOWN_FAILURE = 5,
-};
-
-// Describes app reinstall candidates that are shown to users as suggestions.
-struct AppReinstallCandidate {
-  // The package name of this in the Play Store.
-  string package_name;
-
-  // The title of this package in the Play Store.
-  string title;
-
-  // The url of an icon for this package. Optional, a default icon is used if
-  // unset.
-  string? icon_url;
-
-  // Ratings Count from Play Store for this package. e.g. "17103" .
-  // Default of 0 if not set.
-  int64 rating_count;
-
-  // Mean star rating for this package, [1, 5]. 0 indicates missing.
-  float star_rating;
-};
-
 // Describes app shortcut that is published by Android's ShortcutManager.
 struct AppShortcutItem {
   // The ID of this shortcut. Unique within each publisher app and stable across
@@ -421,7 +385,7 @@ interface AppHost {
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
 // Next method ID: 42
-// Deprecated method IDs: 0, 1, 2, 3, 4, 9, 12, 13, 15, 17, 18, 19, 22
+// Deprecated method IDs: 0, 1, 2, 3, 4, 9, 12, 13, 15, 17, 18, 19, 22, 31
 interface AppInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=26] Init@21(pending_remote<AppHost> host_remote) => ();
@@ -531,12 +495,6 @@ interface AppInstance {
 
   // Sends a request to ARC to start FastAppReinstall flow.
   [MinVersion=33] StartFastAppReinstallFlow@25(array<string> arc_package_names);
-
-  // Sends a request to ARC to retrieve an array of app reinstall
-  // candidates for this user on this device. Order of results is in an
-  // unspecified order of relevance from Play Store.
-  [MinVersion=39] GetAppReinstallCandidates@31() =>
-      (AppReinstallState state, array<AppReinstallCandidate> candidates);
 
   // Sends a request to ARC to uninstall the given package.  Error (if ever
   // happens) is ignored, and uninstall option should appear in the UI.

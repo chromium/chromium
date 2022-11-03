@@ -479,17 +479,6 @@ void FakeAppInstance::StartPaiFlow(StartPaiFlowCallback callback) {
   std::move(callback).Run(pai_state_response_);
 }
 
-void FakeAppInstance::GetAppReinstallCandidates(
-    GetAppReinstallCandidatesCallback callback) {
-  ++get_app_reinstall_callback_count_;
-  std::vector<arc::mojom::AppReinstallCandidatePtr> candidates;
-  for (const auto& candidate : app_reinstall_candidates_)
-    candidates.emplace_back(candidate.Clone());
-
-  std::move(callback).Run(arc::mojom::AppReinstallState::REQUEST_SUCCESS,
-                          std::move(candidates));
-}
-
 void FakeAppInstance::StartFastAppReinstallFlow(
     const std::vector<std::string>& package_names) {
   ++start_fast_app_reinstall_request_count_;
@@ -555,12 +544,5 @@ void FakeAppInstance::GetPackageIcon(const std::string& package_name,
 }
 
 void FakeAppInstance::RemoveCachedIcon(const std::string& icon_resource_id) {}
-
-void FakeAppInstance::SetAppReinstallCandidates(
-    const std::vector<arc::mojom::AppReinstallCandidatePtr>& candidates) {
-  app_reinstall_candidates_.clear();
-  for (const auto& candidate : candidates)
-    app_reinstall_candidates_.emplace_back(candidate.Clone());
-}
 
 }  // namespace arc
