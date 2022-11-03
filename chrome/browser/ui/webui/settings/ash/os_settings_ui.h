@@ -16,12 +16,15 @@
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-forward.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-forward.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -36,6 +39,20 @@ namespace ash::settings {
 namespace mojom {
 class SearchHandler;
 }
+
+class OSSettingsUI;
+
+// WebUIConfig for chrome://os-settings
+//
+// Even though OSSettings is a System Web App, it is used in profiles where SWAs
+// are not installed (e.g. kiosk mode) so it can't use
+// ash::SystemWebAppUIConfig.
+class OSSettingsUIConfig : public content::DefaultWebUIConfig<OSSettingsUI> {
+ public:
+  OSSettingsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIOSSettingsHost) {}
+};
 
 // The WebUI handler for chrome://os-settings.
 class OSSettingsUI : public ui::MojoWebUIController {

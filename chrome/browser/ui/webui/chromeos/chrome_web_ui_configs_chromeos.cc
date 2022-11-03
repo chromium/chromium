@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/webui/ash/set_time_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_trace_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_ui.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
@@ -78,6 +79,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::InternetDetailDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NetworkUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::settings::OSSettingsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ParentAccessUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SetTimeUIConfig>());
