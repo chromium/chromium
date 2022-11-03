@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_EXTENSIONS_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_H_
-#define CHROME_RENDERER_EXTENSIONS_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_H_
+#ifndef CHROME_RENDERER_EXTENSIONS_API_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_H_
+#define CHROME_RENDERER_EXTENSIONS_API_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_H_
 
 #include "extensions/renderer/object_backed_native_handler.h"
 
@@ -35,4 +35,4 @@ class FileBrowserHandlerCustomBindings : public ObjectBackedNativeHandler {
 
 }  // namespace extensions
 
-#endif  // CHROME_RENDERER_EXTENSIONS_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_H_
+#endif  // CHROME_RENDERER_EXTENSIONS_API_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_H_

@@ -301,32 +301,32 @@ static_library("renderer") {
 
   if (enable_extensions) {
     sources += [
-      "extensions/accessibility_private_hooks_delegate.cc",
-      "extensions/accessibility_private_hooks_delegate.h",
-      "extensions/app_hooks_delegate.cc",
-      "extensions/app_hooks_delegate.h",
+      "extensions/api/accessibility_private_hooks_delegate.cc",
+      "extensions/api/accessibility_private_hooks_delegate.h",
+      "extensions/api/app_hooks_delegate.cc",
+      "extensions/api/app_hooks_delegate.h",
+      "extensions/api/extension_hooks_delegate.cc",
+      "extensions/api/extension_hooks_delegate.h",
+      "extensions/api/identity_hooks_delegate.cc",
+      "extensions/api/identity_hooks_delegate.h",
+      "extensions/api/media_galleries_custom_bindings.cc",
+      "extensions/api/media_galleries_custom_bindings.h",
+      "extensions/api/notifications_native_handler.cc",
+      "extensions/api/notifications_native_handler.h",
+      "extensions/api/page_capture_custom_bindings.cc",
+      "extensions/api/page_capture_custom_bindings.h",
+      "extensions/api/sync_file_system_custom_bindings.cc",
+      "extensions/api/sync_file_system_custom_bindings.h",
+      "extensions/api/tabs_hooks_delegate.cc",
+      "extensions/api/tabs_hooks_delegate.h",
       "extensions/chrome_extensions_dispatcher_delegate.cc",
       "extensions/chrome_extensions_dispatcher_delegate.h",
       "extensions/chrome_extensions_renderer_client.cc",
       "extensions/chrome_extensions_renderer_client.h",
-      "extensions/extension_hooks_delegate.cc",
-      "extensions/extension_hooks_delegate.h",
-      "extensions/identity_hooks_delegate.cc",
-      "extensions/identity_hooks_delegate.h",
-      "extensions/media_galleries_custom_bindings.cc",
-      "extensions/media_galleries_custom_bindings.h",
-      "extensions/notifications_native_handler.cc",
-      "extensions/notifications_native_handler.h",
-      "extensions/page_capture_custom_bindings.cc",
-      "extensions/page_capture_custom_bindings.h",
       "extensions/renderer_permissions_policy_delegate.cc",
       "extensions/renderer_permissions_policy_delegate.h",
       "extensions/resource_request_policy.cc",
       "extensions/resource_request_policy.h",
-      "extensions/sync_file_system_custom_bindings.cc",
-      "extensions/sync_file_system_custom_bindings.h",
-      "extensions/tabs_hooks_delegate.cc",
-      "extensions/tabs_hooks_delegate.h",
     ]
     deps += [
       "//chrome/common/extensions/api",
@@ -369,23 +369,23 @@ static_library("renderer") {
 
   if (is_chromeos) {
     sources += [
-      "extensions/file_browser_handler_custom_bindings.cc",
-      "extensions/file_browser_handler_custom_bindings.h",
-      "extensions/platform_keys_natives.cc",
-      "extensions/platform_keys_natives.h",
+      "extensions/api/file_browser_handler_custom_bindings.cc",
+      "extensions/api/file_browser_handler_custom_bindings.h",
+      "extensions/api/platform_keys_natives.cc",
+      "extensions/api/platform_keys_natives.h",
     ]
     if (use_cups) {
       sources += [
-        "extensions/printing_hooks_delegate.cc",
-        "extensions/printing_hooks_delegate.h",
+        "extensions/api/printing_hooks_delegate.cc",
+        "extensions/api/printing_hooks_delegate.h",
       ]
     }
   }
 
   if (is_chromeos_ash) {
     sources += [
-      "extensions/file_manager_private_custom_bindings.cc",
-      "extensions/file_manager_private_custom_bindings.h",
+      "extensions/api/file_manager_private_custom_bindings.cc",
+      "extensions/api/file_manager_private_custom_bindings.h",
     ]
   }
 

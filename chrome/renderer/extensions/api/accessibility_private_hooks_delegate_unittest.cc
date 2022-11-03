@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/extensions/accessibility_private_hooks_delegate.h"
+#include "chrome/renderer/extensions/api/accessibility_private_hooks_delegate.h"
 
 #include "base/strings/stringprintf.h"
 #include "extensions/common/constants.h"

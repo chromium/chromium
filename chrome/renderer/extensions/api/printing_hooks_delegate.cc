@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/extensions/printing_hooks_delegate.h"
+#include "chrome/renderer/extensions/api/printing_hooks_delegate.h"
 
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/v8_helpers.h"

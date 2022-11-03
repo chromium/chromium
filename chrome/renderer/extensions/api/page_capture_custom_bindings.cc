@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/extensions/page_capture_custom_bindings.h"
+#include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"

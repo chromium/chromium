@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_EXTENSIONS_TABS_HOOKS_DELEGATE_H_
-#define CHROME_RENDERER_EXTENSIONS_TABS_HOOKS_DELEGATE_H_
+#ifndef CHROME_RENDERER_EXTENSIONS_API_TABS_HOOKS_DELEGATE_H_
+#define CHROME_RENDERER_EXTENSIONS_API_TABS_HOOKS_DELEGATE_H_
 
 #include <vector>
 
@@ -52,4 +52,4 @@ class TabsHooksDelegate : public APIBindingHooksDelegate {
 
 }  // namespace extensions
 
-#endif  // CHROME_RENDERER_EXTENSIONS_TABS_HOOKS_DELEGATE_H_
+#endif  // CHROME_RENDERER_EXTENSIONS_API_TABS_HOOKS_DELEGATE_H_

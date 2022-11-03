@@ -8130,12 +8130,12 @@ test("unit_tests") {
       "../common/extensions/permissions/permissions_data_unittest.cc",
       "../common/extensions/permissions/settings_override_permission_unittest.cc",
       "../common/extensions/sync_type_unittest.cc",
+      "../renderer/extensions/api/extension_hooks_delegate_unittest.cc",
+      "../renderer/extensions/api/identity_hooks_delegate_unittest.cc",
+      "../renderer/extensions/api/tabs_hooks_delegate_unittest.cc",
       "../renderer/extensions/chrome_native_extension_bindings_system_unittest.cc",
       "../renderer/extensions/custom_types_unittest.cc",
-      "../renderer/extensions/extension_hooks_delegate_unittest.cc",
-      "../renderer/extensions/identity_hooks_delegate_unittest.cc",
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
-      "../renderer/extensions/tabs_hooks_delegate_unittest.cc",
     ]
 
     if (is_linux || is_mac || is_win) {
@@ -8258,7 +8258,7 @@ test("unit_tests") {
         "../browser/ui/webui/about_ui_unittest.cc",
         "../common/chromeos/extensions/chromeos_system_extension_info_unittest.cc",
         "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
-        "../renderer/extensions/accessibility_private_hooks_delegate_unittest.cc",
+        "../renderer/extensions/api/accessibility_private_hooks_delegate_unittest.cc",
       ]
 
       deps += [

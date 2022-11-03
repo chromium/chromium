@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_EXTENSIONS_PLATFORM_KEYS_NATIVES_H_
-#define CHROME_RENDERER_EXTENSIONS_PLATFORM_KEYS_NATIVES_H_
+#ifndef CHROME_RENDERER_EXTENSIONS_API_PLATFORM_KEYS_NATIVES_H_
+#define CHROME_RENDERER_EXTENSIONS_API_PLATFORM_KEYS_NATIVES_H_
 
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "v8/include/v8.h"
@@ -36,4 +36,4 @@ class PlatformKeysNatives : public ObjectBackedNativeHandler {
 
 }  // namespace extensions
 
-#endif  // CHROME_RENDERER_EXTENSIONS_PLATFORM_KEYS_NATIVES_H_
+#endif  // CHROME_RENDERER_EXTENSIONS_API_PLATFORM_KEYS_NATIVES_H_

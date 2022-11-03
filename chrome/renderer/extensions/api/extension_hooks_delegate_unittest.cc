@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/extensions/extension_hooks_delegate.h"
+#include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 
 #include "base/strings/stringprintf.h"
 #include "content/public/common/child_process_host.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/extensions/file_manager_private_custom_bindings.h"
+#include "chrome/renderer/extensions/api/file_manager_private_custom_bindings.h"
 
 #include <string>
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "chrome/renderer/extensions/file_browser_handler_custom_bindings.h"
+#include "chrome/renderer/extensions/api/file_browser_handler_custom_bindings.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "third_party/blink/public/platform/web_string.h"
