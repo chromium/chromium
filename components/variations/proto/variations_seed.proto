@@ -17,7 +17,7 @@ import "layer.proto";
 // serial number allows the client to easily determine if the list of
 // experiments has changed from the previous VariationsSeed seen by the client.
 //
-// Next tag: 4
+// Next tag: 7
 message VariationsSeed {
   optional string serial_number = 1;
   repeated Study study = 2;
@@ -30,7 +30,10 @@ message VariationsSeed {
   // that this seed was generated from.
   optional string version = 4;
 
+  // Previous implementation of layers. Do not re-use.
+  reserved 5;
+
   // A list of layers where each study can optionally be part of one, with
   // clients ensuring that only one study per layer is enabled.
-  repeated Layer layers = 5;
+  repeated Layer layers = 6;
 }
