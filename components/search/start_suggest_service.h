@@ -55,6 +55,8 @@ class StartSuggestService : public KeyedService {
       TemplateURLService* template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<AutocompleteSchemeClassifier> scheme_classifier,
+      const std::string& application_country,
+      const std::string& application_locale,
       const GURL& request_initiator_url);
   ~StartSuggestService() override;
   StartSuggestService(const StartSuggestService&) = delete;
@@ -93,6 +95,12 @@ class StartSuggestService : public KeyedService {
   raw_ptr<TemplateURLService> template_url_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<AutocompleteSchemeClassifier> scheme_classifier_;
+
+  // The country locale used by this client.
+  const std::string application_country_;
+
+  // The language locale used by this client.
+  const std::string application_locale_;
 
   // Indicates what page is initiating the requests by this service.
   const GURL request_initiator_url_;

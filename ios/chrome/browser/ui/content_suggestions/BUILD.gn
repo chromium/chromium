@@ -21,6 +21,7 @@ source_set("start_suggest") {
     "//components/prefs",
     "//components/search:start_suggest",
     "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/search_engines",

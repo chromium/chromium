@@ -19,6 +19,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -37,10 +38,14 @@ StartSuggestService::StartSuggestService(
     TemplateURLService* template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<AutocompleteSchemeClassifier> scheme_classifier,
+    const std::string& application_country,
+    const std::string& application_locale,
     const GURL& request_initiator_url)
     : template_url_service_(template_url_service),
       url_loader_factory_(url_loader_factory),
       scheme_classifier_(std::move(scheme_classifier)),
+      application_country_(application_country),
+      application_locale_(application_locale),
       request_initiator_url_(request_initiator_url),
       search_provider_observer_(std::make_unique<SearchProviderObserver>(
           template_url_service_,
@@ -133,8 +138,20 @@ GURL StartSuggestService::GetRequestURL(
   const SearchTermsData& search_terms_data =
       template_url_service_->search_terms_data();
   DCHECK(suggestion_url_ref.SupportsReplacement(search_terms_data));
-  return GURL(suggestion_url_ref.ReplaceSearchTerms(search_terms_args,
-                                                    search_terms_data));
+  GURL url = GURL(suggestion_url_ref.ReplaceSearchTerms(search_terms_args,
+                                                        search_terms_data));
+  if (!application_country_.empty()) {
+    // Trending Queries are country-based, so passing this helps determine
+    // locale.
+    url = net::AppendQueryParameter(url, "gl", application_country_);
+  }
+  if (!application_locale_.empty()) {
+    // Language is also used in addition to country to rank suggestions,
+    // ensuring that there can be separate ranks for different languages in the
+    // same country (i.e. fr-ca and en-ca.
+    url = net::AppendQueryParameter(url, "hl", application_locale_);
+  }
+  return url;
 }
 
 GURL StartSuggestService::GetQueryDestinationURL(

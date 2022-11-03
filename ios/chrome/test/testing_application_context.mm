@@ -27,6 +27,7 @@
 
 TestingApplicationContext::TestingApplicationContext()
     : application_locale_("en"),
+      application_country_("us"),
       local_state_(nullptr),
       chrome_browser_state_manager_(nullptr),
       was_last_shutdown_clean_(false),
@@ -116,6 +117,12 @@ const std::string& TestingApplicationContext::GetApplicationLocale() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!application_locale_.empty());
   return application_locale_;
+}
+
+const std::string& TestingApplicationContext::GetApplicationCountry() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!application_country_.empty());
+  return application_country_;
 }
 
 ios::ChromeBrowserStateManager*
