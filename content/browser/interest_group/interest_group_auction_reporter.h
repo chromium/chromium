@@ -20,6 +20,7 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
+#include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
@@ -62,6 +63,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // TODO(mmenke):  Figure out how to make this survive the auction (perhaps
     // pass ownership to the constructor).
     base::raw_ptr<const blink::AuctionConfig, DanglingUntriaged> auction_config;
+
+    std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder;
 
     // Bid fed as input to the seller. If this is the top level seller and the
     // bid came from a component auction, it's the (optionally) modified bid

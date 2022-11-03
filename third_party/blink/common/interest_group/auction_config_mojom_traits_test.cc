@@ -21,11 +21,6 @@
 
 namespace blink {
 
-bool operator==(const DirectFromSellerSignalsSubresource& a,
-                const DirectFromSellerSignalsSubresource& b) {
-  return std::tie(a.bundle_url, a.token) == std::tie(b.bundle_url, b.token);
-}
-
 bool operator==(const DirectFromSellerSignals& a,
                 const DirectFromSellerSignals& b) {
   return std::tie(a.prefix, a.per_buyer_signals, a.seller_signals,

@@ -94,6 +94,7 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
   if (auction_worklet_manager_->RequestSellerWorklet(
           seller_info->auction_config->decision_logic_url,
           seller_info->auction_config->trusted_scoring_signals_url,
+          *seller_info->subresource_url_builder,
           seller_info->auction_config->seller_experiment_group_id,
           base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
                          base::Unretained(this), base::Unretained(seller_info),
@@ -256,10 +257,9 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
   const blink::InterestGroup& interest_group =
       winning_bid_info_.storage_interest_group->interest_group;
 
-  const blink::AuctionConfig* auction_config =
-      GetBidderAuction().auction_config;
+  const SellerWinningBidInfo& bidder_auction = GetBidderAuction();
   absl::optional<uint16_t> experiment_group_id =
-      InterestGroupAuction::GetBuyerExperimentId(*auction_config,
+      InterestGroupAuction::GetBuyerExperimentId(*bidder_auction.auction_config,
                                                  interest_group.owner);
 
   // base::Unretained is safe to use for these callbacks because destroying
@@ -268,7 +268,8 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
   if (auction_worklet_manager_->RequestBidderWorklet(
           interest_group.bidding_url.value_or(GURL()),
           interest_group.bidding_wasm_helper_url,
-          interest_group.trusted_bidding_signals_url, experiment_group_id,
+          interest_group.trusted_bidding_signals_url,
+          *bidder_auction.subresource_url_builder, experiment_group_id,
           base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletReceived,
                          base::Unretained(this), signals_for_winner),
           base::BindOnce(

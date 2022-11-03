@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iterator>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -969,7 +970,9 @@ InterestGroupAuction::InterestGroupAuction(
       interest_group_manager_(interest_group_manager),
       config_(config),
       parent_(parent),
-      auction_start_time_(auction_start_time) {
+      auction_start_time_(auction_start_time),
+      subresource_url_builder_(std::make_unique<SubresourceUrlBuilder>(
+          config->direct_from_seller_signals)) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", trace_id_,
                                     "decision_logic_url",
                                     config_->decision_logic_url);
@@ -1167,6 +1170,8 @@ void InterestGroupAuction::StartReportingPhase(
   InterestGroupAuctionReporter::SellerWinningBidInfo
       top_level_seller_winning_bid_info;
   top_level_seller_winning_bid_info.auction_config = config_;
+  top_level_seller_winning_bid_info.subresource_url_builder =
+      std::move(subresource_url_builder_);
   top_level_seller_winning_bid_info.bid = auction_leader_.top_bid->bid->bid;
   top_level_seller_winning_bid_info.score = auction_leader_.top_bid->score;
   top_level_seller_winning_bid_info.highest_scoring_other_bid =
@@ -1190,11 +1195,13 @@ void InterestGroupAuction::StartReportingPhase(
   absl::optional<InterestGroupAuctionReporter::SellerWinningBidInfo>
       component_seller_winning_bid_info;
   if (auction_leader_.top_bid->bid->auction != this) {
-    const InterestGroupAuction* component_auction =
+    InterestGroupAuction* component_auction =
         auction_leader_.top_bid->bid->auction;
     component_seller_winning_bid_info.emplace();
     component_seller_winning_bid_info->auction_config =
         component_auction->config_;
+    component_seller_winning_bid_info->subresource_url_builder =
+        std::move(component_auction->subresource_url_builder_);
     component_seller_winning_bid_info->bid =
         component_auction->auction_leader_.top_bid->bid->bid;
     component_seller_winning_bid_info->score =
@@ -1644,7 +1651,7 @@ void InterestGroupAuction::RequestSellerWorklet() {
                                     trace_id_);
   if (auction_worklet_manager_->RequestSellerWorklet(
           config_->decision_logic_url, config_->trusted_scoring_signals_url,
-          config_->seller_experiment_group_id,
+          *subresource_url_builder_, config_->seller_experiment_group_id,
           base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,
                          base::Unretained(this)),
           base::BindOnce(&InterestGroupAuction::OnSellerWorkletFatalError,
@@ -2126,9 +2133,9 @@ bool InterestGroupAuction::RequestBidderWorklet(
   return auction_worklet_manager_->RequestBidderWorklet(
       interest_group.bidding_url.value_or(GURL()),
       interest_group.bidding_wasm_helper_url,
-      interest_group.trusted_bidding_signals_url, experiment_group_id,
-      std::move(worklet_available_callback), std::move(fatal_error_callback),
-      bid_state.worklet_handle);
+      interest_group.trusted_bidding_signals_url, *subresource_url_builder_,
+      experiment_group_id, std::move(worklet_available_callback),
+      std::move(fatal_error_callback), bid_state.worklet_handle);
 }
 
 }  // namespace content

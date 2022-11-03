@@ -22,6 +22,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_storage.h"
+#include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -449,7 +450,7 @@ class CONTENT_EXPORT InterestGroupAuction
       const blink::AuctionConfig& config,
       const url::Origin& buyer);
 
-  // Gets the buyer per-buyer-signals ID in `config` for buyer. Public so that
+  // Gets the buyer per-buyer-signals in `config` for buyer. Public so that
   // InterestGroupAuctionReporter can use it.
   static absl::optional<std::string> GetPerBuyerSignals(
       const blink::AuctionConfig& config,
@@ -743,6 +744,14 @@ class CONTENT_EXPORT InterestGroupAuction
   // The time the auction started. Use a single base time for all Worklets, to
   // present a more consistent view of the universe.
   const base::Time auction_start_time_;
+
+  // Holds the computed subresource URLs (renderer-supplied prefix + browser
+  // produced suffix).
+  //
+  // Not null until moved into the InterestGroupAuctionReporter. The move occurs
+  // while the seller and bidder worklet handles, which hold raw pointers to it,
+  // are still alive.
+  std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder_;
 
   // The number of buyers in the AuctionConfig that passed the
   // IsInterestGroupApiAllowedCallback filter and interest groups were found

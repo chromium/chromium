@@ -39,6 +39,10 @@ struct BLINK_COMMON_EXPORT DirectFromSellerSignalsSubresource {
   base::UnguessableToken token;
 };
 
+bool BLINK_COMMON_EXPORT
+operator==(const DirectFromSellerSignalsSubresource& a,
+           const DirectFromSellerSignalsSubresource& b);
+
 // The set of directFromSellerSignals for a particular auction or component
 // auction.
 struct BLINK_COMMON_EXPORT DirectFromSellerSignals {

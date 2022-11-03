@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/strings/string_piece_forward.h"
+#include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -73,6 +74,10 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       delete;
   ~AuctionURLLoaderFactoryProxy() override;
 
+  SubresourceUrlAuthorizations& subresource_url_authorizations() {
+    return subresource_url_authorizations_;
+  }
+
   // mojom::URLLoaderFactory implementation.
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
@@ -97,6 +102,9 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
 
   const GetUrlLoaderFactoryCallback get_frame_url_loader_factory_;
   const GetUrlLoaderFactoryCallback get_trusted_url_loader_factory_;
+
+  // Manages the bundle subresource URLs that may be accessed by the worklet.
+  SubresourceUrlAuthorizations subresource_url_authorizations_;
 
   const url::Origin top_frame_origin_;
   const url::Origin frame_origin_;

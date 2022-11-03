@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 
+#include <tuple>
+
 namespace blink {
 
 DirectFromSellerSignalsSubresource::DirectFromSellerSignalsSubresource() =
@@ -21,6 +23,11 @@ DirectFromSellerSignalsSubresource::operator=(
 DirectFromSellerSignalsSubresource&
 DirectFromSellerSignalsSubresource::operator=(
     DirectFromSellerSignalsSubresource&&) = default;
+
+bool operator==(const DirectFromSellerSignalsSubresource& a,
+                const DirectFromSellerSignalsSubresource& b) {
+  return std::tie(a.bundle_url, a.token) == std::tie(b.bundle_url, b.token);
+}
 
 DirectFromSellerSignals::DirectFromSellerSignals() = default;
 DirectFromSellerSignals::DirectFromSellerSignals(
