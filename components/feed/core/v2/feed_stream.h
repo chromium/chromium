@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -367,6 +368,9 @@ class FeedStream : public FeedApi,
     std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks;
     std::vector<base::OnceCallback<void(bool)>> refresh_complete_callbacks;
     bool is_activity_logging_enabled = false;
+    // Cache the list of IDs of contents that have been viewed by the user.
+    // This allows fast lookup. It is only used in for-you feed.
+    base::flat_set<uint32_t> viewed_content_hashes;
   };
 
   void InitializeComplete(WaitForStoreInitializeTask::Result result);
@@ -419,7 +423,8 @@ class FeedStream : public FeedApi,
   // Internal method for scheduling the feed-close refresh.
   void ScheduleFeedCloseRefresh(const StreamType& type);
 
-  void CheckDuplicatedContents();
+  void CheckDuplicatedContentsOnRefresh();
+  void AddViewedContentHashes(const feedstore::Content& content);
 
   // Unowned.
 

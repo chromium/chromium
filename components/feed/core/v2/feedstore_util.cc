@@ -254,4 +254,16 @@ void AddMostRecentContentHashes(Metadata& metadata,
       new_content_hashes.begin(), new_content_hashes.end());
 }
 
+base::flat_set<uint32_t> GetViewedContentHashes(const Metadata& metadata,
+                                                const StreamType& stream_type) {
+  const Metadata::StreamMetadata* stream_metadata =
+      FindMetadataForStream(metadata, stream_type);
+  if (stream_metadata) {
+    return base::flat_set<uint32_t>(
+        stream_metadata->viewed_content_hashes().begin(),
+        stream_metadata->viewed_content_hashes().end());
+  }
+  return {};
+}
+
 }  // namespace feedstore

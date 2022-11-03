@@ -734,6 +734,7 @@ void TestWireResponseTranslator::InjectResponse(
   RefreshResponseData data;
   data.model_update_request = std::move(response);
   data.session_id = std::move(session_id);
+  data.last_fetch_timestamp = base::Time::Now();
   InjectResponse(std::move(data));
 }
 void TestWireResponseTranslator::InjectResponse(

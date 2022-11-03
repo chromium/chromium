@@ -114,6 +114,10 @@ message Metadata {
     // the server. This is returned from the server and based on server clock.
     int64 last_server_response_time_millis = 7;
 
+    // List of IDs of contents that have been viewed by the user. A content is
+    // viewed if 2/3rds of it is in the viewport.
+    repeated uint32 viewed_content_hashes = 8;
+
     reserved 2;
   }
 

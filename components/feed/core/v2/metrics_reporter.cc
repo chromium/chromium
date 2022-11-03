@@ -972,6 +972,38 @@ void MetricsReporter::OnBackgroundRefresh(const StreamType& stream_type,
       final_status);
 }
 
+void MetricsReporter::OnManualRefresh(const StreamType& stream_type,
+                                      const feedstore::Metadata& metadata,
+                                      const ContentHashSet& content_hashes) {
+  if (!stream_type.IsForYou())
+    return;
+  const feedstore::Metadata::StreamMetadata* stream_metadata =
+      FindMetadataForStream(metadata, stream_type);
+  if (stream_metadata == nullptr)
+    return;
+
+  base::UmaHistogramCustomTimes(
+      "ContentSuggestions.Feed.ManualRefreshInterval",
+      base::Time::Now() - feedstore::FromTimestampMillis(
+                              stream_metadata->last_fetch_time_millis()),
+      base::Minutes(1), base::Days(1), /*buckets=*/50);
+
+  int viewed_count = 0;
+  int viewed_percentage = 0;
+  if (content_hashes.original_hashes().size() > 0) {
+    viewed_count = stream_metadata->viewed_content_hashes_size();
+    viewed_percentage =
+        100 * viewed_count / content_hashes.original_hashes().size();
+  }
+
+  base::UmaHistogramCounts100(
+      "ContentSuggestions.Feed.ViewedCardCountAtManualRefresh", viewed_count);
+
+  base::UmaHistogramCounts100(
+      "ContentSuggestions.Feed.ViewedCardPercentageAtManualRefresh",
+      viewed_percentage);
+}
+
 void MetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
                                       SurfaceId surface_id) {
   ReportGetMoreIfNeeded(surface_id, false);

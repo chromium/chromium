@@ -1228,6 +1228,35 @@ TEST_F(FeedApiTest, ReportSliceViewedIdentifiesCorrectIndex) {
   EXPECT_EQ(1, metrics_reporter_->slice_viewed_index);
 }
 
+TEST_F(FeedApiTest, ReportSliceViewed_AddViewedContentHashes) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+  const feedstore::Metadata::StreamMetadata* stream_metadata =
+      feedstore::FindMetadataForStream(stream_->GetMetadata(),
+                                       StreamType(StreamKind::kForYou));
+  EXPECT_EQ(1, stream_metadata->viewed_content_hashes().size());
+
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(0).slice().slice_id());
+  stream_metadata = feedstore::FindMetadataForStream(
+      stream_->GetMetadata(), StreamType(StreamKind::kForYou));
+  EXPECT_EQ(2, stream_metadata->viewed_content_hashes().size());
+
+  // Reporting the slice viewed before will not be counted again.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+  stream_metadata = feedstore::FindMetadataForStream(
+      stream_->GetMetadata(), StreamType(StreamKind::kForYou));
+  EXPECT_EQ(2, stream_metadata->viewed_content_hashes().size());
+}
+
 TEST_F(FeedApiTest, ReportOpenInNewTabAction) {
   store_->OverwriteStream(StreamType(StreamKind::kForYou),
                           MakeTypicalInitialModelState(), base::DoNothing());
@@ -3015,6 +3044,123 @@ TEST_F(FeedApiTest, ManualRefreshFailesWhenLoadingInProgress) {
   EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
   // The initial loading should finish.
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
+}
+
+TEST_F(FeedApiTest, ManualRefresh_MetricsOnNoCardViewed) {
+  base::HistogramTester histograms;
+
+  // Load the initial page.
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Manual refresh.
+  task_environment_.FastForwardBy(base::Seconds(100));
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->ManualRefresh(surface.GetStreamType(), base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  histograms.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.ManualRefreshInterval", base::Seconds(100), 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ViewedCardCountAtManualRefresh", 0, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ViewedCardPercentageAtManualRefresh", 0, 1);
+}
+
+TEST_F(FeedApiTest, ManualRefresh_MetricsOnCardsViewed) {
+  base::HistogramTester histograms;
+
+  // Load the initial page.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // View a card.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+  WaitForIdleTaskQueue();
+
+  // Manual refresh.
+  task_environment_.FastForwardBy(base::Seconds(100));
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->ManualRefresh(surface.GetStreamType(), base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  histograms.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.ManualRefreshInterval", base::Seconds(100), 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ViewedCardCountAtManualRefresh", 1, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ViewedCardPercentageAtManualRefresh", 50, 1);
+
+  // View a card.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.update->updated_slices(0).slice().slice_id());
+  WaitForIdleTaskQueue();
+
+  // Manual refresh.
+  task_environment_.FastForwardBy(base::Seconds(200));
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->ManualRefresh(surface.GetStreamType(), base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.ManualRefreshInterval",
+                               base::Seconds(100).InMilliseconds(), 1);
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.ManualRefreshInterval",
+                               base::Seconds(200).InMilliseconds(), 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ViewedCardCountAtManualRefresh", 1, 2);
+  histograms.ExpectBucketCount(
+      "ContentSuggestions.Feed.ViewedCardPercentageAtManualRefresh", 50, 1);
+  histograms.ExpectBucketCount(
+      "ContentSuggestions.Feed.ViewedCardPercentageAtManualRefresh", 33, 1);
+}
+
+TEST_F(FeedApiTest, ManualRefresh_MetricsOnCardsViewedAfterRestart) {
+  base::HistogramTester histograms;
+
+  // Load the initial page.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // View a card.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+  WaitForIdleTaskQueue();
+
+  histograms.ExpectUniqueSample("NewTabPage.ContentSuggestions.Shown", 1, 1);
+
+  // Simulate a Chrome restart.
+  CreateStream();
+
+  TestForYouSurface surface2(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // View the same card.
+  stream_->ReportSliceViewed(
+      surface2.GetSurfaceId(), surface2.GetStreamType(),
+      surface2.initial_state->updated_slices(1).slice().slice_id());
+  WaitForIdleTaskQueue();
+
+  histograms.ExpectUniqueSample("NewTabPage.ContentSuggestions.Shown", 1, 2);
+
+  // Manual refresh.
+  task_environment_.FastForwardBy(base::Seconds(100));
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  stream_->ManualRefresh(surface.GetStreamType(), base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  histograms.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.ManualRefreshInterval", base::Seconds(100), 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ViewedCardCountAtManualRefresh", 1, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ViewedCardPercentageAtManualRefresh", 50, 1);
 }
 
 TEST_F(FeedApiTest, StartSurface) {

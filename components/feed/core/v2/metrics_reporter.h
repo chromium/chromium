@@ -125,6 +125,9 @@ class MetricsReporter {
                             std::unique_ptr<LoadLatencyTimes> load_latencies);
   virtual void OnBackgroundRefresh(const StreamType& stream_type,
                                    LoadStreamStatus final_status);
+  void OnManualRefresh(const StreamType& stream_type,
+                       const feedstore::Metadata& metadata,
+                       const ContentHashSet& content_hashes);
   virtual void OnLoadMoreBegin(const StreamType& stream_type,
                                SurfaceId surface_id);
   virtual void OnLoadMore(const StreamType& stream_type,

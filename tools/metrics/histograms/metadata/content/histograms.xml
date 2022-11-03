@@ -1127,6 +1127,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.ManualRefreshInterval" units="ms"
+    expires_after="2023-03-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The interval between current pull-to-refresh time and last time when the
+    feed is refreshed (background refresh or pull-to-refresh), up to 1 day. This
+    is reported when the pull-to-refresh occurs.
+  </summary>
+</histogram>
+
 <histogram
     name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB{NetworkRequestType}"
     units="KB" expires_after="2023-03-01">
@@ -1690,6 +1701,31 @@ chromium-metrics-reviews@google.com.
     The state of some account settings that affect Feed users. Reported once at
     startup (to a single bucket), for all users. Note that this histogram uses
     data cached from the last time the Feed was fetched. Android only.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.ViewedCardCountAtManualRefresh"
+    units="count" expires_after="2023-03-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Tracks the number of cards viewed at the time of pull-to-refresh. This is
+    reported when the pull-to-refresh occurs. This is computed as the number of
+    cards that are viewed (2/3rds of card is in the viewport) since last time
+    when the feed is refreshed (background refresh or pull-to-refresh).
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.ViewedCardPercentageAtManualRefresh"
+    units="%" expires_after="2023-03-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Tracks the percentage of cards viewed at the time of pull-to-refresh. This
+    is reported when the pull-to-refresh occurs. This is computed as the
+    percentage of cards that are viewed (2/3rds of card is in the viewport)
+    since last time when the feed is refreshed (background refresh or
+    pull-to-refresh).
   </summary>
 </histogram>
 

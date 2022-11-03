@@ -7,6 +7,7 @@
 
 #include <deque>
 #include <string>
+#include "base/containers/flat_set.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -93,6 +94,10 @@ int32_t ContentHashFromPrefetchMetadata(
 // at the beginning of the list.
 void AddMostRecentContentHashes(Metadata& metadata,
                                 std::deque<uint32_t> new_content_hashes);
+
+base::flat_set<uint32_t> GetViewedContentHashes(
+    const Metadata& metadata,
+    const feed::StreamType& stream_type);
 
 }  // namespace feedstore
 
