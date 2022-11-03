@@ -86,6 +86,9 @@ class ProfileManagementStepTestView : public ProfilePickerView {
       Profile* picker_profile,
       ClearHostClosure clear_host_callback) override;
 
+  void OnNativeWidgetSizeChanged(const gfx::Size& new_size) override;
+  gfx::Size CalculatePreferredSize() const override;
+
  private:
   const ProfileManagementFlowController::Step step_;
   StepControllerFactory step_controller_factory_;

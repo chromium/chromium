@@ -86,6 +86,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
+  // Gets called when the native wiget changes size.
+  // TODO(crbug.com/1380808): Remove once the cause of the bug is found.
+  virtual void OnNativeWidgetSizeChanged(const gfx::Size& new_size) {}
+
  protected:
   // To display the Profile picker, use ProfilePicker::Show().
   explicit ProfilePickerView(ProfilePicker::Params&& params);
@@ -99,6 +103,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   virtual std::unique_ptr<ProfileManagementFlowController> CreateFlowController(
       Profile* picker_profile,
       ClearHostClosure clear_host_callback);
+
+  // TODO(crbug.com/1380808): Make private once the cause of the bug is found.
+  gfx::Size CalculatePreferredSize() const override;
 
  private:
   friend class ProfilePicker;
@@ -170,7 +177,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   std::u16string GetAccessibleWindowTitle() const override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
