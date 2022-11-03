@@ -12,6 +12,7 @@ import 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 import 'chrome://resources/ash/common/network/network_proxy.js';
 import 'chrome://resources/ash/common/network/network_shared.css.js';
 import 'chrome://resources/ash/common/network/network_siminfo.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
@@ -112,6 +113,9 @@ Polymer({
 
     /** @private {!GlobalPolicy|undefined} */
     globalPolicy_: Object,
+
+    /** @private */
+    apnExpanded_: Boolean,
 
     /**
      * Return true if apnRevamp feature flag is enabled.
@@ -449,6 +453,35 @@ Polymer({
   shouldShowApnList_(managedProperties) {
     return !this.isApnRevampEnabled_ &&
         managedProperties.type == NetworkType.kCellular;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowApnSection_(managedProperties) {
+    return this.isApnRevampEnabled_ &&
+        managedProperties.type === NetworkType.kCellular;
+  },
+
+  /**
+   * @param {!ManagedProperties|undefined}
+   *     managedProperties
+   * @param {boolean} apnExpanded
+   * @return {string}
+   * @private
+   */
+  getApnRowSublabel_(managedProperties, apnExpanded) {
+    if (managedProperties.type !== NetworkType.kCellular ||
+        !managedProperties.typeProperties.cellular.connectedApn) {
+      return '';
+    }
+    // Don't show the connected APN if the section has been expanded.
+    if (apnExpanded) {
+      return '';
+    }
+    return managedProperties.typeProperties.cellular.connectedApn
+        .accessPointName;
   },
 
   /**

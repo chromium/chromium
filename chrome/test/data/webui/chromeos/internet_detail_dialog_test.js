@@ -76,7 +76,7 @@ suite('internet-detail-dialog', () => {
     await flushAsync();
   }
 
-  async function setupCellularNetwork(isPrimary, isInhibited) {
+  async function setupCellularNetwork(isPrimary, isInhibited, connectedApn) {
     await mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 
     const cellularNetwork =
@@ -88,6 +88,7 @@ suite('internet-detail-dialog', () => {
         ConnectionStateType.kNotConnected;
     // Required for networkChooseMobile to be rendered.
     cellularNetwork.typeProperties.cellular.supportNetworkScan = true;
+    cellularNetwork.typeProperties.cellular.connectedApn = connectedApn;
 
     mojoApi_.setManagedPropertiesForTest(cellularNetwork);
     mojoApi_.setDeviceStateForTest({
@@ -319,13 +320,44 @@ suite('internet-detail-dialog', () => {
       await init();
       const legacyApnElement =
           internetDetailDialog.shadowRoot.querySelector('network-apnlist');
+      const apnSection =
+          internetDetailDialog.shadowRoot.querySelector('cr-expand-button');
 
-      // TODO(b/162365553): Check visibility of new APN element when
-      // implemented.
       if (isApnRevampEnabled) {
         assertFalse(!!legacyApnElement);
+        assertTrue(!!apnSection);
+        assertEquals(
+            internetDetailDialog.i18n('internetApnPageTitle'),
+            internetDetailDialog.shadowRoot.querySelector('#apnRowTitle')
+                .textContent);
+        const getApnSectionSublabel = () =>
+            internetDetailDialog.shadowRoot.querySelector('#apnRowSublabel')
+                .textContent.trim();
+        assertFalse(!!getApnSectionSublabel());
+
+        // Add a connected APN.
+        const accessPointName = 'access point name';
+        await setupCellularNetwork(
+            /* isPrimary= */ true, /* isInhibited= */ false,
+            {accessPointName: accessPointName});
+
+        // Force a refresh.
+        internetDetailDialog.onDeviceStateListChanged();
+        await flushAsync();
+        assertEquals(accessPointName, getApnSectionSublabel());
+
+        // Expand the section, the sublabel should no longer show.
+        apnSection.click();
+        await flushAsync();
+        assertFalse(!!getApnSectionSublabel());
+
+        // Collapse the section, the sublabel should show.
+        apnSection.click();
+        await flushAsync();
+        assertEquals(accessPointName, getApnSectionSublabel());
       } else {
         assertTrue(!!legacyApnElement);
+        assertFalse(!!apnSection);
       }
     });
   });

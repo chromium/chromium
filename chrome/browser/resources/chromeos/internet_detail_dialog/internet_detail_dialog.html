@@ -32,6 +32,10 @@
     margin-inline-end: 4px;
     margin-inline-start: 0;
   }
+
+  #apnRowSublabel {
+    color: var(--cros-text-color-positive);
+  }
 </style>
 
 <!-- Title section: Icon + name + connection state. -->
@@ -104,6 +108,18 @@
           disabled="[[disabled_]]">
       </network-apnlist>
     </div>
+  </template>
+  <template is="dom-if"
+      if="[[shouldShowApnSection_(managedProperties_,
+          isApnRevampEnabled_)]]">
+    <cr-expand-button class="settings-box cr-row"
+        expanded="{{apnExpanded_}}">
+      <div id="apnRowTitle">$i18n{internetApnPageTitle}</div>
+      <div id="apnRowSublabel" class="cr-secondary-text">
+        [[getApnRowSublabel_(managedProperties_, apnExpanded_)]]
+      </div>
+    </cr-expand-button>
+    <!-- TODO(b/162365553): Add <apn-list> element -->
   </template>
 
   <!-- Proxy -->
