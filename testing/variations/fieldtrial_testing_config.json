@@ -8958,7 +8958,7 @@
                         "BiddingAndScoringDebugReportingAPI",
                         "BrowsingTopics",
                         "FencedFrames",
-                        "FencedFramesInnerConfig",
+                        "FencedFramesAPIChanges",
                         "InterestGroupStorage",
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
