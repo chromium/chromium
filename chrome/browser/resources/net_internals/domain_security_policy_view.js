@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.js';
 
@@ -9,9 +10,6 @@ import './strings.js';
 import {BrowserBridge} from './browser_bridge.js';
 import {addNode, addNodeWithText, addTextNode} from './util.js';
 import {DivView} from './view.js';
-
-/** @type {?DomainSecurityPolicyView} */
-let instance = null;
 
 /**
  * This UI allows a user to query and update the browser's list of per-domain
@@ -283,10 +281,6 @@ export class DomainSecurityPolicyView extends DivView {
       observer.onExpectCTTestReportResult(result);
     }
   }
-
-  static getInstance() {
-    return instance || (instance = new DomainSecurityPolicyView());
-  }
 }
 
 function modeToString(m) {
@@ -361,3 +355,5 @@ DomainSecurityPolicyView.TEST_REPORT_EXPECT_CT_SUBMIT_ID =
     'expect-ct-view-test-report-submit';
 DomainSecurityPolicyView.TEST_REPORT_EXPECT_CT_OUTPUT_DIV_ID =
     'expect-ct-view-test-report-output';
+
+addSingletonGetter(DomainSecurityPolicyView);

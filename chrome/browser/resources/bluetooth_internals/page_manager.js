@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 
 import {Page} from './page.js';
@@ -287,15 +288,7 @@ export class PageManager {
       this.observers_[i].updateHistory(newPath, replace);
     }
   }
-
-  /** @return {!PageManager} */
-  static getInstance() {
-    return instance || (instance = new PageManager());
-  }
 }
-
-/** @type {?PageManager} */
-let instance = null;
 
 /**
  * An observer of PageManager.
@@ -314,3 +307,5 @@ export class PageManagerObserver {
    */
   updateHistory(path, replace) {}
 }
+
+addSingletonGetter(PageManager);

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @type {?NotificationsInternalsBrowserProxy} */
-let instance = null;
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 
 /** @interface */
 export class NotificationsInternalsBrowserProxy {
@@ -24,10 +23,6 @@ export class NotificationsInternalsBrowserProxyImpl {
   scheduleNotification(url, title, message) {
     chrome.send('scheduleNotification', [url, title, message]);
   }
-
-  /** @return {!NotificationsInternalsBrowserProxy} */
-  static getInstance() {
-    return instance ||
-        (instance = new NotificationsInternalsBrowserProxyImpl());
-  }
 }
+
+addSingletonGetter(NotificationsInternalsBrowserProxyImpl);

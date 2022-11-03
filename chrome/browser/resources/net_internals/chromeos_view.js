@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DivView} from './view.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 
-/** @type {?CrosView} */
-let instance = null;
+import {DivView} from './view.js';
 
 /**
  * This view displays information on ChromeOS specific features.
@@ -15,10 +14,6 @@ export class CrosView extends DivView {
     // Call superclass's constructor.
     super(CrosView.MAIN_BOX_ID);
   }
-
-  static getInstance() {
-    return instance || (instance = new CrosView());
-  }
 }
 
 CrosView.TAB_ID = 'tab-handle-chromeos';
@@ -26,3 +21,5 @@ CrosView.TAB_NAME = 'ChromeOS';
 CrosView.TAB_HASH = '#chromeos';
 
 CrosView.MAIN_BOX_ID = 'chromeos-view-tab-content';
+
+addSingletonGetter(CrosView);

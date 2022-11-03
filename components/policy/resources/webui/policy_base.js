@@ -12,6 +12,7 @@ import './status_box.js';
 import './policy_table.js';
 
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.js';
@@ -256,12 +257,7 @@ export class Page {
     $('upload-report').style.display = enabled ? 'inline-block' : 'none';
   }
   // </if>
-
-  static getInstance() {
-    return instance || (instance = new Page());
-  }
 }
 
 // Make Page a singleton.
-/** @type {?Page} */
-let instance = null;
+addSingletonGetter(Page);

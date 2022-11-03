@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {$} from 'chrome://resources/js/util.js';
 
 import {addNode, addNodeWithText, setNodeDisplay, setNodePosition} from './util.js';
 import {View} from './view.js';
 
 const TAB_LIST_ID = 'tab-list';
-
-/** @type {?TabSwitcherView} */
-let instance = null;
 
 /**
  * Controller and View for switching between tabs.
@@ -155,9 +153,5 @@ export class TabSwitcherView extends View {
     if (this.onTabSwitched_) {
       this.onTabSwitched_(oldTabId, tabId);
     }
-  }
-
-  static getInstance() {
-    return instance || (instance = new TabSwitcherView());
   }
 }

@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-
-/** @type {?BrowserBridge} */
-let instance = null;
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 
 /**
  * This class provides a "bridge" for communicating between the javascript and
@@ -68,8 +66,6 @@ export class BrowserBridge {
   setNetworkDebugMode(subsystem) {
     chrome.send('setNetworkDebugMode', [subsystem]);
   }
-
-  static getInstance() {
-    return instance || (instance = new BrowserBridge());
-  }
 }
+
+addSingletonGetter(BrowserBridge);
