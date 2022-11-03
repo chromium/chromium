@@ -520,13 +520,11 @@ void PasswordAutofillManager::DidAcceptSuggestion(
     } else {
       authenticator_ = std::move(authenticator);
 #if BUILDFLAG(IS_ANDROID)
-      // `this` cancels the authentication when it is destructed, which
-      // invalidates the callback, so using base::Unretained here is safe.
       authenticator_->Authenticate(
           device_reauth::BiometricAuthRequester::kAutofillSuggestion,
           base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
-                         base::Unretained(this), suggestion.main_text.value,
-                         suggestion.frontend_id),
+                         weak_ptr_factory_.GetWeakPtr(),
+                         suggestion.main_text.value, suggestion.frontend_id),
           /*use_last_valid_auth=*/true);
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       const std::u16string origin =
@@ -535,11 +533,9 @@ void PasswordAutofillManager::DidAcceptSuggestion(
 
       auto on_reath_complete =
           base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
-                         base::Unretained(this), suggestion.main_text.value,
-                         suggestion.frontend_id);
+                         weak_ptr_factory_.GetWeakPtr(),
+                         suggestion.main_text.value, suggestion.frontend_id);
 
-      // `this` cancels the authentication when it is destructed, which
-      // invalidates the callback, so using base::Unretained here is safe.
       authenticator_->AuthenticateWithMessage(
           device_reauth::BiometricAuthRequester::kAutofillSuggestion,
           l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
