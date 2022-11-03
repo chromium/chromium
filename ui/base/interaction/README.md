@@ -1,4 +1,7 @@
-# Elements and Interaction Sequences
+# Chromium Interaction Library
+
+Note: for **Interactive Testing**, see the
+[Interactive Test Documentation](/chrome/test/interaction/README.md)
 
 This folder contains primitives for locating named elements in different
 application windows as well as following specific sequences of user interactions

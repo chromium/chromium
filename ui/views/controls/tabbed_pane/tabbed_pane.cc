@@ -533,7 +533,7 @@ size_t TabbedPane::GetSelectedTabIndex() const {
   return tab_strip_->GetSelectedTabIndex();
 }
 
-size_t TabbedPane::GetTabCount() {
+size_t TabbedPane::GetTabCount() const {
   DCHECK_EQ(tab_strip_->children().size(), contents_->children().size());
   return contents_->children().size();
 }

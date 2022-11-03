@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/threading/thread_task_runner_handle.h"
-#include "chrome/test/interaction/interaction_test_util_mouse.h"
+#include "ui/views/interaction/interaction_test_util_mouse.h"
 
 #include "base/test/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -30,11 +31,12 @@ class InteractionTestUtilMouseUiTest : public InProcessBrowserTest {
   InteractionTestUtilMouseUiTest() = default;
   ~InteractionTestUtilMouseUiTest() override = default;
 
-  using Mouse = InteractionTestUtilMouse;
+  using Mouse = views::test::InteractionTestUtilMouse;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    mouse_ = std::make_unique<Mouse>(browser());
+    mouse_ = std::make_unique<Mouse>(
+        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget());
   }
 
   void TearDownOnMainThread() override {

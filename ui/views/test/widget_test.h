@@ -99,11 +99,11 @@ class WidgetTest : public ViewsTestBase {
   Widget* CreateTopLevelNativeWidget();
   Widget* CreateChildNativeWidgetWithParent(Widget* parent);
 
-  View* GetMousePressedHandler(internal::RootView* root_view);
+  View* GetMousePressedHandler(views::internal::RootView* root_view);
 
-  View* GetMouseMoveHandler(internal::RootView* root_view);
+  View* GetMouseMoveHandler(views::internal::RootView* root_view);
 
-  View* GetGestureHandler(internal::RootView* root_view);
+  View* GetGestureHandler(views::internal::RootView* root_view);
 
   // Simulate an activation of the native window held by |widget|, as if it was
   // clicked by the user. This is a synchronous method for use in

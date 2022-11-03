@@ -2,23 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/interaction/interaction_test_util_mouse.h"
+#include "ui/views/interaction/interaction_test_util_mouse.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
-
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#endif  // defined(USE_AURA)
+
+namespace views::test {
+
+namespace {
+base::raw_ptr<InteractionTestUtilMouse> g_current_mouse_util = nullptr;
+}
+
+#if defined(USE_AURA)
 
 // Ends any drag currently in progress or that starts during this object's
 // lifetime.
@@ -95,15 +102,8 @@ class InteractionTestUtilMouse::NativeWindowRef : public aura::WindowObserver {
 
 #endif  // defined(USE_AURA)
 
-namespace {
-base::raw_ptr<InteractionTestUtilMouse> g_current_mouse_util = nullptr;
-}
-
 InteractionTestUtilMouse::InteractionTestUtilMouse(views::Widget* widget)
     : InteractionTestUtilMouse(widget->GetNativeWindow()) {}
-
-InteractionTestUtilMouse::InteractionTestUtilMouse(Browser* browser)
-    : InteractionTestUtilMouse(browser->window()->GetNativeWindow()) {}
 
 InteractionTestUtilMouse::~InteractionTestUtilMouse() {
   CHECK(!pending_callback_ && pending_gestures_.empty())
@@ -312,3 +312,5 @@ void InteractionTestUtilMouse::AddGestures(MouseGestures& gestures,
   for (auto& gesture : to_add)
     gestures.emplace_back(std::move(gesture));
 }
+
+}  // namespace views::test

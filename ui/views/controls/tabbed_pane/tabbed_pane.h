@@ -63,7 +63,7 @@ class VIEWS_EXPORT TabbedPane : public View {
   size_t GetSelectedTabIndex() const;
 
   // Returns the number of tabs.
-  size_t GetTabCount();
+  size_t GetTabCount() const;
 
   // Adds a new tab at the end of this TabbedPane with the specified |title|.
   // |contents| is the view displayed when the tab is selected and is owned by

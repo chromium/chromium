@@ -1,0 +1,241 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/views/interaction/interactive_views_test.h"
+
+#include <memory>
+
+#include "base/test/mock_callback.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
+
+namespace views::test {
+
+namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContentsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kButtonsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kButton1Id);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabbedPaneId);
+constexpr char16_t kButton1Caption[] = u"Button 1";
+constexpr char16_t kButton2Caption[] = u"Button 2";
+constexpr char16_t kTab1Title[] = u"Tab 1";
+constexpr char16_t kTab2Title[] = u"Tab 2";
+constexpr char16_t kTab3Title[] = u"Tab 3";
+constexpr char16_t kTab1Contents[] = u"Tab 1 Contents";
+constexpr char16_t kTab2Contents[] = u"Tab 2 Contents";
+constexpr char16_t kTab3Contents[] = u"Tab 3 Contents";
+constexpr char kViewName[] = "Named View";
+}  // namespace
+
+class InteractiveViewsTestTest : public InteractiveViewsTest {
+ public:
+  InteractiveViewsTestTest() = default;
+  ~InteractiveViewsTestTest() override = default;
+
+  void SetUp() override {
+    InteractiveViewsTest::SetUp();
+    widget_ = CreateTestWidget();
+    contents_ = widget_->SetContentsView(std::make_unique<FlexLayoutView>());
+    contents_->SetProperty(kElementIdentifierKey, kContentsId);
+    contents_->SetOrientation(LayoutOrientation::kVertical);
+    tabs_ = contents_->AddChildView(std::make_unique<TabbedPane>());
+    tabs_->SetProperty(kElementIdentifierKey, kTabbedPaneId);
+    tabs_->AddTab(kTab1Title, std::make_unique<Label>(kTab1Contents));
+    tabs_->AddTab(kTab2Title, std::make_unique<Label>(kTab2Contents));
+    tabs_->AddTab(kTab3Title, std::make_unique<Label>(kTab3Contents));
+    buttons_ = contents_->AddChildView(std::make_unique<FlexLayoutView>());
+    buttons_->SetOrientation(LayoutOrientation::kHorizontal);
+    buttons_->SetProperty(kElementIdentifierKey, kButtonsId);
+    button1_ = buttons_->AddChildView(std::make_unique<LabelButton>(
+        button1_callback_.Get(), kButton1Caption));
+    button1_->SetProperty(kElementIdentifierKey, kButton1Id);
+    button2_ = buttons_->AddChildView(std::make_unique<LabelButton>(
+        button2_callback_.Get(), kButton2Caption));
+    WidgetVisibleWaiter waiter(widget_.get());
+    widget_->Show();
+    waiter.Wait();
+    widget_->LayoutRootViewIfNecessary();
+    SetContextWidget(widget_.get());
+  }
+
+  void TearDown() override {
+    SetContextWidget(nullptr);
+    widget_.reset();
+    contents_ = nullptr;
+    tabs_ = nullptr;
+    buttons_ = nullptr;
+    button1_ = nullptr;
+    button2_ = nullptr;
+    InteractiveViewsTest::TearDown();
+  }
+
+ protected:
+  using ButtonCallbackMock = testing::StrictMock<
+      base::MockCallback<Button::PressedCallback::Callback>>;
+
+  std::unique_ptr<Widget> widget_;
+  base::raw_ptr<FlexLayoutView> contents_;
+  base::raw_ptr<TabbedPane> tabs_;
+  base::raw_ptr<FlexLayoutView> buttons_;
+  base::raw_ptr<LabelButton> button1_;
+  base::raw_ptr<LabelButton> button2_;
+  ButtonCallbackMock button1_callback_;
+  ButtonCallbackMock button2_callback_;
+};
+
+TEST_F(InteractiveViewsTestTest, CheckView) {
+  RunTestSequence(
+      // Check version with no matcher and only boolean return value.
+      CheckView(kButton1Id, base::BindOnce([](LabelButton* button) {
+                  return button->GetVisible();
+                })),
+      // Check version with arbitrary return value and matcher.
+      CheckView(kTabbedPaneId, base::BindOnce([](TabbedPane* tabs) {
+                  return tabs->GetTabCount();
+                }),
+                testing::Gt(2U)));
+}
+
+TEST_F(InteractiveViewsTestTest, CheckViewFails) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequence(
+          // Check version with no matcher and only boolean return value.
+          CheckView(kButton1Id, base::BindOnce([](LabelButton* button) {
+                      return !button->GetVisible();
+                    }))));
+}
+
+TEST_F(InteractiveViewsTestTest, CheckViewProperty) {
+  RunTestSequence(
+      CheckViewProperty(kButton1Id, &LabelButton::GetText,
+                        // Implicit creation of an equality matcher.
+                        kButton1Caption),
+      CheckViewProperty(kTabbedPaneId, &TabbedPane::GetSelectedTabIndex,
+                        // Explicit creation of an inequality matcher.
+                        testing::Ne(1U)));
+}
+
+TEST_F(InteractiveViewsTestTest, CheckViewPropertyFails) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequence(CheckViewProperty(
+          kTabbedPaneId, &TabbedPane::GetSelectedTabIndex, testing::Eq(1U))));
+}
+
+TEST_F(InteractiveViewsTestTest, NameViewAbsoluteValue) {
+  RunTestSequence(
+      NameView(kViewName, button2_.get()),
+      WithElement(kViewName,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_EQ(button2_.get(), AsView<LabelButton>(el));
+                  })));
+}
+
+TEST_F(InteractiveViewsTestTest, NameViewAbsoluteDeferred) {
+  View* view = nullptr;
+  RunTestSequence(
+      Do(base::BindLambdaForTesting([&]() { view = button2_.get(); })),
+      NameView(kViewName, &view),
+      WithElement(kViewName,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_EQ(view, AsView(el));
+                  })));
+}
+
+TEST_F(InteractiveViewsTestTest, NameViewAbsoluteCallback) {
+  RunTestSequence(
+      NameView(kViewName, base::BindLambdaForTesting(
+                              [&]() -> View* { return button2_.get(); })),
+      WithElement(kViewName,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_EQ(button2_.get(), AsView<LabelButton>(el));
+                  })));
+}
+
+TEST_F(InteractiveViewsTestTest, NameChildViewByIndex) {
+  RunTestSequence(
+      NameChildView(kButtonsId, kViewName, 1U),
+      WithElement(kViewName,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    auto* const button = AsView<LabelButton>(el);
+                    EXPECT_EQ(button2_.get(), button);
+                    EXPECT_EQ(1U, button->parent()->GetIndexOf(button));
+                  })));
+}
+
+TEST_F(InteractiveViewsTestTest, NameChildViewByFilter) {
+  EXPECT_CALL_IN_SCOPE(
+      button2_callback_, Run,
+      RunTestSequence(
+          NameChildView(kButtonsId, kViewName,
+                        base::BindRepeating([](const View* view) {
+                          // TODO(dfried): fix const-correctness of Views
+                          // metadata.
+                          auto* const button =
+                              AsViewClass<LabelButton>(const_cast<View*>(view));
+                          return button && button->GetText() == kButton2Caption;
+                        })),
+          PressButton(kViewName, InputType::kKeyboard)));
+}
+
+TEST_F(InteractiveViewsTestTest, NameDescendantView) {
+  EXPECT_CALL_IN_SCOPE(
+      button1_callback_, Run,
+      RunTestSequence(NameDescendantView(
+                          kContentsId, kViewName,
+                          base::BindRepeating([&](const View* view) {
+                            return view->GetProperty(kElementIdentifierKey) ==
+                                   kButton1Id;
+                          })),
+                      PressButton(kViewName, InputType::kMouse)));
+}
+
+TEST_F(InteractiveViewsTestTest, NameViewRelative) {
+  RunTestSequence(
+      SelectTab(kTabbedPaneId, 1U, InputType::kTouch),
+      NameViewRelative(kTabbedPaneId, kViewName,
+                       base::BindRepeating([&](TabbedPane* tabs) {
+                         return tabs->GetTabAt(1U)->contents();
+                       })),
+      WithElement(kViewName,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_EQ(kTab2Contents, AsView<Label>(el)->GetText());
+                  })));
+}
+
+TEST_F(InteractiveViewsTestTest, NameChildViewFails) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequence(
+          NameChildView(
+              kButtonsId, kViewName, base::BindRepeating([](const View* view) {
+                // TODO(dfried): fix const-correctness of Views
+                // metadata.
+                auto* const button =
+                    AsViewClass<LabelButton>(const_cast<View*>(view));
+                return button && button->GetText() ==
+                                     u"This is not a valid button caption.";
+              })),
+          PressButton(kViewName, InputType::kKeyboard)));
+}
+
+}  // namespace views::test

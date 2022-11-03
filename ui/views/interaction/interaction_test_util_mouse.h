@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_
-#define CHROME_TEST_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_
+#ifndef UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_
+#define UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_
 
 #include <list>
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
@@ -20,11 +21,11 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 
-class Browser;
-
 namespace views {
+
 class Widget;
-}
+
+namespace test {
 
 // Class which provides useful primitives for controlling the mouse and then
 // cleaning up mouse state (even if a test fails). As this object does control
@@ -36,8 +37,7 @@ class InteractionTestUtilMouse {
   // Construct for a particular window or browser. This is required because the
   // util object may need access to a drag controller, which is most easily
   // accessed via the window.
-  explicit InteractionTestUtilMouse(views::Widget* widget);
-  explicit InteractionTestUtilMouse(Browser* browser);
+  explicit InteractionTestUtilMouse(Widget* widget);
 
   ~InteractionTestUtilMouse();
   InteractionTestUtilMouse(const InteractionTestUtilMouse&) = delete;
@@ -132,4 +132,7 @@ void InteractionTestUtilMouse::PerformGestures(T result_callback,
       base::RectifyCallback<GestureCallback>(std::move(result_callback)));
 }
 
-#endif  // CHROME_TEST_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_
+}  // namespace test
+}  // namespace views
+
+#endif  // UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_

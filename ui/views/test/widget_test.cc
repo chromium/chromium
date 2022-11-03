@@ -126,15 +126,15 @@ Widget* WidgetTest::CreateChildNativeWidgetWithParent(Widget* parent) {
   return child;
 }
 
-View* WidgetTest::GetMousePressedHandler(internal::RootView* root_view) {
+View* WidgetTest::GetMousePressedHandler(views::internal::RootView* root_view) {
   return root_view->mouse_pressed_handler_;
 }
 
-View* WidgetTest::GetMouseMoveHandler(internal::RootView* root_view) {
+View* WidgetTest::GetMouseMoveHandler(views::internal::RootView* root_view) {
   return root_view->mouse_move_handler_;
 }
 
-View* WidgetTest::GetGestureHandler(internal::RootView* root_view) {
+View* WidgetTest::GetGestureHandler(views::internal::RootView* root_view) {
   return root_view->gesture_handler_;
 }
 
