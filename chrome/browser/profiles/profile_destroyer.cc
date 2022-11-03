@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 
 #include <memory>
+#include <sstream>
 #include <utility>
 
 #include "base/bind.h"
@@ -205,7 +206,9 @@ void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* profile) {
         auto* proto = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                           ->set_chrome_profile_destroyer();
         proto->set_profile_ptr(reinterpret_cast<uint64_t>(profile));
-        proto->set_otr_profile_id(profile->GetOTRProfileID().ToString());
+        std::stringstream otr_id;
+        otr_id << profile->GetOTRProfileID();
+        proto->set_otr_profile_id(otr_id.str());
       });
 
   DCHECK(profile->GetOriginalProfile());

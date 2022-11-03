@@ -149,7 +149,6 @@ class Profile : public content::BrowserContext {
 #endif
 
    private:
-    friend class ProfileDestroyer;
     friend std::ostream& operator<<(std::ostream& out,
                                     const OTRProfileID& profile_id);
 
@@ -507,9 +506,6 @@ class Profile : public content::BrowserContext {
   virtual bool IsSignedIn() = 0;
 
  private:
-  friend class ProfileDestroyer;
-  friend class OTRProfileDestroyer;
-
   // Created on the UI thread, and returned by GetResourceContext(), but
   // otherwise lives on and is destroyed on the IO thread.
   //
