@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -142,7 +141,6 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1381197")
     public void testExpectedChipTextMaxWidthPx() {
         ContextMenuChipController chipController =
                 new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
@@ -153,7 +151,6 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1381197")
     public void testExpectedChipTextMaxWidthPx_EndButtonHidden() {
         ContextMenuChipController chipController =
                 new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
