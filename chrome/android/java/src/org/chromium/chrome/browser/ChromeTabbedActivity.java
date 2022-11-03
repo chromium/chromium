@@ -2262,7 +2262,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public boolean handleBackPressed() {
-        if (!mUIWithNativeInitialized) return false;
+        if (!mUIWithNativeInitialized) {
+            RecordUserAction.record("SystemBackBeforeUINativeInitialized");
+            return false;
+        }
 
         // This only intercepts back press 1. on T+ 2. back press refactor is disabled
         // 3. predictive back gesture is opted in.

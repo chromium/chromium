@@ -32567,6 +32567,13 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="SystemBackBeforeUINativeInitialized">
+  <owner>lazzzis@google.com</owner>
+  <description>
+    The user triggered system back before UI with Native is initialized.
+  </description>
+</action>
+
 <action name="SystemBackForNavigation">
   <obsolete>
     Deprecated as of 02/2016. Now recorded in the histogram
