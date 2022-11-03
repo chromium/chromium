@@ -3214,7 +3214,7 @@
   {
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 115
   },
   {
     "name": "enable-user-cloud-signin-restriction-policy",
