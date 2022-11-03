@@ -10,8 +10,8 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_window_builder.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
@@ -31,6 +31,8 @@
 
 namespace ash {
 
+using base::test::RepeatingTestFuture;
+
 namespace {
 
 const char kAppPackageName[] = "com.app";
@@ -49,50 +51,31 @@ class FakeController : public KioskAppLauncher::Delegate {
 
   ~FakeController() override { service_->SetDelegate(nullptr); }
 
-  void Reset() {
-    window_created_ = false;
-    app_prepared_ = false;
-  }
-
   // KioskAppLauncher::Delegate:
   bool IsNetworkReady() const override { return true; }
   bool IsShowingNetworkConfigScreen() const override { return false; }
   bool ShouldSkipAppInstallation() const override { return false; }
 
   void OnAppWindowCreated() override {
-    window_created_ = true;
-    if (waiter_)
-      waiter_->Quit();
+    window_created_semaphore_.AddValue(true);
   }
 
-  void OnAppPrepared() override {
-    app_prepared_ = true;
-    if (waiter_)
-      waiter_->Quit();
-  }
+  void OnAppPrepared() override { app_prepared_semaphore_.AddValue(true); }
 
   void WaitUntilWindowCreated() {
-    if (window_created_)
-      return;
-    waiter_ = std::make_unique<base::RunLoop>();
-    waiter_->Run();
+    EXPECT_TRUE(window_created_semaphore_.Take());
   }
 
-  void WaitForAppToBePrepared() {
-    if (app_prepared_)
-      return;
-    waiter_ = std::make_unique<base::RunLoop>();
-    waiter_->Run();
-  }
+  void WaitForAppToBePrepared() { EXPECT_TRUE(app_prepared_semaphore_.Take()); }
 
   void InitializeNetwork() override {}
 
  private:
-  std::unique_ptr<base::RunLoop> waiter_;
-  ArcKioskAppService* service_;
+  // TODO(crbug/1379290): Replace with `RepeatingTestFuture<void>`
+  RepeatingTestFuture<bool> window_created_semaphore_;
+  RepeatingTestFuture<bool> app_prepared_semaphore_;
 
-  bool window_created_ = false;
-  bool app_prepared_ = false;
+  ArcKioskAppService* service_;
 };
 
 class ArcKioskAppServiceTest : public testing::Test {
@@ -157,7 +140,7 @@ class ArcKioskAppServiceTest : public testing::Test {
     EXPECT_EQ(launch_requests_, app_instance()->launch_requests().size());
     EXPECT_TRUE(
         app_instance()->launch_requests().back()->IsForApp(*app_info()));
-    controller.Reset();
+
     app_instance()->SendTaskCreated(0, *app_info(), std::string());
   }
 

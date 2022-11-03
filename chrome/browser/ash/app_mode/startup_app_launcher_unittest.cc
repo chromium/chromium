@@ -15,7 +15,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -86,9 +86,6 @@ class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
   TestAppLaunchDelegate& operator=(const TestAppLaunchDelegate&) = delete;
   ~TestAppLaunchDelegate() override = default;
 
-  const std::vector<LaunchState>& launch_state_changes() const {
-    return launch_state_changes_;
-  }
   KioskAppLaunchError::Error launch_error() const { return launch_error_; }
 
   void set_network_ready(bool network_ready) { network_ready_ = network_ready; }
@@ -99,17 +96,18 @@ class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
     showing_network_config_screen_ = showing;
   }
 
-  void ClearLaunchStateChanges() { launch_state_changes_.clear(); }
+  void ClearLaunchStateChanges() {
+    while (!launch_state_changes_.IsEmpty()) {
+      launch_state_changes_.Take();
+    }
+  }
 
-  void WaitForLaunchStates(const std::set<LaunchState>& states) {
-    if (states.count(launch_state_))
-      return;
+  LaunchState WaitForNextLaunchState() { return launch_state_changes_.Take(); }
 
-    ASSERT_FALSE(run_loop_.get());
-
-    waiting_for_launch_states_ = states;
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
+  bool ExpectNoLaunchStateChanges() {
+    // Wait a bit to give the state changes a chance to arrive
+    base::RunLoop().RunUntilIdle();
+    return launch_state_changes_.IsEmpty();
   }
 
   // StartupAppLauncher::Delegate:
@@ -137,17 +135,9 @@ class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
 
  private:
   void SetLaunchState(LaunchState state) {
-    launch_state_changes_.push_back(state);
-    launch_state_ = state;
-
-    if (run_loop_ && waiting_for_launch_states_.count(state)) {
-      waiting_for_launch_states_.clear();
-      std::move(run_loop_)->Quit();
-    }
+    launch_state_changes_.AddValue(state);
   }
 
-  LaunchState launch_state_ = LaunchState::kNotStarted;
-  std::vector<LaunchState> launch_state_changes_;
   KioskAppLaunchError::Error launch_error_ = KioskAppLaunchError::Error::kNone;
 
   bool network_ready_ = false;
@@ -155,8 +145,7 @@ class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
 
   bool should_skip_app_installation_ = false;
 
-  std::unique_ptr<base::RunLoop> run_loop_;
-  std::set<LaunchState> waiting_for_launch_states_;
+  base::test::RepeatingTestFuture<LaunchState> launch_state_changes_;
 };
 
 class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
@@ -459,7 +448,7 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   void InitializeLauncherWithNetworkReady() {
     startup_launch_delegate_.set_network_ready(true);
     startup_app_launcher_->Initialize();
-    EXPECT_THAT(startup_launch_delegate_.launch_state_changes(), ElementsAre());
+    EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
   }
 
   [[nodiscard]] AssertionResult DownloadPrimaryApp(
@@ -644,26 +633,23 @@ TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {
                                                 kTestPrimaryAppId);
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
 
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
@@ -683,11 +669,10 @@ TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
 
   // Given that the app is offline enabled and installed, the app should be
   // launched immediately, without waiting for network or checking for updates.
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>(
-                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
 
@@ -696,17 +681,16 @@ TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
   // to relaunch the app, nor request the update installation.
   startup_app_launcher_->ContinueWithNetworkReady();
   ASSERT_TRUE(DownloadPrimaryApp(kTestPrimaryAppId, "1.1"));
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
-  EXPECT_TRUE(startup_launch_delegate_.launch_state_changes().empty());
+  EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
@@ -727,20 +711,19 @@ TEST_F(StartupAppLauncherTest,
 
   // Given that the app is offline enabled and installed, the app should be
   // launched immediately, without waiting for network or checking for updates.
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>(
-                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
+
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
@@ -752,11 +735,10 @@ TEST_F(StartupAppLauncherTest,
   // to relaunch the app, nor request the update installation.
   startup_app_launcher_->ContinueWithNetworkReady();
   ASSERT_TRUE(DownloadPrimaryApp(kTestPrimaryAppId, "1.1"));
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
-  EXPECT_TRUE(startup_launch_delegate_.launch_state_changes().empty());
+  EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
 }
 
 TEST_F(StartupAppLauncherTest, PrimaryAppDownloadFailure) {
@@ -771,8 +753,8 @@ TEST_F(StartupAppLauncherTest, PrimaryAppDownloadFailure) {
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchFailed}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchFailed);
 
   EXPECT_EQ(KioskAppLaunchError::Error::kUnableToDownload,
             startup_launch_delegate_.launch_error());
@@ -789,8 +771,8 @@ TEST_F(StartupAppLauncherTest, PrimaryAppCrxInstallFailure) {
   ASSERT_TRUE(
       external_apps_loader_handler_->FailPendingInstall(kTestPrimaryAppId));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchFailed}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchFailed);
 
   EXPECT_EQ(KioskAppLaunchError::Error::kUnableToInstall,
             startup_launch_delegate_.launch_error());
@@ -806,14 +788,13 @@ TEST_F(StartupAppLauncherTest, PrimaryAppNotKioskEnabled) {
   primary_app_builder.set_kiosk_enabled(false);
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchFailed}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchFailed);
 
   EXPECT_EQ(KioskAppLaunchError::Error::kNotKioskEnabled,
             startup_launch_delegate_.launch_error());
@@ -828,14 +809,13 @@ TEST_F(StartupAppLauncherTest, PrimaryAppIsExtension) {
                                                 kTestPrimaryAppId);
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchFailed}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchFailed);
 
   EXPECT_EQ(KioskAppLaunchError::Error::kNotKioskEnabled,
             startup_launch_delegate_.launch_error());
@@ -854,9 +834,8 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
 
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
@@ -869,10 +848,8 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
       Manifest::TYPE_PLATFORM_APP, kExtraSecondaryAppId);
   ASSERT_TRUE(FinishSecondaryExtensionInstall(disabled_secondary_app_builder));
 
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
 
@@ -886,8 +863,8 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
             extensions::ExtensionPrefs::Get(browser_context())
                 ->GetDisableReasons(kExtraSecondaryAppId));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
   EXPECT_TRUE(kiosk_app_session_initialized_);
@@ -909,9 +886,8 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
 
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
@@ -920,17 +896,15 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
   secondary_extension_builder.set_kiosk_enabled(false);
   ASSERT_TRUE(FinishSecondaryExtensionInstall(secondary_extension_builder));
 
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
   EXPECT_TRUE(kiosk_app_session_initialized_);
@@ -959,11 +933,10 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
 
   // Given that the app is offline enabled and installed, the app should be
   // launched immediately, without waiting for network or checking for updates.
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>(
-                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
 
@@ -972,17 +945,16 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
   // to relaunch the app, nor request the update installation.
   startup_app_launcher_->ContinueWithNetworkReady();
   ASSERT_TRUE(DownloadPrimaryApp(kTestPrimaryAppId, "1.1"));
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
-  EXPECT_TRUE(startup_launch_delegate_.launch_state_changes().empty());
+  EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
@@ -1002,21 +974,19 @@ TEST_F(StartupAppLauncherTest, OfflineInstallPreCachedExtension) {
 
   startup_app_launcher_->Initialize();
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
 }
 
 TEST_F(StartupAppLauncherTest,
@@ -1032,42 +1002,37 @@ TEST_F(StartupAppLauncherTest,
 
   startup_app_launcher_->Initialize();
 
-  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
-              ElementsAre(LaunchState::kInstallingApp));
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
-              ElementsAre(LaunchState::kReadyToLaunch));
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
   // When trying to launch app we should realize that the app is not offline
   // enabled and request a network connection.
-  startup_launch_delegate_.WaitForLaunchStates(
-      {LaunchState::kInitializingNetwork});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInitializingNetwork}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInitializingNetwork);
 
   startup_launch_delegate_.set_network_ready(true);
   startup_app_launcher_->ContinueWithNetworkReady();
 
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>(
-                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
 }
 
 TEST_F(StartupAppLauncherTest,
@@ -1085,9 +1050,8 @@ TEST_F(StartupAppLauncherTest,
 
   startup_app_launcher_->Initialize();
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
@@ -1096,32 +1060,27 @@ TEST_F(StartupAppLauncherTest,
 
   // After install is complete we should realize that the app needs to install
   // secondary apps, so we need to get network set up
-  startup_launch_delegate_.WaitForLaunchStates(
-      {LaunchState::kInitializingNetwork});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInitializingNetwork}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInitializingNetwork);
 
   startup_launch_delegate_.set_network_ready(true);
   startup_app_launcher_->ContinueWithNetworkReady();
 
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishSecondaryExtensionInstall(secondary_extension_builder));
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
 }
 
 TEST_F(StartupAppLauncherTest,
@@ -1134,31 +1093,29 @@ TEST_F(StartupAppLauncherTest,
 
   startup_app_launcher_->Initialize();
 
-  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
-              ElementsAre(LaunchState::kInstallingApp,
-                          LaunchState::kInitializingNetwork));
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInitializingNetwork);
 
   startup_launch_delegate_.set_network_ready(true);
   startup_app_launcher_->ContinueWithNetworkReady();
 
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
 
-  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
-              ElementsAre(LaunchState::kInstallingApp));
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
-              ElementsAre(LaunchState::kReadyToLaunch));
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
-              ElementsAre(LaunchState::kLaunchSucceeded));
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
 }
 
 TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
@@ -1182,17 +1139,15 @@ TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
 
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
@@ -1218,15 +1173,15 @@ TEST_F(StartupAppLauncherTest, SecondaryAppCrxInstallFailureTriggersRetry) {
       external_apps_loader_handler_->FailPendingInstall(kSecondaryAppId));
 
   // The retry mechanism should trigger a new request to initialize the network
-  startup_launch_delegate_.WaitForLaunchStates(
-      {LaunchState::kInitializingNetwork});
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInitializingNetwork);
 
   startup_app_launcher_->ContinueWithNetworkReady();
 
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
 
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kInstallingApp});
-  startup_launch_delegate_.ClearLaunchStateChanges();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
 
   ASSERT_EQ(std::set<std::string>({kSecondaryAppId}),
             external_apps_loader_handler_->pending_update_urls());
@@ -1235,7 +1190,8 @@ TEST_F(StartupAppLauncherTest, SecondaryAppCrxInstallFailureTriggersRetry) {
   secondary_app_builder.set_kiosk_enabled(false);
   ASSERT_TRUE(FinishSecondaryExtensionInstall(secondary_app_builder));
 
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 }
 
 TEST_F(StartupAppLauncherTest,
@@ -1274,7 +1230,10 @@ TEST_F(StartupAppLauncherTest,
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
   startup_app_launcher_->LaunchApp();
 
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
@@ -1312,7 +1271,10 @@ TEST_F(StartupAppLauncherTest,
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
   startup_app_launcher_->LaunchApp();
 
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
@@ -1351,7 +1313,10 @@ TEST_F(StartupAppLauncherTest,
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
   startup_app_launcher_->LaunchApp();
 
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
@@ -1389,7 +1354,10 @@ TEST_F(StartupAppLauncherTest, PrimaryAppUpdatesToDisabledOnLaunch) {
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_update));
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_update));
 
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
   startup_app_launcher_->LaunchApp();
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
@@ -1428,7 +1396,10 @@ TEST_F(StartupAppLauncherTest, PrimaryAppUpdatesToEnabledOnLaunch) {
   ASSERT_TRUE(DownloadPrimaryApp(primary_app_update));
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_update));
 
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
   startup_app_launcher_->LaunchApp();
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
@@ -1472,9 +1443,8 @@ TEST_F(StartupAppLauncherTest, SecondaryExtensionStateOnSessionRestore) {
   startup_launch_delegate_.set_network_ready(true);
   startup_app_launcher_->Initialize();
 
-  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
 
