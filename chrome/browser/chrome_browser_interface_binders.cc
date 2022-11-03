@@ -214,6 +214,7 @@
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
+#include "ash/webui/color_internals/mojom/color_internals.mojom.h"
 #include "ash/webui/common/mojom/accessibility_features.mojom.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
@@ -1370,7 +1371,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
         .Add<ash::mojom::face_ml_app::PageHandlerFactory>();
   }
   registry.ForWebUI<ash::ColorInternalsUI>()
-      .Add<color_change_listener::mojom::PageHandler>();
+      .Add<color_change_listener::mojom::PageHandler>()
+      .Add<ash::color_internals::mojom::WallpaperColorsHandler>();
   registry.ForWebUI<ash::FilesInternalsUI>()
       .Add<ash::mojom::files_internals::PageHandler>();
   registry.ForWebUI<ash::file_manager::FileManagerUI>()

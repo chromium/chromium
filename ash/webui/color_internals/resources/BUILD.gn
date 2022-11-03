@@ -12,8 +12,15 @@ ts_library("color_internals_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
 
-  in_files = [ "index.ts" ]
-  deps = [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
+  in_files = [
+    "index.ts",
+    "wallpaper_colors.ts",
+    "utils.ts",
+  ]
+  deps = [
+    "../mojom:mojom_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+  ]
 
   composite = true
   tsconfig_base = "tsconfig_base.json"
@@ -37,7 +44,10 @@ generate_grd("build_grd") {
   grd_prefix = "ash_color_internals"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
-  grdp_files = [ "$target_gen_dir/webui_cros_styles_resources.grdp" ]
+  grdp_files = [
+    "$target_gen_dir/webui_cros_styles_resources.grdp",
+    "$target_gen_dir/../mojom/mojom_webui_resources.grdp",
+  ]
 
   input_files = [ "index.html" ]
   input_files_base_dir = rebase_path(".", "//")
@@ -50,5 +60,6 @@ generate_grd("build_grd") {
   deps = [
     ":build_cros_styles_grdp",
     ":color_internals_ts",
+    "../mojom:mojom_webui_grdp",
   ]
 }

@@ -4,6 +4,9 @@
 
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
+import {getRGBAFromComputedStyle} from './utils.js';
+import {startObservingWallpaperColors} from './wallpaper_colors.js';
+
 const CROS_TOKENS_JSON_URL = 'color_internals_tokens.json';
 
 interface Token {
@@ -15,11 +18,6 @@ interface Token {
 interface TokenArray {
   ref_tokens: Token[];
   sys_tokens: Token[];
-}
-
-function getRGBAFromComputedStyle(element: HTMLElement): string {
-  const computedStyle = window.getComputedStyle(element);
-  return computedStyle.backgroundColor.toString();
 }
 
 function appendTokenRowToTable(
@@ -97,4 +95,5 @@ async function populateTokenTable() {
 window.onload = () => {
   populateTokenTable();
   startColorChangeUpdater();
+  startObservingWallpaperColors();
 };

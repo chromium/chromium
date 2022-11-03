@@ -136,6 +136,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // Returns the k mean color of the current wallpaper.
   SkColor GetKMeanColor() const;
 
+  const WallpaperCalculatedColors& calculated_colors() const {
+    return calculated_colors_;
+  }
+
   // Returns current image on the wallpaper, or an empty image if there's no
   // wallpaper.
   gfx::ImageSkia GetWallpaper() const;

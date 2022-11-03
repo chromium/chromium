@@ -15,9 +15,12 @@ static_library("color_internals") {
     "color_internals_ui.h",
     "url_constants.cc",
     "url_constants.h",
+    "wallpaper_colors_handler_impl.cc",
+    "wallpaper_colors_handler_impl.h",
   ]
 
   deps = [
+    "//ash/webui/color_internals/mojom",
     "//ash/webui/resources:color_internals_resources",
     "//content/public/browser",
     "//ui/webui",

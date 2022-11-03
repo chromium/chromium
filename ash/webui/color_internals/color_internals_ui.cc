@@ -5,11 +5,13 @@
 #include "ash/webui/color_internals/color_internals_ui.h"
 
 #include "ash/webui/color_internals/url_constants.h"
+#include "ash/webui/color_internals/wallpaper_colors_handler_impl.h"
 #include "ash/webui/grit/ash_color_internals_resources.h"
 #include "ash/webui/grit/ash_color_internals_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash {
@@ -33,6 +35,13 @@ void ColorInternalsUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void ColorInternalsUI::BindInterface(
+    mojo::PendingReceiver<color_internals::mojom::WallpaperColorsHandler>
+        receiver) {
+  wallpaper_colors_handler_ =
+      std::make_unique<WallpaperColorsHandlerImpl>(std::move(receiver));
 }
 
 ColorInternalsUI::~ColorInternalsUI() = default;

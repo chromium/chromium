@@ -5185,6 +5185,7 @@ static_library("browser") {
       "//ash/webui/camera_app_ui",
       "//ash/webui/camera_app_ui:mojo_bindings",
       "//ash/webui/color_internals",
+      "//ash/webui/color_internals/mojom",
       "//ash/webui/common/mojom",
       "//ash/webui/connectivity_diagnostics",
       "//ash/webui/demo_mode_app_ui",

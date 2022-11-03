@@ -51,9 +51,6 @@
     td {
       text-align: center;
     }
-    #text-container {
-      padding: 16px;
-    }
     a {
       color: var(--cros-sys-primary);
     }
@@ -69,7 +66,14 @@
   </style>
 </head>
 <div id="content">
-  <div id="text-container">
+  <div class="block" id="wallpaper-block" loading>
+    <h1 id="wallpaper-colors-title">Wallpaper Colors</h1>
+    <h2 id="wallpaper-prominent-colors-title">Prominent Colors</h2>
+    <div id="wallpaper-prominent-colors-container"></div>
+    <h2 id="wallpaper-k-mean-color-title">K Mean Color</h2>
+    <div id="wallpaper-k-mean-color-container"></div>
+  </div>
+  <div class="block">
     <h1 id="table-title">Cros Tokens</h2>
     <p>This is the current color palette for CrOS, generated from
       <a href="https://crsrc.org/c/ui/chromeos/styles/cros_ref_colors.json5">
@@ -83,31 +87,30 @@
       system palette in whatever light/dark theme you are currently using. The
       formula columns show how a sys token is calculated from a ref token.
     </p>
-  </div>
-  <div id="table-container">
-    <table id="ref-tokens">
-      <caption>Ref Tokens</caption>
-      <thead>
-        <tr>
-          <th class="border-end">Token</th>
-          <th class="border-end">Value</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <table id="sys-tokens" aria-labelledby="table-title">
-      <caption>Sys Tokens</caption>
-      <thead>
-        <tr>
-          <th class="border-end">Token</th>
-          <th class="border-end">Value</th>
-          <th class="border-end">Light Formula</th>
-          <th>Dark Formula</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+    <div id="table-container">
+      <table id="ref-tokens">
+        <caption>Ref Tokens</caption>
+        <thead>
+          <tr>
+            <th class="border-end">Token</th>
+            <th class="border-end">Value</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <table id="sys-tokens" aria-labelledby="table-title">
+        <caption>Sys Tokens</caption>
+        <thead>
+          <tr>
+            <th class="border-end">Token</th>
+            <th class="border-end">Value</th>
+            <th class="border-end">Light Formula</th>
+            <th>Dark Formula</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 </div>
 <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
 <script type="module" src="index.js"></script>

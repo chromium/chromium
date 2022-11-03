@@ -44,3 +44,28 @@ TEST_F('ColorInternalsUIBrowserTest', 'BuildsTokenTable', async () => {
   assertNotEquals(table.tBodies[0].rows.length, 0);
   testDone();
 });
+
+TEST_F('ColorInternalsUIBrowserTest', 'DisplaysWallpaperColors', async () => {
+  // Wait for initial load to finish to reduce flakiness.
+  await new Promise(async (resolve) => {
+    const block = document.getElementById('wallpaper-block');
+    while (block.hasAttribute('loading')) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    resolve();
+  });
+
+  const prominentColorsContainer =
+      document.getElementById('wallpaper-prominent-colors-container');
+  assertGT(
+      prominentColorsContainer.querySelectorAll('.wallpaper-color-container')
+          .length,
+      1, 'more than 1 wallpaper prominent color should be displayed');
+
+  const kMeanContainer =
+      document.getElementById('wallpaper-k-mean-color-container');
+  assertEquals(
+      kMeanContainer.querySelectorAll('.wallpaper-color-container').length, 1,
+      'one k mean color should be displayed');
+  testDone();
+});
