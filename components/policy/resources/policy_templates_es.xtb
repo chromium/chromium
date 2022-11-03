@@ -193,9 +193,9 @@
 
       Si se le asigna el valor "False", no aparecerá la casilla "Permitir siempre" y el usuario verá un mensaje de confirmación cada vez que se invoque un protocolo externo.</translation>
 <translation id="1181598794547737681">Habilitar la interfaz del cuadro de descargas</translation>
-<translation id="11903325225202653">Si se le asigna el valor "true" a esta política, el modo de contraste alto permanece activado. Si se le asigna el valor "false", el modo de contraste alto permanece desactivado.
+<translation id="11903325225202653">Si se le asigna el valor "true" a esta política, el modo Contraste alto permanece activado. Si se le asigna el valor "false", el modo Contraste alto permanece desactivado.
 
-      Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, el modo de contraste alto permanece desactivado, pero los usuarios pueden activarlo en cualquier momento.</translation>
+      Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, el modo Contraste alto permanece desactivado, pero los usuarios pueden activarlo en cualquier momento.</translation>
 <translation id="1192875037379495940">Si se define esta política, se iniciará automáticamente la sesión especificada en caso de que el usuario no realice ninguna interacción en la pantalla de inicio de sesión durante el periodo de tiempo especificado en <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_DELAY_POLICY_NAME" />. La cuenta local del dispositivo debe estar configurada previamente (ver <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" />).
 
       Si no se define esta política, no se iniciará sesión automáticamente.</translation>
@@ -1867,7 +1867,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="284288632677954003">URL de un archivo XML que contiene URLs que nunca deben activar un cambio de navegador.</translation>
 <translation id="2846689894646472396">Intervalo de comprobación de eventos de red en milisegundos</translation>
 <translation id="2853649500575897584">No bloquea los puntos de extensión antiguos en el proceso del navegador</translation>
-<translation id="285480231336205327">Habilitar modo de contraste alto</translation>
+<translation id="285480231336205327">Habilitar modo Contraste alto</translation>
 <translation id="285627849510728211">Define la configuración diaria del modo Avanzado de carga de la batería</translation>
 <translation id="2856674246949497058">Vuelve a instalar la versión de destino si la versión del SO es más reciente que la de destino. Realiza un Powerwash durante el proceso.</translation>
 <translation id="2866619962692161453">Tipo de metapolítica</translation>
@@ -5574,11 +5574,11 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se asigna ningún valor a esta política, el dispositivo utilizará el formato de la configuración regional actual.
 
       Las sesiones de usuario también se inician con el formato del dispositivo de forma predeterminada, pero el usuario puede cambiar el formato del reloj de una cuenta.</translation>
-<translation id="6833064854262015312">Si se le asigna el valor "true" a esta política, el modo de contraste alto se activa en la pantalla de inicio de sesión. Si se le asigna el valor "false", el modo de contraste alto se desactiva en la pantalla de inicio de sesión.
+<translation id="6833064854262015312">Si se le asigna el valor "true" a esta política, el modo Contraste alto se activa en la pantalla de inicio de sesión. Si se le asigna el valor "false", el modo Contraste alto se desactiva en la pantalla de inicio de sesión.
 
-      Si se configura esta política, los usuarios pueden cambiar temporalmente el modo de contraste alto activándolo o desactivándolo. Cuando la pantalla de inicio de sesión se vuelve a cargar o permanece inactiva durante un minuto, vuelve a su estado original.
+      Si se configura esta política, los usuarios pueden cambiar temporalmente el modo Contraste alto activándolo o desactivándolo. Cuando la pantalla de inicio de sesión se vuelve a cargar o permanece inactiva durante un minuto, vuelve a su estado original.
 
-      Si no se le asigna ningún valor, el modo de contraste alto está desactivado en la pantalla de inicio de sesión. Los usuarios pueden activar el modo de contraste alto cuando quieran y su estado en la pantalla de inicio de sesión permanece entre usuarios.
+      Si no se le asigna ningún valor, el modo Contraste alto está desactivado en la pantalla de inicio de sesión. Los usuarios pueden activar el modo Contraste alto cuando quieran y su estado en la pantalla de inicio de sesión permanece entre usuarios.
 
           Nota: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> anula esta política si se especifica la anterior.</translation>
 <translation id="6833462729740272863">Configura una lista de URLs que pueden permanecer en modo de pantalla completa sin que se muestre una notificación cuando el dispositivo sale de la pantalla de bloqueo.
@@ -6560,7 +6560,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7807139251387225825">Lista de tipos que se deben excluir de la sincronización</translation>
 <translation id="781268256210530471">Configuración de complementos</translation>
 <translation id="7816326058023670173">Secreto compartido entre los dispositivos del niño/a y del padre o madre.</translation>
-<translation id="7818131573217430250">Establecer el estado predeterminado del modo de contraste alto en la pantalla de inicio de sesión</translation>
+<translation id="7818131573217430250">Establecer el estado predeterminado del modo Contraste alto en la pantalla de inicio de sesión</translation>
 <translation id="7821864705813933283">Permitir que aparezca la opción de menú de búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual (si es compatible).</translation>
 <translation id="7823902813460802031">Si se habilita esta política, <ph name="PRODUCT_OS_NAME" /> impide que el dispositivo entre en el modo desarrollador.
 
