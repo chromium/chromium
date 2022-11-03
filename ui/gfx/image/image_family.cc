@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/check_op.h"
 #include "skia/ext/image_operations.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"

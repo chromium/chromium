@@ -8,7 +8,7 @@
 #include <objidl.h>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 // Windows interface.
 struct IDropTargetHelper;

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace base {

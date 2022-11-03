@@ -6,7 +6,7 @@
 #define UI_BASE_VIEW_PROP_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "ui/gfx/native_widget_types.h"
 
