@@ -9,7 +9,6 @@ Package: @@PACKAGE@@-@@CHANNEL@@
 Provides: @@PROVIDES@@
 Pre-Depends: @@PREDEPENDS@@
 Depends: @@DEPENDS@@
-Recommends: @@RECOMMENDS@@
 Architecture: @@ARCHITECTURE@@
 Description: @@SHORTDESC@@
  @@FULLDESC@@

@@ -91,7 +91,6 @@ process_template() (
     -e "s#@@PRODUCTURL@@#${PRODUCTURL}#g" \
     -e "s#@@PREDEPENDS@@#${PREDEPENDS}#g" \
     -e "s#@@DEPENDS@@#${DEPENDS}#g" \
-    -e "s#@@RECOMMENDS@@#${RECOMMENDS}#g" \
     -e "s#@@PROVIDES@@#${PROVIDES}#g" \
     -e "s#@@ARCHITECTURE@@#${ARCHITECTURE}#g" \
     -e "s#@@MAINTNAME@@#${MAINTNAME}#g" \

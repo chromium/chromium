@@ -308,7 +308,6 @@ copy("deb_packaging_files") {
     "debian/changelog.template",
     "debian/control.template",
     "debian/debian.menu",
-    "debian/manual_recommends",
     "debian/postinst",
     "debian/postrm",
     "debian/prerm",
