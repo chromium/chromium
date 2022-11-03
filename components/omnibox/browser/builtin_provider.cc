@@ -227,7 +227,6 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
   match.description = template_url.short_name();
   match.description_class.emplace_back(0, ACMatchClassification::NONE);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  match.keyword = template_url.keyword();
   match.allowed_to_be_default_match = true;
   matches_.push_back(match);
 }

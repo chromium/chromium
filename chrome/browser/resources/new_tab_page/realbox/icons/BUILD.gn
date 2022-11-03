@@ -11,6 +11,7 @@ generate_grd("build_grdp") {
   input_files = [
     "calculator.svg",
     "calendar.svg",
+    "chrome_product.svg",
     "currency.svg",
     "default.svg",
     "definition.svg",

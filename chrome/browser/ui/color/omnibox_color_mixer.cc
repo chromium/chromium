@@ -96,6 +96,9 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
     mixer[kColorOmniboxResultsIconSelected] =
         results_icon(kColorOmniboxResultsTextSelected,
                      kColorOmniboxResultsBackgroundSelected);
+    mixer[kColorOmniboxResultsStarterPackIcon] = ui::BlendForMinContrast(
+        gfx::kGoogleBlue600, kColorOmniboxResultsBackground, absl::nullopt,
+        color_utils::kMinimumVisibleContrastRatio);
   }
 
   // Dimmed text colors.

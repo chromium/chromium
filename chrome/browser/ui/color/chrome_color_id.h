@@ -212,6 +212,7 @@
   E_CPONLY(kColorOmniboxResultsFocusIndicator) \
   E_CPONLY(kColorOmniboxResultsIcon) \
   E_CPONLY(kColorOmniboxResultsIconSelected) \
+  E_CPONLY(kColorOmniboxResultsStarterPackIcon) \
   E_CPONLY(kColorOmniboxResultsTextDimmed) \
   E_CPONLY(kColorOmniboxResultsTextDimmedSelected) \
   E_CPONLY(kColorOmniboxResultsTextNegative) \

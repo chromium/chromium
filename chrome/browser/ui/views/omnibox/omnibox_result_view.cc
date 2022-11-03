@@ -544,6 +544,8 @@ gfx::Image OmniboxResultView::GetIcon() const {
     //  `kColorOmniboxResultSpecialIcon[Selected]`.
     vector_icon_color_id = GetMatchSelected() ? kColorOmniboxResultsUrlSelected
                                               : kColorOmniboxResultsUrl;
+  } else if (match_.type == AutocompleteMatchType::STARTER_PACK) {
+    vector_icon_color_id = kColorOmniboxResultsStarterPackIcon;
   } else {
     vector_icon_color_id = GetMatchSelected() ? kColorOmniboxResultsIconSelected
                                               : kColorOmniboxResultsIcon;

@@ -26,6 +26,7 @@ namespace omnibox {
 extern const char kGoogleGIconResourceName[];
 extern const char kBookmarkIconResourceName[];
 extern const char kCalculatorIconResourceName[];
+extern const char kChromeProductIconResourceName[];
 extern const char kClockIconResourceName[];
 extern const char kDriveDocsIconResourceName[];
 extern const char kDriveFolderIconResourceName[];

@@ -84,6 +84,8 @@ constexpr char kAnswerWhenIsIconResourceName[] = "realbox/icons/when_is.svg";
 constexpr char kBookmarkIconResourceName[] =
     "chrome://resources/images/icon_bookmark.svg";
 constexpr char kCalculatorIconResourceName[] = "realbox/icons/calculator.svg";
+constexpr char kChromeProductIconResourceName[] =
+    "realbox/icons/chrome_product.svg";
 constexpr char kClockIconResourceName[] =
     "chrome://resources/images/icon_clock.svg";
 constexpr char kDinoIconResourceName[] = "realbox/icons/dino.svg";
@@ -411,6 +413,8 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     return kPageIconResourceName;
   } else if (icon.name == omnibox::kPedalIcon.name) {
     return kPedalsIconResourceName;
+  } else if (icon.name == omnibox::kProductIcon.name) {
+    return kChromeProductIconResourceName;
   } else if (icon.name == vector_icons::kSearchIcon.name) {
     return kSearchIconResourceName;
   } else if (icon.name == omnibox::kTrendingUpIcon.name) {
