@@ -8,6 +8,7 @@
 #import <AppKit/AppKit.h>
 
 #include "base/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
@@ -31,7 +32,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
  public:
   explicit ImmersiveModeController(NSWindow* browser_widget,
                                    NSWindow* overlay_widget,
-                                   base::OnceCallback<void()> callback);
+                                   base::OnceClosure callback);
   ~ImmersiveModeController();
 
   void Enable();
@@ -46,8 +47,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   int revealed_lock_count() { return revealed_lock_count_; }
 
  private:
-  // Pin or unpin the Title Bar.
-  void SetTitleBarPinned(bool pinned);
+  // Pin or unpin the titlebar.
+  void SetTitlebarPinned(bool pinned);
 
   // Start observing child windows of overlay_widget_.
   void ObserveOverlayChildWindows();
@@ -72,5 +73,26 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
 };
 
 }  // namespace remote_cocoa
+
+// A small class that moves the overlay window along the y axis.
+//
+// The overlay's content view (top chrome) is not hosted in the overlay window.
+// It is moved to the AppKit controlled fullscreen window via the
+// NSTitlebarAccessoryViewController API. However the overlay window is still
+// important.
+//  * It is the parent window for top chrome popups. Moving the overlay window
+//  in turn moves the child windows.
+//  * Its origin in important for dragging operations.
+//
+// This class will keep the position of the overlay window in sync with its
+// original content (top chrome).
+REMOTE_COCOA_APP_SHIM_EXPORT @interface ImmersiveModeTitlebarObserver
+    : NSObject {
+  NSWindow* _overlay_window;
+  NSView* _overlay_view;
+}
+- (instancetype)initWithOverlayWindow:(NSWindow*)overlay_window
+                          overlayView:(NSView*)overlay_view;
+@end
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_CONTROLLER_H_
