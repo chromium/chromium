@@ -509,7 +509,7 @@ void UnsentLogStore::RecordMetaDataMetrics() {
   }
 }
 
-void UnsentLogStore::NotifyLogCreated(LogInfo& info) {
+void UnsentLogStore::NotifyLogCreated(const LogInfo& info) {
   if (!logs_event_manager_)
     return;
   logs_event_manager_->NotifyLogCreated(info.hash, info.compressed_log_data,

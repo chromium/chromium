@@ -170,7 +170,7 @@ class UnsentLogStore : public LogStore {
   void RecordMetaDataMetrics();
 
   // Wrapper functions for the notify functions of |logs_event_manager_|.
-  void NotifyLogCreated(LogInfo& info);
+  void NotifyLogCreated(const LogInfo& info);
   void NotifyLogsCreated(base::span<std::unique_ptr<LogInfo>> logs);
   void NotifyLogEvent(MetricsLogsEventManager::LogEvent event,
                       base::StringPiece log_hash,
