@@ -107,6 +107,36 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
       static_cast<StyleSheetContents*>(nullptr), execution_context);
 }
 
+static inline const CSSParserContext* GetParserContext(
+    SecureContextMode secure_context_mode,
+    StyleSheetContents* style_sheet,
+    const ExecutionContext* execution_context,
+    CSSParserMode parser_mode) {
+  if (style_sheet) {
+    if (style_sheet->ParserContext()->GetMode() == parser_mode) {
+      // We can reuse this, to save on the construction.
+      return style_sheet->ParserContext();
+    } else {
+      // This can happen when parsing e.g. SVG attributes in the context of
+      // an HTML document.
+      CSSParserContext* mutable_context =
+          MakeGarbageCollected<CSSParserContext>(style_sheet->ParserContext());
+      mutable_context->SetMode(parser_mode);
+      return mutable_context;
+    }
+  } else if (IsA<LocalDOMWindow>(execution_context)) {
+    // Create parser context using document if it exists so it can check for
+    // origin trial enabled property/value.
+    CSSParserContext* mutable_context = MakeGarbageCollected<CSSParserContext>(
+        *To<LocalDOMWindow>(execution_context)->document());
+    mutable_context->SetMode(parser_mode);
+    return mutable_context;
+  } else {
+    return MakeGarbageCollected<CSSParserContext>(parser_mode,
+                                                  secure_context_mode);
+  }
+}
+
 MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     MutableCSSPropertyValueSet* declaration,
     CSSPropertyID unresolved_property,
@@ -128,21 +158,8 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     return declaration->SetProperty(CSSPropertyValue(
         CSSPropertyName(resolved_property), *value, important));
   }
-  CSSParserContext* context;
-  if (style_sheet) {
-    context =
-        MakeGarbageCollected<CSSParserContext>(style_sheet->ParserContext());
-    context->SetMode(parser_mode);
-  } else if (IsA<LocalDOMWindow>(execution_context)) {
-    // Create parser context using document if it exists so it can check for
-    // origin trial enabled property/value.
-    context = MakeGarbageCollected<CSSParserContext>(
-        *To<LocalDOMWindow>(execution_context)->document());
-    context->SetMode(parser_mode);
-  } else {
-    context = MakeGarbageCollected<CSSParserContext>(parser_mode,
-                                                     secure_context_mode);
-  }
+  const CSSParserContext* context = GetParserContext(
+      secure_context_mode, style_sheet, execution_context, parser_mode);
   return ParseValue(declaration, unresolved_property, string, important,
                     context);
 }

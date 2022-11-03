@@ -116,6 +116,7 @@ class CORE_EXPORT CSSParserContext final
   // CSSParserContext is not well understood and thus we sometimes need to
   // override this field.
   void SetMode(CSSParserMode mode) { mode_ = mode; }
+  CSSParserMode GetMode() const { return mode_; }
 
   void SetIsAdRelated() { is_ad_related_ = true; }
 
