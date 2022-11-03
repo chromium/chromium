@@ -100,15 +100,15 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
     const std::string& version,
     const std::string& id,
     const std::string& required_platform_version) {
-  base::DictionaryValue value;
-  value.SetStringKey("name", name);
-  value.SetStringKey("version", version);
-  base::ListValue scripts;
+  base::Value::Dict value;
+  value.Set("name", name);
+  value.Set("version", version);
+  base::Value::List scripts;
   scripts.Append("main.js");
-  value.SetPath("app.background.scripts", std::move(scripts));
-  value.SetBoolKey("kiosk_enabled", true);
+  value.SetByDottedPath("app.background.scripts", std::move(scripts));
+  value.Set("kiosk_enabled", true);
   if (!required_platform_version.empty()) {
-    value.SetStringPath("kiosk.required_platform_version",
+    value.SetByDottedPath("kiosk.required_platform_version",
                         required_platform_version);
   }
 
@@ -314,10 +314,10 @@ class KioskAppManagerTest : public InProcessBrowserTest {
     base::FilePath icon_path =
         CopyFileToTempDir(data_dir.AppendASCII(icon_file_name));
 
-    base::DictionaryValue apps_dict;
-    apps_dict.SetStringPath(app_id + ".name", app_name);
-    apps_dict.SetStringPath(app_id + ".icon", icon_path.MaybeAsASCII());
-    apps_dict.SetStringPath(app_id + ".required_platform_version",
+    base::Value::Dict apps_dict;
+    apps_dict.SetByDottedPath(app_id + ".name", app_name);
+    apps_dict.SetByDottedPath(app_id + ".icon", icon_path.MaybeAsASCII());
+    apps_dict.SetByDottedPath(app_id + ".required_platform_version",
                             required_platform_version);
 
     PrefService* local_state = g_browser_process->local_state();
