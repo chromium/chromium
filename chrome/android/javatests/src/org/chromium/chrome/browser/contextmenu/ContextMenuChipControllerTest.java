@@ -136,7 +136,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
         ContextMenuChipController chipController =
                 new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
         assertEquals("Vertical px is not matching the expectation",
-                (int) (EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity),
+                (int) Math.round(EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity),
                 chipController.getVerticalPxNeededForChip());
     }
 
@@ -147,7 +147,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
         ContextMenuChipController chipController =
                 new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
         assertEquals("Chip width px is not matching the expectation",
-                (int) (EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
+                (int) Math.round(EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
                 chipController.getChipTextMaxWidthPx(false));
     }
 
@@ -158,7 +158,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
         ContextMenuChipController chipController =
                 new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
         assertEquals("Chip width px is not matching the expectation",
-                (int) (EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity),
+                (int) Math.round(EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity),
                 chipController.getChipTextMaxWidthPx(true));
     }
 }
