@@ -47,8 +47,9 @@ Steps depend on your version of Android:
 
 ### Android 10 and later (Q, R, etc.) - Beta channel {#trichrome-beta}
 
-We offer a new streamlined experience for joining the WebView Beta channel
-(if you want to opt into Dev or Canary, [skip to the next
+We offer a new streamlined experience for joining the WebView Beta channel (if
+you want to opt into Dev or Canary, or you are interested in using WebView
+DevTools to try experimental WebView features, [skip to the next
 section](#trichrome-dev)).
 
 The easiest way to start testing WebView Beta is to opt into the experience on
@@ -58,9 +59,6 @@ the Google Play Store.
 2. On your device, update **Android System WebView** [in the Play
    Store.][WebView PlayStore]
 3. When the Play Store finishes updating, you will be using WebView Beta!
-4. **Bonus:** you'll also now see the "WebView Beta" icon in your list of apps.
-   You can use this app to report bugs, toggle experimental features, and much
-   more! See the [WebView DevTools user guide] for more details.
 
 #### Returning to stable WebView
 
@@ -87,7 +85,8 @@ later.
 1. Download a pre-release channel of WebView from the play store, available here:
    - [WebView Beta](https://play.google.com/store/apps/details?id=com.google.android.webview.beta)
      may be installed either through this method or through the [streamlined
-     approach mentioned above](#trichrome-beta)
+     approach mentioned above](#trichrome-beta). Installing through this method
+     will automatically install WebView DevTools.
    - [WebView Dev](https://play.google.com/store/apps/details?id=com.google.android.webview.dev)
    - [WebView Canary](https://play.google.com/store/apps/details?id=com.google.android.webview.canary)
 2. Follow the [steps to enable Android's developer options
@@ -97,6 +96,10 @@ later.
    ![The "WebView implementation" menu](/android_webview/docs/images/webview_implementations_menu_10.png)
 
 4. Choose the channel that you would like to use for WebView
+5. **Bonus:** you'll also now see an icon for your chosen WebView channel in the
+   list of apps. You can use this app to report bugs, toggle experimental
+   features, and much more! See the [WebView DevTools user guide] for more
+   details.
 
 #### Returning to stable WebView
 
