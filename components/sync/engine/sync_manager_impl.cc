@@ -448,6 +448,7 @@ void SyncManagerImpl::OnIncomingInvalidation(
         PendingInvalidationStatus::kDataTypeNotConnected);
   }
   sync_status_tracker_->IncrementNotificationsReceived();
+  scheduler_->ScheduleInvalidationNudge(type);
 }
 
 void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {

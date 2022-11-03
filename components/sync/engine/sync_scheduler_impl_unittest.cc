@@ -768,6 +768,7 @@ TEST_F(SyncSchedulerImplTest, NudgeWithStates) {
           DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times1, true)))
       .RetiresOnSaturation();
   scheduler()->SetHasPendingInvalidations(THEMES, true);
+  scheduler()->ScheduleInvalidationNudge(THEMES);
   RunLoop();
 
   Mock::VerifyAndClearExpectations(syncer());
@@ -778,6 +779,7 @@ TEST_F(SyncSchedulerImplTest, NudgeWithStates) {
       .WillOnce(
           DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times2, true)));
   scheduler()->SetHasPendingInvalidations(TYPED_URLS, true);
+  scheduler()->ScheduleInvalidationNudge(TYPED_URLS);
   RunLoop();
 }
 
@@ -1222,7 +1224,7 @@ TEST_F(SyncSchedulerImplTest, TypeThrottlingDoesBlockOtherSources) {
   EXPECT_FALSE(scheduler()->IsGlobalThrottle());
 
   // Ignore invalidations for throttled types.
-  scheduler()->SetHasPendingInvalidations(throttled_type, true);
+  scheduler()->ScheduleInvalidationNudge(throttled_type);
   PumpLoop();
 
   // Ignore refresh requests for throttled types.
@@ -1267,7 +1269,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffDoesBlockOtherSources) {
   EXPECT_FALSE(scheduler()->IsGlobalThrottle());
 
   // Ignore invalidations for backed off types.
-  scheduler()->SetHasPendingInvalidations(backed_off_type, true);
+  scheduler()->ScheduleInvalidationNudge(backed_off_type);
   PumpLoop();
 
   // Ignore refresh requests for backed off types.

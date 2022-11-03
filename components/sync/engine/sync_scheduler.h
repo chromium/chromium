@@ -71,6 +71,12 @@ class SyncScheduler : public SyncCycle::Delegate {
   // platforms where tab sync is not registered for invalidations.
   virtual void ScheduleLocalRefreshRequest(ModelTypeSet types) = 0;
 
+  // Invalidations are notifications the server sends to let us know when other
+  // clients have committed data.  We need to contact the sync server (being
+  // careful to pass along the "hints" delivered with those invalidations) in
+  // order to fetch the update.
+  virtual void ScheduleInvalidationNudge(ModelType type) = 0;
+
   // Requests a non-blocking initial sync request for the specified type.
   //
   // Many types can only complete initial sync while the scheduler is in
