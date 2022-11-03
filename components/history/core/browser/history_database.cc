@@ -260,7 +260,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     base::Time one_month_ago = base::Time::Now() - base::Days(30);
     sql::Statement url_sql(db_.GetUniqueStatement(
         "SELECT url, last_visit_time FROM urls WHERE last_visit_time > ?"));
-    url_sql.BindInt64(0, one_month_ago.ToInternalValue());
+    url_sql.BindTime(0, one_month_ago);
 
     // Count URLs (which will always be unique) and unique hosts within the last
     // week and last month.
@@ -271,8 +271,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     base::Time one_week_ago = base::Time::Now() - base::Days(7);
     while (url_sql.Step()) {
       GURL url(url_sql.ColumnString(0));
-      base::Time visit_time =
-          base::Time::FromInternalValue(url_sql.ColumnInt64(1));
+      base::Time visit_time = url_sql.ColumnTime(1);
       ++month_url_count;
       month_hosts.insert(url.host());
       if (visit_time > one_week_ago) {
@@ -301,7 +300,7 @@ int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
                              "WHERE last_visit_time > ? "
                              "AND hidden = 0 "
                              "AND visit_count > 0"));
-  url_sql.BindInt64(0, one_month_ago.ToInternalValue());
+  url_sql.BindTime(0, one_month_ago);
 
   std::set<std::string> hosts;
   while (url_sql.Step()) {
@@ -330,8 +329,8 @@ int HistoryDatabase::CountUniqueDomainsVisited(base::Time begin_time,
   url_sql.BindInt64(3, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
   url_sql.BindInt64(4, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 
-  url_sql.BindInt64(5, begin_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  url_sql.BindInt64(6, end_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  url_sql.BindTime(5, begin_time);
+  url_sql.BindTime(6, end_time);
 
   std::set<std::string> domains;
   while (url_sql.Step()) {

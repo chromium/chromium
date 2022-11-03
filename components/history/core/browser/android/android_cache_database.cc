@@ -44,8 +44,8 @@ bool AndroidCacheDatabase::AddBookmarkCacheRow(const Time& created_time,
       "INSERT INTO android_cache_db.bookmark_cache (created_time, "
       "last_visit_time, url_id) VALUES (?, ?, ?)"));
 
-  statement.BindInt64(0, ToDatabaseTime(created_time));
-  statement.BindInt64(1, ToDatabaseTime(last_visit_time));
+  statement.BindTime(0, created_time);
+  statement.BindTime(1, last_visit_time);
   statement.BindInt64(2, url_id);
 
   if (!statement.Run()) {
@@ -115,7 +115,7 @@ SearchTermID AndroidCacheDatabase::AddSearchTerm(
       "date) VALUES (?, ?)"));
 
   statement.BindString16(0, term);
-  statement.BindInt64(1, ToDatabaseTime(last_visit_time));
+  statement.BindTime(1, last_visit_time);
 
   if (!statement.Run()) {
     LOG(ERROR) << GetDB().GetErrorMessage();
@@ -133,7 +133,7 @@ bool AndroidCacheDatabase::UpdateSearchTerm(SearchTermID id,
       "WHERE _id = ?"
       ));
   statement.BindString16(0, row.term);
-  statement.BindInt64(1, ToDatabaseTime(row.last_visit_time));
+  statement.BindTime(1, row.last_visit_time);
   statement.BindInt64(2, id);
 
   return statement.Run();
@@ -157,7 +157,7 @@ SearchTermID AndroidCacheDatabase::GetSearchTerm(const std::u16string& term,
   if (row) {
     row->id = statement.ColumnInt64(0);
     row->term = statement.ColumnString16(1);
-    row->last_visit_time = FromDatabaseTime(statement.ColumnInt64(2));
+    row->last_visit_time = statement.ColumnTime(2);
   }
   return statement.ColumnInt64(0);
 }

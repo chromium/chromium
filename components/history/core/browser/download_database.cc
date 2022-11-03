@@ -611,10 +611,10 @@ bool DownloadDatabase::UpdateDownload(const DownloadRow& data) {
   statement.BindInt(column++,
                     DownloadInterruptReasonToInt(data.interrupt_reason));
   statement.BindBlob(column++, data.hash);
-  statement.BindInt64(column++, data.end_time.ToInternalValue());
+  statement.BindTime(column++, data.end_time);
   statement.BindInt64(column++, data.total_bytes);
   statement.BindInt(column++, (data.opened ? 1 : 0));
-  statement.BindInt64(column++, data.last_access_time.ToInternalValue());
+  statement.BindTime(column++, data.last_access_time);
   statement.BindInt(column++, (data.transient ? 1 : 0));
   statement.BindString(column++, data.by_ext_id);
   statement.BindString(column++, data.by_ext_name);
@@ -694,7 +694,7 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
     BindFilePath(statement_insert, info.target_path, column++);
     statement_insert.BindString(column++, info.mime_type);
     statement_insert.BindString(column++, info.original_mime_type);
-    statement_insert.BindInt64(column++, info.start_time.ToInternalValue());
+    statement_insert.BindTime(column++, info.start_time);
     statement_insert.BindInt64(column++, info.received_bytes);
     statement_insert.BindInt64(column++, info.total_bytes);
     statement_insert.BindInt(column++, DownloadStateToInt(info.state));
@@ -703,10 +703,9 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
     statement_insert.BindInt(
         column++, DownloadInterruptReasonToInt(info.interrupt_reason));
     statement_insert.BindBlob(column++, info.hash);
-    statement_insert.BindInt64(column++, info.end_time.ToInternalValue());
+    statement_insert.BindTime(column++, info.end_time);
     statement_insert.BindInt(column++, info.opened ? 1 : 0);
-    statement_insert.BindInt64(column++,
-                               info.last_access_time.ToInternalValue());
+    statement_insert.BindTime(column++, info.last_access_time);
     statement_insert.BindInt(column++, info.transient ? 1 : 0);
     statement_insert.BindString(column++, info.referrer_url.spec());
     statement_insert.BindString(column++, info.site_url.spec());

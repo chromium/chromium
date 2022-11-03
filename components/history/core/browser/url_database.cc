@@ -298,8 +298,7 @@ bool URLDatabase::InitURLEnumeratorForSignificant(URLEnumerator* enumerator) {
       " ORDER BY typed_count DESC, last_visit_time DESC, visit_count "
       "DESC");
   enumerator->statement_.Assign(GetDB().GetUniqueStatement(sql.c_str()));
-  enumerator->statement_.BindInt64(
-      0, AutocompleteAgeThreshold().ToInternalValue());
+  enumerator->statement_.BindTime(0, AutocompleteAgeThreshold());
   enumerator->statement_.BindInt(1, kLowQualityMatchVisitLimit);
   enumerator->statement_.BindInt(2, kLowQualityMatchTypedLimit);
   enumerator->initialized_ = enumerator->statement_.is_valid();
@@ -705,10 +704,10 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
       ORDER BY last_visit_time DESC
       )"));
 
-  statement.BindInt64(
-      0, kAutocompleteDuplicateVisitIntervalThreshold.ToInternalValue());
+  statement.BindTime(0, base::Time::FromDeltaSinceWindowsEpoch(
+                            kAutocompleteDuplicateVisitIntervalThreshold));
   statement.BindInt64(1, keyword_id);
-  statement.BindInt64(2, age_threshold.ToInternalValue());
+  statement.BindTime(2, age_threshold);
 
   while (statement.Step()) {
     auto visit = std::make_unique<KeywordSearchTermVisit>();
@@ -747,7 +746,7 @@ URLDatabase::CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id,
       ORDER BY kst.normalized_term, u.last_visit_time
       )"));
   enumerator->statement_.BindInt64(0, keyword_id);
-  enumerator->statement_.BindInt64(1, age_threshold.ToInternalValue());
+  enumerator->statement_.BindTime(1, age_threshold);
   enumerator->initialized_ = enumerator->statement_.is_valid();
   return enumerator;
 }
