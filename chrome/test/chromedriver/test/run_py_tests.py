@@ -3021,7 +3021,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         'state': 'denied'})
 
   def testPermissionStates(self):
-    """ Confirms that denied, granted, and prompt can be set. """
+    """ Confirms that denied and granted can be set. """
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     self._driver.SetPermission({
       'descriptor': { 'name': 'geolocation' },
@@ -3033,11 +3033,6 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
       'state': 'granted'
     })
     self.CheckPermission(self.GetPermission('geolocation'), 'granted')
-    self._driver.SetPermission({
-      'descriptor': { 'name': 'geolocation' },
-      'state': 'prompt'
-    })
-    self.CheckPermission(self.GetPermission('geolocation'), 'prompt')
 
   def testSettingPermissionDoesNotAffectOthers(self):
     """ Confirm permissions do not affect unset permissions. """
@@ -3060,15 +3055,10 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
       'state': 'denied'
     })
     self._driver.SetPermission({
-      'descriptor': { 'name': 'background-fetch' },
-      'state': 'prompt'
-    })
-    self._driver.SetPermission({
       'descriptor': { 'name': 'background-sync' },
       'state': 'granted'
     })
     self.CheckPermission(self.GetPermission('geolocation'), 'denied')
-    self.CheckPermission(self.GetPermission('background-fetch'), 'prompt')
     self.CheckPermission(self.GetPermission('background-sync'), 'granted')
 
   def testSensorPermissions(self):
@@ -3172,11 +3162,11 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
 
     parameters = {
       'descriptor': { 'name': 'clipboard-write' },
-      'state': 'prompt'
+      'state': 'denied'
     }
     self._driver.SetPermission(parameters)
     self.CheckPermission(self.GetPermission('clipboard-read'), 'granted')
-    self.CheckPermission(self.GetPermission('clipboard-write'), 'prompt')
+    self.CheckPermission(self.GetPermission('clipboard-write'), 'denied')
 
   def testPersistentStoragePermissions(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
@@ -3267,14 +3257,14 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.SwitchToWindow(another_window_handle)
 
     # Set permission.
-    parameters = { 'descriptor': { 'name': 'geolocation' }, 'state': 'prompt' }
+    parameters = { 'descriptor': { 'name': 'geolocation' }, 'state': 'granted' }
 
     # Test that they are present across the same domain.
     self._driver.SetPermission(parameters)
-    self.CheckPermission(self.GetPermission('geolocation'), 'prompt')
+    self.CheckPermission(self.GetPermission('geolocation'), 'granted')
 
     self._driver.SwitchToWindow(window_handle)
-    self.CheckPermission(self.GetPermission('geolocation'), 'prompt')
+    self.CheckPermission(self.GetPermission('geolocation'), 'granted')
 
     # Assert different domain is not the same.
     self._driver.SwitchToWindow(different_domain)

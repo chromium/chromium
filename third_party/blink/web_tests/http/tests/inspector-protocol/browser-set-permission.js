@@ -14,12 +14,10 @@
   // Test that all three states can be set.
   await Promise.all([
     setWithName('background-fetch', 'granted'),
-    setWithName('persistent-storage', 'prompt'),
     setWithName('background-sync', 'denied')
   ]);
   await Promise.all([
     waitForName('background-fetch', 'granted'),
-    waitForName('persistent-storage', 'prompt'),
     waitForName('background-sync', 'denied')
   ]);
   await dp.Browser.resetPermissions();
@@ -35,8 +33,6 @@
   await waitForName('background-fetch', 'granted');
   await setWithName('background-fetch', 'denied');
   await waitForName('background-fetch', 'denied');
-  await setWithName('background-fetch', 'prompt');
-  await waitForName('background-fetch', 'prompt');
   await dp.Browser.resetPermissions();
 
   // Test MIDI rules are respected.
@@ -57,14 +53,6 @@
     waitPermission(midi_with_sysex, 'denied')
   ]);
 
-  // Prompt sysex=false implies prompt sysex=true.
-  await set(midi_without_sysex, 'prompt');
-  await Promise.all([
-    waitPermission(midi_without_sysex, 'prompt'),
-    waitPermission(midi_with_sysex, 'prompt')
-  ]);
-  await dp.Browser.resetPermissions();
-
   // Test "push" permissions userVisibleOnly=true is supported.
   await set({name: 'push', userVisibleOnly: true}, 'granted');
   await waitPermission({name: 'push', userVisibleOnly: true}, 'granted');
@@ -79,7 +67,7 @@
   await setWithName('geolocation', 'granted');
   await set({name: 'geolocation'}, 'denied', 'http://devtools.txt:8001');
   await waitForName('geolocation', 'granted');
-  await dp.Browser.resetPermissions()
+  await dp.Browser.resetPermissions();
 
   testRunner.log(await session.evaluate(() => window.messages));
 
