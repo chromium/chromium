@@ -225,6 +225,11 @@ crbug.com/1376647 [ Linux ] virtual/scalefactor200/css3/filters/effect-reference
 
 # --- END Skia roll test suppresions
 
+# ====== Popover and Anchor Positioning failures from here ======
+
+crbug.com/1380112 external/wpt/html/semantics/popovers/popover-anchor-display.tentative.html [ Failure ]
+
+# ====== Popover and Anchor Positioning failures to here ======
 
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]

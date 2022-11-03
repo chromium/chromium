@@ -29,6 +29,10 @@ dialog[popover]:not(:closed) {
   background-color: Canvas;
 }
 
+[popover][anchor] {
+  inset:auto;
+}
+
 [popover]:open::backdrop {
   /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
   position: fixed;
