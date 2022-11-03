@@ -65,26 +65,12 @@ ContentAnalysisDelegate::Factory* GetFactoryStorage() {
   return factory.get();
 }
 
-// A BinaryUploadService::Request implementation that gets the data to scan
-// from a string.
-class StringAnalysisRequest : public BinaryUploadService::Request {
- public:
-  StringAnalysisRequest(CloudOrLocalAnalysisSettings settings,
-                        std::string text,
-                        BinaryUploadService::ContentAnalysisCallback callback);
-  ~StringAnalysisRequest() override;
+bool* UIEnabledStorage() {
+  static bool enabled = true;
+  return &enabled;
+}
 
-  StringAnalysisRequest(const StringAnalysisRequest&) = delete;
-  StringAnalysisRequest& operator=(const StringAnalysisRequest&) = delete;
-
-  // BinaryUploadService::Request implementation.
-  void GetRequestData(DataCallback callback) override;
-
- private:
-  Data data_;
-  BinaryUploadService::Result result_ =
-      BinaryUploadService::Result::FILE_TOO_LARGE;
-};
+}  // namespace
 
 StringAnalysisRequest::StringAnalysisRequest(
     CloudOrLocalAnalysisSettings settings,
@@ -110,15 +96,8 @@ StringAnalysisRequest::~StringAnalysisRequest() {
 }
 
 void StringAnalysisRequest::GetRequestData(DataCallback callback) {
-  std::move(callback).Run(result_, std::move(data_));
+  std::move(callback).Run(result_, data_);
 }
-
-bool* UIEnabledStorage() {
-  static bool enabled = true;
-  return &enabled;
-}
-
-}  // namespace
 
 ContentAnalysisDelegate::Data::Data() = default;
 ContentAnalysisDelegate::Data::Data(Data&& other) = default;

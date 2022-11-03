@@ -16,6 +16,13 @@
 
 namespace enterprise_connectors {
 
+static base::ReadOnlySharedMemoryRegion CreateFakePage(size_t page_size) {
+  base::MappedReadOnlyRegion page =
+      base::ReadOnlySharedMemoryRegion::Create(page_size);
+  memset(page.mapping.memory(), 'a', page_size);
+  return std::move(page.region);
+}
+
 constexpr std::pair<safe_browsing::BinaryUploadService::Result, size_t>
     kTestValues[] = {
         {safe_browsing::BinaryUploadService::Result::SUCCESS, 1024},
@@ -32,13 +39,6 @@ class PagePrintAnalysisRequestTest
 
   size_t page_size() const { return GetParam().second; }
 
-  base::ReadOnlySharedMemoryRegion CreateFakePage() {
-    base::MappedReadOnlyRegion page =
-        base::ReadOnlySharedMemoryRegion::Create(page_size());
-    memset(page.mapping.memory(), 'a', page_size());
-    return std::move(page.region);
-  }
-
  private:
   base::test::SingleThreadTaskEnvironment environment_;
 };
@@ -48,8 +48,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(kTestValues));
 
 TEST_P(PagePrintAnalysisRequestTest, Sizes) {
-  PagePrintAnalysisRequest request(AnalysisSettings(), CreateFakePage(),
-                                   base::DoNothing());
+  PagePrintAnalysisRequest request(
+      AnalysisSettings(), CreateFakePage(page_size()), base::DoNothing());
 
   base::RunLoop run_loop;
   request.GetRequestData(base::BindLambdaForTesting(
@@ -73,6 +73,33 @@ TEST_P(PagePrintAnalysisRequestTest, Sizes) {
       }));
 
   run_loop.Run();
+}
+
+// Calling GetRequestData() twice should return the same valid region.
+TEST(PagePrintAnalysisRequest, GetRequestData) {
+  PagePrintAnalysisRequest request(AnalysisSettings(), CreateFakePage(1024),
+                                   base::DoNothing());
+
+  safe_browsing::BinaryUploadService::Request::Data data1;
+  request.GetRequestData(base::BindLambdaForTesting(
+      [&data1](safe_browsing::BinaryUploadService::Result result,
+               safe_browsing::BinaryUploadService::Request::Data data) {
+        data1 = std::move(data);
+      }));
+
+  safe_browsing::BinaryUploadService::Request::Data data2;
+  request.GetRequestData(base::BindLambdaForTesting(
+      [&data2](safe_browsing::BinaryUploadService::Result result,
+               safe_browsing::BinaryUploadService::Request::Data data) {
+        data2 = std::move(data);
+      }));
+
+  ASSERT_EQ(data1.size, data2.size);
+
+  ASSERT_TRUE(data1.page.IsValid());
+  ASSERT_TRUE(data2.page.IsValid());
+  ASSERT_EQ(data1.page.GetSize(), data2.page.GetSize());
+  ASSERT_EQ(data1.page.GetGUID(), data2.page.GetGUID());
 }
 
 }  // namespace enterprise_connectors

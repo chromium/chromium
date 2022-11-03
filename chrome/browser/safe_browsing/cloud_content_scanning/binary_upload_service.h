@@ -85,10 +85,10 @@ class BinaryUploadService : public KeyedService {
     // Structure of data returned in the callback to GetRequestData().
     struct Data {
       Data();
+      Data(const Data&);
       Data(Data&&);
+      Data& operator=(const Data&);
       Data& operator=(Data&&);
-      Data(const Data&) = delete;
-      Data& operator=(const Data&) = delete;
       ~Data();
 
       // The data content. Only populated for string requests.

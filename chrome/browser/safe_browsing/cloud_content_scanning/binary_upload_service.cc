@@ -75,7 +75,24 @@ std::string BinaryUploadService::ResultToString(Result result) {
 }
 
 BinaryUploadService::Request::Data::Data() = default;
+
+BinaryUploadService::Request::Data::Data(const Data& other) {
+  operator=(other);
+}
+
 BinaryUploadService::Request::Data::Data(Data&&) = default;
+
+BinaryUploadService::Request::Data&
+BinaryUploadService::Request::Data::operator=(
+    const BinaryUploadService::Request::Data& other) {
+  contents = other.contents;
+  path = other.path;
+  hash = other.hash;
+  size = other.size;
+  page = other.page.Duplicate();
+  return *this;
+}
+
 BinaryUploadService::Request::Data&
 BinaryUploadService::Request::Data::operator=(
     BinaryUploadService::Request::Data&& other) = default;

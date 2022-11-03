@@ -37,7 +37,7 @@ PagePrintAnalysisRequest::~PagePrintAnalysisRequest() {
 }
 
 void PagePrintAnalysisRequest::GetRequestData(DataCallback callback) {
-  safe_browsing::BinaryUploadService::Request::Data data;
+  Data data;
   data.size = page_.GetSize();
 
   if (data.size >= kMaxPageSize) {
@@ -47,7 +47,7 @@ void PagePrintAnalysisRequest::GetRequestData(DataCallback callback) {
     return;
   }
 
-  data.page = std::move(page_);
+  data.page = page_.Duplicate();
   std::move(callback).Run(safe_browsing::BinaryUploadService::Result::SUCCESS,
                           std::move(data));
 }
