@@ -34,6 +34,8 @@ bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
   }
 }
 
+}  // namespace
+
 // PasswordStoreFetcher ----------------------------------
 
 // Fetches passswords and observes a PasswordStoreInterface.
@@ -167,8 +169,6 @@ void PasswordStoreFetcher::CancelAllRequests() {
   cancelable_task_tracker()->TryCancelAll();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
-
-}  // namespace
 
 // PasswordsCounter::PasswordsResult ----------------------------------
 PasswordsCounter::PasswordsResult::PasswordsResult(

@@ -18,9 +18,7 @@ class PasswordStoreInterface;
 }
 
 namespace browsing_data {
-namespace {
 class PasswordStoreFetcher;
-}
 class PasswordsCounter : public browsing_data::BrowsingDataCounter {
  public:
   // A subclass of SyncResult that stores the result value, a boolean
