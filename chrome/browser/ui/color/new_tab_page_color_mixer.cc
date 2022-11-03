@@ -137,6 +137,9 @@ void AddNewTabPageComprehensiveColors(ui::ColorMixer& mixer) {
       {gfx::kGoogleGrey300}, themed_foreground_color);
   mixer[kColorNewTabPageMostVisitedForeground] = SelectBasedOnDarkInput(
       element_background_color, SK_ColorWHITE, gfx::kGoogleGrey800);
+  mixer[kColorNewTabPageMostVisitedTileBackground] =
+      SelectBasedOnWhiteNtpBackground({gfx::kGoogleGrey100},
+                                      {element_background_color});
   mixer[kColorNewTabPageMostVisitedTileBackgroundThemed] = {
       element_background_color};
   mixer[kColorNewTabPageOnThemeForeground] = themed_foreground_color;
