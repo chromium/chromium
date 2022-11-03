@@ -55,6 +55,7 @@ class ArcGhostWindowView : public views::View {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, IconLoadTest);
+  FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, EmptyViewIconLoadTest);
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, FixupMessageTest);
 
   // Callback function for loading icon from App service.

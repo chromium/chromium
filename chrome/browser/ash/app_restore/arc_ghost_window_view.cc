@@ -107,7 +107,9 @@ namespace ash::full_restore {
 ArcGhostWindowView::ArcGhostWindowView(
     ArcGhostWindowShellSurface* shell_surface,
     const std::string& app_name)
-    : app_name_(app_name), shell_surface_(shell_surface) {
+    : app_name_(app_name),
+      ghost_window_type_(arc::GhostWindowType::kAppLaunch),
+      shell_surface_(shell_surface) {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));

@@ -96,6 +96,10 @@ class ArcGhostWindowViewTest : public testing::Test {
     view_->SetGhostWindowViewType(type);
   }
 
+  void CreateEmptyView() {
+    view_ = std::make_unique<ArcGhostWindowView>(nullptr, "");
+  }
+
   ArcGhostWindowView* view() { return view_.get(); }
 
  protected:
@@ -123,6 +127,20 @@ TEST_F(ArcGhostWindowViewTest, IconLoadTest) {
 
   int count = 0;
   CreateView(arc::GhostWindowType::kFullRestore, kThemeColor);
+  EXPECT_EQ(count, 0);
+
+  view()->icon_loaded_cb_for_testing_ = base::BindLambdaForTesting(
+      [&count](apps::IconValuePtr icon_value) { count++; });
+  view()->LoadIcon(kAppId);
+  EXPECT_EQ(count, 1);
+}
+
+TEST_F(ArcGhostWindowViewTest, EmptyViewIconLoadTest) {
+  const std::string kAppId = "test_app";
+  InstallApp(kAppId);
+
+  int count = 0;
+  CreateEmptyView();
   EXPECT_EQ(count, 0);
 
   view()->icon_loaded_cb_for_testing_ = base::BindLambdaForTesting(
