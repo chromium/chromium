@@ -5,17 +5,14 @@
 #include "chrome/browser/headless/headless_mode_util.h"
 
 #include "build/build_config.h"
+#include "ui/gfx/switches.h"
 
-// Native headless is currently available on Linux, Windows and Mac platforms.
-// More platforms will be added later, so avoid function level clutter by
-// providing stub implementations at the end of the file.
+// New headless mode is available on Linux, Windows and Mac platforms.
+// More platforms will be added later, so avoid function level clutter
+// by providing stub implementations at the end of the file.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-#include <cstdlib>
-#include <vector>
-
 #include "base/base_switches.h"
-#include "ui/gfx/switches.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/gl/gl_switches.h"
@@ -25,35 +22,52 @@
 namespace headless {
 
 namespace {
+const char kNewHeadlessModeSwitchValue[] = "new";
+const char kNewHeadlessModeSwitchValueDeprecated[] = "chrome";
+const char kOldHeadlessModeSwitchValue[] = "old";
 
-// Chrome native headless mode is enabled by adding the 'chrome' value
-// to --headless command line switch or by setting the USE_HEADLESS_CHROME
-// environment variable.
-const char kChrome[] = "chrome";
-const char kUseHeadlessChrome[] = "USE_HEADLESS_CHROME";
+enum HeadlessMode {
+  kNoHeadlessMode,
+  kOldHeadlessMode,
+  kNewHeadlessMode,
+  kDefaultHeadlessMode = kOldHeadlessMode
+};
+
+HeadlessMode GetHeadlessMode() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kHeadless))
+    return kNoHeadlessMode;
+
+  std::string switch_value =
+      command_line->GetSwitchValueASCII(switches::kHeadless);
+  if (switch_value == kOldHeadlessModeSwitchValue)
+    return kOldHeadlessMode;
+  if (switch_value == kNewHeadlessModeSwitchValue ||
+      switch_value == kNewHeadlessModeSwitchValueDeprecated)
+    return kNewHeadlessMode;
+
+  return kDefaultHeadlessMode;
+}
+
 }  // namespace
 
-bool IsChromeNativeHeadless() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kHeadless)) {
-    if (command_line->GetSwitchValueASCII(switches::kHeadless) == kChrome)
-      return true;
-    if (getenv(kUseHeadlessChrome) != nullptr)
-      return true;
-  }
+bool IsHeadlessMode() {
+  return GetHeadlessMode() == kNewHeadlessMode;
+}
 
-  return false;
+bool IsOldHeadlessMode() {
+  return GetHeadlessMode() == kOldHeadlessMode;
 }
 
 void SetUpCommandLine(const base::CommandLine* command_line) {
-  DCHECK(IsChromeNativeHeadless());
+  DCHECK(IsHeadlessMode());
   // Enable unattended mode.
   if (!command_line->HasSwitch(::switches::kNoErrorDialogs)) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kNoErrorDialogs);
   }
 #if BUILDFLAG(IS_LINUX)
-  // Native headless chrome on Linux relies on ozone/headless platform.
+  // Headless mode on Linux relies on ozone/headless platform.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ::switches::kOzonePlatform, switches::kHeadless);
   if (!command_line->HasSwitch(switches::kOzoneOverrideScreenSize)) {
@@ -76,8 +90,19 @@ void SetUpCommandLine(const base::CommandLine* command_line) {
 
 namespace headless {
 
-bool IsChromeNativeHeadless() {
+bool IsHeadlessMode() {
   return false;
+}
+
+bool IsOldHeadlessMode() {
+  // In addition to Linux, Windows and Mac (which are handled above),
+  // the old headless mode is also supported on ChromeOS, see chrome_main.cc.
+#if BUILDFLAG(IS_CHROMEOS)
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(switches::kHeadless);
+#else
+  return false;
+#endif
 }
 
 void SetUpCommandLine(const base::CommandLine* command_line) {}

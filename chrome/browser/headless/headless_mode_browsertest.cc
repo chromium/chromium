@@ -51,7 +51,7 @@ void HeadlessModeBrowserTest::SetUpCommandLine(
 void HeadlessModeBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
 
-  ASSERT_TRUE(headless::IsChromeNativeHeadless());
+  ASSERT_TRUE(headless::IsHeadlessMode());
 }
 
 void HeadlessModeBrowserTestWithStartWindowMode::SetUpCommandLine(
