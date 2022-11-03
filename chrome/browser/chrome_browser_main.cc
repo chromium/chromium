@@ -63,6 +63,8 @@
 #include "chrome/browser/chrome_browser_field_trials.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/chrome_for_testing/buildflags.h"
+#include "chrome/browser/component_updater/first_party_sets_component_installer.h"
+#include "chrome/browser/component_updater/registration.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -193,10 +195,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
-
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
-#include "chrome/browser/component_updater/registration.h"
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -496,11 +494,7 @@ bool ShouldInstallSodaDuringPostProfileInit(
   return base::FeatureList::IsEnabled(
       ash::features::kOnDeviceSpeechRecognition);
 #else
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
   return !command_line.HasSwitch(switches::kDisableComponentUpdate);
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1574,12 +1568,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // Needs to be done before PostProfileInit, since the SODA Installer setup is
   // called inside PostProfileInit and depends on it.
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableComponentUpdate)) {
     component_updater::RegisterComponentsForUpdate();
   }
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
+#endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 
   // `profile` may be nullptr if the profile picker is shown.
   Profile* profile = profile_info.profile;

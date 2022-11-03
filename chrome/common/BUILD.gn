@@ -40,7 +40,6 @@ buildflag_header("buildflags") {
     "ENABLE_BACKGROUND_CONTENTS=$enable_background_contents",
     "ENABLE_CHROME_NOTIFICATIONS=$enable_chrome_notifications",
     "ENABLE_CLICK_TO_CALL=$enable_click_to_call",
-    "ENABLE_COMPONENT_UPDATER=$enable_component_updater",
     "ENABLE_DOWNGRADE_PROCESSING=$enable_downgrade_processing",
     "ENABLE_HANGOUT_SERVICES_EXTENSION=$enable_hangout_services_extension",
     "ENABLE_SERVICE_DISCOVERY=$enable_service_discovery",

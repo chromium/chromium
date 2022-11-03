@@ -48,10 +48,6 @@ declare_args() {
   # Disable Click to Call on Fuchsia.
   enable_click_to_call = !is_fuchsia
 
-  # Whether to enable the component updater. Code is in
-  # //components/component_updater.
-  enable_component_updater = true
-
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = is_chrome_branded
