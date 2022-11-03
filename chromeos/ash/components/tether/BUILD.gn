@@ -262,12 +262,12 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     ":tether",
-    "//ash/services/device_sync:test_support",
     "//base/test:test_support",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/tether/proto",
+    "//chromeos/ash/services/device_sync:test_support",
     "//chromeos/ash/services/device_sync/public/cpp",
     "//chromeos/ash/services/device_sync/public/cpp:test_support",
     "//chromeos/ash/services/device_sync/public/mojom",

@@ -10,10 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/services/device_sync/attestation_certificates_syncer.h"
-#include "ash/services/device_sync/device_sync_impl.h"
-#include "ash/services/device_sync/fake_device_sync.h"
-#include "ash/services/device_sync/feature_status_change.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -24,6 +20,10 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
+#include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"
+#include "chromeos/ash/services/device_sync/device_sync_impl.h"
+#include "chromeos/ash/services/device_sync/fake_device_sync.h"
+#include "chromeos/ash/services/device_sync/feature_status_change.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"

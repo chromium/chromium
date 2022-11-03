@@ -9318,13 +9318,13 @@ if (!is_android) {
         "//ash:test_support",
         "//ash/constants",
         "//ash/public/cpp",
-        "//ash/services/device_sync",
-        "//ash/services/device_sync:test_support",
         "//chrome/browser/ash",
         "//chrome/browser/ash/system_web_apps",
         "//chrome/browser/ash/system_web_apps/test_support",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/ash/components/cryptohome",
+        "//chromeos/ash/services/device_sync",
+        "//chromeos/ash/services/device_sync:test_support",
       ]
     } else {
       sources += [

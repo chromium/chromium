@@ -9,12 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/device_sync/feature_status_change.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
+#include "chromeos/ash/services/device_sync/feature_status_change.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -12,7 +12,7 @@ all,chrome/browser/ash/net/network_portal_detector_impl.cc
 all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
 all,chromeos/geolocation/simple_geolocation_request.cc
 all,components/quirks/quirks_client.cc
-all,ash/services/device_sync/cryptauth_client_impl.cc
+all,chromeos/ash/services/device_sync/cryptauth_client_impl.cc
 all,chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc
 all,chrome/services/sharing/nearby/platform/webrtc.cc
 all,chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc

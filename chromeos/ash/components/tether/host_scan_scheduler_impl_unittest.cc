@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/services/device_sync/cryptauth_device_manager.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,6 +18,7 @@
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/tether/fake_host_scanner.h"
+#include "chromeos/ash/services/device_sync/cryptauth_device_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/session_manager/core/session_manager.h"

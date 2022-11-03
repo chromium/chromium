@@ -3217,7 +3217,6 @@ test("ash_unittests") {
     "//ash/public/mojom",
     "//ash/quick_pair:unit_tests",
     "//ash/resources/vector_icons",
-    "//ash/services:unit_tests",
     "//ash/shortcut_viewer:unit_tests",
     "//ash/strings",
     "//ash/style",
