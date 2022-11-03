@@ -10,7 +10,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chrome/browser/signin/signin_features.h"')
 GEN('#include "content/public/test/browser_test.h"');
 
-class SignInPromoBrowserTest extends PolymerTest {
+class IntroBrowserTest extends PolymerTest {
   /** @override */
   get browsePreload() {
     throw new Error('this is abstract and should be overriden by subclasses');
@@ -26,14 +26,14 @@ class SignInPromoBrowserTest extends PolymerTest {
  * Test that the Sign in and Don't sign in buttons send the correct callback
  * when clicked in chrome/browser/resources/intro/dice_app.html
  */
-var SignInPromoTest = class extends SignInPromoBrowserTest {
+var DiceAppTest = class extends IntroBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://intro/test_loader.html?module=' +
-        'intro/sign_in_promo_test.js';
+        'intro/dice_app_test.js';
   }
 };
 
-TEST_F('SignInPromoTest', 'All', function() {
+TEST_F('DiceAppTest', 'All', function() {
   mocha.run();
 });
