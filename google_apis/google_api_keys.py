@@ -96,5 +96,3 @@ if __name__ == "__main__":
   print('GOOGLE_CLIENT_ID_REMOTING_HOST=%s' % GetClientID('REMOTING_HOST'))
   print('GOOGLE_CLIENT_SECRET_REMOTING_HOST=%s' % GetClientSecret(
       'REMOTING_HOST'))
-  print('GOOGLE_CLIENT_ID_REMOTING_IDENTITY_API=%s' %GetClientID(
-      'REMOTING_IDENTITY_API'))

@@ -106,8 +106,6 @@ def _DoMain(argv):
       'REMOTING_HOST')
   values['GOOGLE_CLIENT_SECRET_REMOTING_HOST'] = (google_api_keys.
       GetClientSecret('REMOTING_HOST'))
-  values['GOOGLE_CLIENT_ID_REMOTING_IDENTITY_API'] = (google_api_keys.
-      GetClientID('REMOTING_IDENTITY_API'))
 
   if options.out:
     _DoWriteJavaOutput(options.out, values)
