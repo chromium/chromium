@@ -93,6 +93,11 @@ void ZeroStateFileProvider::StartZeroState() {
                      weak_factory_.GetWeakPtr()));
 }
 
+void ZeroStateFileProvider::StopZeroState() {
+  // Cancel any pending zero state callbacks.
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 void ZeroStateFileProvider::OnSuggestFileDataFetched(
     const absl::optional<std::vector<FileSuggestData>>& suggest_results) {
   if (suggest_results)

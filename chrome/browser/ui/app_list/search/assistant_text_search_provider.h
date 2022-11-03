@@ -30,6 +30,7 @@ class AssistantTextSearchProvider : public SearchProvider,
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
+  void StopQuery() override;
 
  private:
   // SearchProvider:

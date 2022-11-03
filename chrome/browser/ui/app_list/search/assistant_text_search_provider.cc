@@ -105,6 +105,10 @@ void AssistantTextSearchProvider::Start(const std::u16string& query) {
   UpdateResults();
 }
 
+void AssistantTextSearchProvider::StopQuery() {
+  query_.clear();
+}
+
 void AssistantTextSearchProvider::OnAssistantControllerDestroying() {
   DCHECK(assistant_state_observation_.IsObservingSource(
       ash::AssistantState::Get()));

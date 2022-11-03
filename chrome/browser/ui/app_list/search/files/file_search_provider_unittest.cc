@@ -237,6 +237,24 @@ TEST_F(FileSearchProviderTest, HighScoringFilesHaveScoreInRightRange) {
   EXPECT_LE(results[0]->relevance(), 1.0);
 }
 
+TEST_F(FileSearchProviderTest, ResultsNotReturnedAfterClearingSearch) {
+  // Make two identically named files with different access times.
+  const base::Time time = base::Time::Now();
+  const base::Time earlier_time = time - base::Days(5);
+  CreateDirectory("dir");
+  WriteFile("file");
+  TouchFile(Path("file"), earlier_time, time);
+
+  // Start search, and cancel it before the provider has had a chance to return
+  // results.
+  provider_->Start(u"file");
+
+  provider_->StopQuery();
+  Wait();
+
+  EXPECT_EQ(LastResults().size(), 0u);
+}
+
 class FileSearchProviderTrashTest : public FileSearchProviderTest {
  public:
   FileSearchProviderTrashTest() {

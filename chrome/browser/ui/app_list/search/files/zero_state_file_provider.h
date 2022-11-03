@@ -40,6 +40,7 @@ class ZeroStateFileProvider : public SearchProvider,
 
   // SearchProvider:
   void StartZeroState() override;
+  void StopZeroState() override;
   ash::AppListSearchResultType ResultType() const override;
 
  private:

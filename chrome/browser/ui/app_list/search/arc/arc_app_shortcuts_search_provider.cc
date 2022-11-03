@@ -59,6 +59,13 @@ void ArcAppShortcutsSearchProvider::Start(const std::u16string& query) {
   }
 }
 
+void ArcAppShortcutsSearchProvider::StopQuery() {
+  last_query_.clear();
+
+  // Invalidate the weak ptr to prevent previous callback run.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void ArcAppShortcutsSearchProvider::UpdateRecommendedResults(
     std::vector<arc::mojom::AppShortcutItemPtr> shortcut_items) {
   const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);

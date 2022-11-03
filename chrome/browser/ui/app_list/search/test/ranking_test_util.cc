@@ -37,12 +37,14 @@ TestResult::TestResult(const std::string& id,
 }
 
 TestResult::TestResult(const std::string& id,
+                       DisplayType display_type,
                        Category category,
                        int best_match_rank,
                        double relevance,
                        double ftrl_result_score) {
   set_id(id);
   SetTitle(base::UTF8ToUTF16(id));
+  SetDisplayType(display_type);
   SetCategory(category);
   scoring().best_match_rank = best_match_rank;
   set_relevance(relevance);

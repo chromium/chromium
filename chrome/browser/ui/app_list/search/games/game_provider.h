@@ -43,6 +43,7 @@ class GameProvider : public SearchProvider {
   // SearchProvider:
   ash::AppListSearchResultType ResultType() const override;
   void Start(const std::u16string& query) override;
+  void StopQuery() override;
 
   void SetGameIndexForTest(GameIndex game_index);
 

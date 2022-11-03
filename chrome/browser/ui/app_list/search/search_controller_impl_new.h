@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -57,6 +58,7 @@ class SearchControllerImplNew : public SearchController {
 
   // SearchController:
   void StartSearch(const std::u16string& query) override;
+  void ClearSearch() override;
   void StartZeroState(base::OnceClosure on_done,
                       base::TimeDelta timeout) override;
   void OpenResult(ChromeSearchResult* result, int event_flags) override;
@@ -83,6 +85,7 @@ class SearchControllerImplNew : public SearchController {
   std::u16string get_query() override;
   base::Time session_start() override;
   void disable_ranking_for_test() override;
+  void WaitForZeroStateCompletionForTest(base::OnceClosure callback) override;
 
   void set_ranker_manager_for_test(
       std::unique_ptr<RankerManager> ranker_manager) {
@@ -122,10 +125,10 @@ class SearchControllerImplNew : public SearchController {
   // StartZeroState.
   base::OneShotTimer zero_state_timeout_;
 
-  // The callback to indicate zero-state should be published. It is reset after
-  // calling, and has_value is used as a flag for whether zero-state has
-  // published.
-  absl::optional<base::OnceClosure> on_zero_state_done_;
+  // Callbacks to run when initial set of zero state results is published.
+  // Non empty list indicates that results should be published when zero state
+  // times out.
+  base::OnceClosureList on_zero_state_done_;
 
   // The time when StartSearch was most recently called.
   base::Time session_start_;

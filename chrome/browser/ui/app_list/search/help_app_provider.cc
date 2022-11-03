@@ -88,6 +88,11 @@ HelpAppResult::HelpAppResult(
 HelpAppResult::~HelpAppResult() = default;
 
 void HelpAppResult::Open(int event_flags) {
+  // This is a google-internal histogram. If changing this, also change the
+  // corresponding histograms file.
+  base::UmaHistogramSparse("Discover.LauncherSearch.ContentLaunched",
+                           base::PersistentHash(help_app_content_id_));
+
   // Note: event_flags is ignored, LaunchSWA doesn't need it.
   // Launch list result.
   ash::SystemAppLaunchParams params;
@@ -96,10 +101,6 @@ void HelpAppResult::Open(int event_flags) {
   ash::LaunchSystemWebAppAsync(
       profile_, ash::SystemWebAppType::HELP, params,
       std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
-  // This is a google-internal histogram. If changing this, also change the
-  // corresponding histograms file.
-  base::UmaHistogramSparse("Discover.LauncherSearch.ContentLaunched",
-                           base::PersistentHash(help_app_content_id_));
 }
 
 HelpAppProvider::HelpAppProvider(Profile* profile)
@@ -163,12 +164,10 @@ void HelpAppProvider::Start(const std::u16string& query) {
                      weak_factory_.GetWeakPtr(), query, start_time));
 }
 
-void HelpAppProvider::StartZeroState() {
+void HelpAppProvider::StopQuery() {
   last_query_.clear();
-}
-
-void HelpAppProvider::ViewClosing() {
-  last_query_.clear();
+  // Invalidate weak pointers to cancel existing searches.
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void HelpAppProvider::OnSearchReturned(

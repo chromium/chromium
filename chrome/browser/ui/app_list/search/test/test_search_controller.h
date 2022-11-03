@@ -26,6 +26,7 @@ class TestSearchController : public SearchController {
   Results& last_results() { return last_results_; }
 
   // SearchController:
+  void ClearSearch() override;
   void StartSearch(const std::u16string& query) override;
   void StartZeroState(base::OnceClosure on_done,
                       base::TimeDelta timeout) override;
@@ -53,6 +54,7 @@ class TestSearchController : public SearchController {
   void set_results_changed_callback_for_test(
       ResultsChangedCallback callback) override;
   void disable_ranking_for_test() override;
+  void WaitForZeroStateCompletionForTest(base::OnceClosure callback) override;
 
  private:
   std::unique_ptr<SearchProvider> provider_;

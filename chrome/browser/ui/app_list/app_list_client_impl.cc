@@ -163,17 +163,10 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
 }
 
 void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
-  // TODO(crbug.com/1269115): In the productivity launcher we handle empty
-  // queries, eg. from a user deleting a query, by re-routing them to
-  // StartZeroStateSearch. We may want to change this behavior so that ash calls
-  // StartZeroStateSearch directly.
   if (search_controller_) {
     if (trimmed_query.empty() &&
         ash::features::IsProductivityLauncherEnabled()) {
-      // We use a long timeout here because the we don't have an
-      // animation-related deadline for these results, unlike a call to
-      // StartZeroStateSearch.
-      StartZeroStateSearch(base::DoNothing(), base::Seconds(1));
+      search_controller_->ClearSearch();
     } else {
       search_controller_->StartSearch(trimmed_query);
     }

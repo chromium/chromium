@@ -27,7 +27,7 @@ class AppSearchProvider : public SearchProvider {
 
   // SearchProvider overrides:
   void Start(const std::u16string& query) override;
-  void StartZeroState() override;
+  void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
 
  private:

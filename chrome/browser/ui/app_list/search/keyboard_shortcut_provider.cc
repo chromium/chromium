@@ -71,6 +71,11 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
                      weak_factory_.GetWeakPtr()));
 }
 
+void KeyboardShortcutProvider::StopQuery() {
+  // Cancel all previous searches.
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 ash::AppListSearchResultType KeyboardShortcutProvider::ResultType() const {
   return ash::AppListSearchResultType::kKeyboardShortcut;
 }

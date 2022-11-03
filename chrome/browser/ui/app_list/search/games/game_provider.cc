@@ -196,6 +196,10 @@ void GameProvider::Start(const std::u16string& query) {
                      weak_factory_.GetWeakPtr(), query));
 }
 
+void GameProvider::StopQuery() {
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 void GameProvider::SetGameIndexForTest(GameIndex game_index) {
   game_index_ = std::move(game_index);
 }

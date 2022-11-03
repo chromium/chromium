@@ -80,6 +80,10 @@ void SearchControllerImpl::StartSearch(const std::u16string& query) {
   OnResultsChanged();
 }
 
+void SearchControllerImpl::ClearSearch() {
+  NOTIMPLEMENTED();
+}
+
 void SearchControllerImpl::StartZeroState(base::OnceClosure on_done,
                                           base::TimeDelta timeout) {
   // Only used for the productivity launcher.
@@ -90,7 +94,7 @@ void SearchControllerImpl::StartZeroState(base::OnceClosure on_done,
 
 void SearchControllerImpl::AppListClosing() {
   for (const auto& provider : providers_)
-    provider->ViewClosing();
+    provider->StopZeroState();
 }
 
 void SearchControllerImpl::OpenResult(ChromeSearchResult* result,
@@ -304,6 +308,11 @@ void SearchControllerImpl::set_results_changed_callback_for_test(
 
 void SearchControllerImpl::disable_ranking_for_test() {
   // Only called for the productivity launcher.
+  NOTREACHED();
+}
+
+void SearchControllerImpl::WaitForZeroStateCompletionForTest(
+    base::OnceClosure callback) {
   NOTREACHED();
 }
 

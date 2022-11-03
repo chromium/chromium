@@ -141,9 +141,13 @@ void ZeroStateDriveProvider::ScreenIdleStateChanged(
   screen_off_ = proto.off();
 }
 
-void ZeroStateDriveProvider::ViewClosing() {
+void ZeroStateDriveProvider::StopZeroState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Cancel any in-flight queries for this provider.
+  suggestion_query_weak_factory_.InvalidateWeakPtrs();
+
+  // Update the cache for when the zero state is next requested.
   static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
       ash::features::kProductivityLauncher, "itemsuggest_query_on_view_closing",
       true);

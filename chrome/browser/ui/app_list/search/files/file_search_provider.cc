@@ -179,6 +179,13 @@ void FileSearchProvider::Start(const std::u16string& query) {
                      weak_factory_.GetWeakPtr()));
 }
 
+void FileSearchProvider::StopQuery() {
+  weak_factory_.InvalidateWeakPtrs();
+
+  last_query_.clear();
+  last_tokenized_query_.reset();
+}
+
 void FileSearchProvider::OnSearchComplete(
     std::vector<FileSearchProvider::FileInfo> paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

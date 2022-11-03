@@ -174,6 +174,10 @@ class ASH_EXPORT AppListTestApi {
   // Returns the recent app item item specified by `index`.
   views::View* GetRecentAppAt(int index);
 
+  // Returns the list of app IDs shown in recent apps view, in order they appear
+  // in the  UI.
+  std::vector<std::string> GetRecentAppIds();
+
   // Updates launcher search box content, and triggers search.
   void SimulateSearch(const std::u16string& query);
 

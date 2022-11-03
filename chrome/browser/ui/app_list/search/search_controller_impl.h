@@ -56,6 +56,7 @@ class SearchControllerImpl : public SearchController,
   // SearchController:
   void InitializeRankers() override;
   void StartSearch(const std::u16string& query) override;
+  void ClearSearch() override;
   void StartZeroState(base::OnceClosure on_done,
                       base::TimeDelta timeout) override;
   void AppListClosing() override;
@@ -82,6 +83,7 @@ class SearchControllerImpl : public SearchController,
   void set_results_changed_callback_for_test(
       ResultsChangedCallback callback) override;
   void disable_ranking_for_test() override;
+  void WaitForZeroStateCompletionForTest(base::OnceClosure callback) override;
 
   // ash::AppListNotifier::Observer:
   void OnImpression(ash::AppListNotifier::Location location,

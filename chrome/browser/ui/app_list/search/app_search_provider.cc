@@ -63,7 +63,7 @@ void AppSearchProvider::Start(const std::u16string& query) {
   UpdateResults();
 }
 
-void AppSearchProvider::StartZeroState() {
+void AppSearchProvider::StopQuery() {
   query_.clear();
   record_query_uma_ = false;
 }
@@ -73,7 +73,7 @@ ash::AppListSearchResultType AppSearchProvider::ResultType() const {
 }
 
 void AppSearchProvider::UpdateResults() {
-  if (updates_blocked_)
+  if (updates_blocked_ || query_.empty())
     return;
 
   SearchProvider::Results new_results;

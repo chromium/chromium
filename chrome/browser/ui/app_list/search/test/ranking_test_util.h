@@ -38,6 +38,7 @@ class TestResult : public ChromeSearchResult {
              bool best_match = false);
 
   TestResult(const std::string& id,
+             DisplayType display_type,
              Category category,
              int best_match_rank,
              double relevance,

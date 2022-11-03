@@ -232,8 +232,10 @@ void OsSettingsProvider::Start(const std::u16string& query) {
                      weak_factory_.GetWeakPtr(), query, start_time));
 }
 
-void OsSettingsProvider::ViewClosing() {
+void OsSettingsProvider::StopQuery() {
   last_query_.clear();
+  // Invalidate weak pointers to cancel existing searches.
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void OsSettingsProvider::OnSearchReturned(

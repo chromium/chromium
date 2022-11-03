@@ -112,6 +112,11 @@ void ArcPlayStoreSearchProvider::Start(const std::u16string& query) {
                      base::TimeTicks::Now()));
 }
 
+void ArcPlayStoreSearchProvider::StopQuery() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  last_query_.clear();
+}
+
 void ArcPlayStoreSearchProvider::OnResults(
     const std::u16string& query,
     base::TimeTicks query_start_time,

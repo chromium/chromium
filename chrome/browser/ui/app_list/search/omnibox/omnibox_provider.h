@@ -36,6 +36,7 @@ class OmniboxProvider : public SearchProvider,
 
   // SearchProvider overrides:
   void Start(const std::u16string& query) override;
+  void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
 
   // Populates result list from AutocompleteResult.

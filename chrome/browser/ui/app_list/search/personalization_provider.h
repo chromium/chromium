@@ -67,8 +67,8 @@ class PersonalizationProvider
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
+  void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
-  void ViewClosing() override;
 
   // ::ash::personalization_app::mojom::SearchResultsObserver:
   void OnSearchResultsChanged() override;

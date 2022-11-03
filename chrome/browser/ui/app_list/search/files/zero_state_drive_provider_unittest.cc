@@ -116,7 +116,7 @@ TEST_F(ZeroStateDriveProviderTest, UpdateCache) {
   FastForwardByMinutes(1);
   EXPECT_EQ(update_count(), 1);
 
-  provider_->ViewClosing();
+  provider_->StopZeroState();
   EXPECT_EQ(update_count(), 2);
 
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);

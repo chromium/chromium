@@ -101,6 +101,8 @@ HelpAppZeroStateResult::~HelpAppZeroStateResult() = default;
 void HelpAppZeroStateResult::Open(int event_flags) {
   // Note: event_flags is ignored, LaunchSWA doesn't need it.
   if (id() == kHelpAppDiscoverResult) {
+    StopShowingDiscoverTabSuggestionChip(profile_);
+
     // Launch discover tab suggestion chip.
     ash::SystemAppLaunchParams params;
     params.url = GURL("chrome://help-app/discover");
@@ -108,12 +110,14 @@ void HelpAppZeroStateResult::Open(int event_flags) {
     ash::LaunchSystemWebAppAsync(
         profile_, ash::SystemWebAppType::HELP, params,
         std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
-
-    StopShowingDiscoverTabSuggestionChip(profile_);
+    // NOTE: Launching the result may dismiss the app list, which may delete
+    // this result.
   } else if (id() == kHelpAppUpdatesResult) {
     // Launch release notes suggestion chip.
     base::RecordAction(
         base::UserMetricsAction("ReleaseNotes.SuggestionChipLaunched"));
+
+    ash::ReleaseNotesStorage(profile_).StopShowingSuggestionChip();
 
     ash::SystemAppLaunchParams params;
     params.url = GURL("chrome://help-app/updates");
@@ -121,8 +125,8 @@ void HelpAppZeroStateResult::Open(int event_flags) {
     ash::LaunchSystemWebAppAsync(
         profile_, ash::SystemWebAppType::HELP, params,
         std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
-
-    ash::ReleaseNotesStorage(profile_).StopShowingSuggestionChip();
+    // NOTE: Launching the result may dismiss the app list, which may delete
+    // this result.
   }
 }
 

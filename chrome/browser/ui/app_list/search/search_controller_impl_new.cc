@@ -71,28 +71,19 @@ SearchControllerImplNew::SearchControllerImplNew(
 SearchControllerImplNew::~SearchControllerImplNew() {}
 
 void SearchControllerImplNew::StartSearch(const std::u16string& query) {
-  // For query searches, begin the burn-in timer.
-  if (!query.empty()) {
-    burnin_controller_->Start();
-  }
+  DCHECK(!query.empty());
 
-  // Cancel a pending zero-state publish if it exists.
-  zero_state_timeout_.Stop();
+  burnin_controller_->Start();
 
   // TODO(crbug.com/1199206): We should move this histogram logic somewhere
   // else.
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
 
-  // Clear all search results but preserve zero-state results. On a call to
-  // StartSearch, we were previously either in zero-state, or another query
-  // search. Handle these two cases differently:
-  //
-  // a) were in zero-state: publish these changes, so that results from a
-  //    previous search aren't shown.
-  //
-  // b) were in search query: do not publish these changes, so that the
-  //    old results stay on screen until the new ones are ready.
+  // Clear all search results but preserve zero-state results.
   ClearNonZeroStateResults(results_);
+
+  // NOTE: Not publishing change to clear results when the search query changes
+  // so the old results stay on screen until the new ones are ready.
   if (last_query_.empty())
     Publish();
 
@@ -103,35 +94,42 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   last_query_ = query;
 
   // Search all providers.
-  //
-  // TODO(crbug.com/1288712): The query can be empty if the user has entered and
-  // then deleted a query. We should consider whether this should trigger a
-  // StartSearch call or not.
-  for (const auto& provider : providers_) {
-    if (query.empty()) {
-      provider->StartZeroState();
-    } else {
-      provider->Start(query);
-    }
-  }
+  for (const auto& provider : providers_)
+    provider->Start(query);
+}
+
+void SearchControllerImplNew::ClearSearch() {
+  // Cancel a pending search publish if it exists.
+  burnin_controller_->Stop();
+
+  ClearNonZeroStateResults(results_);
+  last_query_.clear();
+
+  for (const auto& provider : providers_)
+    provider->StopQuery();
+
+  Publish();
+  ranker_manager_->Start(u"", results_, categories_);
 }
 
 void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
                                              base::TimeDelta timeout) {
-  // Cancel a pending search publish if it exists.
+  // Clear all results - zero state search request is made when the app list
+  // gets first shown, which would indicate that search is not currently active.
+  results_.clear();
   burnin_controller_->Stop();
 
-  results_.clear();
   // Categories currently are not used by zero-state, but may be required for
   // sorting in SetResults.
   categories_ = CreateAllCategories();
 
-  last_query_.clear();
-
   ranker_manager_->Start(std::u16string(), results_, categories_);
 
-  on_zero_state_done_ = std::move(on_done);
+  last_query_.clear();
+
+  on_zero_state_done_.AddUnsafe(std::move(on_done));
   returned_zero_state_blockers_ = 0;
+
   for (const auto& provider : providers_)
     provider->StartZeroState();
 
@@ -142,12 +140,15 @@ void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
 }
 
 void SearchControllerImplNew::OnZeroStateTimedOut() {
-  // This will be nullopt if all zero-state blocking providers have returned. If
-  // it isn't, publish whatever results have been returned.
-  if (on_zero_state_done_.has_value()) {
+  // `on_zero_state_done_` will be empty if all zero-state blocking providers
+  // have returned. If it isn't, publish whatever results have been returned.
+  // If `last_query_` is non-empty, this indicates that a search query has been
+  // issued since zero state results were requested. Do not publish results in
+  // this case to avoid interfering with queried search burn-in period.
+  // Zero state callbacks will get run when next batch of results gets
+  // published.
+  if (last_query_.empty() && !on_zero_state_done_.empty()) {
     Publish();
-    std::move(on_zero_state_done_.value()).Run();
-    on_zero_state_done_.reset();
   }
 }
 
@@ -163,10 +164,14 @@ void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
   if (!result)
     return;
 
-  // Log the length of the last query that led to the clicked result.
+  // Log the length of the last query that led to the clicked result - for zero
+  // state search results, log 0.
   // TODO(crbug.com/1199206): This histogram logic should be moved somewhere
   // else.
-  ash::RecordLauncherClickedSearchQueryLength(last_query_.length());
+  if (ash::IsZeroStateResultType(result->result_type()))
+    ash::RecordLauncherClickedSearchQueryLength(0);
+  else
+    ash::RecordLauncherClickedSearchQueryLength(last_query_.length());
 
   const bool dismiss_view_on_open = result->dismiss_view_on_open();
 
@@ -251,7 +256,7 @@ void SearchControllerImplNew::SetResults(const SearchProvider* provider,
   }
 
   results_[provider->ResultType()] = std::move(results);
-  if (last_query_.empty()) {
+  if (ash::IsZeroStateResultType(provider->ResultType())) {
     SetZeroStateResults(provider);
   } else {
     SetSearchResults(provider);
@@ -264,7 +269,7 @@ void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
                                     provider->ResultType());
   // If the burn-in period has not yet elapsed, don't call Publish here (this
   // case is covered by a call scheduled within the burn-in controller).
-  if (burnin_controller_->is_post_burnin())
+  if (!last_query_.empty() && burnin_controller_->is_post_burnin())
     Publish();
 }
 
@@ -275,16 +280,19 @@ void SearchControllerImplNew::SetZeroStateResults(
   if (ash::IsZeroStateResultType(provider->ResultType()))
     ++returned_zero_state_blockers_;
 
-  if (!on_zero_state_done_) {
-    // Zero-state has been unblocked, publish immediately.
-    Publish();
-  } else if (returned_zero_state_blockers_ == total_zero_state_blockers_) {
-    // All zero-state blockers have returned. Publish everything received so
-    // far, and trigger the on-done callback.
-    Publish();
-    std::move(on_zero_state_done_.value()).Run();
-    on_zero_state_done_.reset();
+  // Don't publish zero-state results if a queried search is currently in
+  // progress.
+  if (!last_query_.empty())
+    return;
+
+  // Wait until all zero state providers have returned before publishing
+  // results.
+  if (!on_zero_state_done_.empty() &&
+      returned_zero_state_blockers_ < total_zero_state_blockers_) {
+    return;
   }
+
+  Publish();
 }
 
 void SearchControllerImplNew::Rank(ProviderType provider_type) {
@@ -350,6 +358,12 @@ void SearchControllerImplNew::Publish() {
   }
 
   model_updater_->PublishSearchResults(all_results, category_enums);
+
+  if (!on_zero_state_done_.empty() &&
+      (!zero_state_timeout_.IsRunning() ||
+       returned_zero_state_blockers_ >= total_zero_state_blockers_)) {
+    on_zero_state_done_.Notify();
+  }
 }
 
 ChromeSearchResult* SearchControllerImplNew::FindSearchResult(
@@ -380,7 +394,12 @@ ChromeSearchResult* SearchControllerImplNew::GetResultByTitleForTest(
 }
 
 void SearchControllerImplNew::Train(LaunchData&& launch_data) {
-  launch_data.query = base::UTF16ToUTF8(last_query_);
+  // For non-zero state results (i.e. non continue section results), record the
+  // last search query.
+  const std::string query = ash::IsZeroStateResultType(launch_data.result_type)
+                                ? ""
+                                : base::UTF16ToUTF8(last_query_);
+  launch_data.query = query;
 
   // TODO(crbug.com/1199206): This logging code should move elsewhere.
   if (app_list_features::IsAppListLaunchRecordingEnabled()) {
@@ -392,8 +411,8 @@ void SearchControllerImplNew::Train(LaunchData&& launch_data) {
     metrics::structured::events::v2::launcher_usage::LauncherUsage()
         .SetTarget(NormalizeId(launch_data.id))
         .SetApp(last_launched_app_id_)
-        .SetSearchQuery(base::UTF16ToUTF8(last_query_))
-        .SetSearchQueryLength(last_query_.size())
+        .SetSearchQuery(query)
+        .SetSearchQueryLength(query.size())
         .SetProviderType(static_cast<int>(launch_data.ranking_item_type))
         .SetHour(now_exploded.hour)
         .SetScore(launch_data.score)
@@ -417,8 +436,7 @@ void SearchControllerImplNew::Train(LaunchData&& launch_data) {
   CrOSActionRecorder::GetCrosActionRecorder()->RecordAction(
       {base::StrCat({"SearchResultLaunched-", NormalizeId(launch_data.id)})},
       {{"ResultType", static_cast<int>(launch_data.ranking_item_type)},
-       {"Query", static_cast<int>(
-                     base::HashMetricName(base::UTF16ToUTF8(last_query_)))}});
+       {"Query", static_cast<int>(base::HashMetricName(query))}});
 
   // Train all search result ranking models.
   ranker_manager_->Train(launch_data);
@@ -426,7 +444,7 @@ void SearchControllerImplNew::Train(LaunchData&& launch_data) {
 
 void SearchControllerImplNew::AppListClosing() {
   for (const auto& provider : providers_)
-    provider->ViewClosing();
+    provider->StopZeroState();
 }
 
 void SearchControllerImplNew::OnResultsChangedWithType(
@@ -458,6 +476,15 @@ void SearchControllerImplNew::set_results_changed_callback_for_test(
 
 void SearchControllerImplNew::disable_ranking_for_test() {
   disable_ranking_for_test_ = true;
+}
+
+void SearchControllerImplNew::WaitForZeroStateCompletionForTest(
+    base::OnceClosure callback) {
+  if (on_zero_state_done_.empty()) {
+    std::move(callback).Run();
+    return;
+  }
+  on_zero_state_done_.AddUnsafe(std::move(callback));
 }
 
 }  // namespace app_list

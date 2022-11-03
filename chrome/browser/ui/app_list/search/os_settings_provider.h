@@ -69,7 +69,7 @@ class OsSettingsProvider : public SearchProvider,
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
-  void ViewClosing() override;
+  void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
 
   // apps::AppRegistryCache::Observer:

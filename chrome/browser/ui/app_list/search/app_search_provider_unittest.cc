@@ -173,6 +173,8 @@ class AppSearchProviderTestBase : public AppListTestBase {
     return GetSortedResultsString();
   }
 
+  void ClearSearch() { search_controller_->ClearSearch(); }
+
   std::string GetSortedResultsString() {
     // Sort results by relevance.
     std::vector<ChromeSearchResult*> sorted_results;
@@ -247,7 +249,7 @@ class AppSearchProviderTestBase : public AppListTestBase {
 
   ArcAppTest& arc_test() { return arc_test_; }
 
-  void CallViewClosing() { app_search_->ViewClosing(); }
+  void CallViewClosing() { app_search_->StopZeroState(); }
 
  private:
   // Whether the test is testing zero state, or queried apps search provider.
@@ -438,6 +440,23 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   base::RunLoop().RunUntilIdle();
 
   arc_test().TearDown();
+}
+
+TEST_F(AppSearchProviderTest, NoResultsAfterClearingSearch) {
+  CreateSearch();
+
+  EXPECT_EQ("", RunQuery("Gmail"));
+  ClearSearch();
+
+  AddExtension(extension_misc::kGmailAppId, kGmailExtensionName,
+               ManifestLocation::kExternalPrefDownload,
+               extensions::Extension::NO_FLAGS);
+  // Allow async callbacks to run.
+  base::RunLoop().RunUntilIdle();
+
+  // If matching extension is installed after the user has cleared search, the
+  // query results should not get updated.
+  EXPECT_TRUE(results().empty());
 }
 
 TEST_F(AppZeroStateProviderTest, FetchRecommendations) {

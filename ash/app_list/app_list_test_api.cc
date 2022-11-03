@@ -663,6 +663,15 @@ views::View* AppListTestApi::GetRecentAppAt(int index) {
   return GetRecentAppsView()->GetItemViewAt(index);
 }
 
+std::vector<std::string> AppListTestApi::GetRecentAppIds() {
+  std::vector<std::string> ids;
+  RecentAppsView* recent_apps = GetRecentAppsView();
+  for (int i = 0; i < recent_apps->GetItemViewCount(); ++i) {
+    ids.push_back(recent_apps->GetItemViewAt(i)->item()->id());
+  }
+  return ids;
+}
+
 void AppListTestApi::SimulateSearch(const std::u16string& query) {
   views::Textfield* textfield = GetSearchBoxView()->search_box();
   textfield->SetText(u"");

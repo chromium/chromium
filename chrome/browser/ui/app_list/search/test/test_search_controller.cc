@@ -13,6 +13,12 @@ namespace app_list {
 TestSearchController::TestSearchController() = default;
 TestSearchController::~TestSearchController() = default;
 
+void TestSearchController::ClearSearch() {
+  if (!ash::IsZeroStateResultType(provider_->ResultType()))
+    last_results_.clear();
+  provider_->StopQuery();
+}
+
 void TestSearchController::StartSearch(const std::u16string& query) {
   // The search controller used when categorical search is enabled clears all
   // results when starging another search query - simulate this behavior in
@@ -100,4 +106,8 @@ void TestSearchController::set_results_changed_callback_for_test(
 
 void TestSearchController::disable_ranking_for_test() {}
 
+void TestSearchController::WaitForZeroStateCompletionForTest(
+    base::OnceClosure callback) {
+  std::move(callback).Run();
+}
 }  // namespace app_list

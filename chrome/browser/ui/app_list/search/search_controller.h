@@ -71,6 +71,7 @@ class SearchController {
   virtual void InitializeRankers() {}
 
   virtual void StartSearch(const std::u16string& query) = 0;
+  virtual void ClearSearch() = 0;
   virtual void StartZeroState(base::OnceClosure on_done,
                               base::TimeDelta timeout) = 0;
 
@@ -125,6 +126,12 @@ class SearchController {
       ResultsChangedCallback callback) = 0;
 
   virtual void disable_ranking_for_test() = 0;
+
+  // Registers a callback to be run when zero state search returns (eiher due to
+  // all zero state providers returning results, or a timeout). The callback
+  // will run immediately if there is no pending zero state search callback.
+  virtual void WaitForZeroStateCompletionForTest(
+      base::OnceClosure callback) = 0;
 };
 
 }  // namespace app_list

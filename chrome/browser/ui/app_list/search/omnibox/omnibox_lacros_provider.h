@@ -32,6 +32,7 @@ class OmniboxLacrosProvider : public SearchProvider {
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
+  void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
 
  private:

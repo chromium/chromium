@@ -114,6 +114,14 @@ void OmniboxProvider::Start(const std::u16string& query) {
   controller_->Start(input_);
 }
 
+void OmniboxProvider::StopQuery() {
+  last_query_.clear();
+  last_tokenized_query_.reset();
+  query_finished_ = false;
+
+  controller_->Stop(true);
+}
+
 ash::AppListSearchResultType OmniboxProvider::ResultType() const {
   return ash::AppListSearchResultType::kOmnibox;
 }

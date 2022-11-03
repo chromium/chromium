@@ -111,12 +111,13 @@ void PersonalizationProvider::Start(const std::u16string& query) {
                      /*start_time=*/base::TimeTicks::Now()));
 }
 
-ash::AppListSearchResultType PersonalizationProvider::ResultType() const {
-  return ash::AppListSearchResultType::kPersonalization;
+void PersonalizationProvider::StopQuery() {
+  current_query_.clear();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void PersonalizationProvider::ViewClosing() {
-  current_query_.clear();
+ash::AppListSearchResultType PersonalizationProvider::ResultType() const {
+  return ash::AppListSearchResultType::kPersonalization;
 }
 
 void PersonalizationProvider::OnSearchResultsChanged() {

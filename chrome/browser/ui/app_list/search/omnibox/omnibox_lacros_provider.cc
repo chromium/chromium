@@ -89,6 +89,12 @@ void OmniboxLacrosProvider::Start(const std::u16string& query) {
                                  weak_factory_.GetWeakPtr()));
 }
 
+void OmniboxLacrosProvider::StopQuery() {
+  last_query_.clear();
+  last_tokenized_query_.reset();
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 ash::AppListSearchResultType OmniboxLacrosProvider::ResultType() const {
   return ash::AppListSearchResultType::kOmnibox;
 }

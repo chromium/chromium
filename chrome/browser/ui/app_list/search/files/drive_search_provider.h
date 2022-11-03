@@ -51,6 +51,7 @@ class DriveSearchProvider : public SearchProvider {
   // SearchProvider:
   ash::AppListSearchResultType ResultType() const override;
   void Start(const std::u16string& query) override;
+  void StopQuery() override;
 
  private:
   void OnSearchDriveByFileName(drive::FileError error,

@@ -47,6 +47,7 @@ class FileSearchProvider : public SearchProvider {
   // SearchProvider:
   ash::AppListSearchResultType ResultType() const override;
   void Start(const std::u16string& query) override;
+  void StopQuery() override;
 
   void SetRootPathForTesting(const base::FilePath& root_path) {
     root_path_ = root_path;

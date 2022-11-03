@@ -33,11 +33,19 @@ class SearchProvider {
 
   // Invoked to start a query search. |query| is guaranteed to be non-empty.
   virtual void Start(const std::u16string& query) {}
+
+  // Called when search query is cleared. The provider should stop/cancel
+  // any pending search query handling. This should not affect zero state
+  // search.
+  virtual void StopQuery() {}
+
   // Invoked to start a zero-state search.
   virtual void StartZeroState() {}
-  // Invoked when the UI view closes. In response, the |SearchProvider| may
-  // clear its caches.
-  virtual void ViewClosing() {}
+
+  // Invoked to cancel zero-state search - called when app list view gets
+  // hidden.
+  virtual void StopZeroState() {}
+
   // Handles training signals if necessary. A given |SearchProvider| may receive
   // training signals for results of any |RankingItemType|, so it is the
   // |SearchProvider|'s responsibility to check |type| and ignore if necessary.
