@@ -27,15 +27,15 @@ DictionaryValueUpdate::DictionaryValueUpdate(UpdateCallback report_update,
 DictionaryValueUpdate::~DictionaryValueUpdate() = default;
 
 bool DictionaryValueUpdate::HasKey(base::StringPiece key) const {
-  return value_->FindKey(key);
+  return value_->GetDict().contains(key);
 }
 
 size_t DictionaryValueUpdate::size() const {
-  return value_->DictSize();
+  return value_->GetDict().size();
 }
 
 bool DictionaryValueUpdate::empty() const {
-  return value_->DictEmpty();
+  return value_->GetDict().empty();
 }
 
 void DictionaryValueUpdate::Clear() {
@@ -43,7 +43,7 @@ void DictionaryValueUpdate::Clear() {
     return;
 
   RecordSplitPath(std::vector<base::StringPiece>());
-  value_->DictClear();
+  value_->GetDict().clear();
 }
 
 void DictionaryValueUpdate::Set(base::StringPiece path, base::Value in_value) {
