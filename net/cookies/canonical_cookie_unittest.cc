@@ -3123,7 +3123,6 @@ TEST(CanonicalCookieTest, TestSetCreationDate) {
   EXPECT_EQ(now, cookie->CreationDate());
 }
 
-// TODO(bingler) Expand this
 TEST(CanonicalCookieTest, TestPrefixHistograms) {
   base::HistogramTester histograms;
   const char kCookiePrefixHistogram[] = "Cookie.CookiePrefix";
@@ -5501,6 +5500,61 @@ TEST(CanonicalCookieTest, TestHasHiddenPrefixName) {
               test_case.result)
         << test_case.value << " failed check";
   }
+}
+
+TEST(CanonicalCookieTest, TestDoubleUnderscorePrefixHistogram) {
+  base::HistogramTester histograms;
+  const char kDoubleUnderscorePrefixHistogram[] =
+      "Cookie.DoubleUnderscorePrefixedName";
+
+  CanonicalCookie::Create(
+      GURL("https://www.example.com/"), "__Secure-abc=123; Secure",
+      base::Time::Now() /* Creation time */, absl::nullopt /* Server Time */,
+      absl::nullopt /* cookie_partition_key */);
+
+  CanonicalCookie::Create(
+      GURL("https://www.example.com/"), "__Host-abc=123; Secure; Path=/",
+      base::Time::Now() /* Creation time */, absl::nullopt /* Server Time */,
+      absl::nullopt /* cookie_partition_key */);
+
+  // Cookie prefixes shouldn't count.
+  histograms.ExpectTotalCount(kDoubleUnderscorePrefixHistogram, 2);
+  histograms.ExpectBucketCount(kDoubleUnderscorePrefixHistogram, false, 2);
+
+  CanonicalCookie::Create(GURL("https://www.example.com/"), "f__oo=bar",
+                          base::Time::Now() /* Creation time */,
+                          absl::nullopt /* Server Time */,
+                          absl::nullopt /* cookie_partition_key */);
+
+  CanonicalCookie::Create(GURL("https://www.example.com/"), "foo=__bar",
+                          base::Time::Now() /* Creation time */,
+                          absl::nullopt /* Server Time */,
+                          absl::nullopt /* cookie_partition_key */);
+
+  CanonicalCookie::Create(GURL("https://www.example.com/"), "_foo=bar",
+                          base::Time::Now() /* Creation time */,
+                          absl::nullopt /* Server Time */,
+                          absl::nullopt /* cookie_partition_key */);
+
+  CanonicalCookie::Create(GURL("https://www.example.com/"), "_f_oo=bar",
+                          base::Time::Now() /* Creation time */,
+                          absl::nullopt /* Server Time */,
+                          absl::nullopt /* cookie_partition_key */);
+
+  // These should be counted.
+  CanonicalCookie::Create(GURL("https://www.example.com/"), "__foo=bar",
+                          base::Time::Now() /* Creation time */,
+                          absl::nullopt /* Server Time */,
+                          absl::nullopt /* cookie_partition_key */);
+
+  CanonicalCookie::Create(GURL("https://www.example.com/"), "___foo=bar",
+                          base::Time::Now() /* Creation time */,
+                          absl::nullopt /* Server Time */,
+                          absl::nullopt /* cookie_partition_key */);
+
+  histograms.ExpectTotalCount(kDoubleUnderscorePrefixHistogram, 8);
+  histograms.ExpectBucketCount(kDoubleUnderscorePrefixHistogram, false, 6);
+  histograms.ExpectBucketCount(kDoubleUnderscorePrefixHistogram, true, 2);
 }
 
 }  // namespace net

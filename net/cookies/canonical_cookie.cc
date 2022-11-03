@@ -663,6 +663,14 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   RecordCookieSameSiteAttributeValueHistogram(samesite_string);
 
+  // Check for "__" prefixed names, excluding the cookie prefixes.
+  bool name_prefixed_with_underscores =
+      (prefix_case_insensitive == CanonicalCookie::COOKIE_PREFIX_NONE) &&
+      base::StartsWith(parsed_cookie.Name(), "__");
+
+  UMA_HISTOGRAM_BOOLEAN("Cookie.DoubleUnderscorePrefixedName",
+                        name_prefixed_with_underscores);
+
   UMA_HISTOGRAM_BOOLEAN("Cookie.ControlCharacterTruncation",
                         parsed_cookie.HasTruncatedNameOrValue());
 

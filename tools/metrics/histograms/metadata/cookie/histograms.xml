@@ -277,6 +277,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.DoubleUnderscorePrefixedName" enum="Boolean"
+    expires_after="2023-05-01">
+  <owner>bingler@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    Records if a cookie has a double underscore prefixed name, excluding the
+    cookie prefixes. I.e.: __Secure- and __Host- prefixed names are ignored.
+
+    This metric is recorded every time a cookie is successfully created using
+    CanonicalCookie::Create.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ExpirationDuration400DaysGT" units="days"
     expires_after="M114">
   <owner>arichiv@chromium.org</owner>
