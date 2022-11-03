@@ -2248,6 +2248,9 @@ void DocumentLoader::CommitNavigation() {
 }
 
 void DocumentLoader::CreateParserPostCommit() {
+  // https://linear.app/replay/issue/BAC-2424
+  recordreplay::Assert("DocumentLoader::CreateParserPostCommit");
+
   // DidObserveLoadingBehavior() must be called after DispatchDidCommitLoad() is
   // called for the metrics tracking logic to handle it properly.
   if (service_worker_network_provider_ &&

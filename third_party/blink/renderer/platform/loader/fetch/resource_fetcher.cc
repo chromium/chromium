@@ -789,6 +789,9 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     FetchParameters& params,
     const ResourceFactory& factory,
     WebScopedVirtualTimePauser& virtual_time_pauser) {
+  // https://linear.app/replay/issue/BAC-2424
+  recordreplay::Assert("ResourceFetcher::PrepareRequest Start");
+
   ResourceRequest& resource_request = params.MutableResourceRequest();
   ResourceType resource_type = factory.GetType();
   const ResourceLoaderOptions& options = params.Options();
