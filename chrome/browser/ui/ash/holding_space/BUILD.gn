@@ -14,7 +14,6 @@ source_set("browser_tests") {
   sources = [
     "//chrome/browser/ui/ash/holding_space/holding_space_client_impl_browsertest.cc",
     "//chrome/browser/ui/ash/holding_space/holding_space_keyed_service_browsertest.cc",
-    "//chrome/browser/ui/ash/holding_space/holding_space_suggestions_delegate_browsertest.cc",
     "//chrome/browser/ui/ash/holding_space/holding_space_ui_browsertest.cc",
   ]
 
