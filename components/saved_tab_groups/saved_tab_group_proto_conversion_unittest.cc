@@ -34,6 +34,7 @@ class SavedTabGroupConversionTest : public testing::Test {
                            sync_pb::SavedTabGroupSpecifics* sp2) {
     EXPECT_EQ(sp1->guid(), sp2->guid());
     EXPECT_EQ(sp1->tab().url(), sp2->tab().url());
+    EXPECT_EQ(sp1->tab().title(), sp2->tab().title());
     EXPECT_EQ(sp1->tab().group_guid(), sp2->tab().group_guid());
     EXPECT_EQ(sp1->creation_time_windows_epoch_micros(),
               sp2->creation_time_windows_epoch_micros());
@@ -52,14 +53,15 @@ class SavedTabGroupConversionTest : public testing::Test {
               group2.update_time_windows_epoch_micros());
   }
 
-  void CompareTabs(SavedTabGroupTab group1, SavedTabGroupTab group2) {
-    EXPECT_EQ(group1.url(), group2.url());
-    EXPECT_EQ(group1.guid(), group2.guid());
-    EXPECT_EQ(group1.group_guid(), group2.group_guid());
-    EXPECT_EQ(group1.creation_time_windows_epoch_micros(),
-              group2.creation_time_windows_epoch_micros());
-    EXPECT_EQ(group1.update_time_windows_epoch_micros(),
-              group2.update_time_windows_epoch_micros());
+  void CompareTabs(SavedTabGroupTab tab1, SavedTabGroupTab tab2) {
+    EXPECT_EQ(tab1.url(), tab2.url());
+    EXPECT_EQ(tab1.guid(), tab2.guid());
+    EXPECT_EQ(tab1.title(), tab2.title());
+    EXPECT_EQ(tab1.group_guid(), tab2.group_guid());
+    EXPECT_EQ(tab1.creation_time_windows_epoch_micros(),
+              tab2.creation_time_windows_epoch_micros());
+    EXPECT_EQ(tab1.update_time_windows_epoch_micros(),
+              tab2.update_time_windows_epoch_micros());
   }
 
   base::Time time_;
@@ -91,7 +93,7 @@ TEST_F(SavedTabGroupConversionTest, GroupToSpecificRetainsData) {
 
 TEST_F(SavedTabGroupConversionTest, TabToSpecificRetainsData) {
   // Create a tab.
-  SavedTabGroupTab tab(GURL("chrome://hidden_link"),
+  SavedTabGroupTab tab(GURL("chrome://hidden_link"), u"Hidden Title",
                        base::GUID::GenerateRandomV4(), nullptr,
                        base::GUID::GenerateRandomV4(), time_, time_);
 
@@ -146,6 +148,7 @@ TEST_F(SavedTabGroupConversionTest, SpecificToTabRetainsData) {
   sync_pb::SavedTabGroupTab* pb_tab = pb_specific->mutable_tab();
   pb_tab->set_url("chrome://newtab/");
   pb_tab->set_group_guid(base::GUID::GenerateRandomV4().AsLowercaseString());
+  pb_tab->set_title("New Tab Title");
 
   // Turn a specific into a tab.
   SavedTabGroupTab tab = SavedTabGroupTab::FromSpecifics(*pb_specific);
@@ -200,7 +203,7 @@ TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
   // Create a tab.
   const base::Time old_time = base::Time::Now();
   base::GUID saved_guid = base::GUID::GenerateRandomV4();
-  SavedTabGroupTab tab1(GURL("Test url"), saved_guid);
+  SavedTabGroupTab tab1(GURL("Test url"), u"Test Title", saved_guid);
 
   // Create a new group with the same data and update it. Calling set functions
   // should internally update update_time_windows_epoch_micros.

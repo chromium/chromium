@@ -96,9 +96,9 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
 
   SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
                                           const std::u16string& title) {
-    SavedTabGroupTab tab(GURL(base_path_ + url),
+    SavedTabGroupTab tab(GURL(base_path_ + url), title,
                          base::GUID::GenerateRandomV4());
-    tab.SetTitle(title).SetFavicon(gfx::Image());
+    tab.SetFavicon(gfx::Image());
     return tab;
   }
 
@@ -206,8 +206,8 @@ class SavedTabGroupModelTest : public ::testing::Test {
   SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
                                           const std::u16string& title,
                                           const base::GUID& group_guid) {
-    SavedTabGroupTab tab(GURL(base_path_ + url), group_guid);
-    tab.SetTitle(title).SetFavicon(gfx::Image());
+    SavedTabGroupTab tab(GURL(base_path_ + url), title, group_guid);
+    tab.SetFavicon(gfx::Image());
     return tab;
   }
 

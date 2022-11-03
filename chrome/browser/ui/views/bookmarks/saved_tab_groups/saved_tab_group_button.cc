@@ -197,7 +197,7 @@ SavedTabGroupButton::CreateDialogModelForContextMenu() {
         tab.favicon().has_value()
             ? ui::ImageModel::FromImage(tab.favicon().value())
             : ui::ImageModel(),
-        tab.title().value_or(base::UTF8ToUTF16(tab.url().spec())),
+        tab.title().empty() ? base::UTF8ToUTF16(tab.url().spec()) : tab.title(),
         base::BindRepeating(
             [](GURL url,
                base::RepeatingCallback<content::PageNavigator*()>

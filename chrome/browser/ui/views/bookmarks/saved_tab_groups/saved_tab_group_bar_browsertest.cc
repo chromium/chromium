@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
 
     stg_model->Add(SavedTabGroup(
         std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
-        {SavedTabGroupTab(GURL("chrome://newtab"), guid)
+        {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid)
              .SetTitle(u"Title")
              .SetFavicon(favicon::GetDefaultFavicon())},
         guid));
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   {  // Add an STG, open a group for it in the tabstrip, and delete the STG.
     stg_model->Add(SavedTabGroup(
         std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
-        {SavedTabGroupTab(GURL("chrome://newtab"), guid)
+        {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid)
              .SetTitle(u"Title")
              .SetFavicon(favicon::GetDefaultFavicon())},
         guid));
@@ -119,12 +119,11 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   EXPECT_FALSE(model->group_model()->GetTabGroup(group_id)->IsSaved());
 
   // Add the group to the SavedTabGroupModel and expect it is saved.
-  stg_model->Add(SavedTabGroup(std::u16string(u"test_title_1"),
-                               tab_groups::TabGroupColorId::kGrey,
-                               {SavedTabGroupTab(GURL("chrome://newtab"), guid)
-                                    .SetTitle(u"Title")
-                                    .SetFavicon(favicon::GetDefaultFavicon())},
-                               guid, group_id));
+  stg_model->Add(SavedTabGroup(
+      std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
+      {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid)
+           .SetFavicon(favicon::GetDefaultFavicon())},
+      guid, group_id));
   EXPECT_TRUE(model->group_model()->GetTabGroup(group_id)->IsSaved());
 
   // Remove the group from the SavedTabGroupModel and expect it is no longer

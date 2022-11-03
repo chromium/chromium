@@ -24,6 +24,7 @@ class SavedTabGroup;
 class SavedTabGroupTab {
  public:
   SavedTabGroupTab(const GURL& url,
+                   const std::u16string& title,
                    const base::GUID& group_guid,
                    SavedTabGroup* group = nullptr,
                    absl::optional<base::GUID> guid = absl::nullopt,
@@ -31,7 +32,6 @@ class SavedTabGroupTab {
                        creation_time_windows_epoch_micros = absl::nullopt,
                    absl::optional<base::Time> update_time_windows_epoch_micros =
                        absl::nullopt,
-                   absl::optional<std::u16string> title = absl::nullopt,
                    absl::optional<gfx::Image> favicon = absl::nullopt);
   SavedTabGroupTab(const SavedTabGroupTab& other);
   ~SavedTabGroupTab();
@@ -41,7 +41,7 @@ class SavedTabGroupTab {
   const base::GUID& group_guid() const { return group_guid_; }
   SavedTabGroup* saved_tab_group() const { return saved_tab_group_; }
   const GURL& url() const { return url_; }
-  const absl::optional<std::u16string>& title() const { return title_; }
+  const std::u16string& title() const { return title_; }
   const absl::optional<gfx::Image>& favicon() const { return favicon_; }
   const base::Time& creation_time_windows_epoch_micros() const {
     return creation_time_windows_epoch_micros_;
@@ -109,8 +109,8 @@ class SavedTabGroupTab {
   // The link to navigate with.
   GURL url_;
 
-  // The title of the website this urls is associated with.
-  absl::optional<std::u16string> title_;
+  // The title of the website this url is associated with.
+  std::u16string title_;
 
   // The favicon of the website this SavedTabGroupTab represents.
   absl::optional<gfx::Image> favicon_;

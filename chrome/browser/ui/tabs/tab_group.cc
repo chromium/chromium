@@ -147,9 +147,9 @@ void TabGroup::SaveGroup() {
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
     content::WebContents* web_contents = controller_->GetWebContentsAt(i);
     const GURL& url = web_contents->GetVisibleURL();
+    const std::u16string& title = web_contents->GetTitle();
     tabs.emplace_back(
-        SavedTabGroupTab(url, saved_group_guid)
-            .SetTitle(web_contents->GetTitle())
+        SavedTabGroupTab(url, title, saved_group_guid)
             .SetFavicon(favicon::TabFaviconFromWebContents(web_contents)));
   }
 
