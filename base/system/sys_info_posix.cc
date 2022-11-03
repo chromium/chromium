@@ -120,9 +120,9 @@ int NumberOfProcessors() {
   // disables hyper-threading for the current application, which effectively
   // limits the number of concurrently executing threads to the number of
   // physical cores.
-  if (is_cpu_security_mitigation_enabled &&
-      base::FeatureList::IsEnabled(
-          base::kNumberOfCoresWithCpuSecurityMitigation)) {
+  if (base::FeatureList::IsEnabled(
+          base::kNumberOfCoresWithCpuSecurityMitigation) &&
+      is_cpu_security_mitigation_enabled) {
     absl::optional<int> number_of_physical_cores =
         internal::NumberOfPhysicalProcessors();
     if (number_of_physical_cores.has_value())
