@@ -67,7 +67,7 @@ source_set("browser_tests") {
     sources += [
       "manifest_verifier_browsertest.cc",
       "payment_manifest_parser_browsertest.cc",
-      "secure_payment_confirmation_creation_browsertest.cc",
+      "secure_payment_confirmation_authenticator_browsertest.cc",
       "service_worker_payment_app_finder_browsertest.cc",
       "site_per_process_payments_browsertest.cc",
     ]
