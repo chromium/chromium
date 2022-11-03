@@ -48,6 +48,8 @@ void SetImplementation(wl_resource* resource,
                                  DestroyUserData<T>);
 }
 
+void SetImplementation(wl_resource* resource, const void* implementation);
+
 // Convert a timestamp to a time value that can be used when interfacing
 // with wayland. Note that we cast a int64_t value to uint32_t which can
 // potentially overflow.

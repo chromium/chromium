@@ -134,7 +134,10 @@ void RegistryHandler(void* data,
                      uint32_t id,
                      const char* interface,
                      uint32_t version) {
-  ClientBase::Globals* globals = static_cast<ClientBase::Globals*>(data);
+  auto* data_tuple = static_cast<
+      std::tuple<ClientBase::Globals*, const ClientBase::InitParams&>*>(data);
+  ClientBase::Globals* globals = std::get<0>(*data_tuple);
+  const ClientBase::InitParams& params = std::get<1>(*data_tuple);
 
   if (strcmp(interface, "wl_compositor") == 0) {
     globals->compositor.reset(static_cast<wl_compositor*>(
@@ -156,7 +159,8 @@ void RegistryHandler(void* data,
         wl_registry_bind(registry, id, &zaura_shell_interface, 34)));
   } else if (strcmp(interface, "zwp_linux_dmabuf_v1") == 0) {
     globals->linux_dmabuf.reset(static_cast<zwp_linux_dmabuf_v1*>(
-        wl_registry_bind(registry, id, &zwp_linux_dmabuf_v1_interface, 2)));
+        wl_registry_bind(registry, id, &zwp_linux_dmabuf_v1_interface,
+                         std::min(params.linux_dmabuf_version, version))));
   } else if (strcmp(interface, "wl_subcompositor") == 0) {
     globals->subcompositor.reset(static_cast<wl_subcompositor*>(
         wl_registry_bind(registry, id, &wl_subcompositor_interface, 1)));
@@ -476,7 +480,9 @@ bool ClientBase::Init(const InitParams& params) {
     return false;
   }
   registry_.reset(wl_display_get_registry(display_.get()));
-  wl_registry_add_listener(registry_.get(), &g_registry_listener, &globals_);
+
+  std::tuple<Globals*, const InitParams&> data(&globals_, params);
+  wl_registry_add_listener(registry_.get(), &g_registry_listener, &data);
 
   wl_display_roundtrip(display_.get());
 
@@ -944,7 +950,7 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
   std::unique_ptr<Buffer> buffer;
 #if defined(USE_GBM)
   if (device_) {
-    buffer = CreateDrmBuffer(size, drm_format, bo_usage, y_invert_);
+    buffer = CreateDrmBuffer(size, drm_format, nullptr, 0, bo_usage, y_invert_);
     CHECK(buffer) << "Can't create drm buffer";
   }
 #endif
@@ -1049,6 +1055,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
 std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     const gfx::Size& size,
     int32_t drm_format,
+    const uint64_t* drm_modifiers,
+    const unsigned int drm_modifiers_count,
     int32_t bo_usage,
     bool y_invert) {
   std::unique_ptr<Buffer> buffer;
@@ -1060,8 +1068,14 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     }
 
     buffer = std::make_unique<Buffer>();
-    buffer->bo.reset(gbm_bo_create(device_.get(), size.width(), size.height(),
-                                   drm_format, bo_usage));
+    if (drm_modifiers_count == 0) {
+      buffer->bo.reset(gbm_bo_create(device_.get(), size.width(), size.height(),
+                                     drm_format, bo_usage));
+    } else {
+      buffer->bo.reset(gbm_bo_create_with_modifiers(
+          device_.get(), size.width(), size.height(), drm_format, drm_modifiers,
+          drm_modifiers_count));
+    }
     if (!buffer->bo) {
       LOG(ERROR) << "Can't create gbm buffer";
       return nullptr;

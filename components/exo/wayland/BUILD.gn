@@ -37,6 +37,8 @@ source_set("wayland") {
     "wayland_display_output.h",
     "wayland_display_util.cc",
     "wayland_display_util.h",
+    "wayland_dmabuf_feedback_manager.cc",
+    "wayland_dmabuf_feedback_manager.h",
     "wayland_input_delegate.cc",
     "wayland_input_delegate.h",
     "wayland_keyboard_delegate.cc",
@@ -192,11 +194,20 @@ source_set("wayland") {
     "//ui/events:events_base",
     "//ui/events/devices:devices",
     "//ui/events/ozone/layout",
+    "//ui/gfx/linux:drm",
     "//ui/ozone",
     "//ui/views",
     "//ui/wm:wm",
     "//ui/wm/public",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash",
+      "//ash/public/cpp",
+      "//chromeos/ui/base",
+    ]
+  }
 
   if (use_xkbcommon) {
     deps += [ "//ui/events/keycodes:xkb" ]

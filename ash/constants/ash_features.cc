@@ -817,6 +817,21 @@ BASE_FEATURE(kExoHapticFeedbackSupport,
              "ExoHapticFeedbackSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables version 3 of the zwp_linux_dmabuf_v1 Wayland protocol.
+// This version adds support for DRM modifiers and is required by Mesas Vulkan
+// WSI, which otherwise falls back to software rendering.
+BASE_FEATURE(kExoLinuxDmabufV3,
+             "ExoLinuxDmabufV3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables version 4 of the zwp_linux_dmabuf_v1 Wayland protocol.
+// This version adds support for dynamic feedback, allowing the compositor to
+// give clients hints about more optimal DRM formats and modifiers depending on
+// e.g. available KMS hardware planes.
+BASE_FEATURE(kExoLinuxDmabufV4,
+             "ExoLinuxDmabufV4",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable use of ordinal (unaccelerated) motion by Exo clients.
 BASE_FEATURE(kExoOrdinalMotion,
              "ExoOrdinalMotion",
