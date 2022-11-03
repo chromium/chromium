@@ -606,7 +606,10 @@ void AppListBubbleView::Layout() {
     // NOTE: Folder view bounds are also modified during reparent drag when the
     // view is "visible" but hidden offscreen. See app_list_folder_view.cc.
     folder_view_->SetBoundsRect(folder_view_->preferred_bounds());
-    folder_view_->UpdateShadowBounds();
+    // The folder view updates the shadow bounds on its own when animating, so
+    // only update the shadow bounds here when not animating.
+    if (!folder_view_->IsAnimationRunning())
+      folder_view_->UpdateShadowBounds();
   }
 }
 
