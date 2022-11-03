@@ -122,7 +122,8 @@ class SavedDeskTest : public OverviewTestBase {
     desk_model()->AddOrUpdateEntry(
         std::move(desk_template),
         base::BindLambdaForTesting(
-            [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
+            [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
                         status);
               loop.Quit();
@@ -3766,7 +3767,8 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   desk_model()->AddOrUpdateEntry(
       std::move(new_desk_template),
       base::BindLambdaForTesting(
-          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
             EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
                       status);
             loop.Quit();

@@ -121,7 +121,8 @@ class LocalDeskDataManager : public DeskModel {
                           bool is_update,
                           ash::DeskTemplateType desk_type,
                           const base::GUID uuid,
-                          std::unique_ptr<ash::DeskTemplate> entry,
+                          std::unique_ptr<ash::DeskTemplate> old_entry,
+                          std::unique_ptr<ash::DeskTemplate> new_entry,
                           AddOrUpdateEntryStatus status);
 
   using SavedDesks =

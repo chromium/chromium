@@ -166,10 +166,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
       std::make_unique<DeskTemplate>(kTestUuid1_, DeskTemplateSource::kUser,
                                      "template 1", AdvanceAndGetTime(),
                                      DeskTemplateType::kTemplate),
-      base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
-        EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
-        loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
+            loop.Quit();
+          }));
   loop.Run();
 
   DeskSyncService* service =

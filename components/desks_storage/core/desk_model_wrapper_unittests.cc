@@ -92,12 +92,14 @@ bool FindUuidInUuidList(
 }
 
 // Verifies that the status passed into it is kOk
-void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
+void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status,
+                               std::unique_ptr<ash::DeskTemplate> new_entry) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
 }
 
 void VerifyEntryAddedErrorHitMaximumLimit(
-    DeskModel::AddOrUpdateEntryStatus status) {
+    DeskModel::AddOrUpdateEntryStatus status,
+    std::unique_ptr<ash::DeskTemplate> new_entry) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kHitMaximumLimit);
 }
 
@@ -229,7 +231,8 @@ class DeskModelWrapperTest : public testing::Test {
     model_wrapper_->AddOrUpdateEntry(
         std::move(sample_desk_template_one_),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
               loop1.Quit();
             }));
@@ -239,7 +242,8 @@ class DeskModelWrapperTest : public testing::Test {
     model_wrapper_->AddOrUpdateEntry(
         std::move(sample_desk_template_two_),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
               loop2.Quit();
             }));
@@ -251,7 +255,8 @@ class DeskModelWrapperTest : public testing::Test {
     model_wrapper_->AddOrUpdateEntry(
         std::move(sample_save_and_recall_desk_one_),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
               loop1.Quit();
             }));
@@ -261,7 +266,8 @@ class DeskModelWrapperTest : public testing::Test {
     model_wrapper_->AddOrUpdateEntry(
         std::move(sample_save_and_recall_desk_two_),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
               loop2.Quit();
             }));
@@ -273,7 +279,8 @@ class DeskModelWrapperTest : public testing::Test {
     model_wrapper_->AddOrUpdateEntry(
         std::move(entry),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
               loop.Quit();
             }));

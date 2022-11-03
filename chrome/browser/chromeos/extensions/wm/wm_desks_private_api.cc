@@ -253,8 +253,8 @@ ExtensionFunction::ResponseAction WmDesksPrivateSaveActiveDeskFunction::Run() {
 }
 
 void WmDesksPrivateSaveActiveDeskFunction::OnSavedActiveDesk(
-    std::unique_ptr<ash::DeskTemplate> desk_template,
-    std::string error_string) {
+    std::string error_string,
+    std::unique_ptr<ash::DeskTemplate> desk_template) {
   if (!error_string.empty()) {
     Respond(Error(std::move(error_string)));
     return;

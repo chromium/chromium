@@ -652,7 +652,8 @@ class DeskSyncBridgeTest : public testing::Test {
     bridge()->AddOrUpdateEntry(
         std::move(desk_template1),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
               loop1.Quit();
             }));
@@ -662,7 +663,8 @@ class DeskSyncBridgeTest : public testing::Test {
     bridge()->AddOrUpdateEntry(
         std::move(desk_template2),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
               loop2.Quit();
             }));
@@ -685,7 +687,8 @@ class DeskSyncBridgeTest : public testing::Test {
     bridge()->AddOrUpdateEntry(
         std::move(desk_template1),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
               loop1.Quit();
             }));
@@ -695,7 +698,8 @@ class DeskSyncBridgeTest : public testing::Test {
     bridge()->AddOrUpdateEntry(
         std::move(desk_template2),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
               loop2.Quit();
             }));
@@ -1169,19 +1173,23 @@ TEST_F(DeskSyncBridgeTest, AddEntriesLocally) {
   base::RunLoop loop1;
   bridge()->AddOrUpdateEntry(
       desk_template_conversion::FromSyncProto(specifics1),
-      base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
-        EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
-        loop1.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
+            loop1.Quit();
+          }));
   loop1.Run();
 
   base::RunLoop loop2;
   bridge()->AddOrUpdateEntry(
       desk_template_conversion::FromSyncProto(specifics2),
-      base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
-        EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
-        loop2.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
+            loop2.Quit();
+          }));
   loop2.Run();
 
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
@@ -1218,10 +1226,13 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenEntryIsTooLarge) {
   base::RunLoop loop;
   bridge()->AddOrUpdateEntry(
       desk_template_conversion::FromSyncProto(specifics),
-      base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
-        EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kEntryTooLarge);
-        loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(status,
+                      DeskModel::AddOrUpdateEntryStatus::kEntryTooLarge);
+            loop.Quit();
+          }));
   loop.Run();
 }
 
@@ -1240,10 +1251,12 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldSucceedWheSyncIsDisabled) {
       std::make_unique<DeskTemplate>(
           MakeTestUuid(TestUuidId(1)), DeskTemplateSource::kUser, "template 1",
           AdvanceAndGetTime(), DeskTemplateType::kTemplate),
-      base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
-        EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
-        loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
+            loop.Quit();
+          }));
   loop.Run();
 }
 
@@ -1262,10 +1275,12 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenBridgeIsNotReady) {
       std::make_unique<DeskTemplate>(
           MakeTestUuid(TestUuidId(1)), DeskTemplateSource::kUser, "template 1",
           AdvanceAndGetTime(), DeskTemplateType::kTemplate),
-      base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
-        EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kFailure);
-        loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kFailure);
+            loop.Quit();
+          }));
   loop.Run();
 }
 
@@ -1396,10 +1411,12 @@ TEST_F(DeskSyncBridgeTest, UpdateEntryLocally) {
                                      DeskTemplateSource::kUser,
                                      "updated template 1", AdvanceAndGetTime(),
                                      DeskTemplateType::kTemplate),
-      base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
-        EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
-        loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
+            loop.Quit();
+          }));
   loop.Run();
 
   // We should still have both templates.

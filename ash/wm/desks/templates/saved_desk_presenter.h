@@ -107,9 +107,9 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void OnAddOrUpdateEntry(
       bool was_update,
       aura::Window* const root_window,
-      std::unique_ptr<DeskTemplate> desk_template,
       const std::u16string& saved_desk_name,
-      desks_storage::DeskModel::AddOrUpdateEntryStatus status);
+      desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+      std::unique_ptr<DeskTemplate> desk_template);
 
   // Helper functions for updating the UI.
   void AddOrUpdateUIEntries(

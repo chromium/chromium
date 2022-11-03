@@ -102,7 +102,8 @@ std::string GetPolicyWithOneTemplate() {
 }
 
 // Verifies that the status passed into it is kOk
-void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
+void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status,
+                               std::unique_ptr<ash::DeskTemplate> new_entry) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
 }
 
@@ -112,12 +113,14 @@ void VerifyEntryDeletedCorrectly(DeskModel::DeleteEntryStatus status) {
 }
 
 // Verifies that the status passed into it is kFailure
-void VerifyEntryAddedFailure(DeskModel::AddOrUpdateEntryStatus status) {
+void VerifyEntryAddedFailure(DeskModel::AddOrUpdateEntryStatus status,
+                             std::unique_ptr<ash::DeskTemplate> new_entry) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kFailure);
 }
 
 void VerifyEntryAddedErrorHitMaximumLimit(
-    DeskModel::AddOrUpdateEntryStatus status) {
+    DeskModel::AddOrUpdateEntryStatus status,
+    std::unique_ptr<ash::DeskTemplate> new_entry) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kHitMaximumLimit);
 }
 
@@ -267,7 +270,8 @@ class LocalDeskDataManagerTest : public testing::Test {
     data_manager_->AddOrUpdateEntry(
         std::move(sample_desk_template_one_),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
               loop1.Quit();
             }));
@@ -277,7 +281,8 @@ class LocalDeskDataManagerTest : public testing::Test {
     data_manager_->AddOrUpdateEntry(
         std::move(sample_desk_template_two_),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
               loop2.Quit();
             }));
@@ -289,7 +294,8 @@ class LocalDeskDataManagerTest : public testing::Test {
     data_manager_->AddOrUpdateEntry(
         std::move(sample_save_and_recall_desk_one_),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
               loop1.Quit();
             }));
@@ -299,7 +305,8 @@ class LocalDeskDataManagerTest : public testing::Test {
     data_manager_->AddOrUpdateEntry(
         std::move(sample_save_and_recall_desk_two_),
         base::BindLambdaForTesting(
-            [&](DeskModel::AddOrUpdateEntryStatus status) {
+            [&](DeskModel::AddOrUpdateEntryStatus status,
+                std::unique_ptr<ash::DeskTemplate> new_entry) {
               EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
               loop2.Quit();
             }));

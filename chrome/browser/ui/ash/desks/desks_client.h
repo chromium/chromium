@@ -54,8 +54,8 @@ class DesksClient : public ash::SessionObserver {
   // later when DesksTemplatesClient (or DesksController) hooks up with storage
   // and can hold an in-memory captured desk template instance.
   using CaptureActiveDeskAndSaveTemplateCallback =
-      base::OnceCallback<void(std::unique_ptr<ash::DeskTemplate>,
-                              std::string error)>;
+      base::OnceCallback<void(std::string error,
+                              std::unique_ptr<ash::DeskTemplate>)>;
   // Captures the active desk and saves it as template or saved desk for later
   // use. If such desk can be saved, `callback` will be invoked
   // with `""` as the error string with the pointer to the captured desk
@@ -64,20 +64,6 @@ class DesksClient : public ash::SessionObserver {
   void CaptureActiveDeskAndSaveTemplate(
       CaptureActiveDeskAndSaveTemplateCallback callback,
       ash::DeskTemplateType template_type);
-
-  using UpdateDeskTemplateCallback =
-      base::OnceCallback<void(std::string error)>;
-  // Updates the existing saved desk template with id |template_uuid| with the
-  // new provided template name |template_name|. The |template_uuid| should be
-  // the id of an existing desk template that was previously-saved in the
-  // storage. If no such existing desk template can be found or the file
-  // operation has failed, |callback| will be invoked with a description of the
-  // error as the |error|.
-  // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
-  // further uses of this method.
-  void UpdateDeskTemplate(const base::GUID& template_uuid,
-                          const std::u16string& template_name,
-                          UpdateDeskTemplateCallback callback);
 
   using DeleteDeskTemplateCallback =
       base::OnceCallback<void(std::string error)>;
@@ -187,8 +173,8 @@ class DesksClient : public ash::SessionObserver {
   // |callback| to be called as a |desks_storage::AddOrUpdateEntryCallback|.
   void OnCaptureActiveDeskAndSaveTemplate(
       CaptureActiveDeskAndSaveTemplateCallback callback,
-      std::unique_ptr<ash::DeskTemplate> desk_template,
-      desks_storage::DeskModel::AddOrUpdateEntryStatus status);
+      desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+      std::unique_ptr<ash::DeskTemplate> desk_template);
 
   // Callback function that allows for the |DeleteDeskTemplateCallback| to be
   // called as a |desks_storage::DeleteEntryCallback|
@@ -199,12 +185,6 @@ class DesksClient : public ash::SessionObserver {
   void OnRecallSavedDesk(DesksClient::LaunchDeskCallback callback,
                          const base::GUID& desk_id,
                          desks_storage::DeskModel::DeleteEntryStatus status);
-
-  // Callback function that allows the |UpdateDeskTemplateCallback| to be called
-  // as a |desks_storage::AddOrUpdateEntryCallback|.
-  void OnUpdateDeskTemplate(
-      UpdateDeskTemplateCallback callback,
-      desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 
   // Callback function that is called once the DesksController has captured the
   // active desk as a template. Invokes |callback| with |desk_template| as an

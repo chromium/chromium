@@ -323,13 +323,15 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   if (!IsReady()) {
     // This sync bridge has not finished initializing. Do not save the new entry
     // yet.
-    std::move(callback).Run(AddOrUpdateEntryStatus::kFailure);
+    std::move(callback).Run(AddOrUpdateEntryStatus::kFailure,
+                            std::move(new_entry));
     return;
   }
 
   base::GUID uuid = new_entry->uuid();
   if (!uuid.is_valid()) {
-    std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument);
+    std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
+                            std::move(new_entry));
     return;
   }
 
@@ -349,7 +351,8 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
       entry.get(),
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_));
   if (sync_proto.ByteSizeLong() > kMaxTemplateSize) {
-    std::move(callback).Run(AddOrUpdateEntryStatus::kEntryTooLarge);
+    std::move(callback).Run(AddOrUpdateEntryStatus::kEntryTooLarge,
+                            std::move(new_entry));
     return;
   }
 
@@ -371,7 +374,7 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
 
   Commit(std::move(batch));
 
-  std::move(callback).Run(AddOrUpdateEntryStatus::kOk);
+  std::move(callback).Run(AddOrUpdateEntryStatus::kOk, std::move(new_entry));
 }
 
 void DeskSyncBridge::DeleteEntry(const base::GUID& uuid,

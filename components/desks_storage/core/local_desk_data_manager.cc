@@ -234,7 +234,8 @@ void LocalDeskDataManager::AddOrUpdateEntry(
     std::unique_ptr<ash::DeskTemplate> new_entry,
     AddOrUpdateEntryCallback callback) {
   if (cache_status_ != CacheStatus::kOk) {
-    std::move(callback).Run(AddOrUpdateEntryStatus::kFailure);
+    std::move(callback).Run(AddOrUpdateEntryStatus::kFailure,
+                            std::move(new_entry));
     return;
   }
 
@@ -244,13 +245,15 @@ void LocalDeskDataManager::AddOrUpdateEntry(
                                       : kMaxSaveAndRecallDeskCount;
   if (!g_disable_max_template_limit &&
       saved_desks_list_[desk_type].size() >= template_type_max_size) {
-    std::move(callback).Run(AddOrUpdateEntryStatus::kHitMaximumLimit);
+    std::move(callback).Run(AddOrUpdateEntryStatus::kHitMaximumLimit,
+                            std::move(new_entry));
     return;
   }
 
   const base::GUID uuid = new_entry->uuid();
   if (!uuid.is_valid()) {
-    std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument);
+    std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
+                            std::move(new_entry));
     return;
   }
 
@@ -284,7 +287,8 @@ void LocalDeskDataManager::AddOrUpdateEntry(
                      std::move(template_base_value)),
       base::BindOnce(&LocalDeskDataManager::OnAddOrUpdateEntry,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     is_update, desk_type, uuid, std::move(old_entry)));
+                     is_update, desk_type, uuid, std::move(old_entry),
+                     std::move(new_entry)));
 }
 
 void LocalDeskDataManager::DeleteEntry(const base::GUID& uuid,
@@ -493,17 +497,18 @@ void LocalDeskDataManager::OnAddOrUpdateEntry(
     bool is_update,
     ash::DeskTemplateType desk_type,
     const base::GUID uuid,
-    std::unique_ptr<ash::DeskTemplate> entry,
+    std::unique_ptr<ash::DeskTemplate> old_entry,
+    std::unique_ptr<ash::DeskTemplate> new_entry,
     AddOrUpdateEntryStatus status) {
   // Rollback the template addition to the cache if there's a failure.
   if (status == AddOrUpdateEntryStatus::kFailure) {
     if (is_update) {
-      saved_desks_list_[desk_type][uuid] = std::move(entry);
+      saved_desks_list_[desk_type][uuid] = std::move(old_entry);
     } else {
       saved_desks_list_[desk_type].erase(uuid);
     }
   }
-  std::move(callback).Run(status);
+  std::move(callback).Run(status, std::move(new_entry));
 }
 
 // static

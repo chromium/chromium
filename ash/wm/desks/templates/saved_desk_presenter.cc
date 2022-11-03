@@ -457,18 +457,12 @@ void SavedDeskPresenter::SaveOrUpdateDeskTemplate(
         AppendDuplicateNumberToDuplicateName(desk_template->template_name()));
   }
 
-  // Clone the desk template so one can be sent to the model, and the other as
-  // part of the callback.
-  // TODO: Investigate if we can modify the model to send the template as one of
-  // the callback args.
-  auto desk_template_clone = desk_template->Clone();
-
   // Save or update `desk_template` as an entry in DeskModel.
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template),
       base::BindOnce(&SavedDeskPresenter::OnAddOrUpdateEntry,
                      weak_ptr_factory_.GetWeakPtr(), is_update, root_window,
-                     std::move(desk_template_clone), saved_desk_name));
+                     saved_desk_name));
 }
 
 void SavedDeskPresenter::OnDeskModelDestroying() {
@@ -610,9 +604,9 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
 void SavedDeskPresenter::OnAddOrUpdateEntry(
     bool was_update,
     aura::Window* const root_window,
-    std::unique_ptr<DeskTemplate> desk_template,
     const std::u16string& saved_desk_name,
-    desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
+    desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+    std::unique_ptr<DeskTemplate> desk_template) {
   RecordAddOrUpdateTemplateStatusHistogram(status);
 
   if (status ==

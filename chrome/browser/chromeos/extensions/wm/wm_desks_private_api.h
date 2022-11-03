@@ -155,8 +155,8 @@ class WmDesksPrivateSaveActiveDeskFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnSavedActiveDesk(std::unique_ptr<ash::DeskTemplate> desk_template,
-                         std::string error_string);
+  void OnSavedActiveDesk(std::string error_string,
+                         std::unique_ptr<ash::DeskTemplate> desk_template);
 };
 
 class WmDesksPrivateDeleteSavedDeskFunction : public ExtensionFunction {

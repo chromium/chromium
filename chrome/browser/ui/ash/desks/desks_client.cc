@@ -245,7 +245,7 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
     CaptureActiveDeskAndSaveTemplateCallback callback,
     ash::DeskTemplateType template_type) {
   if (!active_profile_) {
-    std::move(callback).Run(/*desk_template=*/nullptr, kNoCurrentUserError);
+    std::move(callback).Run(kNoCurrentUserError, /*desk_template=*/nullptr);
     return;
   }
 
@@ -254,30 +254,6 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       template_type,
       /*root_window_to_show=*/nullptr);
-}
-
-void DesksClient::UpdateDeskTemplate(const base::GUID& template_uuid,
-                                     const std::u16string& template_name,
-                                     UpdateDeskTemplateCallback callback) {
-  if (!active_profile_) {
-    std::move(callback).Run(kNoCurrentUserError);
-    return;
-  }
-
-  desks_storage::DeskModel::GetEntryByUuidResult result =
-      GetDeskModel()->GetEntryByUUID(template_uuid);
-
-  if (result.status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk) {
-    std::move(callback).Run(kStorageError);
-    return;
-  }
-
-  result.entry->set_template_name(template_name);
-
-  GetDeskModel()->AddOrUpdateEntry(
-      std::move(result.entry),
-      base::BindOnce(&DesksClient::OnUpdateDeskTemplate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DesksClient::DeleteDeskTemplate(const base::GUID& template_uuid,
@@ -616,10 +592,10 @@ void DesksClient::OnGetTemplateForDeskLaunch(
 
 void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
     DesksClient::CaptureActiveDeskAndSaveTemplateCallback callback,
-    std::unique_ptr<ash::DeskTemplate> desk_template,
-    desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
+    desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+    std::unique_ptr<ash::DeskTemplate> desk_template) {
   if (status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk) {
-    std::move(callback).Run(std::move(desk_template), kNoSavedTemplatesError);
+    std::move(callback).Run(kNoSavedTemplatesError, std::move(desk_template));
     return;
   }
   const auto saved_desk_type = desk_template->type();
@@ -635,7 +611,7 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
               ash::OverviewStartAction::kDevTools,
               ash::OverviewEnterExitType::kImmediateEnterWithoutFocus)) {
         // If for whatever reason we didn't enter overview mode, bail.
-        std::move(callback).Run(std::move(desk_template), "");
+        std::move(callback).Run("", std::move(desk_template));
         return;
       }
       overview_session = overview_controller->overview_session();
@@ -663,7 +639,7 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
         ash::DeskCloseType::kCloseAllWindows);
   }
 
-  std::move(callback).Run(std::move(desk_template), "");
+  std::move(callback).Run("", std::move(desk_template));
 }
 
 void DesksClient::OnDeleteDeskTemplate(
@@ -686,27 +662,16 @@ void DesksClient::OnRecallSavedDesk(
       desk_id);
 }
 
-void DesksClient::OnUpdateDeskTemplate(
-    DesksClient::UpdateDeskTemplateCallback callback,
-    desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
-  std::move(callback).Run(std::string(
-      status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk
-          ? kStorageError
-          : ""));
-}
-
 void DesksClient::OnCapturedDeskTemplate(
     CaptureActiveDeskAndSaveTemplateCallback callback,
     std::unique_ptr<ash::DeskTemplate> desk_template) {
   if (!desk_template)
     return;
 
-  auto desk_template_clone = desk_template->Clone();
   GetDeskModel()->AddOrUpdateEntry(
-      std::move(desk_template_clone),
+      std::move(desk_template),
       base::BindOnce(&DesksClient::OnCaptureActiveDeskAndSaveTemplate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(desk_template)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DesksClient::OnGetTemplateJson(

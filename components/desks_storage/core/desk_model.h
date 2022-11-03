@@ -120,7 +120,8 @@ class DeskModel {
   virtual GetEntryByUuidResult GetEntryByUUID(const base::GUID& uuid) = 0;
 
   using AddOrUpdateEntryCallback =
-      base::OnceCallback<void(AddOrUpdateEntryStatus status)>;
+      base::OnceCallback<void(AddOrUpdateEntryStatus status,
+                              std::unique_ptr<ash::DeskTemplate> new_entry)>;
   // Add or update a desk template by `new_entry`'s UUID.
   // The given template's name could be cleaned (e.g. removing trailing
   // whitespace) and truncated to a reasonable length before saving. This method

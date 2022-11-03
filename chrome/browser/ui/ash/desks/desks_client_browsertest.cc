@@ -172,8 +172,8 @@ std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate(
   std::unique_ptr<ash::DeskTemplate> desk_template;
   DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindLambdaForTesting(
-          [&](std::unique_ptr<ash::DeskTemplate> captured_desk_template,
-              std::string error_string) {
+          [&](std::string error_string,
+              std::unique_ptr<ash::DeskTemplate> captured_desk_template) {
             run_loop.Quit();
             ASSERT_TRUE(captured_desk_template);
             desk_template = std::move(captured_desk_template);
