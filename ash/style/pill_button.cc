@@ -127,7 +127,7 @@ absl::optional<ui::ColorId> GetDefaultButtonTextIconColorId(
               : static_cast<ui::ColorId>(ash::kColorAshButtonLabelColorPrimary);
       break;
     case PillButton::kSecondary:
-      color_id = cros_tokens::kCrosSysOnPrimaryContainer;
+      color_id = cros_tokens::kCrosSysOnSecondaryContainer;
       break;
     case PillButton::kFloating:
       color_id = is_jellyroll_enabled
