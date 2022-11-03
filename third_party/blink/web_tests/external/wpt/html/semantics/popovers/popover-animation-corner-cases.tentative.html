@@ -181,12 +181,12 @@ promise_test(async (t) => {
 
   animation.dispatchEvent(new Event('finish'));
   await waitForRender();
-  assert_true(isElementVisible(popover),'Synthetic finish events should not stop the animation, so the popover should still be visible.');
+  assert_true(isElementVisible(popover),'The popover should still be visible because the animation finish event was not trusted.');
   assert_equals(popover.getAnimations({subtree: true}).length,1,'the hide animation should still be running');
 
   animation.dispatchEvent(new Event('cancel'));
   await waitForRender();
-  assert_true(isElementVisible(popover),'Synthetic cancel events should not stop the animation, so the popover should still be visible.');
+  assert_true(isElementVisible(popover),'The popover should still be visible because the animation cancel event was not trusted.');
   assert_equals(popover.getAnimations({subtree: true}).length,1,'the hide animation should still be running');
 },'animation finish/cancel events must be trusted in order to finish closing the popover.');
 

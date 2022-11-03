@@ -8,7 +8,6 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="resources/popover-utils.js"></script>
 
 <body>
 
@@ -31,6 +30,14 @@
 
 
 <script>
+  function clickOn(element) {
+    const actions = new test_driver.Actions();
+    return actions.pointerMove(0, 0, {origin: element})
+      .pointerDown({button: actions.ButtonType.LEFT})
+      .pointerUp({button: actions.ButtonType.LEFT})
+      .send();
+  }
+
   const popover1 = document.querySelector('#p1');
   const button1 = document.querySelector('#b1');
   const popover2 = document.querySelector('#p2');
