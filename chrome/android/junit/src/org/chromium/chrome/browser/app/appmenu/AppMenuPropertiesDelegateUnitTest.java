@@ -805,6 +805,20 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    public void enablePriceTrackingItemRow_NullBookmarkModel() {
+        setShoppingListItemRowEnabled(true);
+        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
+        mBookmarkModelSupplier.set(null);
+
+        MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
+        MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
+        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
+                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
+        verify(startPriceTrackingMenuItem).setVisible(false);
+        verify(stopPriceTrackingMenuItem).setVisible(false);
+    }
+
+    @Test
     public void enablePriceTrackingItemRow_NullBookmarkId() {
         setShoppingListItemRowEnabled(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
