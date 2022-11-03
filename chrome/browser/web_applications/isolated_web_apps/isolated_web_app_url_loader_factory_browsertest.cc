@@ -262,8 +262,9 @@ fetch('title.txt')
   NavigateAndWaitForTitle(GURL(kPrimaryUrl), u"some data");
 }
 
+// Disabled due to flakiness. http://crbug.com/1381002
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
-                       InvalidStatusCode) {
+                       DISABLED_InvalidStatusCode) {
   web_package::WebBundleBuilder builder;
   builder.AddPrimaryURL(kPrimaryUrl);
   builder.AddExchange(kPrimaryUrl,
@@ -282,8 +283,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
       "unsupported HTTP status code: 201 (only status code 200 is allowed).");
 }
 
+// Disabled due to flakiness. http://crbug.com/1381002
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
-                       NonExistingResource) {
+                       DISABLED_NonExistingResource) {
   web_package::WebBundleBuilder builder;
   builder.AddPrimaryURL(kPrimaryUrl);
   builder.AddExchange(kPrimaryUrl,
