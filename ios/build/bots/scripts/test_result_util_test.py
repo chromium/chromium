@@ -13,8 +13,15 @@ import test_result_util
 from test_result_util import TestResult, TestStatus, ResultCollection
 import test_runner_test
 
+FAKE_TEST_LOC = {'repo': 'https://test', 'fileName': '//test.cc'}
 PASSED_RESULT = TestResult(
     'passed/test', TestStatus.PASS, duration=1233, test_log='Logs')
+PASSED_RESULT_WITH_LOC = TestResult(
+    'passed/test',
+    TestStatus.PASS,
+    duration=1233,
+    test_log='Logs',
+    test_loc=FAKE_TEST_LOC)
 FAILED_RESULT = TestResult(
     'failed/test', TestStatus.FAIL, duration=1233, test_log='line1\nline2')
 FAILED_RESULT_DUPLICATE = TestResult(
@@ -105,6 +112,7 @@ class TestResultTest(test_runner_test.TestCase):
         duration=None,
         test_log='',
         tags=[('test_name', 'disabled/test'), ('disabled_test', 'true')],
+        test_loc=None,
         file_artifacts={'name': '/path/to/name'})
     # Duplicate calls will only report once.
     disabled_test_result.report_to_result_sink(client)
@@ -122,7 +130,21 @@ class TestResultTest(test_runner_test.TestCase):
         duration=1233,
         file_artifacts={},
         tags=[('test_name', 'failed/test')],
+        test_loc=None,
         test_log='line1\nline2')
+
+    passed_result = PASSED_RESULT_WITH_LOC
+    client = mock.MagicMock()
+    passed_result.report_to_result_sink(client)
+    client.post.assert_called_with(
+        'passed/test',
+        'PASS',
+        True,
+        duration=1233,
+        file_artifacts={},
+        tags=[('test_name', 'passed/test')],
+        test_loc=FAKE_TEST_LOC,
+        test_log='Logs')
 
 
 class ResultCollectionTest(test_runner_test.TestCase):

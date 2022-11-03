@@ -30,6 +30,7 @@ import xctest_utils
 
 LOGGER = logging.getLogger(__name__)
 DERIVED_DATA = os.path.expanduser('~/Library/Developer/Xcode/DerivedData')
+DEFAULT_TEST_REPO = 'https://chromium.googlesource.com/chromium/src'
 
 
 # TODO(crbug.com/1077277): Move commonly used error classes to
@@ -361,6 +362,7 @@ class TestRunner(object):
     self.xctest = kwargs.get('xctest') or False
     self.readline_timeout = (
         kwargs.get('readline_timeout') or constants.READLINE_TIMEOUT)
+    self.output_disabled_tests = kwargs.get('output_disabled_tests') or False
 
     self.test_results = init_test_result_defaults()
 
@@ -561,6 +563,19 @@ class TestRunner(object):
     returncode = proc.returncode
 
     LOGGER.info('%s returned %s\n', cmd[0], returncode)
+
+    LOGGER.info('Populating test location info for test results...')
+    if isinstance(self, SimulatorTestRunner):
+      # TODO(crbug.com/1091345): currently we have some tests suites that are
+      # written in ios_internal, so not all test repos are public. We should
+      # figure out a way to identify test repo info depending on the test suite.
+      parser.ParseAndPopulateTestResultLocations(DEFAULT_TEST_REPO,
+                                                 self.output_disabled_tests)
+    else:
+      # TODO(crbug.com/1091345): Pull the file from device first before parsing.
+      LOGGER.warning(
+          'Cannot populate test locations because it is not yet supported' +
+          'on device tests yet...')
 
     return parser.GetResultCollection()
 

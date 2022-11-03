@@ -11,7 +11,7 @@ from result_sink_util import ResultSinkClient
 
 _VALID_RESULT_COLLECTION_INIT_KWARGS = set(['test_results', 'crashed'])
 _VALID_TEST_RESULT_INIT_KWARGS = set(
-    ['attachments', 'duration', 'expected_status', 'test_log'])
+    ['attachments', 'duration', 'expected_status', 'test_log', 'test_loc'])
 _VALID_TEST_STATUSES = set(['PASS', 'FAIL', 'CRASH', 'ABORT', 'SKIP'])
 
 
@@ -67,6 +67,9 @@ class TestResult(object):
       duration: (int) Test duration in milliseconds or None if unknown.
       expected_status: (str) Expected test outcome for the run.
       test_log: (str) Logs of the test.
+      test_loc: (dict): This is used to report test location info to resultSink.
+          data required in the dict can be found in
+          https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/v1/test_metadata.proto;l=32;drc=37488404d1c8aa8fccca8caae4809ece08828bae
     """
     _validate_kwargs(kwargs, _VALID_TEST_RESULT_INIT_KWARGS)
     assert isinstance(name, str), (
@@ -79,6 +82,7 @@ class TestResult(object):
     self.duration = kwargs.get('duration')
     self.expected_status = kwargs.get('expected_status', TestStatus.PASS)
     self.test_log = kwargs.get('test_log', '')
+    self.test_loc = kwargs.get('test_loc', None)
 
     # Use the var to avoid duplicate reporting.
     self._reported_to_result_sink = False
@@ -117,6 +121,7 @@ class TestResult(object):
           self.expected(),
           duration=self.duration,
           test_log=self.test_log,
+          test_loc=self.test_loc,
           tags=self._compose_result_sink_tags(),
           file_artifacts=self.attachments)
       self._reported_to_result_sink = True

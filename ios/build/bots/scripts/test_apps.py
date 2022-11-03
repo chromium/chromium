@@ -14,8 +14,11 @@ import test_runner
 import test_runner_errors
 import xcode_util
 
-
-OUTPUT_DISABLED_TESTS_TEST_ARG = '--write-compiled-tests-json-to-writable-path'
+# Including this test arg will have the gTest launcher generate
+# an info file containing all the compiled tests for this test run
+# This should be on by default
+GENERATE_COMPILED_GTESTS_FILE_TEST_ARG = (
+    '--write-compiled-tests-json-to-writable-path')
 
 
 def get_gtest_filter(included, excluded):
@@ -219,6 +222,8 @@ class GTestsApp(object):
 
     if self.env_vars:
       xctestrun_data[module].update({'EnvironmentVariables': self.env_vars})
+
+    self.test_args.append(GENERATE_COMPILED_GTESTS_FILE_TEST_ARG)
     if self.test_args:
       xctestrun_data[module].update({'CommandLineArguments': self.test_args})
 
@@ -279,8 +284,6 @@ class GTestsApp(object):
     # TODO(crbug.com/1123681): Move all_tests to class var. Set all_tests,
     # disabled_tests values in initialization to avoid multiple calls to otool.
     all_tests = []
-    # Only store the tests when there is the test arg.
-    store_disabled_tests = OUTPUT_DISABLED_TESTS_TEST_ARG in self.test_args
     self.disabled_tests = []
     for test_class, test_method in shard_util.fetch_test_names(
         self.test_app_path,
@@ -299,7 +302,7 @@ class GTestsApp(object):
       if not included or test_name in included or test_class in included:
         if test_method.startswith('test'):
           all_tests.append(test_name)
-        elif store_disabled_tests:
+        else:
           self.disabled_tests.append(test_name)
     return all_tests
 
@@ -517,6 +520,7 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
       self.test_args.append('--gtest_repeat=%s' % self.repeat_count)
 
     self.test_args.append('--gmock_verbose=error')
+    self.test_args.append(GENERATE_COMPILED_GTESTS_FILE_TEST_ARG)
 
     xctestrun_data['TestTargetName'].update(
         {'CommandLineArguments': self.test_args})
@@ -628,6 +632,7 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
       self.test_args.append('--gtest_repeat=%s' % self.repeat_count)
 
     self.test_args.append('--gmock_verbose=error')
+    self.test_args.append(GENERATE_COMPILED_GTESTS_FILE_TEST_ARG)
 
     xctestrun_data['TestTargetName'].update(
         {'CommandLineArguments': self.test_args})

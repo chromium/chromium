@@ -43,7 +43,8 @@ class UnitTest(unittest.TestCase):
         'expected': True,
         'tags': [],
         'testMetadata': {
-            'name': 'TestCase/testSomething'
+            'name': 'TestCase/testSomething',
+            'location': None,
         },
     }
     self.assertEqual(test_result, expected)
@@ -73,7 +74,8 @@ class UnitTest(unittest.TestCase):
         'duration': '1.233000000s',
         'tags': [],
         'testMetadata': {
-            'name': 'TestCase/testSomething'
+            'name': 'TestCase/testSomething',
+            'location': None,
         },
     }
     self.assertEqual(test_result, expected)
@@ -99,7 +101,8 @@ class UnitTest(unittest.TestCase):
         },
         'tags': [],
         'testMetadata': {
-            'name': 'TestCase/testSomething'
+            'name': 'TestCase/testSomething',
+            'location': None,
         },
     }
     test_result = result_sink_util._compose_test_result(
@@ -138,13 +141,38 @@ class UnitTest(unittest.TestCase):
             'value': 'true',
         }],
         'testMetadata': {
-            'name': 'TestCase/testSomething'
+            'name': 'TestCase/testSomething',
+            'location': None,
         },
     }
     test_result = result_sink_util._compose_test_result(
         'TestCase/testSomething',
         'SKIP',
         True,
+        tags=[('disabled_test', 'true')])
+    self.assertEqual(test_result, expected)
+
+  def test_composed_with_location(self):
+    """Tests with test locations"""
+    test_loc = {'repo': 'https://test', 'fileName': '//test.cc'}
+    expected = {
+        'testId': 'TestCase/testSomething',
+        'status': 'SKIP',
+        'expected': True,
+        'tags': [{
+            'key': 'disabled_test',
+            'value': 'true',
+        }],
+        'testMetadata': {
+            'name': 'TestCase/testSomething',
+            'location': test_loc,
+        },
+    }
+    test_result = result_sink_util._compose_test_result(
+        'TestCase/testSomething',
+        'SKIP',
+        True,
+        test_loc=test_loc,
         tags=[('disabled_test', 'true')])
     self.assertEqual(test_result, expected)
 
@@ -162,7 +190,8 @@ class UnitTest(unittest.TestCase):
             'value': 'true',
         }],
         'testMetadata': {
-            'name': 'TestCase/testSomething'
+            'name': 'TestCase/testSomething',
+            'location': None,
         },
     }
     client = result_sink_util.ResultSinkClient()

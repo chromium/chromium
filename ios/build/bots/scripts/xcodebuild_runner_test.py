@@ -259,7 +259,10 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
         TestResult('Class1/passedTest2', TestStatus.PASS)
     ])
     tr = xcodebuild_runner.DeviceXcodeTestRunner(
-        "fake-app-path", "fake-host-app-path", "fake-out-dir")
+        "fake-app-path",
+        "fake-host-app-path",
+        "fake-out-dir",
+        output_disabled_tests=True)
     self.assertTrue(tr.launch())
     self.assertEqual(len(tr.test_results['tests']), 3)
     tests = tr.test_results['tests']

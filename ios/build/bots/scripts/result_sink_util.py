@@ -23,6 +23,7 @@ def _compose_test_result(test_id,
                          expected,
                          duration=None,
                          test_log=None,
+                         test_loc=None,
                          tags=None,
                          file_artifacts=None):
   """Composes the test_result dict item to be posted to result sink.
@@ -35,6 +36,8 @@ def _compose_test_result(test_id,
     test_log: (str) Log of the test. Optional.
     tags: (list) List of tags. Each item in list should be a length 2 tuple of
         string as ("key", "value"). Optional.
+    test_loc: (dict): Test location metadata as described in
+        https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/v1/test_metadata.proto;l=32;drc=37488404d1c8aa8fccca8caae4809ece08828bae
     file_artifacts: (dict) IDs to abs paths mapping of existing files to
         report as artifact.
 
@@ -65,6 +68,7 @@ def _compose_test_result(test_id,
       } for (key, value) in tags],
       'testMetadata': {
           'name': test_id,
+          'location': test_loc,
       }
   }
 

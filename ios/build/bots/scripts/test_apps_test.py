@@ -125,7 +125,8 @@ class DeviceXCTestUnitTestsAppTest(test_runner_test.TestCase):
         'TestTargetName': {
             'CommandLineArguments': [
                 '--enable-run-ios-unittests-with-xctest',
-                '--gmock_verbose=error'
+                '--gmock_verbose=error',
+                '--write-compiled-tests-json-to-writable-path'
             ],
             'IsAppHostedTestBundle': True,
             'TestBundlePath': '__TESTHOST__%s' % _XCTEST_PATH,
@@ -177,7 +178,8 @@ class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
         'TestTargetName': {
             'CommandLineArguments': [
                 '--enable-run-ios-unittests-with-xctest',
-                '--gmock_verbose=error'
+                '--gmock_verbose=error',
+                '--write-compiled-tests-json-to-writable-path'
             ],
             'IsAppHostedTestBundle': True,
             'TestBundlePath': '__TESTHOST__%s' % _XCTEST_PATH,

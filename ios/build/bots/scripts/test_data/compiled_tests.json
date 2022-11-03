@@ -1,0 +1,12 @@
+[
+    {
+        "test_case_name": "test1",
+        "test_name": "test_method1",
+        "file": "../../random/path/test1.cc"
+    },
+    {
+        "test_case_name": "test2",
+        "test_name": "DISABLED_test_method1",
+        "file": "../../random/path/test2.cc"
+    }
+]

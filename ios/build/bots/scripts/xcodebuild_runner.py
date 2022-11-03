@@ -348,11 +348,12 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         iossim_util.delete_simulator_by_udid(self.udid)
 
       # Adds disabled tests to result.
-      overall_result.add_and_report_test_names_status(
-          launch_command.egtests_app.disabled_tests,
-          TestStatus.SKIP,
-          expected_status=TestStatus.SKIP,
-          test_log='Test disabled.')
+      if self.output_disabled_tests:
+        overall_result.add_and_report_test_names_status(
+            launch_command.egtests_app.disabled_tests,
+            TestStatus.SKIP,
+            expected_status=TestStatus.SKIP,
+            test_log='Test disabled.')
 
       # Adds unexpectedly skipped tests to result if applicable.
       tests_selected_at_runtime = _tests_decided_at_runtime(self.app_path)

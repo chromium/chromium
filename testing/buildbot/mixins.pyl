@@ -570,8 +570,7 @@
   'ios_output_disabled_tests': {
     '$mixin_append': {
       'args': [
-        '--args-json',
-        '{"test_args": ["--write-compiled-tests-json-to-writable-path"]}'
+        '--output-disabled-tests',
       ],
     },
   },

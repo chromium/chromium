@@ -43,6 +43,7 @@ class UnitTest(unittest.TestCase):
     self.assertTrue(runner.args.xcode_path == 'some/Xcode.app')
     self.assertTrue(runner.args.repeat == 2)
     self.assertTrue(runner.args.record_video == None)
+    self.assertFalse(runner.args.output_disabled_tests)
 
   def test_isolated_repeat_ok(self):
     cmd = [
@@ -240,6 +241,34 @@ class UnitTest(unittest.TestCase):
       runner.parse_args(cmd)
       self.assertTrue(re.match('is only supported on EG tests', ctx.message))
       self.assertEqual(ctx.exception.code, 2)
+
+  def test_parse_args_output_disabled_tests(self):
+    """
+    report disabled tests to resultdb
+    """
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--host-app',
+        './bar.app',
+        '--runtime-cache-prefix',
+        'some/dir',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--gtest_repeat',
+        '2',
+        '--output-disabled-tests',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertTrue(runner.args.output_disabled_tests)
 
   def test_merge_test_cases(self):
     """Tests test cases are merges in --test-cases and --args-json."""
