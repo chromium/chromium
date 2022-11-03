@@ -6,8 +6,6 @@ package org.chromium.shape_detection;
 
 import static org.junit.Assert.assertNull;
 
-import android.os.Build;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +23,7 @@ import org.chromium.skia.mojom.BitmapN32ImageInfo;
  * Test suite for conversion-to-Frame utils.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
+@Config(manifest = Config.NONE)
 public class BitmapUtilsTest {
     private static final int VALID_WIDTH = 1;
     private static final int VALID_HEIGHT = 1;
