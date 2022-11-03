@@ -883,15 +883,16 @@ SurroundingTextInfo InputMethodAsh::GetSurroundingTextInfo() {
   return info;
 }
 
-void InputMethodAsh::DeleteSurroundingText(int32_t offset, uint32_t length) {
+void InputMethodAsh::DeleteSurroundingText(uint32_t num_char16s_before_cursor,
+                                           uint32_t num_char16s_after_cursor) {
   if (!GetTextInputClient())
     return;
 
   if (GetTextInputClient()->HasCompositionText())
     return;
 
-  uint32_t before = offset >= 0 ? 0U : static_cast<uint32_t>(-1 * offset);
-  GetTextInputClient()->ExtendSelectionAndDelete(before, length - before);
+  GetTextInputClient()->ExtendSelectionAndDelete(num_char16s_before_cursor,
+                                                 num_char16s_after_cursor);
 }
 
 bool InputMethodAsh::ExecuteCharacterComposer(const ui::KeyEvent& event) {

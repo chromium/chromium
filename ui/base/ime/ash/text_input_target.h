@@ -74,7 +74,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
                                      bool visible) = 0;
 
   // Called when the engine request deleting surrounding string.
-  virtual void DeleteSurroundingText(int32_t offset, uint32_t length) = 0;
+  virtual void DeleteSurroundingText(uint32_t num_char16s_before_cursor,
+                                     uint32_t num_char16s_after_cursor) = 0;
 
   // Called from the extension API.
   // WARNING: This could return a stale cache that doesn't reflect reality, due

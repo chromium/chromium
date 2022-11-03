@@ -192,7 +192,9 @@ bool InputMethodEngine::DeleteSurroundingText(int context_id,
   ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (input_context) {
-    input_context->DeleteSurroundingText(offset, number_of_chars);
+    const uint32_t before =
+        offset >= 0 ? 0U : static_cast<uint32_t>(-1 * offset);
+    input_context->DeleteSurroundingText(before, number_of_chars - before);
   }
 
   return true;

@@ -462,8 +462,8 @@ TEST_F(InputMethodEngineTest,
       1, mock_ime_input_context_handler_->delete_surrounding_text_call_count());
   auto deleteSurroundingTextArg =
       mock_ime_input_context_handler_->last_delete_surrounding_text_arg();
-  EXPECT_EQ(deleteSurroundingTextArg.offset, -1);
-  EXPECT_EQ(deleteSurroundingTextArg.length, 1u);
+  EXPECT_EQ(deleteSurroundingTextArg.num_char16s_before_cursor, 1u);
+  EXPECT_EQ(deleteSurroundingTextArg.num_char16s_after_cursor, 0u);
   EXPECT_EQ(u"suggestion", mock_ime_input_context_handler_->last_commit_text());
 }
 }  // namespace input_method

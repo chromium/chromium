@@ -157,8 +157,8 @@ void InputConnectionImpl::DeleteSurroundingText(int before, int after) {
   // |before| is a number of characters is going to be deleted before the cursor
   // and |after| is a number of characters is going to be deleted after the
   // cursor.
-  if (!ime_engine_->DeleteSurroundingText(input_context_id_, -before,
-                                          before + after, &error)) {
+  if (!ime_engine_->DeleteSurroundingText(input_context_id_, before, after,
+                                          &error)) {
     LOG(ERROR) << "DeleteSurroundingText failed: before = " << before
                << ", after = " << after << ", error = \"" << error << "\"";
   }

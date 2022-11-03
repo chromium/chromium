@@ -334,11 +334,12 @@ void GrammarManager::AcceptSuggestion() {
         input_context->GetSurroundingTextInfo();
 
     // Delete the incorrect grammar fragment.
-    input_context->DeleteSurroundingText(
-        -static_cast<int>(surrounding_text.selection_range.start() -
-                          current_fragment_.range.start()),
-        current_fragment_.range.length() -
-            surrounding_text.selection_range.length());
+    DCHECK(current_fragment_.range.Contains(surrounding_text.selection_range));
+    const uint32_t before = surrounding_text.selection_range.start() -
+                            current_fragment_.range.start();
+    const uint32_t after =
+        current_fragment_.range.end() - surrounding_text.selection_range.end();
+    input_context->DeleteSurroundingText(before, after);
     input_context->SetSelectionRange(current_fragment_.range.start(),
                                      current_fragment_.range.start());
     // Insert the suggestion and put cursor after it.

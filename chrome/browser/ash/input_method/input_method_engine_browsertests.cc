@@ -1159,16 +1159,17 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
         "chrome.input.ime.deleteSurroundingText({"
         "  engineID: engineBridge.getActiveEngineID(),"
         "  contextID: engineBridge.getFocusedContextID().contextID,"
-        "  offset: 5,"
+        "  offset: -1,"
         "  length: 3"
         "});";
     ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
                                        delete_surrounding_text_test_script));
 
     EXPECT_EQ(1, mock_input_context->delete_surrounding_text_call_count());
-    EXPECT_EQ(5, mock_input_context->last_delete_surrounding_text_arg().offset);
-    EXPECT_EQ(3U,
-              mock_input_context->last_delete_surrounding_text_arg().length);
+    EXPECT_EQ(1u, mock_input_context->last_delete_surrounding_text_arg()
+                      .num_char16s_before_cursor);
+    EXPECT_EQ(2u, mock_input_context->last_delete_surrounding_text_arg()
+                      .num_char16s_after_cursor);
   }
   {
     SCOPED_TRACE("onFocus test");

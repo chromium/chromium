@@ -1145,8 +1145,7 @@ void NativeInputMethodEngineObserver::DeleteSurroundingText(
   if (!IsTextClientActive())
     return;
   ui::IMEBridge::Get()->GetInputContextHandler()->DeleteSurroundingText(
-      /*offset=*/-static_cast<int>(num_before_cursor),
-      /*length=*/num_before_cursor + num_after_cursor);
+      num_before_cursor, num_after_cursor);
 }
 
 void NativeInputMethodEngineObserver::HandleAutocorrect(

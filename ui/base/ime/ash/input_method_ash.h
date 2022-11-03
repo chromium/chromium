@@ -82,7 +82,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   void UpdateCompositionText(const CompositionText& text,
                              uint32_t cursor_pos,
                              bool visible) override;
-  void DeleteSurroundingText(int32_t offset, uint32_t length) override;
+  void DeleteSurroundingText(uint32_t num_char16s_before_cursor,
+                             uint32_t num_char16s_after_cursor) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
   void SendKeyEvent(KeyEvent* event) override;
   InputMethod* GetInputMethod() override;

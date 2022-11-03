@@ -28,8 +28,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
   };
 
   struct DeleteSurroundingTextArg {
-    int32_t offset;
-    uint32_t length;
+    uint32_t num_char16s_before_cursor;
+    uint32_t num_char16s_after_cursor;
   };
 
   MockIMEInputContextHandler();
@@ -60,7 +60,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
   bool AddGrammarFragments(
       const std::vector<GrammarFragment>& fragments) override;
   bool SetSelectionRange(uint32_t start, uint32_t end) override;
-  void DeleteSurroundingText(int32_t offset, uint32_t length) override;
+  void DeleteSurroundingText(uint32_t num_char16s_before_cursor,
+                             uint32_t num_char16s_after_cursor) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
   void SendKeyEvent(KeyEvent* event) override;
   InputMethod* GetInputMethod() override;

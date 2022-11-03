@@ -114,15 +114,20 @@ bool MockIMEInputContextHandler::SetSelectionRange(uint32_t start,
   return true;
 }
 
-void MockIMEInputContextHandler::DeleteSurroundingText(int32_t offset,
-                                                       uint32_t length) {
+void MockIMEInputContextHandler::DeleteSurroundingText(
+    uint32_t num_char16s_before_cursor,
+    uint32_t num_char16s_after_cursor) {
   ++delete_surrounding_text_call_count_;
-  last_delete_surrounding_text_arg_.offset = offset;
-  last_delete_surrounding_text_arg_.length = length;
+  last_delete_surrounding_text_arg_.num_char16s_before_cursor =
+      num_char16s_before_cursor;
+  last_delete_surrounding_text_arg_.num_char16s_after_cursor =
+      num_char16s_after_cursor;
 }
 
 SurroundingTextInfo MockIMEInputContextHandler::GetSurroundingTextInfo() {
-  return SurroundingTextInfo();
+  SurroundingTextInfo info;
+  info.selection_range = cursor_range_;
+  return info;
 }
 
 void MockIMEInputContextHandler::Reset() {
