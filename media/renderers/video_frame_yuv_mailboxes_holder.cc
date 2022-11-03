@@ -328,7 +328,8 @@ SkYUVAInfo VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(
 
   // TODO(crbug.com/828599): This should really default to rec709.
   SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;
-  video_frame->ColorSpace().ToSkYUVColorSpace(&color_space);
+  video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(),
+                                              &color_space);
   return SkYUVAInfo(video_size, plane_config, subsampling, color_space);
 }
 

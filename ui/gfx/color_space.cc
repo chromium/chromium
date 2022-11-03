@@ -1153,7 +1153,11 @@ bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {
                                        : kBT2020_8bit_Limited_SkYUVColorSpace;
         return true;
       }
-      if (bit_depth == 10) {
+      // Videos that are from an 8 or 10 bit source, but are stored in a 16-bit
+      // format (e.g, PIXEL_FORMAT_P016LE) will report having 16 bits per pixel.
+      // Assume they have 10 bits per pixel.
+      // https://crbug.com/1381100
+      if (bit_depth == 10 || bit_depth == 16) {
         *out = range_ == RangeID::FULL ? kBT2020_10bit_Full_SkYUVColorSpace
                                        : kBT2020_10bit_Limited_SkYUVColorSpace;
         return true;
