@@ -22,9 +22,13 @@ TEST_F(OutlinePainterTest, FocusRingOutset) {
   LayoutObject::OutlineInfo info =
       LayoutObject::OutlineInfo::GetFromStyle(*style);
   EXPECT_EQ(2, OutlinePainter::OutlineOutsetExtent(*style, info));
-  style->SetEffectiveZoom(4.75);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetEffectiveZoom(4.75);
+  style = builder.TakeStyle();
   EXPECT_EQ(10, OutlinePainter::OutlineOutsetExtent(*style, info));
-  style->SetEffectiveZoom(10);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetEffectiveZoom(10);
+  style = builder.TakeStyle();
   EXPECT_EQ(20, OutlinePainter::OutlineOutsetExtent(*style, info));
 }
 

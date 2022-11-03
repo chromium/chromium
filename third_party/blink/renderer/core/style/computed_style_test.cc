@@ -143,9 +143,11 @@ TEST_F(ComputedStyleTest, TrackedPseudoStyle) {
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesRespectsTransformAnimation) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-  other->SetHasCurrentTransformAnimation(true);
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetHasCurrentTransformAnimation(true);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
+
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.TransformChanged());
@@ -175,9 +177,11 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesRespectsScaleAnimation) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-  other->SetHasCurrentScaleAnimation(true);
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetHasCurrentScaleAnimation(true);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
+
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.TransformChanged());
@@ -185,9 +189,11 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesRespectsRotateAnimation) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-  other->SetHasCurrentRotateAnimation(true);
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetHasCurrentRotateAnimation(true);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
+
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.TransformChanged());
@@ -195,9 +201,11 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesRespectsTranslateAnimation) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-  other->SetHasCurrentTranslateAnimation(true);
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetHasCurrentTranslateAnimation(true);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
+
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.TransformChanged());
@@ -205,10 +213,11 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsOpacity) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetHasCurrentOpacityAnimation(true);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
 
-  other->SetHasCurrentOpacityAnimation(true);
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
@@ -216,10 +225,11 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsFilter) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetHasCurrentFilterAnimation(true);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
 
-  other->SetHasCurrentFilterAnimation(true);
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
@@ -227,10 +237,11 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsBackdropFilter) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetHasCurrentBackdropFilterAnimation(true);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
 
-  other->SetHasCurrentBackdropFilterAnimation(true);
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
@@ -463,12 +474,12 @@ TEST_F(ComputedStyleTest, BorderStyle) {
 
 #define TEST_ANIMATION_FLAG(flag, inherited)                               \
   do {                                                                     \
-    auto style = CreateComputedStyle();                                    \
-    auto other = CreateComputedStyle();                                    \
-    EXPECT_FALSE(style->flag());                                           \
-    EXPECT_FALSE(other->flag());                                           \
-    style->Set##flag(true);                                                \
+    auto builder = CreateComputedStyleBuilder();                           \
+    builder.Set##flag(true);                                               \
+    auto style = builder.TakeStyle();                                      \
     EXPECT_TRUE(style->flag());                                            \
+    auto other = CreateComputedStyle();                                    \
+    EXPECT_FALSE(other->flag());                                           \
     EXPECT_EQ(ComputedStyle::Difference::inherited,                        \
               ComputedStyle::ComputeDifference(style.get(), other.get())); \
     auto diff = style->VisualInvalidationDiff(*document, *other);          \
@@ -478,12 +489,12 @@ TEST_F(ComputedStyleTest, BorderStyle) {
 
 #define TEST_ANIMATION_FLAG_NO_DIFF(flag)                                  \
   do {                                                                     \
-    auto style = CreateComputedStyle();                                    \
-    auto other = CreateComputedStyle();                                    \
-    EXPECT_FALSE(style->flag());                                           \
-    EXPECT_FALSE(other->flag());                                           \
-    style->Set##flag(true);                                                \
+    auto builder = CreateComputedStyleBuilder();                           \
+    builder.Set##flag(true);                                               \
+    auto style = builder.TakeStyle();                                      \
     EXPECT_TRUE(style->flag());                                            \
+    auto other = CreateComputedStyle();                                    \
+    EXPECT_FALSE(other->flag());                                           \
     EXPECT_EQ(ComputedStyle::Difference::kEqual,                           \
               ComputedStyle::ComputeDifference(style.get(), other.get())); \
     auto diff = style->VisualInvalidationDiff(*document, *other);          \
@@ -850,8 +861,8 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
                            StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetEffectiveZoom(1.5);
   state.SetStyle(style);
+  state.StyleBuilder().SetEffectiveZoom(1.5);
 
   auto* calc_value = CSSMathFunctionValue::Create(
       CSSMathExpressionNumericLiteral::Create(CSSNumericLiteralValue::Create(

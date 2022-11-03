@@ -480,8 +480,6 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   // Previously no background-color animation, now it has. This should trigger
   // a repaint, see ComputedStyle::UpdatePropertySpecificDifferences().
   EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
-  style->ResetHasCurrentBackgroundColorAnimation();
-  style->ResetCompositablePaintAnimationChanged();
 
   start_keyframe->SetCSSPropertyValue(
       property_id, "blue", SecureContextMode::kInsecureContext, nullptr);
@@ -555,8 +553,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
   // Previously no background-color animation, now it has. This should trigger
   // a repaint, see ComputedStyle::UpdatePropertySpecificDifferences().
   EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
-  style->ResetHasCurrentBackgroundColorAnimation();
-  style->ResetCompositablePaintAnimationChanged();
 
   start_keyframe->SetCSSPropertyValue(
       property_id, "red", SecureContextMode::kInsecureContext, nullptr);

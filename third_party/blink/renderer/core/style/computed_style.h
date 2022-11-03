@@ -748,8 +748,6 @@ class ComputedStyle : public ComputedStyleBase,
   // reporting)
   int EffectiveZIndex() const { return EffectiveZIndexZero() ? 0 : ZIndex(); }
 
-  CORE_EXPORT bool SetEffectiveZoom(float);
-
   // -webkit-clip-path
   bool ClipPathDataEquivalent(const ComputedStyle& other) const {
     return base::ValuesEquivalent(ClipPath(), other.ClipPath());
@@ -3003,6 +3001,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetHasAutoZIndexInternal(true);
     SetZIndexInternal(0);
   }
+
+  // zoom
+  CORE_EXPORT bool SetEffectiveZoom(float);
 
   bool ShouldPreserveParentColor() const {
     return InForcedColorsMode() &&

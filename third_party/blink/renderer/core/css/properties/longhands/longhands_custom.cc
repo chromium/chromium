@@ -6801,7 +6801,8 @@ void Size::ApplyInitial(StyleResolverState& state) const {}
 void Size::ApplyInherit(StyleResolverState& state) const {}
 
 void Size::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
-  state.Style()->ResetPageSizeType();
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.ResetPageSizeType();
   gfx::SizeF size;
   PageSizeType page_size_type = PageSizeType::kAuto;
   const auto& list = To<CSSValueList>(value);
@@ -6860,8 +6861,8 @@ void Size::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
       }
     }
   }
-  state.Style()->SetPageSizeType(page_size_type);
-  state.Style()->SetPageSize(size);
+  builder.SetPageSizeType(page_size_type);
+  builder.SetPageSize(size);
 }
 
 const CSSValue* Speak::CSSValueFromComputedStyleInternal(
@@ -9333,21 +9334,21 @@ const CSSValue* WillChange::CSSValueFromComputedStyleInternal(
 }
 
 void WillChange::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetWillChangeContents(false);
-  state.Style()->SetWillChangeScrollPosition(false);
-  state.Style()->SetWillChangeProperties(Vector<CSSPropertyID>());
-  state.Style()->SetSubtreeWillChangeContents(
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetWillChangeContents(false);
+  builder.SetWillChangeScrollPosition(false);
+  builder.SetWillChangeProperties(Vector<CSSPropertyID>());
+  builder.SetSubtreeWillChangeContents(
       state.ParentStyle()->SubtreeWillChangeContents());
 }
 
 void WillChange::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetWillChangeContents(
-      state.ParentStyle()->WillChangeContents());
-  state.Style()->SetWillChangeScrollPosition(
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetWillChangeContents(state.ParentStyle()->WillChangeContents());
+  builder.SetWillChangeScrollPosition(
       state.ParentStyle()->WillChangeScrollPosition());
-  state.Style()->SetWillChangeProperties(
-      state.ParentStyle()->WillChangeProperties());
-  state.Style()->SetSubtreeWillChangeContents(
+  builder.SetWillChangeProperties(state.ParentStyle()->WillChangeProperties());
+  builder.SetSubtreeWillChangeContents(
       state.ParentStyle()->SubtreeWillChangeContents());
 }
 
@@ -9375,10 +9376,11 @@ void WillChange::ApplyValue(StyleResolverState& state,
       }
     }
   }
-  state.Style()->SetWillChangeContents(will_change_contents);
-  state.Style()->SetWillChangeScrollPosition(will_change_scroll_position);
-  state.Style()->SetWillChangeProperties(will_change_properties);
-  state.Style()->SetSubtreeWillChangeContents(
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetWillChangeContents(will_change_contents);
+  builder.SetWillChangeScrollPosition(will_change_scroll_position);
+  builder.SetWillChangeProperties(will_change_properties);
+  builder.SetSubtreeWillChangeContents(
       will_change_contents || state.ParentStyle()->SubtreeWillChangeContents());
 }
 

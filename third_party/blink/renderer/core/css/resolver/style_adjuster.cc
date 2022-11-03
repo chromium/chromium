@@ -460,7 +460,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     // communicate into the fenced frame by adjusting it, but still include
     // the page zoom factor in the effective zoom, which is safe because it
     // comes from user intervention. crbug.com/1285327
-    style.SetEffectiveZoom(
+    builder.SetEffectiveZoom(
         element.GetDocument().GetStyleResolver().InitialZoom());
 
     if (!features::IsFencedFramesMPArchBased()) {
@@ -677,6 +677,7 @@ bool StyleAdjuster::IsPasswordFieldWithUnrevealedPassword(Element* element) {
 
 void StyleAdjuster::AdjustEffectiveTouchAction(
     ComputedStyle& style,
+    ComputedStyleBuilder& builder,
     const ComputedStyle& parent_style,
     Element* element,
     bool is_svg_root) {
@@ -716,7 +717,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   }
 
   if (!element) {
-    style.SetEffectiveTouchAction(element_touch_action & inherited_action);
+    builder.SetEffectiveTouchAction(element_touch_action & inherited_action);
     return;
   }
 
@@ -759,8 +760,8 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   }
 
   // Apply the adjusted parent effective touch actions.
-  style.SetEffectiveTouchAction((element_touch_action & inherited_action) |
-                                enforced_by_policy);
+  builder.SetEffectiveTouchAction((element_touch_action & inherited_action) |
+                                  enforced_by_policy);
 
   // Propagate touch action to child frames.
   if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(element)) {
@@ -1047,7 +1048,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // nested sticky nodes) - in that case the bit will already be set via
   // inheritance from the ancestor and there is no harm to setting it again.
   if (style.GetPosition() == EPosition::kSticky)
-    style.SetSubtreeIsSticky(true);
+    builder.SetSubtreeIsSticky(true);
 
   // If the inherited value of justify-items includes the 'legacy'
   // keyword (plus 'left', 'right' or 'center'), 'legacy' computes to
@@ -1057,7 +1058,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetJustifyItems(parent_style.JustifyItems());
   }
 
-  AdjustEffectiveTouchAction(style, parent_style, element, is_svg_root);
+  AdjustEffectiveTouchAction(style, builder, parent_style, element,
+                             is_svg_root);
 
   bool is_media_control =
       element && element->ShadowPseudoId().StartsWith("-webkit-media-controls");

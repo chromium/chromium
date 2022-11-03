@@ -217,18 +217,18 @@ TEST_P(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
 void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
     bool supports_transform_animation) {
   auto* object = GetLayoutObjectByElementId("target");
-  scoped_refptr<ComputedStyle> style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
+  ComputedStyleBuilder builder =
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
 
-  style->SetSubtreeWillChangeContents(false);
-  style->SetHasCurrentTransformAnimation(false);
-  style->SetHasCurrentScaleAnimation(false);
-  style->SetHasCurrentRotateAnimation(false);
-  style->SetHasCurrentTranslateAnimation(false);
-  style->SetHasCurrentOpacityAnimation(false);
-  style->SetHasCurrentFilterAnimation(false);
-  style->SetHasCurrentBackdropFilterAnimation(false);
-  object->SetStyle(style);
+  builder.SetSubtreeWillChangeContents(false);
+  builder.SetHasCurrentTransformAnimation(false);
+  builder.SetHasCurrentScaleAnimation(false);
+  builder.SetHasCurrentRotateAnimation(false);
+  builder.SetHasCurrentTranslateAnimation(false);
+  builder.SetHasCurrentOpacityAnimation(false);
+  builder.SetHasCurrentFilterAnimation(false);
+  builder.SetHasCurrentBackdropFilterAnimation(false);
+  object->SetStyle(builder.TakeStyle());
 
   EXPECT_REASONS(
       CompositingReason::kNone,
@@ -236,41 +236,55 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
 
   CompositingReasons expected_reason = CompositingReason::kNone;
 
-  style->SetHasCurrentTransformAnimation(true);
+  builder = ComputedStyleBuilder(object->StyleRef());
+  builder.SetHasCurrentTransformAnimation(true);
+  object->SetStyle(builder.TakeStyle());
   if (supports_transform_animation)
     expected_reason |= CompositingReason::kActiveTransformAnimation;
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
-  style->SetHasCurrentScaleAnimation(true);
+  builder = ComputedStyleBuilder(object->StyleRef());
+  builder.SetHasCurrentScaleAnimation(true);
+  object->SetStyle(builder.TakeStyle());
   if (supports_transform_animation)
     expected_reason |= CompositingReason::kActiveScaleAnimation;
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
-  style->SetHasCurrentRotateAnimation(true);
+  builder = ComputedStyleBuilder(object->StyleRef());
+  builder.SetHasCurrentRotateAnimation(true);
+  object->SetStyle(builder.TakeStyle());
   if (supports_transform_animation)
     expected_reason |= CompositingReason::kActiveRotateAnimation;
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
-  style->SetHasCurrentTranslateAnimation(true);
+  builder = ComputedStyleBuilder(object->StyleRef());
+  builder.SetHasCurrentTranslateAnimation(true);
+  object->SetStyle(builder.TakeStyle());
   if (supports_transform_animation)
     expected_reason |= CompositingReason::kActiveTranslateAnimation;
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
-  style->SetHasCurrentOpacityAnimation(true);
+  builder = ComputedStyleBuilder(object->StyleRef());
+  builder.SetHasCurrentOpacityAnimation(true);
+  object->SetStyle(builder.TakeStyle());
   expected_reason |= CompositingReason::kActiveOpacityAnimation;
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
-  style->SetHasCurrentFilterAnimation(true);
+  builder = ComputedStyleBuilder(object->StyleRef());
+  builder.SetHasCurrentFilterAnimation(true);
+  object->SetStyle(builder.TakeStyle());
   expected_reason |= CompositingReason::kActiveFilterAnimation;
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
-  style->SetHasCurrentBackdropFilterAnimation(true);
+  builder = ComputedStyleBuilder(object->StyleRef());
+  builder.SetHasCurrentBackdropFilterAnimation(true);
+  object->SetStyle(builder.TakeStyle());
   expected_reason |= CompositingReason::kActiveBackdropFilterAnimation;
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));

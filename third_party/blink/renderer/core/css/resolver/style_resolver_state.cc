@@ -192,12 +192,12 @@ void StyleResolverState::SetZoom(float f) {
   if (f != 1.f)
     GetDocument().CountUse(WebFeature::kCascadedCSSZoomNotEqualToOne);
 
-  if (StyleRef().SetEffectiveZoom(parent_effective_zoom * f))
+  if (StyleBuilder().SetEffectiveZoom(parent_effective_zoom * f))
     font_builder_.DidChangeEffectiveZoom();
 }
 
 void StyleResolverState::SetEffectiveZoom(float f) {
-  if (StyleRef().SetEffectiveZoom(f))
+  if (StyleBuilder().SetEffectiveZoom(f))
     font_builder_.DidChangeEffectiveZoom();
 }
 

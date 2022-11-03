@@ -228,7 +228,7 @@ void LayoutTheme::AdjustStyle(const Element* element,
                               ComputedStyle& style,
                               ComputedStyleBuilder& builder) {
   ControlPart original_part = style.Appearance();
-  style.SetEffectiveAppearance(original_part);
+  builder.SetEffectiveAppearance(original_part);
   if (original_part == ControlPart::kNoControlPart)
     return;
 
@@ -251,7 +251,7 @@ void LayoutTheme::AdjustStyle(const Element* element,
 
   ControlPart part = AdjustAppearanceWithAuthorStyle(
       AdjustAppearanceWithElementType(style, element), style);
-  style.SetEffectiveAppearance(part);
+  builder.SetEffectiveAppearance(part);
   DCHECK_NE(part, kAutoPart);
   if (part == kNoControlPart)
     return;
@@ -278,7 +278,7 @@ void LayoutTheme::AdjustStyle(const Element* element,
   }
 
   if (IsSliderContainer(*element))
-    AdjustSliderContainerStyle(*element, style, builder);
+    AdjustSliderContainerStyle(*element, builder);
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
@@ -461,11 +461,10 @@ void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyleBuilder&) const {}
 
 void LayoutTheme::AdjustSliderContainerStyle(
     const Element& element,
-    ComputedStyle& style,
     ComputedStyleBuilder& builder) const {
   DCHECK(IsSliderContainer(element));
 
-  if (style.EffectiveAppearance() == kSliderVerticalPart) {
+  if (builder.EffectiveAppearance() == kSliderVerticalPart) {
     builder.SetTouchAction(TouchAction::kPanX);
     builder.SetWritingMode(WritingMode::kVerticalRl);
     // It's always in RTL because the slider value increases up even in LTR.
@@ -478,7 +477,7 @@ void LayoutTheme::AdjustSliderContainerStyle(
                                                   OverflowAlignment::kUnsafe));
     }
   }
-  style.SetEffectiveAppearance(kNoControlPart);
+  builder.SetEffectiveAppearance(kNoControlPart);
 }
 
 void LayoutTheme::AdjustSliderThumbStyle(ComputedStyleBuilder& builder) const {

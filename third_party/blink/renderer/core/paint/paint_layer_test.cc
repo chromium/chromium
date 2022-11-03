@@ -1769,9 +1769,9 @@ TEST_P(PaintLayerTest, PaintLayerTransformUpdatedOnStyleTransformAnimation) {
   EXPECT_EQ(nullptr, target_paint_layer->Transform());
 
   const ComputedStyle* old_style = target_object->Style();
-  scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(*old_style);
-  new_style->SetHasCurrentTransformAnimation(true);
-  target_object->SetStyle(std::move(new_style));
+  ComputedStyleBuilder new_style_builder(*old_style);
+  new_style_builder.SetHasCurrentTransformAnimation(true);
+  target_object->SetStyle(new_style_builder.TakeStyle());
 
   EXPECT_NE(nullptr, target_paint_layer->Transform());
 }

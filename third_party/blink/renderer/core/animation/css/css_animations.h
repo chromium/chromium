@@ -51,6 +51,7 @@ namespace blink {
 
 class CSSScrollTimeline;
 class CSSTransitionData;
+class ComputedStyleBuilder;
 class Element;
 class StylePropertyShorthand;
 class StyleResolver;
@@ -113,7 +114,7 @@ class CORE_EXPORT CSSAnimations final {
 
   static void UpdateAnimationFlags(Element& animating_element,
                                    CSSAnimationUpdate&,
-                                   ComputedStyle& style);
+                                   ComputedStyleBuilder&);
 
   const CSSAnimationUpdate& PendingUpdate() const { return pending_update_; }
   void SetPendingUpdate(const CSSAnimationUpdate& update) {

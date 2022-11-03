@@ -1122,58 +1122,58 @@ bool AffectsBackgroundColor(const AnimationEffect& effect) {
 }
 
 void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
-                                   ComputedStyle& style) {
+                                   ComputedStyleBuilder& builder) {
   if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
-    style.SetHasCurrentOpacityAnimation(true);
+    builder.SetHasCurrentOpacityAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyTransform())))
-    style.SetHasCurrentTransformAnimation(true);
+    builder.SetHasCurrentTransformAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyRotate())))
-    style.SetHasCurrentRotateAnimation(true);
+    builder.SetHasCurrentRotateAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyScale())))
-    style.SetHasCurrentScaleAnimation(true);
+    builder.SetHasCurrentScaleAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyTranslate())))
-    style.SetHasCurrentTranslateAnimation(true);
+    builder.SetHasCurrentTranslateAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyFilter())))
-    style.SetHasCurrentFilterAnimation(true);
+    builder.SetHasCurrentFilterAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyBackdropFilter())))
-    style.SetHasCurrentBackdropFilterAnimation(true);
+    builder.SetHasCurrentBackdropFilterAnimation(true);
   if (AffectsBackgroundColor(effect))
-    style.SetHasCurrentBackgroundColorAnimation(true);
+    builder.SetHasCurrentBackgroundColorAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyClipPath())))
-    style.SetHasCurrentClipPathAnimation(true);
+    builder.SetHasCurrentClipPathAnimation(true);
 }
 
 void SetCompositablePaintAnimationChangedIfAffected(
     const AnimationEffect& effect,
-    ComputedStyle& style) {
+    ComputedStyleBuilder& builder) {
   if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       AffectsBackgroundColor(effect)) {
-    style.SetCompositablePaintAnimationChanged(true);
+    builder.SetCompositablePaintAnimationChanged(true);
   }
 }
 
 // Called for animations that are newly created or updated.
 void UpdateAnimationFlagsForInertEffect(const InertEffect& effect,
-                                        ComputedStyle& style) {
+                                        ComputedStyleBuilder& builder) {
   if (!effect.IsCurrent())
     return;
 
-  UpdateAnimationFlagsForEffect(effect, style);
+  UpdateAnimationFlagsForEffect(effect, builder);
 
   // We defensively assume that any update to an existing animation
   // would result in CompositorPending()==true.
-  SetCompositablePaintAnimationChangedIfAffected(effect, style);
+  SetCompositablePaintAnimationChangedIfAffected(effect, builder);
 }
 
 // Called for existing animations that are not modified in this update.
 void UpdateAnimationFlagsForAnimation(const Animation& animation,
-                                      ComputedStyle& style) {
+                                      ComputedStyleBuilder& builder) {
   const AnimationEffect& effect = *animation.effect();
 
   if (!effect.IsCurrent())
     return;
 
-  UpdateAnimationFlagsForEffect(effect, style);
+  UpdateAnimationFlagsForEffect(effect, builder);
 
   if (animation.CalculateAnimationPlayState() != Animation::kIdle &&
       animation.CompositorPending()) {
@@ -1185,7 +1185,7 @@ void UpdateAnimationFlagsForAnimation(const Animation& animation,
     //
     // See ComputedStyle::UpdatePropertySpecificDifferences for how this flag
     // is used.
-    SetCompositablePaintAnimationChangedIfAffected(effect, style);
+    SetCompositablePaintAnimationChangedIfAffected(effect, builder);
   }
 }
 
@@ -1193,15 +1193,15 @@ void UpdateAnimationFlagsForAnimation(const Animation& animation,
 
 void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
                                          CSSAnimationUpdate& update,
-                                         ComputedStyle& style) {
+                                         ComputedStyleBuilder& builder) {
   for (const auto& new_animation : update.NewAnimations())
-    UpdateAnimationFlagsForInertEffect(*new_animation.effect, style);
+    UpdateAnimationFlagsForInertEffect(*new_animation.effect, builder);
 
   for (const auto& updated_animation : update.AnimationsWithUpdates())
-    UpdateAnimationFlagsForInertEffect(*updated_animation.effect, style);
+    UpdateAnimationFlagsForInertEffect(*updated_animation.effect, builder);
 
   for (const auto& entry : update.NewTransitions())
-    UpdateAnimationFlagsForInertEffect(*entry.value->effect, style);
+    UpdateAnimationFlagsForInertEffect(*entry.value->effect, builder);
 
   if (auto* element_animations = animating_element.GetElementAnimations()) {
     HeapHashSet<Member<const Animation>> cancelled_transitions =
@@ -1217,14 +1217,14 @@ void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
 
     for (auto& entry : element_animations->Animations()) {
       if (!is_suppressed(*entry.key))
-        UpdateAnimationFlagsForAnimation(*entry.key, style);
+        UpdateAnimationFlagsForAnimation(*entry.key, builder);
     }
 
     for (auto& entry : element_animations->GetWorkletAnimations()) {
       // TODO(majidvp): we should check the effect's phase before updating the
       // style once the timing of effect is ready to use.
       // https://crbug.com/814851.
-      UpdateAnimationFlagsForEffect(*entry->GetEffect(), style);
+      UpdateAnimationFlagsForEffect(*entry->GetEffect(), builder);
     }
 
     // All Animations in this list will get SetCompositorPending(true)
@@ -1232,44 +1232,44 @@ void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
     for (const Animation* animation : update.UpdatedCompositorKeyframes()) {
       if (!is_suppressed(*animation)) {
         SetCompositablePaintAnimationChangedIfAffected(*animation->effect(),
-                                                       style);
+                                                       builder);
       }
     }
 
     EffectStack& effect_stack = element_animations->GetEffectStack();
 
-    if (style.HasCurrentOpacityAnimation()) {
-      style.SetIsRunningOpacityAnimationOnCompositor(
+    if (builder.HasCurrentOpacityAnimation()) {
+      builder.SetIsRunningOpacityAnimationOnCompositor(
           effect_stack.HasActiveAnimationsOnCompositor(
               PropertyHandle(GetCSSPropertyOpacity())));
     }
-    if (style.HasCurrentTransformAnimation()) {
-      style.SetIsRunningTransformAnimationOnCompositor(
+    if (builder.HasCurrentTransformAnimation()) {
+      builder.SetIsRunningTransformAnimationOnCompositor(
           effect_stack.HasActiveAnimationsOnCompositor(
               PropertyHandle(GetCSSPropertyTransform())));
     }
-    if (style.HasCurrentScaleAnimation()) {
-      style.SetIsRunningScaleAnimationOnCompositor(
+    if (builder.HasCurrentScaleAnimation()) {
+      builder.SetIsRunningScaleAnimationOnCompositor(
           effect_stack.HasActiveAnimationsOnCompositor(
               PropertyHandle(GetCSSPropertyScale())));
     }
-    if (style.HasCurrentRotateAnimation()) {
-      style.SetIsRunningRotateAnimationOnCompositor(
+    if (builder.HasCurrentRotateAnimation()) {
+      builder.SetIsRunningRotateAnimationOnCompositor(
           effect_stack.HasActiveAnimationsOnCompositor(
               PropertyHandle(GetCSSPropertyRotate())));
     }
-    if (style.HasCurrentTranslateAnimation()) {
-      style.SetIsRunningTranslateAnimationOnCompositor(
+    if (builder.HasCurrentTranslateAnimation()) {
+      builder.SetIsRunningTranslateAnimationOnCompositor(
           effect_stack.HasActiveAnimationsOnCompositor(
               PropertyHandle(GetCSSPropertyTranslate())));
     }
-    if (style.HasCurrentFilterAnimation()) {
-      style.SetIsRunningFilterAnimationOnCompositor(
+    if (builder.HasCurrentFilterAnimation()) {
+      builder.SetIsRunningFilterAnimationOnCompositor(
           effect_stack.HasActiveAnimationsOnCompositor(
               PropertyHandle(GetCSSPropertyFilter())));
     }
-    if (style.HasCurrentBackdropFilterAnimation()) {
-      style.SetIsRunningBackdropFilterAnimationOnCompositor(
+    if (builder.HasCurrentBackdropFilterAnimation()) {
+      builder.SetIsRunningBackdropFilterAnimationOnCompositor(
           effect_stack.HasActiveAnimationsOnCompositor(
               PropertyHandle(GetCSSPropertyBackdropFilter())));
     }

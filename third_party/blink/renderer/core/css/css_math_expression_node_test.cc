@@ -90,9 +90,9 @@ CSSLengthArray& SetLengthArray(String text, CSSLengthArray& length_array) {
 }
 
 TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
-  scoped_refptr<ComputedStyle> style =
-      ComputedStyle::CreateInitialStyleSingleton();
-  style->SetEffectiveZoom(5);
+  ComputedStyleBuilder builder(*ComputedStyle::CreateInitialStyleSingleton());
+  builder.SetEffectiveZoom(5);
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   CSSToLengthConversionData conversion_data(
       style.get(), style.get(), style.get(), nullptr,
       CSSToLengthConversionData::ContainerSizes(), style->EffectiveZoom());

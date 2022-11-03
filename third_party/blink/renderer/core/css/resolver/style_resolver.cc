@@ -1073,7 +1073,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
     }
   }
   state.StyleBuilder().SetStyleType(style_request.pseudo_id);
-  state.Style()->SetPseudoArgument(style_request.pseudo_argument);
+  state.StyleBuilder().SetPseudoArgument(style_request.pseudo_argument);
 
   // For highlight inheritance, propagate link visitedness, forced-colors
   // status, and font properties (for font- or glyph-relative offsets in
@@ -1568,7 +1568,7 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
   builder.SetRtlOrdering(GetDocument().VisuallyOrdered() ? EOrder::kVisual
                                                          : EOrder::kLogical);
   builder.SetZoom(InitialZoom());
-  initial_style->SetEffectiveZoom(InitialZoom());
+  builder.SetEffectiveZoom(InitialZoom());
   builder.SetInForcedColorsMode(GetDocument().InForcedColorsMode());
   builder.SetTapHighlightColor(
       ComputedStyleInitialValues::InitialTapHighlightColor());
@@ -1787,7 +1787,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
       *animating_element, state.AnimationUpdate(),
       *state.StyleRef().GetBaseComputedStyle(), state.ParentStyle());
   CSSAnimations::UpdateAnimationFlags(
-      *animating_element, state.AnimationUpdate(), state.StyleRef());
+      *animating_element, state.AnimationUpdate(), state.StyleBuilder());
 
   return apply;
 }
@@ -1946,7 +1946,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   // part of a raredata field when copying non-inherited values from the cached
   // result. The argument isn't a style property per se, it represents the
   // argument to the matching element which should remain unchanged.
-  state.Style()->SetPseudoArgument(pseudo_argument);
+  state.StyleBuilder().SetPseudoArgument(pseudo_argument);
 
   return CacheSuccess(is_inherited_cache_hit, is_non_inherited_cache_hit, key,
                       cached_matched_properties);
