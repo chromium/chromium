@@ -1201,13 +1201,10 @@ Try tapping the mic to ask me anything.
         For more help, go to the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Help Center<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_INSTRUCTION" desc="Instruction text in a keyboard testing UI. Appears above a visual representation showing the keys currently pressed on the keyboard.">
-        Type any key on your keyboard. You can press up to 4 keys at the same time.
+        Type any key on your keyboard. You can press up to 4 keys at the same time. Press Alt plus Esc to close the dialog.
       </message>
       <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_TITLE" desc="Title for a dialog allowing the user to test their keyboard.">
         Test your keyboard
-      </message>
-      <message name="IDS_INPUT_DIAGNOSTICS_CLOSE_DIALOG_SHORTCUT_HELP_TEXT" translateable="false" desc="Informs the user how to close the keyboard tester dialog using a keyboard shortcut">
-        Press Alt + Esc to close the dialog.
       </message>
 
       <!-- Ash keyboard diagram ARIA labels -->

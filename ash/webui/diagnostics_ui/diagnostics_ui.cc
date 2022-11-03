@@ -132,8 +132,6 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"captivePortalRoutineText", IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL},
       {"cellularLabel", IDS_DIAGNOSTICS_NETWORK_TYPE_CELLULAR},
       {"chargeTestResultText", IDS_CHARGE_TEST_RESULT},
-      {"closeDialogShortcutHelpText",
-       IDS_INPUT_DIAGNOSTICS_CLOSE_DIALOG_SHORTCUT_HELP_TEXT},
       {"connectivityText", IDS_DIAGNOSTICS_CONNECTIVITY},
       {"cpuBannerMessage", IDS_DIAGNOSTICS_CPU_BANNER_MESSAGE},
       {"cpuCacheRoutineText", IDS_DIAGNOSTICS_CPU_CACHE_ROUTINE_TEXT},
