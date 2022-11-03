@@ -6,9 +6,13 @@ source_set("persistence") {
   public = [
     "key_persistence_delegate.h",
     "key_persistence_delegate_factory.h",
+    "metrics_utils.h",
   ]
 
-  sources = [ "key_persistence_delegate_factory.cc" ]
+  sources = [
+    "key_persistence_delegate_factory.cc",
+    "metrics_utils.cc",
+  ]
 
   deps = [ "//base" ]
 
@@ -106,6 +110,7 @@ source_set("unit_tests") {
 
   if (is_linux) {
     sources = [ "linux_key_persistence_delegate_unittest.cc" ]
+    deps += [ "//base/test:test_support" ]
   }
 
   if (is_mac) {

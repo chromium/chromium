@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -75,7 +76,10 @@ base::File OpenSigningKeyFile(uint32_t flags) {
   return base::File(GetSigningKeyFilePath(), flags);
 }
 
-bool LogFailure(const std::string& log_message) {
+bool RecordFailure(KeyPersistenceOperation operation,
+                   KeyPersistenceError error,
+                   const std::string& log_message) {
+  RecordError(operation, error);
   SYSLOG(ERROR) << log_message;
   return false;
 }
@@ -93,16 +97,21 @@ bool LinuxKeyPersistenceDelegate::CheckRotationPermissions() {
   if (!locked_file_ || !locked_file_->IsValid() ||
       HANDLE_EINTR(flock(locked_file_->GetPlatformFile(), LOCK_EX | LOCK_NB)) ==
           -1) {
-    return LogFailure(
+    return RecordFailure(
+        KeyPersistenceOperation::kCheckPermissions,
+        KeyPersistenceError::kLockPersistenceStorageFailed,
         "Device trust key rotation failed. Could not acquire lock on the "
         "signing key storage.");
   }
 
   int mode;
-  if (!base::GetPosixFilePermissions(signing_key_path, &mode))
-    return LogFailure(
+  if (!base::GetPosixFilePermissions(signing_key_path, &mode)) {
+    return RecordFailure(
+        KeyPersistenceOperation::kCheckPermissions,
+        KeyPersistenceError::kRetrievePersistenceStoragePermissionsFailed,
         "Device trust key rotation failed. Could not get permissions "
         "for the signing key storage.");
+  }
 
   struct stat st;
   stat(signing_key_path.value().c_str(), &st);
@@ -110,10 +119,12 @@ bool LinuxKeyPersistenceDelegate::CheckRotationPermissions() {
   struct group* chrome_mgmt_group = getgrnam(constants::kGroupName);
 
   if (!chrome_mgmt_group || signing_key_file_gid != chrome_mgmt_group->gr_gid ||
-      mode != kFileMode)
-    return LogFailure(
-        "Device trust key rotation failed. Incorrect permissions "
-        "for the signing key storage.");
+      mode != kFileMode) {
+    RecordFailure(KeyPersistenceOperation::kCheckPermissions,
+                  KeyPersistenceError::kInvalidPermissionsForPersistenceStorage,
+                  "Device trust key rotation failed. Incorrect permissions "
+                  "for the signing key storage.");
+  }
   return true;
 }
 
@@ -124,13 +135,23 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
                                        base::File::FLAG_WRITE);
   if (trust_level == BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED) {
     DCHECK_EQ(wrapped.size(), 0u);
-    return file.error_details() == base::File::FILE_OK;
+    if (file.error_details() == base::File::FILE_OK) {
+      return true;
+    };
+
+    return RecordFailure(KeyPersistenceOperation::kStoreKeyPair,
+                           KeyPersistenceError::kDeleteKeyPairFailed,
+                           "Device trust key rotation failed. Failed to delete "
+                           "the signing key pair.");
   }
 
-  if (!file.IsValid())
-    return LogFailure(
+  if (!file.IsValid()) {
+    return RecordFailure(
+        KeyPersistenceOperation::kStoreKeyPair,
+        KeyPersistenceError::kOpenPersistenceStorageFailed,
         "Device trust key rotation failed. Could not open the signing key file "
         "for writing.");
+  }
 
   // Storing key and trust level information.
   base::Value keyinfo(base::Value::Type::DICTIONARY);
@@ -138,49 +159,82 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
   keyinfo.SetKey(kSigningKeyName, base::Value(encoded_key));
   keyinfo.SetKey(kSigningKeyTrustLevel, base::Value(trust_level));
   std::string keyinfo_str;
-  if (!base::JSONWriter::Write(keyinfo, &keyinfo_str))
-    return LogFailure(
+  if (!base::JSONWriter::Write(keyinfo, &keyinfo_str)) {
+    return RecordFailure(
+        KeyPersistenceOperation::kStoreKeyPair,
+        KeyPersistenceError::kJsonFormatSigningKeyPairFailed,
         "Device trust key rotation failed. Could not format signing key "
         "information for storage.");
+  }
 
-  bool write_result =
-      file.WriteAtCurrentPos(keyinfo_str.c_str(), keyinfo_str.length()) > 0
-          ? true
-          : LogFailure(
-                "Device trust key rotation failed. Could not write to the "
-                "signing key storage.");
+  if (file.WriteAtCurrentPos(keyinfo_str.c_str(), keyinfo_str.length()) > 0) {
+    return true;
+  }
 
-  return write_result;
+  return RecordFailure(KeyPersistenceOperation::kStoreKeyPair,
+                       KeyPersistenceError::kWritePersistenceStorageFailed,
+                       "Device trust key rotation failed. Could not write to "
+                       "the signing key storage.");
 }
 
 std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair() {
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(GetSigningKeyFilePath(), &file_content,
                                          kMaxBufferSize)) {
+    RecordFailure(
+        KeyPersistenceOperation::kLoadKeyPair,
+        KeyPersistenceError::kReadPersistenceStorageFailed,
+        "Device trust key rotation failed. Failed to read from the signing key "
+        "storage.");
     return nullptr;
   }
 
   // Get dictionary key info.
   auto keyinfo = base::JSONReader::Read(file_content);
   if (!keyinfo || !keyinfo->is_dict()) {
+    RecordFailure(
+        KeyPersistenceOperation::kLoadKeyPair,
+        KeyPersistenceError::kInvalidSigningKeyPairFormat,
+        "Device trust key rotation failed. Invalid signing key format found in "
+        "signing key storage.");
     return nullptr;
   }
 
   // Get the trust level.
   auto stored_trust_level = keyinfo->FindIntKey(kSigningKeyTrustLevel);
+  if (!stored_trust_level.has_value()) {
+    RecordFailure(KeyPersistenceOperation::kLoadKeyPair,
+                  KeyPersistenceError::kKeyPairMissingTrustLevel,
+                  "Device trust key rotation failed. Signing key pair missing "
+                  "trust level details.");
+    return nullptr;
+  }
+
   if (stored_trust_level != BPKUR::CHROME_BROWSER_OS_KEY) {
+    RecordFailure(KeyPersistenceOperation::kLoadKeyPair,
+                  KeyPersistenceError::kInvalidTrustLevel,
+                  "Device trust key rotation failed. Invalid trust level for "
+                  "the signing key.");
     return nullptr;
   }
 
   // Get the key.
   std::string* encoded_key = keyinfo->FindStringKey(kSigningKeyName);
   std::string decoded_key;
-
   if (!encoded_key) {
+    RecordFailure(
+        KeyPersistenceOperation::kLoadKeyPair,
+        KeyPersistenceError::kKeyPairMissingSigningKey,
+        "Device trust key rotation failed. Signing key pair missing signing "
+        "key details.");
     return nullptr;
   }
 
   if (!base::Base64Decode(*encoded_key, &decoded_key)) {
+    RecordFailure(
+        KeyPersistenceOperation::kLoadKeyPair,
+        KeyPersistenceError::kFailureDecodingSigningKey,
+        "Device trust key rotation failed. Failure decoding the signing key.");
     return nullptr;
   }
   std::vector<uint8_t> wrapped =
@@ -189,6 +243,11 @@ std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair() {
   auto provider = std::make_unique<ECSigningKeyProvider>();
   auto signing_key = provider->FromWrappedSigningKeySlowly(wrapped);
   if (!signing_key) {
+    RecordFailure(
+        KeyPersistenceOperation::kLoadKeyPair,
+        KeyPersistenceError::kCreateSigningKeyFromWrappedFailed,
+        "Device trust key rotation failed. Failure creating a signing key "
+        "object from the signing key details.");
     return nullptr;
   }
 
@@ -203,6 +262,11 @@ std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::CreateKeyPair() {
   auto signing_key = provider->GenerateSigningKeySlowly(algorithm);
 
   if (!signing_key) {
+    RecordFailure(
+        KeyPersistenceOperation::kCreateKeyPair,
+        KeyPersistenceError::kGenerateOSSigningKeyFailed,
+        "Device trust key rotation failed. Failure generating a new OS signing "
+        "key");
     return nullptr;
   }
 

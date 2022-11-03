@@ -872,6 +872,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.Persistence.{Operation}.Error"
+    enum="DTKeyPersistenceError" expires_after="2023-10-17">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Captures any terminal failures that occur during the process of creating,
+    storing, and loading a Device Trust signing key pair during a key rotation.
+  </summary>
+  <token key="Operation">
+    <variant name="CheckPermission"
+        summary="Operation that checks the permissions for accessing the key
+                 storage"/>
+    <variant name="CreateKeyPair"
+        summary="Operation that creates a new signing key pair"/>
+    <variant name="LoadKeyPair"
+        summary="Operation that loads the key pair from the persistence
+                 storage"/>
+    <variant name="StoreKeyPair"
+        summary="Operation that stores the key pair in persistence storage"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
     expires_after="2023-07-01">
   <owner>hmare@google.com</owner>

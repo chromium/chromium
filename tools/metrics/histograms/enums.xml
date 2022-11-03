@@ -29093,6 +29093,31 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Unmanaged"/>
 </enum>
 
+<enum name="DTKeyPersistenceError">
+  <int value="0" label="Failed to attain a lock on the persistence storage."/>
+  <int value="1" label="Failed to open the persistence storage."/>
+  <int value="2" label="Failed to read from the persistence storage."/>
+  <int value="3" label="Failed to write to the persistence storage."/>
+  <int value="4"
+      label="Failed to retrieve the permissions of the persistence storage."/>
+  <int value="5" label="Invalid permissions for the persistence storage."/>
+  <int value="6" label="Failed to JSON format the signing key pair."/>
+  <int value="7"
+      label="Failed to delete the signing key pair from persistence storage."/>
+  <int value="8" label="Invalid format for the signing key pair."/>
+  <int value="9"
+      label="The signing key pair is missing the trust level details."/>
+  <int value="10"
+      label="The signing key pair is missing the signing key details."/>
+  <int value="11" label="Invalid trust level for the signing key pair."/>
+  <int value="12" label="Invalid signing key for the signing key pair."/>
+  <int value="13" label="Failed to decode the signing key."/>
+  <int value="14"
+      label="Failed to create a signing key pair object from the signing key."/>
+  <int value="15" label="Failed to create an OS signing key."/>
+  <int value="16" label="Failed to create a hardware signing key."/>
+</enum>
+
 <enum name="DTKeyRotationResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Failed"/>
