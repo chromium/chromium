@@ -355,8 +355,8 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
     // incremented.
     sql::Statement locate_statement(db->GetCachedStatement(
         sql::StatementID(SQL_FROM_HERE), locate_str.c_str()));
-    locate_statement.BindInt64(0, day_start.ToInternalValue());
-    locate_statement.BindInt64(1, next_day.ToInternalValue());
+    locate_statement.BindTime(0, day_start);
+    locate_statement.BindTime(1, next_day);
     for (size_t j = 0; j < matched_values.size(); j++) {
       // A call to BindNull when matched_values contains -1 is likely not
       // necessary as parameters default to null before they are explicitly
@@ -375,7 +375,7 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       sql::Statement update_statement(db->GetCachedStatement(
           sql::StatementID(SQL_FROM_HERE), update_str.c_str()));
       update_statement.BindInt(0, count);
-      update_statement.BindInt64(1, action->time().ToInternalValue());
+      update_statement.BindTime(1, action->time());
       update_statement.BindInt64(2, rowid);
       if (!update_statement.Run())
         return false;
@@ -384,7 +384,7 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       sql::Statement insert_statement(db->GetCachedStatement(
           sql::StatementID(SQL_FROM_HERE), insert_str.c_str()));
       insert_statement.BindInt(0, count);
-      insert_statement.BindInt64(1, action->time().ToInternalValue());
+      insert_statement.BindTime(1, action->time());
       for (size_t j = 0; j < matched_values.size(); j++) {
         if (matched_values[j] == -1)
           insert_statement.BindNull(j + 2);
@@ -485,8 +485,7 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
   // Execute the query and get results.
   while (query.is_valid() && query.Step()) {
     auto action = base::MakeRefCounted<Action>(
-        query.ColumnString(0),
-        base::Time::FromInternalValue(query.ColumnInt64(1)),
+        query.ColumnString(0), query.ColumnTime(1),
         static_cast<Action::ActionType>(query.ColumnInt(2)),
         query.ColumnString(3), query.ColumnInt64(10));
 
@@ -753,7 +752,7 @@ bool CountingPolicy::CleanOlderThan(sql::Database* db,
       "DELETE FROM " + std::string(kTableName) + " WHERE time < ?";
   sql::Statement cleaner(db->GetCachedStatement(sql::StatementID(SQL_FROM_HERE),
                                                 clean_statement.c_str()));
-  cleaner.BindInt64(0, cutoff.ToInternalValue());
+  cleaner.BindTime(0, cutoff);
   if (!cleaner.Run())
     return false;
   return CleanStringTables(db);

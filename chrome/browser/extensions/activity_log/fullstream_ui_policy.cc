@@ -83,7 +83,7 @@ bool FullStreamUIPolicy::FlushDatabase(sql::Database* db) {
   for (const auto& action : queued_actions_) {
     statement.Reset(true);
     statement.BindString(0, action->extension_id());
-    statement.BindInt64(1, action->time().ToInternalValue());
+    statement.BindTime(1, action->time());
     statement.BindInt(2, static_cast<int>(action->action_type()));
     statement.BindString(3, action->api_name());
     if (action->args()) {

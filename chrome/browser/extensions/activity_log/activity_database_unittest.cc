@@ -80,7 +80,7 @@ bool ActivityDatabaseTestPolicy::FlushDatabase(sql::Database* db) {
     sql::Statement statement(db->GetCachedStatement(
         sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
     statement.BindString(0, action.extension_id());
-    statement.BindInt64(1, action.time().ToInternalValue());
+    statement.BindTime(1, action.time());
     statement.BindInt(2, static_cast<int>(action.action_type()));
     statement.BindString(3, action.api_name());
     if (!statement.Run()) {
