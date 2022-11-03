@@ -363,6 +363,7 @@ group("generate_web_components") {
     "os_apps_page/app_notifications_page:web_components",
     "os_bluetooth_page:web_components",
     "os_people_page:web_components",
+    "os_printing_page:web_components",
     "os_privacy_page:web_components",
   ]
 }
@@ -384,6 +385,7 @@ group("closure_compile_module") {
     "os_bluetooth_page:closure_compile_module",
     "os_languages_page:closure_compile_module",
     "os_people_page:closure_compile_module",
+    "os_printing_page:closure_compile_module",
     "os_privacy_page:closure_compile_module",
   ]
 }

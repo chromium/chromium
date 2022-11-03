@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,25 @@ import {CupsPrinterInfo, PrinterSetupResult, PrintServerResult} from './cups_pri
  * @fileoverview  Utility functions that are used in Cups printer setup dialogs.
  */
 
-export function isNetworkProtocol(protocol: string): boolean {
+/**
+ * @param {string} protocol
+ * @return {boolean} Whether |protocol| is a network protocol
+ */
+export function isNetworkProtocol(protocol) {
   return ['ipp', 'ipps', 'http', 'https', 'socket', 'lpd'].includes(protocol);
 }
 
 /**
- * @return Returns true if the printer's name and address is valid. This
- * function uses regular expressions to determine whether the provided printer
- * name and address are valid. Address can be either an ipv4/6 address or a
+ * Returns true if the printer's name and address is valid. This function
+ * uses regular expressions to determine whether the provided printer name
+ * and address are valid. Address can be either an ipv4/6 address or a
  * hostname followed by an optional port.
  * NOTE: The regular expression for hostnames will allow hostnames that are
  * over 255 characters.
+ * @param {CupsPrinterInfo} printer
+ * @return {boolean}
  */
-export function isNameAndAddressValid(printer: CupsPrinterInfo): boolean {
+export function isNameAndAddressValid(printer) {
   if (!printer) {
     return false;
   }
@@ -43,36 +49,26 @@ export function isNameAndAddressValid(printer: CupsPrinterInfo): boolean {
 
   const hostnamePrefix = '([a-z\\d]|[a-z\\d][a-z\\d\\-]{0,61}[a-z\\d])';
 
-  /**
-   * Matches an arbitrary number of 'prefix patterns' which are separated by a
-   * dot.
-   */
+  // Matches an arbitrary number of 'prefix patterns' which are separated by a
+  // dot.
   const hostnameSuffix = `(\\.${hostnamePrefix})*`;
 
-  /**
-   * Matches an optional port at the end of the address.
-   */
+  // Matches an optional port at the end of the address.
   const portNumber = '(:\\d+)?';
 
   const ipv6Full = '(([a-f\\d]){1,4}(:(:)?([a-f\\d]){1,4}){1,7})';
 
-  /**
-   * Special cases for addresses using a shorthand notation.
-   */
+  // Special cases for addresses using a shorthand notation.
   const ipv6Prefix = '(::([a-f\\d]){1,4})';
   const ipv6Suffix = '(([a-f\\d]){1,4}::)';
   const ipv6Combined = `(${ipv6Full}|${ipv6Prefix}|${ipv6Suffix})`;
   const ipv6WithPort = `(\\[${ipv6Combined}\\]${portNumber})`;
 
-  /**
-   * Matches valid hostnames and ipv4 addresses.
-   */
+  // Matches valid hostnames and ipv4 addresses.
   const hostnameRegex =
       new RegExp(`^${hostnamePrefix}${hostnameSuffix}${portNumber}$`, 'i');
 
-  /**
-   * Matches valid ipv6 addresses.
-   */
+  // Matches valid ipv6 addresses.
   const ipv6AddressRegex =
       new RegExp(`^(${ipv6Combined}|${ipv6WithPort})$`, 'i');
 
@@ -83,18 +79,22 @@ export function isNameAndAddressValid(printer: CupsPrinterInfo): boolean {
 }
 
 /**
- * @return Returns true if the printer's manufacturer and model or ppd path is
- *     valid.
+ * Returns true if the printer's manufacturer and model or ppd path is valid.
+ * @param {string} manufacturer
+ * @param {string} model
+ * @param {string} ppdPath
+ * @return {boolean}
  */
-export function isPPDInfoValid(
-    manufacturer: string, model: string, ppdPath: string): boolean {
+export function isPPDInfoValid(manufacturer, model, ppdPath) {
   return !!((manufacturer && model) || ppdPath);
 }
 
 /**
- * @return Returns the base name of a filepath.
+ * Returns the base name of a filepath.
+ * @param {string} path The full path of the file
+ * @return {string} The base name of the file
  */
-export function getBaseName(path: string): string {
+export function getBaseName(path) {
   if (path && path.length > 0) {
     return path.substring(path.lastIndexOf('/') + 1);
   }
@@ -104,17 +104,21 @@ export function getBaseName(path: string): string {
 /**
  * A function used for sorting printer names based on the current locale's
  * collation order.
+ * @param {!CupsPrinterInfo} first
+ * @param {!CupsPrinterInfo} second
+ * @return {number} The result of the comparison.
  */
-function alphabeticalSort(
-    first: CupsPrinterInfo, second: CupsPrinterInfo): number {
+function alphabeticalSort(first, second) {
   return first.printerName.toLocaleLowerCase().localeCompare(
       second.printerName.toLocaleLowerCase());
 }
 
 /**
- * @return Return the error string corresponding to the result code.
+ * Return the error string corresponding to the result code.
+ * @param {!PrinterSetupResult} result
+ * @return {string}
  */
-export function getErrorText(result: PrinterSetupResult): string {
+export function getErrorText(result) {
   switch (result) {
     case PrinterSetupResult.FATAL_ERROR:
       return loadTimeData.getString('printerAddedFatalErrorMessage');
@@ -139,15 +143,15 @@ export function getErrorText(result: PrinterSetupResult): string {
       return loadTimeData.getString('printerAddedPpdUnretrievableMessage');
     default:
       assertNotReached();
-      return '';
   }
 }
 
 /**
- * @return Return the error string corresponding to the result code for print
- *     servers.
+ * Return the error string corresponding to the result code for print servers.
+ * @param {!PrintServerResult} result
+ * @return {string}
  */
-export function getPrintServerErrorText(result: PrintServerResult): string {
+export function getPrintServerErrorText(result) {
   switch (result) {
     case PrintServerResult.CONNECTION_ERROR:
       return loadTimeData.getString('printServerConnectionError');
@@ -156,16 +160,17 @@ export function getPrintServerErrorText(result: PrintServerResult): string {
       return loadTimeData.getString('printServerConfigurationErrorMessage');
     default:
       assertNotReached();
-      return '';
   }
 }
 
 /**
  * We sort by printer type, which is based off of a maintained list in
  * cups_printers_types.js. If the types are the same, we sort alphabetically.
+ * @param {!PrinterListEntry} first
+ * @param {!PrinterListEntry} second
+ * @return {number}
  */
-export function sortPrinters(
-    first: PrinterListEntry, second: PrinterListEntry): number {
+export function sortPrinters(first, second) {
   if (first.printerType === second.printerType) {
     return alphabeticalSort(first.printerInfo, second.printerInfo);
   }
@@ -173,22 +178,31 @@ export function sortPrinters(
   return first.printerType - second.printerType;
 }
 
-export function matchesSearchTerm(
-    printer: CupsPrinterInfo, searchTerm: string): boolean {
+/**
+ * @param {!CupsPrinterInfo} printer
+ * @param {string} searchTerm
+ * @return {boolean} True if the printer has |searchTerm| in its name.
+ */
+export function matchesSearchTerm(printer, searchTerm) {
   return printer.printerName.toLowerCase().includes(searchTerm.toLowerCase());
 }
 
-export function arePrinterIdsEqual(
-    first: PrinterListEntry, second: PrinterListEntry): boolean {
+/**
+ * @param {!PrinterListEntry} first
+ * @param {!PrinterListEntry} second
+ * @return {boolean}
+ */
+function arePrinterIdsEqual(first, second) {
   return first.printerInfo.printerId === second.printerInfo.printerId;
 }
 
 /**
  * Finds the printers that are in |firstArr| but not in |secondArr|.
+ * @param {!Array<!PrinterListEntry>} firstArr
+ * @param {!Array<!PrinterListEntry>} secondArr
+ * @return {!Array<!PrinterListEntry>}
  */
-export function findDifference(
-    firstArr: PrinterListEntry[],
-    secondArr: PrinterListEntry[]): PrinterListEntry[] {
+export function findDifference(firstArr, secondArr) {
   return firstArr.filter(p1 => {
     return !secondArr.some(
         p2 => p2.printerInfo.printerId === p1.printerInfo.printerId);

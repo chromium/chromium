@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,51 +11,50 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../../settings_shared.css.js';
-import './cups_printer_types.js';
-import './cups_printers_browser_proxy.js';
 import './cups_printers_entry.js';
-import './cups_printers_entry_list_behavior.js';
+import '../../settings_shared.css.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/ash/common/list_property_update_behavior.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {castExists} from '../assert_extras.js';
-
-import {getTemplate} from './cups_enterprise_printers.html.js';
 import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
 import {PrinterListEntry} from './cups_printer_types.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListBehavior, CupsPrintersEntryListBehaviorInterface} from './cups_printers_entry_list_behavior.js';
 
-/**
- * If the Show more button is visible, the minimum number of printers we show
- * is 3.
- */
-const kMinVisiblePrinters: number = 3;
+// If the Show more button is visible, the minimum number of printers we show
+// is 3.
+const kMinVisiblePrinters = 3;
 
 /**
  * Move a printer's position in |printerArr| from |fromIndex| to |toIndex|.
+ * @param {!Array<!PrinterListEntry>} printerArr
+ * @param {number} fromIndex
+ * @param {number} toIndex
  */
-export function moveEntryInPrinters(
-    printerArr: PrinterListEntry[], fromIndex: number, toIndex: number): void {
+function moveEntryInPrinters(printerArr, fromIndex, toIndex) {
   const element = printerArr[fromIndex];
   printerArr.splice(fromIndex, 1);
   printerArr.splice(toIndex, 0, element);
 }
 
-const SettingsCupsEnterprisePrintersElementBase =
-    mixinBehaviors(
-        [
-          CupsPrintersEntryListBehavior,
-        ],
-        WebUiListenerMixin(ListPropertyUpdateMixin(PolymerElement))) as {
-      new (): PolymerElement & CupsPrintersEntryListBehaviorInterface &
-          ListPropertyUpdateMixinInterface & WebUiListenerMixinInterface,
-    };
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CupsPrintersEntryListBehaviorInterface}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsCupsEnterprisePrintersElementBase = mixinBehaviors(
+    [
+      CupsPrintersEntryListBehavior,
+      ListPropertyUpdateBehavior,
+      WebUIListenerBehavior,
+    ],
+    PolymerElement);
 
+/** @polymer */
 class SettingsCupsEnterprisePrintersElement extends
     SettingsCupsEnterprisePrintersElementBase {
   static get is() {
@@ -63,25 +62,30 @@ class SettingsCupsEnterprisePrintersElement extends
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {
     return {
-
       /**
        * Search term for filtering |enterprisePrinters|.
+       * @type {string}
        */
       searchTerm: {
         type: String,
         value: '',
       },
 
+      /** @type {?CupsPrinterInfo} */
       activePrinter: {
         type: Object,
         notify: true,
       },
 
+      /**
+       * @type {number}
+       * @private
+       */
       activePrinterListEntryIndex_: {
         type: Number,
         value: -1,
@@ -95,6 +99,8 @@ class SettingsCupsEnterprisePrintersElement extends
 
       /**
        * List of printers filtered through a search term.
+       * @type {!Array<!PrinterListEntry>}
+       * @private
        */
       filteredPrinters_: {
         type: Array,
@@ -106,6 +112,7 @@ class SettingsCupsEnterprisePrintersElement extends
        * search term will expand the collapsed list, so we need to keep track of
        * whether the list expanded because of a search term or because the user
        * tapped on the Show more button.
+       * @private
        */
       hasShowMoreBeenTapped_: {
         type: Boolean,
@@ -114,11 +121,13 @@ class SettingsCupsEnterprisePrintersElement extends
 
       /**
        * Used by FocusRowBehavior to track the last focused element on a row.
+       * @private
        */
       lastFocused_: Object,
 
       /**
        * Used by FocusRowBehavior to track if the list has been blurred.
+       * @private
        */
       listBlurred_: Boolean,
     };
@@ -131,23 +140,12 @@ class SettingsCupsEnterprisePrintersElement extends
     ];
   }
 
-  activePrinter: CupsPrinterInfo;
-  printersCount: number;
-  searchTerm: string;
-
-  private activePrinterListEntryIndex_: number;
-  private browserProxy_: CupsPrintersBrowserProxy;
-  private filteredPrinters_: PrinterListEntry[];
-  private hasShowMoreBeenTapped_: boolean;
-  private lastFocused_: Object;
-  private listBlurred_: boolean;
-  private visiblePrinterCounter_: number;
-
+  /** @override */
   constructor() {
     super();
 
+    /** @private {!CupsPrintersBrowserProxy} */
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
-
 
     /**
      * The number of printers we display if hidden printers are allowed.
@@ -157,28 +155,31 @@ class SettingsCupsEnterprisePrintersElement extends
     this.visiblePrinterCounter_ = kMinVisiblePrinters;
   }
 
-  override ready(): void {
+  ready() {
     super.ready();
-    this.addEventListener('open-action-menu', event => {
-      this.onOpenActionMenu_(event);
+    this.addEventListener('open-action-menu', (event) => {
+      this.onOpenActionMenu_(
+          /**
+             @type {!CustomEvent<{target: !HTMLElement, item:
+                 !PrinterListEntry}>}
+           */
+          (event));
     });
   }
 
   /**
    * Redoes the search whenever |searchTerm| or |enterprisePrinters| changes.
+   * @private
    */
-  private onSearchOrPrintersChanged_(): void {
+  onSearchOrPrintersChanged_() {
     if (!this.enterprisePrinters) {
       return;
     }
-    /**
-     * Filter printers through |searchTerm|. If |searchTerm| is empty,
-     * |filteredPrinters_| is just |enterprisePrinters|.
-     */
+    // Filter printers through |searchTerm|. If |searchTerm| is empty,
+    // |filteredPrinters_| is just |enterprisePrinters|.
     let updatedPrinters = this.searchTerm ?
         this.enterprisePrinters.filter(
-            (item: PrinterListEntry) =>
-                matchesSearchTerm(item.printerInfo, this.searchTerm)) :
+            item => matchesSearchTerm(item.printerInfo, this.searchTerm)) :
         this.enterprisePrinters.slice();
     updatedPrinters.sort(sortPrinters);
 
@@ -186,28 +187,28 @@ class SettingsCupsEnterprisePrintersElement extends
       // If the Show more button is visible, we only display the first
       // N < |visiblePrinterCounter_| printers and the rest are hidden.
       updatedPrinters = updatedPrinters.filter(
-          (_: PrinterListEntry, idx: number) =>
-              idx < this.visiblePrinterCounter_);
+          (printer, idx) => idx < this.visiblePrinterCounter_);
     }
 
     this.updateList(
-        'filteredPrinters_',
-        (printer: PrinterListEntry) => printer.printerInfo.printerId,
+        'filteredPrinters_', printer => printer.printerInfo.printerId,
         updatedPrinters);
   }
 
-  private onShowMoreTap_(): void {
+  /** @private */
+  onShowMoreTap_() {
     this.hasShowMoreBeenTapped_ = true;
   }
-
 
   /**
    * Keeps track of whether the Show more button should be visible which means
    * that the printer list is collapsed. There are two ways a collapsed list
    * may be expanded: the Show more button is tapped or if there is a search
    * term.
+   * @return {boolean} True if the printer list should be collapsed.
+   * @private
    */
-  private shouldPrinterListBeCollapsed_(): boolean {
+  shouldPrinterListBeCollapsed_() {
     // If |searchTerm| is set, never collapse the list.
     if (this.searchTerm) {
       return false;
@@ -227,33 +228,41 @@ class SettingsCupsEnterprisePrintersElement extends
     return true;
   }
 
-  private showNoSearchResultsMessage_(): boolean {
+  /**
+   * @return {boolean} Returns true if the no search message should be visible.
+   * @private
+   */
+  showNoSearchResultsMessage_() {
     return !!this.searchTerm && !this.filteredPrinters_.length;
   }
 
-  private getFilteredPrintersLength_(): number {
+  /**
+   * @return {number} Length of |filteredPrinters_|.
+   * @private
+   */
+  getFilteredPrintersLength_() {
     return this.filteredPrinters_.length;
   }
 
-  private getCrActionMenu(): CrActionMenuElement {
-    return castExists(this.shadowRoot!.querySelector('cr-action-menu'));
-  }
-
-  private onOpenActionMenu_(
-      e: CustomEvent<{target: HTMLElement, item: PrinterListEntry}>): void {
-    const item: PrinterListEntry = e.detail.item;
+  /**
+   * @param {!CustomEvent<{target: !HTMLElement, item: !PrinterListEntry}>} e
+   * @private
+   */
+  onOpenActionMenu_(e) {
+    const item = /** @type {!PrinterListEntry} */ (e.detail.item);
     this.activePrinterListEntryIndex_ = this.enterprisePrinters.findIndex(
-        (printer: PrinterListEntry) =>
+        printer =>
             printer.printerInfo.printerId === item.printerInfo.printerId);
     this.activePrinter =
         this.get(['enterprisePrinters', this.activePrinterListEntryIndex_])
             .printerInfo;
 
-    const target: HTMLElement = e.detail.target;
-    this.getCrActionMenu().showAt(target);
+    const target = /** @type {!HTMLElement} */ (e.detail.target);
+    this.shadowRoot.querySelector('cr-action-menu').showAt(target);
   }
 
-  private onViewTap_(): void {
+  /** @private */
+  onViewTap_() {
     // Event is caught by 'settings-cups-printers'.
     const editCupsPrinterDetailsEvent = new CustomEvent(
         'edit-cups-printer-details', {bubbles: true, composed: true});
@@ -261,18 +270,9 @@ class SettingsCupsEnterprisePrintersElement extends
     this.closeActionMenu_();
   }
 
-  private closeActionMenu_(): void {
-    this.getCrActionMenu().close();
-  }
-}
-
-declare global {
-  interface HTMLElementEventMap {
-    'open-action-menu':
-        CustomEvent<{target: HTMLElement, item: PrinterListEntry}>;
-  }
-  interface HTMLElementTagNameMap {
-    'settings-cups-enterprise-printers': SettingsCupsEnterprisePrintersElement;
+  /** @private */
+  closeActionMenu_() {
+    this.shadowRoot.querySelector('cr-action-menu').close();
   }
 }
 

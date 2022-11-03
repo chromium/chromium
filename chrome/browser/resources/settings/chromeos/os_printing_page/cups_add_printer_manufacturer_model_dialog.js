@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,44 +7,47 @@
  * 'add-printer-manufacturer-model-dialog' is a dialog in which the user can
  *   manually select the manufacture and model of the new printer.
  */
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './cups_add_printer_dialog.js';
 import './cups_printer_dialog_error.js';
-import './cups_printer_shared.css.js';
-import './cups_printers_browser_proxy.js';
+import './cups_printer_shared_css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
-import {getTemplate} from './cups_add_printer_manufacturer_model_dialog.html.js';
 import {getBaseName, getErrorText, isPPDInfoValid} from './cups_printer_dialog_util.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, ManufacturersInfo, ModelsInfo, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 
+/** @polymer */
 class AddPrinterManufacturerModelDialogElement extends PolymerElement {
   static get is() {
     return 'add-printer-manufacturer-model-dialog';
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {
     return {
+      /** @type {!CupsPrinterInfo} */
       activePrinter: {
         type: Object,
         notify: true,
       },
 
+      /** @type {?Array<string>} */
       manufacturerList: Array,
 
+      /** @type {?Array<string>} */
       modelList: Array,
 
       /**
        * Whether the user selected PPD file is valid.
+       * @private
        */
       invalidPPD_: {
         type: Boolean,
@@ -53,17 +56,20 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
 
       /**
        * The base name of a newly selected PPD file.
+       * @private
        */
       newUserPPD_: String,
 
       /**
        * The URL to a printer's EULA.
+       * @private
        */
       eulaUrl_: {
         type: String,
         value: '',
       },
 
+      /** @private */
       addPrinterInProgress_: {
         type: Boolean,
         value: false,
@@ -71,6 +77,7 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
 
       /**
        * The error text to be displayed on the dialog.
+       * @private
        */
       errorText_: {
         type: String,
@@ -80,12 +87,14 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
       /**
        * Indicates whether the value in the Manufacturer dropdown is a valid
        * printer manufacturer.
+       * @private
        */
       isManufacturerInvalid_: Boolean,
 
       /**
        * Indicates whether the value in the Model dropdown is a valid printer
        * model.
+       * @private
        */
       isModelInvalid_: Boolean,
     };
@@ -99,35 +108,31 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
     ];
   }
 
-  activePrinter: CupsPrinterInfo;
-  manufacturerList: string[];
-  modelList: string[];
-
-  private addPrinterInProgress_: boolean;
-  private browserProxy_: CupsPrintersBrowserProxy;
-  private errorText_: string;
-  private eulaUrl_: string;
-  private invalidPPD_: boolean;
-  private newUserPPD_: string;
-
   constructor() {
     super();
 
+    /** @private {!CupsPrintersBrowserProxy} */
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback(): void {
+  /** @override */
+  connectedCallback() {
     super.connectedCallback();
 
     this.browserProxy_.getCupsPrinterManufacturersList().then(
         this.manufacturerListChanged_.bind(this));
   }
 
-  private close(): void {
-    this.shadowRoot!.querySelector('add-printer-dialog')!.close();
+  close() {
+    this.shadowRoot.querySelector('add-printer-dialog').close();
   }
 
-  private onPrinterAddedSucceeded_(result: PrinterSetupResult): void {
+  /**
+   * Handler for addCupsPrinter success.
+   * @param {!PrinterSetupResult} result
+   * @private
+   */
+  onPrinterAddedSucceeded_(result) {
     const showCupsPrinterToastEvent =
         new CustomEvent('show-cups-printer-toast', {
           bubbles: true,
@@ -141,17 +146,23 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
 
   /**
    * Handler for addCupsPrinter failure.
+   * @param {*} result
+   * @private
    */
-  private onPrinterAddedFailed_(result: PrinterSetupResult): void {
+  onPrinterAddedFailed_(result) {
     this.addPrinterInProgress_ = false;
-    this.errorText_ = getErrorText(result);
+    this.errorText_ = getErrorText(
+        /** @type {PrinterSetupResult} */ (result));
   }
 
   /**
    * If the printer is a nearby printer, return make + model with the subtext.
    * Otherwise, return printer name.
+   * @return {string} The additional information subtext of the manufacturer and
+   * model dialog.
+   * @private
    */
-  private getManufacturerAndModelSubtext_(): string {
+  getManufacturerAndModelSubtext_() {
     if (this.activePrinter.printerMakeAndModel) {
       return loadTimeData.getStringF(
           'manufacturerAndModelAdditionalInformation',
@@ -162,7 +173,12 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
         this.activePrinter.printerName);
   }
 
-  private selectedManufacturerChanged_(manufacturer: string): void {
+  /**
+   * @param {string} manufacturer The manufacturer for which we are retrieving
+   *     models.
+   * @private
+   */
+  selectedManufacturerChanged_(manufacturer) {
     // Reset model if manufacturer is changed.
     this.set('activePrinter.ppdModel', '');
     this.modelList = [];
@@ -174,8 +190,9 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
 
   /**
    * Attempts to get the EULA Url if the selected printer has one.
+   * @private
    */
-  private selectedModelChanged_(): void {
+  selectedModelChanged_() {
     this.errorText_ = '';
     if (!this.activePrinter.ppdManufacturer || !this.activePrinter.ppdModel) {
       // Do not check for an EULA unless both |ppdManufacturer| and |ppdModel|
@@ -190,11 +207,19 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
         .then(this.onGetEulaUrlCompleted_.bind(this));
   }
 
-  private onGetEulaUrlCompleted_(eulaUrl: string): void {
+  /**
+   * @param {string} eulaUrl The URL for the printer's EULA.
+   * @private
+   */
+  onGetEulaUrlCompleted_(eulaUrl) {
     this.eulaUrl_ = eulaUrl;
   }
 
-  private manufacturerListChanged_(manufacturersInfo: ManufacturersInfo): void {
+  /**
+   * @param {!ManufacturersInfo} manufacturersInfo
+   * @private
+   */
+  manufacturerListChanged_(manufacturersInfo) {
     if (!manufacturersInfo.success) {
       return;
     }
@@ -206,37 +231,45 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
     }
   }
 
-  private modelListChanged_(modelsInfo: ModelsInfo): void {
+  /**
+   * @param {!ModelsInfo} modelsInfo
+   * @private
+   */
+  modelListChanged_(modelsInfo) {
     if (modelsInfo.success) {
       this.modelList = modelsInfo.models;
     }
   }
 
-  private onBrowseFile_(): void {
+  /** @private */
+  onBrowseFile_() {
     this.browserProxy_.getCupsPrinterPPDPath().then(
         this.printerPPDPathChanged_.bind(this));
   }
 
-
   /**
-   * @param path The full path to the selected PPD file
+   * @param {string} path The full path to the selected PPD file
+   * @private
    */
-  private printerPPDPathChanged_(path: string): void {
+  printerPPDPathChanged_(path) {
     this.set('activePrinter.printerPPDPath', path);
     this.invalidPPD_ = !path;
     this.newUserPPD_ = getBaseName(path);
   }
 
-  private onLearnMoreTap_() {
+  /** @private */
+  onLearnMoreTap_() {
     window.open(loadTimeData.getString('printingCUPSPrintPpdLearnMoreUrl'));
   }
 
-  private onCancelTap_(): void {
+  /** @private */
+  onCancelTap_() {
     this.close();
     this.browserProxy_.cancelPrinterSetUp(this.activePrinter);
   }
 
-  private addPrinter_(): void {
+  /** @private */
+  addPrinter_() {
     this.addPrinterInProgress_ = true;
     this.browserProxy_.addCupsPrinter(this.activePrinter)
         .then(
@@ -245,22 +278,18 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
   }
 
   /**
-   * @return Whether we have enough information to set up the printer
+   * @param {string} ppdManufacturer
+   * @param {string} ppdModel
+   * @param {string} printerPPDPath
+   * @return {boolean} Whether we have enough information to set up the printer
+   * @private
    */
-  private canAddPrinter_(
-      ppdManufacturer: string, ppdModel: string, printerPPDPath: string,
-      addPrinterInProgress: boolean, isManufacturerInvalid: boolean,
-      isModelInvalid: boolean): boolean {
+  canAddPrinter_(
+      ppdManufacturer, ppdModel, printerPPDPath, addPrinterInProgress,
+      isManufacturerInvalid, isModelInvalid) {
     return !addPrinterInProgress &&
         isPPDInfoValid(ppdManufacturer, ppdModel, printerPPDPath) &&
         !isManufacturerInvalid && !isModelInvalid;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'add-printer-manufacturer-model-dialog':
-        AddPrinterManufacturerModelDialogElement;
   }
 }
 

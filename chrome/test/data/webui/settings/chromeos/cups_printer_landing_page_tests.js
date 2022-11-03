@@ -75,6 +75,7 @@ function verifyErrorToastMessage(expectedMessage, toast) {
  * Helper function that verifies that |printerList| matches the printers in
  * |entryList|.
  * @param {!HTMLElement} entryList
+ * @param {!Array<!CupsPrinterInfo>} printerList
  * @private
  */
 function verifyPrintersList(entryList, printerList) {
@@ -116,7 +117,7 @@ function verifyFilteredPrinters(printerEntryListTestElement, searchTerm) {
  * Helper function to verify that the actual visible printers match the
  * expected printer list.
  * @param {!Element} printerEntryListTestElement
-
+ * @param {!Array<!PrinterListEntry>} expectedVisiblePrinters
  */
 function verifyVisiblePrinters(
     printerEntryListTestElement, expectedVisiblePrinters) {
@@ -140,7 +141,7 @@ function verifyVisiblePrinters(
  * match the search query. Also checks if the no search results section is shown
  * when appropriate.
  * @param {!Element} printersElement
-
+ * @param {!Array<!PrinterListEntry>} expectedVisiblePrinters
  * @param {string} searchTerm
  */
 function verifySearchQueryResults(
@@ -162,7 +163,7 @@ function verifySearchQueryResults(
 
 /**
  * Removes a saved printer located at |index|.
-
+ * @param {!TestCupsPrintersBrowserProxy} cupsPrintersBrowserProxy
  * @param {!HTMLElement} savedPrintersElement
  * @param {number} index
  * @return {!Promise}
@@ -189,7 +190,7 @@ function removePrinter(cupsPrintersBrowserProxy, savedPrintersElement, index) {
 
 /**
  * Removes all saved printers through recursion.
-
+ * @param {!TestCupsPrintersBrowserProxy} cupsPrintersBrowserProxy
  * @param {!HTMLElement} savedPrintersElement
  * @return {!Promise}
  */
@@ -233,7 +234,7 @@ suite('CupsSavedPrintersTests', function() {
     page = null;
   });
 
-
+  /** @param {!Array<!CupsPrinterInfo>} printerList */
   function createCupsPrinterPage(printers) {
     printerList = printers;
     // |cupsPrinterBrowserProxy| needs to have a list of saved printers before
@@ -249,7 +250,7 @@ suite('CupsSavedPrintersTests', function() {
     flush();
   }
 
-
+  /** @param {!CupsPrinterInfo} printer*/
   function addNewSavedPrinter(printer) {
     printerList.push(printer);
     updateSavedPrinters();
@@ -648,9 +649,8 @@ suite('CupsSavedPrintersTests', function() {
     const deepLinkElement =
         printerEntry && printerEntry.shadowRoot.querySelector('#moreActions');
     await waitAfterNextRender(deepLinkElement);
-    const activeDeepLink = getDeepActiveElement();
     assertEquals(
-        deepLinkElement, activeDeepLink,
+        deepLinkElement, getDeepActiveElement(),
         'First saved printer menu button should be focused for settingId=1401.');
   });
 
@@ -1581,7 +1581,7 @@ suite('CupsEnterprisePrintersTests', function() {
     page = null;
   });
 
-
+  /** @param {!Array<!CupsPrinterInfo>} printerList */
   function createCupsPrinterPage(printers) {
     printerList = printers;
     // |cupsPrinterBrowserProxy| needs to have a list of printers before

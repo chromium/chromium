@@ -144,19 +144,10 @@ suite('TrafficCountersTest', function() {
         expectedTime[1].substring(indexExpected);
   }
 
-  /**
-   * Disable type check here to work around FakeNetworkConfig type issues.
-   * @suppress {checkTypes}
-   * @param {!FakeNetworkConfig} networkConfig
-   */
-  function setMojoServiceRemote(networkConfig) {
-    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
-        networkConfig);
-  }
-
   setup(function() {
     networkConfigRemote = new FakeNetworkConfig();
-    setMojoServiceRemote(networkConfigRemote);
+    MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote;
+
 
     trafficCounters = /** @type {!TrafficCountersElement} */ (
         document.createElement('traffic-counters'));

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrinterSetupResult, PrintServerResult} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {CupsPrintersBrowserProxy, PrinterSetupResult, PrintServerResult} from 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
+/** @implements {CupsPrintersBrowserProxy} */
 export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
