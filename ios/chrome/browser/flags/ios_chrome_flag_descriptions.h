@@ -731,6 +731,11 @@ extern const char kUseLoadSimulatedRequestForOfflinePageDescription[];
 extern const char kUseSFSymbolsName[];
 extern const char kUseSFSymbolsDescription[];
 
+// Title and description for the flag to enable the replacement of images
+// by SFSymbols in omnibox.
+extern const char kUseSFSymbolsInOmniboxName[];
+extern const char kUseSFSymbolsInOmniboxDescription[];
+
 // Title and description for the flag to control the maximum wait time (in
 // seconds) for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];

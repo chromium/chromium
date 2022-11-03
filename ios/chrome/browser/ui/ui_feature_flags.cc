@@ -91,6 +91,10 @@ BASE_FEATURE(kEnableShortenedPasswordAutoFillInstruction,
 
 BASE_FEATURE(kUseSFSymbols, "UseSFSymbols", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseSFSymbolsInOmnibox,
+             "UseSFSymbolsInOmnibox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCalendarExperienceKit,
              "CalendarExperienceKit",
              base::FEATURE_DISABLED_BY_DEFAULT);

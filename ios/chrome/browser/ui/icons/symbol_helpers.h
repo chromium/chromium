@@ -14,6 +14,9 @@
 // Returns YES if the kUseSFSymbols flag is enabled.
 bool UseSymbols();
 
+// Returns YES if the kUseSFSymbolsInOmnibox flag is enabled.
+bool UseSymbolsInOmnibox();
+
 // Returns a SF symbol named `symbol_name` configured with the given
 // `configuration`.
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,

@@ -1304,6 +1304,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxCarouselDynamicSpacingName,
      flag_descriptions::kOmniboxCarouselDynamicSpacingDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOmniboxCarouselDynamicSpacing)},
+    {"use-sf-symbols-omnibox", flag_descriptions::kUseSFSymbolsInOmniboxName,
+     flag_descriptions::kUseSFSymbolsInOmniboxDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUseSFSymbolsInOmnibox)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

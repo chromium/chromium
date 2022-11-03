@@ -38,7 +38,7 @@ const CGFloat kTextSpacingActionsEnabled = 2.0f;
 // fancy layout guide setup and can get away with simple margins.
 const CGFloat kImageOffsetVariation2 = 8.0f;
 const CGFloat kTextOffsetVariation2 = 8.0f;
-const CGFloat kTrailingButtonPointSizeVariation2 = 17.0f;
+const CGFloat kTrailingButtonPointSize = 17.0f;
 
 NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     @"OmniboxPopupRowSwitchTabAccessibilityIdentifier";
@@ -550,27 +550,35 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
   UIImage* trailingButtonImage = nil;
   if (IsOmniboxActionsVisualTreatment2()) {
-    UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-        configurationWithPointSize:kTrailingButtonPointSizeVariation2
-                            weight:UIImageSymbolWeightMedium];
-
     trailingButtonImage =
         self.suggestion.isTabMatch
-            ? DefaultSymbolWithConfiguration(kNavigateToTabSymbol,
-                                             configuration)
-            : DefaultSymbolWithConfiguration(kRefineQuerySymbol, configuration);
+            ? DefaultSymbolWithPointSize(kNavigateToTabSymbol,
+                                         kTrailingButtonPointSize)
+            : DefaultSymbolWithPointSize(kRefineQuerySymbol,
+                                         kTrailingButtonPointSize);
     trailingButtonImage =
         trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
   } else {
-    if (self.suggestion.isTabMatch) {
-      trailingButtonImage = [UIImage imageNamed:@"omnibox_popup_tab_match"];
+    if (UseSymbolsInOmnibox()) {
+      trailingButtonImage =
+          self.suggestion.isTabMatch
+              ? DefaultSymbolWithPointSize(kNavigateToTabSymbol,
+                                           kTrailingButtonPointSize)
+              : DefaultSymbolWithPointSize(kRefineQuerySymbol,
+                                           kTrailingButtonPointSize);
       trailingButtonImage =
           trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
     } else {
-      int trailingButtonResourceID = 0;
-      trailingButtonResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
-      trailingButtonImage =
-          NativeReversableImage(trailingButtonResourceID, YES);
+      if (self.suggestion.isTabMatch) {
+        trailingButtonImage = [UIImage imageNamed:@"omnibox_popup_tab_match"];
+        trailingButtonImage =
+            trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
+      } else {
+        int trailingButtonResourceID = 0;
+        trailingButtonResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
+        trailingButtonImage =
+            NativeReversableImage(trailingButtonResourceID, YES);
+      }
     }
   }
   trailingButtonImage = [trailingButtonImage

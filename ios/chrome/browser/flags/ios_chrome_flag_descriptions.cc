@@ -827,6 +827,11 @@ const char kUseSFSymbolsName[] = "Replace Image by SFSymbols";
 const char kUseSFSymbolsDescription[] =
     "When enabled, images are replaced by SFSymbols";
 
+const char kUseSFSymbolsInOmniboxName[] =
+    "Replace Image by SFSymbols in Omnibox";
+const char kUseSFSymbolsInOmniboxDescription[] =
+    "When enabled, images are replaced by SFSymbols in the omnibox";
+
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

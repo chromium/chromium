@@ -6875,7 +6875,12 @@
   {
     "name": "use-sf-symbols",
     "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
+  },
+  {
+    "name": "use-sf-symbols-omnibox",
+    "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
+    "expiry_milestone": 114
   },
   {
     "name": "use-stork-smds-server-address",

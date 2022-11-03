@@ -44,6 +44,14 @@ UIImage* SymbolWithConfiguration(NSString* symbol_name,
 
 }  // namespace
 
+bool UseSymbols() {
+  return base::FeatureList::IsEnabled(kUseSFSymbols);
+}
+
+bool UseSymbolsInOmnibox() {
+  return base::FeatureList::IsEnabled(kUseSFSymbolsInOmnibox);
+}
+
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
                                         UIImageConfiguration* configuration) {
   return SymbolWithConfiguration(symbol_name, configuration, true);
@@ -100,10 +108,6 @@ UIImage* SymbolWithPalette(UIImage* symbol, NSArray<UIColor*>* colors) {
   return [symbol
       imageByApplyingSymbolConfiguration:
           [UIImageSymbolConfiguration configurationWithPaletteColors:colors]];
-}
-
-bool UseSymbols() {
-  return base::FeatureList::IsEnabled(kUseSFSymbols);
 }
 
 UIImage* DefaultSettingsRootSymbol(NSString* symbol_name) {
