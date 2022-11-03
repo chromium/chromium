@@ -104,6 +104,9 @@ uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
   } else if (header_fourcc == V4L2_PIX_FMT_AV1) {
     LOG(INFO) << "OUTPUT format mapped from AV01 to AV1F.";
     return V4L2_PIX_FMT_AV1_FRAME;
+  } else if (header_fourcc == V4L2_PIX_FMT_VP8) {
+    LOG(INFO) << "OUTPUT format mapped from VP80 to VP8F.";
+    return V4L2_PIX_FMT_VP8_FRAME;
   }
 
   return header_fourcc;

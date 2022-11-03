@@ -20,6 +20,7 @@
 #endif
 #include "media/gpu/v4l2/test/h264_decoder.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
+#include "media/gpu/v4l2/test/vp8_decoder.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
 // AV1 stateless decoding not supported upstream yet
@@ -28,6 +29,7 @@ using media::v4l2_test::Av1Decoder;
 #endif
 using media::v4l2_test::H264Decoder;
 using media::v4l2_test::VideoDecoder;
+using media::v4l2_test::Vp8Decoder;
 using media::v4l2_test::Vp9Decoder;
 
 namespace {
@@ -104,6 +106,9 @@ std::unique_ptr<VideoDecoder> CreateVideoDecoder(
 
   if (!decoder)
     decoder = H264Decoder::Create(stream);
+
+  if (!decoder)
+    decoder = Vp8Decoder::Create(stream);
 
   return decoder;
 }

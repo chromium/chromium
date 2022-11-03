@@ -172,6 +172,8 @@ executable("v4l2_stateless_decoder") {
     "test/v4l2_stateless_decoder.cc",
     "test/video_decoder.cc",
     "test/video_decoder.h",
+    "test/vp8_decoder.cc",
+    "test/vp8_decoder.h",
     "test/vp9_decoder.cc",
     "test/vp9_decoder.h",
   ]
@@ -188,6 +190,7 @@ executable("v4l2_stateless_decoder") {
     "//media",
     "//media:test_support",
     "//media/gpu:common",
+    "//media/parsers",
   ]
 
   if (enable_libgav1_decoder || use_libgav1_parser) {
