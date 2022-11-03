@@ -2892,10 +2892,12 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // The test will succeed to start the print job, render a page/document of
-  // content, and complete with document done.  Wait for the one print job to
-  // be destroyed to ensure printing finished cleanly before completing the
-  // test.  This results in a total of 4 expected calls.
+  // The expected events for this are:
+  // 1.  A print job is started.
+  // 2.  Rendering for 1 page of document of content.
+  // 3.  Completes with document done.
+  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  //    finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/4);
   PrintAfterPreviewIsReadyAndLoaded();
 
@@ -2927,16 +2929,26 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // The test will succeed to start the print job, render 3 pages of document
-  // content, and complete with document done.  Wait for the one print job to
-  // be destroyed to ensure printing finished cleanly before completing the
-  // test.  This results in a total of 6 expected calls for Windows GDI
-  // printing, or 4 expected calls for all other cases.
 #if BUILDFLAG(IS_WIN)
+  // Windows GDI results in a callback for each rendered page.
+  // The expected events for this are:
+  // 1.  A print job is started.
+  // 2.  First page is rendered.
+  // 3.  Second page is rendered.
+  // 4.  Third page is rendered.
+  // 5.  Completes with document done.
+  // 6.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   // TODO(crbug.com/1008222)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
   SetNumExpectedMessages(/*num=*/6);
 #else
+  // The expected events for this are:
+  // 1.  A print job is started.
+  // 2.  Document is rendered.
+  // 3.  Completes with document done.
+  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/4);
 #endif
   PrintAfterPreviewIsReadyAndLoaded();
@@ -2971,12 +2983,12 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // No attempt to retry is made if a job has a shared memory error when trying
-  // to spool a page/document fails on a shared memory error.  The test will
-  // succeed to start the print job, and fails in spooling when it is preparing
-  // to send the data for rendering.  This will cause a printing error dialog
-  // to be displayed.  Wait for the one print job to be destroyed to ensure
-  // printing finished cleanly before completing the test.  This results in a
-  // total of 3 expected calls.
+  // to spool a page/document fails on a shared memory error.  The test
+  // sequence for this is:
+  // 1.  A print job is started.
+  // 2.  Spooling to send the render data will fail.  An error dialog is shown.
+  // 3.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/3);
 
   PrintAfterPreviewIsReadyAndLoaded();
@@ -3005,19 +3017,17 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     // There are no callbacks for print stages with in-browser printing.  So
     // the print job is started, but that fails, and there is no capturing of
     // that result.
-    // The rest of the test sequence for this is:
-    // - An error dialog is shown.
-    // - Wait for the one print job to be destroyed, to ensure printing
-    //   finished cleanly before completing the test.
-    // This results in a total of 2 calls.
+    // The expected events for this are:
+    // 1.  An error dialog is shown.
+    // 2.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/2);
   } else {
-    // The test sequence for this is:
-    // - A print job is started, but that fails.
-    // - An error dialog is shown.
-    // - Wait for the one print job to be destroyed, to ensure printing
-    //   finished cleanly before completing the test.
-    // This results in a total of 3 calls.
+    // The expected events for this are:
+    // 1.  A print job is started, but that fails.
+    // 2.  An error dialog is shown.
+    // 3.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/3);
   }
 
@@ -3043,11 +3053,13 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // The test will retry to print after getting an access-denied error when
-  // trying to start printing.  After that the printing will succeed to start,
-  // render a page/document of content, and complete.  Wait for the one print
-  // job to be destroyed to ensure printing finished cleanly before completing
-  // the test.  This results in 5 calls.
+  // The expected events for this are:
+  // 1.  A print job is started, but has an access-denied error.
+  // 2.  A retry to start the print job with adjusted access will succeed.
+  // 3.  Rendering for 1 page of document of content.
+  // 4.  Completes with document done.
+  // 5.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/5);
 
   PrintAfterPreviewIsReadyAndLoaded();
@@ -3083,11 +3095,12 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // Test of a misbehaving printer driver which only returns access-denied
-  // errors.  The test will retry printing once but will abort when it is
-  // seen again.  This will cause a printing error dialog to be displayed.
-  // Wait for the one print job to be destroyed to ensure printing finished
-  // cleanly before completing the test.  This results in a total of 4
-  // expected calls.
+  // errors.  The expected events for this are:
+  // 1.  A print job is started, but has an access-denied error.
+  // 2.  A retry to start the print job with adjusted access will still fail.
+  // 3.  An error dialog is shown.
+  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/4);
 
   PrintAfterPreviewIsReadyAndLoaded();
@@ -3114,11 +3127,12 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // No attempt to retry is made if an access-denied error occurs when trying
-  // to render a page.  The test will fail after starting the print job and
-  // rendering a page of content.  This will cause a printing error dialog to
-  // be displayed.  Wait for the one print job to be destroyed to ensure
-  // printing finished cleanly before completing the test.  This results in a
-  // total of 4 expected calls.
+  // to render a page.  The expected events for this are:
+  // 1.  A print job is started.
+  // 2.  Rendering for 1 page of document of content fails with access denied.
+  // 3.  An error dialog is shown.
+  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/4);
 
   PrintAfterPreviewIsReadyAndLoaded();
@@ -3184,11 +3198,12 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // No attempt to retry is made if an access-denied error occurs when trying
-  // to render a document.  The test will fail after starting the print job and
-  // rendering the document.  This will cause a printing error dialog to be
-  // displayed.  Wait for the one print job to be destroyed to ensure printing
-  // finished cleanly before completing the test.  This results in a total of 4
-  // expected calls.
+  // to render a document.  The expected events for this are:
+  // 1.  A print job is started.
+  // 2.  Rendering for 1 page of document of content fails with access denied.
+  // 3.  An error dialog is shown.
+  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/4);
 
   PrintAfterPreviewIsReadyAndLoaded();
@@ -3216,11 +3231,13 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // No attempt to retry is made if an access-denied error occurs when trying
-  // do wrap-up a rendered document.  The test will fail after starting the
-  // print job, rendering a page of content, and calling for document done.
-  // This will cause a printing error dialog to be displayed.  Wait for the one
-  // print job to be destroyed to ensure printing finished cleanly before
-  // completing the test.  This results in a total of 5 expected calls.
+  // do wrap-up a rendered document.  The expected events are:
+  // 1.  A print job is started.
+  // 2.  Rendering for 1 page of document of content.
+  // 3.  Document done results in an access-denied error.
+  // 4.  An error dialog is shown.
+  // 5.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/5);
 
   PrintAfterPreviewIsReadyAndLoaded();
@@ -3255,24 +3272,26 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
 #if BUILDFLAG(IS_WIN)
-  // The test will get the default settings followed by asking the user for
-  // settings.  After that a print job will be started, with a page getting
-  // rendered, and finally the document done notification.  Wait for the one
-  // print job to be destroyed to ensure printing finished cleanly before
-  // completing the test.  This results in a total of 6 calls.
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings.
+  // 3.  A print job is started.
+  // 4.  The document is rendered.
+  // 5.  Receive document done notification.
+  // 6.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/6);
 #else
-  // The test sequence for this is:
-  // - Get the default settings.
-  // - Ask the user for settings.  Due to issues with displaying a system dialog
-  //   from the utility process, there is no callback to capture the request for
-  //   user supplied settings.
-  // - A print job is started.
-  // - The document is rendered.
-  // - Receive document done notification.
-  // - Wait for the one print job to be destroyed, to ensure printing finished
-  //   cleanly before completing the test.
-  // This results in a total of 5 calls.
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings.  Due to issues with displaying a system
+  //     dialog from the utility process, there is no callback to capture the
+  //     request for user supplied settings.
+  // 3.  A print job is started.
+  // 4.  The document is rendered.
+  // 5.  Receive document done notification.
+  // 6.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
   // TODO(crbug.com/1374188)  Update this expectation once
   // `AskUserForSettings()` is able to be pushed OOP for Linux.
   SetNumExpectedMessages(/*num=*/5);
@@ -3327,11 +3346,11 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // The test will get the default settings followed by asking the user for
-  // settings.  Since this pretends the user canceled from that, no further
-  // printing calls are made.  No print job is created because of such an early
-  // cancel, so no need to wait any further.  This results in a total of 2
-  // expected calls.
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings, which indicates to cancel the print
+  //     request.  No further printing calls are made.
+  // No print job is created because of such an early cancel.
   SetNumExpectedMessages(/*num=*/2);
 
   StartBasicPrint(web_contents);
@@ -3366,24 +3385,22 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
     // There are only partial overrides to track most steps in the printing
-    // pipeline, so the test sequence for this is:
-    // - Gets default settings.
-    // - Asks user for settings.
-    // - A print job is started, but that fails.  There is no override to
-    //   this notice directly.  This does cause an error dialog to be shown.
-    // - Wait for the one print job to be destroyed, to ensure printing
-    //   finished cleanly before completing the test.
-    // This results in a total of 4 calls.
+    // pipeline, so the expected events for this are:
+    // 1.  Gets default settings.
+    // 2.  Asks user for settings.
+    // 3.  A print job is started, but that fails.  There is no override to
+    //     this notice directly.  This does cause an error dialog to be shown.
+    // 4.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/4);
   } else {
-    // The test sequence for this is:
-    // - Gets default settings.
-    // - Asks user for settings.
-    // - A print job is started, which fails.
-    // - An error dialog is shown.
-    // - Wait for the one print job to be destroyed, to ensure printing
-    //   finished cleanly before completing the test.
-    // This results in a total of 5 calls.
+    // The expected events for this are:
+    // 1.  Gets default settings.
+    // 2.  Asks user for settings.
+    // 3.  A print job is started, which fails.
+    // 4.  An error dialog is shown.
+    // 5.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/5);
   }
 
@@ -3422,11 +3439,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // The test will get the default settings followed by asking the user for
-  // settings.  Since this pretends the user canceled from that, no further
-  // printing calls are made.  No print job is created because of such an early
-  // cancel, so no need to wait any further.  This results in a total of 2
-  // expected calls.
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings, which indicates to cancel the print
+  //     request.  No further printing calls are made.
+  // No print job is created because of such an early cancel.
   SetNumExpectedMessages(/*num=*/2);
 
   StartBasicPrint(web_contents);
@@ -3487,11 +3504,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // The test sequence for this is:
-  // - Get the default settings, which fails.
-  // - The print error dialog is shown.
+  // The expected events for this are:
+  // 1.  Get the default settings, which fails.
+  // 2.  The print error dialog is shown.
   // No print job is created from such an early failure.
-  // This results in a total of 2 calls.
   SetNumExpectedMessages(/*num=*/2);
 
   StartBasicPrint(web_contents);
