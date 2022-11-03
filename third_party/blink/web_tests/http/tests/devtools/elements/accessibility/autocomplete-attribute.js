@@ -53,8 +53,7 @@
     } else {
       selectionRange.selectNodeContents(proxyElement);
     }
-    var range = selectionRange.startContainer.rangeOfWord(
-        selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
+    var range = self.Platform.DOMUtilities.rangeOfWord(selectionRange.startContainer, selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
     var prefix = range.toString();
     prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
         .then(completions);
