@@ -226,7 +226,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
        features::kAutofillInferCountryCallingCode,
        // TODO(crbug.com/1352826): Remove once launched.
-       features::kAutofillMin3FieldTypesForLocalHeuristics},
+       features::kAutofillMin3FieldTypesForLocalHeuristics,
+       // TODO(crbug.com/1339277): Remove once launched.
+       features::kAutofillImprovedLabelForInference},
       // Disabled
       {// TODO(crbug.com/1311937): Remove once launched.
        // This feature is part of the AutofillRefinedPhoneNumberTypes rollout.
