@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="42">
+  <interface name="zaura_shell" version="43">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -536,7 +536,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_output" version="38">
+  <interface name="zaura_output" version="43">
     <description summary="aura shell interface to a wl_output">
       An additional interface to a wl_output object, which allows the
       client to access aura shell specific functionality for output.
@@ -682,6 +682,15 @@
   See zaura_shell.release for destructor naming.
       </description>
     </request>
+
+    <event name="display_id" since="43">
+      <description summary="advertise the output's display id">
+        This event describes the 64bit display id assigned to each display by ChromeOS.
+	The value is opaque and should not be interpreted.
+      </description>
+      <arg name="display_id_hi" type="uint"/>
+      <arg name="display_id_lo" type="uint"/>
+    </event>
   </interface>
 
   <interface name="zaura_toplevel" version="42">
@@ -733,20 +742,21 @@
 	Request a new location and bounds of the surface in DP screen
 	coordinates.  The size will be applied to visible bounds used
 	in set_geometry.  The output is a hint for the compositor to
-	determine which output the window should move to.  These
-	parameters are just a request and the compositor may ignore,
-	adjust the size and position based on the rule imposed by the
-	window manager, or may preserve it for future operations. For
-	example, the compositor will not allow a position outside of
-	the output, or the compositor may just store it if the
-	toplevel surface is in maximiezd state, and may use it upon
-	unmaximized.
+	determine which output the window should move to. If the
+	output is null, the compositor should make decision sololy by
+	the given boudns. These parameters are just a request and the
+	compositor may ignore, adjust the size and position based on
+	the rule imposed by the window manager, or may preserve it for
+	future operations. For example, the compositor will not allow
+	a position outside of the output, or the compositor may just
+	store it if the toplevel surface is in maximiezd state, and
+	may use it upon unmaximized.
       </description>
       <arg name="x" type="int"/>
       <arg name="y" type="int"/>
       <arg name="width" type="int"/>
       <arg name="height" type="int"/>
-      <arg name="output" type="object" interface="wl_output" summary="the output"/>
+      <arg name="output" type="object" interface="wl_output" summary="the output" allow-null="true"/>
     </request>
 
     <event name="configure" since="29">

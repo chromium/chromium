@@ -865,6 +865,13 @@ bool AuraOutput::SendDisplayMetrics(const display::Display& display,
   const display::ManagedDisplayInfo& display_info =
       wm_helper->GetDisplayInfo(display.id());
 
+  if (wl_resource_get_version(resource_) >=
+      ZAURA_OUTPUT_DISPLAY_ID_SINCE_VERSION) {
+    uint32_t display_id_hi = static_cast<uint32_t>(display.id() >> 32);
+    uint32_t display_id_lo = static_cast<uint32_t>(display.id());
+    zaura_output_send_display_id(resource_, display_id_hi, display_id_lo);
+  }
+
   if (wl_resource_get_version(resource_) >= ZAURA_OUTPUT_SCALE_SINCE_VERSION) {
     display::ManagedDisplayMode active_mode;
     bool rv = wm_helper->GetActiveModeForDisplayId(display.id(), &active_mode);
