@@ -358,7 +358,7 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
 
  protected:
   virtual std::string GetTestHtmlFile() = 0;
-  virtual void OnNeedsBeginFrame() {}
+  virtual void StartFrames() {}
   virtual void OnFrameFinished(base::Value::Dict result) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -403,11 +403,6 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
 
     devtools_client_.AttachToWebContents(web_contents_->web_contents());
 
-    devtools_client_.AddEventHandler(
-        "HeadlessExperimental.needsBeginFramesChanged",
-        on_needs_begin_frames_changed_handler_);
-    devtools_client_.SendCommand("HeadlessExperimental.enable");
-
     devtools_client_.SendCommand(
         "Page.stopLoading",
         base::BindOnce(
@@ -441,33 +436,10 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
                                         on_load_event_fired_handler_);
 
     page_ready_ = true;
-    if (needs_begin_frames_) {
-      DCHECK(!frame_in_flight_);
-      OnNeedsBeginFrame();
-    }
-  }
-
-  void OnNeedsBeginFramesChanged(const base::Value::Dict& params) {
-    TRACE_EVENT1(
-        "headless",
-        "HeadlessWebContentsBeginFrameControlTest::OnNeedsBeginFramesChanged",
-        "needs_begin_frames",
-        *params.FindBoolByDottedPath("params.needsBeginFrames"));
-    needs_begin_frames_ =
-        *params.FindBoolByDottedPath("params.needsBeginFrames");
-    // With full-pipeline mode and surface sync, the needs_begin_frame signal
-    // should become and then always stay true.
-    EXPECT_TRUE(needs_begin_frames_);
-    EXPECT_FALSE(frame_in_flight_);
-    if (page_ready_)
-      OnNeedsBeginFrame();
+    StartFrames();
   }
 
   void BeginFrame(bool screenshot) {
-    // With full-pipeline mode and surface sync, the needs_begin_frame signal
-    // should always be true.
-    EXPECT_TRUE(needs_begin_frames_);
-
     frame_in_flight_ = true;
     num_begin_frames_++;
 
@@ -502,10 +474,6 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
   }
 
   void PostFinishAsynchronousTest() {
-    devtools_client_.RemoveEventHandler(
-        "HeadlessExperimental.needsBeginFramesChanged",
-        on_needs_begin_frames_changed_handler_);
-
     browser()->BrowserMainThread()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -519,7 +487,6 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
       nullptr;  // Not owned.
 
   bool page_ready_ = false;
-  bool needs_begin_frames_ = false;
   bool frame_in_flight_ = false;
   int num_begin_frames_ = 0;
 
@@ -529,11 +496,6 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
   SimpleDevToolsProtocolClient::EventCallback on_load_event_fired_handler_ =
       base::BindRepeating(
           &HeadlessWebContentsBeginFrameControlTest::OnLoadEventFired,
-          base::Unretained(this));
-
-  SimpleDevToolsProtocolClient::EventCallback
-      on_needs_begin_frames_changed_handler_ = base::BindRepeating(
-          &HeadlessWebContentsBeginFrameControlTest::OnNeedsBeginFramesChanged,
           base::Unretained(this));
 };
 
@@ -548,7 +510,7 @@ class HeadlessWebContentsBeginFrameControlBasicTest
     return "/blue_page.html";
   }
 
-  void OnNeedsBeginFrame() override { BeginFrame(true); }
+  void StartFrames() override { BeginFrame(true); }
 
   void OnFrameFinished(base::Value::Dict result) override {
     if (num_begin_frames_ == 1) {
@@ -600,7 +562,7 @@ class HeadlessWebContentsBeginFrameControlViewportTest
     return "/blue_box.html";
   }
 
-  void OnNeedsBeginFrame() override {
+  void StartFrames() override {
     // Send a first BeginFrame to initialize the surface.
     BeginFrame(false);
   }

@@ -3941,18 +3941,10 @@ experimental domain HeadlessExperimental
       optional binary screenshotData
 
   # Disables headless events for the target.
-  command disable
+  deprecated command disable
 
   # Enables headless events for the target.
-  command enable
-
-  # Issued when the target starts or stops needing BeginFrames.
-  # Deprecated. Issue beginFrame unconditionally instead and use result from
-  # beginFrame to detect whether the frames were suppressed.
-  deprecated event needsBeginFramesChanged
-    parameters
-      # True if BeginFrames are needed, false otherwise.
-      boolean needsBeginFrames
+  deprecated command enable
 
 # Input/Output operations for streams produced by DevTools.
 domain IO

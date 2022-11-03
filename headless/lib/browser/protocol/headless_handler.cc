@@ -115,8 +115,6 @@ void HeadlessHandler::Wire(UberDispatcher* dispatcher) {
 }
 
 Response HeadlessHandler::Enable() {
-  if (frontend_)
-    frontend_->NeedsBeginFramesChanged(true);
   return Response::Success();
 }
 
