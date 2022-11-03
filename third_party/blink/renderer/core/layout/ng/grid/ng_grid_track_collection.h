@@ -137,7 +137,7 @@ class CORE_EXPORT NGGridRangeBuilder {
   wtf_size_t auto_repetitions_;
   wtf_size_t start_offset_;
 
-  bool must_sort_grid_lines : 1;
+  bool must_sort_grid_lines_ : 1;
 
   // Stores the grid's explicit and implicit tracks.
   const NGGridTrackList& explicit_tracks_;
@@ -195,7 +195,7 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   LayoutUnit GetSetOffset(wtf_size_t set_index) const;
   wtf_size_t GetSetTrackCount(wtf_size_t set_index) const;
 
-  bool HasBaselines() const;
+  bool HasBaselines() const { return baselines_.has_value(); }
   LayoutUnit MajorBaseline(wtf_size_t set_index) const;
   LayoutUnit MinorBaseline(wtf_size_t set_index) const;
 
@@ -218,6 +218,11 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   LayoutUnit GutterSize() const { return gutter_size_; }
   const NGGridRangeVector& Ranges() const { return ranges_; }
 
+  bool HasFlexibleTrack() const;
+  bool HasIntrinsicTrack() const;
+  bool IsDependentOnAvailableSize() const;
+  bool IsSpanningOnlyDefiniteTracks() const;
+
   // Don't allow this class to be used for grid sizing.
   virtual bool IsForSizing() const { return false; }
   // Indefinite indices are only used while measuring grid item contributions.
@@ -227,18 +232,24 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   }
 
  protected:
+  struct Baselines {
+    Vector<LayoutUnit, 16> major;
+    Vector<LayoutUnit, 16> minor;
+  };
+
+  // Baselines are only created when there are items with baseline alignment.
+  absl::optional<Baselines> baselines_;
+
   LayoutUnit gutter_size_;
+  NGGridRangeVector ranges_;
+  TrackSpanProperties properties_;
+  Vector<SetGeometry, 16> sets_geometry_;
 
   // These values are used to adjust the sets geometry to the relative border
   // box of a subgrid and account for its gutter size difference.
   LayoutUnit sets_geometry_start_offset_;
   LayoutUnit start_extra_margin_;
   LayoutUnit end_extra_margin_;
-
-  NGGridRangeVector ranges_;
-  Vector<SetGeometry, 16> sets_geometry_;
-  Vector<LayoutUnit, 16> major_baselines_;
-  Vector<LayoutUnit, 16> minor_baselines_;
 };
 
 // |NGGridRangeBuilder::EnsureTrackCoverage| may introduce a range start and/or
@@ -369,6 +380,7 @@ class CORE_EXPORT NGGridSizingTrackCollection
 
   explicit NGGridSizingTrackCollection(
       NGGridRangeVector&& ranges,
+      bool must_create_baselines = false,
       GridTrackSizingDirection track_direction = kForColumns);
 
   // Returns a reference to the set located at position |set_index|.
@@ -392,8 +404,8 @@ class CORE_EXPORT NGGridSizingTrackCollection
   }
   LayoutUnit TotalTrackSize() const;
 
-  TrackSpanProperties InitializeSets(const ComputedStyle& grid_style,
-                                     LayoutUnit grid_available_size);
+  void InitializeSets(const ComputedStyle& grid_style,
+                      LayoutUnit grid_available_size);
   void SetIndefiniteGrowthLimitsToBaseSize();
 
   // Caches the initial geometry used to compute grid item contributions.
@@ -401,11 +413,8 @@ class CORE_EXPORT NGGridSizingTrackCollection
                               LayoutUnit gutter_size);
   // Caches the final geometry required to place |NGGridSet| in the grid.
   void CacheSetsGeometry(LayoutUnit first_set_offset, LayoutUnit gutter_size);
-  // Returns true if any of the two methods above already cached sets' geometry.
-  bool HasCachedSetsGeometry() const { return !sets_geometry_.empty(); }
 
   void ResetBaselines();
-
   void SetMajorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
   void SetMinorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
 
@@ -415,10 +424,9 @@ class CORE_EXPORT NGGridSizingTrackCollection
   friend class NGGridTrackCollectionTest;
 
   // This private version of |InitializeSets| is directly used in testing.
-  TrackSpanProperties InitializeSets(
-      const NGGridTrackList& explicit_track_list,
-      const NGGridTrackList& implicit_track_list,
-      LayoutUnit grid_available_size = kIndefiniteSize);
+  void InitializeSets(const NGGridTrackList& explicit_track_list,
+                      const NGGridTrackList& implicit_track_list,
+                      LayoutUnit grid_available_size = kIndefiniteSize);
 
   void AppendSetsForRange(const NGGridTrackList& specified_track_list,
                           bool is_available_size_indefinite,

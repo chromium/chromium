@@ -73,7 +73,7 @@ NGGridRangeBuilder::NGGridRangeBuilder(
       start_offset_((track_direction == kForColumns)
                         ? placement_data.column_start_offset
                         : placement_data.row_start_offset),
-      must_sort_grid_lines(false),
+      must_sort_grid_lines_(false),
       explicit_tracks_((track_direction == kForColumns)
                            ? grid_style.GridTemplateColumns().TrackList()
                            : grid_style.GridTemplateRows().TrackList()),
@@ -130,7 +130,7 @@ void NGGridRangeBuilder::EnsureTrackCoverage(
   DCHECK_NE(span_length, kNotFound);
   DCHECK(grid_item_start_range_index && grid_item_end_range_index);
 
-  must_sort_grid_lines = true;
+  must_sort_grid_lines_ = true;
   start_lines_.emplace_back(start_line, grid_item_start_range_index);
   end_lines_.emplace_back(start_line + span_length, grid_item_end_range_index);
 }
@@ -139,14 +139,14 @@ NGGridRangeVector NGGridRangeBuilder::FinalizeRanges() {
   DCHECK_LE(start_lines_.size(), end_lines_.size());
 
   // Sort start and ending tracks from low to high.
-  if (must_sort_grid_lines) {
+  if (must_sort_grid_lines_) {
     auto CompareTrackBoundaries = [](const TrackBoundaryToRangePair& a,
                                      const TrackBoundaryToRangePair& b) {
       return a.grid_line < b.grid_line;
     };
     std::sort(start_lines_.begin(), start_lines_.end(), CompareTrackBoundaries);
     std::sort(end_lines_.begin(), end_lines_.end(), CompareTrackBoundaries);
-    must_sort_grid_lines = false;
+    must_sort_grid_lines_ = false;
   }
 
   const wtf_size_t explicit_repeater_count = explicit_tracks_.RepeaterCount();
@@ -348,7 +348,7 @@ NGGridRangeBuilder::NGGridRangeBuilder(const NGGridTrackList& explicit_tracks,
                                        wtf_size_t auto_repetitions)
     : auto_repetitions_(auto_repetitions),
       start_offset_(0),
-      must_sort_grid_lines(false),
+      must_sort_grid_lines_(false),
       explicit_tracks_(explicit_tracks),
       implicit_tracks_(implicit_tracks) {
   const wtf_size_t repeater_count = explicit_tracks_.RepeaterCount();
@@ -490,10 +490,10 @@ bool NGGridLayoutTrackCollection::operator==(
          sets_geometry_start_offset_ == other.sets_geometry_start_offset_ &&
          start_extra_margin_ == other.start_extra_margin_ &&
          end_extra_margin_ == other.end_extra_margin_ &&
-         ranges_ == other.ranges_ &&
-         major_baselines_ == other.major_baselines_ &&
-         minor_baselines_ == other.minor_baselines_ &&
-         sets_geometry_ == other.sets_geometry_;
+         baselines_.has_value() == other.baselines_.has_value() &&
+         (!baselines_ || (baselines_->major == other.baselines_->major &&
+                          baselines_->minor == other.baselines_->minor)) &&
+         ranges_ == other.ranges_ && sets_geometry_ == other.sets_geometry_;
 }
 
 wtf_size_t NGGridLayoutTrackCollection::RangeStartLine(
@@ -569,21 +569,16 @@ wtf_size_t NGGridLayoutTrackCollection::GetSetTrackCount(
   return sets_geometry_[set_index + 1].track_count;
 }
 
-bool NGGridLayoutTrackCollection::HasBaselines() const {
-  DCHECK_EQ(major_baselines_.size(), minor_baselines_.size());
-  return !major_baselines_.empty();
-}
-
 LayoutUnit NGGridLayoutTrackCollection::MajorBaseline(
     wtf_size_t set_index) const {
-  DCHECK_LT(set_index, major_baselines_.size());
-  return major_baselines_[set_index];
+  DCHECK(baselines_ && set_index < baselines_->major.size());
+  return baselines_->major[set_index];
 }
 
 LayoutUnit NGGridLayoutTrackCollection::MinorBaseline(
     wtf_size_t set_index) const {
-  DCHECK_LT(set_index, minor_baselines_.size());
-  return minor_baselines_[set_index];
+  DCHECK(baselines_ && set_index < baselines_->minor.size());
+  return baselines_->minor[set_index];
 }
 
 void NGGridLayoutTrackCollection::AdjustSetOffsets(wtf_size_t set_index,
@@ -658,17 +653,19 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
         sets_geometry_[i].track_count);
   }
 
-  if (!major_baselines_.empty()) {
-    DCHECK_LE(end_set_index, major_baselines_.size());
-    DCHECK_LE(end_set_index, minor_baselines_.size());
+  if (baselines_ && !baselines_->major.empty()) {
+    DCHECK_LE(end_set_index, baselines_->major.size());
+    DCHECK_LE(end_set_index, baselines_->minor.size());
 
-    subgrid_collection.major_baselines_.ReserveInitialCapacity(set_span_size);
-    subgrid_collection.minor_baselines_.ReserveInitialCapacity(set_span_size);
+    Baselines subgrid_baselines;
+    subgrid_baselines.major.ReserveInitialCapacity(set_span_size);
+    subgrid_baselines.minor.ReserveInitialCapacity(set_span_size);
 
     for (wtf_size_t i = begin_set_index; i < end_set_index; ++i) {
-      subgrid_collection.major_baselines_.emplace_back(major_baselines_[i]);
-      subgrid_collection.minor_baselines_.emplace_back(minor_baselines_[i]);
+      subgrid_baselines.major.emplace_back(baselines_->major[i]);
+      subgrid_baselines.minor.emplace_back(baselines_->minor[i]);
     }
+    subgrid_collection.baselines_ = std::move(subgrid_baselines);
   }
 
   subgrid_collection.gutter_size_ = gutter_size_;
@@ -679,12 +676,33 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
   return subgrid_collection;
 }
 
+bool NGGridLayoutTrackCollection::HasFlexibleTrack() const {
+  return properties_.HasProperty(TrackSpanProperties::kHasFlexibleTrack);
+}
+
+bool NGGridLayoutTrackCollection::HasIntrinsicTrack() const {
+  return properties_.HasProperty(TrackSpanProperties::kHasIntrinsicTrack);
+}
+
+bool NGGridLayoutTrackCollection::IsDependentOnAvailableSize() const {
+  return properties_.HasProperty(
+      TrackSpanProperties::kIsDependentOnAvailableSize);
+}
+
+bool NGGridLayoutTrackCollection::IsSpanningOnlyDefiniteTracks() const {
+  return !properties_.HasProperty(TrackSpanProperties::kHasNonDefiniteTrack);
+}
+
 NGGridSizingTrackCollection::NGGridSizingTrackCollection(
     NGGridRangeVector&& ranges,
+    bool must_create_baselines,
     GridTrackSizingDirection track_direction)
     : NGGridLayoutTrackCollection(track_direction),
       non_collapsed_track_count_(0) {
   ranges_ = std::move(ranges);
+
+  if (must_create_baselines)
+    baselines_ = Baselines();
 
   wtf_size_t set_count = 0;
   for (const auto& range : ranges_) {
@@ -796,46 +814,46 @@ void NGGridSizingTrackCollection::SetIndefiniteGrowthLimitsToBaseSize() {
 }
 
 void NGGridSizingTrackCollection::ResetBaselines() {
+  DCHECK(baselines_);
+
   const wtf_size_t set_count = sets_.size();
-  major_baselines_ = Vector<LayoutUnit, 16>(set_count, LayoutUnit::Min());
-  minor_baselines_ = Vector<LayoutUnit, 16>(set_count, LayoutUnit::Min());
+  baselines_->major = Vector<LayoutUnit, 16>(set_count, LayoutUnit::Min());
+  baselines_->minor = Vector<LayoutUnit, 16>(set_count, LayoutUnit::Min());
 }
 
 void NGGridSizingTrackCollection::SetMajorBaseline(
     wtf_size_t set_index,
     LayoutUnit candidate_baseline) {
-  DCHECK_LT(set_index, major_baselines_.size());
-  if (candidate_baseline > major_baselines_[set_index])
-    major_baselines_[set_index] = candidate_baseline;
+  DCHECK(baselines_ && set_index < baselines_->major.size());
+  if (candidate_baseline > baselines_->major[set_index])
+    baselines_->major[set_index] = candidate_baseline;
 }
 
 void NGGridSizingTrackCollection::SetMinorBaseline(
     wtf_size_t set_index,
     LayoutUnit candidate_baseline) {
-  DCHECK_LT(set_index, minor_baselines_.size());
-  if (candidate_baseline > minor_baselines_[set_index])
-    minor_baselines_[set_index] = candidate_baseline;
+  DCHECK(baselines_ && set_index < baselines_->minor.size());
+  if (candidate_baseline > baselines_->minor[set_index])
+    baselines_->minor[set_index] = candidate_baseline;
 }
 
-TrackSpanProperties NGGridSizingTrackCollection::InitializeSets(
+void NGGridSizingTrackCollection::InitializeSets(
     const ComputedStyle& grid_style,
     LayoutUnit grid_available_size) {
   const bool is_for_columns = track_direction_ == kForColumns;
 
-  return InitializeSets(
-      is_for_columns ? grid_style.GridTemplateColumns().TrackList()
-                     : grid_style.GridTemplateRows().TrackList(),
-      is_for_columns ? grid_style.GridAutoColumns().NGTrackList()
-                     : grid_style.GridAutoRows().NGTrackList(),
-      grid_available_size);
+  InitializeSets(is_for_columns ? grid_style.GridTemplateColumns().TrackList()
+                                : grid_style.GridTemplateRows().TrackList(),
+                 is_for_columns ? grid_style.GridAutoColumns().NGTrackList()
+                                : grid_style.GridAutoRows().NGTrackList(),
+                 grid_available_size);
 }
 
-TrackSpanProperties NGGridSizingTrackCollection::InitializeSets(
+void NGGridSizingTrackCollection::InitializeSets(
     const NGGridTrackList& explicit_track_list,
     const NGGridTrackList& implicit_track_list,
     LayoutUnit grid_available_size) {
-  TrackSpanProperties collection_properties;
-
+  properties_.Reset();
   sets_.Shrink(0);
   {
     const bool is_available_size_indefinite =
@@ -845,7 +863,7 @@ TrackSpanProperties NGGridSizingTrackCollection::InitializeSets(
       AppendSetsForRange(
           range.IsImplicit() ? implicit_track_list : explicit_track_list,
           is_available_size_indefinite, &range);
-      collection_properties |= range.properties;
+      properties_ |= range.properties;
     }
   }
 
@@ -894,7 +912,6 @@ TrackSpanProperties NGGridSizingTrackCollection::InitializeSets(
       set.InitBaseSize(LayoutUnit());
     }
   }
-  return collection_properties;
 }
 
 void NGGridSizingTrackCollection::AppendSetsForRange(

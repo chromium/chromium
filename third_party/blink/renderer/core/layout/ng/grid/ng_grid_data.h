@@ -24,13 +24,12 @@ struct CORE_EXPORT NGGridPlacementData {
   NGGridPlacementData(const ComputedStyle& grid_style,
                       const NGGridLineResolver& parent_line_resolver,
                       GridArea subgrid_area)
-      : line_resolver(grid_style, parent_line_resolver, subgrid_area),
-        subgridded_column_span_size(subgrid_area.columns.IsTranslatedDefinite()
-                                        ? subgrid_area.SpanSize(kForColumns)
-                                        : kNotFound),
-        subgridded_row_span_size(subgrid_area.rows.IsTranslatedDefinite()
-                                     ? subgrid_area.SpanSize(kForRows)
-                                     : kNotFound) {}
+      : line_resolver(grid_style, parent_line_resolver, subgrid_area) {
+    if (subgrid_area.columns.IsTranslatedDefinite())
+      subgridded_column_span_size = subgrid_area.SpanSize(kForColumns);
+    if (subgrid_area.rows.IsTranslatedDefinite())
+      subgridded_row_span_size = subgrid_area.SpanSize(kForRows);
+  }
 
   // This constructor only copies inputs to the auto-placement algorithm.
   NGGridPlacementData(const NGGridPlacementData& other)

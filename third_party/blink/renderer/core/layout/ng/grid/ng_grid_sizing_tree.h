@@ -12,37 +12,6 @@
 
 namespace blink {
 
-// This class stores various grid properties. Some of these properties
-// depend on grid items and some depend on tracks, hence the need for a
-// separate class to consolidate them. These properties can then be used
-// to skip certain parts of the grid algorithm for better performance.
-//
-// TODO(ethavar): We can probably merge this struct with the sizing data.
-struct CORE_EXPORT NGGridProperties {
-  NGGridProperties()
-      : has_baseline_column(false),
-        has_baseline_row(false),
-        has_orthogonal_item(false) {}
-
-  bool HasBaseline(const GridTrackSizingDirection track_direction) const;
-  bool HasFlexibleTrack(const GridTrackSizingDirection track_direction) const;
-  bool HasIntrinsicTrack(const GridTrackSizingDirection track_direction) const;
-  bool IsDependentOnAvailableSize(
-      const GridTrackSizingDirection track_direction) const;
-  bool IsSpanningOnlyDefiniteTracks(
-      const GridTrackSizingDirection track_direction) const;
-
-  // TODO(layout-dev) Initialize these with {false} and remove the constructor
-  // when the codebase moves to C++20 (this syntax isn't allowed in bitfields
-  // prior to C++20).
-  bool has_baseline_column : 1;
-  bool has_baseline_row : 1;
-  bool has_orthogonal_item : 1;
-
-  TrackSpanProperties column_properties;
-  TrackSpanProperties row_properties;
-};
-
 struct NGGridSizingData : public GarbageCollected<NGGridSizingData> {
   NGGridSizingData() = delete;
 
@@ -60,7 +29,6 @@ struct NGGridSizingData : public GarbageCollected<NGGridSizingData> {
   }
 
   GridItems grid_items;
-  NGGridProperties grid_properties;
   NGGridLayoutData layout_data;
 
   Member<const NGGridSizingData> parent_sizing_data;

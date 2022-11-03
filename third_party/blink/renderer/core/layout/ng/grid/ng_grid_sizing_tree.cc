@@ -6,51 +6,6 @@
 
 namespace blink {
 
-bool NGGridProperties::HasBaseline(
-    const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns)
-             ? (has_baseline_column ||
-                (has_orthogonal_item && has_baseline_row))
-             : (has_baseline_row ||
-                (has_orthogonal_item && has_baseline_column));
-}
-
-bool NGGridProperties::HasFlexibleTrack(
-    const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns)
-             ? column_properties.HasProperty(
-                   TrackSpanProperties::kHasFlexibleTrack)
-             : row_properties.HasProperty(
-                   TrackSpanProperties::kHasFlexibleTrack);
-}
-
-bool NGGridProperties::HasIntrinsicTrack(
-    const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns)
-             ? column_properties.HasProperty(
-                   TrackSpanProperties::kHasIntrinsicTrack)
-             : row_properties.HasProperty(
-                   TrackSpanProperties::kHasIntrinsicTrack);
-}
-
-bool NGGridProperties::IsDependentOnAvailableSize(
-    const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns)
-             ? column_properties.HasProperty(
-                   TrackSpanProperties::kIsDependentOnAvailableSize)
-             : row_properties.HasProperty(
-                   TrackSpanProperties::kIsDependentOnAvailableSize);
-}
-
-bool NGGridProperties::IsSpanningOnlyDefiniteTracks(
-    const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns)
-             ? !column_properties.HasProperty(
-                   TrackSpanProperties::kHasNonDefiniteTrack)
-             : !row_properties.HasProperty(
-                   TrackSpanProperties::kHasNonDefiniteTrack);
-}
-
 bool NGGridSizingData::MustBuildLayoutData(
     GridTrackSizingDirection track_direction) const {
   return !subgrid_data_in_parent ||
