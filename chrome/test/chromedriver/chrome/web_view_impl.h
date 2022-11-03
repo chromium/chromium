@@ -184,7 +184,6 @@ class WebViewImpl : public WebView {
   bool IsDetached() const;
 
  private:
-  Status TraverseHistoryWithJavaScript(int delta);
   Status CallAsyncFunctionInternal(const std::string& frame,
                                    const std::string& function,
                                    const base::Value::List& args,
