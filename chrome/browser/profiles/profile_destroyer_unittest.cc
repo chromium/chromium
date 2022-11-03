@@ -84,6 +84,10 @@ class ProfileDestroyerTest : public testing::Test,
     original_profile_keep_alive_.reset();
   }
 
+  void DestroyOffTheRecordProfileNow(Profile* profile) {
+    ProfileDestroyer::DestroyOffTheRecordProfileNow(profile);
+  }
+
   // Destroying profile is still not universally supported. We need to disable
   // some tests, because it isn't possible to start destroying the profile.
   bool IsScopedProfileKeepAliveSupported() {
@@ -229,9 +233,37 @@ TEST_P(ProfileDestroyerTest,
   EXPECT_FALSE(OtrProfile(0));
 }
 
+// Expect immediate OTR profile destruction when requested.
+TEST_P(ProfileDestroyerTest, ImmediateOTRProfileDestructionNowWithNoHost) {
+  CreateOriginalProfile();
+  CreateOTRProfile();
+  EXPECT_TRUE(original_profile());
+  EXPECT_TRUE(OtrProfile(0));
+
+  // Ask for immediate destruction of OTR profile with no hosts and expect
+  // immediate destruction.
+  DestroyOffTheRecordProfileNow(OtrProfile(0));
+  EXPECT_FALSE(OtrProfile(0));
+}
+
+#if defined(GTEST_HAS_DEATH_TEST)
+// Expect immediate OTR profile destruction when requested.
+TEST_P(ProfileDestroyerTest, CrashOTRProfileDestructionNowWithHosts) {
+  CreateOriginalProfile();
+  CreateOTRProfile();
+  EXPECT_TRUE(original_profile());
+  EXPECT_TRUE(OtrProfile(0));
+
+  CreatedRendererProcessHost(OtrProfile(0));
+
+  // Immediate destruction of OTR profile with hosts will crash.
+  EXPECT_DEATH(DestroyOffTheRecordProfileNow(OtrProfile(0)), "");
+}
+#endif  // defined(GTEST_HAS_DEATH_TEST)
+
 // Expect immediate OTR profile destruction when no pending renderer
 // process host exists.
-TEST_P(ProfileDestroyerTest, ImmediateOTRProfileDestruction) {
+TEST_P(ProfileDestroyerTest, ImmediateOTRProfileDestructionWithNoHosts) {
   CreateOriginalProfile();
   CreateOTRProfile();
   EXPECT_TRUE(original_profile());
@@ -372,6 +404,36 @@ TEST_P(ProfileDestroyerTest, MultipleOTRPRofile) {
   EXPECT_FALSE(OtrProfile(1));
   EXPECT_FALSE(OtrProfile(2));
 }
+
+#if defined(GTEST_HAS_DEATH_TEST)
+// Crash if original profile has hosts at shutdown.
+TEST_P(ProfileDestroyerTest, CrashShutdownAllPendingProfilesOriginalWithHosts) {
+  CreateOriginalProfile();
+  EXPECT_TRUE(original_profile());
+  CreatedRendererProcessHost(original_profile());
+
+  StopKeepingAliveOriginalProfile();
+  EXPECT_TRUE(original_profile());
+
+  EXPECT_DEATH(ProfileDestroyer::DestroyPendingProfilesForShutdown(), "");
+}
+
+// Crash if off-the-record profile has hosts at shutdown.
+TEST_P(ProfileDestroyerTest, CrashShutdownAllPendingProfilesOTRWithHosts) {
+  CreateOriginalProfile();
+  CreateOTRProfile();
+  EXPECT_TRUE(original_profile());
+  EXPECT_TRUE(OtrProfile(0));
+  CreatedRendererProcessHost(OtrProfile(0));
+
+  StopKeepingAliveOriginalProfile();
+  EXPECT_TRUE(original_profile());
+  EXPECT_TRUE(OtrProfile(0));
+
+  // Ask for destruction of OTR profile with hosts and expect it will crash.
+  EXPECT_DEATH(ProfileDestroyer::DestroyPendingProfilesForShutdown(), "");
+}
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 INSTANTIATE_TEST_SUITE_P(AllOTRProfileTypes,
                          ProfileDestroyerTest,

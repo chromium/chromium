@@ -97,6 +97,7 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
  private:
   friend class ProfileImpl;
   friend class base::RefCounted<ProfileDestroyer>;
+  friend class ProfileDestroyerTest;
 
   // For custom timeout, see DestroyProfileWhenAppropriateWithTimeout.
   friend class DevToolsBrowserContextManager;
