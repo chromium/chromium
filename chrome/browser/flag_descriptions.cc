@@ -1861,10 +1861,6 @@ const char kNotificationInteractionHistoryName[] =
 const char kNotificationInteractionHistoryDescription[] =
     "Enable recording notification count and interaction.";
 
-const char kNotificationsRevampName[] = "Notifications Revamp";
-const char kNotificationsRevampDescription[] =
-    "Enable notification UI revamp and grouped web notifications.";
-
 const char kNotificationSchedulerName[] = "Notification scheduler";
 const char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";

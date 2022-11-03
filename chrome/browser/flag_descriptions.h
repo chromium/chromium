@@ -1052,9 +1052,6 @@ extern const char kDestroySystemProfilesDescription[];
 extern const char kNotificationInteractionHistoryName[];
 extern const char kNotificationInteractionHistoryDescription[];
 
-extern const char kNotificationsRevampName[];
-extern const char kNotificationsRevampDescription[];
-
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];
 
