@@ -27,7 +27,7 @@
 --   power_state : The power state that the CPU was in at time 'ts' for
 --                 duration 'dur'.
 --   previous_power_state : The power state that the CPU was previously in.
---   power_slice_id       : A unique ID for the slice.
+--   powerup_id  : A unique ID for the CPU power-up.
 --
 -- Power states are encoded as non-negative integers, with zero representing
 -- full-power operation and positive values representing increasingly deep
@@ -60,7 +60,7 @@ CREATE VIEW cpu_power_slice AS
       power_state,
       LAG(power_state) OVER (PARTITION BY cpu ORDER BY ts ASC)
         AS previous_power_state,
-      id AS power_slice_id
+      id AS powerup_id
     FROM cpu_power_states
   )
   WHERE dur IS NOT NULL
@@ -115,11 +115,12 @@ CREATE VIEW first_sched_slice_after_cpu_power_up AS
     id,
     utid,
     previous_power_state,
-    power_slice_id
+    powerup_id
   FROM sched_and_power_slice
   WHERE power_state = 0     -- Power-ups only.
-  GROUP BY cpu, power_slice_id
-  HAVING ts = MIN(ts)       -- There will only be one MIN sched slice per CPU.
+  GROUP BY cpu, powerup_id
+  HAVING ts = MIN(ts)       -- There will only be one MIN sched slice
+                            -- per CPU power up.
   ORDER BY ts ASC;
 
 -- A view joining thread tracks and top-level slices.
@@ -165,7 +166,7 @@ DROP VIEW IF EXISTS first_top_level_slice_after_cpu_power_up;
 CREATE VIEW first_top_level_slice_after_cpu_power_up AS
   SELECT slice_id, previous_power_state
   FROM slices_after_cpu_power_up
-  GROUP BY cpu, power_slice_id
+  GROUP BY cpu, powerup_id
   HAVING ts = MIN(ts)
   ORDER BY ts ASC;
 
