@@ -64,6 +64,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_urls.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -193,8 +194,10 @@ class ManagementUninstallFunctionUninstallDialogDelegate
         Profile::FromBrowserContext(function->browser_context()),
         details.GetNativeWindowForUI(), this);
     bool uninstall_from_webstore =
-        function->extension() &&
-        function->extension()->id() == extensions::kWebStoreAppId;
+        (function->extension() &&
+         function->extension()->id() == extensions::kWebStoreAppId) ||
+        function->source_url().DomainIs(
+            extension_urls::GetNewWebstoreLaunchURL().host());
     extensions::UninstallSource source;
     extensions::UninstallReason reason;
     if (uninstall_from_webstore) {
