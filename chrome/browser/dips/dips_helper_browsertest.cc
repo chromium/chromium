@@ -17,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/switches.h"
@@ -150,36 +151,51 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   base::Time time = base::Time::FromDoubleT(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  // The top-level page is on a.test, containing an iframe pointing at b.test.
+  // The top-level page is on a.test.
   ASSERT_TRUE(content::NavigateToURL(web_contents, url_a));
-  ASSERT_TRUE(content::NavigateIframeToURL(web_contents, kIframeId, url_b));
-
-  content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
-      web_contents->GetPrimaryPage(),
-      base::BindRepeating(&content::FrameIsChildOfMainFrame));
-  // Wait until we can click on the iframe.
-  content::WaitForHitTestData(iframe);
 
   // Before clicking, no DIPS state for either site.
   EXPECT_FALSE(GetDIPSState(url_a).has_value());
   EXPECT_FALSE(GetDIPSState(url_b).has_value());
 
-  // Click on the b.test iframe.
+  // Click on the a.test top-level site.
   SetDIPSTime(time);
-  UserActivationObserver observer(web_contents, iframe);
-  content::SimulateMouseClickOrTapElementWithId(web_contents, kIframeId);
-  observer.Wait();
+  UserActivationObserver observer_a(web_contents,
+                                    web_contents->GetPrimaryMainFrame());
+  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
+  observer_a.Wait();
 
   // User interaction is recorded for a.test (the top-level frame).
   absl::optional<StateValue> state_a = GetDIPSState(url_a);
   ASSERT_TRUE(state_a.has_value());
   EXPECT_FALSE(state_a->site_storage_times.first.has_value());
   EXPECT_EQ(absl::make_optional(time), state_a->user_interaction_times.first);
-  // User interaction is also recorded for b.test (the iframe).
-  absl::optional<StateValue> state_b = GetDIPSState(url_b);
-  ASSERT_TRUE(state_b.has_value());
-  EXPECT_FALSE(state_b->site_storage_times.first.has_value());
-  EXPECT_EQ(absl::make_optional(time), state_b->user_interaction_times.first);
+
+  // Update the top-level page to have an iframe pointing to b.test.
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents, kIframeId, url_b));
+  content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
+      web_contents->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameIsChildOfMainFrame));
+  // Wait until we can click on the iframe.
+  content::WaitForHitTestData(iframe);
+
+  // Click on the b.test iframe.
+  base::Time frame_interaction_time = base::Time::FromDoubleT(2);
+  SetDIPSTime(frame_interaction_time);
+  UserActivationObserver observer_b(web_contents, iframe);
+  content::SimulateMouseClickOrTapElementWithId(web_contents, kIframeId);
+  observer_b.Wait();
+
+  // User interaction on the top-level is updated by interacting with b.test
+  // (the iframe).
+  state_a = GetDIPSState(url_a);
+  ASSERT_TRUE(state_a.has_value());
+  EXPECT_FALSE(state_a->site_storage_times.first.has_value());
+  EXPECT_EQ(absl::make_optional(frame_interaction_time),
+            state_a->user_interaction_times.last);
+
+  // The iframe site doesn't have any state.
+  EXPECT_FALSE(GetDIPSState(url_b).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
@@ -263,11 +279,10 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   // Nothing recorded for a.test (the top-level frame).
   absl::optional<StateValue> state_a = GetDIPSState(url_a);
   EXPECT_FALSE(state_a.has_value());
-  // Site storage was recorded for b.test (the iframe).
+  // Nothing recorded for b.test (the iframe), since we don't record non main
+  // frame URLs to DIPS State.
   absl::optional<StateValue> state_b = GetDIPSState(url_b);
-  ASSERT_TRUE(state_b.has_value());
-  EXPECT_EQ(absl::make_optional(time), state_b->site_storage_times.first);
-  EXPECT_FALSE(state_b->user_interaction_times.first.has_value());
+  EXPECT_FALSE(state_b.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {

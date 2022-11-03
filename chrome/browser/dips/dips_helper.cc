@@ -64,6 +64,8 @@ void DIPSTabHelper::RecordInteraction(const GURL& url) {
 void DIPSTabHelper::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
+  if (!render_frame_host->IsInPrimaryMainFrame())
+    return;
   if (details.type == content::CookieAccessDetails::Type::kChange) {
     RecordStorage(details.url);
   }
@@ -72,14 +74,23 @@ void DIPSTabHelper::OnCookiesAccessed(
 void DIPSTabHelper::OnCookiesAccessed(
     content::NavigationHandle* handle,
     const content::CookieAccessDetails& details) {
+  if (!handle->IsInPrimaryMainFrame())
+    return;
   if (details.type == content::CookieAccessDetails::Type::kChange) {
     RecordStorage(details.url);
   }
 }
 
+// TODO(kaklilu): Follow up on how this interacts with Fenced Frames.
 void DIPSTabHelper::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
+  // Ignore iframe activations since we only care for its associated main-frame
+  // interactions on the top-level site.
+  if (!render_frame_host->IsInPrimaryMainFrame())
+    return;
+
   const GURL& url = render_frame_host->GetLastCommittedURL();
+
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
