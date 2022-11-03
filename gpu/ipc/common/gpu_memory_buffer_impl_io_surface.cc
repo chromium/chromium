@@ -23,18 +23,14 @@ const int kMaxCrashDumps = 10;
 
 uint32_t LockFlags(gfx::BufferUsage usage) {
   switch (usage) {
-    case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
-    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
-      // The AvoidSync call has the property that it will not preserve the
-      // previous contents of the buffer if those contents were written by a
-      // GPU.
-      return kIOSurfaceLockAvoidSync;
     case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
       // This constant is used for buffers used by video capture. On macOS,
       // these buffers are only ever written to in the capture process,
       // directly as IOSurfaces.
       // Once they are sent to other processes, no CPU writes are performed.
       return kIOSurfaceLockReadOnly;
+    case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
     case gfx::BufferUsage::GPU_READ:
     case gfx::BufferUsage::SCANOUT:
     case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
@@ -119,7 +115,7 @@ bool GpuMemoryBufferImplIOSurface::Map() {
     return true;
 
   IOReturn status = IOSurfaceLock(io_surface_, lock_flags_, nullptr);
-  DCHECK_NE(status, kIOReturnCannotLock);
+  DCHECK_NE(status, kIOReturnCannotLock) << " lock_flags_: " << lock_flags_;
   return true;
 }
 
