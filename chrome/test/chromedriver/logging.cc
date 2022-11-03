@@ -285,17 +285,17 @@ bool InitLogging(uint16_t port) {
     g_log_level = Log::kInfo;
     base::FilePath log_path = cmd_line->GetSwitchValuePath("log-path");
 
-    const base::FilePath::CharType* logMode = FILE_PATH_LITERAL("w");
+    const base::FilePath::CharType* log_mode = FILE_PATH_LITERAL("w");
     if (cmd_line->HasSwitch("append-log")) {
-        logMode = FILE_PATH_LITERAL("a");
+      log_mode = FILE_PATH_LITERAL("a");
     }
   if (cmd_line->HasSwitch("readable-timestamp")) {
     readable_timestamp = true;
   }
 #if BUILDFLAG(IS_WIN)
-  FILE* redir_stderr = _wfreopen(log_path.value().c_str(), logMode, stderr);
+  FILE* redir_stderr = _wfreopen(log_path.value().c_str(), log_mode, stderr);
 #else
-    FILE* redir_stderr = freopen(log_path.value().c_str(), logMode, stderr);
+  FILE* redir_stderr = freopen(log_path.value().c_str(), log_mode, stderr);
 #endif
     if (!redir_stderr) {
       printf("Failed to redirect stderr to log file.\n");

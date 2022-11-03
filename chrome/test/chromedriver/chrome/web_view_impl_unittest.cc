@@ -213,8 +213,8 @@ class MockSyncWebSocket : public SyncWebSocket {
   MockSyncWebSocket() : MockSyncWebSocket(SyncWebSocket::StatusCode::kOk) {}
   ~MockSyncWebSocket() override = default;
 
-  void SetNexStatusCode(SyncWebSocket::StatusCode statusCode) {
-    next_status_ = statusCode;
+  void SetNexStatusCode(SyncWebSocket::StatusCode status_code) {
+    next_status_ = status_code;
   }
 
   bool IsConnected() override { return connected_; }
@@ -236,14 +236,14 @@ class MockSyncWebSocket : public SyncWebSocket {
       return false;
     }
 
-    std::string responseStr;
+    std::string response_str;
     base::Value::Dict response;
     response.Set("id", *id);
     base::Value result{base::Value::Type::DICT};
     result.GetDict().Set("param", 1);
     response.Set("result", result.Clone());
-    base::JSONWriter::Write(base::Value(std::move(response)), &responseStr);
-    messages_.push(responseStr);
+    base::JSONWriter::Write(base::Value(std::move(response)), &response_str);
+    messages_.push(response_str);
     return true;
   }
 

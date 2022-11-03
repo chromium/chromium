@@ -70,7 +70,7 @@ const int k2GThroughput = 250 * 1024;
 
 Status EvaluateScriptAndIgnoreResult(Session* session,
                                      std::string expression,
-                                     const bool awaitPromise = false) {
+                                     const bool await_promise = false) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
@@ -86,7 +86,7 @@ Status EvaluateScriptAndIgnoreResult(Session* session,
   }
   std::string frame_id = session->GetCurrentFrameId();
   std::unique_ptr<base::Value> result;
-  return web_view->EvaluateScript(frame_id, expression, awaitPromise, &result);
+  return web_view->EvaluateScript(frame_id, expression, await_promise, &result);
 }
 
 void InitSessionForWebSocketConnection(SessionConnectionMap* session_map,
@@ -167,13 +167,13 @@ std::unique_ptr<base::DictionaryValue> CreateCapabilities(
   caps->SetStringKey("browserName", base::ToLowerASCII(kBrowserShortName));
   caps->SetStringKey(session->w3c_compliant ? "browserVersion" : "version",
                      session->chrome->GetBrowserInfo()->browser_version);
-  std::string operatingSystemName = session->chrome->GetOperatingSystemName();
-  if (operatingSystemName.find("Windows") != std::string::npos)
-    operatingSystemName = "Windows";
+  std::string os_name = session->chrome->GetOperatingSystemName();
+  if (os_name.find("Windows") != std::string::npos)
+    os_name = "Windows";
   if (session->w3c_compliant) {
-    caps->SetStringKey("platformName", base::ToLowerASCII(operatingSystemName));
+    caps->SetStringKey("platformName", base::ToLowerASCII(os_name));
   } else {
-    caps->SetStringKey("platform", operatingSystemName);
+    caps->SetStringKey("platform", os_name);
   }
   caps->SetStringKey("pageLoadStrategy", session->chrome->page_load_strategy());
   caps->SetBoolKey("acceptInsecureCerts", capabilities.accept_insecure_certs);
@@ -210,22 +210,22 @@ std::unique_ptr<base::DictionaryValue> CreateCapabilities(
   caps->SetBoolKey("webauthn:extension:credBlob", !capabilities.IsAndroid());
 
   // Chrome-specific extensions.
-  const std::string chromedriverVersionKey = base::StringPrintf(
+  const std::string chrome_driver_version_key = base::StringPrintf(
       "%s.%sVersion", base::ToLowerASCII(kBrowserShortName).c_str(),
       base::ToLowerASCII(kChromeDriverProductShortName).c_str());
-  caps->SetStringPath(chromedriverVersionKey, kChromeDriverVersion);
-  const std::string debuggerAddressKey =
+  caps->SetStringPath(chrome_driver_version_key, kChromeDriverVersion);
+  const std::string debugger_address_key =
       base::StringPrintf("%s.debuggerAddress", kChromeDriverOptionsKeyPrefixed);
-  caps->SetStringPath(debuggerAddressKey, session->chrome->GetBrowserInfo()
-                                              ->debugger_endpoint.Address()
-                                              .ToString());
+  caps->SetStringPath(debugger_address_key, session->chrome->GetBrowserInfo()
+                                                ->debugger_endpoint.Address()
+                                                .ToString());
   ChromeDesktopImpl* desktop = nullptr;
   Status status = session->chrome->GetAsDesktop(&desktop);
   if (status.IsOk()) {
-    const std::string userDataDirKey = base::StringPrintf(
+    const std::string user_data_key = base::StringPrintf(
         "%s.userDataDir", base::ToLowerASCII(kBrowserShortName).c_str());
     caps->SetStringPath(
-        userDataDirKey,
+        user_data_key,
         desktop->command().GetSwitchValuePath("user-data-dir").AsUTF8Unsafe());
     caps->SetBoolKey("networkConnectionEnabled",
                      desktop->IsNetworkConnectionEnabled());
@@ -1192,15 +1192,15 @@ Status ExecuteSetNetworkConnection(Session* session,
 Status ExecuteGetWindowPosition(Session* session,
                                 const base::Value::Dict& params,
                                 std::unique_ptr<base::Value>* value) {
-  Chrome::WindowRect windowRect;
-  Status status = session->chrome->GetWindowRect(session->window, &windowRect);
+  Chrome::WindowRect window_rect;
+  Status status = session->chrome->GetWindowRect(session->window, &window_rect);
 
   if (status.IsError())
     return status;
 
   base::Value position(base::Value::Type::DICTIONARY);
-  position.SetIntKey("x", windowRect.x);
-  position.SetIntKey("y", windowRect.y);
+  position.SetIntKey("x", window_rect.x);
+  position.SetIntKey("y", window_rect.y);
   *value = base::Value::ToUniquePtrValue(position.Clone());
   return Status(kOk);
 }
@@ -1224,15 +1224,15 @@ Status ExecuteSetWindowPosition(Session* session,
 Status ExecuteGetWindowSize(Session* session,
                             const base::Value::Dict& params,
                             std::unique_ptr<base::Value>* value) {
-  Chrome::WindowRect windowRect;
-  Status status = session->chrome->GetWindowRect(session->window, &windowRect);
+  Chrome::WindowRect window_rect;
+  Status status = session->chrome->GetWindowRect(session->window, &window_rect);
 
   if (status.IsError())
     return status;
 
   base::Value size(base::Value::Type::DICTIONARY);
-  size.SetIntKey("width", windowRect.width);
-  size.SetIntKey("height", windowRect.height);
+  size.SetIntKey("width", window_rect.width);
+  size.SetIntKey("height", window_rect.height);
   *value = base::Value::ToUniquePtrValue(size.Clone());
   return Status(kOk);
 }

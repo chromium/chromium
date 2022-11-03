@@ -259,8 +259,8 @@ namespace {
 
 class AddCookieWebView : public StubWebView {
  public:
-  explicit AddCookieWebView(std::string documentUrl)
-      : StubWebView("1"), documentUrl_(documentUrl) {}
+  explicit AddCookieWebView(std::string document_url)
+      : StubWebView("1"), document_url_(document_url) {}
   ~AddCookieWebView() override = default;
 
   Status CallFunction(const std::string& frame,
@@ -268,13 +268,13 @@ class AddCookieWebView : public StubWebView {
                       const base::Value::List& args,
                       std::unique_ptr<base::Value>* result) override {
     if (function.find("document.URL") != std::string::npos) {
-      *result = std::make_unique<base::Value>(documentUrl_);
+      *result = std::make_unique<base::Value>(document_url_);
     }
     return Status(kOk);
   }
 
  private:
-  std::string documentUrl_;
+  std::string document_url_;
 };
 
 }  // namespace
@@ -377,15 +377,15 @@ class StorePrintParamsWebView : public StubWebView {
     return Status(kOk);
   }
 
-  const base::Value& getParams() const { return params_; }
+  const base::Value& GetParams() const { return params_; }
 
  private:
   base::Value params_;
 };
 
-base::DictionaryValue getDefaultPrintParams() {
-  base::DictionaryValue printParams;
-  base::Value::Dict& dict = printParams.GetDict();
+base::DictionaryValue GetDefaultPrintParams() {
+  base::DictionaryValue print_params;
+  base::Value::Dict& dict = print_params.GetDict();
   dict.Set("landscape", false);
   dict.Set("scale", 1.0);
   dict.Set("marginBottom", ConvertCentimeterToInch(1.0));
@@ -398,7 +398,7 @@ base::DictionaryValue getDefaultPrintParams() {
   dict.Set("preferCSSPageSize", false);
   dict.Set("printBackground", false);
   dict.Set("transferMode", "ReturnAsBase64");
-  return printParams;
+  return print_params;
 }
 }  // namespace
 
@@ -409,8 +409,8 @@ TEST(WindowCommandsTest, ExecutePrintDefaultParams) {
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue printParams = getDefaultPrintParams();
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  base::DictionaryValue print_params = GetDefaultPrintParams();
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 }
 
 TEST(WindowCommandsTest, ExecutePrintSpecifyOrientation) {
@@ -422,15 +422,15 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyOrientation) {
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue printParams = getDefaultPrintParams();
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  base::DictionaryValue print_params = GetDefaultPrintParams();
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   params.Set("orientation", "landscape");
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("landscape", true);
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("landscape", true);
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   params.Set("orientation", "Invalid");
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
@@ -450,15 +450,15 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyScale) {
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue printParams = getDefaultPrintParams();
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  base::DictionaryValue print_params = GetDefaultPrintParams();
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   params.Set("scale", 2.0);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("scale", 2.0);
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("scale", 2.0);
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   params.Set("scale", 0.05);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
@@ -482,15 +482,15 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyBackground) {
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue printParams = getDefaultPrintParams();
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  base::DictionaryValue print_params = GetDefaultPrintParams();
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   params.Set("background", true);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("printBackground", true);
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("printBackground", true);
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   params.Set("background", "true");
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
@@ -510,15 +510,15 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyShrinkToFit) {
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue printParams = getDefaultPrintParams();
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  base::DictionaryValue print_params = GetDefaultPrintParams();
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   params.Set("shrinkToFit", false);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("preferCSSPageSize", true);
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("preferCSSPageSize", true);
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   params.Set("shrinkToFit", "False");
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
@@ -539,8 +539,8 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue printParams = getDefaultPrintParams();
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  base::DictionaryValue print_params = GetDefaultPrintParams();
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   lv = base::Value::List();
   lv.Append(2);
@@ -552,9 +552,9 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
   params.Set("pageRanges", std::move(lv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.SetString("pageRanges", "2,1,3,4-4,4-,-5");
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.SetString("pageRanges", "2,1,3,4-4,4-,-5");
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   lv = base::Value::List();
   lv.Append(-1);
@@ -584,9 +584,9 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
   params.Set("pageRanges", std::move(lv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.SetString("pageRanges", "-,,  , 1-3 ,Invalid");
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.SetString("pageRanges", "-,,  , 1-3 ,Invalid");
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 }
 
 TEST(WindowCommandsTest, ExecutePrintSpecifyPage) {
@@ -599,24 +599,24 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPage) {
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue printParams = getDefaultPrintParams();
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  base::DictionaryValue print_params = GetDefaultPrintParams();
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("page", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("width", 21.59);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("paperWidth", ConvertCentimeterToInch(21.59));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("paperWidth", ConvertCentimeterToInch(21.59));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("page", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("width", 33);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("paperWidth", ConvertCentimeterToInch(33));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("paperWidth", ConvertCentimeterToInch(33));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("page", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("width", "10");
@@ -632,17 +632,17 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPage) {
   dv->GetDict().Set("height", 20);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("paperHeight", ConvertCentimeterToInch(20));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("paperHeight", ConvertCentimeterToInch(20));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("page", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("height", 27.94);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("paperHeight", ConvertCentimeterToInch(27.94));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("paperHeight", ConvertCentimeterToInch(27.94));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("page", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("height", "10");
@@ -665,24 +665,24 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyMargin) {
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue printParams = getDefaultPrintParams();
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  base::DictionaryValue print_params = GetDefaultPrintParams();
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("margin", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("top", 1.0);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("marginTop", ConvertCentimeterToInch(1.0));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("marginTop", ConvertCentimeterToInch(1.0));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("margin", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("top", 10.2);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("marginTop", ConvertCentimeterToInch(10.2));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("marginTop", ConvertCentimeterToInch(10.2));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("margin", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("top", "10.2");
@@ -698,17 +698,17 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyMargin) {
   dv->GetDict().Set("bottom", 1.0);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("marginBottom", ConvertCentimeterToInch(1.0));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("marginBottom", ConvertCentimeterToInch(1.0));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("margin", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("bottom", 5.3);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("marginBottom", ConvertCentimeterToInch(5.3));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("marginBottom", ConvertCentimeterToInch(5.3));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("margin", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("bottom", "10.2");
@@ -724,17 +724,17 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyMargin) {
   dv->GetDict().Set("left", 1.0);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("marginLeft", ConvertCentimeterToInch(1.0));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("marginLeft", ConvertCentimeterToInch(1.0));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("margin", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("left", 9.1);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("marginLeft", ConvertCentimeterToInch(9.1));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("marginLeft", ConvertCentimeterToInch(9.1));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("margin", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("left", "10.2");
@@ -750,17 +750,17 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyMargin) {
   dv->GetDict().Set("right", 1.0);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("marginRight", ConvertCentimeterToInch(1.0));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("marginRight", ConvertCentimeterToInch(1.0));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("margin", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("right", 8.1);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  printParams = getDefaultPrintParams();
-  printParams.GetDict().Set("marginRight", ConvertCentimeterToInch(8.1));
-  ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
+  print_params = GetDefaultPrintParams();
+  print_params.GetDict().Set("marginRight", ConvertCentimeterToInch(8.1));
+  ASSERT_EQ(static_cast<const base::Value&>(print_params), webview.GetParams());
 
   dv = params.Set("margin", base::Value(base::Value::Type::DICTIONARY));
   dv->GetDict().Set("right", "10.2");
@@ -823,7 +823,7 @@ class StoreScreenshotParamsWebView : public StubWebView {
     return Status(kOk);
   }
 
-  const base::Value& getParams() const { return params_; }
+  const base::Value& GetParams() const { return params_; }
 
   MobileEmulationOverrideManager* GetMobileEmulationOverrideManager()
       const override {
@@ -835,7 +835,7 @@ class StoreScreenshotParamsWebView : public StubWebView {
   std::unique_ptr<MobileEmulationOverrideManager> meom_;
 };
 
-base::DictionaryValue getExpectedCaptureParams() {
+base::DictionaryValue GetExpectedCaptureParams() {
   base::DictionaryValue clip;
   return clip;
 }
@@ -848,9 +848,9 @@ TEST(WindowCommandsTest, ExecuteScreenCapture) {
   Status status =
       CallWindowCommand(ExecuteScreenshot, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::DictionaryValue screenshotParams = base::DictionaryValue();
-  ASSERT_EQ(static_cast<const base::Value&>(screenshotParams),
-            webview.getParams());
+  base::DictionaryValue screenshot_params;
+  ASSERT_EQ(static_cast<const base::Value&>(screenshot_params),
+            webview.GetParams());
 }
 
 TEST(WindowCommandsTest, ExecuteFullPageScreenCapture) {
@@ -860,8 +860,8 @@ TEST(WindowCommandsTest, ExecuteFullPageScreenCapture) {
   Status status = CallWindowCommand(ExecuteFullPageScreenshot, &webview, params,
                                     &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(static_cast<const base::Value&>(getExpectedCaptureParams()),
-            webview.getParams());
+  ASSERT_EQ(static_cast<const base::Value&>(GetExpectedCaptureParams()),
+            webview.GetParams());
 }
 
 TEST(WindowCommandsTest, ExecuteMobileFullPageScreenCapture) {
@@ -875,6 +875,6 @@ TEST(WindowCommandsTest, ExecuteMobileFullPageScreenCapture) {
   Status status = CallWindowCommand(ExecuteFullPageScreenshot, &webview, params,
                                     &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(static_cast<const base::Value&>(getExpectedCaptureParams()),
-            webview.getParams());
+  ASSERT_EQ(static_cast<const base::Value&>(GetExpectedCaptureParams()),
+            webview.GetParams());
 }

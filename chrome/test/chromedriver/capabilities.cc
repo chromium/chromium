@@ -336,12 +336,13 @@ Status ParseProxy(bool w3c_compliant,
       }
       std::string value = option_value->GetString();
       if (proxy_servers_option[0] == kSocksProxy) {
-        int socksVersion = proxy_dict->FindInt("socksVersion").value_or(-1);
-        if (socksVersion < 0 || socksVersion > 255)
+        int socks_version = proxy_dict->FindInt("socksVersion").value_or(-1);
+        if (socks_version < 0 || socks_version > 255)
           return Status(
               kInvalidArgument,
               "'socksVersion' must be between 0 and 255");
-        value = base::StringPrintf("socks%d://%s", socksVersion, value.c_str());
+        value =
+            base::StringPrintf("socks%d://%s", socks_version, value.c_str());
       }
       // Converts into Chrome proxy scheme.
       // Example: "http=localhost:9000;ftp=localhost:8000".
@@ -867,13 +868,13 @@ Status Capabilities::Parse(const base::Value::Dict& desired_caps,
   }
   // se:options.loggingPrefs and goog:loggingPrefs is spec-compliant name,
   // but loggingPrefs is still supported in legacy mode.
-  const std::string prefixedLoggingPrefsKey =
+  const std::string prefixed_logging_prefs_key =
       base::StringPrintf("%s:loggingPrefs", kChromeDriverCompanyPrefix);
   if (desired_caps.FindDictByDottedPath("se:options.loggingPrefs")) {
     parser_map["se:options"] = base::BindRepeating(&ParseSeleniumOptions);
   } else if (w3c_compliant ||
-             desired_caps.FindDictByDottedPath(prefixedLoggingPrefsKey)) {
-    parser_map[prefixedLoggingPrefsKey] =
+             desired_caps.FindDictByDottedPath(prefixed_logging_prefs_key)) {
+    parser_map[prefixed_logging_prefs_key] =
         base::BindRepeating(&ParseLoggingPrefs);
   } else {
     parser_map["loggingPrefs"] = base::BindRepeating(&ParseLoggingPrefs);

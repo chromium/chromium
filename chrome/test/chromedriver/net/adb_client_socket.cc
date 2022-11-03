@@ -407,15 +407,15 @@ class AdbSendFileSocket : AdbClientSocket {
   void SendPayload(const char* command,
                    int data,
                    const char* payload,
-                   size_t payloadLength,
+                   size_t payload_length,
                    net::CompletionOnceCallback callback) {
     std::string buffer(command);
     for (int i = 0; i < 4; i++) {
       buffer.append(1, static_cast<char>(data & 0xff));
       data >>= 8;
     }
-    if (payloadLength > 0)
-      buffer.append(payload, payloadLength);
+    if (payload_length > 0)
+      buffer.append(payload, payload_length);
 
     scoped_refptr<net::StringIOBuffer> request_buffer =
         base::MakeRefCounted<net::StringIOBuffer>(buffer);

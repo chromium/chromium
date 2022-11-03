@@ -36,16 +36,16 @@
 #include "third_party/selenium-atoms/atoms.h"
 
 const int kFlickTouchEventsPerSecond = 30;
-const std::set<std::string> textControlTypes = {"text", "search", "tel", "url",
-                                                "password"};
-const std::set<std::string> inputControlTypes = {
+const std::set<std::string> kTextControlTypes = {"text", "search", "tel", "url",
+                                                 "password"};
+const std::set<std::string> kInputControlTypes = {
     "text",           "search", "url",   "tel",   "email",
     "password",       "date",   "month", "week",  "time",
     "datetime-local", "number", "range", "color", "file"};
 
-const std::set<std::string> nontypeableControlTypes = {"color"};
+const std::set<std::string> kNontypeableControlTypes = {"color"};
 
-const std::unordered_set<std::string> booleanAttributes = {
+const std::unordered_set<std::string> kBooleanAttributes = {
     "allowfullscreen",
     "allowpaymentrequest",
     "allowusermedia",
@@ -152,9 +152,9 @@ Status SendKeysToElement(Session* session,
   // However, non-text elements such as contenteditable elements needs to be
   // focused to ensure the keys will end up being sent to the correct place.
   // So in the case of non-text elements, we still focusToElement.
-  bool wasPreviouslyFocused = false;
-  IsElementFocused(session, web_view, element_id, &wasPreviouslyFocused);
-  if (!wasPreviouslyFocused || !is_text) {
+  bool was_previously_focused = false;
+  IsElementFocused(session, web_view, element_id, &was_previously_focused);
+  if (!was_previously_focused || !is_text) {
     Status status = FocusToElement(session, web_view, element_id);
     if (status.IsError())
       return Status(kElementNotInteractable);
@@ -162,7 +162,7 @@ Status SendKeysToElement(Session* session,
 
   // Move cursor/caret to append the input if we only just focused this
   // element. keys if element's type is text-related
-  if (is_text && !wasPreviouslyFocused) {
+  if (is_text && !was_previously_focused) {
     base::Value::List args;
     args.Append(CreateElement(element_id));
     std::unique_ptr<base::Value> result;
@@ -237,8 +237,6 @@ Status ExecuteGetElementShadowRoot(Session* session,
 
   base::Value::List args;
   args.Append(CreateElement(element_id));
-
-  std::string currentFrameId = session->GetCurrentFrameId();
 
   status = web_view->CallFunction(session->GetCurrentFrameId(),
                                   "function(elem) { return elem.shadowRoot; }",
@@ -461,7 +459,7 @@ Status ExecuteClearElement(Session* session,
       element_type = base::ToLowerASCII(get_element_type->GetString());
 
     is_input_control =
-        inputControlTypes.find(element_type) != inputControlTypes.end();
+        kInputControlTypes.find(element_type) != kInputControlTypes.end();
   }
 
   bool is_text = tag_name == "textarea";
@@ -508,14 +506,14 @@ Status ExecuteClearElement(Session* session,
     }
     base::PlatformThread::Sleep(base::Milliseconds(50));
   }
-  static bool isClearWarningNotified = false;
-  if (!isClearWarningNotified) {
+  static bool is_clear_warning_notified = false;
+  if (!is_clear_warning_notified) {
     VLOG(0) << "\n\t=== NOTE: ===\n"
             << "\tThe Clear command in " << kChromeDriverProductShortName
             << " 2.43 and above\n"
             << "\thas been updated to conform to the current standard,\n"
             << "\tincluding raising blur event after clearing.\n";
-    isClearWarningNotified = true;
+    is_clear_warning_notified = true;
   }
   base::Value::List args;
   args.Append(CreateElement(element_id));
@@ -561,8 +559,8 @@ Status ExecuteSendKeysToElement(Session* session,
   if (get_element_type->is_string())
     element_type = base::ToLowerASCII(get_element_type->GetString());
   bool is_file = element_type == "file";
-  bool is_nontypeable = nontypeableControlTypes.find(element_type) !=
-                        nontypeableControlTypes.end();
+  bool is_nontypeable = kNontypeableControlTypes.find(element_type) !=
+                        kNontypeableControlTypes.end();
 
   if (is_input && is_file) {
     if (session->strict_file_interactability) {
@@ -646,16 +644,17 @@ Status ExecuteSendKeysToElement(Session* session,
   if (status.IsError())
     return status;
 
-  // If element_type is in textControlTypes, sendKeys should append
-  bool is_textControlType =
-      is_input && textControlTypes.find(element_type) != textControlTypes.end();
+  // If element_type is in kTextControlTypes, sendKeys should append
+  bool is_text_control_type =
+      is_input &&
+      kTextControlTypes.find(element_type) != kTextControlTypes.end();
   // If the element is a textarea, sendKeys should also append
   bool is_textarea = false;
   status = IsElementAttributeEqualToIgnoreCase(
       session, web_view, element_id, "tagName", "textarea", &is_textarea);
   if (status.IsError())
     return status;
-  bool is_text = is_textControlType || is_textarea;
+  bool is_text = is_text_control_type || is_textarea;
 
   if (get_content_editable->is_bool() && get_content_editable->GetBool()) {
     // If element is contentEditable
@@ -859,25 +858,25 @@ Status ExecuteGetComputedLabel(Session* session,
                                const std::string& element_id,
                                const base::Value::Dict& params,
                                std::unique_ptr<base::Value>* value) {
-  std::unique_ptr<base::Value> axNode;
-  Status status = GetAXNodeByElementId(session, web_view, element_id, &axNode);
+  std::unique_ptr<base::Value> ax_node;
+  Status status = GetAXNodeByElementId(session, web_view, element_id, &ax_node);
   if (status.IsError())
     return status;
 
   // Computed label stores as `name` in the AXTree.
-  absl::optional<base::Value> nameNode = axNode->ExtractKey("name");
-  if (!nameNode) {
+  absl::optional<base::Value> name_node = ax_node->ExtractKey("name");
+  if (!name_node) {
     // No computed label found. Return empty string.
     *value = std::make_unique<base::Value>("");
     return Status(kOk);
   }
 
-  absl::optional<base::Value> nameVal = nameNode->ExtractKey("value");
-  if (!nameVal)
+  absl::optional<base::Value> name_val = name_node->ExtractKey("value");
+  if (!name_val)
     return Status(kUnknownError,
                   "No name value found in the node in CDP response");
 
-  *value = std::make_unique<base::Value>(std::move(*nameVal));
+  *value = std::make_unique<base::Value>(std::move(*name_val));
 
   return Status(kOk);
 }
@@ -887,25 +886,25 @@ Status ExecuteGetComputedRole(Session* session,
                               const std::string& element_id,
                               const base::Value::Dict& params,
                               std::unique_ptr<base::Value>* value) {
-  std::unique_ptr<base::Value> axNode;
-  Status status = GetAXNodeByElementId(session, web_view, element_id, &axNode);
+  std::unique_ptr<base::Value> ax_node;
+  Status status = GetAXNodeByElementId(session, web_view, element_id, &ax_node);
   if (status.IsError())
     return status;
 
-  absl::optional<base::Value> roleNode = axNode->ExtractKey("role");
-  if (!roleNode) {
+  absl::optional<base::Value> role_node = ax_node->ExtractKey("role");
+  if (!role_node) {
     // No computed role found. Return empty string.
     *value = std::make_unique<base::Value>("");
     return Status(kOk);
   }
 
-  absl::optional<base::Value> roleVal = roleNode->ExtractKey("value");
-  if (!roleVal) {
+  absl::optional<base::Value> role_val = role_node->ExtractKey("value");
+  if (!role_val) {
     return Status(kUnknownError,
                   "No role value found in the node in CDP response");
   }
 
-  *value = std::make_unique<base::Value>(std::move(*roleVal));
+  *value = std::make_unique<base::Value>(std::move(*role_val));
 
   return Status(kOk);
 }
@@ -1060,7 +1059,7 @@ Status ExecuteGetElementAttribute(Session* session,
   args.Append(*attribute_name);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
-      booleanAttributes.count(base::ToLowerASCII(*attribute_name))
+      kBooleanAttributes.count(base::ToLowerASCII(*attribute_name))
           ? "(elem, attribute) => elem.hasAttribute(attribute) ? 'true' : null"
           : "(elem, attribute) => elem.getAttribute(attribute)",
       args, value);

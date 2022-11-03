@@ -112,16 +112,16 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
       return Status(kUnknownError, method + " has invalid 'context': " + json);
     }
 
-    if (const base::Value* auxData = context->GetDict().Find("auxData")) {
-      if (!auxData->is_dict()) {
+    if (const base::Value* aux_data = context->GetDict().Find("auxData")) {
+      if (!aux_data->is_dict()) {
         return Status(kUnknownError, method + " has invalid 'auxData' value");
       }
-      if (absl::optional<bool> b = auxData->GetDict().FindBool("isDefault")) {
+      if (absl::optional<bool> b = aux_data->GetDict().FindBool("isDefault")) {
         is_default = *b;
       } else {
         return Status(kUnknownError, method + " has invalid 'isDefault' value");
       }
-      if (const std::string* s = auxData->GetDict().FindString("frameId")) {
+      if (const std::string* s = aux_data->GetDict().FindString("frameId")) {
         frame_id = *s;
       } else {
         return Status(kUnknownError, method + " has invalid 'frameId' value");

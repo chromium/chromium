@@ -75,7 +75,7 @@ void GetApplicationDirs(std::vector<base::FilePath>* locations) {
 
 void GetPathsFromEnvironment(std::vector<base::FilePath>* paths) {
   base::FilePath::StringType delimiter;
-  base::FilePath::StringType commonPath;
+  base::FilePath::StringType common_path;
   std::string path;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
 
@@ -84,15 +84,15 @@ void GetPathsFromEnvironment(std::vector<base::FilePath>* paths) {
   }
 
 #if BUILDFLAG(IS_WIN)
-  commonPath = base::UTF8ToWide(path);
+  common_path = base::UTF8ToWide(path);
   delimiter = L";";
 #else
-  commonPath = path;
+  common_path = path;
   delimiter = ":";
 #endif
 
   std::vector<base::FilePath::StringType> path_entries = base::SplitString(
-      commonPath, delimiter, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      common_path, delimiter, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   for (auto& path_entry : path_entries) {
 #if BUILDFLAG(IS_WIN)

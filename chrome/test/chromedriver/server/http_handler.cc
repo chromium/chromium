@@ -1416,11 +1416,11 @@ HttpHandler::PrepareStandardResponse(
       if (first == std::string::npos || last == std::string::npos) {
         inner_params->SetStringPath("data.text", "");
       } else {
-        std::string alertText = message.substr(first, last - first);
-        auto colon = alertText.find(":");
-        if (colon != std::string::npos && alertText.size() > (colon + 2))
-          alertText = alertText.substr(colon + 2);
-        inner_params->SetStringPath("data.text", alertText);
+        std::string alert_text = message.substr(first, last - first);
+        auto colon = alert_text.find(":");
+        if (colon != std::string::npos && alert_text.size() > (colon + 2))
+          alert_text = alert_text.substr(colon + 2);
+        inner_params->SetStringPath("data.text", alert_text);
       }
     }
   } else {

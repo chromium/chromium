@@ -215,10 +215,10 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
 
 namespace {
 
-Status ProcessCapabilitiesJson(const std::string& paramsJson,
+Status ProcessCapabilitiesJson(const std::string& params_json,
                                base::Value::Dict& result_capabilities) {
   std::unique_ptr<base::Value> params =
-      base::JSONReader::ReadDeprecated(paramsJson);
+      base::JSONReader::ReadDeprecated(params_json);
   if (!params || !params->is_dict())
     return Status(kUnknownError);
   return ProcessCapabilities(params->GetDict(), result_capabilities);

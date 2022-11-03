@@ -191,11 +191,11 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
     LOG(WARNING) << "excluding remote-debugging-port switch is not supported";
   }
   if (switches.HasSwitch("user-data-dir")) {
-    base::FilePath::StringType userDataDir =
-      switches.GetSwitchValueNative("user-data-dir");
-    if (userDataDir.empty())
+    base::FilePath::StringType user_data_dir_value =
+        switches.GetSwitchValueNative("user-data-dir");
+    if (user_data_dir_value.empty())
       return Status(kInvalidArgument, "user data dir can not be empty");
-    *user_data_dir = base::FilePath(userDataDir);
+    *user_data_dir = base::FilePath(user_data_dir_value);
   } else {
     command.AppendArg("data:,");
     if (!user_data_dir_temp_dir->CreateUniqueTempDir())
@@ -918,8 +918,8 @@ Status GetExtensionBackgroundPage(const base::DictionaryValue* manifest,
   manifest->GetString("background.page", &bg_page_name);
   if (bg_page_name.empty() || !persistent)
     return Status(kOk);
-  GURL baseUrl("chrome-extension://" + id + "/");
-  *bg_page = baseUrl.Resolve(bg_page_name).spec();
+  GURL base_url("chrome-extension://" + id + "/");
+  *bg_page = base_url.Resolve(bg_page_name).spec();
   return Status(kOk);
 }
 

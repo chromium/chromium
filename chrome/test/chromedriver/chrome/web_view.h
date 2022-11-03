@@ -101,12 +101,12 @@ class WebView {
   // the result. |frame| is a frame ID or an empty string for the main frame.
   // If the expression evaluates to a element, it will be bound to a unique ID
   // (per frame) and the ID will be returned.
-  // |awaitPromise| controls awaitPromise parameter for Command
+  // |await_promise| controls awaitPromise parameter for Command
   // send to devtools backend
   // |result| will never be NULL on success.
   virtual Status EvaluateScript(const std::string& frame,
                                 const std::string& expression,
-                                const bool awaitPromise,
+                                const bool await_promise,
                                 std::unique_ptr<base::Value>* result) = 0;
 
   // Calls a JavaScript function in a specified frame with the given args and
@@ -196,9 +196,9 @@ class WebView {
                            const std::string& value,
                            const std::string& domain,
                            const std::string& path,
-                           const std::string& sameSite,
+                           const std::string& same_site,
                            bool secure,
-                           bool httpOnly,
+                           bool http_only,
                            double expiry) = 0;
 
   // Waits until all pending navigations have completed in the given frame.

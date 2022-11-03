@@ -191,8 +191,8 @@ class RemoteObjectReleaseGuard {
 bool IsFencedFrameNode(const base::Value& node) {
   if (!node.is_dict())
     return false;
-  const std::string* nodeName = node.GetDict().FindString("nodeName");
-  return nodeName && *nodeName == "FENCEDFRAME";
+  const std::string* node_name = node.GetDict().FindString("nodeName");
+  return node_name && *node_name == "FENCEDFRAME";
 }
 
 const base::Value* GetFencedFrameUserAgentShadowRoot(const base::Value& node) {
@@ -397,10 +397,10 @@ WebViewImpl* WebViewImpl::CreateChild(const std::string& session_id,
       IsNonBlocking() ? PageLoadStrategy::kNone : PageLoadStrategy::kNormal);
   if (!IsNonBlocking()) {
     // Find Navigation Tracker for the top of the WebViewImpl hierarchy
-    const WebViewImpl* currentView = this;
-    while (currentView->parent_)
-      currentView = currentView->parent_;
-    PageLoadStrategy* pls = currentView->navigation_tracker_.get();
+    const WebViewImpl* current_view = this;
+    while (current_view->parent_)
+      current_view = current_view->parent_;
+    PageLoadStrategy* pls = current_view->navigation_tracker_.get();
     NavigationTracker* nt = static_cast<NavigationTracker*>(pls);
     child->client_->AddListener(static_cast<DevToolsEventListener*>(nt));
   }
@@ -586,7 +586,7 @@ Status WebViewImpl::EvaluateScriptWithTimeout(
     const std::string& frame,
     const std::string& expression,
     const base::TimeDelta& timeout,
-    const bool awaitPromise,
+    const bool await_promise,
     std::unique_ptr<base::Value>* result) {
   WebViewImpl* target = GetTargetForFrame(this, frame);
   if (target != nullptr && target != this) {
@@ -594,7 +594,7 @@ Status WebViewImpl::EvaluateScriptWithTimeout(
       return Status(kTargetDetached);
     WebViewImplHolder target_holder(target);
     return target->EvaluateScriptWithTimeout(frame, expression, timeout,
-                                             awaitPromise, result);
+                                             await_promise, result);
   }
 
   std::string context_id;
@@ -608,15 +608,15 @@ Status WebViewImpl::EvaluateScriptWithTimeout(
   // detached.
   WebViewImplHolder target_holder(this);
   return internal::EvaluateScriptAndGetValue(
-      client_.get(), context_id, expression, timeout, awaitPromise, result);
+      client_.get(), context_id, expression, timeout, await_promise, result);
 }
 
 Status WebViewImpl::EvaluateScript(const std::string& frame,
                                    const std::string& expression,
-                                   const bool awaitPromise,
+                                   const bool await_promise,
                                    std::unique_ptr<base::Value>* result) {
   return EvaluateScriptWithTimeout(frame, expression, base::TimeDelta::Max(),
-                                   awaitPromise, result);
+                                   await_promise, result);
 }
 
 Status WebViewImpl::CallFunctionWithTimeout(
@@ -748,14 +748,14 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
         break;
     }
 
-    base::Value::List touchPoints;
+    base::Value::List touch_points;
     if (it->type != kReleasedMouseEventType) {
-      base::Value::Dict touchPoint;
-      touchPoint.Set("x", it->x);
-      touchPoint.Set("y", it->y);
-      touchPoints.Append(std::move(touchPoint));
+      base::Value::Dict touch_point;
+      touch_point.Set("x", it->x);
+      touch_point.Set("y", it->y);
+      touch_points.Append(std::move(touch_point));
     }
-    params.Set("touchPoints", std::move(touchPoints));
+    params.Set("touchPoints", std::move(touch_points));
     params.Set("modifiers", it->modifiers);
     Status status = client_->SendCommand("Input.dispatchTouchEvent", params);
     if (status.IsError())
@@ -1011,9 +1011,9 @@ Status WebViewImpl::AddCookie(const std::string& name,
                               const std::string& value,
                               const std::string& domain,
                               const std::string& path,
-                              const std::string& sameSite,
+                              const std::string& same_site,
                               bool secure,
-                              bool httpOnly,
+                              bool http_only,
                               double expiry) {
   base::Value::Dict params;
   params.Set("name", name);
@@ -1022,9 +1022,9 @@ Status WebViewImpl::AddCookie(const std::string& name,
   params.Set("domain", domain);
   params.Set("path", path);
   params.Set("secure", secure);
-  params.Set("httpOnly", httpOnly);
-  if (!sameSite.empty())
-    params.Set("sameSite", sameSite);
+  params.Set("httpOnly", http_only);
+  if (!same_site.empty())
+    params.Set("sameSite", same_site);
   if (expiry >= 0)
     params.Set("expires", expiry);
 
@@ -1193,7 +1193,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
   // like we're appending files.
   if (append) {
     // Convert the node_id to a Runtime.RemoteObject
-    std::string inputRemoteObjectId;
+    std::string inner_remote_object_id;
     {
       base::DictionaryValue cmd_result;
       base::Value::Dict params;
@@ -1202,59 +1202,59 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
                                                 &cmd_result);
       if (status.IsError())
         return status;
-      if (!cmd_result.GetString("object.objectId", &inputRemoteObjectId))
+      if (!cmd_result.GetString("object.objectId", &inner_remote_object_id))
         return Status(kUnknownError, "DevTools didn't return objectId");
     }
 
     // figure out how many files there are
-    absl::optional<int> numberOfFiles = 0;
+    absl::optional<int> number_of_files;
     {
       base::DictionaryValue cmd_result;
       base::Value::Dict params;
       params.Set("functionDeclaration",
                  "function() { return this.files.length }");
-      params.Set("objectId", inputRemoteObjectId);
+      params.Set("objectId", inner_remote_object_id);
       status = client_->SendCommandAndGetResult("Runtime.callFunctionOn",
                                                 params, &cmd_result);
       if (status.IsError())
         return status;
-      numberOfFiles = cmd_result.FindIntPath("result.value");
-      if (!numberOfFiles)
+      number_of_files = cmd_result.FindIntPath("result.value");
+      if (!number_of_files)
         return Status(kUnknownError, "DevTools didn't return value");
     }
 
     // Ask for each Runtime.RemoteObject and add them to the list
-    for (int i = 0; i < *numberOfFiles; i++) {
-      std::string fileObjectId;
+    for (int i = 0; i < *number_of_files; i++) {
+      std::string file_object_id;
       {
         base::DictionaryValue cmd_result;
         base::Value::Dict params;
         params.Set("functionDeclaration", "function() { return this.files[" +
                                               std::to_string(i) + "] }");
-        params.Set("objectId", inputRemoteObjectId);
+        params.Set("objectId", inner_remote_object_id);
 
         status = client_->SendCommandAndGetResult("Runtime.callFunctionOn",
                                                   params, &cmd_result);
         if (status.IsError())
           return status;
-        if (!cmd_result.GetString("result.objectId", &fileObjectId))
+        if (!cmd_result.GetString("result.objectId", &file_object_id))
           return Status(kUnknownError, "DevTools didn't return objectId");
       }
 
       // Now convert each RemoteObject into the full path
       {
         base::Value::Dict params;
-        params.Set("objectId", fileObjectId);
-        base::DictionaryValue getFileInfoResult;
+        params.Set("objectId", file_object_id);
+        base::DictionaryValue get_file_info_result;
         status = client_->SendCommandAndGetResult("DOM.getFileInfo", params,
-                                                  &getFileInfoResult);
+                                                  &get_file_info_result);
         if (status.IsError())
           return status;
         // Add the full path to the file_list
-        std::string fullPath;
-        if (!getFileInfoResult.GetString("path", &fullPath))
+        std::string full_path;
+        if (!get_file_info_result.GetString("path", &full_path))
           return Status(kUnknownError, "DevTools didn't return path");
-        file_list.Append(fullPath);
+        file_list.Append(full_path);
       }
     }
   }
@@ -1272,10 +1272,10 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
     file_list.Append(files[i].AsUTF8Unsafe());
   }
 
-  base::Value::Dict setFilesParams;
-  setFilesParams.Set("backendNodeId", backend_node_id);
-  setFilesParams.Set("files", std::move(file_list));
-  return client_->SendCommand("DOM.setFileInputFiles", setFilesParams);
+  base::Value::Dict set_files_params;
+  set_files_params.Set("backendNodeId", backend_node_id);
+  set_files_params.Set("files", std::move(file_list));
+  return client_->SendCommand("DOM.setFileInputFiles", set_files_params);
 }
 
 Status WebViewImpl::TakeHeapSnapshot(std::unique_ptr<base::Value>* snapshot) {
@@ -1546,7 +1546,7 @@ Status EvaluateScript(DevToolsClient* client,
                       const std::string& expression,
                       EvaluateScriptReturnType return_type,
                       const base::TimeDelta& timeout,
-                      const bool awaitPromise,
+                      const bool await_promise,
                       std::unique_ptr<base::DictionaryValue>* result) {
   base::Value::Dict params;
   params.Set("expression", expression);
@@ -1554,7 +1554,7 @@ Status EvaluateScript(DevToolsClient* client,
     params.Set("uniqueContextId", context_id);
   }
   params.Set("returnByValue", return_type == ReturnByValue);
-  params.Set("awaitPromise", awaitPromise);
+  params.Set("awaitPromise", await_promise);
   base::Value cmd_result;
 
   Timeout local_timeout(timeout);
@@ -1585,12 +1585,12 @@ Status EvaluateScriptAndGetObject(DevToolsClient* client,
                                   const std::string& context_id,
                                   const std::string& expression,
                                   const base::TimeDelta& timeout,
-                                  const bool awaitPromise,
+                                  const bool await_promise,
                                   bool* got_object,
                                   std::string* object_id) {
   std::unique_ptr<base::DictionaryValue> result;
   Status status = EvaluateScript(client, context_id, expression, ReturnByObject,
-                                 timeout, awaitPromise, &result);
+                                 timeout, await_promise, &result);
   if (status.IsError())
     return status;
   const base::Value* object_id_val = result->FindKey("objectId");
@@ -1609,11 +1609,11 @@ Status EvaluateScriptAndGetValue(DevToolsClient* client,
                                  const std::string& context_id,
                                  const std::string& expression,
                                  const base::TimeDelta& timeout,
-                                 const bool awaitPromise,
+                                 const bool await_promise,
                                  std::unique_ptr<base::Value>* result) {
   std::unique_ptr<base::DictionaryValue> temp_result;
   Status status = EvaluateScript(client, context_id, expression, ReturnByValue,
-                                 timeout, awaitPromise, &temp_result);
+                                 timeout, await_promise, &temp_result);
   if (status.IsError())
     return status;
 
@@ -1691,7 +1691,7 @@ Status GetBackendNodeIdFromFunction(DevToolsClient* client,
     return Status(kOk);
   }
 
-  RemoteObjectReleaseGuard releaseGuard(client, element_id);
+  RemoteObjectReleaseGuard release_guard(client, element_id);
 
   base::DictionaryValue cmd_result;
   {

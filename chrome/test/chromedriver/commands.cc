@@ -68,9 +68,9 @@ void ExecuteCreateSession(SessionThreadMap* session_thread_map,
                           const CommandCallback& callback) {
   std::string new_id = GenerateId();
   std::unique_ptr<Session> session = std::make_unique<Session>(new_id, host);
-  std::unique_ptr<SessionThreadInfo> threadInfo =
+  std::unique_ptr<SessionThreadInfo> thread_info =
       std::make_unique<SessionThreadInfo>(new_id, GetW3CSetting(params));
-  if (!threadInfo->thread()->Start()) {
+  if (!thread_info->thread()->Start()) {
     callback.Run(
         Status(kUnknownError, "failed to start a thread for the new session"),
         std::unique_ptr<base::Value>(), std::string(),
@@ -78,9 +78,9 @@ void ExecuteCreateSession(SessionThreadMap* session_thread_map,
     return;
   }
 
-  threadInfo->thread()->task_runner()->PostTask(
+  thread_info->thread()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&SetThreadLocalSession, std::move(session)));
-  session_thread_map->insert(std::make_pair(new_id, std::move(threadInfo)));
+  session_thread_map->insert(std::make_pair(new_id, std::move(thread_info)));
   init_session_cmd.Run(params, new_id, callback);
 }
 

@@ -229,14 +229,14 @@ void OnSimpleCommand(base::RunLoop* run_loop,
 
 TEST(CommandsTest, ExecuteSessionCommand) {
   SessionThreadMap map;
-  auto threadInfo = std::make_unique<SessionThreadInfo>("1", true);
-  base::Thread* thread = threadInfo->thread();
+  auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
+  base::Thread* thread = thread_info->thread();
   ASSERT_TRUE(thread->Start());
   std::string id("id");
   thread->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&internal::CreateSessionOnSessionThreadForTesting, id));
-  map[id] = std::move(threadInfo);
+  map[id] = std::move(thread_info);
 
   base::Value::Dict params;
   params.Set("param", 5);
@@ -311,10 +311,10 @@ void OnNoSuchSessionAndQuit(base::RunLoop* run_loop,
 
 TEST(CommandsTest, ExecuteSessionCommandOnJustDeletedSession) {
   SessionThreadMap map;
-  auto threadInfo = std::make_unique<SessionThreadInfo>("1", true);
-  ASSERT_TRUE(threadInfo->thread()->Start());
+  auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
+  ASSERT_TRUE(thread_info->thread()->Start());
   std::string id("id");
-  map[id] = std::move(threadInfo);
+  map[id] = std::move(thread_info);
 
   base::test::SingleThreadTaskEnvironment task_environment;
   base::Value::Dict params;
@@ -699,15 +699,15 @@ void OnSessionCommand(base::RunLoop* run_loop,
 
 TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   SessionThreadMap map;
-  auto threadInfo = std::make_unique<SessionThreadInfo>("1", true);
-  base::Thread* thread = threadInfo->thread();
+  auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
+  base::Thread* thread = thread_info->thread();
   ASSERT_TRUE(thread->Start());
   std::string id("id");
   thread->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&internal::CreateSessionOnSessionThreadForTesting, id));
 
-  map[id] = std::move(threadInfo);
+  map[id] = std::move(thread_info);
 
   base::Value::Dict params;
   auto listener = std::make_unique<MockCommandListener>();
@@ -781,14 +781,14 @@ void VerifySessionWasDeleted() {
 
 TEST(CommandsTest, ErrorNotifyingCommandListeners) {
   SessionThreadMap map;
-  auto threadInfo = std::make_unique<SessionThreadInfo>("1", true);
-  base::Thread* thread = threadInfo->thread();
+  auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
+  base::Thread* thread = thread_info->thread();
   ASSERT_TRUE(thread->Start());
   std::string id("id");
   thread->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&internal::CreateSessionOnSessionThreadForTesting, id));
-  map[id] = std::move(threadInfo);
+  map[id] = std::move(thread_info);
 
   // In SuccessNotifyingCommandListenersBeforeCommand, we verified BeforeCommand
   // was called before (as opposed to after) command execution. We don't need to

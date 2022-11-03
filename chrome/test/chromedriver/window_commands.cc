@@ -358,10 +358,10 @@ Status ExecuteTouchEvent(Session* session,
 
 Status WindowViewportSize(Session* session,
                           WebView* web_view,
-                          int* innerWidth,
-                          int* innerHeight) {
-  DCHECK(innerWidth);
-  DCHECK(innerHeight);
+                          int* inner_width,
+                          int* inner_height) {
+  DCHECK(inner_width);
+  DCHECK(inner_height);
   std::unique_ptr<base::Value> value;
   base::Value::List args;
   Status status =
@@ -377,11 +377,11 @@ Status WindowViewportSize(Session* session,
   const base::Value::Dict& view_attrib = value->GetDict();
   absl::optional<int> maybe_inner_width = view_attrib.FindInt("view_width");
   if (maybe_inner_width)
-    *innerWidth = *maybe_inner_width;
+    *inner_width = *maybe_inner_width;
 
   absl::optional<int> maybe_inner_height = view_attrib.FindInt("view_height");
   if (maybe_inner_height)
-    *innerHeight = *maybe_inner_height;
+    *inner_height = *maybe_inner_height;
   return Status(kOk);
 }
 
@@ -499,16 +499,16 @@ Status GetNonNegativeDouble(const base::Value::Dict& dict,
                             const std::string& child,
                             double* attribute) {
   bool has_value;
-  std::string attributeStr = "'" + parent + "." + child + "'";
+  std::string attribute_str = "'" + parent + "." + child + "'";
   if (!GetOptionalDouble(dict, child, attribute, &has_value)) {
-    return Status(kInvalidArgument, attributeStr + " must be a double");
+    return Status(kInvalidArgument, attribute_str + " must be a double");
   }
 
   if (has_value) {
     *attribute = ConvertCentimeterToInch(*attribute);
     if (*attribute < 0) {
       return Status(kInvalidArgument,
-                    attributeStr + " must not be less than 0");
+                    attribute_str + " must not be less than 0");
     }
   }
   return Status(kOk);
@@ -587,7 +587,7 @@ Status ParseMargin(const base::Value::Dict& params, Margin* margin) {
 }
 
 Status ParsePageRanges(const base::Value::Dict& params,
-                       std::string* pageRanges) {
+                       std::string* page_ranges) {
   bool has_value;
   const base::Value::List* page_range_list = nullptr;
   if (!GetOptionalList(params, "pageRanges", &page_range_list, &has_value)) {
@@ -614,7 +614,7 @@ Status ParsePageRanges(const base::Value::Dict& params,
     }
   }
 
-  *pageRanges = base::JoinString(ranges, ",");
+  *page_ranges = base::JoinString(ranges, ",");
   return Status(kOk);
 }
 
@@ -1974,11 +1974,11 @@ Status ExecuteSendCommand(Session* session,
   if (!cmd) {
     return Status(kInvalidArgument, "command not passed");
   }
-  const base::Value::Dict* cmdParams = params.FindDict("params");
-  if (!cmdParams) {
+  const base::Value::Dict* cmd_params = params.FindDict("params");
+  if (!cmd_params) {
     return Status(kInvalidArgument, "params not passed");
   }
-  return web_view->SendCommand(*cmd, *cmdParams);
+  return web_view->SendCommand(*cmd, *cmd_params);
 }
 
 Status ExecuteSendCommandFromWebSocket(Session* session,
@@ -1990,8 +1990,8 @@ Status ExecuteSendCommandFromWebSocket(Session* session,
   if (!cmd) {
     return Status(kInvalidArgument, "command not passed");
   }
-  const base::Value::Dict* cmdParams = params.FindDict("params");
-  if (!cmdParams) {
+  const base::Value::Dict* cmd_params = params.FindDict("params");
+  if (!cmd_params) {
     return Status(kInvalidArgument, "params not passed");
   }
   absl::optional<int> client_cmd_id = params.FindInt("id");
@@ -1999,7 +1999,7 @@ Status ExecuteSendCommandFromWebSocket(Session* session,
     return Status(kInvalidArgument, "command id must be negative");
   }
 
-  return web_view->SendCommandFromWebSocket(*cmd, *cmdParams, *client_cmd_id);
+  return web_view->SendCommandFromWebSocket(*cmd, *cmd_params, *client_cmd_id);
 }
 
 Status ExecuteSendCommandAndGetResult(Session* session,
@@ -2011,11 +2011,11 @@ Status ExecuteSendCommandAndGetResult(Session* session,
   if (!cmd) {
     return Status(kInvalidArgument, "command not passed");
   }
-  const base::Value::Dict* cmdParams = params.FindDict("params");
-  if (!cmdParams) {
+  const base::Value::Dict* cmd_params = params.FindDict("params");
+  if (!cmd_params) {
     return Status(kInvalidArgument, "params not passed");
   }
-  return web_view->SendCommandAndGetResult(*cmd, *cmdParams, value);
+  return web_view->SendCommandAndGetResult(*cmd, *cmd_params, value);
 }
 
 Status ExecuteGetActiveElement(Session* session,
@@ -2171,20 +2171,20 @@ Status ExecuteFullPageScreenshot(Session* session,
   if (status.IsError())
     return status;
 
-  std::unique_ptr<base::Value> layoutMetrics;
+  std::unique_ptr<base::Value> layout_metrics;
   status = web_view->SendCommandAndGetResult(
-      "Page.getLayoutMetrics", base::Value::Dict(), &layoutMetrics);
+      "Page.getLayoutMetrics", base::Value::Dict(), &layout_metrics);
   if (status.IsError())
     return status;
 
-  const auto width = layoutMetrics->FindDoublePath("contentSize.width");
+  const auto width = layout_metrics->FindDoublePath("contentSize.width");
   if (!width.has_value())
     return Status(kUnknownError, "invalid width type");
   int w = ceil(width.value());
   if (w == 0)
     return Status(kUnknownError, "invalid width 0");
 
-  const auto height = layoutMetrics->FindDoublePath("contentSize.height");
+  const auto height = layout_metrics->FindDoublePath("contentSize.height");
   if (!height.has_value())
     return Status(kUnknownError, "invalid height type");
   int h = ceil(height.value());
@@ -2192,22 +2192,22 @@ Status ExecuteFullPageScreenshot(Session* session,
     return Status(kUnknownError, "invalid height 0");
 
   auto* meom = web_view->GetMobileEmulationOverrideManager();
-  bool hasOverrideMetrics = meom->HasOverrideMetrics();
+  bool has_override_metrics = meom->HasOverrideMetrics();
 
-  base::Value::Dict deviceMetrics;
-  deviceMetrics.Set("width", w);
-  deviceMetrics.Set("height", h);
-  if (hasOverrideMetrics) {
+  base::Value::Dict device_metrics;
+  device_metrics.Set("width", w);
+  device_metrics.Set("height", h);
+  if (has_override_metrics) {
     const auto* dm = meom->GetDeviceMetrics();
-    deviceMetrics.Set("deviceScaleFactor", dm->device_scale_factor);
-    deviceMetrics.Set("mobile", dm->mobile);
+    device_metrics.Set("deviceScaleFactor", dm->device_scale_factor);
+    device_metrics.Set("mobile", dm->mobile);
   } else {
-    deviceMetrics.Set("deviceScaleFactor", 1);
-    deviceMetrics.Set("mobile", false);
+    device_metrics.Set("deviceScaleFactor", 1);
+    device_metrics.Set("mobile", false);
   }
   std::unique_ptr<base::Value> ignore;
   status = web_view->SendCommandAndGetResult(
-      "Emulation.setDeviceMetricsOverride", deviceMetrics, &ignore);
+      "Emulation.setDeviceMetricsOverride", device_metrics, &ignore);
   if (status.IsError())
     return status;
 
@@ -2233,7 +2233,7 @@ Status ExecuteFullPageScreenshot(Session* session,
 
   // Check if there is already deviceMetricsOverride in use,
   // if so, restore to that instead
-  if (hasOverrideMetrics) {
+  if (has_override_metrics) {
     status = meom->RestoreOverrideMetrics();
   } else {
     // The scroll bar disappear after setting device metrics to fullpage
@@ -2275,32 +2275,32 @@ Status ExecutePrint(Session* session,
   if (status.IsError())
     return status;
 
-  bool shrinkToFit;
-  status = ParseBoolean(params, "shrinkToFit", true, &shrinkToFit);
+  bool shrink_to_fit;
+  status = ParseBoolean(params, "shrinkToFit", true, &shrink_to_fit);
   if (status.IsError())
     return status;
 
-  std::string pageRanges;
-  status = ParsePageRanges(params, &pageRanges);
+  std::string page_ranges;
+  status = ParsePageRanges(params, &page_ranges);
   if (status.IsError())
     return status;
 
-  base::Value::Dict printParams;
-  printParams.Set(kLandscape, orientation == kLandscape);
-  printParams.Set("scale", scale);
-  printParams.Set("printBackground", background);
-  printParams.Set("paperWidth", page.width);
-  printParams.Set("paperHeight", page.height);
-  printParams.Set("marginTop", margin.top);
-  printParams.Set("marginBottom", margin.bottom);
-  printParams.Set("marginLeft", margin.left);
-  printParams.Set("marginRight", margin.right);
-  printParams.Set("preferCSSPageSize", !shrinkToFit);
-  printParams.Set("pageRanges", pageRanges);
-  printParams.Set("transferMode", "ReturnAsBase64");
+  base::Value::Dict print_params;
+  print_params.Set(kLandscape, orientation == kLandscape);
+  print_params.Set("scale", scale);
+  print_params.Set("printBackground", background);
+  print_params.Set("paperWidth", page.width);
+  print_params.Set("paperHeight", page.height);
+  print_params.Set("marginTop", margin.top);
+  print_params.Set("marginBottom", margin.bottom);
+  print_params.Set("marginLeft", margin.left);
+  print_params.Set("marginRight", margin.right);
+  print_params.Set("preferCSSPageSize", !shrink_to_fit);
+  print_params.Set("pageRanges", page_ranges);
+  print_params.Set("transferMode", "ReturnAsBase64");
 
   std::string pdf;
-  status = web_view->PrintToPDF(printParams, &pdf);
+  status = web_view->PrintToPDF(print_params, &pdf);
   if (status.IsError())
     return status;
 
@@ -2402,8 +2402,8 @@ Status ExecuteAddCookie(Session* session,
   bool secure = false;
   if (!GetOptionalBool(*cookie, "secure", &secure))
     return Status(kInvalidArgument, "invalid 'secure'");
-  bool httpOnly = false;
-  if (!GetOptionalBool(*cookie, "httpOnly", &httpOnly))
+  bool http_only = false;
+  if (!GetOptionalBool(*cookie, "httpOnly", &http_only))
     return Status(kInvalidArgument, "invalid 'httpOnly'");
   double expiry;
   bool has_value;
@@ -2426,7 +2426,7 @@ Status ExecuteAddCookie(Session* session,
                kDefaultCookieExpiryTime;
   }
   return web_view->AddCookie(*name, url, *cookie_value, domain, path, samesite,
-                             secure, httpOnly, expiry);
+                             secure, http_only, expiry);
 }
 
 Status ExecuteDeleteCookie(Session* session,
@@ -2631,16 +2631,16 @@ Status ExecuteGetWindowRect(Session* session,
                             const base::Value::Dict& params,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout) {
-  Chrome::WindowRect windowRect;
-  Status status = session->chrome->GetWindowRect(session->window, &windowRect);
+  Chrome::WindowRect window_rect;
+  Status status = session->chrome->GetWindowRect(session->window, &window_rect);
   if (status.IsError())
     return status;
 
   base::Value::Dict rect;
-  rect.Set("x", windowRect.x);
-  rect.Set("y", windowRect.y);
-  rect.Set("width", windowRect.width);
-  rect.Set("height", windowRect.height);
+  rect.Set("x", window_rect.x);
+  rect.Set("y", window_rect.y);
+  rect.Set("width", window_rect.width);
+  rect.Set("height", window_rect.height);
   value->reset(new base::Value(std::move(rect)));
   return Status(kOk);
 }

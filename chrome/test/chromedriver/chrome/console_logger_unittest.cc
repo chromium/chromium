@@ -122,7 +122,7 @@ void ConsoleLogParams(base::DictionaryValue* out_params,
                       const char* source,
                       const char* url,
                       const char* level,
-                      int lineNumber,
+                      int line_number,
                       const char* text) {
   base::Value::Dict* out_dict = out_params->GetIfDict();
   CHECK(out_dict);
@@ -132,8 +132,8 @@ void ConsoleLogParams(base::DictionaryValue* out_params,
     out_dict->SetByDottedPath("entry.url", url);
   if (level)
     out_dict->SetByDottedPath("entry.level", level);
-  if (lineNumber != -1)
-    out_dict->SetByDottedPath("entry.lineNumber", lineNumber);
+  if (line_number != -1)
+    out_dict->SetByDottedPath("entry.lineNumber", line_number);
   if (text)
     out_dict->SetByDottedPath("entry.text", text);
 }

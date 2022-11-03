@@ -70,12 +70,13 @@ class NavigationTracker : public DevToolsEventListener,
  private:
   Status UpdateCurrentLoadingState();
   // Use for read access to loading_state_
-  LoadingState loadingState();
+  LoadingState GetLoadingState() const;
   // Only set access loading_state_ if this is true
-  bool hasCurrentFrame();
-  void setCurrentFrameInvalid();
-  void initCurrentFrame(LoadingState state);
-  void clearFrameStates();
+  bool HasCurrentFrame() const;
+  void SetCurrentFrameInvalid();
+  void InitCurrentFrame(LoadingState state);
+  void ClearFrameStates();
+
   raw_ptr<DevToolsClient> client_;
   raw_ptr<WebView> web_view_;
   const std::string top_frame_id_;

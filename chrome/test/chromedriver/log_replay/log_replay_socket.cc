@@ -104,7 +104,7 @@ bool LogReplaySocket::HasNextMessage() {
     log_reader_.UndoGetNext(std::move(next));
     return true;
   }
-  bool haveMessage = next->id <= max_id_;
+  bool have_message = next->id <= max_id_;
   log_reader_.UndoGetNext(std::move(next));
-  return haveMessage;
+  return have_message;
 }
