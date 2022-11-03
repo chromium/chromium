@@ -264,9 +264,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Map of processed IDPs' data keyed by IDP config URL to display on the UI.
   base::flat_map<GURL, IdentityProviderData> idp_data_;
 
-  // Whether to show the iframe requester on the FedCM UI.
-  bool show_iframe_requester_ = false;
-
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };
 

@@ -513,7 +513,6 @@ void FederatedAuthRequestImpl::RequestToken(
 
     idp_info_[idp_ptr->config_url].provider = *idp_ptr;
     idp_order_.push_back(idp_ptr->config_url);
-    show_iframe_requester_ = show_iframe_requester;
     FetchManifest(*idp_ptr);
   }
 }
@@ -858,14 +857,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog(
       idp_data_for_display.push_back(idp_data_.at(idp));
   }
 
-  absl::optional<std::string> iframe_url_for_display = absl::nullopt;
-  if (IsFedCmIframeSupportEnabled() && show_iframe_requester_) {
-    iframe_url_for_display = FormatOriginForDisplay(origin());
-  }
-
   request_dialog_controller_->ShowAccountsDialog(
-      rp_web_contents, rp_url_for_display, iframe_url_for_display,
-      idp_data_for_display,
+      rp_web_contents, rp_url_for_display, idp_data_for_display,
       is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -904,7 +897,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
 
   request_dialog_controller_->ShowFailureDialog(
       rp_web_contents, FormatOriginForDisplay(GetEmbeddingOrigin()),
-      FormatUrlForDisplay(idp_url), FormatOriginForDisplay(origin()),
+      FormatUrlForDisplay(idp_url),
       base::BindOnce(
           &FederatedAuthRequestImpl::OnDismissFailureDialog,
           weak_ptr_factory_.GetWeakPtr(), FederatedAuthRequestResult::kError,

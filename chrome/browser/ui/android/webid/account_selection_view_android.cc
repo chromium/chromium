@@ -113,7 +113,6 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 
 void AccountSelectionViewAndroid::Show(
     const std::string& rp_for_display,
-    const absl::optional<std::string>& iframe_url_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     Account::SignInMode sign_in_mode) {
   if (!RecreateJavaObject()) {
@@ -147,8 +146,7 @@ void AccountSelectionViewAndroid::Show(
 
 void AccountSelectionViewAndroid::ShowFailureDialog(
     const std::string& rp_for_display,
-    const std::string& idp_for_display,
-    const absl::optional<std::string>& iframe_url_for_display) {
+    const std::string& idp_for_display) {
   // TODO(crbug.com/1357790): add support on Android.
 }
 

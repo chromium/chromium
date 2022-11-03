@@ -21,9 +21,6 @@ bool IsFedCmMultipleIdentityProvidersEnabled();
 // Whether IdpSigninStatus is enabled.
 bool IsFedCmIdpSigninStatusEnabled();
 
-// Whether FedCM iframe support is enabled.
-bool IsFedCmIframeSupportEnabled();
-
 // Whether metrics endpoint is enabled.
 bool IsFedCmMetricsEndpointEnabled();
 

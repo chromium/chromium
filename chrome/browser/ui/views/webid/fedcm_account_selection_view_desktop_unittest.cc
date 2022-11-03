@@ -87,8 +87,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   views::Widget* CreateBubble(
       Browser* browser,
       const std::u16string& rp_etld_plus_one,
-      const absl::optional<std::u16string>& idp_title,
-      const absl::optional<std::u16string>& iframe_url_for_display) override {
+      const absl::optional<std::u16string>& idp_title) override {
     return widget_;
   }
 
@@ -158,7 +157,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), widget_.get(), bubble_view_.get());
     controller->Show(
-        kRpEtldPlusOne, absl::nullopt,
+        kRpEtldPlusOne,
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
           content::ClientIdData(GURL(), GURL())}},
         SignInMode::kExplicit);

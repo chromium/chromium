@@ -48,7 +48,6 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 
 void FedCmAccountSelectionView::Show(
     const std::string& rp_etld_plus_one,
-    const absl::optional<std::string>& iframe_etld_plus_one,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     Account::SignInMode sign_in_mode) {
   Browser* browser =
@@ -72,16 +71,9 @@ void FedCmAccountSelectionView::Show(
           ? absl::make_optional<std::u16string>(
                 base::UTF8ToUTF16(identity_provider_data[0].idp_for_display))
           : absl::nullopt;
-  absl::optional<std::u16string> iframe_url_for_display =
-      iframe_etld_plus_one.has_value()
-          ? absl::make_optional<std::u16string>(
-                base::UTF8ToUTF16(iframe_etld_plus_one.value()))
-          : absl::nullopt;
-  std::u16string rp_for_display = base::UTF8ToUTF16(rp_etld_plus_one);
-  rp_in_title_ = iframe_url_for_display.value_or(rp_for_display);
+  rp_for_display_ = base::UTF8ToUTF16(rp_etld_plus_one);
   bubble_widget_ =
-      CreateBubble(browser, rp_for_display, idp_title, iframe_url_for_display)
-          ->GetWeakPtr();
+      CreateBubble(browser, rp_for_display_, idp_title)->GetWeakPtr();
   GetBubbleView()->ShowAccountPicker(idp_data_list_,
                                      /*show_back_button=*/false);
   bubble_widget_->Show();
@@ -90,27 +82,17 @@ void FedCmAccountSelectionView::Show(
 
 void FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& rp_etld_plus_one,
-    const std::string& idp_etld_plus_one,
-    const absl::optional<std::string>& iframe_url_for_display) {
+    const std::string& idp_etld_plus_one) {
   Browser* browser =
       chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
   // `browser` is null in unit tests.
   if (browser)
     browser->tab_strip_model()->AddObserver(this);
 
-  absl::optional<std::u16string> iframe_etld_plus_one =
-      iframe_url_for_display.has_value()
-          ? absl::make_optional<std::u16string>(
-                base::UTF8ToUTF16(*iframe_url_for_display))
-          : absl::nullopt;
-
-  bubble_widget_ =
-      CreateBubble(browser, base::UTF8ToUTF16(rp_etld_plus_one),
-                   base::UTF8ToUTF16(idp_etld_plus_one), iframe_etld_plus_one)
-          ->GetWeakPtr();
-  rp_in_title_ =
-      iframe_etld_plus_one.value_or(base::UTF8ToUTF16(rp_etld_plus_one));
-  GetBubbleView()->ShowFailureDialog(rp_in_title_,
+  bubble_widget_ = CreateBubble(browser, base::UTF8ToUTF16(rp_etld_plus_one),
+                                base::UTF8ToUTF16(idp_etld_plus_one))
+                       ->GetWeakPtr();
+  GetBubbleView()->ShowFailureDialog(base::UTF8ToUTF16(rp_etld_plus_one),
                                      base::UTF8ToUTF16(idp_etld_plus_one));
   bubble_widget_->Show();
   bubble_widget_->AddObserver(this);
@@ -158,14 +140,12 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
 views::Widget* FedCmAccountSelectionView::CreateBubble(
     Browser* browser,
     const std::u16string& rp_etld_plus_one,
-    const absl::optional<std::u16string>& idp_title,
-    const absl::optional<std::u16string>& iframe_url_for_display) {
+    const absl::optional<std::u16string>& idp_title) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   views::View* anchor_view = browser_view->contents_web_view();
 
   return views::BubbleDialogDelegateView::CreateBubble(
-      new AccountSelectionBubbleView(rp_etld_plus_one, idp_title,
-                                     iframe_url_for_display, anchor_view,
+      new AccountSelectionBubbleView(rp_etld_plus_one, idp_title, anchor_view,
                                      SystemNetworkContextManager::GetInstance()
                                          ->GetSharedURLLoaderFactory(),
                                      this));
@@ -200,7 +180,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
     GetBubbleView()->ShowVerifyingSheet(account, idp_data);
     return;
   }
-  GetBubbleView()->ShowSingleAccountConfirmDialog(rp_in_title_, account,
+  GetBubbleView()->ShowSingleAccountConfirmDialog(rp_for_display_, account,
                                                   idp_data);
 }
 

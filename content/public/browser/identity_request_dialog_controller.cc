@@ -77,7 +77,6 @@ int IdentityRequestDialogController::GetBrandIconMinimumSize() {
 void IdentityRequestDialogController::ShowAccountsDialog(
     WebContents* rp_web_contents,
     const std::string& rp_for_display,
-    const absl::optional<std::string>& iframe_url_for_display,
     const std::vector<IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected,
@@ -89,7 +88,6 @@ void IdentityRequestDialogController::ShowFailureDialog(
     WebContents* rp_web_contents,
     const std::string& rp_for_display,
     const std::string& idp_for_display,
-    const absl::optional<std::string>& iframe_url_for_display,
     DismissCallback dismiss_callback) {
   std::move(dismiss_callback).Run(DismissReason::OTHER);
 }
