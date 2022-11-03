@@ -106,6 +106,12 @@
 namespace blink {
 namespace {
 
+enum SplitHistogramTypes {
+  kTotal = 0x1 << 0,
+  kPlaybackType = 0x1 << 1,
+  kEncrypted = 0x1 << 2,
+};
+
 namespace learning = ::media::learning;
 using ::media::Demuxer;
 using ::media::MediaLogEvent;
@@ -2051,7 +2057,9 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
   // TimeToPlayReady metrics later if we end up doing a suspended startup.
   time_to_metadata_ = base::TimeTicks::Now() - load_start_time_;
   media_metrics_provider_->SetTimeToMetadata(time_to_metadata_);
-  RecordTimingUMA("Media.TimeToMetadata", time_to_metadata_);
+  WriteSplitHistogram<kPlaybackType | kEncrypted>(
+      &base::UmaHistogramMediumTimes, "Media.TimeToMetadata",
+      time_to_metadata_);
 
   MaybeSetContainerNameForMetrics();
 
@@ -2300,7 +2308,8 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
       have_reported_time_to_play_ready_ = true;
       const base::TimeDelta elapsed = base::TimeTicks::Now() - load_start_time_;
       media_metrics_provider_->SetTimeToPlayReady(elapsed);
-      RecordTimingUMA("Media.TimeToPlayReady", elapsed);
+      WriteSplitHistogram<kPlaybackType | kEncrypted>(
+          &base::UmaHistogramMediumTimes, "Media.TimeToPlayReady", elapsed);
     }
 
     // Warning: This call may be re-entrant.
@@ -3881,20 +3890,42 @@ void WebMediaPlayerImpl::SwitchToLocalRenderer(
     client_->MediaRemotingStopped(GetSwitchToLocalMessage(reason));
 }
 
-void WebMediaPlayerImpl::RecordUnderflowDuration(base::TimeDelta duration) {
-  DCHECK(data_source_ || GetDemuxerType() == media::DemuxerType::kChunkDemuxer);
+template <uint32_t Flags, typename... T>
+void WebMediaPlayerImpl::WriteSplitHistogram(
+    void (*UmaFunction)(const std::string&, T...),
+    const std::string& key,
+    const T&... values) {
+  std::string strkey = std::string(key);
 
-  if (data_source_)
-    UMA_HISTOGRAM_TIMES("Media.UnderflowDuration2.SRC", duration);
-  else
-    UMA_HISTOGRAM_TIMES("Media.UnderflowDuration2.MSE", duration);
+  if constexpr (Flags & kEncrypted) {
+    if (is_encrypted_)
+      UmaFunction(strkey + ".EME", values...);
+  }
 
-  if (is_encrypted_)
-    UMA_HISTOGRAM_TIMES("Media.UnderflowDuration2.EME", duration);
+  if constexpr (Flags & kTotal)
+    UmaFunction(strkey + ".All", values...);
+
+  if constexpr (Flags & kPlaybackType) {
+    auto demuxer_type = GetDemuxerType();
+    if (!demuxer_type.has_value())
+      return;
+    switch (*demuxer_type) {
+      case media::DemuxerType::kChunkDemuxer:
+        UmaFunction(strkey + ".MSE", values...);
+        break;
+      default:
+        // TODO (crbug/1377053): Add additional cases for HLS, eventually.
+        UmaFunction(strkey + ".SRC", values...);
+        break;
+    }
+  }
 }
 
-#define UMA_HISTOGRAM_VIDEO_HEIGHT(name, sample) \
-  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 100, 10000, 50)
+void WebMediaPlayerImpl::RecordUnderflowDuration(base::TimeDelta duration) {
+  DCHECK(data_source_ || GetDemuxerType() == media::DemuxerType::kChunkDemuxer);
+  WriteSplitHistogram<kPlaybackType | kEncrypted>(
+      &base::UmaHistogramTimes, "Media.UnderflowDuration2", duration);
+}
 
 void WebMediaPlayerImpl::RecordVideoNaturalSize(const gfx::Size& natural_size) {
   // Always report video natural size to MediaLog.
@@ -3908,21 +3939,13 @@ void WebMediaPlayerImpl::RecordVideoNaturalSize(const gfx::Size& natural_size) {
 
   int height = natural_size.height();
 
-  if (load_type_ == kLoadTypeURL)
-    UMA_HISTOGRAM_VIDEO_HEIGHT("Media.VideoHeight.Initial.SRC", height);
-  else if (load_type_ == kLoadTypeMediaSource)
-    UMA_HISTOGRAM_VIDEO_HEIGHT("Media.VideoHeight.Initial.MSE", height);
-
-  if (is_encrypted_)
-    UMA_HISTOGRAM_VIDEO_HEIGHT("Media.VideoHeight.Initial.EME", height);
-
-  UMA_HISTOGRAM_VIDEO_HEIGHT("Media.VideoHeight.Initial.All", height);
+  WriteSplitHistogram<kPlaybackType | kEncrypted | kTotal>(
+      &base::UmaHistogramCustomCounts, "Media.VideoHeight.Initial", height, 100,
+      10000, size_t{50});
 
   if (playback_events_recorder_)
     playback_events_recorder_->OnNaturalSizeChanged(natural_size);
 }
-
-#undef UMA_HISTOGRAM_VIDEO_HEIGHT
 
 void WebMediaPlayerImpl::SetTickClockForTest(
     const base::TickClock* tick_clock) {
@@ -3937,7 +3960,8 @@ void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time) {
   needs_first_frame_ = false;
   const base::TimeDelta elapsed = frame_time - load_start_time_;
   media_metrics_provider_->SetTimeToFirstFrame(elapsed);
-  RecordTimingUMA("Media.TimeToFirstFrame", elapsed);
+  WriteSplitHistogram<kPlaybackType | kEncrypted>(
+      &base::UmaHistogramMediumTimes, "Media.TimeToFirstFrame", elapsed);
 
   media::PipelineStatistics ps = GetPipelineStatistics();
   if (client_) {
@@ -3948,16 +3972,6 @@ void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time) {
       client_->Repaint();
     }
   }
-}
-
-void WebMediaPlayerImpl::RecordTimingUMA(const std::string& key,
-                                         base::TimeDelta elapsed) {
-  if (GetDemuxerType() == media::DemuxerType::kChunkDemuxer)
-    base::UmaHistogramMediumTimes(key + ".MSE", elapsed);
-  else
-    base::UmaHistogramMediumTimes(key + ".SRC", elapsed);
-  if (is_encrypted_)
-    base::UmaHistogramMediumTimes(key + ".EME", elapsed);
 }
 
 void WebMediaPlayerImpl::RecordEncryptionScheme(

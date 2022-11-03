@@ -338,6 +338,31 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   friend class WebMediaPlayerImplTest;
   friend class WebMediaPlayerImplBackgroundBehaviorTest;
 
+  // Helper function that can be used for generating different UMA records:
+  // |key| is the UMA prefix, such as "Media.TimeToPlayReady", for example.
+  // |UmaFunction| is some UMA function, like base::UmaHistogramMediumTimes
+  //               which the record actually gets logged with
+  // |T...| are the arguments passed. Usually this is only one piece of data,
+  //        such as a base::TimeDelta, in the case of UmaHistogramMediumTimes,
+  //        but could also be a series of fields that customize bucket sizes
+  //        or the like.
+  //
+  // Finally, the |Flags| template argument is used to determine which suffixes
+  // are logged - An integer enum is provided |SplitHistogramTypes| which is
+  // a bitmask, and can be used to require logging:
+  //   PlaybackType: {".SRC", ".MSE", ".HLS" (in the future)} based on demuxer
+  //                 type
+  //   Encrypted:    {".EME"} based on the value of |is_encrypted_|
+  //   All:          {".All"} all the time.
+  // |Flags| is provided as a template argument instead of a function argument
+  // in order to guard different components in "if constexpr" conditionals,
+  // so we won't even compile in strings such as "Media.TimeToPlayReady.All"
+  // if it's not specified.
+  template <uint32_t Flags, typename... T>
+  void WriteSplitHistogram(void (*UmaFunction)(const std::string&, T...),
+                           const std::string& key,
+                           const T&... value);
+
   void EnableOverlay();
   void DisableOverlay();
 
@@ -619,11 +644,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // Called by the compositor the very first time a frame is received.
   void OnFirstFrame(base::TimeTicks frame_time);
-
-  // Records timing metrics for three UMA metrics: #key.SRC, #key.MSE, and
-  // #key.EME. The SRC and MSE ones are mutually exclusive based on
-  // the demuxer type, while the EME one is only recorded if |is_encrypted_|.
-  void RecordTimingUMA(const std::string& key, base::TimeDelta elapsed);
 
   // Records the encryption scheme used by the stream |stream_name|. This is
   // only recorded when metadata is available.
