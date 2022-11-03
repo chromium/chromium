@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
@@ -724,8 +725,11 @@ public abstract class AsyncInitializationActivity
      */
     protected int getCurrentSmallestScreenWidth(Context context) {
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
+        // Android T does not receive updated width upon foldable unfold from window context.
+        // Continue to rely on context on this case.
         Context windowManagerContext = (ChromeFeatureList.sFoldableJankFix.isEnabled()
-                                               && Build.VERSION.SDK_INT >= VERSION_CODES.R)
+                                               && VERSION.SDK_INT >= VERSION_CODES.R
+                                               && VERSION.SDK_INT < VERSION_CODES.TIRAMISU)
                 ? (display.getWindowContext() != null ? display.getWindowContext() : context)
                 : context;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
