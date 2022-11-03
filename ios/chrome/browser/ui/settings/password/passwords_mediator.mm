@@ -142,12 +142,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   [self providePasswordsToConsumer];
 
   _currentState = _passwordCheckManager->GetPasswordCheckState();
-  [self.consumer
-               setPasswordCheckUIState:
-                   [self computePasswordCheckUIStateWith:_currentState]
-      unmutedCompromisedPasswordsCount:_passwordCheckManager
-                                           ->GetUnmutedCompromisedCredentials()
-                                           .size()];
+  [self updateConsumerPasswordCheckState:_currentState];
 }
 
 - (void)deleteCredential:
@@ -271,13 +266,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   if (state == _currentState)
     return;
 
-  DCHECK(self.consumer);
-  [self.consumer
-               setPasswordCheckUIState:
-                   [self computePasswordCheckUIStateWith:state]
-      unmutedCompromisedPasswordsCount:_passwordCheckManager
-                                           ->GetUnmutedCompromisedCredentials()
-                                           .size()];
+  [self updateConsumerPasswordCheckState:state];
 }
 
 - (void)compromisedCredentialsDidChange {
@@ -286,14 +275,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
       PasswordCheckState::kRunning)
     return;
 
-  DCHECK(self.consumer);
-
-  [self.consumer
-               setPasswordCheckUIState:
-                   [self computePasswordCheckUIStateWith:_currentState]
-      unmutedCompromisedPasswordsCount:_passwordCheckManager
-                                           ->GetUnmutedCompromisedCredentials()
-                                           .size()];
+  [self updateConsumerPasswordCheckState:_currentState];
 }
 
 #pragma mark - PasswordAutoFillStatusObserver
@@ -327,6 +309,20 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
     [_consumer setPasswords:std::move(passwords)
                blockedSites:std::move(blockedSites)];
   }
+}
+
+// Updates the `_consumer` Password Check UI State and Unmuted Compromised
+// Passwords.
+- (void)updateConsumerPasswordCheckState:
+    (PasswordCheckState)passwordCheckState {
+  DCHECK(self.consumer);
+
+  PasswordCheckUIState passwordCheckUIState =
+      [self computePasswordCheckUIStateWith:passwordCheckState];
+  NSInteger unmutedCompromisedPasswordsCount =
+      _passwordCheckManager->GetUnmutedCompromisedCredentials().size();
+  [self.consumer setPasswordCheckUIState:passwordCheckUIState
+        unmutedCompromisedPasswordsCount:unmutedCompromisedPasswordsCount];
 }
 
 // Returns PasswordCheckUIState based on PasswordCheckState.

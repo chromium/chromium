@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-#include <vector>
+#import <memory>
+#import <vector>
 
 namespace password_manager {
 struct CredentialUIEntry;

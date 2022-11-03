@@ -63,10 +63,12 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
+#import "ios/chrome/browser/ui/table_view/table_view_illustrated_empty_view.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -181,6 +183,7 @@ NSInteger kTrailingSymbolSize = 18;
     PasswordExportActivityViewControllerDelegate,
     PasswordsConsumer,
     PopoverLabelViewControllerDelegate,
+    TableViewIllustratedEmptyViewDelegate,
     UISearchBarDelegate,
     UISearchControllerDelegate> {
   // The observable boolean that binds to the password manager setting state.
@@ -285,6 +288,10 @@ NSInteger kTrailingSymbolSize = 18;
 @property(nonatomic, strong)
     NSMutableDictionary<NSString*, NSNumber*>* passwordsLoadedWithFavicons;
 
+// The search controller used in this view. This may be added/removed from the
+// navigation controller, but the instance will persist here.
+@property(nonatomic, strong) UISearchController* searchController;
+
 @end
 
 @implementation PasswordManagerViewController
@@ -362,16 +369,20 @@ NSInteger kTrailingSymbolSize = 18;
   // TableView.
   UISearchController* searchController =
       [[UISearchController alloc] initWithSearchResultsController:nil];
+  self.searchController = searchController;
+
   searchController.obscuresBackgroundDuringPresentation = NO;
   searchController.delegate = self;
-  searchController.searchBar.delegate = self;
-  searchController.searchBar.backgroundColor = UIColor.clearColor;
-  searchController.searchBar.accessibilityIdentifier = kPasswordsSearchBarId;
+
+  UISearchBar* searchBar = searchController.searchBar;
+  searchBar.delegate = self;
+  searchBar.backgroundColor = UIColor.clearColor;
+  searchBar.accessibilityIdentifier = kPasswordsSearchBarId;
   // Center search bar and cancel button vertically so it looks centered
   // in the header when searching.
   UIOffset offset =
       UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
-  searchController.searchBar.searchFieldBackgroundPositionAdjustment = offset;
+  searchBar.searchFieldBackgroundPositionAdjustment = offset;
 
   // TODO(crbug.com/1268684): Explicitly set the background color for the search
   // bar to match with the color of navigation bar in iOS 13/14 to work around
@@ -487,6 +498,14 @@ NSInteger kTrailingSymbolSize = 18;
   [super loadModel];
 
   if (!_didReceivePasswords) {
+    return;
+  }
+
+  [self showOrHideEmptyView];
+
+  // If we don't have data or settings to show, add an empty state, then stop
+  // so that we don't add anything that overlaps the illustrated background.
+  if (!ShouldShowSettingsUI() && _passwords.empty() && _blockedSites.empty()) {
     return;
   }
 
@@ -1086,10 +1105,7 @@ NSInteger kTrailingSymbolSize = 18;
   if (!_didReceivePasswords) {
     _blockedSites = std::move(blockedSites);
     _passwords = std::move(passwords);
-    _didReceivePasswords = YES;
     [self hideLoadingSpinnerBackground];
-    [self updateUIForEditState];
-    [self reloadData];
   } else {
     if (_passwords == passwords && _blockedSites == blockedSites) {
       return;
@@ -1139,6 +1155,7 @@ NSInteger kTrailingSymbolSize = 18;
                     withRowAnimation:UITableViewRowAnimationAutomatic];
       [self scrollToLastUpdatedItem];
     } else if (_passwords.empty() && _blockedSites.empty()) {
+      [self showOrHideEmptyView];
       [self setEditing:NO animated:YES];
     }
   }
@@ -1376,20 +1393,30 @@ NSInteger kTrailingSymbolSize = 18;
 
 // Hide the loading spinner if it is showing.
 - (void)hideLoadingSpinnerBackground {
-  if (self.spinnerView) {
-    [self.spinnerView stopWaitingWithCompletion:^{
-      [UIView animateWithDuration:0.2
-          animations:^{
-            self.spinnerView.alpha = 0.0;
-          }
-          completion:^(BOOL finished) {
-            self.navigationItem.searchController.searchBar
-                .userInteractionEnabled = YES;
-            self.tableView.backgroundView = nil;
-            self.spinnerView = nil;
-          }];
-    }];
-  }
+  DCHECK(self.spinnerView);
+  PasswordManagerViewController* weakSelf = self;
+  [self.spinnerView stopWaitingWithCompletion:^{
+    [UIView animateWithDuration:0.2
+        animations:^{
+          self.spinnerView.alpha = 0.0;
+        }
+        completion:^(BOOL finished) {
+          [weakSelf didHideSpinner];
+        }];
+  }];
+}
+
+// Called after the loading spinner hiding animation finished. Updates
+// `tableViewModel` and then the view hierarchy.
+- (void)didHideSpinner {
+  // Remove spinner view after animation finished.
+  self.navigationItem.searchController.searchBar.userInteractionEnabled = YES;
+  self.tableView.backgroundView = nil;
+  self.spinnerView = nil;
+  // Update model and view hierarchy.
+  _didReceivePasswords = YES;
+  [self updateUIForEditState];
+  [self reloadData];
 }
 
 // Dismisses the search controller when there's a touch event on the scrim.
@@ -1503,7 +1530,7 @@ NSInteger kTrailingSymbolSize = 18;
 - (void)updateLastCheckTimestampWithState:(PasswordCheckUIState)state
                                 fromState:(PasswordCheckUIState)oldState
                                    update:(BOOL)update {
-  if (!_didReceivePasswords) {
+  if (!_didReceivePasswords || _passwords.empty()) {
     return;
   }
 
@@ -1824,8 +1851,9 @@ NSInteger kTrailingSymbolSize = 18;
         // displayed), so that indexes in model matches those in the view.  if
         // we don't we'll cause a crash.
         if (strongSelf->_blockedSites.empty()) {
-          [self clearSectionWithIdentifier:SectionIdentifierBlocked
-                          withRowAnimation:UITableViewRowAnimationAutomatic];
+          [strongSelf
+              clearSectionWithIdentifier:SectionIdentifierBlocked
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
         }
         if (strongSelf->_passwords.empty()) {
           [strongSelf
@@ -1838,8 +1866,15 @@ NSInteger kTrailingSymbolSize = 18;
         if (!strongSelf)
           return;
         // If both lists are empty, exit editing mode.
-        if (strongSelf->_passwords.empty() && strongSelf->_blockedSites.empty())
+        if (strongSelf->_passwords.empty() &&
+            strongSelf->_blockedSites.empty()) {
           [strongSelf setEditing:NO animated:YES];
+          if (!ShouldShowSettingsUI()) {
+            // In this case, an illustrated empty state is required, so reload
+            // the whole model.
+            [strongSelf reloadData];
+          }
+        }
         [strongSelf updateUIForEditState];
         [strongSelf updateExportPasswordsButton];
       }];
@@ -1930,6 +1965,48 @@ NSInteger kTrailingSymbolSize = 18;
     self.navigationItem.titleView =
         password_manager::CreatePasswordManagerTitleView(/*title=*/self.title);
   }
+}
+
+// Shows the empty state view when there is no content to display in the
+// tableView, otherwise hides the empty state view if one is being displayed.
+- (void)showOrHideEmptyView {
+  if (ShouldShowSettingsUI()) {
+    // Empty view is only used when the settings submenu is enabled.
+    return;
+  }
+  if (_passwords.empty() && _blockedSites.empty()) {
+    NSString* title =
+        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_EMPTY_TITLE);
+
+    NSDictionary* textAttributes =
+        [TableViewIllustratedEmptyView defaultTextAttributesForSubtitle];
+    NSURL* linkURL = net::NSURLWithGURL(google_util::AppendGoogleLocaleParam(
+        GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
+        GetApplicationContext()->GetApplicationLocale()));
+    NSDictionary* linkAttributes = @{
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+      NSLinkAttributeName : linkURL,
+    };
+    NSAttributedString* subtitle = AttributedStringFromStringWithLink(
+        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER),
+        textAttributes, linkAttributes);
+
+    [self addEmptyTableViewWithImage:[UIImage imageNamed:@"passwords_empty"]
+                               title:title
+                  attributedSubtitle:subtitle
+                            delegate:self];
+    self.navigationItem.searchController = nil;
+    self.tableView.alwaysBounceVertical = NO;
+  } else {
+    [self removeEmptyTableView];
+    self.navigationItem.searchController = self.searchController;
+    self.tableView.alwaysBounceVertical = YES;
+  }
+}
+
+// Private accessor to `_didReceivePasswords` only exposed to unit tests.
+- (BOOL)didReceivePasswords {
+  return _didReceivePasswords;
 }
 
 #pragma mark - UITableViewDelegate
@@ -2318,6 +2395,13 @@ NSInteger kTrailingSymbolSize = 18;
   base::RecordAction(
       base::UserMetricsAction("IOSPasswordsSettingsCloseWithSwipe"));
   _accountManagerServiceObserver.reset();
+}
+
+#pragma mark - TableViewIllustratedEmptyViewDelegate
+
+- (void)tableViewIllustratedEmptyView:(TableViewIllustratedEmptyView*)view
+                   didTapSubtitleLink:(NSURL*)URL {
+  [self didTapLinkURL:URL];
 }
 
 @end

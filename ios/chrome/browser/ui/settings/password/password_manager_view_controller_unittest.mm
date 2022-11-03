@@ -64,6 +64,9 @@ using ::testing::Return;
                                                  UISearchBarDelegate,
                                                  UISearchControllerDelegate>
 - (void)updateExportPasswordsButton;
+
+- (BOOL)didReceivePasswords;
+
 @end
 
 // TODO(crbug.com/1324555): Remove this double and uses TestSyncUserSettings
@@ -130,6 +133,11 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
     [passwords_controller setPasswords:{} blockedSites:{}];
+
+    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, ^bool {
+          return [passwords_controller didReceivePasswords];
+        }));
   }
 
   int GetSectionIndex(PasswordSectionIdentifier section) {
@@ -858,24 +866,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateError) {
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.infoButtonHidden);
   [GetPasswordManagerViewController() settingsWillBeDismissed];
-}
-
-// Test verifies tapping start with no saved passwords has no effect.
-TEST_F(PasswordManagerViewControllerTest, DisabledPasswordCheck) {
-  PasswordManagerViewController* passwords_controller =
-      GetPasswordManagerViewController();
-
-  EXPECT_CALL(GetMockPasswordCheckService(), CheckUsernamePasswordPairs)
-      .Times(0);
-  EXPECT_CALL(GetMockPasswordCheckService(), Cancel).Times(0);
-
-  [passwords_controller
-                    tableView:passwords_controller.tableView
-      didSelectRowAtIndexPath:
-          [NSIndexPath indexPathForItem:1
-                              inSection:GetSectionIndex(
-                                            SectionIdentifierPasswordCheck)]];
-  [passwords_controller settingsWillBeDismissed];
 }
 
 // Test verifies tapping start triggers correct function in service.

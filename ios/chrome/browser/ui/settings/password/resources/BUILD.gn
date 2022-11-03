@@ -1,0 +1,9 @@
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("passwords_empty") {
+  sources = [
+    "passwords_empty.imageset/Contents.json",
+    "passwords_empty.imageset/passwords_empty.pdf",
+    "passwords_empty.imageset/passwords_empty_dark.pdf",
+  ]
+}

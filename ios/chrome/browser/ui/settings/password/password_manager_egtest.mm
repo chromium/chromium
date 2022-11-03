@@ -2055,7 +2055,9 @@ id<GREYMatcher> EditDoneButton() {
 
 // Tests that the error message is shown when the top-level domain is missing
 // when adding a new credential.
-- (void)testTLDMissingMessage {
+// TODO(crbug.com/1335156): Enable once the Add button is added to the
+// Pasword Manager Empty state.
+- (void)DISABLED_testTLDMissingMessage {
   OpenPasswordManager();
   [PasswordSettingsAppInterface setUpMockReauthenticationModuleForExport];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
