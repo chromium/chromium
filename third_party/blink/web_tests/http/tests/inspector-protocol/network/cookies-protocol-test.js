@@ -78,6 +78,23 @@
     testRunner.log(`Cookies as seen on server: ${JSON.stringify(body)}`);
   }
 
+  function listenForSiteHasCookieInOtherPartition(event) {
+    testRunner.log(
+      'Site has cookie in other partition: '
+          + event.params.siteHasCookieInOtherPartition);
+  }
+
+  async function getPartitionedCookies() {
+    dp.Network.onRequestWillBeSentExtraInfo(
+        listenForSiteHasCookieInOtherPartition);
+
+    await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php');
+    logCookies((await dp.Network.getCookies()).result);
+
+    dp.Network.offRequestWillBeSentExtraInfo(
+        listenForSiteHasCookieInOtherPartition);
+  }
+
   testRunner.log('Test started');
   testRunner.log('Enabling network');
   await dp.Network.enable();
@@ -234,6 +251,8 @@
 
     deleteAllCookies,
 
+    getPartitionedCookies,
+
     async function setPartitionedCookie() {
       await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test:8443', sameSite: 'None'});
       await setCookie({url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://devtools.test:8443', sameSite: 'None'});
@@ -251,16 +270,18 @@
       ]);
     },
 
-    async function getPartitionedCookie() {
-      await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php');
-      logCookies((await dp.Network.getCookies()).result);
-    },
-
+    getPartitionedCookies,
     deleteAllCookies,
 
     async function getPartitionedCookieFromOpaqueOrigin() {
+      dp.Network.onRequestWillBeSentExtraInfo(
+        listenForSiteHasCookieInOtherPartition);
+
       await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php?opaque');
       logCookies((await dp.Network.getCookies()).result);
+
+      dp.Network.offRequestWillBeSentExtraInfo(
+        listenForSiteHasCookieInOtherPartition);
     },
 
     deleteAllCookies,

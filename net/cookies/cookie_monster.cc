@@ -75,6 +75,8 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 #include "net/cookies/cookie_monster_netlog_params.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/http/http_util.h"
@@ -2583,6 +2585,31 @@ void CookieMonster::ConvertPartitionedCookie(const net::CanonicalCookie& cookie,
   auto key = GetKey(new_cookie->Domain());
   InternalInsertCookie(key, std::move(new_cookie), /*sync_to_store=*/true,
                        access_result);
+}
+
+absl::optional<bool> CookieMonster::SiteHasCookieInOtherPartition(
+    const net::SchemefulSite& site,
+    const absl::optional<CookiePartitionKey>& partition_key) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // If the partition key is null, it implies the partitioned cookies feature is
+  // not enabled.
+  if (!partition_key)
+    return absl::nullopt;
+
+  std::string domain = site.GetURL().host();
+  if (store_ && !finished_fetching_all_cookies_ &&
+      !keys_loaded_.count(domain)) {
+    return absl::nullopt;
+  }
+
+  for (const auto& it : partitioned_cookies_) {
+    if (it.first == partition_key || CookiePartitionKey::HasNonce(it.first))
+      continue;
+    if (it.second->find(domain) != it.second->end()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace net

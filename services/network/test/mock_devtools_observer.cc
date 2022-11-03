@@ -27,7 +27,8 @@ void MockDevToolsObserver::OnRawRequest(
     const net::CookieAccessResultList& cookies_with_access_result,
     std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
     const base::TimeTicks timestamp,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    network::mojom::OtherPartitionInfoPtr site_has_cookie_in_other_partition) {
   raw_request_cookies_.insert(raw_request_cookies_.end(),
                               cookies_with_access_result.begin(),
                               cookies_with_access_result.end());

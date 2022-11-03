@@ -34,6 +34,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -44,6 +45,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster_store_test.h"  // For CookieStore mock
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_store_change_unittest.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
@@ -5596,6 +5598,63 @@ TEST_F(CookieMonsterTest, ConvertPartitionedCookiesToUnpartitioned) {
   EXPECT_EQ(cookies[7].Name(), "H");
   EXPECT_EQ(cookies[7].Value(), "1");
   EXPECT_FALSE(cookies[7].IsPartitioned());
+}
+
+TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+
+  GURL url("https://subdomain.example.com/");
+  net::SchemefulSite site(url);
+  auto partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"));
+
+  // At first it should return nullopt...
+  EXPECT_FALSE(cm->SiteHasCookieInOtherPartition(site, partition_key));
+
+  // ...until we load cookies for that domain.
+  GetAllCookiesForURL(cm.get(), url,
+                      CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_THAT(cm->SiteHasCookieInOtherPartition(site, partition_key),
+              testing::Optional(false));
+
+  // Set partitioned cookie.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), url, "foo=bar; Secure; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt, partition_key));
+
+  // Should return false with that cookie's partition key.
+  EXPECT_THAT(cm->SiteHasCookieInOtherPartition(site, partition_key),
+              testing::Optional(false));
+
+  auto other_partition_key = CookiePartitionKey::FromURLForTesting(
+      GURL("https://nottoplevelsite.com"));
+
+  // Should return true with another partition key.
+  EXPECT_THAT(cm->SiteHasCookieInOtherPartition(site, other_partition_key),
+              testing::Optional(true));
+
+  // Set a nonced partitioned cookie with a different partition key.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), url, "foo=bar; Secure; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://nottoplevelsite.com"),
+                                            base::UnguessableToken::Create())));
+
+  // Should still return false with the original partition key.
+  EXPECT_THAT(cm->SiteHasCookieInOtherPartition(site, partition_key),
+              testing::Optional(false));
+
+  // Set unpartitioned cookie.
+  EXPECT_TRUE(CreateAndSetCookie(cm.get(), url,
+                                 "bar=baz; Secure; SameSite=None;", options,
+                                 absl::nullopt, absl::nullopt));
+
+  // Should still return false with the original cookie's partition key. This
+  // method only considers partitioned cookies.
+  EXPECT_THAT(cm->SiteHasCookieInOtherPartition(site, partition_key),
+              testing::Optional(false));
 }
 
 // Tests which use this class verify the expiry date clamping behavior when

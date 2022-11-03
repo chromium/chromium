@@ -6332,6 +6332,8 @@ domain Network
       experimental ConnectTiming connectTiming
       # The client security state set for the request.
       optional ClientSecurityState clientSecurityState
+      # Whether the site has partitioned cookies stored in a partition different than the current one.
+      optional boolean siteHasCookieInOtherPartition
 
   # Fired when additional information about a responseReceived event is available from the network
   # stack. Not every responseReceived event will have an additional responseReceivedExtraInfo for

@@ -60,6 +60,14 @@ struct URLResponseHeadDevToolsInfo {
   bool emitted_extra_info;
 };
 
+// This is sent with OnRawRequest to indicate if the site has any partitioned
+// cookies in a partition different than the current one. The event populates
+// this on a best-effort basis, and sometimes will be null to indicate the
+// network service cannot accurately populate the bit.
+struct OtherPartitionInfo {
+  bool site_has_cookie_in_other_partition;
+};
+
 // Interface for devtools receiving information about individual request
 // state.
 interface DevToolsObserver {
@@ -71,7 +79,8 @@ interface DevToolsObserver {
     array<CookieWithAccessResult> cookies_with_access_result,
     array<HttpRawHeaderPair> headers,
     mojo_base.mojom.TimeTicks timestamp,
-    ClientSecurityState? client_security_state);
+    ClientSecurityState? client_security_state,
+    OtherPartitionInfo? other_partition_info);
 
   // Called to send information about the cookies blocked from storage from a
   // received response. Only called when |devtool_request_id| is available to

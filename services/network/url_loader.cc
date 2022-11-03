@@ -46,6 +46,7 @@
 #include "net/base/upload_file_element_reader.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_store.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -2115,10 +2116,24 @@ void URLLoader::DispatchOnRawRequest(
   url_request_->GetLoadTimingInfo(&load_timing_info);
 
   emitted_devtools_raw_request_ = true;
+
+  absl::optional<bool> site_has_cookie_in_other_partition =
+      url_request_->context()->cookie_store()->SiteHasCookieInOtherPartition(
+          net::SchemefulSite(url_request_->url()),
+          net::CookiePartitionKey::FromNetworkIsolationKey(
+              url_request_->isolation_info().network_isolation_key()));
+  network::mojom::OtherPartitionInfoPtr other_partition_info = nullptr;
+  if (site_has_cookie_in_other_partition.has_value()) {
+    other_partition_info = network::mojom::OtherPartitionInfo::New();
+    other_partition_info->site_has_cookie_in_other_partition =
+        *site_has_cookie_in_other_partition;
+  }
+
   devtools_observer_->OnRawRequest(
       devtools_request_id().value(), url_request_->maybe_sent_cookies(),
       std::move(headers), load_timing_info.request_start,
-      private_network_access_checker_.CloneClientSecurityState());
+      private_network_access_checker_.CloneClientSecurityState(),
+      std::move(other_partition_info));
 }
 
 bool URLLoader::DispatchOnRawResponse() {

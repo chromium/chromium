@@ -2914,14 +2914,18 @@ void NetworkHandler::OnRequestWillBeSentExtraInfo(
     const net::CookieAccessResultList& request_cookie_list,
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
     const base::TimeTicks timestamp,
-    const network::mojom::ClientSecurityStatePtr& security_state) {
+    const network::mojom::ClientSecurityStatePtr& security_state,
+    const network::mojom::OtherPartitionInfoPtr& other_partition_info) {
   if (!enabled_)
     return;
 
   frontend_->RequestWillBeSentExtraInfo(
       devtools_request_id, BuildProtocolAssociatedCookies(request_cookie_list),
       GetRawHeaders(request_headers), GetConnectTiming(timestamp),
-      MaybeBuildClientSecurityState(security_state));
+      MaybeBuildClientSecurityState(security_state),
+      other_partition_info
+          ? other_partition_info->site_has_cookie_in_other_partition
+          : Maybe<bool>());
 }
 
 void NetworkHandler::OnResponseReceivedExtraInfo(

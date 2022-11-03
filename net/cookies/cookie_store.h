@@ -184,6 +184,15 @@ class NET_EXPORT CookieStore {
   // Trial ends.
   virtual void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) {}
 
+  // Returns a boolean indicating whether the cookie `site` has any cookie
+  // in another partition other than the `cookie_partition_key` supplied.
+  // Will return nullopt if cookies have not finished loading.
+  // If the partition key is null, the method assumes it is because partitioned
+  // cookies are disabled.
+  virtual absl::optional<bool> SiteHasCookieInOtherPartition(
+      const net::SchemefulSite& site,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key) const;
+
  private:
   // Used to determine whether a particular cookie should be subject to legacy
   // or non-legacy access semantics.

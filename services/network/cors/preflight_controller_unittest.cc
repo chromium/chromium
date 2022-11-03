@@ -305,7 +305,8 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const net::CookieAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
       const base::TimeTicks timestamp,
-      network::mojom::ClientSecurityStatePtr client_security_state) override {
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      network::mojom::OtherPartitionInfoPtr other_partition_info) override {
     on_raw_request_called_ = true;
   }
   void OnRawResponse(

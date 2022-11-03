@@ -259,7 +259,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       const net::CookieAccessResultList& request_cookie_list,
       const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
       const base::TimeTicks timestamp,
-      const network::mojom::ClientSecurityStatePtr& security_state);
+      const network::mojom::ClientSecurityStatePtr& security_state,
+      const network::mojom::OtherPartitionInfoPtr& other_partition_info);
   void OnResponseReceivedExtraInfo(
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& response_cookie_list,
