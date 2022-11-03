@@ -3700,6 +3700,7 @@ enum WebFeature {
   kPerformanceEntryBufferSwaps = 4379,
   kClearPerformanceEntries = 4380,
   kViewportDependentLazyLoadedImageWithoutSizesAttribute = 4381,
+  kV8MediaStreamTrack_ApplyConstraints_Method = 4382,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

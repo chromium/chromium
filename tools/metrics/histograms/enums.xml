@@ -42299,6 +42299,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4380" label="ClearPerformanceEntries"/>
   <int value="4381"
       label="ViewportDependentLazyLoadedImageWithoutSizesAttribute"/>
+  <int value="4382" label="V8MediaStreamTrack_ApplyConstraints_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
