@@ -3610,6 +3610,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SETTINGS_ACCESS_POINT_NAME_APN" desc="Name of the settings page which displays APN related configuration.">
         Access point name (APN)
       </message>
+      <message name="IDS_SETTINGS_ADD_NEW_APN" desc="Title for the button which opens the create new custom APN dialog.">
+        New APN
+      </message>
       <!-- End of APN -->
     </messages>
   </release>

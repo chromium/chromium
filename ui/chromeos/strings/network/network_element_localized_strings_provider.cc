@@ -307,6 +307,7 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
 void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"internetApnPageTitle", IDS_SETTINGS_ACCESS_POINT_NAME_APN},
+      {"apnPageAddNewApn", IDS_SETTINGS_ADD_NEW_APN},
       {"hidePassword", IDS_SETTINGS_PASSWORD_HIDE},
       {"showPassword", IDS_SETTINGS_PASSWORD_SHOW},
       {"networkProxy", IDS_SETTINGS_INTERNET_NETWORK_PROXY_PROXY},

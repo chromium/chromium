@@ -613,6 +613,18 @@ class SettingsInternetDetailPageElement extends
     const name = queryParams.get('name') || type;
     this.init(guid, type, name);
 
+    // If we are getting back from APN subpage set focus to the APN subpage
+    // row.
+    if (oldRoute === routes.APN &&
+        Router.getInstance().lastRouteChangeWasPopstate()) {
+      this.didSetFocus_ = true;
+      afterNextRender(this, () => {
+        const element = this.shadowRoot.querySelector('#apnSubpageButton');
+        if (element) {
+          element.focus();
+        }
+      });
+    }
     this.attemptDeepLink();
   }
 

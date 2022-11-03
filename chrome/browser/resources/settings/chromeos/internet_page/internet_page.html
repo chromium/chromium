@@ -10,6 +10,11 @@
     --iron-icon-fill-color: var(--cros-toast-icon-color-warning);
     margin-inline-end: 16px;
   }
+
+  cr-button iron-icon[icon='cr:add'] {
+    --iron-icon-fill-color: var(--text-color);
+    margin-inline-end: 8px;
+  }
 </style>
 <settings-animated-pages id="pages" section="internet"
     focus-config="[[focusConfig_]]">
@@ -107,12 +112,18 @@
     </settings-subpage>
   </template>
 
-  <template is="dom-if" if="[[isApnRevampEnabled_]]" restamp>
-    <template is="dom-if" route-path="/apn" restamp>
-      <settings-subpage page-title="$i18n{internetApnPageTitle}">
-        <apn-subpage></apn-subpage>
-      </settings-subpage>
-    </template>
+  <template is="dom-if" route-path="/apn" restamp>
+    <settings-subpage page-title="$i18n{internetApnPageTitle}">
+      <div slot="subpage-title-extra">
+        <cr-button id="createCustomApnButton"
+            on-click="onCreateCustomApnClicked_"
+            class="cancel-button">
+          <iron-icon icon="cr:add"></iron-icon>
+          $i18n{apnPageAddNewApn}
+        </cr-button>
+      </div>
+      <apn-subpage></apn-subpage>
+    </settings-subpage>
   </template>
 
   <template is="dom-if" route-path="/networks" restamp>

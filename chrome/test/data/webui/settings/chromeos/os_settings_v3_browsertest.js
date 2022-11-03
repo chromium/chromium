@@ -260,6 +260,26 @@ TEST_F('OSSettingsInternetDetailPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
+// TODO(b/162365553) Move this test back into the list of tests below once
+// APN revamp is launched.
+var OSSettingsInternetPageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/internet_page_tests.js&host=test';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(['ash::features::kApnRevamp'])
+    };
+  }
+};
+
+TEST_F('OSSettingsInternetPageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
 function crostiniTestGenPreamble() {
   GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
   GEN('fake_crostini_features.SetAll(true);');
@@ -379,7 +399,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
  ['InternetKnownNetworksPage', 'internet_known_networks_page_tests.js'],
  ['InternetSubpage', 'internet_subpage_tests.js'],
- ['InternetPage', 'internet_page_tests.js'],
  ['KerberosAccounts', 'kerberos_accounts_test.js'],
  ['KerberosPage', 'kerberos_page_test.js'],
  [

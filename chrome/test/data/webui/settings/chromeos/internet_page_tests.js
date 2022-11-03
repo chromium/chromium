@@ -14,8 +14,8 @@ import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resour
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('InternetPage', function() {
   /** @type {?InternetPageElement} */
@@ -156,6 +156,7 @@ suite('InternetPage', function() {
       internetAddWiFi: 'internetAddWiFi',
       internetDetailPageTitle: 'internetDetailPageTitle',
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
+      isApnRevampEnabled: false,
     });
 
     mojoApi_ = new FakeNetworkConfig();
@@ -734,6 +735,32 @@ suite('InternetPage', function() {
         assertTrue(!!knownNetworksPage);
         assertEquals(knownNetworksPage.networkType, NetworkType.kWiFi);
       });
+
+  test('Navigate to/from APN subpage', async function() {
+    loadTimeData.overrideValues({isApnRevampEnabled: true});
+    await navigateToCellularDetailPage();
+
+    let detailPage =
+        internetPage.shadowRoot.querySelector('settings-internet-detail-page');
+    const getCrLink = () =>
+        detailPage.shadowRoot.querySelector('#apnSubpageButton');
+    getCrLink().click();
+    await flushAsync();
+    assertEquals(Router.getInstance().getCurrentRoute(), routes.APN);
+    assertTrue(!!internetPage.shadowRoot.querySelector('apn-subpage'));
+
+    const windowPopstatePromise = eventToPromise('popstate', window);
+    Router.getInstance().navigateToPreviousRoute();
+    await windowPopstatePromise;
+    await waitBeforeNextRender(internetPage);
+    detailPage =
+        internetPage.shadowRoot.querySelector('settings-internet-detail-page');
+    await flushAsync();
+
+    assertEquals(
+        getCrLink(), detailPage.shadowRoot.activeElement,
+        'Apn subpage row should be focused');
+  });
 
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
   // such tests are flaky.

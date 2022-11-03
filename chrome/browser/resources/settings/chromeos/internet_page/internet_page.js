@@ -279,18 +279,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         type: String,
         value: '',
       },
-
-      /**
-       * Return true if apnRevamp feature flag is enabled.
-       * @private
-       */
-      isApnRevampEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isApnRevampEnabled') &&
-              loadTimeData.getBoolean('isApnRevampEnabled');
-        },
-      },
     };
   }
 
@@ -1010,6 +998,13 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       assertNotReached();
     });
   }
+
+  /**
+   * Handles UI requests to add new APN.
+   * TODO(b/162365553): Implement.
+   * @private
+   */
+  onCreateCustomApnClicked_() {}
 }
 
 customElements.define(
