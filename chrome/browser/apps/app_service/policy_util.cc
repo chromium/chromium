@@ -13,13 +13,16 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
 namespace {
 
-using SystemWebAppMappingPair =
-    std::pair<base::StringPiece, ash::SystemWebAppType>;
+template <class Mapped>
+using PolicyIdMappingPair = std::pair<base::StringPiece, Mapped>;
+
+using SystemWebAppMappingPair = PolicyIdMappingPair<ash::SystemWebAppType>;
 
 // This mapping excludes SWAs not included in official builds (like SAMPLE).
 constexpr SystemWebAppMappingPair kSystemWebAppsMapping[] = {
@@ -51,13 +54,48 @@ static_assert(std::rbegin(kSystemWebAppsMapping)->second ==
                   ash::SystemWebAppType::kMaxValue,
               "Not all SWA types are listed in |system_web_apps_mapping|.");
 
+using PreinstalledWebAppMappingPair = PolicyIdMappingPair<base::StringPiece>;
+
+// Note that this mapping lists only selected Preinstalled Web Apps
+// actively used in policies and is not meant to be exhaustive.
+constexpr PreinstalledWebAppMappingPair kPreinstalledWebAppsMapping[] = {
+    {"cursive", web_app::kCursiveAppId},
+    {"canvas", web_app::kCanvasAppId}};
+
+// Looks up what |policy_id| maps to in |arr|.
+template <class Mapped, size_t N>
+absl::optional<Mapped> LookupMappedValueByPolicyId(
+    const PolicyIdMappingPair<Mapped> (&arr)[N],
+    base::StringPiece policy_id) {
+  if (auto* ptr = base::ranges::find(arr, policy_id,
+                                     &PolicyIdMappingPair<Mapped>::first);
+      ptr != std::end(arr)) {
+    return ptr->second;
+  }
+  return {};
+}
+
+// Looks up what policy_id the provided |value| maps to in |arr|.
+template <class Mapped, size_t N, class U>
+absl::optional<base::StringPiece> LookupPolicyIdByMappedValue(
+    const PolicyIdMappingPair<Mapped> (&arr)[N],
+    const U& value) {
+  if (auto* ptr =
+          base::ranges::find(arr, value, &PolicyIdMappingPair<Mapped>::second);
+      ptr != std::end(arr)) {
+    return ptr->first;
+  }
+  return {};
+}
+
 }  // namespace
 
 namespace apps_util {
 
 bool IsSupportedAppTypePolicyId(const std::string& policy_id) {
   return IsChromeAppPolicyId(policy_id) || IsArcAppPolicyId(policy_id) ||
-         IsWebAppPolicyId(policy_id) || IsSystemWebAppPolicyId(policy_id);
+         IsWebAppPolicyId(policy_id) || IsSystemWebAppPolicyId(policy_id) ||
+         IsPreinstalledWebAppPolicyId(policy_id);
 }
 
 bool IsChromeAppPolicyId(const std::string& policy_id) {
@@ -74,8 +112,13 @@ bool IsWebAppPolicyId(const std::string& policy_id) {
 }
 
 bool IsSystemWebAppPolicyId(const std::string& policy_id) {
-  return base::Contains(kSystemWebAppsMapping, policy_id,
-                        &SystemWebAppMappingPair::first);
+  return LookupMappedValueByPolicyId(kSystemWebAppsMapping, policy_id)
+      .has_value();
+}
+
+bool IsPreinstalledWebAppPolicyId(const std::string& policy_id) {
+  return LookupMappedValueByPolicyId(kPreinstalledWebAppsMapping, policy_id)
+      .has_value();
 }
 
 std::string TransformRawPolicyId(const std::string& raw_policy_id) {
@@ -89,7 +132,16 @@ std::string TransformRawPolicyId(const std::string& raw_policy_id) {
 
 absl::optional<std::string> GetAppIdFromPolicyId(Profile* profile,
                                                  const std::string& policy_id) {
+  // Preinstalled Web Apps are mapped directly, so their |app_id| is not
+  // resolved through the App Service.
+  if (auto result =
+          LookupMappedValueByPolicyId(kPreinstalledWebAppsMapping, policy_id)) {
+    std::string preinstalled_web_app_id(*result);
+    return preinstalled_web_app_id;
+  };
+
   // AppService might be absent in some cases, e.g. Arc++ Kiosk mode.
+  // TODO(b/240493670): Revisit this after app service is available in Kiosk.
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     absl::optional<std::string> app_id;
     apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -126,7 +178,16 @@ absl::optional<std::string> GetAppIdFromPolicyId(Profile* profile,
 absl::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
     Profile* profile,
     const std::string& app_id) {
+  // Preinstalled Web Apps are mapped directly, so their |policy_ids| are not
+  // resolved through the App Service.
+  if (auto result =
+          LookupPolicyIdByMappedValue(kPreinstalledWebAppsMapping, app_id)) {
+    std::string preinstalled_web_app_policy_id(*result);
+    return {{preinstalled_web_app_policy_id}};
+  }
+
   // AppService might be absent in some cases, e.g. Arc++ Kiosk mode.
+  // TODO(b/240493670): Revisit this after app service is available in Kiosk.
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     absl::optional<std::vector<std::string>> policy_ids;
     apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -151,13 +212,7 @@ absl::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
 
 absl::optional<base::StringPiece> GetPolicyIdForSystemWebAppType(
     ash::SystemWebAppType swa_type) {
-  auto* ptr = base::ranges::find(kSystemWebAppsMapping, swa_type,
-                                 &SystemWebAppMappingPair::second);
-  if (ptr != std::end(kSystemWebAppsMapping)) {
-    return ptr->first;
-  }
-
-  return {};
+  return LookupPolicyIdByMappedValue(kSystemWebAppsMapping, swa_type);
 }
 
 }  // namespace apps_util

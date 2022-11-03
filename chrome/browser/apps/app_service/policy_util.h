@@ -12,6 +12,7 @@
 //    * Arc Apps
 //    * Chrome Apps
 //    * System Web Apps
+//    * Preinstalled Web Apps
 
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_POLICY_UTIL_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_POLICY_UTIL_H_
@@ -42,6 +43,9 @@ bool IsWebAppPolicyId(const std::string& policy_id);
 // Checks whether |policy_id| specifies a System Web App.
 bool IsSystemWebAppPolicyId(const std::string& policy_id);
 
+// Checks whether |policy_id| specifies a Preinstalled Web App.
+bool IsPreinstalledWebAppPolicyId(const std::string& policy_id);
+
 // Transforms the provided |raw_policy_id| if necessary.
 // For Web Apps, converts it to GURL and returns the spec().
 // Does nothing for other app types.
@@ -70,8 +74,8 @@ absl::optional<std::string> GetAppIdFromPolicyId(Profile*,
 // GetPolicyIdsFromAppId() with "aaa111" will return {"aaa111"}.
 //
 // System Web App Example:
-// Chrome generates apps ids for all preinstalled System Web Apps -- let's say
-// the id of the Camera app is "hfhhnacclhffhdffklopdkcgdhifgngh". Calling
+// Chrome generates apps ids for all System Web Apps -- let's say the id of the
+// Camera app is "hfhhnacclhffhdffklopdkcgdhifgngh". Calling
 // GetPolicyIdsFromAppId() with "hfhhnacclhffhdffklopdkcgdhifgngh" will return
 // {"camera"}.
 absl::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
