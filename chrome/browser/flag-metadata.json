@@ -5358,7 +5358,7 @@
   {
     "name": "origin-agent-cluster-default",
     "owners": [ "vogelheim", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "os-settings-app-badging-toggle",
