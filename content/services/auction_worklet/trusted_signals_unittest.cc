@@ -491,6 +491,21 @@ TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissing) {
   EXPECT_EQ(nullptr, signals->GetPriorityVector("name4"));
 }
 
+TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissingNameInProto) {
+  // Ensure nothing funny happens when the missing signal key name is something
+  // in Object.prototype.
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL("https://url.test/"
+               "?hostname=publisher&keys=valueOf&interestGroupNames=name4"),
+          kBaseBiddingJson, {"name4"}, {"valueOf"}, kHostname,
+          /*experiment_group_id=*/absl::nullopt);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"valueOf":null})",
+            ExtractBiddingSignals(signals.get(), {"valueOf"}));
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name4"));
+}
+
 TEST_F(TrustedSignalsTest, ScoringSignalsKeysMissing) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(

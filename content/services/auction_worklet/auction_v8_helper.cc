@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -45,6 +46,7 @@
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-script.h"
 #include "v8/include/v8-template.h"
+#include "v8/include/v8-value-serializer.h"
 #include "v8/include/v8-wasm.h"
 
 namespace auction_worklet {
@@ -106,6 +108,16 @@ void TraceTopLevel(const std::string& url,
   dict.Add("lineNumber", 1);
   dict.Add("columnNumber", 1);
 }
+
+class TrivialSerializerDelegate : public v8::ValueSerializer::Delegate {
+ public:
+  TrivialSerializerDelegate() = default;
+  ~TrivialSerializerDelegate() override = default;
+
+  void ThrowDataCloneError(v8::Local<v8::String> message) override {
+    NOTREACHED();  // Should not have any weird types in our usage.
+  }
+};
 
 }  // namespace
 
@@ -279,6 +291,26 @@ AuctionV8Helper::DebugId::~DebugId() {
   v8_helper_->FreeContextGroupId(context_group_id_);
 }
 
+AuctionV8Helper::SerializedValue::SerializedValue()
+    : buffer_(nullptr), size_(0u) {}
+
+AuctionV8Helper::SerializedValue::SerializedValue(SerializedValue&& other) {
+  *this = std::move(other);
+}
+
+AuctionV8Helper::SerializedValue::~SerializedValue() {
+  free(buffer_);
+}
+
+AuctionV8Helper::SerializedValue& AuctionV8Helper::SerializedValue::operator=(
+    SerializedValue&& other) {
+  buffer_ = other.buffer_;
+  size_ = other.size_;
+  other.buffer_ = nullptr;
+  other.size_ = 0u;
+  return *this;
+}
+
 // static
 scoped_refptr<AuctionV8Helper> AuctionV8Helper::Create(
     scoped_refptr<base::SingleThreadTaskRunner> v8_runner) {
@@ -418,6 +450,32 @@ bool AuctionV8Helper::ExtractJson(v8::Local<v8::Context> context,
     return false;
   }
   return true;
+}
+
+AuctionV8Helper::SerializedValue AuctionV8Helper::Serialize(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  SerializedValue result;
+  TrivialSerializerDelegate delegate;
+  v8::ValueSerializer serializer(isolate(), &delegate);
+  v8::Maybe<bool> success = serializer.WriteValue(context, value);
+  if (success.IsJust() && success.FromJust()) {
+    auto serialized_data = serializer.Release();
+    result.buffer_ = serialized_data.first;
+    result.size_ = serialized_data.second;
+  }
+  return result;
+}
+
+v8::MaybeLocal<v8::Value> AuctionV8Helper::Deserialize(
+    v8::Local<v8::Context> context,
+    const SerializedValue& serialized_value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  v8::ValueDeserializer deserializer(isolate(), serialized_value.buffer_,
+                                     serialized_value.size_);
+  return deserializer.ReadValue(context);
 }
 
 v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(

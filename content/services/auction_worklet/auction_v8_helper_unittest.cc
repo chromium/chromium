@@ -1524,4 +1524,38 @@ TEST_F(AuctionV8HelperTest, CloneWasmModule) {
   EXPECT_EQ(-1, int_result);
 }
 
+TEST_F(AuctionV8HelperTest, SerializeDeserialize) {
+  {
+    v8::Local<v8::Context> context = helper_->CreateContext();
+    v8::Context::Scope context_scope(context);
+
+    v8::MaybeLocal<v8::Value> result =
+        helper_->Deserialize(context, AuctionV8Helper::SerializedValue());
+    EXPECT_TRUE(result.IsEmpty());
+  }
+
+  {
+    v8::MaybeLocal<v8::Value> in = helper_->CreateValueFromJson(
+        helper_->scratch_context(),
+        R"({"a": false, "b": 42, "c": {"d": [1,2,3] } })");
+    AuctionV8Helper::SerializedValue serialized =
+        helper_->Serialize(helper_->scratch_context(), in.ToLocalChecked());
+    EXPECT_TRUE(serialized.IsOK());
+
+    // Decode in a different context from scratch_context... Multiple times.
+    for (int run = 0; run < 3; ++run) {
+      v8::Local<v8::Context> context = helper_->CreateContext();
+      v8::Context::Scope context_scope(context);
+      v8::MaybeLocal<v8::Value> deserialized =
+          helper_->Deserialize(context, serialized);
+      ASSERT_FALSE(deserialized.IsEmpty());
+      std::string deserialized_as_json;
+      ASSERT_TRUE(helper_->ExtractJson(context, deserialized.ToLocalChecked(),
+                                       &deserialized_as_json));
+      EXPECT_EQ(R"({"a":false,"b":42,"c":{"d":[1,2,3]}})",
+                deserialized_as_json);
+    }
+  }
+}
+
 }  // namespace auction_worklet

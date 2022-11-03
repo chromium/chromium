@@ -122,6 +122,26 @@ class CONTENT_EXPORT AuctionV8Helper
     const int context_group_id_;
   };
 
+  // Representation for results of serialization via SerializeValue().
+  // Helps with the memory management. Movable but not copyable.
+  class CONTENT_EXPORT SerializedValue {
+   public:
+    SerializedValue();
+    SerializedValue(const SerializedValue&) = delete;
+    SerializedValue(SerializedValue&& other);
+    ~SerializedValue();
+
+    SerializedValue& operator=(const SerializedValue&) = delete;
+    SerializedValue& operator=(SerializedValue&&);
+
+    bool IsOK() const { return buffer_; }
+
+   private:
+    friend class AuctionV8Helper;
+    raw_ptr<uint8_t> buffer_;
+    size_t size_;
+  };
+
   explicit AuctionV8Helper(const AuctionV8Helper&) = delete;
   AuctionV8Helper& operator=(const AuctionV8Helper&) = delete;
 
@@ -195,6 +215,18 @@ class CONTENT_EXPORT AuctionV8Helper
   bool ExtractJson(v8::Local<v8::Context> context,
                    v8::Local<v8::Value> value,
                    std::string* out);
+
+  // Serializes |value| via v8::ValueSerializer and returns it. This is faster
+  // than JSON. The return value can be used (and deserialized) in any context,
+  // and can be freed on any thread (though some malloc implementations would
+  // prefer if it were to be freed on v8 thread).
+  SerializedValue Serialize(v8::Local<v8::Context> context,
+                            v8::Local<v8::Value> value);
+
+  // Deserializes `value` via v8::ValueDeserializer in `context`.
+  v8::MaybeLocal<v8::Value> Deserialize(
+      v8::Local<v8::Context> context,
+      const SerializedValue& serialized_value);
 
   // Compiles the provided script. Despite not being bound to a context, there
   // still must be an active context for this method to be invoked. In case of

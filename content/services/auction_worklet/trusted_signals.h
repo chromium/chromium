@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/auction_v8_helper.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,7 +28,6 @@
 namespace auction_worklet {
 
 class AuctionDownloader;
-class AuctionV8Helper;
 
 // Represents the trusted bidding/scoring signals that are part of the FLEDGE
 // bidding system (https://github.com/WICG/turtledove/blob/main/FLEDGE.md).
@@ -35,14 +35,6 @@ class AuctionV8Helper;
 // separate methods for fetching bidding and scoring signals. A single
 // TrustedSignals object can only be used to fetch bidding signals or scoring
 // signals, even if a single URL is used for both types of signals.
-//
-// TODO(mmenke): This class currently does 4 copies when loading the data (To V8
-// string, use V8's JSON parser, split data into V8 JSON subcomponent strings,
-// convert to C++ strings), and 2 copies of each substring to use the data (To
-// V8 per-key JSON string, use V8's JSON parser). Keeping the data stored as V8
-// JSON subcomponents would remove 2 copies, without too much complexity. Could
-// even implement V8 deep-copy logic, to remove two more copies (counting the
-// clone operation as a copy).
 class CONTENT_EXPORT TrustedSignals {
  public:
   // Contains the values returned by the server.
@@ -56,13 +48,15 @@ class CONTENT_EXPORT TrustedSignals {
 
     // Constructor for bidding signals.
     Result(PriorityVectorMap priority_vectors,
-           std::map<std::string, std::string> bidder_json_data,
+           std::map<std::string, AuctionV8Helper::SerializedValue> bidder_data,
            absl::optional<uint32_t> data_version);
 
     // Constructor for scoring signals.
-    Result(std::map<std::string, std::string> render_url_json_data,
-           std::map<std::string, std::string> ad_component_json_data,
-           absl::optional<uint32_t> data_version);
+    Result(
+        std::map<std::string, AuctionV8Helper::SerializedValue> render_url_data,
+        std::map<std::string, AuctionV8Helper::SerializedValue>
+            ad_component_data,
+        absl::optional<uint32_t> data_version);
 
     explicit Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
@@ -111,14 +105,18 @@ class CONTENT_EXPORT TrustedSignals {
     // Per-interest-group priority vectors returned by the trusted bidding
     // server.
     const absl::optional<PriorityVectorMap> priority_vectors_;
-    // Map of keys to the associated JSON data for trusted bidding signals.
-    const absl::optional<std::map<std::string, std::string>> bidder_json_data_;
+    // Map of keys to the associated data for trusted bidding signals.
+    const absl::optional<
+        std::map<std::string, AuctionV8Helper::SerializedValue>>
+        bidder_data_;
 
-    // Map of keys to the associated JSON data for trusted scoring signals.
-    const absl::optional<std::map<std::string, std::string>>
-        render_url_json_data_;
-    const absl::optional<std::map<std::string, std::string>>
-        ad_component_json_data_;
+    // Map of keys to the associated data for trusted scoring signals.
+    const absl::optional<
+        std::map<std::string, AuctionV8Helper::SerializedValue>>
+        render_url_data_;
+    const absl::optional<
+        std::map<std::string, AuctionV8Helper::SerializedValue>>
+        ad_component_data_;
 
     // Data version associated with the trusted signals.
     const absl::optional<uint32_t> data_version_;

@@ -61,13 +61,13 @@ GURL SetQueryParam(const GURL& base_url, const std::string& new_query_params) {
   return base_url.ReplaceComponents(replacements);
 }
 
-// Extracts GURL/JSON key/value pairs from `v8_object`, using values in `keys`
-// as keys. Does not add entries to the map for keys with missing values.
-std::map<std::string, std::string> ParseKeyValueMap(
+// Extracts key/value pairs from `v8_object`, using values in `keys` as keys.
+// Does not add entries to the map for keys with missing values.
+std::map<std::string, AuctionV8Helper::SerializedValue> ParseKeyValueMap(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Object> v8_object,
     const std::set<std::string>& keys) {
-  std::map<std::string, std::string> out;
+  std::map<std::string, AuctionV8Helper::SerializedValue> out;
   if (keys.empty())
     return out;
 
@@ -76,31 +76,36 @@ std::map<std::string, std::string> ParseKeyValueMap(
     if (!v8_helper->CreateUtf8String(key).ToLocal(&v8_key))
       continue;
 
+    // Skip over missing properties (rather than serializing 'undefined') and
+    // also things in the prototype.
+    v8::Maybe<bool> has_key =
+        v8_object->HasOwnProperty(v8_helper->scratch_context(), v8_key);
+    if (has_key.IsNothing() || !has_key.FromJust())
+      continue;
+
     v8::Local<v8::Value> v8_value;
-    v8::Local<v8::Value> v8_string_value;
-    std::string value;
-    // Only the Get() call should be able to fail.
     if (!v8_object->Get(v8_helper->scratch_context(), v8_key)
-             .ToLocal(&v8_value) ||
-        !v8::JSON::Stringify(v8_helper->scratch_context(), v8_value)
-             .ToLocal(&v8_string_value) ||
-        !gin::ConvertFromV8(v8_helper->isolate(), v8_string_value, &value)) {
+             .ToLocal(&v8_value)) {
       continue;
     }
-    out[key] = std::move(value);
+    AuctionV8Helper::SerializedValue serialized_value =
+        v8_helper->Serialize(v8_helper->scratch_context(), v8_value);
+    if (!serialized_value.IsOK())
+      continue;
+    out[key] = std::move(serialized_value);
   }
   return out;
 }
 
-// Extracts GURL/JSON key/value pairs from the object named `name` in
+// Extracts key/value pairs from the object named `name` in
 // `v8_object`, using values in `keys` as keys. Does not add entries to the map
 // for keys with missing values.
-std::map<std::string, std::string> ParseChildKeyValueMap(
+std::map<std::string, AuctionV8Helper::SerializedValue> ParseChildKeyValueMap(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Object> v8_object,
     const char* name,
     const std::set<std::string>& keys) {
-  std::map<std::string, std::string> out;
+  std::map<std::string, AuctionV8Helper::SerializedValue> out;
   if (keys.empty())
     return out;
 
@@ -213,27 +218,30 @@ ParsePriorityVectorsInPerInterestGroupMap(
   return out;
 }
 
-// Takes a list of keys, a map of strings to JSON strings and creates a
+// Takes a list of keys, a map of strings to serialized values and creates a
 // corresponding v8::Object from the entries with the provided keys. `keys` must
 // not be empty.
 v8::Local<v8::Object> CreateObjectFromMap(
     const std::vector<std::string>& keys,
-    const std::map<std::string, std::string>& json_data,
+    const std::map<std::string, AuctionV8Helper::SerializedValue>&
+        serialized_data,
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Context> context) {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
   DCHECK(!keys.empty());
 
   v8::Local<v8::Object> out = v8::Object::New(v8_helper->isolate());
+
   for (const auto& key : keys) {
-    auto data = json_data.find(key);
-    // InsertJsonValue() shouldn't be able to fail, but the first check might.
-    if (data == json_data.end() ||
-        !v8_helper->InsertJsonValue(context, key, data->second, out)) {
-      bool result =
-          v8_helper->InsertValue(key, v8::Null(v8_helper->isolate()), out);
-      DCHECK(result);
+    auto data = serialized_data.find(key);
+    v8::Local<v8::Value> v8_data;
+    // Deserialize() shouldn't normally fail, but the first check might.
+    if (data == serialized_data.end() ||
+        !v8_helper->Deserialize(context, data->second).ToLocal(&v8_data)) {
+      v8_data = v8::Null(v8_helper->isolate());
     }
+    bool result = v8_helper->InsertValue(key, v8_data, out);
+    DCHECK(result);
   }
   return out;
 }
@@ -242,18 +250,18 @@ v8::Local<v8::Object> CreateObjectFromMap(
 
 TrustedSignals::Result::Result(
     std::map<std::string, base::flat_map<std::string, double>> priority_vectors,
-    std::map<std::string, std::string> bidder_json_data,
+    std::map<std::string, AuctionV8Helper::SerializedValue> bidder_data,
     absl::optional<uint32_t> data_version)
     : priority_vectors_(std::move(priority_vectors)),
-      bidder_json_data_(std::move(bidder_json_data)),
+      bidder_data_(std::move(bidder_data)),
       data_version_(data_version) {}
 
 TrustedSignals::Result::Result(
-    std::map<std::string, std::string> render_url_json_data,
-    std::map<std::string, std::string> ad_component_json_data,
+    std::map<std::string, AuctionV8Helper::SerializedValue> render_url_data,
+    std::map<std::string, AuctionV8Helper::SerializedValue> ad_component_data,
     absl::optional<uint32_t> data_version)
-    : render_url_json_data_(std::move(render_url_json_data)),
-      ad_component_json_data_(std::move(ad_component_json_data)),
+    : render_url_data_(std::move(render_url_data)),
+      ad_component_data_(std::move(ad_component_data)),
       data_version_(data_version) {}
 
 const TrustedSignals::Result::PriorityVector*
@@ -271,10 +279,10 @@ v8::Local<v8::Object> TrustedSignals::Result::GetBiddingSignals(
     v8::Local<v8::Context> context,
     const std::vector<std::string>& bidding_signals_keys) const {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
-  DCHECK(bidder_json_data_.has_value());
+  DCHECK(bidder_data_.has_value());
 
-  return CreateObjectFromMap(bidding_signals_keys, *bidder_json_data_,
-                             v8_helper, context);
+  return CreateObjectFromMap(bidding_signals_keys, *bidder_data_, v8_helper,
+                             context);
 }
 
 v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
@@ -283,15 +291,15 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
     const GURL& render_url,
     const std::vector<std::string>& ad_component_render_urls) const {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
-  DCHECK(render_url_json_data_.has_value());
-  DCHECK(ad_component_json_data_.has_value());
+  DCHECK(render_url_data_.has_value());
+  DCHECK(ad_component_data_.has_value());
 
   v8::Local<v8::Object> out = v8::Object::New(v8_helper->isolate());
 
   // Create renderUrl sub-object, and add it to to `out`.
   v8::Local<v8::Object> render_url_v8_object =
       CreateObjectFromMap(std::vector<std::string>{render_url.spec()},
-                          *render_url_json_data_, v8_helper, context);
+                          *render_url_data_, v8_helper, context);
   bool result = v8_helper->InsertValue("renderUrl", render_url_v8_object, out);
   DCHECK(result);
 
@@ -299,7 +307,7 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
   // object as well.
   if (!ad_component_render_urls.empty()) {
     v8::Local<v8::Object> ad_components_v8_object = CreateObjectFromMap(
-        ad_component_render_urls, *ad_component_json_data_, v8_helper, context);
+        ad_component_render_urls, *ad_component_data_, v8_helper, context);
     result = v8_helper->InsertValue("adComponentRenderUrls",
                                     ad_components_v8_object, out);
     DCHECK(result);
