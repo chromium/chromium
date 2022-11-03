@@ -14,7 +14,7 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.chromiumos",
     cores = 8,
     orchestrator_cores = 2,
-    compilator_cores = 32,
+    compilator_cores = 16,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
@@ -270,6 +270,7 @@ try_.compilator_builder(
     branch_selector = branches.CROS_LTS_MILESTONE,
     main_list_view = "try",
     goma_jobs = goma.jobs.J300,
+    cores = 32,
 )
 
 try_.builder(
@@ -301,9 +302,6 @@ try_.compilator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     goma_jobs = goma.jobs.J300,
-    # TODO (crbug.com/1287228): Set correct values once bots are set up
-    ssd = None,
-    cores = None,
 )
 
 try_.builder(
