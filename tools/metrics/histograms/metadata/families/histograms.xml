@@ -206,8 +206,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total elapsed time in milliseconds to complete the local web approval
     verification flow, from the time the supervised user requests to the time
-    the webpage is approved or rejected by the parent. Currently available on
-    Android only.
+    the webpage is approved or rejected by the parent. Available on Android
+    (M108+) and ChromeOS (M109+).
   </summary>
 </histogram>
 

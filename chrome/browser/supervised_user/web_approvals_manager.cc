@@ -70,9 +70,6 @@ std::string ParentAccessResultToLoggingStringChromeOS(
 }
 #endif
 
-// TODO(b/250947827): Record the
-// "ManagedUsers.LocalWebApprovalCompleteRequestTotalDuration" metric for
-// completed verification flows on Chrome OS.
 void RecordTimeToApprovalDurationMetric(base::TimeDelta durationMs) {
   base::UmaHistogramLongTimes(kLocalWebApprovalDurationHistogramName,
                               durationMs);
@@ -233,8 +230,13 @@ void WebApprovalsManager::OnLocalApprovalRequestCompletedChromeOS(
   VLOG(0) << "Local URL approval final result: "
           << ParentAccessResultToLoggingStringChromeOS(result->status);
 
-  // TODO(b/250947827) Add ChromeOS Metric
+  // Record duration metrics only for completed approval flows.
+  if (result->status == ash::ParentAccessDialog::Result::Status::kApproved ||
+      result->status == ash::ParentAccessDialog::Result::Status::kDeclined) {
+    RecordTimeToApprovalDurationMetric(base::TimeTicks::Now() - start_time);
+  }
 
+  // TODO(b/250947827): Add request result metric for CrOS.
   if (result->status == ash::ParentAccessDialog::Result::Status::kApproved) {
     settings_service->RecordLocalWebsiteApproval(url.host());
   }
