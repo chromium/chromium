@@ -265,11 +265,11 @@ void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
                "Ash.PrivacyIndicators.CameraIcon.AnimationSmoothness");
   }
   if (microphone_icon_->GetVisible()) {
-    FadeInView(camera_icon_, kMicAndScreenshareFadeInDuration,
+    FadeInView(microphone_icon_, kMicAndScreenshareFadeInDuration,
                "Ash.PrivacyIndicators.MicrophoneIcon.AnimationSmoothness");
   }
   if (screen_share_icon_->GetVisible()) {
-    FadeInView(camera_icon_, kMicAndScreenshareFadeInDuration,
+    FadeInView(screen_share_icon_, kMicAndScreenshareFadeInDuration,
                "Ash.PrivacyIndicators.ScreenshareIcon.AnimationSmoothness");
   }
 }
@@ -372,6 +372,11 @@ void PrivacyIndicatorsTrayItemView::AnimationEnded(
   // switch the state back to kIdle when it ends.
   if (animation == shorter_side_shrink_animation_.get()) {
     animation_state_ = AnimationState::kIdle;
+
+    // Hide all the icons at the end since we only want to show a green dot.
+    camera_icon_->SetVisible(false);
+    microphone_icon_->SetVisible(false);
+    screen_share_icon_->SetVisible(false);
 
     if (throughput_tracker_) {
       // Reset `throughput_tracker_` to reset animation metrics recording.

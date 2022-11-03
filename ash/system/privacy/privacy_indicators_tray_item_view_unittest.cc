@@ -337,6 +337,11 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, VisibilityAnimation) {
             privacy_indicators_view()->GetPreferredSize().height());
   EXPECT_EQ(kPrivacyIndicatorsViewSize,
             privacy_indicators_view()->GetPreferredSize().width());
+
+  // All icon should not be visible.
+  EXPECT_FALSE(camera_icon()->GetVisible());
+  EXPECT_FALSE(microphone_icon()->GetVisible());
+  EXPECT_FALSE(screen_share_icon()->GetVisible());
 }
 
 // Same test as above, but with the side shelf (the longer and shorter side will
@@ -405,6 +410,11 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, SideShelfVisibilityAnimation) {
             privacy_indicators_view()->GetPreferredSize().width());
   EXPECT_EQ(kPrivacyIndicatorsViewSize,
             privacy_indicators_view()->GetPreferredSize().height());
+
+  // All icon should not be visible.
+  EXPECT_FALSE(camera_icon()->GetVisible());
+  EXPECT_FALSE(microphone_icon()->GetVisible());
+  EXPECT_FALSE(screen_share_icon()->GetVisible());
 }
 
 TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
