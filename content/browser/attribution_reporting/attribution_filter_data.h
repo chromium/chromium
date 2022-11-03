@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -62,9 +61,6 @@ class CONTENT_EXPORT AttributionFilters {
  public:
   // Filters are allowed to contain a `source_type` filter.
   static absl::optional<AttributionFilters> Create(AttributionFilterValues);
-
-  // Returns filters that match only the given source type.
-  static AttributionFilters ForSourceType(AttributionSourceType);
 
   AttributionFilters();
 

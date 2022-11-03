@@ -996,6 +996,9 @@ std::vector<AggregatableHistogramContribution>
 DefaultAggregatableHistogramContributions(
     const std::vector<uint32_t>& histogram_values = {1});
 
+// Returns filters that match only the given source type.
+AttributionFilters AttributionFiltersForSourceType(AttributionSourceType);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TEST_UTILS_H_

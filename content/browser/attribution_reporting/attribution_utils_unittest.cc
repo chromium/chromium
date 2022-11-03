@@ -8,6 +8,7 @@
 
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -240,7 +241,7 @@ TEST(AttributionUtilsTest, AttributionFilterDataMatch_SourceType) {
       {
           .description = "same-source-type",
           .source_type = AttributionSourceType::kNavigation,
-          .filters = AttributionFilters::ForSourceType(
+          .filters = AttributionFiltersForSourceType(
               AttributionSourceType::kNavigation),
           .negated = false,
           .match_expected = true,
@@ -248,7 +249,7 @@ TEST(AttributionUtilsTest, AttributionFilterDataMatch_SourceType) {
       {
           .description = "same-source-type-negated",
           .source_type = AttributionSourceType::kNavigation,
-          .filters = AttributionFilters::ForSourceType(
+          .filters = AttributionFiltersForSourceType(
               AttributionSourceType::kNavigation),
           .negated = true,
           .match_expected = false,
@@ -257,7 +258,7 @@ TEST(AttributionUtilsTest, AttributionFilterDataMatch_SourceType) {
           .description = "other-source-type",
           .source_type = AttributionSourceType::kNavigation,
           .filters =
-              AttributionFilters::ForSourceType(AttributionSourceType::kEvent),
+              AttributionFiltersForSourceType(AttributionSourceType::kEvent),
           .negated = false,
           .match_expected = false,
       },
@@ -265,7 +266,7 @@ TEST(AttributionUtilsTest, AttributionFilterDataMatch_SourceType) {
           .description = "other-source-type-negated",
           .source_type = AttributionSourceType::kNavigation,
           .filters =
-              AttributionFilters::ForSourceType(AttributionSourceType::kEvent),
+              AttributionFiltersForSourceType(AttributionSourceType::kEvent),
           .negated = true,
           .match_expected = true,
       },

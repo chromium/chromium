@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"

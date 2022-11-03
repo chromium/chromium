@@ -11,6 +11,7 @@
 #include <limits>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -22,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
@@ -659,13 +661,13 @@ AttributionTrigger TriggerBuilder::Build(
     event_triggers.emplace_back(
         trigger_data_, priority_, dedup_key_,
         /*filters=*/
-        AttributionFilters::ForSourceType(AttributionSourceType::kNavigation),
+        AttributionFiltersForSourceType(AttributionSourceType::kNavigation),
         /*not_filters=*/AttributionFilters());
 
     event_triggers.emplace_back(
         event_source_trigger_data_, priority_, dedup_key_,
         /*filters=*/
-        AttributionFilters::ForSourceType(AttributionSourceType::kEvent),
+        AttributionFiltersForSourceType(AttributionSourceType::kEvent),
         /*not_filters=*/AttributionFilters());
   }
 
@@ -1497,6 +1499,20 @@ DefaultAggregatableHistogramContributions(
     contributions.emplace_back(absl::MakeUint128(i, i), histogram_values[i]);
   }
   return contributions;
+}
+
+AttributionFilters AttributionFiltersForSourceType(
+    AttributionSourceType source_type) {
+  std::vector<std::string> values;
+  values.reserve(1);
+  values.push_back(AttributionSourceTypeToString(source_type));
+
+  AttributionFilterValues filter_values;
+  filter_values.reserve(1);
+  filter_values.emplace(AttributionFilterData::kSourceTypeFilterKey,
+                        std::move(values));
+
+  return *AttributionFilters::Create(std::move(filter_values));
 }
 
 }  // namespace content

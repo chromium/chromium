@@ -2535,7 +2535,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
               /*priority=*/12,
               /*dedup_key=*/13,
               /*filters=*/
-              AttributionFilters::ForSourceType(AttributionSourceType::kEvent),
+              AttributionFiltersForSourceType(AttributionSourceType::kEvent),
               /*not_filters=*/AttributionFilters())},
           /*aggregatable_trigger_data=*/{},
           /*aggregatable_values=*/AttributionAggregatableValues())));
@@ -2678,7 +2678,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
       origin, origin,
       /*filters=*/AttributionFilters(),
       /*not_filters=*/
-      AttributionFilters::ForSourceType(AttributionSourceType::kNavigation),
+      AttributionFiltersForSourceType(AttributionSourceType::kNavigation),
       /*debug_key=*/absl::nullopt,
       /*aggregatable_dedup_key=*/absl::nullopt,
       /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values);

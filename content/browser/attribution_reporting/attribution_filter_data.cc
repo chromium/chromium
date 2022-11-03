@@ -118,21 +118,6 @@ AttributionFilterData::FromJSON(base::Value* input_value) {
       AttributionFilterValues(base::sorted_unique, std::move(filter_values)));
 }
 
-// static
-AttributionFilters AttributionFilters::ForSourceType(
-    AttributionSourceType source_type) {
-  std::vector<std::string> values;
-  values.reserve(1);
-  values.push_back(AttributionSourceTypeToString(source_type));
-
-  AttributionFilterValues filter_values;
-  filter_values.reserve(1);
-  filter_values.emplace(AttributionFilterData::kSourceTypeFilterKey,
-                        std::move(values));
-
-  return AttributionFilters(std::move(filter_values));
-}
-
 AttributionFilterData::AttributionFilterData() = default;
 
 AttributionFilterData::AttributionFilterData(
