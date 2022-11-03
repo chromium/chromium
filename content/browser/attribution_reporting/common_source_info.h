@@ -37,6 +37,8 @@ class CONTENT_EXPORT CommonSourceInfo {
                    url::Origin reporting_origin,
                    base::Time source_time,
                    base::Time expiry_time,
+                   absl::optional<base::Time> event_report_window_time,
+                   absl::optional<base::Time> aggregatable_report_window_time,
                    AttributionSourceType source_type,
                    int64_t priority,
                    AttributionFilterData filter_data,
@@ -62,6 +64,14 @@ class CONTENT_EXPORT CommonSourceInfo {
   base::Time source_time() const { return source_time_; }
 
   base::Time expiry_time() const { return expiry_time_; }
+
+  base::Time event_report_window_time() const {
+    return event_report_window_time_;
+  }
+
+  base::Time aggregatable_report_window_time() const {
+    return event_report_window_time_;
+  }
 
   AttributionSourceType source_type() const { return source_type_; }
 
@@ -96,6 +106,8 @@ class CONTENT_EXPORT CommonSourceInfo {
   url::Origin reporting_origin_;
   base::Time source_time_;
   base::Time expiry_time_;
+  base::Time event_report_window_time_;
+  base::Time aggregatable_report_window_time_;
   AttributionSourceType source_type_;
   int64_t priority_;
   AttributionFilterData filter_data_;

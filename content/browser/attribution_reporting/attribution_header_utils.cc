@@ -49,6 +49,17 @@ int64_t ParsePriority(const base::Value::Dict& dict) {
   return base::StringToInt64(*s, &value) ? value : 0;
 }
 
+absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(
+    const base::Value::Dict& registration,
+    base::StringPiece key) {
+  if (const std::string* s = registration.FindString(key)) {
+    int64_t seconds;
+    if (base::StringToInt64(*s, &seconds))
+      return base::Seconds(seconds);
+  }
+  return absl::nullopt;
+}
+
 }  // namespace
 
 base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
@@ -83,12 +94,14 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
 
   int64_t priority = ParsePriority(registration);
 
-  absl::optional<base::TimeDelta> expiry;
-  if (const std::string* s = registration.FindString("expiry")) {
-    int64_t seconds;
-    if (base::StringToInt64(*s, &seconds))
-      expiry = base::Seconds(seconds);
-  }
+  absl::optional<base::TimeDelta> expiry =
+      ParseTimeDeltaInSeconds(registration, "expiry");
+
+  absl::optional<base::TimeDelta> event_report_window =
+      ParseTimeDeltaInSeconds(registration, "event_report_window");
+
+  absl::optional<base::TimeDelta> aggregatable_report_window =
+      ParseTimeDeltaInSeconds(registration, "aggregatable_report_window");
 
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
 
@@ -112,6 +125,14 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
           source_event_id, std::move(source_origin), std::move(destination),
           std::move(reporting_origin), source_time,
           CommonSourceInfo::GetExpiryTime(expiry, source_time, source_type),
+          event_report_window
+              ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
+                    event_report_window, source_time, source_type))
+              : absl::nullopt,
+          aggregatable_report_window
+              ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
+                    aggregatable_report_window, source_time, source_type))
+              : absl::nullopt,
           source_type, priority, std::move(*filter_data), debug_key,
           std::move(*aggregation_keys)),
       is_within_fenced_frame, debug_reporting);

@@ -33,32 +33,45 @@ base::Time CommonSourceInfo::GetExpiryTime(
                                    kDefaultAttributionSourceExpiry);
 }
 
-CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
-                                   url::Origin source_origin,
-                                   url::Origin destination_origin,
-                                   url::Origin reporting_origin,
-                                   base::Time source_time,
-                                   base::Time expiry_time,
-                                   AttributionSourceType source_type,
-                                   int64_t priority,
-                                   AttributionFilterData filter_data,
-                                   absl::optional<uint64_t> debug_key,
-                                   AttributionAggregationKeys aggregation_keys)
+CommonSourceInfo::CommonSourceInfo(
+    uint64_t source_event_id,
+    url::Origin source_origin,
+    url::Origin destination_origin,
+    url::Origin reporting_origin,
+    base::Time source_time,
+    base::Time expiry_time,
+    absl::optional<base::Time> event_report_window_time,
+    absl::optional<base::Time> aggregatable_report_window_time,
+    AttributionSourceType source_type,
+    int64_t priority,
+    AttributionFilterData filter_data,
+    absl::optional<uint64_t> debug_key,
+    AttributionAggregationKeys aggregation_keys)
     : source_event_id_(source_event_id),
       source_origin_(std::move(source_origin)),
       destination_origin_(std::move(destination_origin)),
       reporting_origin_(std::move(reporting_origin)),
       source_time_(source_time),
       expiry_time_(expiry_time),
+      event_report_window_time_(event_report_window_time.value_or(expiry_time)),
+      aggregatable_report_window_time_(
+          aggregatable_report_window_time.value_or(expiry_time)),
       source_type_(source_type),
       priority_(priority),
       filter_data_(std::move(filter_data)),
       debug_key_(debug_key),
       aggregation_keys_(std::move(aggregation_keys)) {
-  // 30 days is the max allowed expiry for an impression.
-  DCHECK_GE(base::Days(30), expiry_time - source_time);
+  DCHECK_GE(kDefaultAttributionSourceExpiry, expiry_time_ - source_time);
+  DCHECK_GE(kDefaultAttributionSourceExpiry,
+            event_report_window_time_ - source_time);
+  DCHECK_GE(kDefaultAttributionSourceExpiry,
+            aggregatable_report_window_time_ - source_time);
+
   // The impression must expire strictly after it occurred.
-  DCHECK_GT(expiry_time, source_time);
+  DCHECK_GT(expiry_time_, source_time);
+  DCHECK_GT(event_report_window_time_, source_time);
+  DCHECK_GT(aggregatable_report_window_time_, source_time);
+
   DCHECK(network::IsOriginPotentiallyTrustworthy(source_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(destination_origin_));

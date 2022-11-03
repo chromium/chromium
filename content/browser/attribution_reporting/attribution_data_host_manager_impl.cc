@@ -413,14 +413,24 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   context.num_data_registered++;
 
   StorableSource storable_source(
-      CommonSourceInfo(data->source_event_id, context.context_origin,
-                       std::move(data->destination),
-                       std::move(data->reporting_origin), source_time,
-                       CommonSourceInfo::GetExpiryTime(
-                           data->expiry, source_time, context.source_type),
-                       context.source_type, data->priority,
-                       std::move(*filter_data), data->debug_key,
-                       std::move(*aggregation_keys)),
+      CommonSourceInfo(
+          data->source_event_id, context.context_origin,
+          std::move(data->destination), std::move(data->reporting_origin),
+          source_time,
+          CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
+                                          context.source_type),
+          data->event_report_window
+              ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
+                    data->event_report_window, source_time,
+                    context.source_type))
+              : absl::nullopt,
+          data->aggregatable_report_window
+              ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
+                    data->aggregatable_report_window, source_time,
+                    context.source_type))
+              : absl::nullopt,
+          context.source_type, data->priority, std::move(*filter_data),
+          data->debug_key, std::move(*aggregation_keys)),
       context.is_within_fenced_frame, data->debug_reporting);
 
   attribution_manager_->HandleSource(std::move(storable_source));

@@ -428,13 +428,18 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   if (!active_state.has_value())
     return absl::nullopt;
 
+  // TODO(crbug.com/1366433): Change constructor call to include separated
+  // event_report_window and aggregatable_report_window.
   return StoredSourceData{
       .source = StoredSource(
-          CommonSourceInfo(
-              source_event_id, std::move(source_origin),
-              std::move(destination_origin), std::move(reporting_origin),
-              source_time, expiry_time, *source_type, priority,
-              std::move(*filter_data), debug_key, std::move(*aggregation_keys)),
+          CommonSourceInfo(source_event_id, std::move(source_origin),
+                           std::move(destination_origin),
+                           std::move(reporting_origin), source_time,
+                           /*expiry_time=*/expiry_time,
+                           /*event_report_window_time=*/expiry_time,
+                           /*aggregatable_report_window_time=*/expiry_time,
+                           *source_type, priority, std::move(*filter_data),
+                           debug_key, std::move(*aggregation_keys)),
           *attribution_logic, *active_state, source_id,
           aggregatable_budget_consumed),
       .num_conversions = num_conversions};

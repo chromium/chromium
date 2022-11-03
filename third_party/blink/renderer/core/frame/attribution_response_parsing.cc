@@ -74,6 +74,14 @@ bool ParseAttributionAggregationKey(const JSONValue* value,
   return true;
 }
 
+absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(const String& s) {
+  bool valid = false;
+  int64_t seconds = s.ToInt64Strict(&valid);
+  if (valid)
+    return base::Seconds(seconds);
+  return absl::nullopt;
+}
+
 }  // namespace
 
 bool ParseAttributionFilterData(
@@ -221,8 +229,9 @@ bool ParseSourceRegistrationHeader(
     return false;
   source_data.destination = std::move(destination);
 
-  // Treat invalid source_event_id, expiry, priority, and debug key as if they
-  // were not set.
+  // Treat invalid source_event_id, expiry, event_report_window,
+  // aggregatable_report_window, priority, and debug key as if they were
+  // not set.
 
   if (String s; object->GetString("source_event_id", &s)) {
     bool valid = false;
@@ -238,12 +247,14 @@ bool ParseSourceRegistrationHeader(
       source_data.priority = priority;
   }
 
-  if (String s; object->GetString("expiry", &s)) {
-    bool valid = false;
-    int64_t seconds = s.ToInt64Strict(&valid);
-    if (valid)
-      source_data.expiry = base::Seconds(seconds);
-  }
+  if (String s; object->GetString("expiry", &s))
+    source_data.expiry = ParseTimeDeltaInSeconds(s);
+
+  if (String s; object->GetString("event_report_window", &s))
+    source_data.event_report_window = ParseTimeDeltaInSeconds(s);
+
+  if (String s; object->GetString("aggregatable_report_window", &s))
+    source_data.aggregatable_report_window = ParseTimeDeltaInSeconds(s);
 
   if (String s; object->GetString("debug_key", &s))
     source_data.debug_key = ParseUint64(s);

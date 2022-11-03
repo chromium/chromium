@@ -121,6 +121,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
         "source_event_id": "123",
         "destination": "https://a.d.test",
         "expiry": "864000",
+        "event_report_window": "864000",
+        "aggregatable_report_window": "864000",
         "priority": "-5",
         "debug_key": "14",
         "debug_reporting": true
@@ -144,6 +146,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
         "source_event_id": "789",
         "destination": "https://c.d.test",
         "expiry": "864001",
+        "event_report_window": "864001",
+        "aggregatable_report_window": "864001",
         "filter_data": {
           "a": [],
           "b": ["c", "d"]
@@ -159,6 +163,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
         "source_event_id": "789",
         "destination": "https://c.d.test",
         "expiry": "864001",
+        "event_report_window": "691201",
+        "aggregatable_report_window": "432001",
         "aggregation_keys": {
           "a": "0x1"
         }
@@ -182,6 +188,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                    .SetDestinationOrigin(
                        url::Origin::Create(GURL("https://a.d.test")))
                    .SetExpiry(base::Days(10))
+                   .SetEventReportWindow(base::Days(10))
+                   .SetAggregatableReportWindow(base::Days(10))
                    .SetPriority(-5)
                    .SetDebugKey(14)
                    .SetDebugReporting(true)
@@ -196,10 +204,11 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                    .SetSourceEventId(0)  // default
                    .SetDestinationOrigin(
                        url::Origin::Create(GURL("https://b.d.test")))
-                   .SetExpiry(base::Days(30))   // default
-                   .SetPriority(0)              // default
-                   .SetDebugKey(absl::nullopt)  // default
-                   .SetDebugReporting(false)    // default
+                   .SetExpiry(base::Days(30))                    // default
+                   .SetEventReportWindow(base::Days(30))         // default
+                   .SetAggregatableReportWindow(base::Days(30))  // default
+                   .SetPriority(0)                               // default
+                   .SetDebugKey(absl::nullopt)                   // default
                    .Build(),
                _),
           Pair(
@@ -213,7 +222,11 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetDestinationOrigin(
                       url::Origin::Create(GURL("https://c.d.test")))
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
-                  .SetPriority(0)             // default
+                  .SetEventReportWindow(
+                      base::Days(10))  // rounded to whole number of days
+                  .SetAggregatableReportWindow(
+                      base::Days(10))  // rounded to whole number of days
+                  .SetPriority(0)      // default
                   .SetDebugKey(absl::nullopt)  // default
                   .SetDebugReporting(false)    // default
                   .SetFilterData(*AttributionFilterData::Create({
@@ -233,7 +246,11 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetDestinationOrigin(
                       url::Origin::Create(GURL("https://c.d.test")))
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
-                  .SetPriority(0)             // default
+                  .SetEventReportWindow(
+                      base::Days(8))  // rounded to whole number of days
+                  .SetAggregatableReportWindow(
+                      base::Days(5))  // rounded to whole number of days
+                  .SetPriority(0)     // default
                   .SetDebugKey(absl::nullopt)  // default
                   .SetDebugReporting(false)    // default
                   .SetAggregationKeys(
@@ -256,6 +273,8 @@ TEST(AttributionSimulatorInputParserTest, OutputRetainsInputJSON) {
           "destination": "https://d.test",
           "filter_data": {"a": ["b", "c"]},
           "expiry": "864000",
+          "event_report_window": "864000",
+          "aggregatable_report_window": "864000",
           "priority": "-5",
           "debug_key": "14"
         }

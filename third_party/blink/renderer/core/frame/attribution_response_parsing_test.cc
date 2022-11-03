@@ -665,6 +665,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -690,6 +692,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -708,6 +712,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -726,6 +732,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/1,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -758,6 +766,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/5,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -776,6 +786,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -794,6 +806,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -812,6 +826,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/base::Seconds(5),
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -830,6 +846,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -848,6 +866,92 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/absl::nullopt,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
+      },
+      {
+          "valid_event_report_window",
+          R"json({
+            "destination": "https://d.test",
+            "expiry": "5",
+            "event_report_window": "10"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/0,
+              /*expiry=*/base::Seconds(5),
+              /*event_report_window=*/base::Seconds(10),
+              /*aggregatable_report_window=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/absl::nullopt,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
+      },
+      {
+          "invalid_event_report_window",
+          R"json({
+            "destination": "https://d.test",
+            "expiry": "5",
+            "event_report_window": "NaN"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/0,
+              /*expiry=*/base::Seconds(5),
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/absl::nullopt,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
+      },
+      {
+          "valid_aggregatable_report_window",
+          R"json({
+            "destination": "https://d.test",
+            "expiry": "5",
+            "aggregatable_report_window": "10"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/0,
+              /*expiry=*/base::Seconds(5),
+              /*event_report_window=*/absl::nullopt,
+              /*event_report_window=*/base::Seconds(10),
+              /*priority=*/0,
+              /*debug_key=*/absl::nullopt,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
+      },
+      {
+          "invalid_aggregatable_report_window",
+          R"json({
+            "destination": "https://d.test",
+            "expiry": "5",
+            "aggregatable_report_window": "NaN"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/0,
+              /*expiry=*/base::Seconds(5),
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -866,6 +970,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/5,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -884,6 +990,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/
@@ -913,6 +1021,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -931,6 +1041,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -949,6 +1061,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
+              /*event_report_window=*/absl::nullopt,
+              /*aggregatable_report_window=*/absl::nullopt,
               /*priority=*/0,
               /*debug_key=*/absl::nullopt,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
@@ -980,6 +1094,14 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
           << test_case.description;
 
       EXPECT_EQ(test_case.expected->expiry, source_data.expiry)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->event_report_window,
+                source_data.event_report_window)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->aggregatable_report_window,
+                source_data.aggregatable_report_window)
           << test_case.description;
 
       EXPECT_EQ(test_case.expected->priority, source_data.priority)

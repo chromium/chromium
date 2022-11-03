@@ -32,6 +32,22 @@ object_value {
     }
   }
   field {
+    name: "event_report_window"
+    value {
+      string_value {
+        value: "1000"
+      }
+    }
+  }
+  field {
+    name: "aggregatable_report_window"
+    value {
+      string_value {
+        value: "1000"
+      }
+    }
+  }
+  field {
     name: "debug_key"
     value {
       string_value {
