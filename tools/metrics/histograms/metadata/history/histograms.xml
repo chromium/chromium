@@ -1293,7 +1293,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DatabaseFileMB" units="MB" expires_after="M110">
+<histogram name="History.DatabaseFileMB" units="MB" expires_after="M115">
   <owner>sophiechang@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
