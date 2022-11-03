@@ -27,6 +27,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 namespace ash {
 
@@ -80,27 +82,6 @@ class AccessibilityFocusHelperView : public views::View {
 
 }  // namespace
 
-SlidersContainerView::SlidersContainerView() {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-}
-
-SlidersContainerView::~SlidersContainerView() = default;
-
-int SlidersContainerView::GetHeight() const {
-  return std::accumulate(
-      children().cbegin(), children().cend(), 0, [](int height, const auto* v) {
-        return height + v->GetHeightForWidth(kRevampedTrayMenuWidth);
-      });
-}
-
-gfx::Size SlidersContainerView::CalculatePreferredSize() const {
-  return gfx::Size(kRevampedTrayMenuWidth, GetHeight());
-}
-
-BEGIN_METADATA(SlidersContainerView, views::View)
-END_METADATA
-
 // The container view for the system tray, i.e. the panel containing settings
 // buttons and sliders (e.g. sign out, lock, volume slider, etc.).
 class QuickSettingsView::SystemTrayContainer : public views::View {
@@ -138,8 +119,11 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
           std::make_unique<InteractedByTapRecorder>(this)) {
   DCHECK(controller_);
 
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
   system_tray_container_ =
-      AddChildView(std::make_unique<SystemTrayContainer>());
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  system_tray_container_->SetOrientation(views::LayoutOrientation::kVertical);
 
   AddTemporaryDetailedViewButtons();
 
@@ -157,12 +141,11 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
   }
 
   sliders_container_ = system_tray_container_->AddChildView(
-      std::make_unique<SlidersContainerView>());
+      std::make_unique<views::FlexLayoutView>());
+  sliders_container_->SetOrientation(views::LayoutOrientation::kVertical);
 
   footer_ = system_tray_container_->AddChildView(
       std::make_unique<QuickSettingsFooter>(controller_));
-
-  system_tray_container_->SetFlexForView(page_indicator_view_);
 
   detailed_view_container_ =
       AddChildView(std::make_unique<DetailedViewContainer>());
@@ -204,15 +187,10 @@ void QuickSettingsView::ShowMediaControls() {
 }
 
 void QuickSettingsView::SetDetailedView(views::View* detailed_view) {
-  auto system_tray_size = system_tray_container_->GetPreferredSize();
-  system_tray_container_->SetVisible(false);
-
   detailed_view_container_->RemoveAllChildViews();
   detailed_view_container_->AddChildView(detailed_view);
+  system_tray_container_->SetVisible(false);
   detailed_view_container_->SetVisible(true);
-  detailed_view_container_->SetPreferredSize(system_tray_size);
-  detailed_view->InvalidateLayout();
-  Layout();
 }
 
 void QuickSettingsView::ResetDetailedView() {
@@ -221,8 +199,6 @@ void QuickSettingsView::ResetDetailedView() {
   if (media_controls_container_)
     media_controls_container_->MaybeShowMediaControls();
   system_tray_container_->SetVisible(true);
-  PreferredSizeChanged();
-  Layout();
 }
 
 void QuickSettingsView::SaveFocus() {
@@ -242,6 +218,9 @@ int QuickSettingsView::GetCurrentHeight() const {
   return GetPreferredSize().height();
 }
 
+// TODO(b/253303697): The `FeatureTilesContainer` does not currently respect
+// size constraints when vertical space is limited. This leads to the
+// `QuickSettingsView` being clipped from the bottom.
 int QuickSettingsView::CalculateHeightForFeatureTilesContainer() {
   int media_controls_container_height =
       media_controls_container_ ? media_controls_container_->GetExpandedHeight()
@@ -251,8 +230,8 @@ int QuickSettingsView::CalculateHeightForFeatureTilesContainer() {
          temporary_buttons_container_->GetPreferredSize().height() -
          header_->GetPreferredSize().height() -
          page_indicator_view_->GetPreferredSize().height() -
-         sliders_container_->GetHeight() - media_controls_container_height -
-         footer_->GetPreferredSize().height();
+         sliders_container_->GetPreferredSize().height() -
+         media_controls_container_height - footer_->GetPreferredSize().height();
 }
 
 std::u16string QuickSettingsView::GetDetailedViewAccessibleName() const {
@@ -263,34 +242,9 @@ bool QuickSettingsView::IsDetailedViewShown() const {
   return detailed_view_container_->GetVisible();
 }
 
-gfx::Size QuickSettingsView::CalculatePreferredSize() const {
-  int media_controls_container_height =
-      media_controls_container_ ? media_controls_container_->GetExpandedHeight()
-                                : 0;
-  return gfx::Size(kRevampedTrayMenuWidth,
-                   temporary_buttons_container_->GetPreferredSize().height() +
-                       header_->GetPreferredSize().height() +
-                       feature_tiles_container_->GetPreferredSize().height() +
-                       page_indicator_view_->GetExpandedHeight() +
-                       sliders_container_->GetHeight() +
-                       media_controls_container_height +
-                       footer_->GetPreferredSize().height());
-}
-
 void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_SCROLL_FLING_START)
     controller_->Fling(event->details().velocity_y());
-}
-
-void QuickSettingsView::Layout() {
-  if (system_tray_container_->GetVisible())
-    system_tray_container_->SetBoundsRect(GetContentsBounds());
-  else if (detailed_view_container_->GetVisible())
-    detailed_view_container_->SetBoundsRect(GetContentsBounds());
-}
-
-void QuickSettingsView::ChildPreferredSizeChanged(views::View* child) {
-  PreferredSizeChanged();
 }
 
 void QuickSettingsView::AddTemporaryDetailedViewButtons() {
