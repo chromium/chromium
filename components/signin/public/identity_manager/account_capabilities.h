@@ -37,6 +37,7 @@ class AccountCapabilities {
   base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountCapabilities(
       JNIEnv* env) const;
 #endif
+  // Keep sorted alphabetically.
 
   // Chrome can display the email address for accounts with this capability.
   signin::Tribool can_have_email_address_displayed() const;
@@ -52,15 +53,15 @@ class AccountCapabilities {
   // this capability.
   signin::Tribool can_stop_parental_supervision() const;
 
-  // Chrome applies parental controls to accounts with this capability.
-  signin::Tribool is_subject_to_parental_controls() const;
+  // Chrome can toggle auto updates with this capability.
+  signin::Tribool can_toggle_auto_updates() const;
 
   // Chrome can send user data to Google servers for machine learning purposes
   // with this capability.
   signin::Tribool is_allowed_for_machine_learning() const;
 
-  // Chrome can toggle auto updates with this capability.
-  signin::Tribool can_toggle_auto_updates() const;
+  // Chrome applies parental controls to accounts with this capability.
+  signin::Tribool is_subject_to_parental_controls() const;
 
   // Whether none of the capabilities has `signin::Tribool::kUnknown`.
   bool AreAllCapabilitiesKnown() const;

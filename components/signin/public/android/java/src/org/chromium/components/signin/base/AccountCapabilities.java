@@ -64,28 +64,8 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canOfferExtendedSyncPromos capability value.
+     * Please keep the list of capability getters alphabetically sorted.
      */
-    public @Tribool int canOfferExtendedSyncPromos() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME);
-    }
-
-    /**
-     * @return isSubjectToParentalControls capability value.
-     */
-    public @Tribool int isSubjectToParentalControls() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
-    }
-
-    /**
-     * @return isAllowedForMachineLearning capability value.
-     */
-    public @Tribool int isAllowedForMachineLearning() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME);
-    }
 
     /**
      * @return canHaveEmailAddressDisplayed capability value.
@@ -93,6 +73,14 @@ public class AccountCapabilities {
     public @Tribool int canHaveEmailAddressDisplayed() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME);
+    }
+
+    /**
+     * @return canOfferExtendedSyncPromos capability value.
+     */
+    public @Tribool int canOfferExtendedSyncPromos() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME);
     }
 
     /**
@@ -116,6 +104,22 @@ public class AccountCapabilities {
      */
     public @Tribool int canToggleAutoUpdates() {
         return getCapabilityByName(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME);
+    }
+
+    /**
+     * @return isAllowedForMachineLearning capability value.
+     */
+    public @Tribool int isAllowedForMachineLearning() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME);
+    }
+
+    /**
+     * @return isSubjectToParentalControls capability value.
+     */
+    public @Tribool int isSubjectToParentalControls() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
     }
 
     /**

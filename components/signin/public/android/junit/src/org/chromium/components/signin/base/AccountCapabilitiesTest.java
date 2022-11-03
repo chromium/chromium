@@ -40,6 +40,7 @@ public final class AccountCapabilitiesTest {
     /**
      * Returns the capability value for the specified capability name
      * from the appropriate getter in AccountCapabilities.
+     * Please keep the list of capabilities alphabetically sorted.
      */
     public static @Tribool int getCapability(
             String capabilityName, AccountCapabilities capabilities) {
@@ -50,14 +51,14 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canOfferExtendedSyncPromos();
             case AccountCapabilitiesConstants.CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME:
                 return capabilities.canRunChromePrivacySandboxTrials();
-            case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
-                return capabilities.isSubjectToParentalControls();
-            case AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME:
-                return capabilities.isAllowedForMachineLearning();
             case AccountCapabilitiesConstants.CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME:
                 return capabilities.canStopParentalSupervision();
             case AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME:
                 return capabilities.canToggleAutoUpdates();
+            case AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME:
+                return capabilities.isAllowedForMachineLearning();
+            case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
+                return capabilities.isSubjectToParentalControls();
         }
         assert false : "Capability name is not known.";
         return -1;
@@ -84,28 +85,28 @@ public final class AccountCapabilitiesTest {
                         .value(AccountCapabilitiesConstants
                                         .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME),
                 new ParameterSet()
+                        .name("CanOfferExtendedChromeSyncPromos")
+                        .value(AccountCapabilitiesConstants
+                                        .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME),
+                new ParameterSet()
                         .name("CanRunChromePrivacySandboxTrials")
                         .value(AccountCapabilitiesConstants
                                         .CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME),
                 new ParameterSet()
-                        .name("IsSubjectToParentalControls")
-                        .value(AccountCapabilitiesConstants
-                                        .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME),
-                new ParameterSet()
                         .name("CanStopParentalSupervision")
                         .value(AccountCapabilitiesConstants
                                         .CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME),
-                new ParameterSet()
-                        .name("CanOfferExtendedChromeSyncPromos")
-                        .value(AccountCapabilitiesConstants
-                                        .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME),
                 new ParameterSet()
                         .name("CanToggleAutoUpdates")
                         .value(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME),
                 new ParameterSet()
                         .name("IsAllowedForMachineLearning")
                         .value(AccountCapabilitiesConstants
-                                        .IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME));
+                                        .IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME),
+                new ParameterSet()
+                        .name("IsSubjectToParentalControls")
+                        .value(AccountCapabilitiesConstants
+                                        .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {

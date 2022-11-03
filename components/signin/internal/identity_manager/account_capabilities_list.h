@@ -16,13 +16,7 @@
 // expanded differently in some places. The macro has the following signature:
 // ACCOUNT_CAPABILITY(cpp_label, java_label, name).
 
-ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
-                   IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
-                   "accountcapabilities/guydolldmfya")
-
-ACCOUNT_CAPABILITY(kIsAllowedForMachineLearningCapabilityName,
-                   IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,
-                   "accountcapabilities/g42tslldmfya")
+// Please keep the list alphabetically sorted by the capability identifiers.
 
 ACCOUNT_CAPABILITY(kCanHaveEmailAddressDisplayedCapabilityName,
                    CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
@@ -43,3 +37,11 @@ ACCOUNT_CAPABILITY(kCanStopParentalSupervisionCapabilityName,
 ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
                    CAN_TOGGLE_AUTO_UPDATES_NAME,
                    "accountcapabilities/gu4dmlldmfya")
+
+ACCOUNT_CAPABILITY(kIsAllowedForMachineLearningCapabilityName,
+                   IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,
+                   "accountcapabilities/g42tslldmfya")
+
+ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
+                   IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
+                   "accountcapabilities/guydolldmfya")
