@@ -1072,7 +1072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.Payload{Operation}.Success{FilePath}"
-    enum="BooleanSuccess" expires_after="2023-04-24">
+    enum="BooleanSuccess" expires_after="2023-05-03">
   <owner>alanding@google.com</owner>
   <owner>cros-sharesheet@google.com</owner>
   <summary>
@@ -1088,8 +1088,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".UnknownPath" summary="file path for unknown mount point"/>
   </token>
   <token key="Operation">
-    <variant name="Open" summary="opening of file for adding to payload"/>
-    <variant name="Read" summary="reading of file from payload"/>
+    <variant name=".Open" summary="opening of file for adding to payload"/>
+    <variant name=".Read" summary="reading of file from payload"/>
   </token>
 </histogram>
 
