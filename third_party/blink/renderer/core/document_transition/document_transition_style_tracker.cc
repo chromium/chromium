@@ -230,8 +230,6 @@ DocumentTransitionStyleTracker::DocumentTransitionStyleTracker(
     element_data->container_properties.emplace_back(
         LayoutSize(transition_state_element.border_box_size_in_css_space),
         TransformationMatrix(transition_state_element.viewport_matrix));
-    element_data->cached_container_properties =
-        element_data->container_properties.back();
     element_data->old_snapshot_id = transition_state_element.snapshot_id;
 
     element_data->element_index = transition_state_element.paint_order;
@@ -241,8 +239,8 @@ DocumentTransitionStyleTracker::DocumentTransitionStyleTracker(
     element_data->visual_overflow_rect_in_layout_space =
         PhysicalRect::EnclosingRect(
             transition_state_element.overflow_rect_in_layout_space);
-    element_data->cached_visual_overflow_rect_in_layout_space =
-        element_data->visual_overflow_rect_in_layout_space;
+
+    element_data->CacheGeometryState();
 
     element_data_map_.insert(tag_name, std::move(element_data));
   }
@@ -481,15 +479,6 @@ void DocumentTransitionStyleTracker::CaptureResolved() {
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
     element_data->target_element = nullptr;
-
-    // This could be empty if the element was uncontained and was ignored for a
-    // transition.
-    if (!element_data->container_properties.empty()) {
-      element_data->cached_container_properties =
-          element_data->container_properties.back();
-    }
-    element_data->cached_visual_overflow_rect_in_layout_space =
-        element_data->visual_overflow_rect_in_layout_space;
     element_data->effect_node = nullptr;
   }
   root_effect_node_ = nullptr;
@@ -872,6 +861,11 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
       static_cast<DocumentTransitionContentElement*>(pseudo_element)
           ->SetIntrinsicSize(size);
     }
+
+    // Ensure that the cached state stays in sync with the current state while
+    // we're capturing.
+    if (state_ == State::kCapturing)
+      element_data->CacheGeometryState();
 
     needs_style_invalidation = true;
   }
@@ -1328,11 +1322,17 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
 
       // Incoming inset also only makes sense if the tag is a new shared element
       // (not a new root).
-      absl::optional<String> incoming_inset = ComputeInsetDifference(
-          element_data->visual_overflow_rect_in_layout_space,
-          LayoutRect(LayoutPoint(), element_data->container_properties.back()
-                                        .border_box_size_in_css_space),
-          device_pixel_ratio_);
+      const bool has_new_image = element_data->new_snapshot_id.IsValid();
+      absl::optional<String> incoming_inset =
+          has_new_image
+              ? ComputeInsetDifference(
+                    element_data->visual_overflow_rect_in_layout_space,
+                    LayoutRect(LayoutPoint(),
+                               element_data->container_properties.back()
+                                   .border_box_size_in_css_space),
+                    device_pixel_ratio_)
+              : absl::nullopt;
+
       if (incoming_inset) {
         builder.AddIncomingObjectViewBox(document_transition_tag,
                                          *incoming_inset);
@@ -1341,12 +1341,14 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
 
     // Outgoing inset only makes sense if the tag is an old shared element (not
     // an old root).
-    if (!tag_is_old_root) {
+    const bool has_old_image = element_data->old_snapshot_id.IsValid();
+    if (has_old_image && !tag_is_old_root) {
       absl::optional<String> outgoing_inset = ComputeInsetDifference(
           element_data->cached_visual_overflow_rect_in_layout_space,
           LayoutRect(LayoutPoint(), element_data->cached_container_properties
                                         .border_box_size_in_css_space),
           device_pixel_ratio_);
+
       if (outgoing_inset) {
         builder.AddOutgoingObjectViewBox(document_transition_tag,
                                          *outgoing_inset);
@@ -1420,6 +1422,17 @@ LayoutSize DocumentTransitionStyleTracker::ElementData::GetIntrinsicSize(
           ? cached_visual_overflow_rect_in_layout_space.size.ToLayoutSize()
           : visual_overflow_rect_in_layout_space.size.ToLayoutSize();
   return box_size;
+}
+
+void DocumentTransitionStyleTracker::ElementData::CacheGeometryState() {
+  // This could be empty if the element was uncontained and was ignored for a
+  // transition.
+  DCHECK_LT(container_properties.size(), 2u);
+
+  if (!container_properties.empty())
+    cached_container_properties = container_properties.back();
+  cached_visual_overflow_rect_in_layout_space =
+      visual_overflow_rect_in_layout_space;
 }
 
 }  // namespace blink

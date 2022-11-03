@@ -180,7 +180,11 @@ class DocumentTransitionStyleTracker
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
 
+    // Returns the intrinsic size for the element's snapshot.
     LayoutSize GetIntrinsicSize(bool use_cached_data);
+
+    // Caches the current geometry state for the old snapshot.
+    void CacheGeometryState();
 
     // The element in the current DOM whose state is being tracked and mirrored
     // into the corresponding container pseudo element.
