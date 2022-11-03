@@ -102,7 +102,8 @@ void InterstitialHTMLSource::StartDataRequest(
         IDR_SECURITY_INTERSTITIAL_UI_HTML);
   }
 
-  std::move(callback).Run(base::RefCountedString::TakeString(&html));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(html)));
 }
 
 #pragma mark - InterstitialUI

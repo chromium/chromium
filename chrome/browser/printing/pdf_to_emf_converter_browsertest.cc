@@ -142,7 +142,8 @@ class PdfToEmfConverterBrowserTest : public InProcessBrowserTest {
     if (pdf_data_str.empty())
       return false;
 
-    test_input_ = base::RefCountedString::TakeString(&pdf_data_str);
+    test_input_ =
+        base::MakeRefCounted<base::RefCountedString>(std::move(pdf_data_str));
     return true;
   }
 

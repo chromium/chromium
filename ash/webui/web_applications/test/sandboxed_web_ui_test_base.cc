@@ -37,7 +37,8 @@ void HandleTestFileRequestCallback(
   std::string contents;
   CHECK(base::ReadFileToString(test_file_path, &contents)) << test_file_path;
 
-  std::move(callback).Run(base::RefCountedString::TakeString(&contents));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(contents)));
 }
 
 bool TestRequestHandlerShouldHandleRequest(

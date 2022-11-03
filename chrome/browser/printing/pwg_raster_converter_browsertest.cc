@@ -58,7 +58,8 @@ void GetPdfData(const char* file_name,
   std::string pdf_data_str;
   ASSERT_TRUE(base::ReadFileToString(pdf_file, &pdf_data_str));
   ASSERT_GT(pdf_data_str.length(), 0U);
-  *pdf_data = base::RefCountedString::TakeString(&pdf_data_str);
+  *pdf_data =
+      base::MakeRefCounted<base::RefCountedString>(std::move(pdf_data_str));
 }
 
 std::string HashData(const char* data, size_t len) {

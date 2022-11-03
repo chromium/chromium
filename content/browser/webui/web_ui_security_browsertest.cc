@@ -577,10 +577,8 @@ class UntrustedSourceWithCorsSupport : public URLDataSource {
   void StartDataRequest(const GURL& url,
                         const WebContents::Getter& wc_getter,
                         GotDataCallback callback) override {
-    std::string dummy_html = "<html><body>dummy</body></html>";
-    scoped_refptr<base::RefCountedString> response =
-        base::RefCountedString::TakeString(&dummy_html);
-    std::move(callback).Run(response.get());
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
+        std::string("<html><body>dummy</body></html>")));
   }
 
  private:

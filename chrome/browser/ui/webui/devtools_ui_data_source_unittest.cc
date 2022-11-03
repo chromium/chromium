@@ -54,13 +54,15 @@ class TestDevToolsDataSource : public DevToolsDataSource {
       int load_flags,
       GotDataCallback callback) override {
     std::string result = "url: " + url.spec();
-    std::move(callback).Run(base::RefCountedString::TakeString(&result));
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(std::move(result)));
   }
 
   void StartFileRequest(const std::string& path,
                         GotDataCallback callback) override {
     std::string result = "file: " + path;
-    std::move(callback).Run(base::RefCountedString::TakeString(&result));
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(std::move(result)));
   }
 };
 

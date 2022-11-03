@@ -51,7 +51,7 @@ Binary Binary::fromVector(std::vector<uint8_t> data) {
 
 // static
 Binary Binary::fromString(std::string data) {
-  return Binary(base::RefCountedString::TakeString(&data));
+  return Binary(base::MakeRefCounted<base::RefCountedString>(std::move(data)));
 }
 
 // static

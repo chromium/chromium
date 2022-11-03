@@ -451,9 +451,9 @@ class MockWebUIDataSource : public content::URLDataSource {
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override {
-    std::string dummy_html = "<html><body>Dummy</body></html>";
     scoped_refptr<base::RefCountedString> response =
-        base::RefCountedString::TakeString(&dummy_html);
+        base::MakeRefCounted<base::RefCountedString>(
+            std::string("<html><body>Dummy</body></html>"));
     std::move(callback).Run(response.get());
   }
 

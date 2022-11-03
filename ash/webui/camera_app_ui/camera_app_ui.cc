@@ -66,7 +66,8 @@ void HandleLocalOverrideRequest(
                 std::string result;
                 if (base::ReadFileToString(file_path, &result)) {
                   std::move(callback).Run(
-                      base::RefCountedString::TakeString(&result));
+                      base::MakeRefCounted<base::RefCountedString>(
+                          std::move(result)));
                 } else {
                   std::move(callback).Run(nullptr);
                 }

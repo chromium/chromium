@@ -86,10 +86,10 @@ std::unique_ptr<OSExchangeDataProvider> XOSExchangeDataProvider::Clone() const {
 }
 
 void XOSExchangeDataProvider::MarkOriginatedFromRenderer() {
-  std::string empty;
-  format_map_.Insert(x11::GetAtom(kRendererTaint),
-                     scoped_refptr<base::RefCountedMemory>(
-                         base::RefCountedString::TakeString(&empty)));
+  format_map_.Insert(
+      x11::GetAtom(kRendererTaint),
+      scoped_refptr<base::RefCountedMemory>(
+          base::MakeRefCounted<base::RefCountedString>(std::string())));
 }
 
 bool XOSExchangeDataProvider::DidOriginateFromRenderer() const {
@@ -97,10 +97,10 @@ bool XOSExchangeDataProvider::DidOriginateFromRenderer() const {
 }
 
 void XOSExchangeDataProvider::MarkAsFromPrivileged() {
-  std::string empty;
-  format_map_.Insert(x11::GetAtom(kFromPrivileged),
-                     scoped_refptr<base::RefCountedMemory>(
-                         base::RefCountedString::TakeString(&empty)));
+  format_map_.Insert(
+      x11::GetAtom(kFromPrivileged),
+      scoped_refptr<base::RefCountedMemory>(
+          base::MakeRefCounted<base::RefCountedString>(std::string())));
 }
 
 bool XOSExchangeDataProvider::IsFromPrivileged() const {
@@ -111,9 +111,9 @@ void XOSExchangeDataProvider::SetString(const std::u16string& text_data) {
   if (HasString())
     return;
 
-  std::string utf8 = base::UTF16ToUTF8(text_data);
   scoped_refptr<base::RefCountedMemory> mem(
-      base::RefCountedString::TakeString(&utf8));
+      base::MakeRefCounted<base::RefCountedString>(
+          base::UTF16ToUTF8(text_data)));
 
   format_map_.Insert(x11::GetAtom(kMimeTypeText), mem);
   format_map_.Insert(x11::GetAtom(kMimeTypeLinuxText), mem);
@@ -158,7 +158,8 @@ void XOSExchangeDataProvider::SetURL(const GURL& url,
     netscape_url += base::UTF16ToUTF8(title);
     format_map_.Insert(x11::GetAtom(kNetscapeURL),
                        scoped_refptr<base::RefCountedMemory>(
-                           base::RefCountedString::TakeString(&netscape_url)));
+                           base::MakeRefCounted<base::RefCountedString>(
+                               std::move(netscape_url))));
   }
 }
 
@@ -177,9 +178,9 @@ void XOSExchangeDataProvider::SetFilenames(
       paths.push_back(url_spec);
   }
 
-  std::string joined_data = base::JoinString(paths, "\n");
   scoped_refptr<base::RefCountedMemory> mem(
-      base::RefCountedString::TakeString(&joined_data));
+      base::MakeRefCounted<base::RefCountedString>(
+          base::JoinString(paths, "\n")));
   format_map_.Insert(x11::GetAtom(kMimeTypeURIList), mem);
 }
 
@@ -406,14 +407,13 @@ void XOSExchangeDataProvider::SetFileContents(
   //   file itself by copying the data from application/octet-stream. To make
   //   things simpler for Chrome, we always 'fail' and let the destination do
   //   the work.
-  std::string failure("F");
-  InsertData(x11::GetAtom(kXdndDirectSave0),
-             scoped_refptr<base::RefCountedMemory>(
-                 base::RefCountedString::TakeString(&failure)));
-  std::string file_contents_copy = file_contents;
+  InsertData(
+      x11::GetAtom(kXdndDirectSave0),
+      scoped_refptr<base::RefCountedMemory>(
+          base::MakeRefCounted<base::RefCountedString>(std::string("F"))));
   InsertData(x11::GetAtom(kMimeTypeOctetStream),
              scoped_refptr<base::RefCountedMemory>(
-                 base::RefCountedString::TakeString(&file_contents_copy)));
+                 base::MakeRefCounted<base::RefCountedString>(file_contents)));
 }
 
 bool XOSExchangeDataProvider::GetFileContents(

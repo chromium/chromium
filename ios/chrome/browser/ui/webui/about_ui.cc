@@ -159,8 +159,7 @@ void AboutUIHTMLSource::StartDataRequest(
 void AboutUIHTMLSource::FinishDataRequest(
     const std::string& html,
     web::URLDataSourceIOS::GotDataCallback callback) {
-  std::string html_copy(html);
-  std::move(callback).Run(base::RefCountedString::TakeString(&html_copy));
+  std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(html));
 }
 
 std::string AboutUIHTMLSource::GetMimeType(const std::string& path) const {

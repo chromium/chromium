@@ -111,7 +111,7 @@ Notification::AppMetadata Notification::AppMetadata::FromValue(
   std::string icon_str;
   base::Base64Decode(*(value.FindStringPath(kIcon)), &icon_str);
   gfx::Image decode_icon = gfx::Image::CreateFrom1xPNGBytes(
-      base::RefCountedString::TakeString(&icon_str));
+      base::MakeRefCounted<base::RefCountedString>(std::move(icon_str)));
 
   return Notification::AppMetadata(visible_app_name_string_value,
                                    *(value.FindStringPath(kPackageName)),

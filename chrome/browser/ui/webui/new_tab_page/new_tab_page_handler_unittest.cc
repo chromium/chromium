@@ -499,11 +499,10 @@ TEST_F(NewTabPageHandlerTest, Histograms) {
 
 TEST_F(NewTabPageHandlerTest, GetAnimatedDoodle) {
   search_provider_logos::EncodedLogo logo;
-  std::string encoded_image("light image");
-  std::string dark_encoded_image("dark image");
-  logo.encoded_image = base::RefCountedString::TakeString(&encoded_image);
+  logo.encoded_image =
+      base::MakeRefCounted<base::RefCountedString>(std::string("light image"));
   logo.dark_encoded_image =
-      base::RefCountedString::TakeString(&dark_encoded_image);
+      base::MakeRefCounted<base::RefCountedString>(std::string("dark image"));
   logo.metadata.type = search_provider_logos::LogoType::ANIMATED;
   logo.metadata.on_click_url = GURL("https://doodle.com/on_click_url");
   logo.metadata.alt_text = "alt text";

@@ -31,9 +31,8 @@ class OSExchangeDataProviderX11Test : public testing::Test {
         event_source(x11::Connection::Get()) {}
 
   void AddURLList(const std::string& list_contents) {
-    std::string contents_copy = list_contents;
     scoped_refptr<base::RefCountedMemory> mem(
-        base::RefCountedString::TakeString(&contents_copy));
+        base::MakeRefCounted<base::RefCountedString>(list_contents));
 
     provider.format_map_.Insert(x11::GetAtom(kMimeTypeURIList), mem);
   }

@@ -47,7 +47,7 @@ scoped_refptr<base::RefCountedMemory> ReadFile(
     const base::FilePath& absolute_resource_path) {
   std::string data;
   base::ReadFileToString(absolute_resource_path, &data);
-  return base::RefCountedString::TakeString(&data);
+  return base::MakeRefCounted<base::RefCountedString>(std::move(data));
 }
 
 bool ShouldSourceFromComponent(

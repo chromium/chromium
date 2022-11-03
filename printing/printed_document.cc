@@ -97,7 +97,7 @@ void DebugDumpSettings(const std::u16string& doc_name,
   base::JSONWriter::WriteWithOptions(
       job_settings, base::JSONWriter::OPTIONS_PRETTY_PRINT, &settings_str);
   scoped_refptr<base::RefCountedMemory> data =
-      base::RefCountedString::TakeString(&settings_str);
+      base::MakeRefCounted<base::RefCountedString>(std::move(settings_str));
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&DebugDumpDataTask, doc_name, FILE_PATH_LITERAL(".json"),

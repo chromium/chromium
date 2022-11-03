@@ -69,20 +69,6 @@ RefCountedString::~RefCountedString() = default;
 
 RefCountedString::RefCountedString(std::string str) : data_(std::move(str)) {}
 
-// static
-scoped_refptr<RefCountedString> RefCountedString::TakeString(
-    std::string* to_destroy) {
-  return TakeString(std::move(*to_destroy));
-}
-
-// static
-scoped_refptr<RefCountedString> RefCountedString::TakeString(
-    std::string&& str) {
-  auto self = MakeRefCounted<RefCountedString>();
-  str.swap(self->data_);
-  return self;
-}
-
 const unsigned char* RefCountedString::front() const {
   return data_.empty() ? nullptr
                        : reinterpret_cast<const unsigned char*>(data_.data());

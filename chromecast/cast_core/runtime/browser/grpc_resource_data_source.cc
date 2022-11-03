@@ -106,7 +106,8 @@ void GrpcResourceDataSource::ReadResourceFile(
 
   std::string text;
   base::ReadFileToString(base::FilePath(resource_file_path), &text);
-  std::move(callback).Run(base::RefCountedString::TakeString(&text));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(text)));
 }
 
 // The Path can either be a filename or a remote url string starting with "?".

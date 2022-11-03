@@ -59,8 +59,8 @@ void TestDataExchangeDelegate::SendFileInfo(
   for (const auto& file : files) {
     lines.push_back("file://" + file.path.value());
   }
-  std::string result = base::JoinString(lines, "\r\n");
-  std::move(callback).Run(base::RefCountedString::TakeString(&result));
+  std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
+      base::JoinString(lines, "\r\n")));
 }
 
 bool TestDataExchangeDelegate::HasUrlsInPickle(
@@ -79,9 +79,9 @@ void TestDataExchangeDelegate::RunSendPickleCallback(std::vector<GURL> urls) {
   for (const auto& url : urls) {
     lines.push_back(url.spec());
   }
-  std::string result = base::JoinString(lines, "\r\n");
   std::move(send_pickle_callback_)
-      .Run(base::RefCountedString::TakeString(&result));
+      .Run(base::MakeRefCounted<base::RefCountedString>(
+          base::JoinString(lines, "\r\n")));
 }
 
 std::vector<ui::FileInfo> TestDataExchangeDelegate::ParseFileSystemSources(

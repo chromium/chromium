@@ -834,13 +834,14 @@ class StaticURLDataSource : public content::URLDataSource {
         };
         self.onfetch = function(e) {};
        )";
-      std::move(callback).Run(base::RefCountedString::TakeString(&data));
+      std::move(callback).Run(
+          base::MakeRefCounted<base::RefCountedString>(std::move(data)));
       return;
     }
 
     // Otherwise, serve an empty page.
-    std::string data;
-    std::move(callback).Run(base::RefCountedString::TakeString(&data));
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(std::string()));
   }
   std::string GetMimeType(const GURL& url) override {
     if (url.ExtractFileName() == "sw.js")

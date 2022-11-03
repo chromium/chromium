@@ -230,7 +230,7 @@ scoped_refptr<base::RefCountedMemory> ReadCursorFromTheme(
 
     std::string contents;
     if (base::ReadFileToString(cursor_dir.Append(name), &contents))
-      return base::RefCountedString::TakeString(&contents);
+      return base::MakeRefCounted<base::RefCountedString>(std::move(contents));
 
     if (base_themes.empty())
       base_themes = GetBaseThemes(theme_dir.Append(kThemeInfo));

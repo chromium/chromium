@@ -88,12 +88,11 @@ class HoldingSpaceServicePrintToPdfIntegrationBrowserTest
     pdf_printer_handler_->SetPdfSavedClosureForTesting(run_loop.QuitClosure());
     pdf_printer_handler_->SetPrintToPdfPathForTesting(file_path);
 
-    std::string data;
-    pdf_printer_handler_->StartPrint(job_title,
-                                     /*settings=*/base::Value::Dict(),
-                                     base::RefCountedString::TakeString(&data),
-                                     /*callback=*/base::DoNothing());
-
+    pdf_printer_handler_->StartPrint(
+        job_title,
+        /*settings=*/base::Value::Dict(),
+        base::MakeRefCounted<base::RefCountedString>(std::string()),
+        /*callback=*/base::DoNothing());
     run_loop.Run();
   }
 

@@ -50,7 +50,8 @@ void HandleRequest(const std::string& url_path,
     CHECK(base::ReadFileToString(path, &contents)) << path.value();
   }
 
-  std::move(callback).Run(base::RefCountedString::TakeString(&contents));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(contents)));
 }
 
 void SetRequestFilterForDataSource(content::WebUIDataSource& data_source) {

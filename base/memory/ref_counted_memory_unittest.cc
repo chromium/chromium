@@ -76,10 +76,8 @@ TEST(RefCountedMemoryUnitTest, RefCountedBytesMutable) {
 }
 
 TEST(RefCountedMemoryUnitTest, RefCountedString) {
-  std::string s("destroy me");
-  scoped_refptr<RefCountedMemory> mem = RefCountedString::TakeString(&s);
-
-  EXPECT_EQ(0U, s.size());
+  scoped_refptr<RefCountedMemory> mem =
+      base::MakeRefCounted<base::RefCountedString>(std::string("destroy me"));
 
   ASSERT_EQ(10U, mem->size());
   EXPECT_EQ('d', mem->front()[0]);
@@ -90,8 +88,8 @@ TEST(RefCountedMemoryUnitTest, RefCountedString) {
 }
 
 TEST(RefCountedMemoryUnitTest, Equals) {
-  std::string s1("same");
-  scoped_refptr<RefCountedMemory> mem1 = RefCountedString::TakeString(&s1);
+  scoped_refptr<RefCountedMemory> mem1 =
+      base::MakeRefCounted<base::RefCountedString>(std::string("same"));
 
   std::vector<unsigned char> d2 = {'s', 'a', 'm', 'e'};
   scoped_refptr<RefCountedMemory> mem2 = RefCountedBytes::TakeVector(&d2);
@@ -99,7 +97,8 @@ TEST(RefCountedMemoryUnitTest, Equals) {
   EXPECT_TRUE(mem1->Equals(mem2));
 
   std::string s3("diff");
-  scoped_refptr<RefCountedMemory> mem3 = RefCountedString::TakeString(&s3);
+  scoped_refptr<RefCountedMemory> mem3 =
+      base::MakeRefCounted<base::RefCountedString>(std::move(s3));
 
   EXPECT_FALSE(mem1->Equals(mem3));
   EXPECT_FALSE(mem2->Equals(mem3));
@@ -107,7 +106,8 @@ TEST(RefCountedMemoryUnitTest, Equals) {
 
 TEST(RefCountedMemoryUnitTest, EqualsNull) {
   std::string s("str");
-  scoped_refptr<RefCountedMemory> mem = RefCountedString::TakeString(&s);
+  scoped_refptr<RefCountedMemory> mem =
+      base::MakeRefCounted<base::RefCountedString>(std::move(s));
   EXPECT_FALSE(mem->Equals(nullptr));
 }
 

@@ -72,8 +72,8 @@ void SharedResourcesDataSourceIOS::StartDataRequest(
 
   int idr = resource ? resource->id : -1;
   if (idr == IDR_WEBUI_CSS_TEXT_DEFAULTS_CSS) {
-    std::string css = webui::GetWebUiCssTextDefaults();
-    bytes = base::RefCountedString::TakeString(&css);
+    bytes = base::MakeRefCounted<base::RefCountedString>(
+        webui::GetWebUiCssTextDefaults());
   } else {
     bytes = web_client->GetDataResourceBytes(idr);
   }
