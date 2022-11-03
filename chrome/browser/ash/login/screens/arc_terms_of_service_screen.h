@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/ash/login/arc_terms_of_service_screen_handler.h"
 
@@ -51,7 +52,7 @@ class ArcTermsOfServiceScreen : public BaseScreen,
   static void MaybeLaunchArcSettings(Profile* profile);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  ArcTermsOfServiceScreen(ArcTermsOfServiceScreenView* view,
+  ArcTermsOfServiceScreen(base::WeakPtr<ArcTermsOfServiceScreenView> view,
                           const ScreenExitCallback& exit_callback);
 
   ArcTermsOfServiceScreen(const ArcTermsOfServiceScreen&) = delete;
@@ -76,12 +77,12 @@ class ArcTermsOfServiceScreen : public BaseScreen,
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
-  ArcTermsOfServiceScreenView* view_;
+  base::WeakPtr<ArcTermsOfServiceScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
 

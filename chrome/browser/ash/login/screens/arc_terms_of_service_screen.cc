@@ -7,6 +7,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -119,23 +120,19 @@ void ArcTermsOfServiceScreen::MaybeLaunchArcSettings(Profile* profile) {
 }
 
 ArcTermsOfServiceScreen::ArcTermsOfServiceScreen(
-    ArcTermsOfServiceScreenView* view,
+    base::WeakPtr<ArcTermsOfServiceScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(ArcTermsOfServiceScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_) {
-    view_->AddObserver(this);
-    view_->Bind(this);
-  }
+  view_->AddObserver(this);
 }
 
 ArcTermsOfServiceScreen::~ArcTermsOfServiceScreen() {
   if (view_) {
     view_->RemoveObserver(this);
-    view_->Bind(nullptr);
   }
 }
 
@@ -196,10 +193,10 @@ void ArcTermsOfServiceScreen::HideImpl() {
     view_->Hide();
 }
 
-void ArcTermsOfServiceScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void ArcTermsOfServiceScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (!IsArcTosUserAction(action_id)) {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
     return;
   }
   RecordUserAction(action_id);
@@ -231,7 +228,7 @@ void ArcTermsOfServiceScreen::OnAccept(bool review_arc_settings) {
 
 void ArcTermsOfServiceScreen::OnViewDestroyed(
     ArcTermsOfServiceScreenView* view) {
-  DCHECK_EQ(view, view_);
+  DCHECK_EQ(view, view_.get());
   view_->RemoveObserver(this);
   view_ = nullptr;
 }

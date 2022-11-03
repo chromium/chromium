@@ -642,7 +642,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnSyncConsentScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<ArcTermsOfServiceScreen>(
-      oobe_ui->GetView<ArcTermsOfServiceScreenHandler>(),
+      oobe_ui->GetView<ArcTermsOfServiceScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnArcTermsOfServiceScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<RecommendAppsScreen>(

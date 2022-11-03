@@ -549,7 +549,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         std::make_unique<MockArcTermsOfServiceScreenView>();
     mock_arc_terms_of_service_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockArcTermsOfServiceScreen>(
-            mock_arc_terms_of_service_screen_view_.get(),
+            mock_arc_terms_of_service_screen_view_->AsWeakPtr(),
             base::BindRepeating(
                 &WizardController::OnArcTermsOfServiceScreenExit,
                 base::Unretained(wizard_controller))));
@@ -642,7 +642,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         std::make_unique<MockArcTermsOfServiceScreenView>();
     mock_arc_terms_of_service_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockArcTermsOfServiceScreen>(
-            mock_arc_terms_of_service_screen_view_.get(),
+            mock_arc_terms_of_service_screen_view_->AsWeakPtr(),
             base::BindRepeating(
                 &WizardController::OnArcTermsOfServiceScreenExit,
                 base::Unretained(wizard_controller))));

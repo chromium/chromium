@@ -51,15 +51,10 @@ using sync_pb::UserConsentTypes;
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId ArcTermsOfServiceScreenView::kScreenId;
-
 ArcTermsOfServiceScreenHandler::ArcTermsOfServiceScreenHandler()
     : BaseScreenHandler(kScreenId),
       is_child_account_(
-          user_manager::UserManager::Get()->IsLoggedInAsChildUser()) {
-  set_user_acted_method_path_deprecated(
-      "login.ArcTermsOfServiceScreen.userActed");
-}
+          user_manager::UserManager::Get()->IsLoggedInAsChildUser()) {}
 
 ArcTermsOfServiceScreenHandler::~ArcTermsOfServiceScreenHandler() {
   OobeUI* oobe_ui = GetOobeUI();
@@ -73,7 +68,6 @@ ArcTermsOfServiceScreenHandler::~ArcTermsOfServiceScreenHandler() {
     session_manager_observing_ = false;
     session_manager::SessionManager::Get()->RemoveObserver(this);
   }
-
   for (auto& observer : observer_list_)
     observer.OnViewDestroyed(this);
 }
@@ -104,7 +98,7 @@ void ArcTermsOfServiceScreenHandler::MaybeLoadPlayStoreToS(bool is_preload) {
   // If `loadPlayStoreToS` in the JS side was called before, ARC++ ToS will
   // only load when the country code has been changed.
   const std::string country_code = base::CountryCodeForCurrentTimezone();
-  CallJS("login.ArcTermsOfServiceScreen.loadPlayStoreToS", country_code);
+  CallExternalAPI("loadPlayStoreToS", country_code);
 }
 
 void ArcTermsOfServiceScreenHandler::OnCurrentScreenChanged(
@@ -274,23 +268,21 @@ void ArcTermsOfServiceScreenHandler::OnMetricsModeChanged(bool enabled,
                         : "arcTextMetricsManagedDisabled";
     }
   }
-  CallJS("login.ArcTermsOfServiceScreen.setMetricsMode", message, true);
+  CallExternalAPI("setMetricsMode", message, true);
 }
 
 void ArcTermsOfServiceScreenHandler::OnBackupAndRestoreModeChanged(
     bool enabled,
     bool managed) {
   backup_restore_managed_ = managed;
-  CallJS("login.ArcTermsOfServiceScreen.setBackupAndRestoreMode", enabled,
-         managed);
+  CallExternalAPI("setBackupAndRestoreMode", enabled, managed);
 }
 
 void ArcTermsOfServiceScreenHandler::OnLocationServicesModeChanged(
     bool enabled,
     bool managed) {
   location_services_managed_ = managed;
-  CallJS("login.ArcTermsOfServiceScreen.setLocationServicesMode", enabled,
-         managed);
+  CallExternalAPI("setLocationServicesMode", enabled, managed);
 }
 
 void ArcTermsOfServiceScreenHandler::AddObserver(
@@ -304,11 +296,7 @@ void ArcTermsOfServiceScreenHandler::RemoveObserver(
 }
 
 void ArcTermsOfServiceScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-
+  was_shown_ = true;
   // Demo mode setup flow requires different variant of Play Store terms. It
   // does not allow to skip, but instead has back button. Some options are not
   // displayed, because they are not relevant for demo mode usage.
@@ -332,10 +320,6 @@ void ArcTermsOfServiceScreenHandler::Hide() {
   pref_handler_.reset();
 }
 
-void ArcTermsOfServiceScreenHandler::Bind(ArcTermsOfServiceScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
 void ArcTermsOfServiceScreenHandler::StartNetworkAndTimeZoneObserving() {
   if (network_time_zone_observing_)
     return;
@@ -354,23 +338,20 @@ void ArcTermsOfServiceScreenHandler::StartSessionManagerObserving() {
   session_manager_observing_ = true;
 }
 
-void ArcTermsOfServiceScreenHandler::InitializeDeprecated() {
-  if (!show_on_init_) {
+void ArcTermsOfServiceScreenHandler::InitAfterJavascriptAllowed() {
+  if (!was_shown_) {
     // Send time zone information as soon as possible to able to pre-load the
     // Play Store ToS.
     GetOobeUI()->AddObserver(this);
     return;
   }
-
-  Show();
-  show_on_init_ = false;
 }
 
 void ArcTermsOfServiceScreenHandler::DoShow() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CHECK(profile);
 
-  CallJS("login.ArcTermsOfServiceScreen.clearDemoMode");
+  CallExternalAPI("clearDemoMode");
 
   // Enable ARC to match ArcSessionManager logic. ArcSessionManager expects that
   // ARC is enabled (prefs::kArcEnabled = true) on showing Terms of Service. If
@@ -383,8 +364,7 @@ void ArcTermsOfServiceScreenHandler::DoShow() {
   ShowInWebUI();
   arc_managed_ = arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile);
   is_child_account_ = user_manager::UserManager::Get()->IsLoggedInAsChildUser();
-  CallJS("login.ArcTermsOfServiceScreen.setArcManaged", arc_managed_,
-         is_child_account_);
+  CallExternalAPI("setArcManaged", arc_managed_, is_child_account_);
 
   MaybeLoadPlayStoreToS(/*is_preload=*/false);
   StartNetworkAndTimeZoneObserving();
@@ -397,7 +377,7 @@ void ArcTermsOfServiceScreenHandler::DoShow() {
 void ArcTermsOfServiceScreenHandler::DoShowForDemoModeSetup() {
   DCHECK(arc::IsArcDemoModeSetupFlow());
 
-  CallJS("login.ArcTermsOfServiceScreen.setupForDemoMode");
+  CallExternalAPI("setupForDemoMode");
   action_taken_ = false;
   ShowInWebUI();
   MaybeLoadPlayStoreToS(/*is_preload=*/false);
