@@ -1872,6 +1872,7 @@ static_library("ui") {
       "//device/bluetooth",
       "//device/bluetooth/strings:strings_grit",
       "//device/fido",
+      "//media/remoting:remoting_device_capability",
       "//services/device/public/cpp/hid",
       "//services/device/public/mojom",
       "//services/metrics/public/cpp:metrics_cpp",

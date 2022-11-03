@@ -416,6 +416,13 @@ void MediaSessionItemProducer::SetAudioSinkId(const std::string& id,
   it->second.SetAudioSinkId(sink_id);
 }
 
+media_session::mojom::RemotePlaybackMetadataPtr
+MediaSessionItemProducer::GetRemotePlaybackMetadataFromItem(
+    const std::string& id) {
+  auto* session = GetSession(id);
+  return session ? session->item()->GetRemotePlaybackMetadata() : nullptr;
+}
+
 base::CallbackListSubscription
 MediaSessionItemProducer::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
     const std::string& id,

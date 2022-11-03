@@ -105,18 +105,6 @@ class MediaNotificationService
   friend class MediaToolbarButtonControllerTest;
   friend class PresentationRequestNotificationProducerTest;
 
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceTest,
-                           HideAfterTimeoutAndActiveAgainOnPlay);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceTest,
-                           SessionIsRemovedImmediatelyWhenATabCloses);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceTest, DismissesMediaSession);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceTest,
-                           HidesInactiveNotifications);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceTest,
-                           HidingNotification_FeatureDisabled);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
-                           ShowSupplementalNotifications);
-
   // True if there are cast notifications associated with |web_contents|.
   bool HasCastNotificationsForWebContents(
       content::WebContents* web_contents) const;

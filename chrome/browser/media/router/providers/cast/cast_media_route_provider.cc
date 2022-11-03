@@ -65,17 +65,7 @@ media::VideoCodec ParseVideoCodec(const MediaSource& media_source) {
                                   &video_codec)) {
     return media::VideoCodec::kUnknown;
   }
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  // `StringToVideoCodec()` does not parse custom strings like "hevc" and
-  // "h264".
-  if (video_codec == "hevc") {
-    return media::VideoCodec::kHEVC;
-  }
-  if (video_codec == "h264") {
-    return media::VideoCodec::kH264;
-  }
-#endif
-  return media::StringToVideoCodec(video_codec);
+  return media::remoting::ParseVideoCodec(video_codec);
 }
 
 media::AudioCodec ParseAudioCodec(const MediaSource& media_source) {
@@ -84,14 +74,7 @@ media::AudioCodec ParseAudioCodec(const MediaSource& media_source) {
                                   &audio_codec)) {
     return media::AudioCodec::kUnknown;
   }
-  if (audio_codec == "aac") {
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    return media::AudioCodec::kAAC;
-#else
-    return media::AudioCodec::kUnknown;
-#endif
-  }
-  return media::StringToAudioCodec(audio_codec);
+  return media::remoting::ParseAudioCodec(audio_codec);
 }
 
 std::vector<MediaSinkInternal> GetRemotePlaybackMediaSourceCompatibleSinks(

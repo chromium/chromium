@@ -44,4 +44,29 @@ bool IsAudioCodecCompatible(const std::string& model_name,
   return (audio_codec == AudioCodec::kAAC) ||
          (audio_codec == AudioCodec::kOpus);
 }
+
+media::VideoCodec ParseVideoCodec(const std::string& codec_str) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // `StringToVideoCodec()` does not parse custom strings like "hevc" and
+  // "h264".
+  if (codec_str == "hevc") {
+    return media::VideoCodec::kHEVC;
+  }
+  if (codec_str == "h264") {
+    return media::VideoCodec::kH264;
+  }
+#endif
+  return media::StringToVideoCodec(codec_str);
+}
+
+media::AudioCodec ParseAudioCodec(const std::string& codec_str) {
+  if (codec_str == "aac") {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    return media::AudioCodec::kAAC;
+#else
+    return media::AudioCodec::kUnknown;
+#endif
+  }
+  return media::StringToAudioCodec(codec_str);
+}
 }  // namespace media::remoting

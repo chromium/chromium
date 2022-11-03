@@ -404,6 +404,7 @@ include_rules = [
   "+media/capabilities", # For InMemoryVideoDecodeStatsDB
   "+media/cdm/cdm_paths.h",
   "+media/cdm/win/media_foundation_cdm.h",
+  "+media/remoting/device_capability_checker.h",
   "+media/capture",
   "+media/midi",  # For midi switches
   "+media/mojo",  # For mojo media services.

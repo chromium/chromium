@@ -260,6 +260,15 @@ void MediaSessionNotificationItem::Freeze(base::OnceClosure unfrozen_callback) {
                      base::Unretained(this)));
 }
 
+media_session::mojom::RemotePlaybackMetadataPtr
+MediaSessionNotificationItem::GetRemotePlaybackMetadata() {
+  if (!session_info_ || !session_info_->remote_playback_metadata ||
+      session_info_->remote_playback_metadata->remote_playback_disabled) {
+    return nullptr;
+  }
+  return session_info_->remote_playback_metadata.Clone();
+}
+
 void MediaSessionNotificationItem::FlushForTesting() {
   media_controller_remote_.FlushForTesting();  // IN-TEST
 }

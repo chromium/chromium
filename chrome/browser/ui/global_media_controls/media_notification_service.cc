@@ -24,10 +24,11 @@
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
+#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
-#include "media/base/media_switches.h"
+#include "media/remoting/device_capability_checker.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -276,6 +277,29 @@ MediaNotificationService::CreateCastDialogControllerForSession(
   if (context_) {
     return media_router::MediaRouterUI::CreateWithStartPresentationContext(
         web_contents, std::move(context_));
+  }
+
+  // Initialize MediaRouterUI with Remote Playback Media Source if there is no
+  // default PresentationRequest associated with `web_contents`.
+  if (base::FeatureList::IsEnabled(
+          media_router::kMediaRemotingWithoutFullscreen)) {
+    base::WeakPtr<media_router::WebContentsPresentationManager>
+        presentation_manager =
+            media_router::WebContentsPresentationManager::Get(web_contents);
+    if (!presentation_manager ||
+        !presentation_manager->HasDefaultPresentationRequest()) {
+      auto remote_playback_metadata =
+          media_session_item_producer_->GetRemotePlaybackMetadataFromItem(id);
+      if (remote_playback_metadata) {
+        return media_router::MediaRouterUI::
+            CreateWithMediaSessionRemotePlayback(
+                web_contents,
+                media::remoting::ParseVideoCodec(
+                    remote_playback_metadata->video_codec),
+                media::remoting::ParseAudioCodec(
+                    remote_playback_metadata->audio_codec));
+      }
+    }
   }
 
   return media_router::MediaRouterUI::CreateWithDefaultMediaSource(

@@ -87,6 +87,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
 
   void SetAudioSinkId(const std::string& id, const std::string& sink_id);
 
+  media_session::mojom::RemotePlaybackMetadataPtr
+  GetRemotePlaybackMetadataFromItem(const std::string& id);
+
   base::CallbackListSubscription
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,

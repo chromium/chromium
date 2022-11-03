@@ -125,6 +125,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   bool frozen() const { return frozen_; }
 
+  // Returns nullptr if `remote_playback_disabled` is true in `session_info_`.
+  media_session::mojom::RemotePlaybackMetadataPtr GetRemotePlaybackMetadata();
+
   void FlushForTesting();
 
   void SetMediaControllerForTesting(

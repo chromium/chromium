@@ -95,6 +95,10 @@ class MediaRouteStarter : public content::PresentationObserver {
   // provide.
   static bool GetScreenCapturePermission(MediaCastMode cast_mode);
 
+  QueryResultManager* GetQueryResultManagerForTesting() const {
+    return query_result_manager_.get();
+  }
+
  private:
   friend class MediaRouteStarterTest;
   friend class MediaRouterViewsUITest;

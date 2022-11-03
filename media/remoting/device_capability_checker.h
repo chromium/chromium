@@ -23,6 +23,11 @@ bool IsVideoCodecCompatible(const std::string& model_name,
 // Return true if the device is compatible to render `audio_codec`.
 bool IsAudioCodecCompatible(const std::string& model_name,
                             media::AudioCodec audio_codec);
+
+// Custom codec parsing function for media remoting.
+media::VideoCodec ParseVideoCodec(const std::string& codec_str);
+media::AudioCodec ParseAudioCodec(const std::string& codec_str);
+
 }  // namespace remoting
 }  // namespace media
 
