@@ -2005,7 +2005,6 @@ static_library("browser") {
     "//chrome/app/vector_icons",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/browsing_data:constants",
-    "//chrome/browser/chrome_for_testing:buildflags",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/feature_guide/notifications:public",
@@ -6096,7 +6095,6 @@ static_library("browser") {
     public_deps += [
       ":titlebar_config",
       "//build:branding_buildflags",
-      "//chrome/browser/chrome_for_testing:buildflags",
       "//chrome/services/util_win/public/mojom",
       "//ui/views",
       "//ui/views/controls/webview",
