@@ -3499,7 +3499,7 @@ Try tapping the mic to ask me anything.
         Can't upload file larger than 10 MB
       </message>
       <message name="IDS_FEEDBACK_TOOL_INCLUDE_SYSTEM_INFO_AND_METRICS_CHECKBOX_LABEL" desc="Checkbox for including system information and metrics on the bug report dialog box">
-        Send <ph name="BEGIN_LINK1">&lt;a id="sysInfoLink"&gt;</ph>system and app info<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a id="histogramsLink"&gt;</ph>metrics<ph name="END_LINK2">&lt;/a&gt;</ph>
+        Send <ph name="BEGIN_LINK1">&lt;a id="sysInfoLink"&gt;</ph>system &amp; app info<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a id="histogramsLink"&gt;</ph>metrics<ph name="END_LINK2">&lt;/a&gt;</ph>
       </message>
       <message name="IDS_FEEDBACK_TOOL_INCLUDE_PERFORMANCE_TRACE_CHECKBOX_LABEL" desc="Checkbox for including performance trace data on the bug report dialog box.">
         Send <ph name="BEGIN_LINK1">&lt;a id="performanceTraceLink"&gt;</ph>performance trace data<ph name="END_LINK1">&lt;/a&gt;</ph>
@@ -3560,10 +3560,10 @@ Try tapping the mic to ask me anything.
         Thanks for your feedback
       </message>
       <message name="IDS_FEEDBACK_TOOL_THANK_YOU_NOTE_OFFLINE" desc="Thank you note when feedback tool is offline">
-        Thanks for the feedback. Your feedback helps improve Chrome OS and will be reviewed by the Chrome OS team. Because of the number of reports submitted, you won’t receive a direct reply.
+        Thanks for your feedback. Your feedback helps us improve the Chromebook experience and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.
       </message>
       <message name="IDS_FEEDBACK_TOOL_THANK_YOU_NOTE_ONLINE" desc="Thank you note when feedback tool is online">
-        Your feedback helps improve Chrome OS and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.
+        Your feedback helps us improve the Chromebook experience and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.
       </message>
       <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE_SEND_OFFLINE" desc="Label showing the title of the feedback tool when the user attempts to send a report while offline.">
         You're offline. Feedback will be sent later.

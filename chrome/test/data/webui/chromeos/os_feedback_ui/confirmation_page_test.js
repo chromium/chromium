@@ -20,14 +20,15 @@ const OFFLINE_TITLE = 'You\'re offline. Feedback will be sent later.';
 
 /** @type {string} */
 const ONLINE_MESSAGE =
-    'Your feedback helps improve Chrome OS and will be reviewed by ' +
-    'our team. Because of the large number of reports, we won\’t be able ' +
-    'to send a reply.';
+    'Your feedback helps us improve the Chromebook experience and will be ' +
+    'reviewed by our team. Because of the large number of reports, ' +
+    'we won’t be able to send a reply.';
+
 /** @type {string} */
 const OFFLINE_MESSAGE =
-    'Thanks for the feedback. Your feedback helps improve Chrome OS ' +
-    'and will be reviewed by the Chrome OS team. Because of the number ' +
-    'of reports submitted, you won’t receive a direct reply.';
+    'Thanks for your feedback. Your feedback helps us improve the Chromebook ' +
+    'experience and will be reviewed by our team. Because of the large ' +
+    'number of reports, we won’t be able to send a reply.';
 
 export function confirmationPageTest() {
   /** @type {?ConfirmationPageElement} */
