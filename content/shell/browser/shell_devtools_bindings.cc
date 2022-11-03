@@ -20,6 +20,7 @@
 #include "base/json/string_escape.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -193,12 +194,12 @@ ShellDevToolsBindings::~ShellDevToolsBindings() {
 // static
 std::vector<ShellDevToolsBindings*>
 ShellDevToolsBindings::GetInstancesForWebContents(WebContents* web_contents) {
-  auto* bindings = GetShellDevtoolsBindingsInstances();
   std::vector<ShellDevToolsBindings*> result;
-  std::copy_if(bindings->begin(), bindings->end(), std::back_inserter(result),
-               [web_contents](ShellDevToolsBindings* binding) {
-                 return binding->inspected_contents() == web_contents;
-               });
+  base::ranges::copy_if(*GetShellDevtoolsBindingsInstances(),
+                        std::back_inserter(result),
+                        [web_contents](ShellDevToolsBindings* binding) {
+                          return binding->inspected_contents() == web_contents;
+                        });
   return result;
 }
 

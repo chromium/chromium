@@ -207,9 +207,10 @@ void OpenXrRenderLoop::EnableSupportedFeatures(
   base::ranges::copy(
       required_features,
       std::inserter(enabled_features_, enabled_features_.begin()));
-  std::copy_if(optional_features.begin(), optional_features.end(),
-               std::inserter(enabled_features_, enabled_features_.begin()),
-               openxr_extension_enabled_filter);
+  base::ranges::copy_if(
+      optional_features,
+      std::inserter(enabled_features_, enabled_features_.begin()),
+      openxr_extension_enabled_filter);
 }
 
 device::mojom::XREnvironmentBlendMode OpenXrRenderLoop::GetEnvironmentBlendMode(

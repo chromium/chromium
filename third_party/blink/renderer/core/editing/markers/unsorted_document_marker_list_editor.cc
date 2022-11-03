@@ -113,11 +113,12 @@ UnsortedDocumentMarkerListEditor::MarkersIntersectingRange(
   DCHECK_LE(start_offset, end_offset);
 
   HeapVector<Member<DocumentMarker>> results;
-  std::copy_if(list.begin(), list.end(), std::back_inserter(results),
-               [start_offset, end_offset](const DocumentMarker* marker) {
-                 return marker->StartOffset() < end_offset &&
-                        marker->EndOffset() > start_offset;
-               });
+  base::ranges::copy_if(
+      list, std::back_inserter(results),
+      [start_offset, end_offset](const DocumentMarker* marker) {
+        return marker->StartOffset() < end_offset &&
+               marker->EndOffset() > start_offset;
+      });
   return results;
 }
 

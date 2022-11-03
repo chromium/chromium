@@ -110,10 +110,8 @@ void LinkToTextJavaScriptFeature::HandleResponse(
 
   std::vector<web::WebFrame*> amp_frames;
   if (ShouldAttemptIframeGeneration(error, web_state->GetLastCommittedURL())) {
-    std::set<web::WebFrame*> all_frames =
-        web_state->GetWebFramesManager()->GetAllWebFrames();
-    std::copy_if(all_frames.begin(), all_frames.end(),
-                 std::back_inserter(amp_frames), IsKnownAmpCache);
+    base::ranges::copy_if(web_state->GetWebFramesManager()->GetAllWebFrames(),
+                          std::back_inserter(amp_frames), IsKnownAmpCache);
   }
 
   // Empty indicates we're not attempting AMP generation (e.g., succeeded or

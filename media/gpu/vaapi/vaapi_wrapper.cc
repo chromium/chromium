@@ -973,11 +973,11 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
                 "");
 
   std::vector<VAEntrypoint> entrypoints;
-  std::copy_if(va_entrypoints.begin(), va_entrypoints.end(),
-               std::back_inserter(entrypoints),
-               [&kAllowedEntryPoints, mode](VAEntrypoint entry_point) {
-                 return base::Contains(kAllowedEntryPoints[mode], entry_point);
-               });
+  base::ranges::copy_if(va_entrypoints, std::back_inserter(entrypoints),
+                        [&kAllowedEntryPoints, mode](VAEntrypoint entry_point) {
+                          return base::Contains(kAllowedEntryPoints[mode],
+                                                entry_point);
+                        });
   return entrypoints;
 }
 
