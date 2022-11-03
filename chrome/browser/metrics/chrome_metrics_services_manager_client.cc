@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "cc/base/switches.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
@@ -312,7 +313,13 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
         user_data_dir, startup_visibility,
-        metrics::EntropyProviderType::kDefault,
+        {
+            .default_entropy_provider_type =
+                metrics::EntropyProviderType::kDefault,
+            .force_benchmarking_mode =
+                base::CommandLine::ForCurrentProcess()->HasSwitch(
+                    cc::switches::kEnableGpuBenchmarking),
+        },
         base::BindRepeating(&PostStoreMetricsClientInfo),
         base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),
         client_id);

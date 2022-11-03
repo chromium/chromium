@@ -126,18 +126,21 @@ std::string GetUniformityAssignment(const VariationsSeed& seed,
 }
 
 // Process the seed and return which group the user is assigned for Uniformity.
-std::vector<std::string> GetUniformityAssignments(const VariationsSeed& seed) {
+std::vector<std::string> GetUniformityAssignments(
+    const VariationsSeed& seed,
+    bool enable_benchmarking = false) {
   std::vector<std::string> result;
   // Add 20 clients that do not have client IDs, 1 per low entropy value.
   for (uint32_t i = 0; i < kMaxEntropy; i++) {
-    result.push_back(
-        GetUniformityAssignment(seed, EntropyProviders("", {i, kMaxEntropy})));
+    EntropyProviders providers("", {i, kMaxEntropy}, enable_benchmarking);
+    result.push_back(GetUniformityAssignment(seed, providers));
   }
   // Add 100 clients that do have client IDs, 5 per low entropy value.
   for (uint32_t i = 0; i < kMaxEntropy * 5; i++) {
-    result.push_back(GetUniformityAssignment(
-        seed, EntropyProviders(base::StringPrintf("clientid_%02d", i),
-                               {i % kMaxEntropy, kMaxEntropy})));
+    auto high_entropy = base::StringPrintf("clientid_%02d", i);
+    ValueInRange low_entropy = {i % kMaxEntropy, kMaxEntropy};
+    EntropyProviders providers(high_entropy, low_entropy, enable_benchmarking);
+    result.push_back(GetUniformityAssignment(seed, providers));
   }
   return result;
 }
@@ -262,6 +265,25 @@ TEST(VariationsUniformityTest, DefaultEntropyLayerDefaultEntropyStudy) {
   }
 
   EXPECT_THAT(assignments, ::testing::ElementsAreArray(expected));
+}
+
+// When enable_benchmarking is passed, layered studies should never activate.
+TEST(VariationsUniformityTest, BenchmarkingDisablesLayeredStudies) {
+  std::vector<std::string> expected(
+      kExpectedLowEntropyAssignments.size() +
+          kExpectedHighEntropyStudyAssignments.size(),
+      "");
+  EXPECT_THAT(GetUniformityAssignments(LayerStudySeed({}),
+                                       /*enable_benchmarking*/ true),
+              ::testing::ElementsAreArray(expected));
+  EXPECT_THAT(
+      GetUniformityAssignments(LayerStudySeed({.force_low_entropy = true}),
+                               /*enable_benchmarking*/ true),
+      ::testing::ElementsAreArray(expected));
+  EXPECT_THAT(GetUniformityAssignments(
+                  LayerStudySeed({.force_low_entropy_layer = false}),
+                  /*enable_benchmarking*/ true),
+              ::testing::ElementsAreArray(expected));
 }
 
 TEST(VariationsUniformityTest, SessionEntropyStudyChiSquare) {

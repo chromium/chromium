@@ -154,6 +154,10 @@ bool ValidSlotBounds(const Layer& layer_proto) {
 VariationsLayers::VariationsLayers(const VariationsSeed& seed,
                                    const EntropyProviders& entropy_providers)
     : nil_entropy({0, 1}) {
+  // Don't activate any layer-constrained studies in benchmarking mode to
+  // maintain deterministic behavior.
+  if (entropy_providers.benchmarking_enabled())
+    return;
   // TODO(crbug.com/1154033): Support a way to expire old/unused layers so they
   // no longer get processed by the clients.
   for (const Layer& layer_proto : seed.layers())

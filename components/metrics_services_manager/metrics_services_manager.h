@@ -43,12 +43,9 @@ class MetricsServicesManager {
   virtual ~MetricsServicesManager();
 
   // Instantiates the FieldTrialList using Chrome's default entropy provider.
-  // Uses |enable_gpu_benchmarking_switch| to set up the FieldTrialList for
-  // benchmarking runs.
   //
   // Side effect: Initializes the CleanExitBeacon.
-  void InstantiateFieldTrialList(
-      const char* enable_gpu_benchmarking_switch = nullptr) const;
+  void InstantiateFieldTrialList() const;
 
   // Returns the MetricsService, creating it if it hasn't been created yet (and
   // additionally creating the MetricsServiceClient in that case).

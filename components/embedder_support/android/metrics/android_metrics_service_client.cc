@@ -241,24 +241,25 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
 
   pref_service_ = pref_service;
 
-  // Pass an empty file path since the path is for Extended Variations Safe
-  // Mode, which is N/A to Android embedders.
   metrics_state_manager_ = MetricsStateManager::Create(
-      pref_service_, this, std::wstring(), base::FilePath(),
-      StartupVisibility::kUnknown, EntropyProviderType::kLow);
+      pref_service_, this,
+      // Pass an empty file path since the path is for Extended Variations Safe
+      // Mode, which is N/A to Android embedders.
+      std::wstring(), base::FilePath(), StartupVisibility::kUnknown,
+      {
+          // The low entropy provider is used instead of the default provider
+          // because the default provider needs to know if UMA is enabled and
+          // querying GMS to determine whether UMA is enabled is slow.
+          // The low entropy provider has fewer unique experiment combinations,
+          // which is better for privacy, but can have crosstalk issues between
+          // experiments.
+          .default_entropy_provider_type = metrics::EntropyProviderType::kLow,
+          .force_benchmarking_mode =
+              base::CommandLine::ForCurrentProcess()->HasSwitch(
+                  cc::switches::kEnableGpuBenchmarking),
+      });
 
-  // Creates the FieldTrialList using the low entropy provider. The low entropy
-  // provider is used instead of the default provider because the default
-  // provider needs to know if UMA is enabled and querying GMS to determine
-  // whether UMA is enabled is slow.
-  //
-  // Both entropy providers guarantee permanent consistency, which is the main
-  // requirement. The difference is that the low entropy provider has fewer
-  // unique experiment combinations. This is better for privacy (since
-  // experiment state doesn't identify users), but also means fewer combinations
-  // are tested in the wild.
-  metrics_state_manager_->InstantiateFieldTrialList(
-      cc::switches::kEnableGpuBenchmarking);
+  metrics_state_manager_->InstantiateFieldTrialList();
 
   init_finished_ = true;
 

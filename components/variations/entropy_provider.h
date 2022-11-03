@@ -88,8 +88,10 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
  public:
   // Construct providers from the given entropy sources.
   // If |high_entropy_source| is empty, no high entropy provider is created.
+  // If |enable_benchmarking| is true, randomization should be suppressed.
   EntropyProviders(const std::string& high_entropy_value,
-                   ValueInRange low_entropy_value);
+                   ValueInRange low_entropy_value,
+                   bool enable_benchmarking = false);
   EntropyProviders(const EntropyProviders&) = delete;
   EntropyProviders& operator=(const EntropyProviders&) = delete;
   virtual ~EntropyProviders();
@@ -108,10 +110,13 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
 
   size_t low_entropy_domain() const { return low_entropy_.entropy_domain(); }
 
+  bool benchmarking_enabled() const { return benchmarking_enabled_; }
+
  private:
   absl::optional<SHA1EntropyProvider> high_entropy_;
   NormalizedMurmurHashEntropyProvider low_entropy_;
   SessionEntropyProvider session_entropy_;
+  bool benchmarking_enabled_;
 };
 
 }  // namespace variations

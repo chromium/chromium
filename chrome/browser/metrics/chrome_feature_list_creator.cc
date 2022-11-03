@@ -248,8 +248,7 @@ void ChromeFeatureListCreator::SetUpFieldTrials(
   browser_field_trials_ =
       std::make_unique<ChromeBrowserFieldTrials>(local_state_.get());
 
-  metrics_services_manager_->InstantiateFieldTrialList(
-      cc::switches::kEnableGpuBenchmarking);
+  metrics_services_manager_->InstantiateFieldTrialList();
   auto feature_list = std::make_unique<base::FeatureList>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, the platform needs to be able to access the

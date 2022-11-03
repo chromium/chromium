@@ -96,8 +96,10 @@ double SessionEntropyProvider::GetEntropyForTrial(
 }
 
 EntropyProviders::EntropyProviders(const std::string& high_entropy_value,
-                                   ValueInRange low_entropy_value)
-    : low_entropy_(low_entropy_value) {
+                                   ValueInRange low_entropy_value,
+                                   bool enable_benchmarking)
+    : low_entropy_(low_entropy_value),
+      benchmarking_enabled_(enable_benchmarking) {
   if (!high_entropy_value.empty()) {
     high_entropy_.emplace(high_entropy_value);
   }

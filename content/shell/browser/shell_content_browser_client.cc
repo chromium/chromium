@@ -682,9 +682,13 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
       metrics::MetricsStateManager::Create(
           local_state_.get(), &enabled_state_provider, std::wstring(),
-          path.AppendASCII("Local State"));
-  metrics_state_manager->InstantiateFieldTrialList(
-      cc::switches::kEnableGpuBenchmarking);
+          path.AppendASCII("Local State"), metrics::StartupVisibility::kUnknown,
+          {
+              .force_benchmarking_mode =
+                  base::CommandLine::ForCurrentProcess()->HasSwitch(
+                      cc::switches::kEnableGpuBenchmarking),
+          });
+  metrics_state_manager->InstantiateFieldTrialList();
 
   std::vector<std::string> variation_ids;
   auto feature_list = std::make_unique<base::FeatureList>();

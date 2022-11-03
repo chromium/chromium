@@ -36,14 +36,12 @@ MetricsServicesManager::MetricsServicesManager(
 
 MetricsServicesManager::~MetricsServicesManager() {}
 
-void MetricsServicesManager::InstantiateFieldTrialList(
-    const char* enable_gpu_benchmarking_switch) const {
+void MetricsServicesManager::InstantiateFieldTrialList() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::structured::NeutrinoDevicesLog(
       metrics::structured::NeutrinoDevicesLocation::kCreateEntropyProvider);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  client_->GetMetricsStateManager()->InstantiateFieldTrialList(
-      enable_gpu_benchmarking_switch);
+  client_->GetMetricsStateManager()->InstantiateFieldTrialList();
 }
 
 metrics::MetricsService* MetricsServicesManager::GetMetricsService() {

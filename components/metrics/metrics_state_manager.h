@@ -54,6 +54,17 @@ enum class EntropyProviderType {
   kLow = 1,      // Always use low entropy randomization.
 };
 
+// Options to apply to trial randomization.
+struct EntropyParams {
+  // The type of entropy to use for default one-time randomization.
+  EntropyProviderType default_entropy_provider_type =
+      EntropyProviderType::kDefault;
+  // Force trial randomization into benchmarking mode, which disables
+  // randomization. Users may also be put in this mode if the
+  // --enable_benchmarking command line flag is passed.
+  bool force_benchmarking_mode = false;
+};
+
 // Responsible for managing MetricsService state prefs, specifically the UMA
 // client id and low entropy source. Code outside the metrics directory should
 // not be instantiating or using this class directly.
@@ -121,12 +132,10 @@ class MetricsStateManager final {
     return startup_visibility_ == StartupVisibility::kForeground;
   }
 
-  // Instantiates the FieldTrialList. Uses |enable_gpu_benchmarking_switch| to
-  // set up the FieldTrialList for benchmarking runs.
+  // Instantiates the FieldTrialList.
   //
   // Side effect: Initializes |clean_exit_beacon_|.
-  void InstantiateFieldTrialList(
-      const char* enable_gpu_benchmarking_switch = nullptr);
+  void InstantiateFieldTrialList();
 
   // Signals whether the session has shutdown cleanly. Passing `false` for
   // |has_session_shutdown_cleanly| means that Chrome has launched and has not
@@ -190,7 +199,7 @@ class MetricsStateManager final {
       const std::wstring& backup_registry_key,
       const base::FilePath& user_data_dir,
       StartupVisibility startup_visibility = StartupVisibility::kUnknown,
-      EntropyProviderType entropy_provider_type = EntropyProviderType::kDefault,
+      EntropyParams entropy_params = {},
       StoreClientInfoCallback store_client_info = StoreClientInfoCallback(),
       LoadClientInfoCallback load_client_info = LoadClientInfoCallback(),
       base::StringPiece external_client_id = base::StringPiece());
@@ -260,7 +269,7 @@ class MetricsStateManager final {
                       EnabledStateProvider* enabled_state_provider,
                       const std::wstring& backup_registry_key,
                       const base::FilePath& user_data_dir,
-                      EntropyProviderType default_entropy_provider_type,
+                      EntropyParams entropy_params,
                       StartupVisibility startup_visibility,
                       StoreClientInfoCallback store_client_info,
                       LoadClientInfoCallback load_client_info,
@@ -324,7 +333,8 @@ class MetricsStateManager final {
   // has consented to reporting, and if reporting should be done.
   raw_ptr<EnabledStateProvider> enabled_state_provider_;
 
-  const EntropyProviderType default_entropy_provider_type_;
+  // Specified options for controlling trial randomization.
+  const EntropyParams entropy_params_;
 
   // A callback run during client id creation so this MetricsStateManager can
   // store a backup of the newly generated ID.

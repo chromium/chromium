@@ -315,8 +315,7 @@ void CastMetricsServiceClient::InitializeMetricsService() {
       // Pass an empty file path since Chromecast does not use the Variations
       // framework.
       /*user_data_dir=*/base::FilePath(),
-      ::metrics::StartupVisibility::kUnknown,
-      ::metrics::EntropyProviderType::kDefault,
+      ::metrics::StartupVisibility::kUnknown, ::metrics::EntropyParams{},
       base::BindRepeating(&CastMetricsServiceClient::StoreClientInfo,
                           base::Unretained(this)),
       base::BindRepeating(&CastMetricsServiceClient::LoadClientInfo,
