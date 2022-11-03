@@ -99,7 +99,7 @@ struct Capabilities {
 
   // Accepts all W3C defined capabilities
   // and all ChromeDriver-specific extensions.
-  Status Parse(const base::DictionaryValue& desired_caps,
+  Status Parse(const base::Value::Dict& desired_caps,
                bool w3c_compliant = true);
 
   //
@@ -191,9 +191,6 @@ struct Capabilities {
 
   bool webSocketUrl = false;
 };
-
-bool GetChromeOptionsDictionaryDeprecated(const base::DictionaryValue& params,
-                                          const base::DictionaryValue** out);
 
 bool GetChromeOptionsDictionary(const base::Value::Dict& params,
                                 const base::Value::Dict** out);

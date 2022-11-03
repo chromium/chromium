@@ -414,7 +414,7 @@ Status ConfigureSession(Session* session,
 
   session->w3c_compliant = GetW3CSetting(params);
   if (session->w3c_compliant) {
-    Status status = ProcessCapabilities(params, merged_caps);
+    Status status = ProcessCapabilities(params, merged_caps->GetDict());
     if (status.IsError())
       return status;
     *desired_caps = merged_caps;
@@ -426,7 +426,8 @@ Status ConfigureSession(Session* session,
     *desired_caps = static_cast<const base::DictionaryValue*>(caps);
   }
 
-  Status status = capabilities->Parse(**desired_caps, session->w3c_compliant);
+  Status status =
+      capabilities->Parse((*desired_caps)->GetDict(), session->w3c_compliant);
   if (status.IsError())
     return status;
 
@@ -480,24 +481,21 @@ Status ConfigureHeadlessSession(Session* session,
 
 }  // namespace internal
 
-bool MergeCapabilities(const base::DictionaryValue* always_match,
-                       const base::DictionaryValue* first_match,
-                       base::DictionaryValue* merged) {
-  CHECK(always_match);
-  CHECK(first_match);
-  CHECK(merged);
-  merged->DictClear();
+bool MergeCapabilities(const base::Value::Dict& always_match,
+                       const base::Value::Dict& first_match,
+                       base::Value::Dict& merged) {
+  merged.clear();
 
-  for (auto kv : first_match->DictItems()) {
-    if (always_match->FindKey(kv.first)) {
-      // firstMatch cannot have the same |keys| as alwaysMatch.
+  for (auto kv : first_match) {
+    if (always_match.Find(kv.first)) {
+      // `first_match` cannot have the same `keys` as `always_match`.
       return false;
     }
   }
 
-  // merge the capabilities together since guarenteed no key collisions
-  merged->MergeDictionary(always_match);
-  merged->MergeDictionary(first_match);
+  // merge the capabilities together since guaranteed no key collisions
+  merged = always_match.Clone();
+  merged.Merge(first_match.Clone());
   return true;
 }
 
@@ -506,22 +504,21 @@ bool MergeCapabilities(const base::DictionaryValue* always_match,
 // It checks some requested capabilities and make sure they are supported.
 // Currently, we only check "browserName", "platformName", and webauthn
 // capabilities but more can be added as necessary.
-bool MatchCapabilities(const base::DictionaryValue* capabilities) {
-  const base::Value* name = capabilities->FindKey("browserName");
+bool MatchCapabilities(const base::Value::Dict& capabilities) {
+  const base::Value* name = capabilities.Find("browserName");
   if (name && !name->is_none()) {
     if (!(name->is_string() && name->GetString() == kBrowserCapabilityName))
       return false;
   }
 
-  const base::DictionaryValue* chrome_options;
+  const base::Value::Dict* chrome_options;
   const bool has_chrome_options =
-      GetChromeOptionsDictionaryDeprecated(*capabilities, &chrome_options);
+      GetChromeOptionsDictionary(capabilities, &chrome_options);
 
   bool is_android = has_chrome_options &&
-                    chrome_options->FindStringKey("androidPackage") != nullptr;
+                    chrome_options->FindString("androidPackage") != nullptr;
 
-  const base::Value* platform_name_value =
-      capabilities->FindPath("platformName");
+  const base::Value* platform_name_value = capabilities.Find("platformName");
   if (platform_name_value && !platform_name_value->is_none()) {
     if (platform_name_value->is_string()) {
       std::string requested_platform_name = platform_name_value->GetString();
@@ -533,8 +530,8 @@ bool MatchCapabilities(const base::DictionaryValue* capabilities) {
       std::string actual_first_token =
         actual_platform_name.substr(0, actual_platform_name.find(' '));
 
-      bool is_remote = has_chrome_options && chrome_options->FindStringKey(
-                                                 "debuggerAddress") != nullptr;
+      bool is_remote = has_chrome_options &&
+                       chrome_options->FindString("debuggerAddress") != nullptr;
       if (requested_platform_name == "any" || is_remote ||
           (is_android && requested_platform_name == "android")) {
         // "any" can be used as a wild card for platformName.
@@ -557,7 +554,7 @@ bool MatchCapabilities(const base::DictionaryValue* capabilities) {
   }
 
   const base::Value* virtual_authenticators_value =
-      capabilities->FindPath("webauthn:virtualAuthenticators");
+      capabilities.Find("webauthn:virtualAuthenticators");
   if (virtual_authenticators_value) {
     if (!virtual_authenticators_value->is_bool() ||
         (virtual_authenticators_value->GetBool() && is_android)) {
@@ -566,7 +563,7 @@ bool MatchCapabilities(const base::DictionaryValue* capabilities) {
   }
 
   const base::Value* large_blob_value =
-      capabilities->FindPath("webauthn:extension:largeBlob");
+      capabilities.Find("webauthn:extension:largeBlob");
   if (large_blob_value) {
     if (!large_blob_value->is_bool() ||
         (large_blob_value->GetBool() && is_android)) {
@@ -581,7 +578,7 @@ bool MatchCapabilities(const base::DictionaryValue* capabilities) {
 // https://www.w3.org/TR/webdriver/#processing-capabilities. Step numbers in
 // the comments correspond to the step numbers in the spec.
 Status ProcessCapabilities(const base::Value::Dict& params,
-                           base::DictionaryValue* result_capabilities) {
+                           base::Value::Dict& result_capabilities) {
   // 1. Get the property "capabilities" from parameters.
   const base::Value::Dict* capabilities_request =
       params.FindDict("capabilities");
@@ -589,14 +586,14 @@ Status ProcessCapabilities(const base::Value::Dict& params,
     return Status(kInvalidArgument, "'capabilities' must be a JSON object");
 
   // 2. Get the property "alwaysMatch" from capabilities request.
-  const base::DictionaryValue empty_object;
-  const base::DictionaryValue* required_capabilities;
+  const base::Value::Dict empty_object;
+  const base::Value::Dict* required_capabilities;
   const base::Value* required_capabilities_value =
       capabilities_request->Find("alwaysMatch");
   if (required_capabilities_value == nullptr) {
     required_capabilities = &empty_object;
-  } else if (required_capabilities_value->GetAsDictionary(
-                 &required_capabilities)) {
+  } else if (required_capabilities_value->is_dict()) {
+    required_capabilities = &required_capabilities_value->GetDict();
     Capabilities cap;
     Status status = cap.Parse(*required_capabilities);
     if (status.IsError())
@@ -606,66 +603,68 @@ Status ProcessCapabilities(const base::Value::Dict& params,
   }
 
   // 3. Get the property "firstMatch" from capabilities request.
-  base::Value default_list(base::Value::Type::LIST);
-  const base::Value* all_first_match_capabilities =
+  base::Value::List default_list;
+  const base::Value::List* all_first_match_capabilities;
+  const base::Value* all_first_match_capabilities_value =
       capabilities_request->Find("firstMatch");
-  if (all_first_match_capabilities == nullptr) {
-    default_list.Append(base::Value(base::Value::Type::DICTIONARY));
+  if (all_first_match_capabilities_value == nullptr) {
+    default_list.Append(base::Value::Dict());
     all_first_match_capabilities = &default_list;
-  } else if (all_first_match_capabilities->is_list()) {
-    if (all_first_match_capabilities->GetList().size() < 1)
+  } else if (all_first_match_capabilities_value->is_list()) {
+    all_first_match_capabilities =
+        &all_first_match_capabilities_value->GetList();
+    if (all_first_match_capabilities->size() < 1) {
       return Status(kInvalidArgument,
                     "'firstMatch' must contain at least one entry");
+    }
   } else {
     return Status(kInvalidArgument, "'firstMatch' must be a JSON list");
   }
 
   // 4. Let validated first match capabilities be an empty JSON List.
-  std::vector<const base::DictionaryValue*> validated_first_match_capabilities;
+  std::vector<const base::Value::Dict*> validated_first_match_capabilities;
 
   // 5. Validate all first match capabilities.
-  for (size_t i = 0; i < all_first_match_capabilities->GetList().size(); ++i) {
-    const base::Value& first_match = all_first_match_capabilities->GetList()[i];
+  for (size_t i = 0; i < all_first_match_capabilities->size(); ++i) {
+    const base::Value& first_match = (*all_first_match_capabilities)[i];
     if (!first_match.is_dict()) {
       return Status(kInvalidArgument,
                     base::StringPrintf(
                         "entry %zu of 'firstMatch' must be a JSON object", i));
     }
     Capabilities cap;
-    Status status = cap.Parse(base::Value::AsDictionaryValue(first_match));
+    Status status = cap.Parse(first_match.GetDict());
     if (status.IsError())
       return Status(
           kInvalidArgument,
           base::StringPrintf("entry %zu of 'firstMatch' is invalid", i),
           status);
-    validated_first_match_capabilities.push_back(
-        &base::Value::AsDictionaryValue(first_match));
+    validated_first_match_capabilities.push_back(&first_match.GetDict());
   }
 
   // 6. Let merged capabilities be an empty List.
-  std::vector<base::DictionaryValue> merged_capabilities;
+  std::vector<base::Value::Dict> merged_capabilities;
 
   // 7. Merge capabilities.
   for (size_t i = 0; i < validated_first_match_capabilities.size(); ++i) {
-    const base::DictionaryValue* first_match_capabilities =
+    const base::Value::Dict* first_match_capabilities =
         validated_first_match_capabilities[i];
-    base::DictionaryValue merged;
-    if (!MergeCapabilities(required_capabilities, first_match_capabilities,
-                           &merged)) {
+    base::Value::Dict merged;
+    if (!MergeCapabilities(*required_capabilities, *first_match_capabilities,
+                           merged)) {
       return Status(
           kInvalidArgument,
           base::StringPrintf(
               "unable to merge 'alwaysMatch' with entry %zu of 'firstMatch'",
               i));
     }
-    merged_capabilities.emplace_back();
-    merged_capabilities.back().Swap(&merged);
+    merged_capabilities.emplace_back(std::move(merged));
   }
 
   // 8. Match capabilities.
   for (auto& capabilities : merged_capabilities) {
-    if (MatchCapabilities(&capabilities)) {
-      capabilities.Swap(result_capabilities);
+    if (MatchCapabilities(capabilities)) {
+      result_capabilities = std::move(capabilities);
       return Status(kOk);
     }
   }

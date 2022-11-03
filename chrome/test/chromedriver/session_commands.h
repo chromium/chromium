@@ -38,14 +38,14 @@ struct InitSessionParams {
 
 bool GetW3CSetting(const base::Value::Dict& params);
 
-bool MergeCapabilities(const base::DictionaryValue* always_match,
-                       const base::DictionaryValue* first_match,
-                       base::DictionaryValue* merged);
+bool MergeCapabilities(const base::Value::Dict& always_match,
+                       const base::Value::Dict& first_match,
+                       base::Value::Dict& merged);
 
-bool MatchCapabilities(const base::DictionaryValue* capabilities);
+bool MatchCapabilities(const base::Value::Dict& capabilities);
 
 Status ProcessCapabilities(const base::Value::Dict& params,
-                           base::DictionaryValue* result_capabilities);
+                           base::Value::Dict& result_capabilities);
 
 // Initializes a session.
 Status ExecuteInitSession(const InitSessionParams& bound_params,
