@@ -4132,11 +4132,6 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
 }
 
 bool WebMediaPlayerImpl::PassedTimingAllowOriginCheck() const {
-  // If there is a MultiBuffer associated with this player, then defer to it.
-  // This will return false if any HTTP response so far has failed the TAO
-  // check.
-  if (mb_data_source_)
-    return mb_data_source_->PassedTimingAllowOriginCheck();
   // If there is no MultiBuffer, then there are no HTTP responses, and so this
   // can safely return true. Specifically for the MSE case, the app itself
   // sources the ArrayBuffer[Views], possibly not even from HTTP responses. Any
@@ -4148,7 +4143,7 @@ bool WebMediaPlayerImpl::PassedTimingAllowOriginCheck() const {
   // revealed via the MediaSource or WebMediaPlayer that's using MSE.
   // TODO(1266991): Ensure that this returns the correct value for HLS media,
   // based on the TAO checks performed on those resources.
-  return true;
+  return data_source_ ? data_source_->PassedTimingAllowOriginCheck() : true;
 }
 
 }  // namespace blink

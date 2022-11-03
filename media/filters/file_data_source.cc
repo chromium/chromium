@@ -70,4 +70,9 @@ void FileDataSource::SetBitrate(int bitrate) {}
 
 FileDataSource::~FileDataSource() = default;
 
+bool FileDataSource::PassedTimingAllowOriginCheck() {
+  // There are no HTTP responses, so this can safely return true.
+  return true;
+}
+
 }  // namespace media
