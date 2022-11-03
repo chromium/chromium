@@ -177,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderWithSymlink) {
       return;
   }
 
-  std::unique_ptr<FileChooserDelegate> delegate(
-      new FileChooserDelegate({text_file, symlink_file}, base::OnceClosure()));
+  std::unique_ptr<FileChooserDelegate> delegate(new FileChooserDelegate(
+      {text_file, symlink_file}, folder_to_upload, base::OnceClosure()));
   shell()->web_contents()->SetDelegate(delegate.get());
   EXPECT_TRUE(ExecJs(shell(),
                      "(async () => {"
@@ -192,6 +192,47 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderWithSymlink) {
       1, EvalJs(shell(), "document.getElementById('fileinput').files.length;"));
   EXPECT_EQ(
       "text_file.txt",
+      EvalJs(shell(), "document.getElementById('fileinput').files[0].name;"));
+}
+
+// https://crbug.com/1378997
+IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderWithDirSymlink) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetTestUrl(".", "file_input_webkitdirectory.html")));
+
+  // The folder contains a regular file and a directory symbolic link.
+  // When uploading the folder, the symbolic link should not be followed.
+  base::FilePath dir_test_data;
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &dir_test_data));
+  base::FilePath folder_to_upload = dir_test_data.AppendASCII("file_chooser")
+                                        .AppendASCII("dir_with_dir_symlink");
+
+  base::FilePath foo_file = folder_to_upload.AppendASCII("foo.txt");
+  base::FilePath dir_symlink = folder_to_upload.AppendASCII("symlink");
+  base::FilePath bar_file = dir_symlink.AppendASCII("bar.txt");
+
+  // Skip the test if symbolic links are not supported.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!base::IsLink(dir_symlink))
+      return;
+  }
+
+  std::unique_ptr<FileChooserDelegate> delegate(new FileChooserDelegate(
+      {foo_file, bar_file}, folder_to_upload, base::OnceClosure()));
+  shell()->web_contents()->SetDelegate(delegate.get());
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "  let listener = new Promise("
+                     "      resolve => fileinput.onchange = resolve);"
+                     "  fileinput.click();"
+                     "  await listener;"
+                     "})()"));
+
+  EXPECT_EQ(
+      1, EvalJs(shell(), "document.getElementById('fileinput').files.length;"));
+  EXPECT_EQ(
+      "foo.txt",
       EvalJs(shell(), "document.getElementById('fileinput').files[0].name;"));
 }
 
