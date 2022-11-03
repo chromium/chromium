@@ -201,6 +201,63 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
   provider.ShutdownOnUIThread();
 }
 
+TEST_F(PolicyProviderTest, InvalidAutoSelectCertificateList) {
+  TestingProfile profile;
+  sync_preferences::TestingPrefServiceSyncable* prefs =
+      profile.GetTestingPrefService();
+
+  PolicyProvider provider(prefs);
+  GURL google_url("https://mail.google.com");
+
+  std::string pattern_str("\"pattern\":\"[*.]google.com\"");
+  std::string filter_str("\"filter\":{\"ISSUER\":{\"CN\":\"issuer name\"}}");
+
+  // Missing pattern should be rejected.
+  base::Value missing_pattern_value(base::Value::Type::LIST);
+  missing_pattern_value.Append("{" + filter_str + "}");
+  prefs->SetManagedPref(
+      prefs::kManagedAutoSelectCertificateForUrls,
+      base::Value::ToUniquePtrValue(std::move(missing_pattern_value)));
+  EXPECT_EQ(base::Value(),
+            TestUtils::GetContentSettingValue(
+                &provider, google_url, google_url,
+                ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
+
+  // Non-dict value should be rejected.
+  base::Value no_dict_value(base::Value::Type::LIST);
+  no_dict_value.Append(pattern_str + "," + filter_str);
+  prefs->SetManagedPref(
+      prefs::kManagedAutoSelectCertificateForUrls,
+      base::Value::ToUniquePtrValue(std::move(no_dict_value)));
+  EXPECT_EQ(base::Value(),
+            TestUtils::GetContentSettingValue(
+                &provider, google_url, google_url,
+                ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
+
+  // Missing filter should be rejected.
+  base::Value missing_filter_value(base::Value::Type::LIST);
+  missing_filter_value.Append("{" + pattern_str + "}");
+  prefs->SetManagedPref(
+      prefs::kManagedAutoSelectCertificateForUrls,
+      base::Value::ToUniquePtrValue(std::move(missing_filter_value)));
+  EXPECT_EQ(base::Value(),
+            TestUtils::GetContentSettingValue(
+                &provider, google_url, google_url,
+                ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
+
+  // Valid configuration should not be rejected.
+  base::Value valid_value(base::Value::Type::LIST);
+  valid_value.Append("{" + pattern_str + "," + filter_str + "}");
+  prefs->SetManagedPref(prefs::kManagedAutoSelectCertificateForUrls,
+                        base::Value::ToUniquePtrValue(std::move(valid_value)));
+  EXPECT_NE(base::Value(),
+            TestUtils::GetContentSettingValue(
+                &provider, google_url, google_url,
+                ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
+
+  provider.ShutdownOnUIThread();
+}
+
 TEST_F(PolicyProviderTest, InvalidManagedDefaultContentSetting) {
   TestingProfile profile;
   sync_preferences::TestingPrefServiceSyncable* prefs =
