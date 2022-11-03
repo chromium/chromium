@@ -22,8 +22,8 @@ using PotentialPasswordTheftInfo =
     ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo;
 using PasswordReuseEventInfo =
     ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_PasswordReuseInfo;
-using RemoteHostInfo =
-    ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_RemoteHostInfo;
+using RemoteHostData =
+    ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_RemoteHostData;
 
 using LoginReputationClientReusedPasswordAccountType =
     LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordAccountType;
@@ -187,7 +187,7 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest, VerifyProtoData) {
   // 2 valid password reused signals should be reported.
   ASSERT_EQ(potential_password_theft_info.reused_password_infos_size(), 2);
   // 4 valid remote hosts signals should be reported.
-  ASSERT_EQ(potential_password_theft_info.remote_hosts_size(), 4);
+  ASSERT_EQ(potential_password_theft_info.remote_hosts_data_size(), 4);
 
   // Verify detailed password reuse info.
   {
@@ -215,15 +215,15 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest, VerifyProtoData) {
   // Verify detailed remote host contacted info.
   {
     // Verify third remote host contacted info.
-    const RemoteHostInfo& remote_host_info_0 =
-        potential_password_theft_info.remote_hosts(0);
+    const RemoteHostData& remote_host_info_0 =
+        potential_password_theft_info.remote_hosts_data(0);
     ASSERT_EQ(remote_host_info_0.remote_host_url(), "www.giggle.com");
     // The count is 3 because there are 3 password reuse event.
     ASSERT_EQ(remote_host_info_0.count(), static_cast<uint32_t>(3));
 
     // Verify second remote host contacted info.
-    const RemoteHostInfo& remote_host_info_1 =
-        potential_password_theft_info.remote_hosts(1);
+    const RemoteHostData& remote_host_info_1 =
+        potential_password_theft_info.remote_hosts_data(1);
     ASSERT_EQ(remote_host_info_1.remote_host_url(), "www.google.com");
     // Only one is counted as potential password theft info because
     // www.google.com is in the reputable list of one of the 2 password reuse
@@ -231,8 +231,8 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest, VerifyProtoData) {
     ASSERT_EQ(remote_host_info_1.count(), static_cast<uint32_t>(2));
 
     // Verify first remote host contacted info.
-    const RemoteHostInfo& remote_host_info_2 =
-        potential_password_theft_info.remote_hosts(2);
+    const RemoteHostData& remote_host_info_2 =
+        potential_password_theft_info.remote_hosts_data(2);
     ASSERT_EQ(remote_host_info_2.remote_host_url(), "www.youtube.com");
     // Only one is counted as potential password theft info because
     // www.youtube.com is in the reputable list of one of the 2 password reuse
@@ -240,8 +240,8 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest, VerifyProtoData) {
     ASSERT_EQ(remote_host_info_2.count(), static_cast<uint32_t>(2));
 
     // Verify fourth remote host contacted info.
-    const RemoteHostInfo& remote_host_info_3 =
-        potential_password_theft_info.remote_hosts(3);
+    const RemoteHostData& remote_host_info_3 =
+        potential_password_theft_info.remote_hosts_data(3);
     ASSERT_EQ(remote_host_info_3.remote_host_url(), "www.yutube.com");
     // The count is 2 because there are 2 password reuse event.
     ASSERT_EQ(remote_host_info_3.count(), static_cast<uint32_t>(3));

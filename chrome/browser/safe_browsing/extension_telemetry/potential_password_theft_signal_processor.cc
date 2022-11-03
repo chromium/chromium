@@ -194,8 +194,9 @@ PotentialPasswordTheftSignalProcessor::GetSignalInfoForReport(
             reuse_info.reused_password_account_type);
   }
   for (auto& remote_host_url_w_count_it : remote_host_url_store_it->second) {
-    ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_RemoteHostInfo*
-        remote_host_url_pb = potential_password_theft_info->add_remote_hosts();
+    ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_RemoteHostData*
+        remote_host_url_pb =
+            potential_password_theft_info->add_remote_hosts_data();
     remote_host_url_pb->set_remote_host_url(
         std::move(remote_host_url_w_count_it.first));
     remote_host_url_pb->set_count(remote_host_url_w_count_it.second);

@@ -1933,6 +1933,8 @@ message ExtensionTelemetryReportRequest {
     // Potential Password Theft signal info.
     message PotentialPasswordTheftInfo {
       message RemoteHostInfo {
+        option deprecated = true;
+
         // This information represents a host that an extension contacted within
         // a specific time window (currently 1 second) after a password-reuse
         // event was detected on one of that extension's pages.
@@ -1986,9 +1988,8 @@ message ExtensionTelemetryReportRequest {
         // Number of times the remote host was contacted.
         optional uint32 count = 2;
       }
-      // The remote host(s) contacted within 1 second of at least one (but not
-      // all) of the password reuse event(s) listed below.
-      repeated RemoteHostInfo remote_hosts = 1;
+      // Deprecated.
+      repeated RemoteHostInfo remote_hosts = 1 [deprecated = true];
       repeated PasswordReuseInfo reused_password_infos = 2;
       // The remote host(s) contacted within 1 second of at least one (but not
       // all) of the password reuse event(s) listed below.
