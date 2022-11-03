@@ -2065,14 +2065,13 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   attribution_manager_->HandleSource(
       SourceBuilder().SetDestinationOrigin(destination_origin).Build());
 
-  // Source registered outside a fenced frame failed with debug reporting.
-  attribution_manager_->HandleSource(
-      SourceBuilder()
-          .SetDestinationOrigin(destination_origin)
-          .SetDebugReporting(true)
-          .Build());
+  task_environment_.RunUntilIdle();
 
-  // Source registered within a fenced frame failed with debug reporting.
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+
+  // Source registered within a fenced frame failed with debug reporting, but
+  // no debug report is sent.
   attribution_manager_->HandleSource(
       SourceBuilder()
           .SetDestinationOrigin(destination_origin)
@@ -2080,28 +2079,31 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
           .SetDebugReporting(true)
           .Build());
 
+  task_environment_.RunUntilIdle();
+
   EXPECT_THAT(StoredSources(), SizeIs(1));
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+
+  // Source registered outside a fenced frame failed with debug reporting.
+  attribution_manager_->HandleSource(
+      SourceBuilder()
+          .SetDestinationOrigin(destination_origin)
+          .SetDebugReporting(true)
+          .Build());
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(2));
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+  EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
 
-  base::Value::List report_body_1 =
+  base::Value::List report_body =
       report_sender_->verbose_debug_calls().front().ReportBody();
-  ASSERT_EQ(report_body_1.size(), 1u);
-  ASSERT_TRUE(report_body_1.front().is_dict());
-  const base::Value::Dict* report_data_1 =
-      report_body_1.front().GetDict().FindDict("body");
-  ASSERT_TRUE(report_data_1);
-  EXPECT_TRUE(report_data_1->Find("source_site"));
-
-  base::Value::List report_body_2 =
-      report_sender_->verbose_debug_calls().back().ReportBody();
-  ASSERT_EQ(report_body_2.size(), 1u);
-  const base::Value::Dict* report_data_2 =
-      report_body_2.front().GetDict().FindDict("body");
-  ASSERT_TRUE(report_data_2);
-  EXPECT_FALSE(report_data_2->Find("source_site"));
+  ASSERT_EQ(report_body.size(), 1u);
+  ASSERT_TRUE(report_body.front().is_dict());
+  const base::Value::Dict* report_data =
+      report_body.front().GetDict().FindDict("body");
+  ASSERT_TRUE(report_data);
+  EXPECT_TRUE(report_data->Find("source_site"));
 }
 
 }  // namespace content

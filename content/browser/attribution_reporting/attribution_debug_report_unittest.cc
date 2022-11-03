@@ -53,35 +53,17 @@ TEST(AttributionDebugReportTest,
 }
 
 TEST(AttributionDebugReportTest,
-     SourceDestinationLimitErrorWithinFencedFrame_ValidReportReturned) {
+     SourceDestinationLimitErrorWithinFencedFrame_NoDebugReport) {
   AttributionConfig config;
   config.max_destinations_per_source_site_reporting_origin = 3;
 
-  absl::optional<AttributionDebugReport> report =
-      AttributionDebugReport::Create(
-          SourceBuilder()
-              .SetDebugReporting(true)
-              .SetIsWithinFencedFrame(true)
-              .Build(),
-          /*is_debug_cookie_set=*/false,
-          AttributionStorage::StoreSourceResult(
-              StorableSource::Result::kInsufficientUniqueDestinationCapacity,
-              /*min_fake_report_time=*/absl::nullopt,
-              /*max_destinations_per_source_site_reporting_origin=*/3));
-  ASSERT_TRUE(report);
-
-  static constexpr char kExpectedJsonString[] = R"([{
-    "body": {
-      "attribution_destination": "https://conversion.test",
-      "limit": 3,
-      "source_event_id": "123"
-    },
-    "type": "source-destination-limit"
-  }])";
-  EXPECT_EQ(report->ReportBody(), base::test::ParseJson(kExpectedJsonString));
-
-  EXPECT_EQ(report->ReportURL(), GURL("https://report.test/.well-known/"
-                                      "attribution-reporting/debug/verbose"));
+  EXPECT_FALSE(AttributionDebugReport::Create(
+      SourceBuilder().SetIsWithinFencedFrame(true).Build(),
+      /*is_debug_cookie_set=*/false,
+      AttributionStorage::StoreSourceResult(
+          StorableSource::Result::kInsufficientUniqueDestinationCapacity,
+          /*min_fake_report_time=*/absl::nullopt,
+          /*max_destinations_per_source_site_reporting_origin=*/3)));
 }
 
 TEST(AttributionDebugReportTest, SourceDebugging) {

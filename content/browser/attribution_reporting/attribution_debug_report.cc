@@ -55,14 +55,15 @@ base::Value::Dict GetReportDataBody(
     AttributionDebugReport::DataType data_type,
     const StorableSource& source,
     absl::optional<int> max_destinations_per_source_site_reporting_origin) {
+  DCHECK(!source.is_within_fenced_frame());
+
   const CommonSourceInfo& common_info = source.common_info();
   base::Value::Dict data_body;
   data_body.Set("attribution_destination",
                 common_info.DestinationSite().Serialize());
   data_body.Set("source_event_id",
                 base::NumberToString(common_info.source_event_id()));
-  if (!source.is_within_fenced_frame())
-    data_body.Set("source_site", common_info.SourceSite().Serialize());
+  data_body.Set("source_site", common_info.SourceSite().Serialize());
 
   switch (data_type) {
     case AttributionDebugReport::DataType::kSourceDestinationLimit:
@@ -120,7 +121,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StorableSource& source,
     bool is_debug_cookie_set,
     const AttributionStorage::StoreSourceResult& result) {
-  if (!source.debug_reporting())
+  if (!source.debug_reporting() || source.is_within_fenced_frame())
     return absl::nullopt;
 
   absl::optional<DataType> data_type =
