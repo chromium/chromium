@@ -40,7 +40,6 @@ export class XfBreadcrumb extends XfBase {
   @state() private isMenuOpen_ = false;
 
   static override get styles() {
-    console.log('aaa');
     return getCSS();
   }
 
