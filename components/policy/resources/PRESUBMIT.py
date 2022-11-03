@@ -5,6 +5,9 @@
 # If this presubmit check fails or misbehaves, please complain to
 # mnissler@chromium.org, bartfab@chromium.org or atwilson@chromium.org.
 
+PRESUBMIT_VERSION = '2.0.0'
+USE_PYTHON3 = True
+
 import os
 import sys
 from xml.dom import minidom
@@ -17,7 +20,28 @@ _SRC_PATH = os.path.abspath('../../../')
 sys.path.append(os.path.join(_SRC_PATH, 'third_party'))
 import pyyaml
 
-USE_PYTHON3 = True
+
+_CACHED_FILES = {}
+
+_PRESUBMIT_PATH = os.path.join(
+      'components', 'policy', 'resources', 'PRESUBMIT.py')
+_POLICIES_YAML_PATH = os.path.join(
+      'components', 'policy', 'resources', 'templates', 'policies.yaml')
+_HISTOGRAMS_PATH = os.path.join(
+      'tools', 'metrics', 'histograms', 'enums.xml')
+
+
+def _SkipPresubmitChecks(input_api, files_watchlist):
+  return not input_api.change.AffectedFiles(
+    file_filter=lambda f: f.LocalPath() in files_watchlist)
+
+def _LoadYamlFile(root, path):
+  str_path = str(path)
+  if str_path not in _CACHED_FILES:
+    with open(os.path.join(root, path), encoding='utf-8') as f:
+      _CACHED_FILES[str_path] = pyyaml.safe_load(f)
+  return _CACHED_FILES[str_path]
+
 
 def _CheckPolicyTemplatesSyntax(input_api, output_api, legacy_policy_template):
 
@@ -153,11 +177,16 @@ def _CheckPolicyTestCases(input_api, output_api, policies):
   return results
 
 
-def _CheckPolicyHistograms(input_api, output_api, policies):
+def CheckPolicyHistograms(input_api, output_api):
+  results = []
+  if _SkipPresubmitChecks(
+      input_api,
+      [_HISTOGRAMS_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
+    return results
+
   root = input_api.change.RepositoryRoot()
-  histograms = input_api.os_path.join(
-      root, 'tools', 'metrics', 'histograms', 'enums.xml')
-  with open(histograms, encoding='utf-8') as f:
+
+  with open(os.path.join(root, _HISTOGRAMS_PATH), encoding='utf-8') as f:
     tree = minidom.parseString(f.read())
   enums = (tree.getElementsByTagName('histogram-configuration')[0]
                .getElementsByTagName('enums')[0]
@@ -166,8 +195,9 @@ def _CheckPolicyHistograms(input_api, output_api, policies):
                  if e.getAttribute('name') == 'EnterprisePolicies'][0]
   policy_enum_ids = frozenset(int(e.getAttribute('value'))
                               for e in policy_enum.getElementsByTagName('int'))
-  policy_id_to_name = {policy['id']: policy['name'] for policy in policies}
-  policy_ids = frozenset(policy_id_to_name.keys())
+  policies_yaml = _LoadYamlFile(root, _POLICIES_YAML_PATH)
+  policies = policies_yaml['policies']
+  policy_ids = frozenset([id for id, name in policies.items() if name])
 
   missing_ids = policy_ids - policy_enum_ids
   extra_ids = policy_enum_ids - policy_ids
@@ -187,7 +217,7 @@ def _CheckPolicyHistograms(input_api, output_api, policies):
   for policy_id in missing_ids:
     results.append(
         output_api.PresubmitError(error_missing %
-                                  (policy_id_to_name[policy_id], policy_id)))
+                                  (policies[policy_id], policy_id)))
   for policy_id in extra_ids:
     results.append(output_api.PresubmitError(error_extra % policy_id))
   return results
@@ -304,8 +334,6 @@ def _CommonChecks(input_api, output_api):
           template_data))
     if template_changed or tests_changed:
       results.extend(_CheckPolicyTestCases(input_api, output_api, policies))
-    if template_changed:
-      results.extend(_CheckPolicyHistograms(input_api, output_api, policies))
     # chrome_device_policy.proto is hand crafted. When it is changed, we need
     # to check if it still corresponds to policy_templates.json.
     if template_changed or device_policy_proto_changed or syntax_check_changed:
