@@ -27,7 +27,7 @@ const size_t kImageCacheSingleAllocationByteLimit = 64 * 1024 * 1024;
 // Decreases the size of the font cache to 1MiB.
 BASE_FEATURE(kSmallerFontCache,
              "SmallerFontCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
