@@ -57,7 +57,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_non_composited_widget_client.h"
-#include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
@@ -2299,7 +2299,8 @@ std::unique_ptr<cc::WebVitalMetrics> WebFrameWidgetImpl::GetWebVitalMetrics() {
     return nullptr;
 
   // This class should be called at most once per commit.
-  WebPerformance perf = LocalRootImpl()->Performance();
+  WebPerformanceMetricsForReporting perf =
+      LocalRootImpl()->PerformanceMetricsForReporting();
   auto metrics = std::make_unique<cc::WebVitalMetrics>();
   if (perf.FirstInputDelay().has_value()) {
     metrics->first_input_delay = perf.FirstInputDelay().value();

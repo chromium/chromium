@@ -99,7 +99,7 @@
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
 #include "third_party/blink/public/web/web_page_popup.h"
-#include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -2694,8 +2694,8 @@ TEST_F(RenderViewImplTest, BrowserNavigationStartSanitized) {
   base::RunLoop().RunUntilIdle();
   base::Time after_navigation = base::Time::Now() + base::Days(1);
 
-  base::Time late_nav_reported_start =
-      base::Time::FromDoubleT(GetMainFrame()->Performance().NavigationStart());
+  base::Time late_nav_reported_start = base::Time::FromDoubleT(
+      GetMainFrame()->PerformanceMetricsForReporting().NavigationStart());
   EXPECT_LE(late_nav_reported_start, after_navigation);
 }
 

@@ -212,7 +212,7 @@
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_navigation_timings.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_nested_contexts.h"
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
@@ -4696,10 +4696,13 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   }
   params->request_id = document_state->request_id();
 
-  params->unload_start = GetWebFrame()->Performance().UnloadStart();
-  params->unload_end = GetWebFrame()->Performance().UnloadEnd();
-  params->commit_navigation_end =
-      GetWebFrame()->Performance().CommitNavigationEnd();
+  params->unload_start =
+      GetWebFrame()->PerformanceMetricsForNestedContexts().UnloadStart();
+  params->unload_end =
+      GetWebFrame()->PerformanceMetricsForNestedContexts().UnloadEnd();
+  params->commit_navigation_end = GetWebFrame()
+                                      ->PerformanceMetricsForNestedContexts()
+                                      .CommitNavigationEnd();
 
   return params;
 }

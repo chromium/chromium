@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -63,7 +64,7 @@ class RecodingTimeAfterBackForwardCacheRestoreFrameCallback
 
     count_++;
     if (count_ ==
-        WebPerformance::
+        WebPerformanceMetricsForReporting::
             kRequestAnimationFramesToRecordAfterBackForwardCacheRestore) {
       paint_timing_->NotifyPaintTimingChanged();
       return;

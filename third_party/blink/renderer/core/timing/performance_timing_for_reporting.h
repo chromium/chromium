@@ -7,7 +7,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
-#include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -32,7 +32,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
     uint64_t navigation_start;
     uint64_t first_paint;
     std::array<uint64_t,
-               WebPerformance::
+               WebPerformanceMetricsForReporting::
                    kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>
         request_animation_frames;
     absl::optional<base::TimeDelta> first_input_delay;

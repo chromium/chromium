@@ -20,7 +20,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "url/gurl.h"
 
 namespace page_load_metrics {
@@ -415,8 +415,8 @@ void MetricsRenderFrameObserver::MaybeSetCompletedBeforeFCP(int request_id) {
   if (HasNoRenderFrame())
     return;
 
-  const blink::WebPerformance& perf =
-      render_frame()->GetWebFrame()->Performance();
+  const blink::WebPerformanceMetricsForReporting& perf =
+      render_frame()->GetWebFrame()->PerformanceMetricsForReporting();
 
   // Blink returns 0 if the performance metrics are unavailable. Check that
   // navigation start is set to determine if performance metrics are
@@ -509,8 +509,8 @@ void MetricsRenderFrameObserver::OnMetricsSenderCreated() {
 
 MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     const {
-  const blink::WebPerformance& perf =
-      render_frame()->GetWebFrame()->Performance();
+  const blink::WebPerformanceMetricsForReporting& perf =
+      render_frame()->GetWebFrame()->PerformanceMetricsForReporting();
 
   mojom::PageLoadTimingPtr timing(CreatePageLoadTiming());
   PageTimingMetadataRecorder::MonotonicTiming monotonic_timing;
@@ -564,8 +564,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   if (perf.FirstPaint() > 0.0)
     timing->paint_timing->first_paint = ClampDelta(perf.FirstPaint(), start);
   if (!perf.BackForwardCacheRestore().empty()) {
-    blink::WebPerformance::BackForwardCacheRestoreTimings restore_timings =
-        perf.BackForwardCacheRestore();
+    blink::WebPerformanceMetricsForReporting::BackForwardCacheRestoreTimings
+        restore_timings = perf.BackForwardCacheRestore();
     for (const auto& restore_timing : restore_timings) {
       double navigation_start = restore_timing.navigation_start;
       double first_paint = restore_timing.first_paint;

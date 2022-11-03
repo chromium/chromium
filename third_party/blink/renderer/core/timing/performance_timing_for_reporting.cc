@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_parser_timing.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
@@ -73,7 +74,7 @@ PerformanceTimingForReporting::BackForwardCacheRestore() const {
       paint_timing->FirstPaintsAfterBackForwardCacheRestore();
   WTF::Vector<std::array<
       base::TimeTicks,
-      WebPerformance::
+      WebPerformanceMetricsForReporting::
           kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>>
       request_animation_frames =
           paint_timing->RequestAnimationFramesAfterBackForwardCacheRestore();

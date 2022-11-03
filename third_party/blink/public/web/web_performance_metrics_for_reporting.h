@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PERFORMANCE_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PERFORMANCE_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PERFORMANCE_METRICS_FOR_REPORTING_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PERFORMANCE_METRICS_FOR_REPORTING_H_
 
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,7 +18,9 @@ namespace blink {
 
 class WindowPerformance;
 
-class BLINK_EXPORT WebPerformance {
+// This class is used for reporting purposes (e.g. ukm) of non-web-exposed
+// metrics.
+class BLINK_EXPORT WebPerformanceMetricsForReporting {
  public:
   // The count to record the times on requestAnimationFrame after the page is
   // restored from the back-forward cache.
@@ -37,19 +39,23 @@ class BLINK_EXPORT WebPerformance {
   using BackForwardCacheRestoreTimings =
       WebVector<BackForwardCacheRestoreTiming>;
 
-  ~WebPerformance() { Reset(); }
+  ~WebPerformanceMetricsForReporting() { Reset(); }
 
-  WebPerformance() = default;
+  WebPerformanceMetricsForReporting() = default;
 
-  WebPerformance(const WebPerformance& p) { Assign(p); }
+  WebPerformanceMetricsForReporting(
+      const WebPerformanceMetricsForReporting& p) {
+    Assign(p);
+  }
 
-  WebPerformance& operator=(const WebPerformance& p) {
+  WebPerformanceMetricsForReporting& operator=(
+      const WebPerformanceMetricsForReporting& p) {
     Assign(p);
     return *this;
   }
 
   void Reset();
-  void Assign(const WebPerformance&);
+  void Assign(const WebPerformanceMetricsForReporting&);
 
   // This only returns one of {Other|Reload|BackForward}.
   // Form submits and link clicks all fall under other.
@@ -60,23 +66,9 @@ class BLINK_EXPORT WebPerformance {
   double NavigationStart() const;
   base::TimeTicks NavigationStartAsMonotonicTime() const;
   BackForwardCacheRestoreTimings BackForwardCacheRestore() const;
-  double UnloadEventEnd() const;
-  double RedirectStart() const;
-  double RedirectEnd() const;
-  uint16_t RedirectCount() const;
-  double FetchStart() const;
-  double DomainLookupStart() const;
-  double DomainLookupEnd() const;
-  double ConnectStart() const;
-  double ConnectEnd() const;
-  double RequestStart() const;
   double ResponseStart() const;
-  double ResponseEnd() const;
-  double DomLoading() const;
-  double DomInteractive() const;
   double DomContentLoadedEventStart() const;
   double DomContentLoadedEventEnd() const;
-  double DomComplete() const;
   double LoadEventStart() const;
   double LoadEventEnd() const;
   double FirstPaint() const;
@@ -86,7 +78,6 @@ class BLINK_EXPORT WebPerformance {
   base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
       const;
   double FirstMeaningfulPaint() const;
-  double FirstMeaningfulPaintCandidate() const;
   double LargestImagePaintForMetrics() const;
   uint64_t LargestImagePaintSizeForMetrics() const;
   double LargestTextPaintForMetrics() const;
@@ -119,16 +110,13 @@ class BLINK_EXPORT WebPerformance {
   double ParseBlockedOnScriptExecutionFromDocumentWriteDuration() const;
   absl::optional<base::TimeTicks> LastPortalActivatedPaint() const;
   absl::optional<base::TimeDelta> PrerenderActivationStart() const;
-  absl::optional<base::TimeTicks> UnloadStart() const;
-  absl::optional<base::TimeTicks> UnloadEnd() const;
-  absl::optional<base::TimeTicks> CommitNavigationEnd() const;
   absl::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const;
   absl::optional<base::TimeDelta> UserTimingMarkFullyVisible() const;
   absl::optional<base::TimeDelta> UserTimingMarkInteractive() const;
 
 #if INSIDE_BLINK
-  explicit WebPerformance(WindowPerformance*);
-  WebPerformance& operator=(WindowPerformance*);
+  explicit WebPerformanceMetricsForReporting(WindowPerformance*);
+  WebPerformanceMetricsForReporting& operator=(WindowPerformance*);
 #endif
 
  private:
@@ -137,4 +125,4 @@ class BLINK_EXPORT WebPerformance {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PERFORMANCE_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PERFORMANCE_METRICS_FOR_REPORTING_H_

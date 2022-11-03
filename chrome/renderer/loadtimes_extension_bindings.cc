@@ -12,7 +12,7 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "v8/include/v8-extension.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
@@ -22,7 +22,6 @@
 using blink::WebDocumentLoader;
 using blink::WebLocalFrame;
 using blink::WebNavigationType;
-using blink::WebPerformance;
 
 // Values for CSI "tran" property
 const int kTransitionLink = 0;
@@ -139,7 +138,8 @@ class LoadTimesExtensionWrapper : public v8::Extension {
       return;
     }
     const blink::WebURLResponse& response = document_loader->GetWebResponse();
-    WebPerformance web_performance = frame->Performance();
+    blink::WebPerformanceMetricsForReporting web_performance =
+        frame->PerformanceMetricsForReporting();
     // Though request time now tends to be used to describe the time that the
     // request for the main resource was issued, when chrome.loadTimes() was
     // added, it was used to describe 'The time the request to load the page was
@@ -344,7 +344,8 @@ class LoadTimesExtensionWrapper : public v8::Extension {
     if (!document_loader) {
       return;
     }
-    WebPerformance web_performance = frame->Performance();
+    blink::WebPerformanceMetricsForReporting web_performance =
+        frame->PerformanceMetricsForReporting();
     base::Time now = base::Time::Now();
     base::Time start =
         base::Time::FromDoubleT(web_performance.NavigationStart());

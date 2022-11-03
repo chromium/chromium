@@ -6,7 +6,7 @@
 
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 
 namespace {
 
@@ -49,7 +49,7 @@ RenderFrameFontFamilyAccessor::~RenderFrameFontFamilyAccessor() {
 bool RenderFrameFontFamilyAccessor::ShouldGetFontNames() const {
   return !render_frame()
               ->GetWebFrame()
-              ->Performance()
+              ->PerformanceMetricsForReporting()
               .FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
               .is_null();
 }

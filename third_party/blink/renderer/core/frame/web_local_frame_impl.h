@@ -62,6 +62,8 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_navigation_control.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_nested_contexts.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/exported/web_input_method_controller_impl.h"
@@ -90,7 +92,8 @@ class WebDevToolsAgentImpl;
 class WebFrameWidgetImpl;
 class WebLocalFrameClient;
 class WebNode;
-class WebPerformance;
+class WebPerformanceMetricsForNestedContexts;
+class WebPerformanceMetricsForReporting;
 class WebRemoteFrameImpl;
 class WebSpellCheckPanelHostClient;
 class WebView;
@@ -315,7 +318,10 @@ class CORE_EXPORT WebLocalFrameImpl final
                            bool include_linked_destinations,
                            bool skip_accelerated_content) override;
   bool ShouldSuppressKeyboardForFocusedElement() override;
-  WebPerformance Performance() const override;
+  WebPerformanceMetricsForReporting PerformanceMetricsForReporting()
+      const override;
+  WebPerformanceMetricsForNestedContexts PerformanceMetricsForNestedContexts()
+      const override;
   bool IsAdFrame() const override;
   bool IsAdScriptInStack() const override;
   void SetAdEvidence(const FrameAdEvidence& ad_evidence) override;
