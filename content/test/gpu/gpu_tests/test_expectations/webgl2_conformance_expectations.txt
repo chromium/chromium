@@ -280,7 +280,6 @@ crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] deqp/functional/gles3/shader
 # Going to try to skip the individual failing tests, rather than adding a
 # wildcard flaky suppression for all of the tests.
 crbug.com/483282 [ angle-d3d11 win amd ] conformance2/rendering/blitframebuffer-stencil-only.html [ Failure ]
-crbug.com/828984 [ angle-d3d11 win amd ] conformance/renderbuffers/depth-renderbuffer-initialization.html [ RetryOnFailure ]
 
 # Failing on AMD RX 5500 XT
 crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
@@ -334,7 +333,6 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_greater.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less_or_equal.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/teximage3d_depth.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 crbug.com/angleproject/7425 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
@@ -363,11 +361,8 @@ crbug.com/angleproject/7397 [ mac passthrough angle-metal intel ] conformance2/r
 
 # Metal M1
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/rendering/multisample-corruption.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/draw/draw_elements_instanced.html [ RetryOnFailure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/samplerobject.html [ RetryOnFailure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_combinations_02.html [ Failure ]
@@ -613,7 +608,6 @@ crbug.com/1289303 [ android ] conformance/textures/misc/texture-video-transparen
 
 # This test is failing on Android Pixel 2 and 3 (Qualcomm)
 # Seems to be an OpenGL ES bug.
-crbug.com/695742 [ android qualcomm angle-disabled ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
 
 # Pixel 4
 crbug.com/1175229 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ Failure ]
