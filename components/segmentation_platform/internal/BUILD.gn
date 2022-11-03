@@ -142,6 +142,8 @@ static_library("internal") {
     "signals/user_action_signal_handler.h",
     "stats.cc",
     "stats.h",
+    "sync_device_info_observer.cc",
+    "sync_device_info_observer.h",
     "ukm_data_manager.h",
     "ukm_data_manager_impl.cc",
     "ukm_data_manager_impl.h",
@@ -157,6 +159,7 @@ static_library("internal") {
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public/proto",
+    "//components/sync_device_info",
     "//components/ukm:ukm_recorder",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -264,6 +267,7 @@ source_set("unit_tests") {
     "signals/url_signal_handler_unittest.cc",
     "signals/user_action_signal_handler_unittest.cc",
     "stats_unittest.cc",
+    "sync_device_info_observer_unittest.cc",
     "ukm_data_manager_impl_unittest.cc",
   ]
 
@@ -281,6 +285,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
     "//components/ukm:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",

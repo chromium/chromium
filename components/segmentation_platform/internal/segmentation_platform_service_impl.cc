@@ -27,6 +27,7 @@
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/internal/sync_device_info_observer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/input_context.h"
@@ -34,6 +35,7 @@
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
+
 namespace {
 
 using proto::SegmentId;
@@ -116,6 +118,10 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   storage_service_->Initialize(
       base::BindOnce(&SegmentationPlatformServiceImpl::OnDatabaseInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // Create sync device info observer.
+  sync_device_info_observer_ = std::make_unique<SyncDeviceInfoObserver>(
+      init_params->device_info_tracker);
 }
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {

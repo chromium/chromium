@@ -21,8 +21,10 @@
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
+#include "components/segmentation_platform/internal/sync_device_info_observer.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 
 namespace base {
 class Clock;
@@ -67,6 +69,12 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
     raw_ptr<history::HistoryService> history_service = nullptr;
     base::FilePath storage_dir;
     raw_ptr<PrefService> profile_prefs = nullptr;
+
+    // Device info tracker. It is owned by
+    // the DeviceInfoSynceService, which the segmentation platform service
+    // depends on. It is guaranteed to outlive the segmentation platform
+    // service.
+    raw_ptr<syncer::DeviceInfoTracker> device_info_tracker = nullptr;
 
     // Platform configuration:
     std::unique_ptr<ModelProviderFactory> model_provider;
@@ -168,6 +176,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   // For caching any method calls that were received before initialization.
   base::circular_deque<base::OnceClosure> pending_actions_;
+
+  // Sync device info observer.
+  std::unique_ptr<SyncDeviceInfoObserver> sync_device_info_observer_;
 
   base::WeakPtrFactory<SegmentationPlatformServiceImpl> weak_ptr_factory_{this};
 };

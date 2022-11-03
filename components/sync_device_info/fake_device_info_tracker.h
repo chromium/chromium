@@ -48,6 +48,9 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   // Adds a new DeviceInfo entry to |devices_|.
   void Add(const DeviceInfo* device);
 
+  // Adds a vector of new DeviceInfo entries to |devices_|.
+  void Add(const std::vector<const DeviceInfo*>& devices);
+
   // Replaces |old_device| with |new_device|. |old_device| must be present in
   // the tracker.
   void Replace(const DeviceInfo* old_device, const DeviceInfo* new_device);
