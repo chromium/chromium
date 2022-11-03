@@ -39,15 +39,27 @@ using feed::FeedUserActionType;
 // FeedEngagementType::kFeedScrolled.
 @property(nonatomic, assign) BOOL scrolledReportedDiscover;
 @property(nonatomic, assign) BOOL scrolledReportedFollowing;
+
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kGoodVisit.
 @property(nonatomic, assign) BOOL goodVisitReported;
-
-// The time when the first metric is being recorded for this session.
+// Tracking property to record a scroll for Good Visits.
+// TODO(crbug.com/1373650) separate the property below in two, one for each
+// feed.
+@property(nonatomic, assign) BOOL goodVisitScroll;
+// The timestamp when the first metric is being recorded for this session.
 @property(nonatomic, assign) base::Time sessionStartTime;
-
-// The time when the first GoodVisit metric is being recorded for this session.
-@property(nonatomic, assign) base::Time goodVisitSessionStartTime;
+// The timestamp when the last interaction happens for Good Visits.
+@property(nonatomic, assign) base::Time lastInteractionTimeForGoodVisits;
+// The timestamp when the feed becomes visible again for Good Visits. It
+// is reset when a new Good Visit session starts
+@property(nonatomic, assign)
+    base::Time feedBecameVisibleTimeForGoodVisitSession;
+// The time the user has spent in the feed during a Good Visit session.
+// This property is preserved across NTP usages if they are part of the same
+// Good Visit Session.
+@property(nonatomic, assign)
+    NSTimeInterval previousTimeInFeedForGoodVisitSession;
 
 @end
 
@@ -68,7 +80,8 @@ using feed::FeedUserActionType;
   [self recordEngagement:scrollDistance interacted:NO];
 
   if (IsGoodVisitsMetricEnabled()) {
-    [self recordEngagementGoodVisit:scrollDistance interacted:NO];
+    self.goodVisitScroll = YES;
+    [self checkEngagementGoodVisitWithInteraction:NO];
   }
 
   // If neither feed has been scrolled into, log "AllFeeds" scrolled.
@@ -105,37 +118,38 @@ using feed::FeedUserActionType;
   }
 }
 
-// Triggered when the NTP becomes visible.
-- (void)recordNTPBecameVisible {
-  // Checks if there is a timestamp in defaults for when a user clicked
-  // on an article.
-  // Calls recordEngagementGoodVisit for a possible non-short click
-  // interaction.
+- (void)recordNTPDidChangeVisibility:(BOOL)visible {
   if (!IsGoodVisitsMetricEnabled()) {
     return;
   }
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDate* shortClickVisitStart = base::mac::ObjCCast<NSDate>(
-      [defaults objectForKey:kArticleClickTimestampKey]);
+  if (visible) {
+    self.previousTimeInFeedForGoodVisitSession =
+        [defaults doubleForKey:kLongFeedVisitTimeAggregateKey];
+    // Checks if there is a timestamp in defaults for when a user clicked
+    // on an article in order to be able to trigger a non-short click
+    // interaction.
+    NSDate* articleVisitStart = base::mac::ObjCCast<NSDate>(
+        [defaults objectForKey:kArticleVisitTimestampKey]);
+    self.feedBecameVisibleTimeForGoodVisitSession = base::Time::Now();
 
-  base::TimeDelta nonShortClickThreshold = base::Seconds(kNonShortClickSeconds);
-
-  // Check if kArticleClickTimestamp exists. If it does, check delta. If it
-  // doesn't ignore.
-  // It basically checks the non-short click condition in this method.
-  if (shortClickVisitStart) {
-    base::Time shortClickVisitStartTime =
-        base::Time::FromNSDate(shortClickVisitStart);
-    NSDate* shortClickVisitEnd = [[NSDate alloc] init];
-    base::Time shortClickVisitEndTime =
-        base::Time::FromNSDate(shortClickVisitEnd);
-
-    if (shortClickVisitEndTime - shortClickVisitStartTime >
-        nonShortClickThreshold) {
-      [self recordEngagedGoodVisits];
+    if (articleVisitStart) {
+      // Report Good Visit if user came back to the NTP after spending
+      // kNonShortClickSeconds in a feed article.
+      if (base::Time::FromNSDate(articleVisitStart) - base::Time::Now() >
+          base::Seconds(kNonShortClickSeconds)) {
+        [self recordEngagedGoodVisits];
+      }
+      // Clear defaults for new session.
+      [defaults setObject:nil forKey:kArticleVisitTimestampKey];
     }
-    // Clean defaults for new session
-    [defaults setObject:nil forKey:kArticleClickTimestampKey];
+  } else {
+    // Once the NTP becomes hidden, check for Good Visit which updates
+    // `self.previousTimeInFeedForGoodVisitSession` and then we save it to
+    // defaults.
+    [self checkEngagementGoodVisitWithInteraction:NO];
+    [defaults setDouble:self.previousTimeInFeedForGoodVisitSession
+                 forKey:kLongFeedVisitTimeAggregateKey];
   }
 }
 
@@ -725,11 +739,14 @@ using feed::FeedUserActionType;
     case FeedUserActionType::kAddedToReadLater:
     case FeedUserActionType::kOpenedNativeContextMenu:
     case FeedUserActionType::kTappedOpenInNewIncognitoTab:
-      [self recordEngagementGoodVisit:0 interacted:YES];
+      [self checkEngagementGoodVisitWithInteraction:YES];
       break;
-    // Default will handle the remaining FeedUserActionTypes that
-    // do not trigger a Good Explicit interaction.
     default:
+      // Default will handle the remaining FeedUserActionTypes that
+      // do not trigger a Good Explicit interaction, but might trigger a good
+      // visit due to other checks e.g. Using the feed for
+      // `kGoodVisitTimeInFeedSeconds`.
+      [self checkEngagementGoodVisitWithInteraction:NO];
       break;
   }
 }
@@ -749,15 +766,15 @@ using feed::FeedUserActionType;
   self.sessionStartTime = now;
 
   // Report the user as engaged-simple if they have scrolled any amount or
-  // interacted with the card, and we have not already reported it for this
-  // chrome run.
+  // interacted with the card, and it has not already been reported for this
+  // Chrome run.
   if (scrollDistance > 0 || interacted) {
     [self recordEngagedSimple];
   }
 
   // Report the user as engaged if they have scrolled more than the threshold or
-  // interacted with the card, and we have not already reported it this chrome
-  // run.
+  // interacted with the card, and it has not already been reported this
+  // Chrome run.
   if (scrollDistance > kMinScrollThreshold || interacted) {
     [self recordEngaged];
   }
@@ -765,42 +782,40 @@ using feed::FeedUserActionType;
   [self.sessionRecorder recordUserInteractionOrScrolling];
 }
 
-// Records a Good Visit whether from a scroll or interaction.
-- (void)recordEngagementGoodVisit:(int)scrollDistance
-                       interacted:(BOOL)interacted {
+// Checks if a Good Visit should be recorded. `interacted` is YES if it was
+// triggered by an explicit interaction. (e.g. Opening a new Tab in Incognito.)
+- (void)checkEngagementGoodVisitWithInteraction:(BOOL)interacted {
   DCHECK(IsGoodVisitsMetricEnabled());
-  // Determine if this interaction is part of a new 'session'.
+  // Determine if this interaction is part of a new session.
   base::Time now = base::Time::Now();
-  base::TimeDelta goodVisitSessionTimeout =
-      base::Minutes(kMinutesBetweenSessions);
-  base::TimeDelta goodVisitMinimumTimeInFeed =
-      base::Minutes(kGoodVisitTimeInFeedSeconds);
+  if ((now - self.lastInteractionTimeForGoodVisits) >
+      base::Minutes(kMinutesBetweenSessions)) {
+    [self resetGoodVisitSession];
+  }
+  self.lastInteractionTimeForGoodVisits = now;
 
-  // Check if session has been started. If it has, it can only reset when
-  // a Good Visit session is terminated.
-  if (self.goodVisitSessionStartTime.is_null()) {
-    self.goodVisitSessionStartTime = now;
+  // If the sessions hasn't been reseted and a GoodVisit has already been
+  // reported return early as an optimization
+  if (self.goodVisitReported) {
+    return;
   }
 
-  // Delta between now and session start time.
-  base::TimeDelta timeDifferential = now - self.goodVisitSessionStartTime;
+  // Report a Good Visit if any of the conditions below is YES and
+  // no Good Visit has been recorded for the past `kMinutesBetweenSessions`:
+  // 1. Good Explicit Interaction (add to reading list, long press, open in
+  // new incognito tab ...).
 
-  if (timeDifferential > goodVisitSessionTimeout) {
-    [self finalizeSessionGoodVisits];
-    // Session resets when you finalize the session
-    self.goodVisitSessionStartTime = now;
-  }
-
-  // Report the user as engaged-good-visits if they have had one of these:
-  // 1. "Non-short click" (calls recordEngagedGoodVisits directly)
-  // 2. Good Explicit Interaction (add to reading list, long press
-  //  open in new incognito tab ...)
-  // 3. Good time in feed ( > 60 seconds with >= 1 scroll (distance > 0))
-  // Then if the visit has not been logged, will log visit as a good visit.
-
-  if (interacted ||
-      (timeDifferential > goodVisitMinimumTimeInFeed && scrollDistance > 0)) {
+  if (interacted) {
     [self recordEngagedGoodVisits];
+    return;
+  }
+  // 2. Good time in feed (`kGoodVisitTimeInFeedSeconds` with >= 1 scroll in an
+  // entire session).
+  if (([self timeSpentInFeedForCurrentGoodVisitSession] >
+       kGoodVisitTimeInFeedSeconds) &&
+      self.goodVisitScroll) {
+    [self recordEngagedGoodVisits];
+    return;
   }
 }
 
@@ -854,7 +869,7 @@ using feed::FeedUserActionType;
 - (void)recordEngaged {
   // If neither feed has been engaged with, log "AllFeeds" engagement.
   if (!self.engagedReportedDiscover && !self.engagedReportedFollowing) {
-    // If the user has engaged with a feed, we record this as a user default.
+    // If the user has engaged with a feed, this is recorded as a user default.
     // This can be used for things which require feed engagement as a condition,
     // such as the top-of-feed signin promo.
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -885,8 +900,8 @@ using feed::FeedUserActionType;
 
     // Log follow count when engaging with Following feed.
     // TODO(crbug.com/1322640): `followDelegate` is nil when navigating to an
-    // article, since NTPCoordinator is stopped first. When this is fixed, we
-    // should call `recordFollowCount` here.
+    // article, since NTPCoordinator is stopped first. When this is fixed,
+    // `recordFollowCount` should be called here.
   }
 
   // TODO(crbug.com/1322640): Separate user action for Following feed
@@ -907,6 +922,20 @@ using feed::FeedUserActionType;
 
   // TODO(crbug.com/1373650): Implement separate feed logging for
   // Good Visits.
+}
+
+// Calculates the time the user has spent in the feed during a good
+// visit session.
+- (NSTimeInterval)timeSpentInFeedForCurrentGoodVisitSession {
+  // Add the time spent since last recording.
+  base::Time now = base::Time::Now();
+  base::TimeDelta additionalTimeInFeed =
+      now - self.feedBecameVisibleTimeForGoodVisitSession;
+  self.previousTimeInFeedForGoodVisitSession =
+      self.previousTimeInFeedForGoodVisitSession +
+      additionalTimeInFeed.InSecondsF();
+
+  return self.previousTimeInFeedForGoodVisitSession;
 }
 
 // Resets the session tracking values, this occurs if there's been
@@ -931,11 +960,18 @@ using feed::FeedUserActionType;
 
 // Resets the Good Visits session tracking values, this occurs if there's been
 // kMinutesBetweenSessions minutes between sessions.
-- (void)finalizeSessionGoodVisits {
-  // Clean defaults for new session.
+- (void)resetGoodVisitSession {
+  // Reset defaults for new session.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setObject:nil forKey:kArticleClickTimestampKey];
+  [defaults setObject:nil forKey:kArticleVisitTimestampKey];
+  [defaults setDouble:0 forKey:kLongFeedVisitTimeAggregateKey];
 
+  self.lastInteractionTimeForGoodVisits = base::Time::Now();
+  self.feedBecameVisibleTimeForGoodVisitSession = base::Time::Now();
+
+  self.previousTimeInFeedForGoodVisitSession = 0;
+
+  self.goodVisitScroll = NO;
   self.goodVisitReported = NO;
 }
 
@@ -950,10 +986,8 @@ using feed::FeedUserActionType;
 - (void)recordOpenURL {
   // Save the time of the open so we can then calculate how long the user spent
   // in that page.
-  NSDate* shortClickVisitStartTime = [[NSDate alloc] init];
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setObject:shortClickVisitStartTime
-               forKey:kArticleClickTimestampKey];
+  [[NSUserDefaults standardUserDefaults] setObject:[[NSDate alloc] init]
+                                            forKey:kArticleVisitTimestampKey];
 
   if (self.isShownOnStartSurface) {
     UMA_HISTOGRAM_ENUMERATION(kActionOnStartSurface,

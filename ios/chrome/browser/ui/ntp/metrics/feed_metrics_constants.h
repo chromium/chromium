@@ -32,7 +32,9 @@ extern const int kMinutesBetweenSessions;
 extern const int kMaxCardsInFeed;
 
 // Stores the time when the user visits an article on the feed.
-extern NSString* const kArticleClickTimestampKey;
+extern NSString* const kArticleVisitTimestampKey;
+// Stores the time elapsed on the feed when the user leaves.
+extern NSString* const kLongFeedVisitTimeAggregateKey;
 
 #pragma mark - Enums
 
