@@ -177,17 +177,44 @@ promise_test(async (t) => {
   await waitForRender();
   assert_equals(popover.getAnimations({subtree: true}).length,1,'the hide animation should now be running');
   assert_true(isElementVisible(popover),'The popover should still be visible because the animation hasn\'t ended.');
+  const animation = popover.getAnimations({subtree: true})[0];
 
-  popover.dispatchEvent(new Event('finish'));
+  animation.dispatchEvent(new Event('finish'));
   await waitForRender();
-  assert_true(isElementVisible(popover),'The popover should still be visible because the finish event was not trusted.');
+  assert_true(isElementVisible(popover),'The popover should still be visible because the animation finish event was not trusted.');
   assert_equals(popover.getAnimations({subtree: true}).length,1,'the hide animation should still be running');
 
-  popover.dispatchEvent(new Event('cancel'));
+  animation.dispatchEvent(new Event('cancel'));
   await waitForRender();
-  assert_true(isElementVisible(popover),'The popover should still be visible because the cancel event was not trusted.');
+  assert_true(isElementVisible(popover),'The popover should still be visible because the animation cancel event was not trusted.');
   assert_equals(popover.getAnimations({subtree: true}).length,1,'the hide animation should still be running');
-
-  popover.remove();
 },'animation finish/cancel events must be trusted in order to finish closing the popover.');
+
+promise_test(async (t) => {
+  const {popover, descendent} = createPopover(t,'');
+  popover.showPopover();
+  popover.addEventListener('popoverhide', () => {
+    popover.animate([{opacity: 1},{opacity: 0}],1000000);
+  });
+  popover.hidePopover();
+  await waitForRender();
+  assert_true(isElementVisible(popover),'The popover should still be visible because the animation hasn\'t ended.');
+  assert_equals(popover.getAnimations({subtree: true}).length,1,'There should be one animation running');
+  const animation = popover.getAnimations({subtree: true})[0];
+  let new_animation;
+  const listener = () => {new_animation = popover.animate([{opacity: 1},{opacity: 0}],1000000)};
+  animation.addEventListener('finish',listener,{capture:true});
+  animation.addEventListener('cancel',listener,{capture:true});
+  popover.addEventListener('animationfinish',listener,{capture:true});
+  popover.addEventListener('animationcancel',listener,{capture:true});
+  assert_true(isElementVisible(popover),'The popover should still be visible.');
+  assert_equals(new_animation, undefined,'New animation should not be started yet.');
+  animation.finish();
+  await waitForRender(); // Wait one frame
+  assert_true(popover.matches(':closed'),'The pop up should now match :closed');
+  assert_false(popover.matches(':open'),'The pop up still shouldn\'t match :open');
+  assert_false(isElementVisible(popover),'The pop up should now be invisible');
+  assert_not_equals(new_animation, animation);
+  assert_equals(popover.getAnimations({subtree: true})[0],new_animation,'The new animation should now be running');
+},'Capturing event listeners can\'t affect popover animations.');
 </script>

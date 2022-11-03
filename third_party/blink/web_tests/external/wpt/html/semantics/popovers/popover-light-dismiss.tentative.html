@@ -66,6 +66,25 @@
     assert_equals(popover1HideCount,p1HideCount+1);
   },'Clicking outside a popover will dismiss the popover');
 
+  promise_test(async (t) => {
+    const controller = new AbortController();
+    t.add_cleanup(() => controller.abort());
+    function addListener(eventName) {
+      document.addEventListener(eventName,(e) => e.preventDefault(),{signal:controller.signal,capture: true});
+    }
+    addListener('pointerdown');
+    addListener('pointerup');
+    addListener('mousedown');
+    addListener('mouseup');
+    assert_false(popover1.matches(':open'));
+    popover1.showPopover();
+    assert_true(popover1.matches(':open'));
+    let p1HideCount = popover1HideCount;
+    await clickOn(outside);
+    assert_false(popover1.matches(':open'),'preventDefault should not prevent light dismiss');
+    assert_equals(popover1HideCount,p1HideCount+1);
+  },'Canceling pointer events should not keep clicks from light dismissing popovers');
+
   promise_test(async () => {
     assert_false(popover1.matches(':open'));
     popover1.showPopover();
@@ -82,16 +101,44 @@
     popover1.showPopover();
     await waitForRender();
     assert_true(popover1.matches(':open'));
-    outside.dispatchEvent(new Event('pointerdown'));
+    outside.dispatchEvent(new PointerEvent('pointerdown'));
     await waitForRender();
     assert_true(popover1.matches(':open'),'pointerdown (outside the popover) should not hide the popover');
-    outside.dispatchEvent(new Event('pointerup'));
+    outside.dispatchEvent(new PointerEvent('pointerup'));
     await waitForRender();
     assert_false(popover1.matches(':open'),'pointerup (outside the popover) should trigger light dismiss');
   },'Popovers close on pointerup, not pointerdown');
 
   promise_test(async () => {
     assert_false(popover1.matches(':open'));
+    popover1.showPopover();
+    assert_true(popover1.matches(':open'));
+    async function testOne(eventName) {
+      document.body.dispatchEvent(new PointerEvent(eventName));
+      document.body.dispatchEvent(new MouseEvent(eventName));
+      document.body.dispatchEvent(new ProgressEvent(eventName));
+      await waitForRender();
+      assert_true(popover1.matches(':open'),`The "${eventName}" event should not hide the popover`);
+    }
+    await testOne('pointerdown');
+    await testOne('mouseup');
+    await testOne('mousedown');
+    popover1.hidePopover();
+  },'Invalid or unrelated synthetic events don\'t close popovers');
+
+  promise_test(async () => {
+    popover1.showPopover();
+    assert_true(popover1.matches(':open'));
+    document.body.dispatchEvent(new MouseEvent('pointerup'));
+    document.body.dispatchEvent(new ProgressEvent('pointerup'));
+    await waitForRender();
+    assert_true(popover1.matches(':open'),`The 'pointerup' event with invalid event types should not hide the popover`);
+    document.body.dispatchEvent(new PointerEvent('pointerup'));
+    await waitForRender();
+    assert_false(popover1.matches(':open'),`A synthetic PointerEvent('pointerup') should hide the popover`);
+  },'The correct synthetic event closes a popover');
+
+  promise_test(async () => {
     popover1.showPopover();
     await clickOn(inside1After);
     assert_true(popover1.matches(':open'));

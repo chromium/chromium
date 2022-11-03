@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -1744,26 +1745,31 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event) {
       document.GetExecutionContext()));
   DCHECK(document.TopmostPopover());
   const AtomicString& event_type = event.type();
-  if (event_type == event_type_names::kPointerdown) {
-    document.SetPopoverPointerdownTarget(NearestOpenAncestralPopover(
-        *target_node, PopoverAncestorType::kInclusive));
-  } else if (event_type == event_type_names::kPointerup) {
-    // Hide everything up to the clicked element. We do this on pointerup,
-    // rather than pointerdown or click, primarily for accessibility concerns.
-    // See https://www.w3.org/WAI/WCAG21/Understanding/pointer-cancellation.html
-    // for more information on why it is better to perform potentially
-    // destructive actions (including hiding a popover) on pointer-up rather
-    // than pointer-down. To properly handle the use case where a user starts a
-    // pointer-drag on a popover, and finishes off the popover (to highlight
-    // text), the ancestral popover is stored in pointerdown and compared here.
-    auto* ancestor_popover = NearestOpenAncestralPopover(
-        *target_node, PopoverAncestorType::kInclusive);
-    bool same_target = ancestor_popover == document.PopoverPointerdownTarget();
-    document.SetPopoverPointerdownTarget(nullptr);
-    if (same_target) {
-      HideAllPopoversUntil(ancestor_popover, document,
-                           HidePopoverFocusBehavior::kNone,
-                           HidePopoverForcingLevel::kHideAfterAnimations);
+  if (IsA<PointerEvent>(event)) {
+    if (event_type == event_type_names::kPointerdown) {
+      document.SetPopoverPointerdownTarget(NearestOpenAncestralPopover(
+          *target_node, PopoverAncestorType::kInclusive));
+    } else if (event_type == event_type_names::kPointerup) {
+      // Hide everything up to the clicked element. We do this on pointerup,
+      // rather than pointerdown or click, primarily for accessibility concerns.
+      // See
+      // https://www.w3.org/WAI/WCAG21/Understanding/pointer-cancellation.html
+      // for more information on why it is better to perform potentially
+      // destructive actions (including hiding a popover) on pointer-up rather
+      // than pointer-down. To properly handle the use case where a user starts
+      // a pointer-drag on a popover, and finishes off the popover (to highlight
+      // text), the ancestral popover is stored in pointerdown and compared
+      // here.
+      auto* ancestor_popover = NearestOpenAncestralPopover(
+          *target_node, PopoverAncestorType::kInclusive);
+      bool same_target =
+          ancestor_popover == document.PopoverPointerdownTarget();
+      document.SetPopoverPointerdownTarget(nullptr);
+      if (same_target) {
+        HideAllPopoversUntil(ancestor_popover, document,
+                             HidePopoverFocusBehavior::kNone,
+                             HidePopoverForcingLevel::kHideAfterAnimations);
+      }
     }
   } else if (event_type == event_type_names::kKeydown) {
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);

@@ -342,7 +342,7 @@
                 // Make sure the type is really correct, via behavior.
                 popover.showPopover(); // Show it
                 assert_true(popover.matches(':open'),'Popover should function');
-                document.body.dispatchEvent(new Event('pointerup')); // Try to light dismiss
+                document.body.dispatchEvent(new PointerEvent('pointerup')); // Try to light dismiss
                 switch (interpretedType(inEventType,method)) {
                   case 'manual':
                     assert_true(popover.matches(':open'),'A popover=manual should not light-dismiss');

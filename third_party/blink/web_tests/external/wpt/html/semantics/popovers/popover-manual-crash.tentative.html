@@ -19,5 +19,8 @@
 <script>
   document.querySelectorAll('[popover]').forEach(p => p.showPopover());
   const manual = document.querySelector('[popover=manual]');
-  manual.dispatchEvent(new Event('mousedown'));
+  manual.dispatchEvent(new PointerEvent('pointerdown'));
+  manual.dispatchEvent(new PointerEvent('pointerup'));
+  manual.dispatchEvent(new MouseEvent('mousedown'));
+  manual.dispatchEvent(new MouseEvent('mouseup'));
 </script>

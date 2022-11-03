@@ -13,5 +13,8 @@
   const popover = document.querySelector('div[popover]');
   dialog.showModal();
   popover.showPopover();
-  dialog.dispatchEvent(new Event('mouseup'));
+  dialog.dispatchEvent(new PointerEvent('pointerdown'));
+  dialog.dispatchEvent(new PointerEvent('pointerup'));
+  dialog.dispatchEvent(new MouseEvent('mousedown'));
+  dialog.dispatchEvent(new MouseEvent('mouseup'));
 </script>
