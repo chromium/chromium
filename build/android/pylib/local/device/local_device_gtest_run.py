@@ -570,11 +570,26 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         self._test_instance.GetDataDependencies())
 
   #override
-  def _ShouldShard(self):
+  def _ShouldShardTestsForDevices(self):
+    """Shard tests across several devices.
+
+    Returns:
+      True if tests should be sharded across several devices,
+      False otherwise.
+    """
     return True
 
   #override
-  def _CreateShards(self, tests):
+  def _CreateShardsForDevices(self, tests):
+    """Create shards of tests to run on devices.
+
+    Args:
+      tests: List containing tests or test batches.
+
+    Returns:
+      True if tests should be sharded across several devices,
+      False otherwise.
+    """
     # _crashes are tests that might crash and make the tests in the same shard
     # following the crashed testcase not run.
     # Thus we need to create separate shards for each crashed testcase,

@@ -594,7 +594,16 @@ class LocalDeviceInstrumentationTestRun(
           device, cmdline_file)
 
   #override
-  def _CreateShards(self, tests):
+  def _CreateShardsForDevices(self, tests):
+    """Create shards of tests to run on devices.
+
+    Args:
+      tests: List containing tests or test batches.
+
+    Returns:
+      True if tests should be sharded across several devices,
+      False otherwise.
+    """
     return tests
 
   #override
@@ -1459,7 +1468,13 @@ class LocalDeviceInstrumentationTestRun(
     return True
 
   #override
-  def _ShouldShard(self):
+  def _ShouldShardTestsForDevices(self):
+    """Shard tests across several devices.
+
+    Returns:
+      True if tests should be sharded across several devices,
+      False otherwise.
+    """
     return True
 
   @classmethod

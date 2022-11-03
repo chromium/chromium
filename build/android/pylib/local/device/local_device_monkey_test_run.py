@@ -88,11 +88,26 @@ class LocalDeviceMonkeyTestRun(local_device_test_run.LocalDeviceTestRun):
     pass
 
   #override
-  def _CreateShards(self, tests):
+  def _CreateShardsForDevices(self, tests):
+    """Create shards of tests to run on devices.
+
+    Args:
+      tests: List containing tests or test batches.
+
+    Returns:
+      True if tests should be sharded across several devices,
+      False otherwise.
+    """
     return tests
 
   #override
-  def _ShouldShard(self):
+  def _ShouldShardTestsForDevices(self):
+    """Shard tests across several devices.
+
+    Returns:
+      True if tests should be sharded across several devices,
+      False otherwise.
+    """
     # TODO(mikecase): Run Monkey test concurrently on each attached device.
     return False
 
