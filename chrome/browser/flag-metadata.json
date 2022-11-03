@@ -155,7 +155,7 @@
   {
     "name": "android-force-app-language-prompt",
     "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 115
   },
   {
     "name": "android-media-picker",
@@ -1327,7 +1327,7 @@
   {
     "name": "desktop-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 115
   },
   {
     "name": "desktop-partial-translate",
