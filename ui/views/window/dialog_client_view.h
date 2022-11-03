@@ -13,10 +13,6 @@
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/dialog_observer.h"
 
-namespace gfx {
-struct PresentationFeedback;
-}
-
 namespace views {
 
 class DialogDelegate;
@@ -60,7 +56,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
-  void OnPaint(gfx::Canvas* canvas) override;
+
   void Layout() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void ViewHierarchyChanged(
@@ -121,10 +117,6 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   void AddFillerView(size_t view_index);
   void RemoveFillerView(size_t view_index);
 
-  // This is run when a frame of this view has been successfully presented to
-  // the screen.
-  void OnFramePresented(const gfx::PresentationFeedback& feedback);
-
   // How much to inset the button row.
   gfx::Insets button_row_insets_;
 
@@ -150,8 +142,6 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   bool adding_or_removing_views_ = false;
 
   InputEventActivationProtector input_protector_;
-
-  base::WeakPtrFactory<DialogClientView> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, DialogClientView, ClientView)

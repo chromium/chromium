@@ -23,7 +23,6 @@
 
 namespace gfx {
 class RoundedCornersF;
-struct PresentationFeedback;
 }
 
 namespace views {
@@ -267,10 +266,6 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
       style::TextContext text_context,
       style::TextStyle text_style);
 
-  // This is run when a frame of this view has been successfully presented to
-  // the screen.
-  void OnFramePresented(const gfx::PresentationFeedback& feedback);
-
   // The bubble border.
   raw_ptr<BubbleBorder> bubble_border_ = nullptr;
 
@@ -325,8 +320,6 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   bool hit_test_transparent_ = false;
 
   InputEventActivationProtector input_protector_;
-
-  base::WeakPtrFactory<BubbleFrameView> weak_ptr_factory_{this};
 };
 
 }  // namespace views

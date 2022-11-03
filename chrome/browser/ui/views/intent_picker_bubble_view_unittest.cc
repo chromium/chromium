@@ -40,7 +40,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/input_event_activation_protector.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
@@ -60,7 +59,6 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
   IntentPickerBubbleViewTest() {
     feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
-    views::InputEventActivationProtector::DisableForTesting();
   }
 
   IntentPickerBubbleViewTest(const IntentPickerBubbleViewTest&) = delete;

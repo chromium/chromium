@@ -58,7 +58,6 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
-#include "ui/views/input_event_activation_protector.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
@@ -298,7 +297,6 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     browser_content_client_ = std::make_unique<ChromeContentBrowserClient>();
     content::SetBrowserClientForTesting(browser_content_client_.get());
 
-    views::InputEventActivationProtector::DisableForTesting();
     views::MenuController::TurnOffMenuSelectionHoldForTest();
     BookmarkBarView::DisableAnimationsForTesting(true);
     SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());

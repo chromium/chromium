@@ -17,7 +17,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
@@ -587,11 +586,6 @@ void BubbleFrameView::VisibilityChanged(View* starting_from, bool is_visible) {
 
 void BubbleFrameView::OnPaint(gfx::Canvas* canvas) {
   OnPaintBackground(canvas);
-  if (!InputEventActivationProtector::IsDisabledForTesting()) {
-    GetWidget()->GetCompositor()->RequestPresentationTimeForNextFrame(
-        base::BindOnce(&BubbleFrameView::OnFramePresented,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
   // Border comes after children.
 }
 
@@ -1051,12 +1045,6 @@ std::unique_ptr<Label> BubbleFrameView::CreateLabelWithContextAndStyle(
   label->SetCollapseWhenHidden(true);
   label->SetMultiLine(true);
   return label;
-}
-
-void BubbleFrameView::OnFramePresented(
-    const gfx::PresentationFeedback& feedback) {
-  // TODO(crbug.com/1378612): Handle failure feedback.
-  input_protector_.UpdateViewShownTimeStamp();
 }
 
 BEGIN_METADATA(BubbleFrameView, NonClientFrameView)

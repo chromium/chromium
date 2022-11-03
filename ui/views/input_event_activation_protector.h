@@ -6,7 +6,6 @@
 #define UI_VIEWS_INPUT_EVENT_ACTIVATION_PROTECTOR_H_
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
@@ -27,15 +26,9 @@ class VIEWS_EXPORT InputEventActivationProtector {
 
   ~InputEventActivationProtector() = default;
 
-  // Initialize the |view_shown_time_stamp_| of the protector based off of
-  // visibility changes. This method must be called when the visibility of the
-  // view is changed.
+  // Updates the state of the protector based off of visibility changes. This
+  // method must be called when the visibility of the view is changed.
   void VisibilityChanged(bool is_visible);
-
-  // Updates the |view_shown_time_stamp_| based on "draw" state of the owner
-  // view. This method basically will be called when a frame of the view is
-  // presented.
-  void UpdateViewShownTimeStamp();
 
   // Returns true if the event is a mouse, touch, or pointer event that took
   // place within the double-click time interval after |view_shown_time_stamp_|.
@@ -46,11 +39,10 @@ class VIEWS_EXPORT InputEventActivationProtector {
 
   // Integration tests can disable all input event activation protectors.
   static void DisableForTesting();
-  static bool IsDisabledForTesting();
 
  private:
   // Timestamp of when the view being tracked is first shown.
-  absl::optional<base::TimeTicks> view_shown_time_stamp_;
+  base::TimeTicks view_shown_time_stamp_;
   // Timestamp of the last event.
   base::TimeTicks last_event_timestamp_;
   // Number of repeated UI events with short intervals.
