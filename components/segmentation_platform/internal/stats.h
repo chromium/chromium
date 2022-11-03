@@ -45,9 +45,6 @@ enum class BooleanSegmentSwitch {
   kMaxValue = kEnabledToNone,
 };
 
-// Records the score computed for a given segment.
-void RecordModelScore(SegmentId segment_id, float score);
-
 // Records the time difference between when a new version of model from
 // optimization guide is available and when the model is initialized in the
 // client.
@@ -121,7 +118,10 @@ void RecordOnDemandSegmentSelectionDuration(
     const SegmentSelectionResult& result,
     base::TimeDelta duration);
 // Records the result value after successfully executing an ML model.
-void RecordModelExecutionResult(SegmentId segment_id, float result);
+void RecordModelExecutionResult(
+    SegmentId segment_id,
+    float result,
+    proto::SegmentationModelMetadata::OutputDescription return_type);
 // Records whether the result value of of executing an ML model was successfully
 // saved.
 void RecordModelExecutionSaveResult(SegmentId segment_id, bool success);

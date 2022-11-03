@@ -93,7 +93,6 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
     segment_result.set_result(result->score);
     segment_result.set_timestamp_us(
         clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    stats::RecordModelScore(segment_id, result->score);
   }
 
   segment_database_->SaveSegmentResult(

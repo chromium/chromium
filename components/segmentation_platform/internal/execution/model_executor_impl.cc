@@ -56,6 +56,8 @@ struct ModelExecutorImpl::ExecutionState {
   // https://crbug.com/1021571.
   std::unique_ptr<ModelExecutionTraceEvent> trace_event;
 
+  // TODO(haileywang): Store the segment info proto here as we are adding more
+  // and more fields that are a copy of the the proto fields.
   SegmentId segment_id;
   int64_t model_version = 0;
   raw_ptr<ModelProvider> model_provider = nullptr;
@@ -66,6 +68,7 @@ struct ModelExecutorImpl::ExecutionState {
   base::Time model_execution_start_time;
   base::TimeDelta signal_storage_length;
   bool upload_tensors;
+  proto::SegmentationModelMetadata::OutputDescription return_type;
 };
 
 ModelExecutorImpl::ModelExecutionTraceEvent::ModelExecutionTraceEvent(
@@ -124,6 +127,7 @@ void ModelExecutorImpl::ExecuteModel(
     return;
   }
 
+  state->return_type = segment_info.model_metadata().return_type();
   state->model_version = segment_info.model_version();
   const proto::SegmentationModelMetadata& model_metadata =
       segment_info.model_metadata();
@@ -188,7 +192,8 @@ void ModelExecutorImpl::OnModelExecutionComplete(
   if (result.has_value()) {
     VLOG(1) << "Segmentation model result: " << *result << " for segment "
             << proto::SegmentId_Name(state->segment_id);
-    stats::RecordModelExecutionResult(state->segment_id, result.value());
+    stats::RecordModelExecutionResult(state->segment_id, result.value(),
+                                      state->return_type);
     if (state->model_version && SegmentationUkmHelper::AllowedToUploadData(
                                     state->signal_storage_length, clock_)) {
       if (state->upload_tensors) {

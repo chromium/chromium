@@ -94,7 +94,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SegmentationPlatform.AdaptiveToolbar.ModelScore.{SegmentID}"
-    units="%" expires_after="2023-03-21">
+    units="%" expires_after="2022-10-24">
+  <obsolete>
+    Deprecated as of 2022-10-24.
+  </obsolete>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -402,7 +405,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.Result.{SegmentationModel}"
-    units="%" expires_after="2023-03-21">
+    units="score" expires_after="2023-03-21">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -475,7 +478,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.ModelScore.{SegmentID}" units="%"
-    expires_after="2023-03-21">
+    expires_after="2022-10-24">
+  <obsolete>
+    Deprecated as of 2022-10-24.
+  </obsolete>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

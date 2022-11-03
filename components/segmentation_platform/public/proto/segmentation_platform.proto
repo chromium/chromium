@@ -13,6 +13,8 @@ package segmentation_platform.proto;
 // Any segment that needs a server provided model should have an entry in
 // OptimizationTarget. If the segment only uses default model, then the segment
 // should have a value higher than `MAX_OPTIMIZATION_TARGET`.
+// Keep in sync with SegmentationPlatformSegmentationModel in
+// //tools/metrics/histograms/enums.xml.
 enum SegmentId {
   reserved 20;
 

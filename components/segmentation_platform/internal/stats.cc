@@ -7,9 +7,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/numerics/clamped_math.h"
 #include "base/strings/strcat.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 
@@ -26,27 +26,27 @@ enum class AdaptiveToolbarButtonVariant {
   kMaxValue = kVoice,
 };
 
-// This is the segmentation subset of
-// proto::SegmentId.
-// Keep in sync with SegmentationPlatformSegmentationModel in
-// //tools/metrics/histograms/enums.xml.
-// See also SegmentationModel variant in
-// //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
-enum class SegmentationModel {
-  kUnknown = 0,
-  kNewTab = 4,
-  kShare = 5,
-  kVoice = 6,
-  kDummy = 10,
-  kChromeStartAndroid = 11,
-  kQueryTiles = 12,
-  kChromeLowUserEngagement = 16,
-  kFeedUserSegment = 17,
-  kContextualPageActionPriceTracking = 18,
-  kChromeStartAndroidV2 = 22,
-  kSearchUserSegment = 23,
-  kMaxValue = kSearchUserSegment,
-};
+// It should only used for legacy models without descriptors of return type in
+// the metadata.
+proto::SegmentationModelMetadata::OutputDescription
+GetOptimizationTargetOutputDescription(SegmentId segment_id) {
+  switch (segment_id) {
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY:
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID:
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
+    case SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
+      return proto::SegmentationModelMetadata::RETURN_TYPE_PROBABILITY;
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
+      return proto::SegmentationModelMetadata::RETURN_TYPE_MULTISEGMENT;
+    default:
+      return proto::SegmentationModelMetadata::UNKNOWN_RETURN_TYPE;
+  }
+}
 
 AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
     SegmentId segment_id) {
@@ -63,23 +63,6 @@ AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
       NOTREACHED();
       return AdaptiveToolbarButtonVariant::kUnknown;
   }
-}
-
-bool IsBooleanSegment(const std::string& segmentation_key) {
-  // Please keep in sync with BooleanModel variant in
-  // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
-  return segmentation_key == kChromeStartAndroidSegmentationKey ||
-         segmentation_key == kChromeStartAndroidV2SegmentationKey ||
-         segmentation_key == kQueryTilesSegmentationKey ||
-         segmentation_key == kChromeLowUserEngagementSegmentationKey ||
-         segmentation_key == kFeedUserSegmentationKey ||
-         segmentation_key == kPowerUserKey ||
-         segmentation_key == kShoppingUserSegmentationKey ||
-         segmentation_key == kCrossDeviceUserKey ||
-         segmentation_key == kFrequentFeatureUserKey ||
-         segmentation_key == kIntentionalUserKey ||
-         segmentation_key == kResumeHeavyUserKey ||
-         segmentation_key == kSearchUserKey;
 }
 
 BooleanSegmentSwitch GetBooleanSegmentSwitch(SegmentId new_selection,
@@ -156,35 +139,6 @@ AdaptiveToolbarSegmentSwitch GetAdaptiveToolbarSegmentSwitch(
   }
 }
 
-SegmentationModel OptimizationTargetToSegmentationModel(SegmentId segment_id) {
-  switch (segment_id) {
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
-      return SegmentationModel::kNewTab;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
-      return SegmentationModel::kShare;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
-      return SegmentationModel::kVoice;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY:
-      return SegmentationModel::kDummy;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID:
-      return SegmentationModel::kChromeStartAndroid;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
-      return SegmentationModel::kQueryTiles;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
-      return SegmentationModel::kChromeLowUserEngagement;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
-      return SegmentationModel::kFeedUserSegment;
-    case SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
-      return SegmentationModel::kContextualPageActionPriceTracking;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2:
-      return SegmentationModel::kChromeStartAndroidV2;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
-      return SegmentationModel::kSearchUserSegment;
-    default:
-      return SegmentationModel::kUnknown;
-  }
-}
-
 // Should map to ModelExecutionStatus variant string in
 // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
 absl::optional<base::StringPiece> ModelExecutionStatusToHistogramVariant(
@@ -237,48 +191,6 @@ float ZeroValueFraction(const std::vector<float>& tensor) {
 
 }  // namespace
 
-void RecordModelScore(SegmentId segment_id, float score) {
-  // Special case adaptive toolbar models since it already has histograms being
-  // recorded and updating names will affect current work.
-  switch (segment_id) {
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
-      base::UmaHistogramPercentage(
-          "SegmentationPlatform.AdaptiveToolbar.ModelScore." +
-              SegmentIdToHistogramVariant(segment_id),
-          score * 100);
-      break;
-    default:
-      break;
-  }
-
-  switch (segment_id) {
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY:
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID:
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
-    case SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
-      // This block assumes all models return score between 0 and 1.
-      base::UmaHistogramPercentage("SegmentationPlatform.ModelScore." +
-                                       SegmentIdToHistogramVariant(segment_id),
-                                   score * 100);
-      break;
-    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
-      // This block assumes all models return score between 0 and 100.
-      base::UmaHistogramPercentage("SegmentationPlatform.ModelScore." +
-                                       SegmentIdToHistogramVariant(segment_id),
-                                   base::ClampRound(score));
-      break;
-    default:
-      break;
-  }
-}
-
 void RecordModelUpdateTimeDifference(SegmentId segment_id,
                                      int64_t model_update_time) {
   // |model_update_time| might be empty for data persisted before M101.
@@ -306,8 +218,7 @@ void RecordSegmentSelectionComputed(
   std::string computed_hist =
       base::StrCat({"SegmentationPlatform.", config.segmentation_uma_name,
                     ".SegmentSelection.Computed2"});
-  base::UmaHistogramEnumeration(
-      computed_hist, OptimizationTargetToSegmentationModel(new_selection));
+  base::UmaHistogramSparse(computed_hist, new_selection);
 
   SegmentId prev_segment = previous_selection.has_value()
                                ? previous_selection.value()
@@ -323,7 +234,7 @@ void RecordSegmentSelectionComputed(
     base::UmaHistogramEnumeration(
         switched_hist,
         GetAdaptiveToolbarSegmentSwitch(new_selection, prev_segment));
-  } else if (IsBooleanSegment(config.segmentation_key)) {
+  } else if (config.IsBooleanSegment()) {
     base::UmaHistogramEnumeration(
         switched_hist, GetBooleanSegmentSwitch(new_selection, prev_segment));
   }
@@ -377,8 +288,8 @@ void RecordModelDeliveryMetadataValidation(
 }
 
 void RecordModelDeliveryReceived(SegmentId segment_id) {
-  UMA_HISTOGRAM_ENUMERATION("SegmentationPlatform.ModelDelivery.Received",
-                            OptimizationTargetToSegmentationModel(segment_id));
+  base::UmaHistogramSparse("SegmentationPlatform.ModelDelivery.Received",
+                           segment_id);
 }
 
 void RecordModelDeliverySaveResult(SegmentId segment_id, bool success) {
@@ -449,7 +360,22 @@ void RecordOnDemandSegmentSelectionDuration(
   base::UmaHistogramTimes(histogram_name, duration);
 }
 
-void RecordModelExecutionResult(SegmentId segment_id, float result) {
+void RecordModelExecutionResult(
+    SegmentId segment_id,
+    float result,
+    proto::SegmentationModelMetadata::OutputDescription return_type) {
+  if (return_type == proto::SegmentationModelMetadata::UNKNOWN_RETURN_TYPE) {
+    return_type = GetOptimizationTargetOutputDescription(segment_id);
+  }
+  if (return_type ==
+      proto::SegmentationModelMetadata::RETURN_TYPE_MULTISEGMENT) {
+    // This type of model return score between 0 and 100.
+    base::UmaHistogramPercentage("SegmentationPlatform.ModelExecution.Result." +
+                                     SegmentIdToHistogramVariant(segment_id),
+                                 base::ClampRound(result));
+    return;
+  }
+  // All other models type return score between 0 and 1.
   base::UmaHistogramPercentage("SegmentationPlatform.ModelExecution.Result." +
                                    SegmentIdToHistogramVariant(segment_id),
                                result * 100);
