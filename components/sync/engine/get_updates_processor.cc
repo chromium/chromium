@@ -212,8 +212,10 @@ void GetUpdatesProcessor::PrepareGetUpdates(
     sync_pb::DataTypeContext context = handler_it->second->GetDataTypeContext();
     if (!context.context().empty())
       *get_updates->add_client_contexts() = std::move(context);
-    handler_it->second->PrepareGetUpdates(
-        progress_marker->mutable_get_update_triggers());
+    if (delegate_.IsNotificationInfoRequired()) {
+      handler_it->second->CollectPendingInvalidations(
+          progress_marker->mutable_get_update_triggers());
+    }
   }
 
   delegate_.HelpPopulateGuMessage(get_updates);

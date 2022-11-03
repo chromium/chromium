@@ -66,7 +66,10 @@ class GetUpdatesProcessor {
                               StatusController* status_controller);
 
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, BookmarkNudge);
-  FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, NotifyMany);
+  FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, NotifyNormalDelegate);
+  FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, NotifyConfigureDelegate);
+  FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest,
+                           NotifyPollGetUpdatesDelegate);
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, InitialSyncRequest);
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, ConfigureTest);
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, PollTest);

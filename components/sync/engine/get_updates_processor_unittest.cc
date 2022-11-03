@@ -137,8 +137,9 @@ TEST_F(GetUpdatesProcessorTest, BookmarkNudge) {
   }
 }
 
-// Basic test to ensure invalidation payloads are expressed in the request.
-TEST_F(GetUpdatesProcessorTest, NotifyMany) {
+// Basic test to ensure invalidation payloads are expressed in the
+// NormalDelegate requests.
+TEST_F(GetUpdatesProcessorTest, NotifyNormalDelegate) {
   MockUpdateHandler* autofill_handler = GetAutofillHandler();
   MockUpdateHandler* bookmarks_handler = GetBookmarksHandler();
   MockUpdateHandler* preferences_handler = GetPreferencesHandler();
@@ -160,9 +161,57 @@ TEST_F(GetUpdatesProcessorTest, NotifyMany) {
   EXPECT_EQ(sync_pb::GetUpdatesCallerInfo::UNKNOWN,
             gu_msg.caller_info().source());
   EXPECT_EQ(sync_pb::SyncEnums::GU_TRIGGER, gu_msg.get_updates_origin());
+
   EXPECT_EQ(1, autofill_handler->GetPrepareGetUpdatesCount());
   EXPECT_EQ(1, bookmarks_handler->GetPrepareGetUpdatesCount());
   EXPECT_EQ(1, preferences_handler->GetPrepareGetUpdatesCount());
+}
+
+// Basic test to ensure invalidation payloads are not expressed in
+// ConfigureDelegate requests.
+TEST_F(GetUpdatesProcessorTest, NotifyConfigureDelegate) {
+  MockUpdateHandler* autofill_handler = GetAutofillHandler();
+  MockUpdateHandler* bookmarks_handler = GetBookmarksHandler();
+  MockUpdateHandler* preferences_handler = GetPreferencesHandler();
+
+  ModelTypeSet notified_types;
+  notified_types.Put(AUTOFILL);
+  notified_types.Put(BOOKMARKS);
+  notified_types.Put(PREFERENCES);
+
+  sync_pb::ClientToServerMessage message;
+  ConfigureGetUpdatesDelegate configure_delegate(
+      sync_pb::SyncEnums::RECONFIGURATION);
+  std::unique_ptr<GetUpdatesProcessor> processor(
+      BuildGetUpdatesProcessor(configure_delegate));
+  processor->PrepareGetUpdates(enabled_types(), &message);
+
+  EXPECT_EQ(0, autofill_handler->GetPrepareGetUpdatesCount());
+  EXPECT_EQ(0, bookmarks_handler->GetPrepareGetUpdatesCount());
+  EXPECT_EQ(0, preferences_handler->GetPrepareGetUpdatesCount());
+}
+
+// Basic test to ensure invalidation payloads are not expressed in
+// PollGetUpdatesDelegate requests.
+TEST_F(GetUpdatesProcessorTest, NotifyPollGetUpdatesDelegate) {
+  MockUpdateHandler* autofill_handler = GetAutofillHandler();
+  MockUpdateHandler* bookmarks_handler = GetBookmarksHandler();
+  MockUpdateHandler* preferences_handler = GetPreferencesHandler();
+
+  ModelTypeSet notified_types;
+  notified_types.Put(AUTOFILL);
+  notified_types.Put(BOOKMARKS);
+  notified_types.Put(PREFERENCES);
+
+  sync_pb::ClientToServerMessage message;
+  PollGetUpdatesDelegate poll_delegate;
+  std::unique_ptr<GetUpdatesProcessor> processor(
+      BuildGetUpdatesProcessor(poll_delegate));
+  processor->PrepareGetUpdates(enabled_types(), &message);
+
+  EXPECT_EQ(0, autofill_handler->GetPrepareGetUpdatesCount());
+  EXPECT_EQ(0, bookmarks_handler->GetPrepareGetUpdatesCount());
+  EXPECT_EQ(0, preferences_handler->GetPrepareGetUpdatesCount());
 }
 
 // Basic test to ensure initial sync requests are expressed in the request.

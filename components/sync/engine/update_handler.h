@@ -45,7 +45,7 @@ class UpdateHandler {
       std::unique_ptr<SyncInvalidation> incoming) = 0;
 
   // Fill invalidation related fields in GetUpdates request.
-  virtual void PrepareGetUpdates(sync_pb::GetUpdateTriggers* msg) = 0;
+  virtual void CollectPendingInvalidations(sync_pb::GetUpdateTriggers* msg) = 0;
   // Returns true if |pending_invalidations_| vector is not empty.
   virtual bool HasPendingInvalidations() const = 0;
 

@@ -2657,7 +2657,7 @@ TEST_F(ModelTypeWorkerTest, HintCoalescing) {
     worker()->RecordRemoteInvalidation(BuildInvalidation(1, "bm_hint_1"));
 
     sync_pb::GetUpdateTriggers gu_trigger;
-    worker()->PrepareGetUpdates(&gu_trigger);
+    worker()->CollectPendingInvalidations(&gu_trigger);
     ASSERT_EQ(1, gu_trigger.notification_hint_size());
     EXPECT_EQ("bm_hint_1", gu_trigger.notification_hint(0));
     EXPECT_FALSE(gu_trigger.client_dropped_hints());
@@ -2667,7 +2667,7 @@ TEST_F(ModelTypeWorkerTest, HintCoalescing) {
     worker()->RecordRemoteInvalidation(BuildInvalidation(2, "bm_hint_2"));
 
     sync_pb::GetUpdateTriggers gu_trigger;
-    worker()->PrepareGetUpdates(&gu_trigger);
+    worker()->CollectPendingInvalidations(&gu_trigger);
     ASSERT_EQ(2, gu_trigger.notification_hint_size());
 
     // Expect the most hint recent is last in the list.
@@ -2691,7 +2691,7 @@ TEST_F(ModelTypeWorkerTest, ModelTypeStateAfterApplyUpdates) {
   sync_pb::GetUpdateTriggers gu_trigger;
   // A GetUpdates request is started (but doesn't finish yet). This causes
   // the existing invalidations to get marked as "processed".
-  worker()->PrepareGetUpdates(&gu_trigger);
+  worker()->CollectPendingInvalidations(&gu_trigger);
   ASSERT_EQ(3, gu_trigger.notification_hint_size());
   EXPECT_EQ("bm_hint_1", gu_trigger.notification_hint(0));
   EXPECT_EQ("bm_hint_2", gu_trigger.notification_hint(1));
@@ -2726,7 +2726,7 @@ TEST_F(ModelTypeWorkerTest, DropHintsLocally_OneAtATime) {
   }
   {
     sync_pb::GetUpdateTriggers gu_trigger;
-    worker()->PrepareGetUpdates(&gu_trigger);
+    worker()->CollectPendingInvalidations(&gu_trigger);
     EXPECT_EQ(ModelTypeWorker::kMaxPendingInvalidations,
               static_cast<size_t>(gu_trigger.notification_hint_size()));
     EXPECT_FALSE(gu_trigger.client_dropped_hints());
@@ -2737,7 +2737,7 @@ TEST_F(ModelTypeWorkerTest, DropHintsLocally_OneAtATime) {
 
   {
     sync_pb::GetUpdateTriggers gu_trigger;
-    worker()->PrepareGetUpdates(&gu_trigger);
+    worker()->CollectPendingInvalidations(&gu_trigger);
     EXPECT_TRUE(gu_trigger.client_dropped_hints());
     ASSERT_EQ(ModelTypeWorker::kMaxPendingInvalidations,
               static_cast<size_t>(gu_trigger.notification_hint_size()));
@@ -2758,7 +2758,7 @@ TEST_F(ModelTypeWorkerTest, DropHintsAtServer_Alone) {
   worker()->RecordRemoteInvalidation(BuildUnknownVersionInvalidation());
   {
     sync_pb::GetUpdateTriggers gu_trigger;
-    worker()->PrepareGetUpdates(&gu_trigger);
+    worker()->CollectPendingInvalidations(&gu_trigger);
     EXPECT_TRUE(gu_trigger.server_dropped_hints());
     EXPECT_FALSE(gu_trigger.client_dropped_hints());
     ASSERT_EQ(0, gu_trigger.notification_hint_size());
@@ -2768,7 +2768,7 @@ TEST_F(ModelTypeWorkerTest, DropHintsAtServer_Alone) {
   worker()->ApplyUpdates(status_controller());
   {
     sync_pb::GetUpdateTriggers gu_trigger;
-    worker()->PrepareGetUpdates(&gu_trigger);
+    worker()->CollectPendingInvalidations(&gu_trigger);
     EXPECT_FALSE(gu_trigger.client_dropped_hints());
     EXPECT_FALSE(gu_trigger.server_dropped_hints());
     ASSERT_EQ(0, gu_trigger.notification_hint_size());
@@ -2785,7 +2785,7 @@ TEST_F(ModelTypeWorkerTest, DropHintsAtServer_WithOtherInvalidations) {
 
   {
     sync_pb::GetUpdateTriggers gu_trigger;
-    worker()->PrepareGetUpdates(&gu_trigger);
+    worker()->CollectPendingInvalidations(&gu_trigger);
     EXPECT_TRUE(gu_trigger.server_dropped_hints());
     EXPECT_FALSE(gu_trigger.client_dropped_hints());
     ASSERT_EQ(1, gu_trigger.notification_hint_size());
@@ -2796,7 +2796,7 @@ TEST_F(ModelTypeWorkerTest, DropHintsAtServer_WithOtherInvalidations) {
   worker()->ApplyUpdates(status_controller());
   {
     sync_pb::GetUpdateTriggers gu_trigger;
-    worker()->PrepareGetUpdates(&gu_trigger);
+    worker()->CollectPendingInvalidations(&gu_trigger);
     EXPECT_FALSE(gu_trigger.client_dropped_hints());
     EXPECT_FALSE(gu_trigger.server_dropped_hints());
     ASSERT_EQ(0, gu_trigger.notification_hint_size());
@@ -2863,7 +2863,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, SimpleAcknowledgement) {
   // GetUpdates proto message. To check the acknowledged invalidation,
   // force invalidation to be used in proto message.
   sync_pb::GetUpdateTriggers gu_trigger;
-  worker()->PrepareGetUpdates(&gu_trigger);
+  worker()->CollectPendingInvalidations(&gu_trigger);
 
   worker()->ApplyUpdates(status_controller());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv_id));
@@ -2881,7 +2881,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, ManyAcknowledgements) {
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv2_id));
 
   sync_pb::GetUpdateTriggers gu_trigger;
-  worker()->PrepareGetUpdates(&gu_trigger);
+  worker()->CollectPendingInvalidations(&gu_trigger);
 
   worker()->ApplyUpdates(status_controller());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
@@ -2914,7 +2914,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, OverflowAndRecover) {
   EXPECT_TRUE(IsInvalidationDropped(inv10_id));
 
   sync_pb::GetUpdateTriggers gu_trigger;
-  worker()->PrepareGetUpdates(&gu_trigger);
+  worker()->CollectPendingInvalidations(&gu_trigger);
 
   // This should recover from the drop and bring us back into sync.
   worker()->ApplyUpdates(status_controller());
@@ -2933,7 +2933,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, UnknownVersionFromServer_Simple) {
   int inv_id = SendUnknownVersionInvalidation();
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv_id));
   sync_pb::GetUpdateTriggers gu_trigger;
-  worker()->PrepareGetUpdates(&gu_trigger);
+  worker()->CollectPendingInvalidations(&gu_trigger);
   worker()->ApplyUpdates(status_controller());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv_id));
   EXPECT_TRUE(AllInvalidationsAccountedFor());
@@ -2958,7 +2958,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, UnknownVersionFromServer_Complex) {
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv5_id));
 
   sync_pb::GetUpdateTriggers gu_trigger;
-  worker()->PrepareGetUpdates(&gu_trigger);
+  worker()->CollectPendingInvalidations(&gu_trigger);
 
   // Finish the sync cycle and expect all remaining invalidations to be acked.
   worker()->ApplyUpdates(status_controller());
@@ -2973,8 +2973,8 @@ TEST_F(ModelTypeWorkerAckTrackingTest, UnknownVersionFromServer_Complex) {
 
 TEST_F(ModelTypeWorkerAckTrackingTest, AckInvalidationsAddedDuringSyncCycle) {
   NormalInitialize();
-  // Invalidations that are not used in PrepareGetUpdates() persist until
-  // next ApplyUpdates().
+  // Invalidations that are not used in CollectPendingInvalidations() persist
+  // until next ApplyUpdates().
   int inv1_id = SendInvalidation(10, "hint");
   int inv2_id = SendInvalidation(14, "hint2");
 
@@ -2985,7 +2985,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, AckInvalidationsAddedDuringSyncCycle) {
 
   // Prepare proto message with the invalidations inv1_id and inv2_id.
   sync_pb::GetUpdateTriggers gu_trigger_1;
-  worker()->PrepareGetUpdates(&gu_trigger_1);
+  worker()->CollectPendingInvalidations(&gu_trigger_1);
   ASSERT_EQ(2, gu_trigger_1.notification_hint_size());
 
   int inv3_id = SendInvalidation(100, "hint3");
@@ -3001,7 +3001,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, AckInvalidationsAddedDuringSyncCycle) {
   // RecordSuccessfulSyncCycleIfNotBlocked after being processed in proto
   // message.
   sync_pb::GetUpdateTriggers gu_trigger_2;
-  worker()->PrepareGetUpdates(&gu_trigger_2);
+  worker()->CollectPendingInvalidations(&gu_trigger_2);
   ASSERT_EQ(1, gu_trigger_2.notification_hint_size());
 
   worker()->ApplyUpdates(status_controller());
@@ -3020,7 +3020,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, MultipleGetUpdates) {
   EXPECT_FALSE(IsInvalidationAcknowledged(inv2_id));
 
   sync_pb::GetUpdateTriggers gu_trigger_1;
-  worker()->PrepareGetUpdates(&gu_trigger_1);
+  worker()->CollectPendingInvalidations(&gu_trigger_1);
   ASSERT_EQ(2, gu_trigger_1.notification_hint_size());
 
   int inv3_id = SendInvalidation(100, "hint3");
@@ -3031,7 +3031,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, MultipleGetUpdates) {
   // As they are not acknowledged yet, inv1_id, inv2_id and inv3_id
   // should be included in next proto message.
   sync_pb::GetUpdateTriggers gu_trigger_2;
-  worker()->PrepareGetUpdates(&gu_trigger_2);
+  worker()->CollectPendingInvalidations(&gu_trigger_2);
   ASSERT_EQ(3, gu_trigger_2.notification_hint_size());
 
   worker()->ApplyUpdates(status_controller());

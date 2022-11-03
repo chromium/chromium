@@ -179,10 +179,7 @@ class ModelTypeWorker : public UpdateHandler,
   void ApplyUpdates(StatusController* status) override;
   void RecordRemoteInvalidation(
       std::unique_ptr<SyncInvalidation> incoming) override;
-  // TODO(crbug.com/1365290): Return pending invalidations and fill in proto
-  // message in GetUpdatesProcessor. Rename the method to something like
-  // "CollectPendingInvalidations" or "UsePendingInvalidations".
-  void PrepareGetUpdates(sync_pb::GetUpdateTriggers* msg) override;
+  void CollectPendingInvalidations(sync_pb::GetUpdateTriggers* msg) override;
   bool HasPendingInvalidations() const override;
 
   // CommitQueue implementation.

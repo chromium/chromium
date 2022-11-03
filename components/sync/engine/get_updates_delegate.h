@@ -40,6 +40,8 @@ class GetUpdatesDelegate {
   virtual std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
       const sync_pb::ClientToServerMessage& request) const = 0;
+
+  virtual bool IsNotificationInfoRequired() const = 0;
 };
 
 // Functionality specific to the normal GetUpdate request.
@@ -59,6 +61,8 @@ class NormalGetUpdatesDelegate : public GetUpdatesDelegate {
   std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
       const sync_pb::ClientToServerMessage& request) const override;
+
+  bool IsNotificationInfoRequired() const override;
 
  private:
   const NudgeTracker& nudge_tracker_;
@@ -84,6 +88,8 @@ class ConfigureGetUpdatesDelegate : public GetUpdatesDelegate {
       base::Time timestamp,
       const sync_pb::ClientToServerMessage& request) const override;
 
+  bool IsNotificationInfoRequired() const override;
+
  private:
   const sync_pb::SyncEnums::GetUpdatesOrigin origin_;
 };
@@ -105,6 +111,8 @@ class PollGetUpdatesDelegate : public GetUpdatesDelegate {
   std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
       const sync_pb::ClientToServerMessage& request) const override;
+
+  bool IsNotificationInfoRequired() const override;
 };
 
 }  // namespace syncer

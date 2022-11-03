@@ -32,7 +32,7 @@ class MockUpdateHandler : public UpdateHandler {
   void ApplyUpdates(StatusController* status) override;
   void RecordRemoteInvalidation(
       std::unique_ptr<SyncInvalidation> incoming) override;
-  void PrepareGetUpdates(sync_pb::GetUpdateTriggers* msg) override;
+  void CollectPendingInvalidations(sync_pb::GetUpdateTriggers* msg) override;
   bool HasPendingInvalidations() const override;
 
   // Returns the number of times ApplyUpdates() was invoked.

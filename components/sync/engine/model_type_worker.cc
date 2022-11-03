@@ -1122,7 +1122,8 @@ void ModelTypeWorker::RecordRemoteInvalidation(
   nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
 }
 
-void ModelTypeWorker::PrepareGetUpdates(sync_pb::GetUpdateTriggers* msg) {
+void ModelTypeWorker::CollectPendingInvalidations(
+    sync_pb::GetUpdateTriggers* msg) {
   // Fill the list of payloads, if applicable.  The payloads must be ordered
   // oldest to newest, so we insert them in the same order as we've been storing
   // them internally.

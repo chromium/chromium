@@ -60,6 +60,10 @@ std::unique_ptr<ProtocolEvent> NormalGetUpdatesDelegate::GetNetworkRequestEvent(
       new NormalGetUpdatesRequestEvent(timestamp, nudge_tracker_, request));
 }
 
+bool NormalGetUpdatesDelegate::IsNotificationInfoRequired() const {
+  return true;
+}
+
 ConfigureGetUpdatesDelegate::ConfigureGetUpdatesDelegate(
     sync_pb::SyncEnums::GetUpdatesOrigin origin)
     : origin_(origin) {}
@@ -84,6 +88,10 @@ ConfigureGetUpdatesDelegate::GetNetworkRequestEvent(
                                                            request);
 }
 
+bool ConfigureGetUpdatesDelegate::IsNotificationInfoRequired() const {
+  return false;
+}
+
 PollGetUpdatesDelegate::PollGetUpdatesDelegate() = default;
 
 PollGetUpdatesDelegate::~PollGetUpdatesDelegate() = default;
@@ -103,6 +111,10 @@ std::unique_ptr<ProtocolEvent> PollGetUpdatesDelegate::GetNetworkRequestEvent(
     const sync_pb::ClientToServerMessage& request) const {
   return std::unique_ptr<ProtocolEvent>(
       new PollGetUpdatesRequestEvent(timestamp, request));
+}
+
+bool PollGetUpdatesDelegate::IsNotificationInfoRequired() const {
+  return false;
 }
 
 }  // namespace syncer
