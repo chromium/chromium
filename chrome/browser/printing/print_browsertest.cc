@@ -3306,8 +3306,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
-// TODO(crbug.com/1375007): Slightly flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1375007): Very flaky on Mac and slightly on Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_StartBasicPrintCancel DISABLED_StartBasicPrintCancel
 #else
 #define MAYBE_StartBasicPrintCancel StartBasicPrintCancel
