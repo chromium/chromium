@@ -158,6 +158,7 @@ void BluetoothAdapterFloss::AddAdapterObservers() {
   // that we are controlling.
   FlossDBusManager::Get()->GetAdapterClient()->AddObserver(this);
   FlossDBusManager::Get()->GetLEScanClient()->AddObserver(this);
+  FlossDBusManager::Get()->GetBatteryManagerClient()->AddObserver(this);
 }
 
 void BluetoothAdapterFloss::RemoveAdapter() {
@@ -818,6 +819,44 @@ void BluetoothAdapterFloss::AdapterDeviceConnected(
   device->SetIsConnected(true);
   NotifyDeviceChanged(device);
   NotifyDeviceConnectedStateChanged(device, true);
+}
+
+absl::optional<device::BluetoothDevice::BatteryType> variant_to_battery_type(
+    const std::string& variant) {
+  std::unordered_map<std::string, device::BluetoothDevice::BatteryType>
+      battery_type_lookup = {
+          {"", device::BluetoothDevice::BatteryType::kDefault},
+          {"left", device::BluetoothDevice::BatteryType::kLeftBudTrueWireless},
+          {"right",
+           device::BluetoothDevice::BatteryType::kRightBudTrueWireless},
+          {"case", device::BluetoothDevice::BatteryType::kCaseTrueWireless},
+      };
+  if (!base::Contains(battery_type_lookup, variant)) {
+    return absl::nullopt;
+  }
+  return battery_type_lookup[variant];
+}
+
+void BluetoothAdapterFloss::BatteryInfoUpdated(std::string remote_address,
+                                               BatterySet battery_set) {
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(remote_address));
+  if (!device) {
+    LOG(WARNING) << "BatterySet received for unknown device" << remote_address;
+    return;
+  }
+
+  for (const auto& battery : battery_set.batteries) {
+    absl::optional<device::BluetoothDevice::BatteryType> battery_type =
+        variant_to_battery_type(battery.variant);
+    if (!battery_type) {
+      LOG(WARNING) << "Unable to convert to battery_type from "
+                   << battery.variant;
+      continue;
+    }
+    device->SetBatteryInfo(device::BluetoothDevice::BatteryInfo(
+        battery_type.value(), battery.percentage));
+  }
 }
 
 void BluetoothAdapterFloss::AdapterDeviceDisconnected(

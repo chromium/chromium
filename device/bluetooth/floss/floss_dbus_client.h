@@ -30,12 +30,14 @@ extern DEVICE_BLUETOOTH_EXPORT const char kAdapterService[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerService[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGattInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kBatteryManagerInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kExperimentalInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGattObjectFormat[];
 extern DEVICE_BLUETOOTH_EXPORT const char kMediaObjectFormat[];
+extern DEVICE_BLUETOOTH_EXPORT const char kBatteryManagerObjectFormat[];
 
 // Other interfaces
 extern DEVICE_BLUETOOTH_EXPORT const char kSocketManagerInterface[];
@@ -194,6 +196,14 @@ extern DEVICE_BLUETOOTH_EXPORT const char
 extern DEVICE_BLUETOOTH_EXPORT const char kOnPeriodicAdvertisingDataSet[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnPeriodicAdvertisingEnabled[];
 }  // namespace advertiser
+
+namespace battery_manager {
+extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterBatteryCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetBatteryInformation[];
+
+extern DEVICE_BLUETOOTH_EXPORT const char kOnBatteryInfoUpdated[];
+}  // namespace battery_manager
 
 namespace experimental {
 extern DEVICE_BLUETOOTH_EXPORT const char kSetLLPrivacy[];
@@ -368,6 +378,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
 
   // Convert adapter number to gatt object path.
   static dbus::ObjectPath GenerateGattPath(int adapter_index);
+
+  // Convert adapter number to battery_manager object path.
+  static dbus::ObjectPath GenerateBatteryManagerPath(int adapter_index);
 
   // Generalized DBus serialization (used for generalized method call
   // invocation).

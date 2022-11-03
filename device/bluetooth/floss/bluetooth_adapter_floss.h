@@ -20,6 +20,7 @@
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/floss/bluetooth_low_energy_scan_session_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
+#include "device/bluetooth/floss/floss_battery_manager_client.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_gatt_client.h"
 #include "device/bluetooth/floss/floss_lescan_client.h"
@@ -45,6 +46,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
     : public device::BluetoothAdapter,
       public floss::FlossManagerClient::Observer,
       public floss::FlossAdapterClient::Observer,
+      public floss::FlossBatteryManagerClient::
+          FlossBatteryManagerClientObserver,
       public ScannerClientObserver {
  public:
   static scoped_refptr<BluetoothAdapterFloss> CreateAdapter();
@@ -219,6 +222,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       FlossAdapterClient::BondState bond_state) override;
   void AdapterDeviceConnected(const FlossDeviceId& device_id) override;
   void AdapterDeviceDisconnected(const FlossDeviceId& device_id) override;
+
+  // floss::FlossBatteryManagerClient::FlossBatteryManagerClientObserver
+  // override.
+  void BatteryInfoUpdated(std::string remote_address,
+                          BatterySet battery_set) override;
 
   // BluetoothAdapter:
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;

@@ -23,6 +23,7 @@
 #include "device/bluetooth/floss/fake_floss_socket_manager.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_advertiser_client.h"
+#include "device/bluetooth/floss/floss_battery_manager_client.h"
 #include "device/bluetooth/floss/floss_lescan_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
 #include "device/bluetooth/floss/floss_socket_manager.h"
@@ -205,6 +206,10 @@ FlossAdvertiserClient* FlossDBusManager::GetAdvertiserClient() {
   return client_bundle_->advertiser_client();
 }
 
+FlossBatteryManagerClient* FlossDBusManager::GetBatteryManagerClient() {
+  return client_bundle_->battery_manager_client();
+}
+
 void FlossDBusManager::InitializeAdapterClients(int adapter) {
   // Clean up active adapter clients
   if (active_adapter_ != kInvalidAdapter) {
@@ -229,6 +234,8 @@ void FlossDBusManager::InitializeAdapterClients(int adapter) {
                                         active_adapter_);
   client_bundle_->advertiser_client()->Init(GetSystemBus(), kAdapterService,
                                             active_adapter_);
+  client_bundle_->battery_manager_client()->Init(
+      GetSystemBus(), kAdapterService, active_adapter_);
 }
 
 void FlossDBusManagerSetter::SetFlossManagerClient(
@@ -262,6 +269,12 @@ void FlossDBusManagerSetter::SetFlossAdvertiserClient(
       std::move(client);
 }
 
+void FlossDBusManagerSetter::SetFlossBatteryManagerClient(
+    std::unique_ptr<FlossBatteryManagerClient> client) {
+  FlossDBusManager::Get()->client_bundle_->battery_manager_client_ =
+      std::move(client);
+}
+
 FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
   if (use_stubs) {
     return;
@@ -284,6 +297,7 @@ void FlossClientBundle::ResetAdapterClients() {
   socket_manager_ = FlossSocketManager::Create();
   lescan_client_ = FlossLEScanClient::Create();
   advertiser_client_ = FlossAdvertiserClient::Create();
+  battery_manager_client_ = FlossBatteryManagerClient::Create();
 }
 
 }  // namespace floss

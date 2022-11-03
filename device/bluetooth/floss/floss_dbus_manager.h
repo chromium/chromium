@@ -34,6 +34,7 @@ class FlossManagerClient;
 class FlossSocketManager;
 class FlossLEScanClient;
 class FlossAdvertiserClient;
+class FlossBatteryManagerClient;
 
 // FlossDBusManager manages the lifetimes of D-Bus connections and clients. It
 // ensures the proper ordering of shutdowns for the D-Bus thread, connections
@@ -111,6 +112,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   FlossSocketManager* GetSocketManager();
   FlossLEScanClient* GetLEScanClient();
   FlossAdvertiserClient* GetAdvertiserClient();
+  FlossBatteryManagerClient* GetBatteryManagerClient();
 
  private:
   friend class FlossDBusManagerSetter;
@@ -161,6 +163,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManagerSetter {
   void SetFlossLEScanClient(std::unique_ptr<FlossLEScanClient> client);
   void SetFlossAdvertiserClient(std::unique_ptr<FlossAdvertiserClient> client);
   void SetFlossGattClient(std::unique_ptr<FlossGattClient> client);
+  void SetFlossBatteryManagerClient(
+      std::unique_ptr<FlossBatteryManagerClient> client);
 };
 
 // FlossDBusThreadManager manages the D-Bus thread, the thread dedicated to
@@ -217,6 +221,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
     return advertiser_client_.get();
   }
 
+  FlossBatteryManagerClient* battery_manager_client() {
+    return battery_manager_client_.get();
+  }
+
  private:
   friend FlossDBusManagerSetter;
   friend FlossDBusManager;
@@ -230,6 +238,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
   std::unique_ptr<FlossSocketManager> socket_manager_;
   std::unique_ptr<FlossLEScanClient> lescan_client_;
   std::unique_ptr<FlossAdvertiserClient> advertiser_client_;
+  std::unique_ptr<FlossBatteryManagerClient> battery_manager_client_;
 };
 
 }  // namespace floss

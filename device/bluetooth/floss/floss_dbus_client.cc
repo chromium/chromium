@@ -21,12 +21,15 @@ const char kAdapterService[] = "org.chromium.bluetooth";
 const char kManagerService[] = "org.chromium.bluetooth.Manager";
 const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
 const char kGattInterface[] = "org.chromium.bluetooth.BluetoothGatt";
+const char kBatteryManagerInterface[] = "org.chromium.bluetooth.BatteryManager";
 const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
 const char kExperimentalInterface[] = "org.chromium.bluetooth.Experimental";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
 const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
 const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
 const char kMediaObjectFormat[] = "/org/chromium/bluetooth/hci%d/media";
+const char kBatteryManagerObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/battery_manager";
 
 const char kSocketManagerInterface[] = "org.chromium.bluetooth.SocketManager";
 
@@ -194,6 +197,15 @@ const char kOnPeriodicAdvertisingDataSet[] = "OnPeriodicAdvertisingDataSet";
 const char kOnPeriodicAdvertisingEnabled[] = "OnPeriodicAdvertisingEnabled";
 }  // namespace advertiser
 
+namespace battery_manager {
+const char kCallbackInterface[] =
+    "org.chromium.bluetooth.BatteryManagerCallback";
+const char kRegisterBatteryCallback[] = "RegisterBatteryCallback";
+const char kGetBatteryInformation[] = "GetBatteryInformation";
+
+const char kOnBatteryInfoUpdated[] = "OnBatteryInfoUpdated";
+}  // namespace battery_manager
+
 namespace experimental {
 const char kSetLLPrivacy[] = "SetLLPrivacy";
 }  // namespace experimental
@@ -340,6 +352,13 @@ dbus::ObjectPath FlossDBusClient::GenerateAdapterPath(int adapter_index) {
 // static
 dbus::ObjectPath FlossDBusClient::GenerateGattPath(int adapter_index) {
   return dbus::ObjectPath(base::StringPrintf(kGattObjectFormat, adapter_index));
+}
+
+// static
+dbus::ObjectPath FlossDBusClient::GenerateBatteryManagerPath(
+    int adapter_index) {
+  return dbus::ObjectPath(
+      base::StringPrintf(kBatteryManagerObjectFormat, adapter_index));
 }
 
 // Default error handler for dbus clients is to just print the error right now.

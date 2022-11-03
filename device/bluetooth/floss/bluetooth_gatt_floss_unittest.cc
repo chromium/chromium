@@ -19,6 +19,7 @@
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
+#include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_gatt_client.h"
 #include "device/bluetooth/floss/fake_floss_lescan_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
@@ -52,10 +53,14 @@ class BluetoothGattFlossTest : public testing::Test {
     auto fake_floss_adapter_client = std::make_unique<FakeFlossAdapterClient>();
     auto fake_floss_gatt_client = std::make_unique<FakeFlossGattClient>();
     auto fake_floss_manager_client = std::make_unique<FakeFlossManagerClient>();
+    auto fake_floss_battery_manager_client =
+        std::make_unique<FakeFlossBatteryManagerClient>();
 
     fake_floss_adapter_client_ = fake_floss_adapter_client.get();
     fake_floss_gatt_client_ = fake_floss_gatt_client.get();
     fake_floss_manager_client_ = fake_floss_manager_client.get();
+    fake_floss_battery_manager_client_ =
+        fake_floss_battery_manager_client.get();
 
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
     dbus_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
@@ -66,6 +71,8 @@ class BluetoothGattFlossTest : public testing::Test {
         std::make_unique<FakeFlossLEScanClient>());
     dbus_setter->SetFlossAdvertiserClient(
         std::make_unique<FakeFlossAdvertiserClient>());
+    dbus_setter->SetFlossBatteryManagerClient(
+        std::make_unique<FakeFlossBatteryManagerClient>());
 
     // Always initialize and enable adapter for Gatt tests.
     InitializeAdapter();
@@ -158,6 +165,7 @@ class BluetoothGattFlossTest : public testing::Test {
   raw_ptr<FakeFlossAdapterClient> fake_floss_adapter_client_;
   raw_ptr<FakeFlossGattClient> fake_floss_gatt_client_;
   raw_ptr<FakeFlossManagerClient> fake_floss_manager_client_;
+  raw_ptr<FakeFlossBatteryManagerClient> fake_floss_battery_manager_client_;
 };
 
 TEST_F(BluetoothGattFlossTest, ConnectAndResolveServices) {

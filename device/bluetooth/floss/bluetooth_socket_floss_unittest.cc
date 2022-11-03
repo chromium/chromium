@@ -20,6 +20,7 @@
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
+#include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_gatt_client.h"
 #include "device/bluetooth/floss/fake_floss_lescan_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
@@ -49,11 +50,15 @@ class BluetoothSocketFlossTest : public testing::Test {
     auto fake_floss_lescan_client = std::make_unique<FakeFlossLEScanClient>();
     auto fake_floss_advertiser_client =
         std::make_unique<FakeFlossAdvertiserClient>();
+    auto fake_floss_battery_manager_client =
+        std::make_unique<FakeFlossBatteryManagerClient>();
 
     fake_floss_manager_client_ = fake_floss_manager_client.get();
     fake_floss_socket_manager_ = fake_floss_socket_manager.get();
     fake_floss_lescan_client_ = fake_floss_lescan_client.get();
     fake_floss_advertiser_client_ = fake_floss_advertiser_client.get();
+    fake_floss_battery_manager_client_ =
+        fake_floss_battery_manager_client.get();
 
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
     dbus_setter->SetFlossAdapterClient(
@@ -63,6 +68,8 @@ class BluetoothSocketFlossTest : public testing::Test {
     dbus_setter->SetFlossLEScanClient(std::move(fake_floss_lescan_client));
     dbus_setter->SetFlossAdvertiserClient(
         std::move(fake_floss_advertiser_client));
+    dbus_setter->SetFlossBatteryManagerClient(
+        std::move(fake_floss_battery_manager_client));
 
     InitializeAndEnableAdapter();
   }
@@ -173,6 +180,7 @@ class BluetoothSocketFlossTest : public testing::Test {
   raw_ptr<FakeFlossSocketManager> fake_floss_socket_manager_;
   raw_ptr<FakeFlossLEScanClient> fake_floss_lescan_client_;
   raw_ptr<FakeFlossAdvertiserClient> fake_floss_advertiser_client_;
+  raw_ptr<FakeFlossBatteryManagerClient> fake_floss_battery_manager_client_;
 
   base::WeakPtrFactory<BluetoothSocketFlossTest> weak_ptr_factory_{this};
 };
