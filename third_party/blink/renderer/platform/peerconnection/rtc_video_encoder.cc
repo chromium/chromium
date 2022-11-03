@@ -746,6 +746,7 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
         spatial_layers,
     media::VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred,
     SignaledValue init_event) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::CreateAndInitializeVEA");
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -908,6 +909,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
 
 void RTCVideoEncoder::Impl::UseOutputBitstreamBufferId(
     int32_t bitstream_buffer_id) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::UseOutputBitstreamBufferId");
   DVLOG(3) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_encoder_) {
@@ -989,6 +991,7 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
     unsigned int input_count,
     const gfx::Size& input_coded_size,
     size_t output_buffer_size) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::RequireBitstreamBuffers");
   DVLOG(3) << __func__ << " input_count=" << input_count
            << ", input_coded_size=" << input_coded_size.ToString()
            << ", output_buffer_size=" << output_buffer_size;
@@ -1040,6 +1043,7 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
 void RTCVideoEncoder::Impl::BitstreamBufferReady(
     int32_t bitstream_buffer_id,
     const media::BitstreamBufferMetadata& metadata) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::BitstreamBufferReady");
   DVLOG(3) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id
            << ", payload_size=" << metadata.payload_size_bytes
            << ", key_frame=" << metadata.key_frame
@@ -1248,6 +1252,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
 
 void RTCVideoEncoder::Impl::NotifyError(
     media::VideoEncodeAccelerator::Error error) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::NotifyError");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int32_t retval = WEBRTC_VIDEO_CODEC_ERROR;
   switch (error) {
@@ -1549,6 +1554,7 @@ bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
 }
 
 void RTCVideoEncoder::Impl::InputBufferReleased(int index) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::InputBufferReleased");
   DVLOG(3) << "Impl::InputBufferReleased(): index=" << index;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!use_native_input_);
@@ -1606,6 +1612,7 @@ RTCVideoEncoder::~RTCVideoEncoder() {
 int32_t RTCVideoEncoder::InitEncode(
     const webrtc::VideoCodec* codec_settings,
     const webrtc::VideoEncoder::Settings& settings) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::InitEncode");
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(1) << __func__ << " codecType=" << codec_settings->codecType
            << ", width=" << codec_settings->width
