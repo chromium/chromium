@@ -198,16 +198,16 @@ export function keyboardDiagramTestSuite() {
     assertEquals('delete', keyElements[6].mainGlyph);
   });
 
-  test('topRightKey', async () => {
+  test('topRightKeyAppearsDisabled', async () => {
     diagramElement.topRightKey = TopRightKey.POWER;
     await flushTasks();
 
     const topRightKey = diagramElement.$.topRightKey;
-    assertEquals('keyboard:power', topRightKey.icon);
-    assertEquals('Power', topRightKey.ariaName);
+    assertEquals(undefined, topRightKey.icon);
+    assertEquals(undefined, topRightKey.ariaName);
 
     diagramElement.setKeyState(116 /* KEY_POWER */, KeyboardKeyState.PRESSED);
-    assertEquals(KeyboardKeyState.PRESSED, topRightKey.state);
+    assertEquals(KeyboardKeyState.NOT_PRESSED, topRightKey.state);
   });
 
   test('setKeyState', async () => {
