@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONTROLLER_ANDROID_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/android/autofill/save_card_controller_metrics_android.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_controller.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"

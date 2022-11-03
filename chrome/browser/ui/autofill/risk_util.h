@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_RISK_UTIL_H_
-#define CHROME_BROWSER_AUTOFILL_RISK_UTIL_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_RISK_UTIL_H_
+#define CHROME_BROWSER_UI_AUTOFILL_RISK_UTIL_H_
 
 #include <stdint.h>
 
@@ -19,9 +19,7 @@ namespace content {
 class WebContents;
 }
 
-namespace autofill {
-
-namespace risk_util {
+namespace autofill::risk_util {
 
 // Loads risk data for the client, getting the device's risk fingerprint before
 // calling |callback|. |obfuscated_gaia_id| is used in the fingerprinting
@@ -46,8 +44,6 @@ void LoadRiskDataHelper(uint64_t obfuscated_gaia_id,
                         const raw_ptr<content::WebContents> web_contents,
                         gfx::Rect window_bounds);
 
-}  // namespace risk_util
+}  // namespace autofill::risk_util
 
-}  // namespace autofill
-
-#endif  // CHROME_BROWSER_AUTOFILL_RISK_UTIL_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_RISK_UTIL_H_

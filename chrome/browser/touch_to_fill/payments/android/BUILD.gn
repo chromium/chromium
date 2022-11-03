@@ -24,6 +24,7 @@ source_set("android") {
   deps = [
     ":jni_headers",
     ":public",
+    "//chrome/browser/autofill",
     "//components/autofill/core/common:features",
     "//content/public/browser:browser",
     "//ui/android",

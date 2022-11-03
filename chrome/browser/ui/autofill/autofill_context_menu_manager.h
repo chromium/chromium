@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_
-#define CHROME_BROWSER_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -170,4 +170,4 @@ class AutofillContextMenuManager {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_

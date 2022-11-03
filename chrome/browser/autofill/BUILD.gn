@@ -1,0 +1,140 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+static_library("autofill") {
+  sources = [
+    "address_normalizer_factory.cc",
+    "address_normalizer_factory.h",
+    "autocomplete_history_manager_factory.cc",
+    "autocomplete_history_manager_factory.h",
+    "autofill_gstatic_reader.cc",
+    "autofill_gstatic_reader.h",
+    "autofill_image_fetcher_factory.cc",
+    "autofill_image_fetcher_factory.h",
+    "autofill_image_fetcher_impl.cc",
+    "autofill_image_fetcher_impl.h",
+    "autofill_offer_manager_factory.cc",
+    "autofill_offer_manager_factory.h",
+    "autofill_popup_controller_utils.cc",
+    "autofill_popup_controller_utils.h",
+    "iban_manager_factory.cc",
+    "iban_manager_factory.h",
+    "merchant_promo_code_manager_factory.cc",
+    "merchant_promo_code_manager_factory.h",
+    "personal_data_manager_factory.cc",
+    "personal_data_manager_factory.h",
+    "strike_database_factory.cc",
+    "strike_database_factory.h",
+    "validation_rules_storage_factory.cc",
+    "validation_rules_storage_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//chrome/common:constants",
+    "//components/autofill/content/browser",
+    "//components/image_fetcher/core",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
+    "//components/variations/service",
+    "//third_party/libphonenumber",
+  ]
+
+  if (is_android) {
+    sources += [
+      "accessory_controller.h",
+      "address_accessory_controller.h",
+      "address_accessory_controller_impl.cc",
+      "address_accessory_controller_impl.h",
+      "android/personal_data_manager_android.cc",
+      "android/personal_data_manager_android.h",
+      "android/phone_number_util_android.cc",
+      "android/save_update_address_profile_message_controller.cc",
+      "android/save_update_address_profile_message_controller.h",
+      "android/save_update_address_profile_prompt_controller.cc",
+      "android/save_update_address_profile_prompt_controller.h",
+      "android/save_update_address_profile_prompt_view.h",
+      "credit_card_accessory_controller.h",
+      "credit_card_accessory_controller_impl.cc",
+      "credit_card_accessory_controller_impl.h",
+      "manual_filling_controller.h",
+      "manual_filling_controller_impl.cc",
+      "manual_filling_controller_impl.h",
+      "manual_filling_utils.cc",
+      "manual_filling_utils.h",
+      "manual_filling_view_interface.h",
+    ]
+    public_deps += [ "//components/messages/android" ]
+    deps += [
+      "//chrome/android:jni_headers",
+      "//chrome/app:generated_resources",
+      "//components/autofill/android:autofill_core_browser_java_enums",
+      "//components/autofill/core/common/mojom:mojo_types",
+      "//components/messages/android:feature_flags",
+      "//components/password_manager/core/browser",
+      "//third_party/libaddressinput",
+      "//url:gurl_android",
+    ]
+  } else {
+    # !is_android
+    deps += [ "//components/sync/base" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_autofill_popup_controller.cc",
+    "mock_autofill_popup_controller.h",
+    "mock_manual_filling_controller.cc",
+    "mock_manual_filling_controller.h",
+  ]
+
+  deps = [
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui",
+    "//components/autofill/core/browser",
+  ]
+
+  if (is_android) {
+    sources += [
+      "mock_address_accessory_controller.cc",
+      "mock_address_accessory_controller.h",
+      "mock_credit_card_accessory_controller.cc",
+      "mock_credit_card_accessory_controller.h",
+      "mock_manual_filling_view.cc",
+      "mock_manual_filling_view.h",
+      "mock_password_accessory_controller.cc",
+      "mock_password_accessory_controller.h",
+    ]
+    deps += [
+      "//chrome/android:test_support_jni_headers",
+      "//chrome/browser",
+      "//chrome/browser/autofill",
+    ]
+  }
+}

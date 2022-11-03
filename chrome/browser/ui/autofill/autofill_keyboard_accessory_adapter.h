@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_ADAPTER_H_
-#define CHROME_BROWSER_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_ADAPTER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_ADAPTER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_ADAPTER_H_
 
 #include <cstddef>
 #include <memory>
@@ -122,4 +122,4 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_ADAPTER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_ADAPTER_H_

@@ -9,7 +9,6 @@
 
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/text_constants.h"
 
 namespace gfx {
 class Point;

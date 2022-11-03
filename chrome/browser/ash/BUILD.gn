@@ -3092,6 +3092,7 @@ source_set("ash") {
     "//chrome/browser/ash/login/oobe_quick_start",
     "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/autofill",
     "//chrome/browser/chromeos",
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",

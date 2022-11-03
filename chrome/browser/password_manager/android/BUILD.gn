@@ -26,6 +26,7 @@ source_set("backend_public") {
 
   deps = [
     ":backend",
+    "//chrome/browser/autofill",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/content:content",
     "//components/password_manager/core/browser:browser",
@@ -431,6 +432,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
+    "//chrome/browser/autofill",
     "//chrome/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
