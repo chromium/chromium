@@ -11,7 +11,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chromecast.base.Controller;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -32,9 +31,8 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     private Context mContext;
     private CastWebContentsComponent mComponent;
 
-    private final Controller<Boolean> mScreenAccess = new Controller<>();
-    private final Controller<CastWebContentsComponent.StartParams> mStartParams =
-            new Controller<>();
+    private boolean mScreenAccess;
+    private CastWebContentsComponent.StartParams mStartParams;
 
     private static int sInstanceId = 1;
 
@@ -58,34 +56,37 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
                         + ") Seesion ID: " + sessionId);
         mComponent = new CastWebContentsComponent(sessionId, this, this, enableTouchInput,
                 isRemoteControlMode, turnOnScreen, keepScreenOn);
-        mScreenAccess.subscribe(screenAccess -> mStartParams.subscribe(startParams -> {
-            // If the app doesn't have screen access, start in headless mode, so that the web
-            // content can still have a window attached. Since we have video overlay always
-            // enabled, this can unblock video decoder.
-            mComponent.start(startParams, !screenAccess);
-            return () -> mComponent.stop(mContext);
-        }));
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void createWindowForWebContents(WebContents webContents, String appId) {
         if (DEBUG) Log.d(TAG, "createWindowForWebContents");
-        mStartParams.set(new CastWebContentsComponent.StartParams(mContext, webContents, appId));
+        mStartParams = new CastWebContentsComponent.StartParams(mContext, webContents, appId);
+        maybeStartComponent();
+    }
+
+    private void maybeStartComponent() {
+        if (mStartParams == null || !mScreenAccess) return;
+
+        Log.d(TAG, "mComponent.start()");
+        mComponent.start(mStartParams, !mScreenAccess /* isHeadless */);
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void grantScreenAccess() {
         if (DEBUG) Log.d(TAG, "grantScreenAccess");
-        mScreenAccess.set(true);
+        mScreenAccess = true;
+        maybeStartComponent();
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void revokeScreenAccess() {
         if (DEBUG) Log.d(TAG, "revokeScreenAccess");
-        mScreenAccess.set(false);
+        mComponent.stop(mContext);
+        mScreenAccess = false;
     }
 
     @SuppressWarnings("unused")
