@@ -48,24 +48,27 @@ import java.util.List;
  * bookmark model stored in native.
  */
 class BookmarkBridge {
-    private final Profile mProfile;
+    private long mNativeBookmarkBridge;
     private boolean mIsDestroyed;
     private boolean mIsDoingExtensiveChanges;
-    private long mNativeBookmarkBridge;
     private boolean mIsNativeBookmarkModelLoaded;
     private final ObserverList<BookmarkModelObserver> mObservers =
             new ObserverList<BookmarkModelObserver>();
     private SubscriptionsManager mSubscriptionManager;
     private SubscriptionsManager.SubscriptionObserver mSubscriptionsObserver;
 
-    /**
-     * Handler to fetch the bookmarks, titles, urls and folder hierarchy.
-     * @param profile Profile instance corresponding to the active profile.
-     */
-    public BookmarkBridge(Profile profile) {
+    static BookmarkModel getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        mProfile = profile;
-        mNativeBookmarkBridge = BookmarkBridgeJni.get().init(BookmarkBridge.this, profile);
+        return BookmarkBridgeJni.get().getForProfile(profile);
+    }
+
+    @CalledByNative
+    public static BookmarkModel createBookmarkModel(long nativeBookmarkBridge) {
+        return new BookmarkModel(nativeBookmarkBridge);
+    }
+
+    BookmarkBridge(long nativeBookmarkBridge) {
+        mNativeBookmarkBridge = nativeBookmarkBridge;
         mIsDoingExtensiveChanges = BookmarkBridgeJni.get().isDoingExtensiveChanges(
                 mNativeBookmarkBridge, BookmarkBridge.this);
         mSubscriptionsObserver = new SubscriptionsManager.SubscriptionObserver() {
@@ -93,7 +96,7 @@ class BookmarkBridge {
     /**
      * Destroys this instance so no further calls can be executed.
      */
-    public void destroy() {
+    void destroy() {
         mIsDestroyed = true;
         if (mNativeBookmarkBridge != 0) {
             BookmarkBridgeJni.get().destroy(mNativeBookmarkBridge, BookmarkBridge.this);
@@ -108,7 +111,7 @@ class BookmarkBridge {
     }
 
     /** Returns whether the bridge has been destroyed. */
-    public boolean isDestroyed() {
+    private boolean isDestroyed() {
         return mIsDestroyed;
     }
 
@@ -750,11 +753,6 @@ class BookmarkBridge {
         return BookmarkBridgeJni.get().isEditBookmarksEnabled(mNativeBookmarkBridge);
     }
 
-    /** Gets the profile. */
-    protected Profile getProfile() {
-        return mProfile;
-    }
-
     /**
      * Notifies the observer that bookmark model has been loaded.
      */
@@ -964,6 +962,7 @@ class BookmarkBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
+        BookmarkModel getForProfile(Profile profile);
         BookmarkId getBookmarkIdForWebContents(long nativeBookmarkBridge, BookmarkBridge caller,
                 WebContents webContents, boolean onlyEditable);
         BookmarkItem getBookmarkByID(
@@ -1031,7 +1030,6 @@ class BookmarkBridge {
                 int powerBookmarkType, int maxNumber);
         void getBookmarksOfType(long nativeBookmarkBridge, BookmarkBridge caller,
                 List<BookmarkId> bookmarkMatches, int powerBookmarkType);
-        long init(BookmarkBridge caller, Profile profile);
         boolean isDoingExtensiveChanges(long nativeBookmarkBridge, BookmarkBridge caller);
         void destroy(long nativeBookmarkBridge, BookmarkBridge caller);
         boolean isEditBookmarksEnabled(long nativeBookmarkBridge);

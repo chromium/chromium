@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -126,7 +127,7 @@ public class BookmarkAddEditFolderActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mModel = new BookmarkModel();
+        mModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         mModel.addObserver(mBookmarkModelObserver);
         mIsAddMode = getIntent().getBooleanExtra(INTENT_IS_ADD_MODE, false);
         if (mIsAddMode) {
@@ -259,8 +260,6 @@ public class BookmarkAddEditFolderActivity
     protected void onDestroy() {
         super.onDestroy();
         mModel.removeObserver(mBookmarkModelObserver);
-        mModel.destroy();
-        mModel = null;
     }
 
     private void updateParent(BookmarkId newParent) {

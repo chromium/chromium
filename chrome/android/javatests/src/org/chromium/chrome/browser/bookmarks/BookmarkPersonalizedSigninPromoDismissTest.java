@@ -76,7 +76,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkModel bookmarkModel = new BookmarkModel(Profile.fromWebContents(
+            BookmarkModel bookmarkModel = BookmarkModel.getForProfile(Profile.fromWebContents(
                     mSyncTestRule.getActivity().getActivityTab().getWebContents()));
             bookmarkModel.loadFakePartnerBookmarkShimForTesting();
         });

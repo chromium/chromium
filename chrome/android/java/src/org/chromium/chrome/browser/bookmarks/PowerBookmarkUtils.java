@@ -167,7 +167,6 @@ public class PowerBookmarkUtils {
             CommerceSubscription subscription =
                     createCommerceSubscriptionForPowerBookmarkMeta(meta);
             Callback<Integer> wrapperCallback = (status) -> {
-                if (bookmarkModel.isDestroyed()) return;
                 if (status == SubscriptionsManager.StatusCode.OK) {
                     setPriceTrackingEnabledInMetadata(bookmarkModel, bookmarkId, enabled);
                 }
@@ -410,7 +409,7 @@ public class PowerBookmarkUtils {
     /** @see #validateBookmarkedCommerceSubscriptions(BookmarkModel, SubscriptionsManager) */
     private static void doBookmarkedSubscriptionValidation(BookmarkModel bookmarkModel,
             SubscriptionsManager subscriptionsManager, List<CommerceSubscription> subscriptions) {
-        if (bookmarkModel.isDestroyed() || subscriptions == null) return;
+        if (subscriptions == null) return;
 
         List<BookmarkId> products =
                 bookmarkModel.searchBookmarks("", null, PowerBookmarkType.SHOPPING, -1);

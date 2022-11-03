@@ -83,7 +83,7 @@ public class ExploreSurfaceCoordinator {
                 SurfaceType.START_SURFACE, embeddingSurfaceConstructedTimeNs, swipeRefreshLayout,
                 /*overScrollDisabled=*/true, parentView,
                 new ExploreSurfaceActionDelegate(
-                        snackbarManager, new BookmarkModel(profile), crowButtonDelegate),
+                        snackbarManager, BookmarkModel.getForProfile(profile), crowButtonDelegate),
                 HelpAndFeedbackLauncherImpl.getInstance(), tabModelSelector);
 
         mFeedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);

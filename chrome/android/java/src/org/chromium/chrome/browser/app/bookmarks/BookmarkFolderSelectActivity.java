@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -137,7 +138,7 @@ public class BookmarkFolderSelectActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mModel = new BookmarkModel();
+        mModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         List<String> stringList =
                 IntentUtils.safeGetStringArrayListExtra(getIntent(), INTENT_BOOKMARKS_TO_MOVE);
         mBookmarksToMove = new ArrayList<>(stringList.size());
@@ -247,8 +248,6 @@ public class BookmarkFolderSelectActivity
     protected void onDestroy() {
         super.onDestroy();
         mModel.removeObserver(mBookmarkModelObserver);
-        mModel.destroy();
-        mModel = null;
     }
 
     /**

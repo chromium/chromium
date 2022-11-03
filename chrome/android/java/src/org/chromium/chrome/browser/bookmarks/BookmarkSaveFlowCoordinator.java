@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -64,7 +65,7 @@ public class BookmarkSaveFlowCoordinator {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mUserEducationHelper = userEducationHelper;
-        mBookmarkModel = new BookmarkModel();
+        mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         mDestroyChecker = new DestroyChecker();
 
         mBookmarkSaveFlowView = LayoutInflater.from(mContext).inflate(
@@ -173,9 +174,6 @@ public class BookmarkSaveFlowCoordinator {
         mMediator = null;
 
         mBookmarkSaveFlowView = null;
-
-        mBookmarkModel.destroy();
-        mBookmarkModel = null;
 
         mChangeProcessor.destroy();
     }
