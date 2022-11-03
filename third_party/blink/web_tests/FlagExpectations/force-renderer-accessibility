@@ -14,46 +14,31 @@
 virtual/* [ Skip ]
 
 # Crashes
-# ax_object_cache_impl.cc#1151 -- IsRelevantSlotElement():
-external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
-virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
-# ax_object.cc#2792 -- IsInert():
-crbug.com/1350162 external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Crash ]
-# Should not receive unincluded child:
-external/wpt/inert/dynamic-inert-on-focused-element.html [ Crash ]
-# SVG text selection does not work correctly:
-svg/text/select-x-list-4.svg [ Crash ]
-# Unknown cause:
-crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ Crash ]
+# Display-locking / content-visibility:
 crbug.com/1380449 external/wpt/css/css-contain/content-visibility/content-visibility-063.html [ Crash ]
-
-# Failures
-# isUseCounted() difference:
-virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Failure Pass ]
-# Unknown cause:
-virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-fixed-position.html [ Failure Pass ]
-virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Failure Pass ]
-external/wpt/css/css-transitions/transition-base-response-002.html [ Failure Pass ]
+# ax_object_cache_impl.cc#1151 -- IsRelevantSlotElement():
+crbug.com/1380449 external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
+crbug.com/1380449 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
 
 # Timeouts
 fast/loader/iframe-navigation-stealing-focus.html [ Skip ]
 
 # Slow prerender tests, needs investigation
 # Using [ Skip ] instead of [ Timeout ] to save time on test run
-crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/about-blank-iframes.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/activation-start.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/cross-origin-isolated.https.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-prompt-by-before-unload.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/cross-origin-iframe.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/purpose-prefetch-header.https.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/sandbox-iframe.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/session-history-subframe-navigation.https.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/session-history-subframe-reload.https.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Skip ]
-crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/about-blank-iframes.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/activation-start.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/cross-origin-isolated.https.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-prompt-by-before-unload.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/cross-origin-iframe.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/purpose-prefetch-header.https.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/sandbox-iframe.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/session-history-subframe-navigation.https.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/session-history-subframe-reload.https.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Skip ]
+crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Skip ]
 
 # Intentional failures for focusless spatial navigation.
 # Focusless spatial navigation is intentionally disabled when accessibility is turned on.
