@@ -9,11 +9,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
-// Kill switch guarding a workaround for broken UI around the dynamic island,
-// see crbug.com/1364629. This workaround makes the UIToolbar background
-// transparent and correctly frames a UIVisualEffectView.
-bool ShouldUseToolbarBlurFix();
-
 @class TabGridPageControl;
 
 // Top toolbar for TabGrid. The appearance of the toolbar is decided by screen

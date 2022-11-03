@@ -47,12 +47,6 @@
 
 namespace crash_helper {
 
-// Kill switch guarding a workaround for too many calls to SetUploadConsent
-// see crbug.com/1361334 for details.
-BASE_FEATURE(kLimitSetUploadConsentCalls,
-             "LimitSetUploadConsentCalls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
@@ -79,12 +73,6 @@ void DeleteOldReportsInDirectory(base::FilePath directory) {
     }
   }
 }
-
-// Kill switch guarding a workaround for stability shutdown metric, see
-// crbug.com/1365765
-BASE_FEATURE(kCorrectMobileSessionShutdownType,
-             "CorrectMobileSessionShutdownType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This mirrors the logic in MobileSessionShutdownMetricsProvider to avoid a
 // dependency loop.
@@ -147,10 +135,6 @@ void ProcessIntermediateDumps() {
   // Wait until after processing intermediate dumps to record last shutdown
   // type.
   dispatch_async(dispatch_get_main_queue(), ^{
-    bool correct_mobile_session_shutdown_type =
-        base::FeatureList::IsEnabled(kCorrectMobileSessionShutdownType);
-    if (!correct_mobile_session_shutdown_type)
-      return;
     // This histogram is similar to MobileSessionShutdownType, but will not
     // appear in the initial stability log. Because of this, the stability flag
     // on this histogram doesn't matter. It will be reported like any other
@@ -250,13 +234,8 @@ void SetEnabled(bool enabled) {
     // Don't sync upload consent when the app is backgrounded. Crashpad
     // flocks the settings file, and because Chrome puts this in a shared
     // container, slow reads and writes can lead to watchdog kills.
-    static bool limit_set_upload_consent_calls =
-        base::FeatureList::IsEnabled(kLimitSetUploadConsentCalls);
-    // TODO(crbug.com/1361334): Safety for cherry-pick. Remove feature check
-    // and keep active check after speculative fix is confirmed to be safe.
-    if (!limit_set_upload_consent_calls ||
-        UIApplication.sharedApplication.applicationState ==
-            UIApplicationStateActive) {
+    if (UIApplication.sharedApplication.applicationState ==
+        UIApplicationStateActive) {
       // Posts SetUploadConsent on blocking pool thread because it needs access
       // to IO and cannot work from UI thread.
       base::ThreadPool::PostTask(
@@ -352,10 +331,7 @@ bool HasReportToUpload() {
   // is called, which means we need to look for non-zero length files in
   // common::CrashpadDumpLocation()/ dir. See crbug.com/1365765 for details,
   // but this should be removed once MobileSessionShutdownType2 is validated.
-  bool correct_mobile_session_shutdown_type =
-      base::FeatureList::IsEnabled(kCorrectMobileSessionShutdownType);
-  if (correct_mobile_session_shutdown_type &&
-      crash_reporter::IsCrashpadRunning()) {
+  if (crash_reporter::IsCrashpadRunning()) {
     const base::FilePath path =
         common::CrashpadDumpLocation().Append("pending-serialized-ios-dump");
     NSString* path_ns = base::SysUTF8ToNSString(path.value());

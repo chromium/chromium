@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
 #import "base/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -1355,9 +1356,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Adds the top toolbar and sets constraints.
 - (void)setupTopToolbar {
-  bool dynamic_island_toolbar_blur_fix = ShouldUseToolbarBlurFix();
   UIVisualEffectView* topToolbarBlurView;
-  if (dynamic_island_toolbar_blur_fix) {
+  if (base::ios::HasDynamicIsland()) {
     UIBlurEffect* blurEffect =
         [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
     topToolbarBlurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
@@ -1401,7 +1401,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [topToolbar.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor]
   ]];
 
-  if (dynamic_island_toolbar_blur_fix) {
+  if (base::ios::HasDynamicIsland()) {
     [NSLayoutConstraint activateConstraints:@[
       [topToolbarBlurView.topAnchor
           constraintEqualToAnchor:self.view.topAnchor],

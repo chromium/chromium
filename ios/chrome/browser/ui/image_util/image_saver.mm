@@ -28,16 +28,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Kill switch guarding a workaround for TCC violations before iOS14.  In case
-// iOS14 starts triggering violations too.  See crbug.com/1159431 for details.
-BASE_FEATURE(kPhotoLibrarySaveImage,
-             "PhotoLibrarySaveImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
 @interface ImageSaver ()
 // Base view controller for the alerts.
 @property(nonatomic, weak) UIViewController* baseViewController;
@@ -88,29 +78,22 @@ BASE_FEATURE(kPhotoLibrarySaveImage,
       return;
     }
 
-    if (base::FeatureList::IsEnabled(kPhotoLibrarySaveImage)) {
-      // Dump `data` into the photo library. Requires the usage of
-      // NSPhotoLibraryAddUsageDescription.
-      [[PHPhotoLibrary sharedPhotoLibrary]
-          performChanges:^{
-            PHAssetResourceCreationOptions* options =
-                [[PHAssetResourceCreationOptions alloc] init];
-            [[PHAssetCreationRequest creationRequestForAsset]
-                addResourceWithType:PHAssetResourceTypePhoto
-                               data:data
-                            options:options];
-          }
-          completionHandler:^(BOOL success, NSError* error) {
-            [weakSelf image:savedImage
-                didFinishSavingWithError:error
-                             contextInfo:nil];
-          }];
-    } else {
-      // Fallback for pre-iOS14.
-      UIImageWriteToSavedPhotosAlbum(
-          savedImage, weakSelf,
-          @selector(image:didFinishSavingWithError:contextInfo:), nullptr);
-    }
+    // Dump `data` into the photo library. Requires the usage of
+    // NSPhotoLibraryAddUsageDescription.
+    [[PHPhotoLibrary sharedPhotoLibrary]
+        performChanges:^{
+          PHAssetResourceCreationOptions* options =
+              [[PHAssetResourceCreationOptions alloc] init];
+          [[PHAssetCreationRequest creationRequestForAsset]
+              addResourceWithType:PHAssetResourceTypePhoto
+                             data:data
+                          options:options];
+        }
+        completionHandler:^(BOOL success, NSError* error) {
+          [weakSelf image:savedImage
+              didFinishSavingWithError:error
+                           contextInfo:nil];
+        }];
   });
 }
 

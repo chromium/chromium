@@ -51,15 +51,6 @@
 
 using base::UmaHistogramEnumeration;
 
-namespace {
-
-// Kill switch guarding a workaround for keyboard flicker, see crbug.com/1253561
-BASE_FEATURE(kFormInputKeyboardReloadInputViews,
-             "FormInputKeyboardReloadInputViews",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
 @interface FormInputAccessoryMediator () <FormActivityObserver,
                                           FormInputAccessoryViewDelegate,
                                           CRWWebStateObserver,
@@ -306,12 +297,6 @@ BASE_FEATURE(kFormInputKeyboardReloadInputViews,
   }
 
   self.validActivityForAccessoryView = YES;
-  static bool form_input_keyboard_reload_input_views_workaround =
-      base::FeatureList::IsEnabled(kFormInputKeyboardReloadInputViews);
-  if (!form_input_keyboard_reload_input_views_workaround) {
-    [GetFirstResponder() reloadInputViews];
-  }
-
   NSString* frameID;
   if (frame) {
     frameID = base::SysUTF8ToNSString(frame->GetFrameId());
@@ -327,8 +312,7 @@ BASE_FEATURE(kFormInputKeyboardReloadInputViews,
     return;
   }
 
-  if (form_input_keyboard_reload_input_views_workaround &&
-      _lastSeenParams.field_type != params.field_type) {
+  if (_lastSeenParams.field_type != params.field_type) {
     [GetFirstResponder() reloadInputViews];
   }
   _lastSeenParams = params;

@@ -1412,11 +1412,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "disable-feed-ios14",
-    "owners": [ "justincohen", "adamta" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "disable-idle-sockets-close-on-memory-pressure",
     "owners": [ "pmarko" ],
     "expiry_milestone": 112
