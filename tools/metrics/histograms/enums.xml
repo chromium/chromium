@@ -25807,6 +25807,8 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="55" label="User exported a trace from the performance panel"/>
   <int value="56" label="Stack frame restarted"/>
   <int value="57" label="Capture test protocol button clicked"/>
+  <int value="58" label="Breakpoint removed from remove button"/>
+  <int value="59" label="Breakpoint group expanded state changed"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
@@ -25816,6 +25818,19 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="5" label="Notifications"/>
   <int value="6" label="Payment Handler"/>
   <int value="7" label="Periodic Background Sync"/>
+</enum>
+
+<enum name="DevToolsBreakpointEditDialogRevealedFrom">
+  <int value="0" label="Breakpoint sidebar context menu"/>
+  <int value="1" label="Breakpoint sidebar edit button"/>
+  <int value="2" label="Breakpoint marker context menu"/>
+  <int value="3" label="Line gutter context menu"/>
+  <int value="4" label="Keyboard Shortcut"/>
+</enum>
+
+<enum name="DevToolsBreakpointWithConditionAdded">
+  <int value="0" label="Logpoint"/>
+  <int value="1" label="Conditional Breakpoint"/>
 </enum>
 
 <enum name="DevToolsColorPickerFixedColor">
