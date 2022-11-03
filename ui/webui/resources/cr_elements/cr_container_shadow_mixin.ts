@@ -33,7 +33,7 @@
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../js/assert.js';
+import {assert} from '../js/assert_ts.js';
 
 export enum CrContainerShadowSide {
   TOP = 'top',
@@ -157,7 +157,7 @@ export const CrContainerShadowMixin = dedupingMixin(
         showDropShadows() {
           assert(!this.intersectionObserver_);
           assert(this.sides_);
-          for (const side of this.sides_!) {
+          for (const side of this.sides_) {
             this.dropShadows_.get(side)!.classList.toggle('has-shadow', true);
           }
         }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CrButtonElement, Destination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, State, whenReady} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -81,8 +81,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
   // is disabled. Verifies that the user can recover from this error by
   // selecting a different, valid printer.
   test(
-      assert(invalid_settings_browsertest.TestNames.InvalidSettingsError),
-      function() {
+      invalid_settings_browsertest.TestNames.InvalidSettingsError, function() {
         createPage();
         const barDevice = getCddTemplate('BarDevice');
         nativeLayer.setLocalDestinationCapabilities(barDevice);
@@ -153,8 +152,9 @@ suite(invalid_settings_browsertest.suiteName, function() {
                   destinationSettings.getDestinationStoreForTest()
                       .destinations()
                       .find((d: Destination) => d.id === 'BarDevice');
+              assert(barDestination);
               destinationSettings.getDestinationStoreForTest()
-                  .selectDestination(assert(barDestination!));
+                  .selectDestination(barDestination);
 
               // Wait for the preview to be updated.
               return nativeLayer.whenCalled('getPreview');

@@ -8,9 +8,9 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './strings.m.js';
 import './signin_shared.css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './signin_reauth_app.html.js';
@@ -102,7 +102,6 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
       }
     }
     assertNotReached('No consent confirmation element found.');
-    return '';
   }
 }
 

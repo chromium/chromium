@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -180,10 +180,12 @@ export class ModulesElement extends PolymerElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    assert(this.setDisabledModulesListenerId_);
     NewTabPageProxy.getInstance().callbackRouter.removeListener(
-        assert(this.setDisabledModulesListenerId_!));
+        this.setDisabledModulesListenerId_);
+    assert(this.setModulesFreVisibilityListenerId_);
     NewTabPageProxy.getInstance().callbackRouter.removeListener(
-        assert(this.setModulesFreVisibilityListenerId_!));
+        this.setModulesFreVisibilityListenerId_);
     this.eventTracker_.removeAll();
   }
 

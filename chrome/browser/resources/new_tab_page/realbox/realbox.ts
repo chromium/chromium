@@ -5,7 +5,7 @@
 import './realbox_dropdown.js';
 import './realbox_icon.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -231,8 +231,9 @@ export class RealboxElement extends PolymerElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    assert(this.autocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
-        assert(this.autocompleteResultChangedListenerId_!));
+        this.autocompleteResultChangedListenerId_);
   }
 
   override ready() {
@@ -369,8 +370,10 @@ export class RealboxElement extends PolymerElement {
         inputValue === lastInputValue &&
         this.lastInput_.inline[0].toLocaleLowerCase() ===
             e.key.toLocaleLowerCase()) {
+      const text = this.lastInput_.text + e.key;
+      assert(text);
       this.updateInput_({
-        text: assert(this.lastInput_.text + e.key),
+        text: text,
         inline: this.lastInput_.inline.substr(1),
       });
 
@@ -546,8 +549,10 @@ export class RealboxElement extends PolymerElement {
         decodeString16(this.selectedMatch_!.inlineAutocompletion) :
         '';
     const newFillEnd = newFill.length - newInline.length;
+    const text = newFill.substr(0, newFillEnd);
+    assert(text);
     this.updateInput_({
-      text: assert(newFill.substr(0, newFillEnd)),
+      text: text,
       inline: newInline,
       moveCursorToEnd: newInline.length === 0,
     });
@@ -628,10 +633,11 @@ export class RealboxElement extends PolymerElement {
 
   private navigateToMatch_(matchIndex: number, e: KeyboardEvent|MouseEvent) {
     assert(matchIndex >= 0);
-    const match = assert(this.result_!.matches[matchIndex]);
+    const match = this.result_!.matches[matchIndex];
+    assert(match);
     assert(this.lastInputFocusTime_);
     const delta =
-        mojoTimeDelta(window.performance.now() - this.lastInputFocusTime_!);
+        mojoTimeDelta(window.performance.now() - this.lastInputFocusTime_);
     this.pageHandler_.openAutocompleteMatch(
         matchIndex, match.destinationUrl, this.matchesAreVisible, delta,
         (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
