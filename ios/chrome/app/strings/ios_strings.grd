@@ -2919,7 +2919,7 @@ Try to use a unique password for every site.
         Open the Tab Grid
       </message>
       <message name="IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_2" desc="Text of the row indicating the second step of Search Tabs in What's New. [iOS only]">
-        At the Top Left, Tap the Search Icon
+        At the Top of the Screen, Tap the Search Icon
       </message>
       <message name="IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_3" desc="Text of the row indicating the third step of Search Tabs in What's New. [iOS only]">
         Enter a Word or Phrase
@@ -2961,7 +2961,7 @@ Try to use a unique password for every site.
         Open Chrome Settings
       </message>
       <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_2" desc="Text of the row indicating the second step of Share Highlight in What's New. [iOS only]">
-        Tap Passwords Then Tap Add
+        Tap Passwords Manager Then Tap Add
       </message>
       <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_3" desc="Text of the row indicating the third step of Share Highlight in What's New. [iOS only]">
         Enter Site and Password, Then Save
@@ -2976,7 +2976,7 @@ Try to use a unique password for every site.
         You can now use Chrome anytime you browse or tap links in messages, documents, and other apps.
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_1" desc="Text of the row indicating the first step of Use Chrome By Default in What's New. [iOS only]">
-        Open Chrome Settings
+        Open Settings
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_2" desc="Text of the row indicating the second step of Use Chrome By Default in What's New. [iOS only]">
         Tap Default Browser App
@@ -2988,7 +2988,7 @@ Try to use a unique password for every site.
         Make Default in Settings...
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_TITLE" desc="Passwords In Other Apps title displayed in What's New. [iOS only]">
-        Passwords In Other Apps
+        Passwords in Other Apps
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_SUBTITLE" desc="Passwords In Other Apps subtitle displayed in What's New. [iOS only]">
         You can use the passwords you saved to Google Password Manager in other apps on your iPhone.
@@ -3788,7 +3788,7 @@ New Search
         What's New
       </message>
       <message name="IDS_IOS_WHATS_NEW_LEARN_MORE_ACTION_TITLE" desc="Label of the button for users to learn more about a feature or a chrome tip.">
-        Learn more
+        Learn More
       </message>
       <message name="IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE" desc="Title of a section in a table view to inform users about a chrome tip.">
         Chrome Tip
