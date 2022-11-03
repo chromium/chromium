@@ -5,12 +5,15 @@
 #include "components/exo/pointer.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
+#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -30,32 +33,26 @@
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/wm_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/test/events_test_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/drag_drop/drag_drop_controller.h"
-#include "base/test/bind.h"
-#include "components/exo/wm_helper.h"
-#include "ui/aura/client/drag_drop_client.h"
-#include "ui/aura/window_tree_host.h"
-#include "ui/events/test/events_test_utils.h"
-#endif
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -176,7 +173,6 @@ class PointerTest : public test::ExoTestBase {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PointerConstraintTest : public PointerTest {
  public:
   PointerConstraintTest() = default;
@@ -236,7 +232,6 @@ class PointerConstraintTest : public PointerTest {
   Surface* surface_;
   aura::client::FocusClient* focus_client_;
 };
-#endif
 
 TEST_F(PointerTest, SetCursor) {
   std::unique_ptr<Surface> surface(new Surface);
@@ -1074,7 +1069,6 @@ TEST_F(PointerTest, DragDropAbort) {
   pointer.reset();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerTest, DragDropAndPointerEnterLeaveEvents) {
   Seat seat(std::make_unique<TestDataExchangeDelegate>());
   MockPointerDelegate pointer_delegate;
@@ -1354,8 +1348,6 @@ TEST_F(PointerTest,
   pointer.reset();
 }
 
-#endif
-
 TEST_F(PointerTest, OnPointerRelativeMotion) {
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1463,9 +1455,6 @@ TEST_F(PointerTest, OnPointerRelativeMotion) {
   pointer.reset();
 }
 
-// TODO(b/161755250): the ifdef is only necessary because of the feature
-// flag. This code should work fine on non-cros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PointerOrdinalMotionTest : public PointerTest {
  public:
   PointerOrdinalMotionTest() {
@@ -1521,9 +1510,7 @@ TEST_F(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
 
   pointer->UnregisterRelativePointerDelegate(&relative_delegate);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, ConstrainPointer) {
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
@@ -1560,9 +1547,7 @@ TEST_F(PointerConstraintTest, ConstrainPointer) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, CanOnlyConstrainPermittedWindows) {
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
@@ -1578,9 +1563,7 @@ TEST_F(PointerConstraintTest, CanOnlyConstrainPermittedWindows) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, OneConstraintPerSurface) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(false));
@@ -1604,9 +1587,7 @@ TEST_F(PointerConstraintTest, OneConstraintPerSurface) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, OneShotConstraintActivatedOnFirstFocus) {
   auto second_shell_surface = BuildShellSurfaceWhichPermitsPointerLock();
   Surface* second_surface = second_shell_surface->surface_for_testing();
@@ -1633,9 +1614,7 @@ TEST_F(PointerConstraintTest, OneShotConstraintActivatedOnFirstFocus) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, UnconstrainPointerWhenSurfaceIsDestroyed) {
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
@@ -1652,9 +1631,7 @@ TEST_F(PointerConstraintTest, UnconstrainPointerWhenSurfaceIsDestroyed) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, UnconstrainPointerWhenWindowLosesFocus) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(false));
@@ -1673,9 +1650,7 @@ TEST_F(PointerConstraintTest, UnconstrainPointerWhenWindowLosesFocus) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, PersistentConstraintActivatedOnRefocus) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(true));
@@ -1694,9 +1669,7 @@ TEST_F(PointerConstraintTest, PersistentConstraintActivatedOnRefocus) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, MultipleSurfacesCanBeConstrained) {
   // Arrange: First surface + persistent constraint
   ON_CALL(constraint_delegate_, IsPersistent())
@@ -1742,9 +1715,7 @@ TEST_F(PointerConstraintTest, MultipleSurfacesCanBeConstrained) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, UserActionPreventsConstraint) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(false));
@@ -1785,9 +1756,7 @@ TEST_F(PointerConstraintTest, UserActionPreventsConstraint) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, UserCanBreakAndActivatePersistentConstraint) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(true));
@@ -1912,7 +1881,6 @@ TEST_F(PointerConstraintTest, ConstrainPointerWithUncommittedShellSurface) {
 
   pointer_.reset();
 }
-#endif
 
 TEST_F(PointerTest, PointerStylus) {
   std::unique_ptr<Surface> surface(new Surface);

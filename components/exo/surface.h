@@ -632,9 +632,7 @@ class Surface final : public ui::PropertyHandler {
   // Surface observer list. Surface does not own the observers.
   base::ObserverList<SurfaceObserver, true>::Unchecked observers_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::OutputProtectionDelegate> output_protection_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   viz::SurfaceId first_embedded_surface_id_;
   viz::SurfaceId latest_embedded_surface_id_;

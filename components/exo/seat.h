@@ -7,6 +7,7 @@
 
 #include <array>
 
+#include "ash/ime/ime_controller_impl.h"
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -15,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/exo/data_source_observer.h"
 #include "components/exo/key_state.h"
+#include "components/exo/ui_lock_controller.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/base/clipboard/clipboard_observer.h"
@@ -23,11 +25,6 @@
 #include "ui/events/event_handler.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/platform/platform_event_observer.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/ime/ime_controller_impl.h"
-#include "components/exo/ui_lock_controller.h"
-#endif
 
 namespace ui {
 class KeyEvent;
@@ -48,9 +45,7 @@ class Seat : public aura::client::FocusChangeObserver,
              public ui::PlatformEventObserver,
              public ui::EventHandler,
              public ui::ClipboardObserver,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
              public ash::ImeControllerImpl::Observer,
-#endif
              public DataSourceObserver {
  public:
   explicit Seat(std::unique_ptr<DataExchangeDelegate> delegate);
@@ -96,9 +91,7 @@ class Seat : public aura::client::FocusChangeObserver,
     return pressed_keys_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const XkbTracker* xkb_tracker() const { return xkb_tracker_.get(); }
-#endif
 
   DataExchangeDelegate* data_exchange_delegate() {
     return data_exchange_delegate_.get();
@@ -137,13 +130,11 @@ class Seat : public aura::client::FocusChangeObserver,
   // Overridden from DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Overridden from ash::ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
 
   UILockController* GetUILockControllerForTesting();
-#endif
 
   void set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode physical_code_for_currently_processing_event) {
@@ -160,7 +151,6 @@ class Seat : public aura::client::FocusChangeObserver,
  private:
   class RefCountedScopedClipboardWriter;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called when the focused window is a Lacros window and a source
   // DataTransferEndpoint is read in the available MIME types. This
   // is currently used to synchronize clipboard source metadata from
@@ -170,7 +160,6 @@ class Seat : public aura::client::FocusChangeObserver,
       base::OnceClosure callback,
       const std::string& mime_type,
       std::u16string data);
-#endif
 
   // Called when data is read from FD passed from a client.
   // |data| is read data. |source| is source of the data, or nullptr if
@@ -191,11 +180,9 @@ class Seat : public aura::client::FocusChangeObserver,
                    base::OnceClosure callback,
                    const std::string& mime_type,
                    const std::vector<uint8_t>& data);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnImageDecoded(base::OnceClosure callback,
                       scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       const SkBitmap& bitmap);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void OnFilenamesRead(ui::EndpointType source,
                        scoped_refptr<RefCountedScopedClipboardWriter> writer,
                        base::OnceClosure callback,
@@ -234,10 +221,8 @@ class Seat : public aura::client::FocusChangeObserver,
 
   bool was_shutdown_ = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<UILockController> ui_lock_controller_;
   std::unique_ptr<XkbTracker> xkb_tracker_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<DataExchangeDelegate> data_exchange_delegate_;
   base::WeakPtrFactory<Seat> weak_ptr_factory_{this};

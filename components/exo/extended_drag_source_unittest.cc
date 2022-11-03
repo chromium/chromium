@@ -700,7 +700,6 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates) {
   EXPECT_FALSE(shell_surface->IsDragged());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
   // Create and map a toplevel shell surface.
   auto shell_surface =
@@ -742,7 +741,6 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
   loop.Run();
   EXPECT_TRUE(data_source_delegate_->cancelled());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   UpdateDisplay("400x300,800x600");

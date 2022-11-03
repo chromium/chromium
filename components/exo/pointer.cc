@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "ash/drag_drop/drag_drop_controller.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -47,13 +50,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/cursor_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// #include "ash/constants/ash_features.h"
-#include "ash/drag_drop/drag_drop_controller.h"
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/wm/window_util.h"
-#endif
-
 namespace exo {
 namespace {
 
@@ -92,12 +88,7 @@ display::ManagedDisplayInfo GetCaptureDisplayInfo() {
 }
 
 int GetContainerIdForMouseCursor() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::kShellWindowId_MouseCursorContainer;
-#else
-  NOTIMPLEMENTED();
-  return -1;
-#endif
 }
 
 }  // namespace
@@ -251,7 +242,6 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
   // Pointer lock is a chromeos-only feature (i.e. the chromeos::features
   // namespace only exists in chromeos builds). So we do not compile pointer
   // lock support unless we are on chromeos.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   Surface* constrained_surface = delegate->GetConstrainedSurface();
   if (!constrained_surface) {
     delegate->OnDefunct();
@@ -294,10 +284,6 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
     delegate->OnConstraintActivated();
   }
   return success;
-#else
-  NOTIMPLEMENTED();
-  return false;
-#endif
 }
 
 bool Pointer::UnconstrainPointerByUserAction() {
@@ -521,16 +507,11 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
 
     // Ordinal motion is sent only on platforms that support it, which is
     // indicated by the presence of a flag.
-    //
-    // TODO(b/161755250): the ifdef is only necessary because of the feature
-    // flag. This code should work fine on non-cros.
     absl::optional<gfx::Vector2dF> ordinal_motion = absl::nullopt;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (event->flags() & ui::EF_UNADJUSTED_MOUSE &&
         base::FeatureList::IsEnabled(chromeos::features::kExoOrdinalMotion)) {
       ordinal_motion = event->movement();
     }
-#endif
 
     if (!same_location) {
       bool ignore_motion = false;

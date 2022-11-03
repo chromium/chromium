@@ -491,7 +491,6 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
   EXPECT_EQ("Test data", base::UTF16ToUTF8(result16));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacros) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
@@ -748,7 +747,6 @@ TEST_F(DataOfferTest, SetDropDataDoNotOfferDteToNonLacros) {
   ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
   EXPECT_EQ("", dte_json_result);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(DataOfferTest, SetClipboardDataHTML) {
   TestDataOfferDelegate delegate;

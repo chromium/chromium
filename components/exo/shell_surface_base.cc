@@ -1369,12 +1369,10 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
         app_restore::kAppIdKey, restore_window_id_source_.value());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Restore `params` to those of the saved `restore_window_id_`.
   app_restore::ModifyWidgetParams(params.init_properties_container.GetProperty(
                                       app_restore::kRestoreWindowIdKey),
                                   &params);
-#endif
 
   // If app restore specifies the initial bounds, set `initial_bounds_` to it so
   // that shell surface knows the initial bounds is set.
@@ -1858,7 +1856,6 @@ bool ShellSurfaceBase::IsFrameDecorationSupported(SurfaceFrameType frame_type) {
 
 void ShellSurfaceBase::SetOrientationLock(
     chromeos::OrientationType orientation_lock) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetOrientationLock",
                "orientation_lock", static_cast<int>(orientation_lock));
 
@@ -1870,9 +1867,6 @@ void ShellSurfaceBase::SetOrientationLock(
   ash::Shell* shell = ash::Shell::Get();
   shell->screen_orientation_controller()->LockOrientationForWindow(
       widget_->GetNativeWindow(), orientation_lock);
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShellSurfaceBase::SetZOrder(ui::ZOrderLevel z_order) {

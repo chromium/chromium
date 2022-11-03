@@ -12,27 +12,18 @@
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/data_source_observer.h"
+#include "components/exo/extended_drag_source.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/point_f.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/exo/extended_drag_source.h"
-#endif
-
 class SkBitmap;
 
 namespace ash {
 class DragDropController;
 }  // namespace ash
-
-namespace aura {
-namespace client {
-class DragDropClient;
-}  // namespace client
-}  // namespace aura
 
 namespace ui {
 class OSExchangeData;
@@ -51,9 +42,7 @@ class ScopedSurface;
 // or if another drag operation races with this one to start and wins.
 class DragDropOperation : public DataSourceObserver,
                           public SurfaceObserver,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
                           public ExtendedDragSource::Observer,
-#endif
                           public aura::client::DragDropClientObserver {
  public:
   // Create an operation for a drag-drop originating from a wayland app.
@@ -79,12 +68,10 @@ class DragDropOperation : public DataSourceObserver,
 
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnDragActionsChanged(int actions) override;
 
   // ExtendedDragSource::Observer:
   void OnExtendedDragSourceDestroying(ExtendedDragSource* source) override;
-#endif
 
  private:
   class IconSurface;
@@ -101,14 +88,12 @@ class DragDropOperation : public DataSourceObserver,
 
   void OnDragIconCaptured(const SkBitmap& icon_bitmap);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called when the focused window is a Lacros window and a source
   // DataTransferEndpoint is found in the available MIME types. This
   // is currently used to synchronize drag source metadata from
   // Lacros to Ash.
   void OnDataTransferEndpointRead(const std::string& mime_type,
                                   std::u16string data);
-#endif
 
   void OnTextRead(const std::string& mime_type, std::u16string data);
   void OnHTMLRead(const std::string& mime_type, std::u16string data);
@@ -128,20 +113,14 @@ class DragDropOperation : public DataSourceObserver,
   // directly. Use ScheduleStartDragDropOperation instead.
   void StartDragDropOperation();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void ResetExtendedDragSource();
-#endif
 
   std::unique_ptr<ScopedDataSource> source_;
   std::unique_ptr<ScopedSurface> icon_;
   std::unique_ptr<ScopedSurface> origin_;
   gfx::PointF drag_start_point_;
   std::unique_ptr<ui::OSExchangeData> os_exchange_data_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::DragDropController* drag_drop_controller_;
-#else
-  aura::client::DragDropClient* drag_drop_controller_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::RepeatingClosure counter_;
 
@@ -159,9 +138,7 @@ class DragDropOperation : public DataSourceObserver,
 
   ui::mojom::DragEventSource event_source_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ExtendedDragSource* extended_drag_source_;
-#endif
 
   base::WeakPtrFactory<DragDropOperation> weak_ptr_factory_{this};
 };

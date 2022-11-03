@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "ash/display/output_protection_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/logging.h"
@@ -69,11 +71,6 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/display/output_protection_delegate.h"
-#include "ash/wm/desks/desks_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Surface*)
 
 namespace exo {
@@ -134,11 +131,7 @@ gfx::Size ToTransformedSize(const gfx::Size& size, Transform transform) {
 }
 
 bool IsDeskContainer(aura::Window* container) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::desks_util::IsDeskContainer(container);
-#else
-  return container->GetId() == ash::kShellWindowId_DefaultContainerDeprecated;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 class CustomWindowDelegate : public aura::WindowDelegate {
@@ -886,11 +879,9 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         cached_state_.basic_state.buffer_transform !=
             state_.basic_state.buffer_transform;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     bool needs_output_protection =
         cached_state_.basic_state.only_visible_on_secure_output !=
         state_.basic_state.only_visible_on_secure_output;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     bool cached_invert_y = false;
 
@@ -916,7 +907,6 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       window_->TrackOcclusionState();
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (needs_output_protection) {
       if (!output_protection_) {
         output_protection_ =
@@ -930,7 +920,6 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
 
       output_protection_->SetProtection(protection_mask, base::DoNothing());
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // We update contents if Attach() has been called since last commit.
     if (has_cached_contents_) {
@@ -1722,12 +1711,11 @@ void Surface::SetKeyboardShortcutsInhibited(bool inhibited) {
     return;
 
   keyboard_shortcuts_inhibited_ = inhibited;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Also set kCanConsumeSystemKeysKey property, so that the key event
   // is also forwarded to exo::Keyboard.
   // TODO(hidehiko): Support capability on migrating ARC/Crostini.
   window_->SetProperty(ash::kCanConsumeSystemKeysKey, inhibited);
-#endif
 }
 
 SecurityDelegate* Surface::GetSecurityDelegate() {

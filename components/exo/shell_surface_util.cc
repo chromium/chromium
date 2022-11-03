@@ -6,9 +6,14 @@
 
 #include <memory>
 
+#include "ash/public/cpp/window_properties.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/permission.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/surface.h"
@@ -24,14 +29,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/window_properties.h"
-#include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/desks_util.h"
-#include "chromeos/ui/base/window_properties.h"
-#include "components/exo/client_controlled_shell_surface.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace exo {
 
 namespace {
@@ -41,12 +38,10 @@ DEFINE_UI_CLASS_PROPERTY_KEY(Surface*, kRootSurfaceKey, nullptr)
 // Startup Id set by the client.
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kStartupIdKey, nullptr)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A property key containing the client controlled shell surface.
 DEFINE_UI_CLASS_PROPERTY_KEY(ClientControlledShellSurface*,
                              kClientControlledShellSurface,
                              nullptr)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns true if the component for a located event should be taken care of
 // by the window system.
@@ -107,16 +102,12 @@ const std::string* GetShellStartupId(const aura::Window* window) {
 }
 
 void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   window->SetProperty(chromeos::kImmersiveImpliedByFullscreen, value);
 
   // Ensure the shelf is fully hidden in plain fullscreen, but shown
   // (auto-hides based on mouse movement) when in immersive fullscreen.
   window->SetProperty(chromeos::kHideShelfWhenFullscreenKey, !value);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SetShellClientAccessibilityId(aura::Window* window,
                                    const absl::optional<int32_t>& id) {
@@ -164,8 +155,6 @@ int GetWindowDeskStateChanged(const aura::Window* window) {
     workspace = ash::DesksController::Get()->GetActiveDeskIndex();
   return workspace;
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SetShellRootSurface(ui::PropertyHandler* property_handler,
                          Surface* surface) {

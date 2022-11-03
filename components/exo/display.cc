@@ -9,21 +9,29 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/command_line.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/buffer.h"
+#include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_exchange_delegate.h"
+#include "components/exo/input_method_surface.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/shared_memory.h"
+#include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
+#include "components/exo/toast_surface.h"
+#include "components/exo/toast_surface_manager.h"
+#include "components/exo/xdg_shell_surface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -32,17 +40,6 @@
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/wm/desks/desks_util.h"
-#include "components/exo/client_controlled_shell_surface.h"
-#include "components/exo/input_method_surface.h"
-#include "components/exo/shell_surface.h"
-#include "components/exo/toast_surface.h"
-#include "components/exo/toast_surface_manager.h"
-#include "components/exo/xdg_shell_surface.h"
-#endif
 
 namespace exo {
 
@@ -54,7 +51,6 @@ Display::Display()
       client_native_pixmap_factory_(
           gfx::CreateClientNativePixmapFactoryDmabuf()) {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 Display::Display(
     std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
     std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
@@ -66,7 +62,6 @@ Display::Display(
       seat_(std::move(data_exchange_delegate)),
       client_native_pixmap_factory_(
           gfx::CreateClientNativePixmapFactoryDmabuf()) {}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 Display::~Display() {
   Shutdown();
@@ -130,7 +125,6 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
       /*is_overlay_candidate=*/true, y_invert);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<ShellSurface> Display::CreateShellSurface(Surface* surface) {
   TRACE_EVENT1("exo", "Display::CreateShellSurface", "surface",
                surface->AsTracedValue());
@@ -273,7 +267,6 @@ std::unique_ptr<ToastSurface> Display::CreateToastSurface(
   }
   return toast_surface;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<SubSurface> Display::CreateSubSurface(Surface* surface,
                                                       Surface* parent) {

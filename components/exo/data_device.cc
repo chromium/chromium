@@ -8,10 +8,12 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/data_device_delegate.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
+#include "components/exo/extended_drag_source.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
@@ -22,11 +24,6 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ui/base/window_properties.h"
-#include "components/exo/extended_drag_source.h"
-#endif
 
 namespace exo {
 namespace {
@@ -130,7 +127,6 @@ aura::client::DragUpdateInfo DataDevice::OnDragUpdated(
 
   bool prevent_motion_drag_events = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // chromeos::kCanAttachToAnotherWindowKey controls if a drag operation should
   // trigger swallow/unswallow tab.
   if (focused_surface_) {
@@ -144,7 +140,6 @@ aura::client::DragUpdateInfo DataDevice::OnDragUpdated(
         !focused_surface_->get()->window()->GetToplevelWindow()->GetProperty(
             chromeos::kCanAttachToAnotherWindowKey);
   }
-#endif
 
   if (!prevent_motion_drag_events)
     delegate_->OnMotion(event.time_stamp(), event.location_f());
