@@ -38,9 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 public class AutofillPaymentInstrument extends EditableOption
         implements FullCardRequestDelegate, NormalizedAddressRequestDelegate {
     // Bit field values are identical to CreditCardCompletionStatus fields in
-    // autofill_card_validation.h. Please modify autofill_card_validation.h after changing these
-    // bits since missing fields on both Android and Desktop are recorded in the same UMA metric:
-    // PaymentRequest.MissingPaymentFields.
+    // autofill_card_validation.h. Please modify autofill_card_validation.h after changing these.
     @IntDef({CompletionStatus.COMPLETE, CompletionStatus.CREDIT_CARD_EXPIRED,
             CompletionStatus.CREDIT_CARD_NO_CARDHOLDER, CompletionStatus.CREDIT_CARD_NO_NUMBER,
             CompletionStatus.CREDIT_CARD_NO_BILLING_ADDRESS,
