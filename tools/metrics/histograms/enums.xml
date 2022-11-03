@@ -58829,6 +58829,7 @@ from previous Chrome versions.
   <int value="-1305690805" label="PrecompileInlineScripts:enabled"/>
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
+  <int value="-1304558220" label="EnableViewPpd:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>
   <int value="-1303417000" label="UseStorkSmdsServerAddress:enabled"/>
   <int value="-1302904242" label="enable-navigation-tracing"/>
@@ -59215,6 +59216,7 @@ from previous Chrome versions.
       label="PrefetchNotificationSchedulingIntegration:disabled"/>
   <int value="-1085492638" label="FetchKeepaliveTimeoutSetting:enabled"/>
   <int value="-1084618227" label="CompositeBGColorAnimation:disabled"/>
+  <int value="-1084500756" label="EnableViewPpd:enabled"/>
   <int value="-1084055006" label="disable-web-notification-custom-layouts"/>
   <int value="-1083736482" label="OmniboxCompactSuggestions:enabled"/>
   <int value="-1083547717" label="NotificationExpansionAnimation:disabled"/>

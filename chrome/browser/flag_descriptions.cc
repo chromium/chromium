@@ -5339,6 +5339,11 @@ const char kEnableVariableRefreshRateDescription[] =
     "Enable the variable refresh rate (Adaptive Sync) setting for capable "
     "displays.";
 
+const char kEnableViewPpdName[] = "Enable View PPD link.";
+const char kEnableViewPpdDescription[] =
+    "Enable View PPD link in the edit printer dialog allowing the "
+    "user to request to view the PPD for a specific printer.";
+
 const char kDeprecateAssistantStylusFeaturesName[] =
     "Deprecate Assistant Stylus Features";
 const char kDeprecateAssistantStylusFeaturesDescription[] =

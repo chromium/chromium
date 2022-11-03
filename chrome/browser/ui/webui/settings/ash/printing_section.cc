@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/printing_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/settings/ash/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
@@ -283,6 +284,7 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
+  html_source->AddBoolean("isViewPpdEnabled", features::IsViewPpdEnabled());
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {

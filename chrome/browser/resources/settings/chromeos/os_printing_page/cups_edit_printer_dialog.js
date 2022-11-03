@@ -121,6 +121,15 @@ class SettingsCupsEditPrinterDialogElement extends
         value: false,
       },
 
+      /**
+       * Flag used to specify whether the view PPD feature is available.
+       * @private
+       */
+      viewPpdEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isViewPpdEnabled'),
+      },
+
       networkProtocolActive_: {
         type: Boolean,
         computed: 'isNetworkProtocol_(pendingPrinter_.printerProtocol)',
@@ -668,6 +677,14 @@ class SettingsCupsEditPrinterDialogElement extends
   isInputFieldReadonly_() {
     return !this.isOnline_ ||
         (this.pendingPrinter_ && this.pendingPrinter_.isManaged);
+  }
+
+  /**
+   * @return {boolean} True if the View PPD button should be enabled.
+   * @private
+   */
+  isViewPpdEnabled_() {
+    return this.viewPpdEnabled_ && !this.printerInfoChanged_;
   }
 }
 

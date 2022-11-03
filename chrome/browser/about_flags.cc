@@ -7199,6 +7199,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilitySelectToSpeakPageMigration)},
 
+    {"enable-view-ppd", flag_descriptions::kEnableViewPpdName,
+     flag_descriptions::kEnableViewPpdDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableViewPpd)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,

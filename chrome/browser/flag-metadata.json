@@ -3257,6 +3257,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-view-ppd",
+    "owners": [ "nmuggli@google.com", "project-bolton-eng@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-virtual-keyboard",
     "owners": [ "//ash/keyboard/OWNERS" ],
     // Useful for debugging the virtual keyboard on non-tablet devices.
