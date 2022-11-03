@@ -38,6 +38,10 @@ void DeviceSettingsHost::Bind(
   receiver_.Bind(std::move(pending_receiver));
 }
 
+void DeviceSettingsHost::Stop() {
+  receiver_.reset();
+}
+
 void DeviceSettingsHost::GetScreenBrightnessLevel(
     GetScreenBrightnessLevelCallback callback) {
   device_actions().GetScreenBrightnessLevel(

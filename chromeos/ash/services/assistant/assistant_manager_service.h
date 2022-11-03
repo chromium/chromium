@@ -49,7 +49,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
     // Stop has been called but `assistant_manager` has not been destroyed. It
     // is possible that some functions will call back to the browser thread,
     // e.g. the audio output.
-    STOPPING = 4
+    STOPPING = 4,
+    // The libassistant mojom service is disconnected, e.g. process crashes.
+    DISCONNECTED = 5
   };
 
   ~AssistantManagerService() override = default;
@@ -122,6 +124,7 @@ class AuthenticationStateObserver
 
   mojo::PendingRemote<libassistant::mojom::AuthenticationStateObserver>
   BindNewPipeAndPassRemote();
+  void ResetAuthenticationStateObserver();
 
  private:
   mojo::Receiver<libassistant::mojom::AuthenticationStateObserver> receiver_{

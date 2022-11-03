@@ -307,4 +307,17 @@ TEST_F(AssistantServiceTest, ShouldSetClientStatusToNotReadyWhenStopped) {
   EXPECT_EQ(client()->status(), AssistantStatus::NOT_READY);
 }
 
+TEST_F(AssistantServiceTest, StopImmediatelyIfAssistantIsDisconnected) {
+  // Test is set up as |State::STARTED|.
+  assistant_manager()->FinishStart();
+  EXPECT_STATE(AssistantManagerService::State::RUNNING);
+
+  assistant_manager()->Disconnected();
+  EXPECT_STATE(AssistantManagerService::State::DISCONNECTED);
+  EXPECT_EQ(client()->status(), AssistantStatus::NOT_READY);
+
+  task_environment()->FastForwardBy(kUpdateAssistantManagerDelay);
+  EXPECT_STATE(AssistantManagerService::State::STARTING);
+}
+
 }  // namespace ash::assistant

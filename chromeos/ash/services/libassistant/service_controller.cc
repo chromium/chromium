@@ -247,6 +247,7 @@ void ServiceController::RemoveAllAssistantClientObservers() {
 bool ServiceController::IsStarted() const {
   switch (state_) {
     case ServiceState::kStopped:
+    case ServiceState::kDisconnected:
       return false;
     case ServiceState::kStarted:
     case ServiceState::kRunning:
@@ -262,6 +263,7 @@ bool ServiceController::IsRunning() const {
   switch (state_) {
     case ServiceState::kStopped:
     case ServiceState::kStarted:
+    case ServiceState::kDisconnected:
       return false;
     case ServiceState::kRunning:
       return true;

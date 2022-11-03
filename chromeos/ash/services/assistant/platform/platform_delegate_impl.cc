@@ -15,6 +15,10 @@ void PlatformDelegateImpl::Bind(
   receiver_.Bind(std::move(pending_receiver));
 }
 
+void PlatformDelegateImpl::Stop() {
+  receiver_.reset();
+}
+
 void PlatformDelegateImpl::BindAudioStreamFactory(
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   AssistantBrowserDelegate::Get()->RequestAudioStreamFactory(

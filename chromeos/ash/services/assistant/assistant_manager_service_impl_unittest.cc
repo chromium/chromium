@@ -358,6 +358,14 @@ TEST_F(AssistantManagerServiceImplTest, ShouldSetStateToStoppedAfterStopping) {
   WaitForState(AssistantManagerService::STOPPED);
 }
 
+TEST_F(AssistantManagerServiceImplTest, ShouldSetStateToDisconnected) {
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  mojom_service_controller().SetState(ServiceState::kDisconnected);
+  WaitForState(AssistantManagerService::DISCONNECTED);
+}
+
 TEST_F(AssistantManagerServiceImplTest, ShouldAllowRestartingAfterStopping) {
   Start();
   WaitForState(AssistantManagerService::STARTED);
@@ -527,7 +535,10 @@ TEST_F(AssistantManagerServiceImplTest,
 TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenAddingIt) {
   StrictMock<StateObserverMock> observer;
   EXPECT_CALL(observer,
-              OnStateChanged(AssistantManagerService::State::STOPPED));
+              OnStateChanged(AssistantManagerService::State::STARTED));
+
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
 
   assistant_manager_service()->AddAndFireStateObserver(&observer);
 
@@ -708,6 +719,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldSyncSpeakerIdEnrollmentStatus) {
 TEST_F(AssistantManagerServiceImplTest,
        ShouldSyncSpeakerIdEnrollmentStatusWhenRunning) {
   AssistantManagerServiceImpl::ResetIsFirstInitFlagForTesting();
+  StartAndWaitForRunning();
 
   StrictMock<SpeakerIdEnrollmentClientMock> client_mock;
   StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
@@ -721,8 +733,6 @@ TEST_F(AssistantManagerServiceImplTest,
         std::move(callback).Run(
             SpeakerIdEnrollmentStatus::New(/*user_model_exists=*/true));
       });
-
-  StartAndWaitForRunning();
 
   mojom_mock.FlushForTesting();
 }

@@ -23,6 +23,7 @@ class AudioOutputDelegateImpl
   ~AudioOutputDelegateImpl() override;
 
   void Bind(mojo::PendingReceiver<AudioOutputDelegate> pending_receiver);
+  void Stop();
 
   // libassistant::mojom::AudioOutputDelegate implementation:
   void RequestAudioFocus(

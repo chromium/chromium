@@ -58,9 +58,16 @@ TimerHost::~TimerHost() = default;
 void TimerHost::Initialize(
     libassistant::mojom::TimerController* libassistant_controller,
     mojo::PendingReceiver<libassistant::mojom::TimerDelegate> delegate) {
+  DCHECK(!libassistant_controller_);
+
   timer_delegate_ =
       std::make_unique<TimerDelegateImpl>(std::move(delegate), &context_);
   libassistant_controller_ = libassistant_controller;
+}
+
+void TimerHost::Stop() {
+  timer_delegate_.reset();
+  libassistant_controller_ = nullptr;
 }
 
 void TimerHost::AddTimeToTimer(const std::string& id,

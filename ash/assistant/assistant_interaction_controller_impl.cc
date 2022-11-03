@@ -828,7 +828,10 @@ void AssistantInteractionControllerImpl::StopActiveInteraction(
   // Abort any request in progress.
   screen_context_request_factory_.InvalidateWeakPtrs();
 
-  assistant_->StopActiveInteraction(cancel_conversation);
+  if (AssistantState::Get()->assistant_status() ==
+      assistant::AssistantStatus::READY) {
+    assistant_->StopActiveInteraction(cancel_conversation);
+  }
 
   // Because we are stopping an interaction in progress, we discard any pending
   // response for it that is cached to prevent it from being committed when the

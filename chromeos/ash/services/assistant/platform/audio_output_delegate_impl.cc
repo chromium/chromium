@@ -18,6 +18,10 @@ void AudioOutputDelegateImpl::Bind(
   receiver_.Bind(std::move(pending_receiver));
 }
 
+void AudioOutputDelegateImpl::Stop() {
+  receiver_.reset();
+}
+
 void AudioOutputDelegateImpl::RequestAudioFocus(
     libassistant::mojom::AudioOutputStreamType stream_type) {
   // TODO(wutao): Fix the libassistant behavior.

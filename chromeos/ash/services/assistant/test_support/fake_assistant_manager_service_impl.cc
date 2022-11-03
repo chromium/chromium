@@ -24,7 +24,14 @@ void FakeAssistantManagerServiceImpl::Start(
 }
 
 void FakeAssistantManagerServiceImpl::Stop() {
+  SetStateAndInformObservers(State::STOPPING);
   SetStateAndInformObservers(State::STOPPED);
+  state_observers_.Clear();
+}
+
+void FakeAssistantManagerServiceImpl::Disconnected() {
+  SetStateAndInformObservers(State::DISCONNECTED);
+  state_observers_.Clear();
 }
 
 void FakeAssistantManagerServiceImpl::SetUser(
@@ -136,6 +143,8 @@ void FakeAssistantManagerServiceImpl::SetStateAndInformObservers(
   MaybeSendStateChange(State::STARTING, old_state, new_state);
   MaybeSendStateChange(State::STARTED, old_state, new_state);
   MaybeSendStateChange(State::RUNNING, old_state, new_state);
+  MaybeSendStateChange(State::STOPPING, old_state, new_state);
+  MaybeSendStateChange(State::DISCONNECTED, old_state, new_state);
 }
 
 void FakeAssistantManagerServiceImpl::MaybeSendStateChange(State state,

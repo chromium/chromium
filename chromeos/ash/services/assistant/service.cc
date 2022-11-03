@@ -70,6 +70,7 @@ AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
     case State::STOPPING:
     case State::STARTING:
     case State::STARTED:
+    case State::DISCONNECTED:
       return AssistantStatus::NOT_READY;
     case State::RUNNING:
       return AssistantStatus::READY;
@@ -331,9 +332,14 @@ void Service::OnStateChanged(AssistantManagerService::State new_state) {
     FinalizeAssistantManagerService();
   if (new_state == AssistantManagerService::State::RUNNING)
     DVLOG(1) << "Assistant is running";
+  if (new_state == AssistantManagerService::State::STOPPED)
+    OnLibassistantServiceStopped();
+  if (new_state == AssistantManagerService::State::DISCONNECTED)
+    OnLibassistantServiceDisconnected();
 
   AssistantBrowserDelegate::Get()->OnAssistantStatusChanged(
       ToAssistantStatus(new_state));
+
   UpdateListeningState();
 }
 
@@ -363,8 +369,20 @@ void Service::UpdateAssistantManagerState() {
   auto state = assistant_manager_service_->GetState();
   switch (state) {
     case AssistantManagerService::State::STOPPED:
+    case AssistantManagerService::State::DISCONNECTED:
       if (assistant_state->settings_enabled().value()) {
         assistant_manager_service_->Start(GetUserInfo(), ShouldEnableHotword());
+
+        // Re-add observers every time when starting.
+        assistant_manager_service_->AddAuthenticationStateObserver(this);
+        assistant_manager_service_->AddAndFireStateObserver(this);
+
+        if (AssistantInteractionLogger::IsLoggingEnabled()) {
+          interaction_logger_ = std::make_unique<AssistantInteractionLogger>();
+          assistant_manager_service_->AddAssistantInteractionSubscriber(
+              interaction_logger_.get());
+        }
+
         DVLOG(1) << "Request Assistant start";
       }
       break;
@@ -487,14 +505,6 @@ void Service::CreateAssistantManagerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   assistant_manager_service_ = CreateAndReturnAssistantManagerService();
-  assistant_manager_service_->AddAuthenticationStateObserver(this);
-  assistant_manager_service_->AddAndFireStateObserver(this);
-
-  if (AssistantInteractionLogger::IsLoggingEnabled()) {
-    interaction_logger_ = std::make_unique<AssistantInteractionLogger>();
-    assistant_manager_service_->AddAssistantInteractionSubscriber(
-        interaction_logger_.get());
-  }
 }
 
 std::unique_ptr<AssistantManagerService>
@@ -522,7 +532,6 @@ void Service::FinalizeAssistantManagerService() {
   is_assistant_manager_service_finalized_ = true;
 
   AddAshSessionObserver();
-
   AssistantController::Get()->SetAssistant(assistant_manager_service_.get());
 }
 
@@ -531,8 +540,17 @@ void Service::StopAssistantManagerService() {
 
   assistant_manager_service_->Stop();
   weak_ptr_factory_.InvalidateWeakPtrs();
-  AssistantBrowserDelegate::Get()->OnAssistantStatusChanged(
-      AssistantStatus::NOT_READY);
+}
+
+void Service::OnLibassistantServiceStopped() {
+  ClearAfterStop();
+}
+
+void Service::OnLibassistantServiceDisconnected() {
+  ClearAfterStop();
+
+  // Restarts LibassistantService.
+  ScheduleUpdateAssistantManagerState();
 }
 
 void Service::AddAshSessionObserver() {
@@ -598,6 +616,12 @@ void Service::OnLibassistantLoaded(bool success) {
   if (success) {
     UpdateAssistantManagerState();
   }
+}
+
+void Service::ClearAfterStop() {
+  is_assistant_manager_service_finalized_ = false;
+  scoped_ash_session_observer_.reset();
+  ResetAuthenticationStateObserver();
 }
 
 }  // namespace ash::assistant

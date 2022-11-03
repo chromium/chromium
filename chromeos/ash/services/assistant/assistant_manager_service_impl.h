@@ -179,18 +179,20 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void OnAndroidAppListRefreshed(
       const std::vector<AndroidAppInfo>& apps_info) override;
 
+  // libassistant::mojom::StateObserver implementation:
+  void OnStateChanged(libassistant::mojom::ServiceState new_state) override;
+
   void SetMicState(bool mic_open);
 
   base::Thread& GetBackgroundThreadForTesting();
 
  private:
-  // libassistant::mojom::StateObserver implementation:
-  void OnStateChanged(libassistant::mojom::ServiceState new_state) override;
-
+  void Initialize();
   void InitAssistant(const absl::optional<UserInfo>& user);
   void OnServiceStarted();
   void OnServiceRunning();
   void OnServiceStopped();
+  void OnServiceDisconnected();
   bool IsServiceStarted() const;
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory();
@@ -234,7 +236,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   void SetStateAndInformObservers(State new_state);
 
+  void ClearAfterStop();
+
   State state_ = State::STOPPED;
+
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 
   std::unique_ptr<AssistantHost> assistant_host_;

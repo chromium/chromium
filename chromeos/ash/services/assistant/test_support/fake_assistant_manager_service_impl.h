@@ -92,6 +92,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   // Return the Gaia ID that was passed to |SetUser|.
   absl::optional<std::string> gaia_id() { return gaia_id_; }
 
+  void Disconnected();
+
  private:
   // Send out a |AssistantStateObserver::OnStateChange(state)| event if we are
   // transitioning from a prior state to a later state.

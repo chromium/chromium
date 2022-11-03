@@ -11,7 +11,10 @@ ConversationObserver::~ConversationObserver() = default;
 
 mojo::PendingRemote<libassistant::mojom::ConversationObserver>
 ConversationObserver::BindNewPipeAndPassRemote() {
-  DCHECK(!remote_observer_.is_bound());
+  // LibassistantService could restart and the remote will be reconnected.
+  if (remote_observer_.is_bound()) {
+    remote_observer_.reset();
+  }
 
   return remote_observer_.BindNewPipeAndPassRemote();
 }

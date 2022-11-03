@@ -35,6 +35,7 @@ class TimerHost {
   void Initialize(
       libassistant::mojom::TimerController* libassistant_controller,
       mojo::PendingReceiver<libassistant::mojom::TimerDelegate> delegate);
+  void Stop();
 
   void AddTimeToTimer(const std::string& id, base::TimeDelta duration);
   void PauseTimer(const std::string& id);

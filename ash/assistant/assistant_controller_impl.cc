@@ -62,6 +62,9 @@ void AssistantControllerImpl::RegisterProfilePrefs(
 
 void AssistantControllerImpl::BindReceiver(
     mojo::PendingReceiver<mojom::AssistantVolumeControl> receiver) {
+  if (assistant_volume_control_receiver_.is_bound()) {
+    assistant_volume_control_receiver_.reset();
+  }
   assistant_volume_control_receiver_.Bind(std::move(receiver));
 }
 
@@ -323,9 +326,11 @@ void AssistantControllerImpl::NotifyUrlOpened(const GURL& url,
 
 void AssistantControllerImpl::OnAssistantStatusChanged(
     assistant::AssistantStatus status) {
-  if (status == assistant::AssistantStatus::NOT_READY)
+  if (status == assistant::AssistantStatus::NOT_READY) {
+    assistant_volume_control_receiver_.reset();
     assistant_ui_controller_.CloseUi(
         assistant::AssistantExitPoint::kUnspecified);
+  }
 }
 
 void AssistantControllerImpl::OnLockedFullScreenStateChanged(bool enabled) {

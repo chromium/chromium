@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom.h"
@@ -29,18 +30,20 @@ class LibassistantService;
 
 namespace ash::assistant {
 
+class AssistantManagerServiceImpl;
 class LibassistantServiceHost;
 
 // The proxy to the Assistant service, which serves as the main
 // access point to the entire Assistant API.
 class AssistantHost {
  public:
-  AssistantHost();
+  explicit AssistantHost(AssistantManagerServiceImpl* service);
   AssistantHost(AssistantHost&) = delete;
   AssistantHost& operator=(AssistantHost&) = delete;
   ~AssistantHost();
 
-  void Initialize(LibassistantServiceHost* host);
+  void StartLibassistantService(LibassistantServiceHost* host);
+  void StopLibassistantService();
 
   // Returns the controller that manages conversations with Libassistant.
   libassistant::mojom::ConversationController& conversation_controller();
@@ -97,13 +100,21 @@ class AssistantHost {
   void LaunchLibassistantService();
   void LaunchLibassistantServiceOnBackgroundThread(
       mojo::PendingReceiver<libassistant::mojom::LibassistantService>);
-  void StopLibassistantService();
   void StopLibassistantServiceOnBackgroundThread();
 
   void BindControllers();
 
+  // Callback when `LibassistantService` has disconnected, e.g. process crashes.
+  void OnRemoteDisconnected();
+
+  // Reset remote controllers etc. for restarts.
+  void ResetRemote();
+
+  // Owned by |Service|.
+  base::raw_ptr<AssistantManagerServiceImpl> service_;
+
   // Owned by |AssistantManagerServiceImpl|.
-  LibassistantServiceHost* libassistant_service_host_ = nullptr;
+  base::raw_ptr<LibassistantServiceHost> libassistant_service_host_;
 
   mojo::Remote<libassistant::mojom::LibassistantService> libassistant_service_;
 

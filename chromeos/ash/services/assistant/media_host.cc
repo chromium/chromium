@@ -224,7 +224,6 @@ MediaHost::~MediaHost() = default;
 void MediaHost::Initialize(
     libassistant::mojom::MediaController* libassistant_controller,
     mojo::PendingReceiver<libassistant::mojom::MediaDelegate> media_delegate) {
-  // Initialize can only be called once.
   DCHECK(!libassistant_media_controller_);
 
   libassistant_media_controller_ = libassistant_controller;
@@ -233,6 +232,7 @@ void MediaHost::Initialize(
 }
 
 void MediaHost::Stop() {
+  libassistant_media_controller_ = nullptr;
   StopObservingMediaController();
 }
 

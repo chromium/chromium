@@ -138,6 +138,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
 
   void StopAssistantManagerService();
 
+  void OnLibassistantServiceStopped();
+  void OnLibassistantServiceDisconnected();
+
   void AddAshSessionObserver();
 
   void UpdateListeningState();
@@ -153,6 +156,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
 
   void LoadLibassistant();
   void OnLibassistantLoaded(bool success);
+
+  void ClearAfterStop();
 
   // |ServiceContext| object passed to child classes so they can access some of
   // our functionality without depending on us.

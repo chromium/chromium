@@ -19,6 +19,7 @@ class PlatformDelegateImpl : public libassistant::mojom::PlatformDelegate {
   ~PlatformDelegateImpl() override;
 
   void Bind(mojo::PendingReceiver<PlatformDelegate> pending_receiver);
+  void Stop();
 
   // libassistant::mojom::PlatformDelegate implementation:
   void BindAudioStreamFactory(

@@ -14,6 +14,10 @@ enum ServiceState {
   kRunning,
   // The service is not running.
   kStopped,
+  // The service is disconnected. This is different than `kStopped` because
+  // `disconnected` is unexpected. This is used to inform the observers so that
+  // the service could be restarted automatically.
+  kDisconnected,
 };
 
 // Interface managing the lifecycle of Libassistant,

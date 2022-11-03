@@ -15,4 +15,8 @@ AuthenticationStateObserver::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
+void AuthenticationStateObserver::ResetAuthenticationStateObserver() {
+  receiver_.reset();
+}
+
 }  // namespace ash::assistant

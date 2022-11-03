@@ -28,6 +28,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) DeviceSettingsHost
   ~DeviceSettingsHost() override;
 
   void Bind(mojo::PendingReceiver<DeviceSettingsDelegate> pending_receiver);
+  void Stop();
 
   // libassistant::mojom::DeviceSettingsDelegate implementation:
   void GetScreenBrightnessLevel(

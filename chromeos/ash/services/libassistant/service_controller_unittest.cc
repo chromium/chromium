@@ -246,6 +246,9 @@ void PrintTo(const ServiceState state, std::ostream* stream) {
     case ServiceState::kStopped:
       *stream << "kStopped";
       return;
+    case ServiceState::kDisconnected:
+      *stream << "kDisconnected";
+      return;
   }
   *stream << "INVALID ServiceState (" << static_cast<int>(state) << ")";
 }

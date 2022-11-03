@@ -38,6 +38,7 @@ class AssistantSettingsImpl : public AssistantSettings {
       mojo::PendingRemote<libassistant::mojom::SpeakerIdEnrollmentController>
           enrollment_controller_remote,
       libassistant::mojom::SettingsController* settings_controller);
+  void Stop();
 
   // AssistantSettings overrides:
   void GetSettings(const std::string& selector,

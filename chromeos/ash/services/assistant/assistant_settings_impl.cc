@@ -28,8 +28,15 @@ void AssistantSettingsImpl::Initialize(
     mojo::PendingRemote<libassistant::mojom::SpeakerIdEnrollmentController>
         remote,
     libassistant::mojom::SettingsController* settings_controller) {
+  DCHECK(!settings_controller_);
+
   speaker_id_enrollment_remote_.Bind(std::move(remote));
   settings_controller_ = settings_controller;
+}
+
+void AssistantSettingsImpl::Stop() {
+  speaker_id_enrollment_remote_.reset();
+  settings_controller_ = nullptr;
 }
 
 void AssistantSettingsImpl::GetSettings(const std::string& selector,
