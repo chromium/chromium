@@ -243,6 +243,46 @@
     }
   });
 
+  test((t) => {
+    const other_popover = createPopover(t);
+    other_popover.setAttribute('popover','auto');
+    other_popover.showPopover();
+    const popover = createPopover(t);
+    popover.setAttribute('popover','auto');
+    other_popover.addEventListener('popoverhide',() => {
+      popover.setAttribute('popover','manual');
+    },{once: true});
+    assert_true(other_popover.matches(':open'));
+    assert_false(popover.matches(':open'));
+    popover.showPopover();
+    assert_false(other_popover.matches(':open'),'unrelated popover is hidden');
+    assert_false(popover.matches(':open'),'popover is not shown if its type changed during show');
+  },`Changing the popover type in a "popoverhide" event handler should not cause problems (during showPopover())`);
+
+  test((t) => {
+    const popover = createPopover(t);
+    popover.setAttribute('popover','auto');
+    const other_popover = createPopover(t);
+    other_popover.setAttribute('popover','auto');
+    popover.appendChild(other_popover);
+    popover.showPopover();
+    other_popover.showPopover();
+    let nested_popover_hidden=false;
+    other_popover.addEventListener('popoverhide',() => {
+      nested_popover_hidden = true;
+      popover.setAttribute('popover','manual');
+    },{once: true});
+    popover.addEventListener('popoverhide',() => {
+      assert_true(nested_popover_hidden,'The nested popover should be hidden first');
+    },{once: true});
+    assert_true(popover.matches(':open'));
+    assert_true(other_popover.matches(':open'));
+    popover.hidePopover();
+    assert_false(other_popover.matches(':open'),'unrelated popover is hidden');
+    assert_false(popover.matches(':open'),'popover is still hidden if its type changed during hide event');
+    assert_throws_dom("InvalidStateError",() => other_popover.hidePopover(),'Nested popover should already be hidden');
+  },`Changing the popover type in a "popoverhide" event handler should not cause problems (during hidePopover())`);
+
   function interpretedType(typeString,method) {
     if (validTypes.includes(typeString))
       return typeString;

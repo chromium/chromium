@@ -1273,7 +1273,8 @@ void HTMLElement::showPopover(ExceptionState& exception_state) {
 
   bool should_restore_focus = false;
   auto& document = GetDocument();
-  if (PopoverType() == PopoverValueType::kAuto) {
+  auto original_type = PopoverType();
+  if (original_type == PopoverValueType::kAuto) {
     // If the new popover is a popover=auto, hide any popover above this in the
     // stack. Because this popover isn't yet in the stack, we call
     // NearestOpenAncestralPopover to find this popover's ancestor, if any.
@@ -1286,7 +1287,8 @@ void HTMLElement::showPopover(ExceptionState& exception_state) {
     // The 'popoverhide' event handlers could have changed this popover, e.g. by
     // changing its type, removing it from the document, or calling
     // showPopover().
-    if (!HasPopoverAttribute() || !isConnected() || popoverOpen())
+    if (!HasPopoverAttribute() || !isConnected() || popoverOpen() ||
+        PopoverType() != original_type)
       return;
 
     // We only restore focus for popover=auto, and only for the first popover in
@@ -1418,7 +1420,8 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
       GetDocument().GetExecutionContext()));
   DCHECK(HasPopoverAttribute());
   auto& document = GetDocument();
-  if (PopoverType() == PopoverValueType::kAuto) {
+  auto original_type = PopoverType();
+  if (original_type == PopoverValueType::kAuto) {
     // Hide any popovers above us in the stack.
     HideAllPopoversUntil(this, document, focus_behavior, forcing_level);
 
@@ -1427,7 +1430,8 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
     // hidePopover().
     if (!HasPopoverAttribute() || !isConnected() ||
         GetPopoverData()->visibilityState() !=
-            PopoverVisibilityState::kShowing) {
+            PopoverVisibilityState::kShowing ||
+        PopoverType() != original_type) {
       DCHECK(!GetDocument().PopoverStack().Contains(this));
       return;
     }
