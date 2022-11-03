@@ -3457,6 +3457,19 @@ void LayoutBox::ClearLayoutResults() {
   ShrinkLayoutResults(0);
 }
 
+void LayoutBox::RebuildFragmentTreeSpine() {
+  DCHECK(PhysicalFragmentCount());
+  // If this box has an associated layout-result, rebuild the spine of the
+  // fragment-tree to ensure consistency.
+  LayoutBox* container = this;
+  while (container && container->PhysicalFragmentCount() &&
+         !container->NeedsLayout()) {
+    for (auto& result : container->layout_results_)
+      result = NGLayoutResult::CloneWithPostLayoutFragments(*result);
+    container = container->ContainingNGBox();
+  }
+}
+
 void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
   NOT_DESTROYED();
   DCHECK_GE(layout_results_.size(), results_to_keep);

@@ -1229,6 +1229,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Clear LayoutObject fields of physical fragments.
   void DisassociatePhysicalFragments();
 
+  void RebuildFragmentTreeSpine();
+
   // Call when NG fragment count or size changed. Only call if the fragment
   // count is or was larger than 1.
   void FragmentCountOrSizeDidChange() {
@@ -1706,6 +1708,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   bool ShouldBeConsideredAsReplaced() const;
 
+  // Return true if this block establishes a fragmentation context root (e.g. a
+  // multicol container).
+  virtual bool IsFragmentationContextRoot() const {
+    NOT_DESTROYED();
+    return false;
+  }
   void UpdateFragmentationInfoForChild(LayoutBox&);
   bool ChildNeedsRelayoutForPagination(const LayoutBox&) const;
   void MarkChildForPaginationRelayoutIfNeeded(LayoutBox&, SubtreeLayoutScope&);

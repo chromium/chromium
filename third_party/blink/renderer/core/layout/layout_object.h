@@ -466,8 +466,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   LayoutBlockFlow* FragmentItemsContainer() const;
 
   // Return the containing NG block, if the containing block is an NG block,
-  // nullptr otherwise.
-  LayoutBlock* ContainingNGBlock() const;
+  // or the LayoutMedia parent.
+  // Nullptr otherwise.
+  LayoutBox* ContainingNGBox() const;
 
   // Return the nearest fragmentation context root, if any.
   LayoutBlock* ContainingFragmentationContextRoot() const;

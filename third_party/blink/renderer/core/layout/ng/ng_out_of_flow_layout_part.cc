@@ -2384,7 +2384,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
 
   // Replace the entry in the parent fragment. Locating the parent fragment
   // isn't straight-forward if the containing block is a multicol container.
-  LayoutBlock* containing_block = box.ContainingNGBlock();
+  LayoutBox* containing_block = box.ContainingNGBox();
 
   if (box.IsOutOfFlowPositioned()) {
     // If the inner multicol is out-of-flow positioned, its fragments will be
@@ -2396,7 +2396,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
     // fragmentation context root.
     while (containing_block->IsOutOfFlowPositioned() &&
            !containing_block->IsLayoutView())
-      containing_block = containing_block->ContainingNGBlock();
+      containing_block = containing_block->ContainingNGBox();
     // If we got to the root LayoutView, it has to mean that it establishes a
     // fragmentation context (i.e. we're printing).
     if (containing_block->IsLayoutView())

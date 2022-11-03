@@ -223,13 +223,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // itself for the legend is still a child of this object.
   bool IsAnonymousNGFieldsetContentWrapper() const;
 
-  // Return true if this block establishes a fragmentation context root (e.g. a
-  // multicol container).
-  virtual bool IsFragmentationContextRoot() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
   void SetHasMarkupTruncation(bool b) {
     NOT_DESTROYED();
     has_markup_truncation_ = b;
@@ -384,8 +377,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // LayoutBox::ContainingBlockLogicalHeightForPercentageResolution
   LayoutUnit AvailableLogicalHeightForPercentageComputation() const;
   bool HasDefiniteLogicalHeight() const;
-
-  void RebuildFragmentTreeSpine();
 
  protected:
   RecalcLayoutOverflowResult RecalcPositionedDescendantsLayoutOverflow();

@@ -1192,7 +1192,7 @@ LayoutBox* LayoutObject::EnclosingBox() const {
 LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
   NOT_DESTROYED();
   DCHECK(!IsOutOfFlowPositioned());
-  auto* block_flow = DynamicTo<LayoutBlockFlow>(ContainingNGBlock());
+  auto* block_flow = DynamicTo<LayoutBlockFlow>(ContainingNGBox());
   if (!block_flow || !block_flow->IsLayoutNGObject())
     return nullptr;
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -1206,10 +1206,13 @@ LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
   return block_flow;
 }
 
-LayoutBlock* LayoutObject::ContainingNGBlock() const {
+LayoutBox* LayoutObject::ContainingNGBox() const {
   NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return nullptr;
+  if (RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled() && Parent() &&
+      Parent()->IsMedia())
+    return To<LayoutBox>(Parent());
   LayoutBlock* containing_block = ContainingBlock();
   if (!containing_block)
     return nullptr;
@@ -1751,11 +1754,11 @@ bool LayoutObject::IsAnonymousNGMulticolInlineWrapper() const {
   if (!IsLayoutNGBlockFlow() || !IsAnonymousBlock())
     return false;
 
-  const LayoutBlock* containing_block = ContainingNGBlock();
-  if (!containing_block)
+  const LayoutBox* container = ContainingNGBox();
+  if (!container)
     return false;
 
-  return containing_block->IsFragmentationContextRoot();
+  return container->IsFragmentationContextRoot();
 }
 
 LayoutBlock* LayoutObject::FindNonAnonymousContainingBlock(

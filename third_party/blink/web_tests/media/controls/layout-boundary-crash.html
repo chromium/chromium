@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<!--
+  We had a crash caused by RebuildFragmentTreeSpine() if -webkit-media-controls
+  is a layout boundary and LayoutMediaNGContainer is enabled.
+-->
+<style>
+video::-webkit-media-controls {
+  contain: size layout;
+  z-index: 1;
+}
+</style>
+
+<video controls></video>
+
+<script>
+promise_test(async () => {
+  await new Promise(resolve => { window.onload = resolve; });
+  document.querySelector('video').controlslist = "nodownload nofullscreen noremoteplayback";
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  await new Promise(resolve => requestAnimationFrame(resolve));
+}, 'No crash for ::-webkit-media-controls as a layout boundary');
+</script>

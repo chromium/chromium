@@ -789,20 +789,20 @@ void LocalFrameView::PerformLayout() {
     if (in_subtree_layout) {
       // This map will be used to avoid rebuilding several times the fragment
       // tree spine of a common ancestor.
-      HeapHashMap<Member<const LayoutBlock>, unsigned> fragment_tree_spines;
+      HeapHashMap<Member<const LayoutBox>, unsigned> fragment_tree_spines;
       for (auto& root : layout_subtree_root_list_.Unordered()) {
-        const LayoutBlock* cb = root->ContainingNGBlock();
-        if (cb && cb->PhysicalFragmentCount()) {
-          auto add_result = fragment_tree_spines.insert(cb, 0);
+        const LayoutBox* container_box = root->ContainingNGBox();
+        if (container_box && container_box->PhysicalFragmentCount()) {
+          auto add_result = fragment_tree_spines.insert(container_box, 0);
           ++add_result.stored_value->value;
         }
       }
       for (auto& root : layout_subtree_root_list_.Ordered()) {
         bool should_rebuild_fragments = false;
         LayoutObject& root_layout_object = *root;
-        LayoutBlock* cb = root->ContainingNGBlock();
-        if (cb) {
-          auto it = fragment_tree_spines.find(cb);
+        LayoutBox* container_box = root->ContainingNGBox();
+        if (container_box) {
+          auto it = fragment_tree_spines.find(container_box);
           DCHECK(it == fragment_tree_spines.end() || it->value > 0);
           // Ensure fragment-tree consistency just after all the cb's
           // descendants have completed their subtree layout.
@@ -814,7 +814,7 @@ void LocalFrameView::PerformLayout() {
           continue;
 
         if (should_rebuild_fragments)
-          cb->RebuildFragmentTreeSpine();
+          container_box->RebuildFragmentTreeSpine();
 
         // We need to ensure that we mark up all layoutObjects up to the
         // LayoutView for paint invalidation. This simplifies our code as we
