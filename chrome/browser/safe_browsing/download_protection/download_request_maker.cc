@@ -33,6 +33,8 @@ namespace {
 // The version of this client supporting tailored warnings.
 // Please update the description of TailoredInfo field in csd.proto when
 // changing this value.
+// Note: The name of this variable is checked by PRESUBMIT. Please update the
+// PRESUBMIT script before renaming this variable.
 constexpr int kTailoredWarningVersion = 1;
 
 DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
