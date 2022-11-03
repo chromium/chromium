@@ -7728,7 +7728,6 @@ crbug.com/webrtc/14619 external/wpt/webrtc-stats/supported-stats.html [ Failure 
 
 # Sheriff 2022-10-20
 crbug.com/1376822 [ Win11 ] external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-intrinsic-width-height.html [ Failure ]
-crbug.com/1376495 http/tests/devtools/runtime/evaluate-timeout.js [ Failure Pass ]
 crbug.com/1376845 external/wpt/mediacapture-insertable-streams/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
 
 crbug.com/1378359 external/wpt/clipboard-apis/async-navigator-clipboard-basics.https.html [ Failure ]

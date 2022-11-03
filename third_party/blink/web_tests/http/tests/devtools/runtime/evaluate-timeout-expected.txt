@@ -18,7 +18,6 @@ Set timer for test function.
 Script execution paused.
 
 Testing expression while (1){} with timeout: 0
-error: Execution was terminated
 Error: Execution was terminated
 
 Testing expression 1 + 1 with timeout: undefined
