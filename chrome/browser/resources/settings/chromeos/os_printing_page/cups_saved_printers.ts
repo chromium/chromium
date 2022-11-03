@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,14 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import './cups_printers_entry.js';
 import '../../settings_shared.css.js';
+import './cups_printer_types.js';
+import './cups_printers_browser_proxy.js';
+import './cups_printers_entry.js';
 
-import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/ash/common/list_property_update_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
 
@@ -24,61 +26,54 @@ import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
 import {PrinterListEntry} from './cups_printer_types.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListBehavior, CupsPrintersEntryListBehaviorInterface} from './cups_printers_entry_list_behavior.js';
+import {getTemplate} from './cups_saved_printers.html.js';
 
-// If the Show more button is visible, the minimum number of printers we show
-// is 3.
-const kMinVisiblePrinters = 3;
+/**
+ * If the Show more button is visible, the minimum number of printers we show
+ * is 3.
+ */
+const kMinVisiblePrinters: number = 3;
 
 /**
  * Move a printer's position in |printerArr| from |fromIndex| to |toIndex|.
- * @param {!Array<!PrinterListEntry>} printerArr
- * @param {number} fromIndex
- * @param {number} toIndex
  */
-function moveEntryInPrinters(printerArr, fromIndex, toIndex) {
+function moveEntryInPrinters(
+    printerArr: PrinterListEntry[], fromIndex: number, toIndex: number) {
   const element = printerArr[fromIndex];
   printerArr.splice(fromIndex, 1);
   printerArr.splice(toIndex, 0, element);
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CupsPrintersEntryListBehaviorInterface}
- * @implements {ListPropertyUpdateBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsCupsSavedPrintersElementBase = mixinBehaviors(
-    [
-      CupsPrintersEntryListBehavior,
-      ListPropertyUpdateBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+const SettingsCupsSavedPrintersElementBase =
+    mixinBehaviors(
+        [
+          CupsPrintersEntryListBehavior,
+        ],
+        WebUiListenerMixin(ListPropertyUpdateMixin(PolymerElement))) as {
+      new (): PolymerElement & CupsPrintersEntryListBehaviorInterface &
+          ListPropertyUpdateMixinInterface & WebUiListenerMixinInterface,
+    };
 
-/** @polymer */
-class SettingsCupsSavedPrintersElement extends
+export class SettingsCupsSavedPrintersElement extends
     SettingsCupsSavedPrintersElementBase {
-  static get is() {
+  static get is(): string {
     return 'settings-cups-saved-printers';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * Search term for filtering |savedPrinters|.
-       * @type {string}
        */
       searchTerm: {
         type: String,
         value: '',
       },
 
-      /** @type {?CupsPrinterInfo} */
       activePrinter: {
         type: Object,
         notify: true,
@@ -90,10 +85,6 @@ class SettingsCupsSavedPrintersElement extends
         notify: true,
       },
 
-      /**
-       * @type {number}
-       * @private
-       */
       activePrinterListEntryIndex_: {
         type: Number,
         value: -1,
@@ -101,8 +92,6 @@ class SettingsCupsSavedPrintersElement extends
 
       /**
        * List of printers filtered through a search term.
-       * @type {!Array<!PrinterListEntry>}
-       * @private
        */
       filteredPrinters_: {
         type: Array,
@@ -111,8 +100,6 @@ class SettingsCupsSavedPrintersElement extends
 
       /**
        * Array of new PrinterListEntry's that were added during this session.
-       * @type {!Array<!PrinterListEntry>}
-       * @private
        */
       newPrinters_: {
         type: Array,
@@ -124,7 +111,6 @@ class SettingsCupsSavedPrintersElement extends
        * search term will expand the collapsed list, so we need to keep track of
        * whether the list expanded because of a search term or because the user
        * tapped on the Show more button.
-       * @private
        */
       hasShowMoreBeenTapped_: {
         type: Boolean,
@@ -133,60 +119,61 @@ class SettingsCupsSavedPrintersElement extends
 
       /**
        * Used by FocusRowBehavior to track the last focused element on a row.
-       * @private
        */
       lastFocused_: Object,
 
       /**
        * Used by FocusRowBehavior to track if the list has been blurred.
-       * @private
        */
       listBlurred_: Boolean,
     };
   }
 
-  static get observers() {
+  static get observers(): string[] {
     return [
       'onSearchOrPrintersChanged_(savedPrinters.*, searchTerm,' +
           'hasShowMoreBeenTapped_, newPrinters_.*)',
     ];
   }
 
-  /** @override */
+  activePrinter: CupsPrinterInfo|null;
+  printersCount: number;
+  searchTerm: string;
+
+  private activePrinterListEntryIndex_: number;
+  private browserProxy_: CupsPrintersBrowserProxy;
+  private filteredPrinters_: PrinterListEntry[];
+  private hasShowMoreBeenTapped_: boolean;
+  private lastFocused_: Object;
+  private listBlurred_: boolean;
+  private newPrinters_: PrinterListEntry[];
+  private visiblePrinterCounter_: number;
+
   constructor() {
     super();
 
-    /** @private {CupsPrintersBrowserProxy} */
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
 
-    /**
-     * The number of printers we display if hidden printers are allowed.
-     * kMinVisiblePrinters is the default value and we never show fewer printers
-     * if the Show more button is visible.
-     * @private
-     */
+    // The number of printers we display if hidden printers are allowed.
+    // kMinVisiblePrinters is the default value and we never show fewer printers
+    // if the Show more button is visible.
     this.visiblePrinterCounter_ = kMinVisiblePrinters;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
-    this.addEventListener('open-action-menu', (event) => {
-      this.onOpenActionMenu_(
-          /**
-           * @type {!CustomEvent<{target: !HTMLElement, item:
-           *    !PrinterListEntry}>}
-           */
-          (event));
-    });
+    this.addEventListener(
+        'open-action-menu',
+        (event: CustomEvent<{target: HTMLElement, item: PrinterListEntry}>) => {
+          this.onOpenActionMenu_(event);
+        });
   }
 
   /**
    * Redoes the search whenever |searchTerm| or |savedPrinters| changes.
-   * @private
    */
-  onSearchOrPrintersChanged_() {
+  private onSearchOrPrintersChanged_(): void {
     if (!this.savedPrinters) {
       return;
     }
@@ -194,29 +181,26 @@ class SettingsCupsSavedPrintersElement extends
     const updatedPrinters = this.getVisiblePrinters_();
 
     this.updateList(
-        'filteredPrinters_', printer => printer.printerInfo.printerId,
+        'filteredPrinters_',
+        (printer: PrinterListEntry) => printer.printerInfo.printerId,
         updatedPrinters);
   }
 
-  /**
-   * @param {!CustomEvent<{target: !HTMLElement, item: !PrinterListEntry}>} e
-   * @private
-   */
-  onOpenActionMenu_(e) {
-    const item = /** @type {!PrinterListEntry} */ (e.detail.item);
+  private onOpenActionMenu_(
+      e: CustomEvent<{target: HTMLElement, item: PrinterListEntry}>) {
+    const item = e.detail.item;
     this.activePrinterListEntryIndex_ = this.savedPrinters.findIndex(
-        printer =>
+        (printer: PrinterListEntry) =>
             printer.printerInfo.printerId === item.printerInfo.printerId);
     this.activePrinter =
         this.get(['savedPrinters', this.activePrinterListEntryIndex_])
             .printerInfo;
 
-    const target = /** @type {!HTMLElement} */ (e.detail.target);
-    this.shadowRoot.querySelector('cr-action-menu').showAt(target);
+    const target = e.detail.target;
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(target);
   }
 
-  /** @private */
-  onEditTap_() {
+  private onEditTap_(): void {
     // Event is caught by 'settings-cups-printers'.
     const editCupsPrinterDetailsEvent =
         new CustomEvent('edit-cups-printer-details', {
@@ -227,18 +211,16 @@ class SettingsCupsSavedPrintersElement extends
     this.closeActionMenu_();
   }
 
-  /** @private */
-  onRemoveTap_() {
+  private onRemoveTap_(): void {
     this.browserProxy_.removeCupsPrinter(
-        this.activePrinter.printerId, this.activePrinter.printerName);
+        this.activePrinter!.printerId, this.activePrinter!.printerName);
     recordSettingChange();
     this.activePrinter = null;
     this.activePrinterListEntryIndex_ = -1;
     this.closeActionMenu_();
   }
 
-  /** @private */
-  onShowMoreTap_() {
+  private onShowMoreTap_(): void {
     this.hasShowMoreBeenTapped_ = true;
   }
 
@@ -246,15 +228,14 @@ class SettingsCupsSavedPrintersElement extends
    * Gets the printers to be shown in the UI. These printers are filtered
    * by the search term, alphabetically sorted (if applicable), and are the
    * printers not hidden by the Show more section.
-   * @return {!Array<!PrinterListEntry>} Returns only the visible printers.
-   * @private
    */
-  getVisiblePrinters_() {
+  private getVisiblePrinters_(): PrinterListEntry[] {
     // Filter printers through |searchTerm|. If |searchTerm| is empty,
     // |filteredPrinters_| is just |savedPrinters|.
     const updatedPrinters = this.searchTerm ?
         this.savedPrinters.filter(
-            item => matchesSearchTerm(item.printerInfo, this.searchTerm)) :
+            (item: PrinterListEntry) =>
+                matchesSearchTerm(item.printerInfo, this.searchTerm)) :
         this.savedPrinters.slice();
 
     updatedPrinters.sort(sortPrinters);
@@ -265,26 +246,24 @@ class SettingsCupsSavedPrintersElement extends
       // If the Show more button is visible, we only display the first
       // N < |visiblePrinterCounter_| printers and the rest are hidden.
       return updatedPrinters.filter(
-          (printer, idx) => idx < this.visiblePrinterCounter_);
+          (_: PrinterListEntry, idx: number) =>
+              idx < this.visiblePrinterCounter_);
     }
     return updatedPrinters;
   }
 
-  /** @private */
-  closeActionMenu_() {
-    this.shadowRoot.querySelector('cr-action-menu').close();
+  private closeActionMenu_(): void {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
 
   /**
-   * @return {boolean} Returns true if the no search message should be visible.
-   * @private
+   * @return Returns true if the no search message should be visible.
    */
-  showNoSearchResultsMessage_() {
+  private showNoSearchResultsMessage_(): boolean {
     return !!this.searchTerm && !this.filteredPrinters_.length;
   }
 
-  /** @param{!Array<!PrinterListEntry>} addedPrinters */
-  onSavedPrintersAdded(addedPrinters) {
+  override onSavedPrintersAdded(addedPrinters: PrinterListEntry[]) {
     const currArr = this.newPrinters_.slice();
     for (const printer of addedPrinters) {
       this.visiblePrinterCounter_++;
@@ -294,8 +273,7 @@ class SettingsCupsSavedPrintersElement extends
     this.set('newPrinters_', currArr);
   }
 
-  /** @param{!Array<!PrinterListEntry>} removedPrinters */
-  onSavedPrintersRemoved(removedPrinters) {
+  override onSavedPrintersRemoved(removedPrinters: PrinterListEntry[]) {
     const currArr = this.newPrinters_.slice();
     for (const printer of removedPrinters) {
       const newPrinterRemovedIdx = currArr.findIndex(
@@ -318,10 +296,9 @@ class SettingsCupsSavedPrintersElement extends
    * that the printer list is collapsed. There are two ways a collapsed list
    * may be expanded: the Show more button is tapped or if there is a search
    * term.
-   * @return {boolean} True if the printer list should be collapsed.
-   * @private
+   * @return True if the printer list should be collapsed.
    */
-  shouldPrinterListBeCollapsed_() {
+  private shouldPrinterListBeCollapsed_(): boolean {
     // If |searchTerm| is set, never collapse the list.
     if (this.searchTerm) {
       return false;
@@ -345,11 +322,9 @@ class SettingsCupsSavedPrintersElement extends
    * Moves printers that are in |newPrinters_| to position |toIndex| of
    * |printerArr|. This moves all recently added printers to the top of the
    * printer list.
-   * @param {!Array<!PrinterListEntry>} printerArr
-   * @param {number} toIndex
-   * @private
    */
-  moveNewlyAddedPrinters_(printerArr, toIndex) {
+  private moveNewlyAddedPrinters_(
+      printerArr: PrinterListEntry[], toIndex: number) {
     if (!this.newPrinters_.length) {
       return;
     }
@@ -364,12 +339,18 @@ class SettingsCupsSavedPrintersElement extends
     }
   }
 
-  /**
-   * @private
-   * @return {number} Length of |filteredPrinters_|.
-   */
-  getFilteredPrintersLength_() {
+  private getFilteredPrintersLength_(): number {
     return this.filteredPrinters_.length;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-cups-saved-printers': SettingsCupsSavedPrintersElement;
+  }
+  interface HTMLElementEventMap {
+    'open-action-menu':
+        CustomEvent<{target: HTMLElement, item: PrinterListEntry}>;
   }
 }
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from '//resources/js/cr_deprecated.js';
 import {CrosNetworkConfig, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 /** @interface */
@@ -18,7 +17,7 @@ export class MojoInterfaceProviderImpl {
     this.remote_ = null;
   }
 
-  /** @override */
+  /** @return {!CrosNetworkConfigRemote} */
   getMojoServiceRemote() {
     if (!this.remote_) {
       this.remote_ = CrosNetworkConfig.getRemote();
@@ -26,6 +25,21 @@ export class MojoInterfaceProviderImpl {
 
     return this.remote_;
   }
+  /** @param {!CrosNetworkConfigRemote} remote */
+  setMojoServiceRemoteForTest(remote) {
+    this.remote_ = remote;
+  }
+
+  /** @return {!MojoInterfaceProviderImpl} */
+  static getInstance() {
+    return instance || (instance = new MojoInterfaceProviderImpl());
+  }
+
+  /** @param {!MojoInterfaceProviderImpl} obj */
+  static setInstanceForTest(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(MojoInterfaceProviderImpl);
+/** @type {?MojoInterfaceProviderImpl} */
+let instance = null;

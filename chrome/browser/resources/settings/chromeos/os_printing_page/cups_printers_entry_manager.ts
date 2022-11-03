@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,21 +14,19 @@ import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersList} from '.
  * printers after the change, the second parameter is the newly-added printer
  * (if it exists), and the third parameter is the newly-removed printer
  * (if it exists).
- * @typedef {!function(!Array<!PrinterListEntry>, !Array<!PrinterListEntry>,
- *     !Array<!PrinterListEntry>): void}
  */
-let PrintersListWithDeltasCallback;
+type PrintersListWithDeltasCallback =
+    (updatedPrinters: PrinterListEntry[], addedPrinters: PrinterListEntry[],
+     removedPrinters: PrinterListEntry[]) => void;
 
 /**
  * Function which provides the client with a list that contains the nearby
  * printers list. The parameter is the updated list of printers after any
  * changes.
- * @typedef {function(!Array<!PrinterListEntry>): void}
  */
-let PrintersListCallback;
+type PrintersListCallback = (updatedPrinters: PrinterListEntry[]) => void;
 
-/** @type {?CupsPrintersEntryManager} */
-let instance = null;
+let instance: CupsPrintersEntryManager|null = null;
 
 /**
  * Class for managing printer entries. Holds Saved, Nearby, Enterprise, Print
@@ -36,46 +34,38 @@ let instance = null;
  * printer lists.
  */
 export class CupsPrintersEntryManager {
-  /** @return {!CupsPrintersEntryManager} */
-  static getInstance() {
+  static getInstance(): CupsPrintersEntryManager {
     return instance || (instance = new CupsPrintersEntryManager());
   }
 
-  /** @param {!CupsPrintersEntryManager} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: CupsPrintersEntryManager): void {
     instance = obj;
   }
 
+  printServerPrinters: PrinterListEntry[];
+
+  private enterprisePrinters_: PrinterListEntry[];
+  private nearbyPrinters_: PrinterListEntry[];
+  private onEnterprisePrintersChangedListener_: WebUIListener|null;
+  private onEnterprisePrintersChangedListeners_: PrintersListCallback[];
+  private onNearbyPrintersChangedListener_: WebUIListener|null;
+  private onNearbyPrintersChangedListeners_: PrintersListCallback[];
+  private onSavedPrintersChangedListeners_: PrintersListWithDeltasCallback[];
+  private savedPrinters_: PrinterListEntry[];
+
   constructor() {
-    /** @private {!Array<!PrinterListEntry>} */
     this.savedPrinters_ = [];
-
-    /** @private {!Array<!PrinterListEntry>} */
     this.nearbyPrinters_ = [];
-
-    /** @private {!Array<!PrinterListEntry>} */
     this.enterprisePrinters_ = [];
-
-    /** @private {!Array<PrintersListWithDeltasCallback>} */
     this.onSavedPrintersChangedListeners_ = [];
-
-    /** @type {!Array<!PrinterListEntry>} */
     this.printServerPrinters = [];
-
-    /** @private {!Array<PrintersListCallback>} */
     this.onNearbyPrintersChangedListeners_ = [];
-
-    /** @private {?WebUIListener} */
     this.onNearbyPrintersChangedListener_ = null;
-
-    /** @private {!Array<PrintersListCallback>} */
     this.onEnterprisePrintersChangedListeners_ = [];
-
-    /** @private {?WebUIListener} */
     this.onEnterprisePrintersChangedListener_ = null;
   }
 
-  addWebUIListeners() {
+  addWebUIListeners(): void {
     // TODO(1005905): Add on-saved-printers-changed listener here once legacy
     // code is removed.
     this.onNearbyPrintersChangedListener_ = addWebUIListener(
@@ -88,64 +78,55 @@ export class CupsPrintersEntryManager {
     CupsPrintersBrowserProxyImpl.getInstance().startDiscoveringPrinters();
   }
 
-  removeWebUIListeners() {
+  removeWebUIListeners(): void {
     if (this.onNearbyPrintersChangedListener_) {
-      removeWebUIListener(
-          /** @type {WebUIListener} */ (this.onNearbyPrintersChangedListener_));
+      removeWebUIListener(this.onNearbyPrintersChangedListener_);
       this.onNearbyPrintersChangedListener_ = null;
     }
     if (this.onEnterprisePrintersChangedListener_) {
-      removeWebUIListener(
-          /** @type {WebUIListener} */ (
-              this.onEnterprisePrintersChangedListener_));
+      removeWebUIListener(this.onEnterprisePrintersChangedListener_);
       this.onEnterprisePrintersChangedListener_ = null;
     }
   }
 
-  /** @return {!Array<!PrinterListEntry>} */
-  get savedPrinters() {
+  get savedPrinters(): PrinterListEntry[] {
     return this.savedPrinters_;
   }
 
-  /** @return {!Array<!PrinterListEntry>} */
-  get nearbyPrinters() {
+  get nearbyPrinters(): PrinterListEntry[] {
     return this.nearbyPrinters_;
   }
 
-  /** @return {!Array<!PrinterListEntry>} */
-  get enterprisePrinters() {
+  get enterprisePrinters(): PrinterListEntry[] {
     return this.enterprisePrinters_;
   }
 
-  /** @param {PrintersListWithDeltasCallback} listener */
-  addOnSavedPrintersChangedListener(listener) {
+  addOnSavedPrintersChangedListener(listener: PrintersListWithDeltasCallback):
+      void {
     this.onSavedPrintersChangedListeners_.push(listener);
   }
 
-  /** @param {PrintersListWithDeltasCallback} listener */
-  removeOnSavedPrintersChangedListener(listener) {
+  removeOnSavedPrintersChangedListener(
+      listener: PrintersListWithDeltasCallback): void {
     this.onSavedPrintersChangedListeners_ =
         this.onSavedPrintersChangedListeners_.filter(lis => lis !== listener);
   }
 
-  /** @param {PrintersListCallback} listener */
-  addOnNearbyPrintersChangedListener(listener) {
+  addOnNearbyPrintersChangedListener(listener: PrintersListCallback): void {
     this.onNearbyPrintersChangedListeners_.push(listener);
   }
 
-  /** @param {PrintersListCallback} listener */
-  removeOnNearbyPrintersChangedListener(listener) {
+  removeOnNearbyPrintersChangedListener(listener: PrintersListCallback): void {
     this.onNearbyPrintersChangedListeners_ =
         this.onNearbyPrintersChangedListeners_.filter(lis => lis !== listener);
   }
 
-  /** @param {PrintersListCallback} listener */
-  addOnEnterprisePrintersChangedListener(listener) {
+  addOnEnterprisePrintersChangedListener(listener: PrintersListCallback): void {
     this.onEnterprisePrintersChangedListeners_.push(listener);
   }
 
-  /** @param {PrintersListCallback} listener */
-  removeOnEnterprisePrintersChangedListener(listener) {
+  removeOnEnterprisePrintersChangedListener(listener: PrintersListCallback):
+      void {
     this.onEnterprisePrintersChangedListeners_ =
         this.onEnterprisePrintersChangedListeners_.filter(
             lis => lis !== listener);
@@ -154,9 +135,8 @@ export class CupsPrintersEntryManager {
   /**
    * Sets the saved printers list and notifies observers of any applicable
    * changes.
-   * @param {!Array<!PrinterListEntry>} printerList
    */
-  setSavedPrintersList(printerList) {
+  setSavedPrintersList(printerList: PrinterListEntry[]): void {
     if (printerList.length > this.savedPrinters_.length) {
       const diff = findDifference(printerList, this.savedPrinters_);
       this.savedPrinters_ = printerList;
@@ -181,10 +161,10 @@ export class CupsPrintersEntryManager {
   /**
    * Sets the nearby printers list and notifies observers of any applicable
    * changes.
-   * @param {!Array<!CupsPrinterInfo>} automaticPrinters
-   * @param {!Array<!CupsPrinterInfo>} discoveredPrinters
    */
-  setNearbyPrintersList(automaticPrinters, discoveredPrinters) {
+  setNearbyPrintersList(
+      automaticPrinters: CupsPrinterInfo[],
+      discoveredPrinters: CupsPrinterInfo[]): void {
     if (!automaticPrinters && !discoveredPrinters) {
       return;
     }
@@ -204,11 +184,8 @@ export class CupsPrintersEntryManager {
     this.notifyOnNearbyPrintersChangedListeners_();
   }
 
-  /**
-   * Sets the enterprise printers list and notifies observers.
-   * @param {!Array<!PrinterListEntry>} enterprisePrinters
-   */
-  setEnterprisePrintersList(enterprisePrinters) {
+  // Sets the enterprise printers list and notifies observers.
+  setEnterprisePrintersList(enterprisePrinters: PrinterListEntry[]): void {
     this.enterprisePrinters_ = enterprisePrinters;
     this.notifyOnEnterprisePrintersChangedListeners_();
   }
@@ -217,9 +194,8 @@ export class CupsPrintersEntryManager {
    * Adds the found print server printers to |printServerPrinters|.
    * |foundPrinters| consist of print server printers that have not been saved
    * and will appear in the nearby printers list.
-   * @param {!CupsPrintersList} foundPrinters
    */
-  addPrintServerPrinters(foundPrinters) {
+  addPrintServerPrinters(foundPrinters: CupsPrintersList): void {
     // Get only new printers from |foundPrinters|. We ignore previously
     // found printers.
     const newPrinters = foundPrinters.printerList.filter(p1 => {
@@ -238,25 +214,20 @@ export class CupsPrintersEntryManager {
 
   /**
    * Non-empty/null fields indicate the applicable change to be notified.
-   * @param {!Array<!PrinterListEntry>} savedPrinters
-   * @param {!Array<!PrinterListEntry>} addedPrinter
-   * @param {!Array<!PrinterListEntry>} removedPrinter
-   * @private
    */
-  notifyOnSavedPrintersChangedListeners_(
-      savedPrinters, addedPrinter, removedPrinter) {
+  private notifyOnSavedPrintersChangedListeners_(
+      savedPrinters: PrinterListEntry[], addedPrinter: PrinterListEntry[],
+      removedPrinter: PrinterListEntry[]) {
     this.onSavedPrintersChangedListeners_.forEach(
         listener => listener(savedPrinters, addedPrinter, removedPrinter));
   }
 
-  /** @private */
-  notifyOnNearbyPrintersChangedListeners_() {
+  private notifyOnNearbyPrintersChangedListeners_(): void {
     this.onNearbyPrintersChangedListeners_.forEach(
         listener => listener(this.nearbyPrinters_));
   }
 
-  /** @private */
-  notifyOnEnterprisePrintersChangedListeners_() {
+  private notifyOnEnterprisePrintersChangedListeners_(): void {
     this.onEnterprisePrintersChangedListeners_.forEach(
         listener => listener(this.enterprisePrinters_));
   }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,43 +9,37 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
+import './cups_printer_types.js';
 
-import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/ash/common/focus_row_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
+import {getTemplate} from './cups_printers_entry.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {FocusRowBehaviorInterface}
- */
-const SettingsCupsPrintersEntryElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement);
+const SettingsCupsPrintersEntryElementBase = FocusRowMixin(PolymerElement);
 
-/** @polymer */
-class SettingsCupsPrintersEntryElement extends
+export class SettingsCupsPrintersEntryElement extends
     SettingsCupsPrintersEntryElementBase {
   static get is() {
     return 'settings-cups-printers-entry';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {!PrinterListEntry} */
       printerEntry: Object,
+
 
       /**
        * TODO(jimmyxgong): Determine how subtext should be set and what
        * information it should have, including necessary ARIA labeling
        * The additional information subtext for a printer.
-       * @type {string}
        */
       subtext: {type: String, value: ''},
 
@@ -64,11 +58,17 @@ class SettingsCupsPrintersEntryElement extends
     };
   }
 
+  printerEntry: PrinterListEntry;
+  savingPrinter: boolean;
+  subtext: string;
+  userPrintersAllowed: boolean;
+
   /**
    * Fires a custom event when the menu button is clicked. Sends the details of
    * the printer and where the menu should appear.
    */
-  onOpenActionMenuTap_(e) {
+  private onOpenActionMenuTap_(
+      e: CustomEvent<{target: HTMLElement, item: PrinterListEntry}>): void {
     const openActionMenuEvent = new CustomEvent('open-action-menu', {
       bubbles: true,
       composed: true,
@@ -80,8 +80,7 @@ class SettingsCupsPrintersEntryElement extends
     this.dispatchEvent(openActionMenuEvent);
   }
 
-  /** @private */
-  onAddDiscoveredPrinterTap_(e) {
+  private onAddDiscoveredPrinterTap_(): void {
     const queryDiscoveredPrinterEvent =
         new CustomEvent('query-discovered-printer', {
           bubbles: true,
@@ -91,8 +90,7 @@ class SettingsCupsPrintersEntryElement extends
     this.dispatchEvent(queryDiscoveredPrinterEvent);
   }
 
-  /** @private */
-  onAddAutomaticPrinterTap_() {
+  private onAddAutomaticPrinterTap_(): void {
     const addAutomaticPrinterEvent = new CustomEvent('add-automatic-printer', {
       bubbles: true,
       composed: true,
@@ -101,8 +99,7 @@ class SettingsCupsPrintersEntryElement extends
     this.dispatchEvent(addAutomaticPrinterEvent);
   }
 
-  /** @private */
-  onAddServerPrinterTap_() {
+  private onAddServerPrinterTap_(): void {
     const addPrintServer = new CustomEvent('add-print-server-printer', {
       bubbles: true,
       composed: true,
@@ -111,55 +108,41 @@ class SettingsCupsPrintersEntryElement extends
     this.dispatchEvent(addPrintServer);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showActionsMenu_() {
+  private showActionsMenu_(): boolean {
     return this.printerEntry.printerType === PrinterType.SAVED ||
         this.printerEntry.printerType === PrinterType.ENTERPRISE;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isDiscoveredPrinter_() {
+  private isDiscoveredPrinter_(): boolean {
     return this.printerEntry.printerType === PrinterType.DISCOVERED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isAutomaticPrinter_() {
+  private isAutomaticPrinter_(): boolean {
     return this.printerEntry.printerType === PrinterType.AUTOMATIC;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isPrintServerPrinter_() {
+  private isPrintServerPrinter_(): boolean {
     return this.printerEntry.printerType === PrinterType.PRINTSERVER;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isConfigureDisabled_() {
+  private isConfigureDisabled_(): boolean {
     return !this.userPrintersAllowed || this.savingPrinter;
   }
 
-  getSaveButtonAria_() {
+  private getSaveButtonAria_(): string {
     return loadTimeData.getStringF(
         'savePrinterAria', this.printerEntry.printerInfo.printerName);
   }
 
-  getSetupButtonAria_() {
+  private getSetupButtonAria_(): string {
     return loadTimeData.getStringF(
         'setupPrinterAria', this.printerEntry.printerInfo.printerName);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-cups-printers-entry': SettingsCupsPrintersEntryElement;
   }
 }
 

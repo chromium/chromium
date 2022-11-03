@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,28 +7,31 @@
  * existing printer's information and re-configure it.
  */
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './cups_add_printer_dialog.js';
 import './cups_printer_dialog_error.js';
-import './cups_printer_shared_css.js';
+import './cups_printer_shared.css.js';
+import './cups_printers_browser_proxy.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {HTMLEscape} from 'chrome://resources/js/util.js';
 import {CrosNetworkConfigRemote, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {cast} from '../assert_extras.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
+import {getTemplate} from './cups_edit_printer_dialog.html.js';
 import {getBaseName, getErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid} from './cups_printer_dialog_util.js';
 import {CupsPrinterInfo, CupsPrinterPpdInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, ManufacturersInfo, ModelsInfo, PrinterPpdMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 
@@ -37,27 +40,22 @@ import {CupsPrinterInfo, CupsPrinterPpdInfo, CupsPrintersBrowserProxy, CupsPrint
  * values are written to logs and used as metrics.  New enum values can be
  * added, but existing values must never be renumbered or deleted and reused.
  * See PrinterEditDialogActions enum in tools/metrics/hisograms/enums.xml.
- * @enum {number}
- * @const
  */
-const DIALOG_ACTIONS = {
-  DIALOG_OPENED: 0,
-  VIEW_PPD_CLICKED: 1,
-};
+enum DialogActions {
+  DIALOG_OPENED = 0,
+  VIEW_PPD_CLICKED = 1,
+}
+
 
 /** Keyword used for recording metrics */
 const METRICS_KEYWORD = 'Printing.CUPS.EditDialog';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {NetworkListenerBehaviorInterface}
- */
 const SettingsCupsEditPrinterDialogElementBase =
-    mixinBehaviors([I18nBehavior, NetworkListenerBehavior], PolymerElement);
+    mixinBehaviors([NetworkListenerBehavior], I18nMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nMixinInterface &
+          NetworkListenerBehaviorInterface,
+    };
 
-/** @polymer */
 class SettingsCupsEditPrinterDialogElement extends
     SettingsCupsEditPrinterDialogElementBase {
   static get is() {
@@ -65,27 +63,24 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * The currently saved printer.
-       * @type {CupsPrinterInfo}
        */
       activePrinter: Object,
 
       /**
        * Printer that holds the modified changes to activePrinter and only
        * applies these changes when the save button is clicked.
-       * @type {CupsPrinterInfo}
        */
       pendingPrinter_: Object,
 
       /**
        * If the printer needs to be re-configured.
-       * @private {boolean}
        */
       needsReconfigured_: {
         type: Boolean,
@@ -94,7 +89,6 @@ class SettingsCupsEditPrinterDialogElement extends
 
       /**
        * The current PPD in use by the printer.
-       * @private
        */
       userPPD_: String,
 
@@ -103,7 +97,6 @@ class SettingsCupsEditPrinterDialogElement extends
        * because the dialog isn't fully initialized until Model and Manufacturer
        * are set. Allows us to ignore changes made to these fields until
        * initialization is complete.
-       * @private
        */
       arePrinterFieldsInitialized_: {
         type: Boolean,
@@ -114,7 +107,6 @@ class SettingsCupsEditPrinterDialogElement extends
        * If the printer info has changed since loading this dialog. This will
        * only track the freeform input fields, since the other fields contain
        * input selected from dropdown menus.
-       * @private
        */
       printerInfoChanged_: {
         type: Boolean,
@@ -126,15 +118,12 @@ class SettingsCupsEditPrinterDialogElement extends
         computed: 'isNetworkProtocol_(pendingPrinter_.printerProtocol)',
       },
 
-      /** @type {?Array<string>} */
       manufacturerList: Array,
 
-      /** @type {?Array<string>} */
       modelList: Array,
 
       /**
        * Whether the user selected PPD file is valid.
-       * @private
        */
       invalidPPD_: {
         type: Boolean,
@@ -143,20 +132,17 @@ class SettingsCupsEditPrinterDialogElement extends
 
       /**
        * The base name of a newly selected PPD file.
-       * @private
        */
       newUserPPD_: String,
 
       /**
        * The URL to a printer's EULA.
-       * @private
        */
       eulaUrl_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       isOnline_: {
         type: Boolean,
         value: true,
@@ -164,7 +150,6 @@ class SettingsCupsEditPrinterDialogElement extends
 
       /**
        * The error text to be displayed on the dialog.
-       * @private
        */
       errorText_: {
         type: String,
@@ -174,7 +159,6 @@ class SettingsCupsEditPrinterDialogElement extends
       /**
        * Indicates whether the value in the Manufacturer dropdown is a valid
        * printer manufacturer.
-       * @private
        */
       isManufacturerInvalid_: {
         type: Boolean,
@@ -184,7 +168,6 @@ class SettingsCupsEditPrinterDialogElement extends
       /**
        * Indicates whether the value in the Model dropdown is a valid printer
        * model.
-       * @private
        */
       isModelInvalid_: {
         type: Boolean,
@@ -201,29 +184,44 @@ class SettingsCupsEditPrinterDialogElement extends
     ];
   }
 
-  /** @override */
+  activePrinter: CupsPrinterInfo;
+  manufacturerList: string[];
+  modelList: string[];
+
+  private arePrinterFieldsInitialized_: boolean;
+  private browserProxy_: CupsPrintersBrowserProxy;
+  private errorText_: string;
+  private eulaUrl_: string;
+  private invalidPPD_: boolean;
+  private isManufacturerInvalid_: boolean;
+  private isModelInvalid_: boolean;
+  private isOnline_: boolean;
+  private needsReconfigured_: boolean;
+  private networkConfig_: CrosNetworkConfigRemote;
+  private networkProtocolActive_: boolean;
+  private newUserPPD_: string;
+  private pendingPrinter_: CupsPrinterInfo;
+  private printerInfoChanged_: boolean;
+  private userPPD_: string;
+
   constructor() {
     super();
 
-    /** @private {!CupsPrintersBrowserProxy} */
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
 
-    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     chrome.metricsPrivate.recordEnumerationValue(
-        METRICS_KEYWORD, DIALOG_ACTIONS.DIALOG_OPENED,
-        Object.keys(DIALOG_ACTIONS).length);
+        METRICS_KEYWORD, DialogActions.DIALOG_OPENED,
+        Object.keys(DialogActions).length);
 
     // Create a copy of activePrinter so that we can modify its fields.
-    this.pendingPrinter_ = /** @type{CupsPrinterInfo} */
-        (Object.assign({}, this.activePrinter));
+    this.pendingPrinter_ = Object.assign({}, this.activePrinter);
 
     this.refreshNetworks_();
 
@@ -237,53 +235,36 @@ class SettingsCupsEditPrinterDialogElement extends
     this.userPPD_ = getBaseName(this.pendingPrinter_.printerPPDPath);
   }
 
-  /**
-   * CrosNetworkConfigObserver impl
-   * @param {!Array<NetworkStateProperties>}
-   *     networks
-   * @private
-   */
-  onActiveNetworksChanged(networks) {
+  override onActiveNetworksChanged(networks: NetworkStateProperties[]): void {
     this.isOnline_ = networks.some(function(network) {
       return OncMojo.connectionStateIsConnected(network.connectionState);
     });
   }
 
-  /**
-   * @param {!{path: string, value: string}} change
-   * @private
-   */
-  printerPathChanged_(change) {
+  private printerPathChanged_(change: {path: string, value: string}): void {
     if (change.path !== 'pendingPrinter_.printerName') {
       this.needsReconfigured_ = true;
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onProtocolChange_(event) {
-    this.set('pendingPrinter_.printerProtocol', event.target.value);
+  private onProtocolChange_(event: Event): void {
+    const selectEl = cast(event.target, HTMLSelectElement);
+    this.set('pendingPrinter_.printerProtocol', selectEl!.value);
     this.onPrinterInfoChange_();
   }
 
-  /** @private */
-  onPrinterInfoChange_() {
+  private onPrinterInfoChange_(): void {
     this.printerInfoChanged_ = true;
   }
 
-  /** @private */
-  onCancelTap_() {
-    this.shadowRoot.querySelector('add-printer-dialog').close();
+  private onCancelTap_(): void {
+    this.shadowRoot!.querySelector('add-printer-dialog')!.close();
   }
 
   /**
    * Handler for update|reconfigureCupsPrinter success.
-   * @param {!PrinterSetupResult} result
-   * @private
    */
-  onPrinterEditSucceeded_(result) {
+  private onPrinterEditSucceeded_(result: PrinterSetupResult): void {
     const showCupsPrinterToastEvent =
         new CustomEvent('show-cups-printer-toast', {
           bubbles: true,
@@ -293,21 +274,17 @@ class SettingsCupsEditPrinterDialogElement extends
         });
     this.dispatchEvent(showCupsPrinterToastEvent);
 
-    this.shadowRoot.querySelector('add-printer-dialog').close();
+    this.shadowRoot!.querySelector('add-printer-dialog')!.close();
   }
 
   /**
    * Handler for update|reconfigureCupsPrinter failure.
-   * @param {*} result
-   * @private
    */
-  onPrinterEditFailed_(result) {
-    this.errorText_ = getErrorText(
-        /** @type {PrinterSetupResult} */ (result));
+  private onPrinterEditFailed_(result: PrinterSetupResult) {
+    this.errorText_ = getErrorText((result));
   }
 
-  /** @private */
-  onSaveTap_() {
+  private onSaveTap_(): void {
     this.updateActivePrinter_();
     if (!this.needsReconfigured_ || !this.isOnline_) {
       // If we don't need to reconfigure or we are offline, just update the
@@ -328,21 +305,15 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   /**
-   * @return {string} The i18n string for the dialog title.
-   * @private
+   * @return Returns the i18n string for the dialog title.
    */
-  getDialogTitle_() {
+  private getDialogTitle_(): string {
     return this.pendingPrinter_.isManaged ?
         this.i18n('viewPrinterDialogTitle') :
         this.i18n('editPrinterDialogTitle');
   }
 
-  /**
-   * @param {!CupsPrinterInfo} printer
-   * @return {string} The printer's URI that displays in the UI
-   * @private
-   */
-  getPrinterURI_(printer) {
+  private getPrinterURI_(printer: CupsPrinterInfo): string {
     if (!printer) {
       return '';
     } else if (
@@ -359,10 +330,9 @@ class SettingsCupsEditPrinterDialogElement extends
 
   /**
    * Handler for getPrinterPpdManufacturerAndModel() success case.
-   * @param {!PrinterPpdMakeModel} info
-   * @private
    */
-  onGetPrinterPpdManufacturerAndModel_(info) {
+  private onGetPrinterPpdManufacturerAndModel_(info: PrinterPpdMakeModel):
+      void {
     this.set('pendingPrinter_.ppdManufacturer', info.ppdManufacturer);
     this.set('pendingPrinter_.ppdModel', info.ppdModel);
 
@@ -373,45 +343,38 @@ class SettingsCupsEditPrinterDialogElement extends
 
   /**
    * Handler for getPrinterPpdManufacturerAndModel() failure case.
-   * @private
    */
-  onGetPrinterPpdManufacturerAndModelFailed_() {
+  private onGetPrinterPpdManufacturerAndModelFailed_(): void {
     this.needsReconfigured_ = false;
   }
 
   /**
-   * @param {string} protocol
-   * @return {boolean} Whether |protocol| is a network protocol
-   * @private
+   * Returns whether |protocol| is a network protocol
    */
-  isNetworkProtocol_(protocol) {
+  private isNetworkProtocol_(protocol: string): boolean {
     return isNetworkProtocol(protocol);
   }
 
   /**
-   * @return {boolean} Whether the current printer was auto configured.
-   * @private
+   * Returns whether the current printer was auto configured.
    */
-  isAutoconfPrinter_() {
+  private isAutoconfPrinter_(): boolean {
     return this.pendingPrinter_.printerPpdReference.autoconf;
   }
 
   /**
-   * @return {boolean} Whether the Save button is enabled.
-   * @private
+   * Returns whether the Save button is enabled.
    */
-  canSavePrinter_() {
+  private canSavePrinter_(): boolean {
     return this.printerInfoChanged_ &&
         (this.isPrinterConfigured_() || !this.isOnline_) &&
         !this.isManufacturerInvalid_ && !this.isModelInvalid_;
   }
 
   /**
-   * @param {string} manufacturer The manufacturer for which we are retrieving
-   *     models.
-   * @private
+   * @param manufacturer The manufacturer for which we are retrieving models.
    */
-  selectedEditManufacturerChanged_(manufacturer) {
+  private selectedEditManufacturerChanged_(manufacturer: string): void {
     // Reset model if manufacturer is changed.
     this.set('pendingPrinter_.ppdModel', '');
     this.modelList = [];
@@ -424,9 +387,8 @@ class SettingsCupsEditPrinterDialogElement extends
   /**
    * Sets printerInfoChanged_ to true to show that the model has changed. Also
    * attempts to get the EULA Url if the selected printer has one.
-   * @private
    */
-  onModelChanged_() {
+  private onModelChanged_(): void {
     if (this.arePrinterFieldsInitialized_) {
       this.printerInfoChanged_ = true;
     }
@@ -443,19 +405,16 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   /**
-   * @param {string} eulaUrl The URL for the printer's EULA.
-   * @private
+   * @param eulaUrl The URL for the printer's EULA.
    */
-  onGetEulaUrlCompleted_(eulaUrl) {
+  private onGetEulaUrlCompleted_(eulaUrl: string): void {
     this.eulaUrl_ = eulaUrl;
   }
 
   /**
    * Handler for retrieveCupsPrinterPpd success.
-   * @param {!CupsPrinterPpdInfo} ppdInfo
-   * @private
    */
-  onRetrieveCupsPrinterPpdSucceeded_(ppdInfo) {
+  private onRetrieveCupsPrinterPpdSucceeded_(ppdInfo: CupsPrinterPpdInfo) {
     let eulaHtml = '';
     if (this.eulaUrl_) {
       const linkText = this.i18n('printerEulaNotice');
@@ -470,30 +429,27 @@ class SettingsCupsEditPrinterDialogElement extends
         '</pre></p>';
 
     const win = window.open('');
-    win.document.title = ppdInfo.printerName;
-    win.document.body.innerHTML = htmlText;
+    win!.document.title = ppdInfo.printerName;
+    win!.document.body.innerHTML = htmlText;
   }
 
   /**
    * Handler for retrieveCupsPrinterPpd failure.
-   * @param {*} ppdInfo
-   * @private
    */
-  onRetrieveCupsPrinterPpdFailed_(ppdInfo) {
+  private onRetrieveCupsPrinterPpdFailed_(ppdInfo: CupsPrinterPpdInfo) {
     const htmlText = '<!DOCTYPE html><html><body><h1>' +
         loadTimeData.getStringF('cupsPrintersPpdFor', ppdInfo.printerName) +
         '</h1><p>' + this.i18n('cupsPrintersViewPpdErrorMessage') + '</p>';
 
     const win = window.open('');
-    win.document.title = ppdInfo.printerName;
-    win.document.body.innerHTML = htmlText;
+    win!.document.title = ppdInfo.printerName;
+    win!.document.body.innerHTML = htmlText;
   }
 
-  /** @private */
-  onViewPpd_() {
+  private onViewPpd_() {
     chrome.metricsPrivate.recordEnumerationValue(
-        METRICS_KEYWORD, DIALOG_ACTIONS.VIEW_PPD_CLICKED,
-        Object.keys(DIALOG_ACTIONS).length);
+        METRICS_KEYWORD, DialogActions.VIEW_PPD_CLICKED,
+        Object.keys(DialogActions).length);
 
     // We always use the activePrinter (the printer when the dialog was first
     // displayed) when viewing the PPD.  Once the user has modified the dialog,
@@ -506,22 +462,16 @@ class SettingsCupsEditPrinterDialogElement extends
             this.onRetrieveCupsPrinterPpdFailed_.bind(this));
   }
 
-  /** @private */
-  onLearnMoreTap_() {
+  private onLearnMoreTap_() {
     window.open(this.i18n('printingCUPSPrintPpdLearnMoreUrl'));
   }
 
-  /** @private */
-  onBrowseFile_() {
+  private onBrowseFile_(): void {
     this.browserProxy_.getCupsPrinterPPDPath().then(
         this.printerPPDPathChanged_.bind(this));
   }
 
-  /**
-   * @param {!ManufacturersInfo} manufacturersInfo
-   * @private
-   */
-  manufacturerListChanged_(manufacturersInfo) {
+  private manufacturerListChanged_(manufacturersInfo: ManufacturersInfo): void {
     if (!manufacturersInfo.success) {
       return;
     }
@@ -533,11 +483,7 @@ class SettingsCupsEditPrinterDialogElement extends
     }
   }
 
-  /**
-   * @param {!ModelsInfo} modelsInfo
-   * @private
-   */
-  modelListChanged_(modelsInfo) {
+  private modelListChanged_(modelsInfo: ModelsInfo): void {
     if (modelsInfo.success) {
       this.modelList = modelsInfo.models;
       // ModelListChanged_ is the final step of initializing pendingPrinter.
@@ -550,10 +496,9 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   /**
-   * @param {string} path The full path to the selected PPD file
-   * @private
+   * @param path The full path to the selected PPD file
    */
-  printerPPDPathChanged_(path) {
+  private printerPPDPathChanged_(path: string): void {
     this.set('pendingPrinter_.printerPPDPath', path);
     this.invalidPPD_ = !path;
     if (!this.invalidPPD_) {
@@ -564,12 +509,11 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   /**
-   * Returns true if the printer has valid name, address, and valid PPD or was
+   * @return Returns true if the printer has valid name, address, and valid PPD
+   *     or was
    * auto-configured.
-   * @return {boolean}
-   * @private
    */
-  isPrinterConfigured_() {
+  private isPrinterConfigured_(): boolean {
     return isNameAndAddressValid(this.pendingPrinter_) &&
         (this.isAutoconfPrinter_() ||
          isPPDInfoValid(
@@ -580,17 +524,17 @@ class SettingsCupsEditPrinterDialogElement extends
 
   /**
    * Helper function to copy over modified fields to activePrinter.
-   * @private
    */
-  updateActivePrinter_() {
+  private updateActivePrinter_(): void {
     if (!this.isOnline_) {
       // If we are not online, only copy over the printerName.
       this.activePrinter.printerName = this.pendingPrinter_.printerName;
       return;
     }
 
-    this.activePrinter =
-        /** @type{CupsPrinterInfo} */ (Object.assign({}, this.pendingPrinter_));
+    // Clone pendingPrinter_ into activePrinter_.
+    this.activePrinter = Object.assign({}, this.pendingPrinter_);
+
     // Set ppdModel since there is an observer that clears ppdmodel's value when
     // ppdManufacturer changes.
     this.activePrinter.ppdModel = this.pendingPrinter_.ppdModel;
@@ -598,9 +542,8 @@ class SettingsCupsEditPrinterDialogElement extends
 
   /**
    * Callback function when networks change.
-   * @private
    */
-  refreshNetworks_() {
+  private refreshNetworks_(): void {
     this.networkConfig_
         .getNetworkStateList({
           filter: FilterType.kActive,
@@ -613,11 +556,10 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   /**
-   * Returns true if the printer protocol select field should be enabled.
-   * @return {boolean}
-   * @private
+   * @return Returns true if the printer protocol select field should be
+   *     enabled.
    */
-  protocolSelectEnabled_() {
+  private protocolSelectEnabled_(): boolean {
     if (this.pendingPrinter_) {
       // Print server printer's protocol should not be editable; disable the
       // drop down if the printer is from a print server.
@@ -637,9 +579,8 @@ class SettingsCupsEditPrinterDialogElement extends
   /**
    * Attempts fetching for the EULA Url based off of the current printer's
    * |ppdManufacturer| and |ppdModel|.
-   * @private
    */
-  attemptPpdEulaFetch_() {
+  private attemptPpdEulaFetch_(): void {
     if (!this.pendingPrinter_.ppdManufacturer ||
         !this.pendingPrinter_.ppdModel) {
       return;
@@ -652,11 +593,10 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   /**
-   * @return {boolean} True if we're on an active network and the printer
+   * @return Returns true if we're on an active network and the printer
    * is not from a print server. If true, the input field is enabled.
-   * @private
    */
-  isInputFieldEnabled_() {
+  private isInputFieldEnabled_(): boolean {
     // Print server printers should not be editable (except for the name field).
     // Return false to disable the field.
     if (this.pendingPrinter_.printServerUri) {
@@ -667,12 +607,17 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   /**
-   * @return {boolean} True if the printer is managed or not online.
-   * @private
+   * @return Returns true if the printer is managed or not online.
    */
-  isInputFieldReadonly_() {
+  private isInputFieldReadonly_(): boolean {
     return !this.isOnline_ ||
         (this.pendingPrinter_ && this.pendingPrinter_.isManaged);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-cups-edit-printer-dialog': SettingsCupsEditPrinterDialogElement;
   }
 }
 

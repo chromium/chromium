@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,25 +18,30 @@ import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './cups_settings_add_printer_dialog.js';
-import './cups_edit_printer_dialog.js';
-import './cups_enterprise_printers.js';
-import './cups_printer_shared_css.js';
-import './cups_saved_printers.js';
-import './cups_nearby_printers.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../icons.html.js';
+import './cups_edit_printer_dialog.js';
+import './cups_enterprise_printers.js';
+import './cups_printer_shared.css.js';
+import './cups_printer_types.js';
+import './cups_printers_browser_proxy.js';
+import './cups_printers_entry.js';
+import './cups_printers_entry_manager.js';
+import './cups_saved_printers.js';
+import './cups_settings_add_printer_dialog.js';
 
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {CrosNetworkConfigRemote, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
@@ -45,39 +50,43 @@ import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import {getTemplate} from './cups_printers.html.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
+import {SettingsCupsAddPrinterDialogElement} from './cups_settings_add_printer_dialog.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {NetworkListenerBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsCupsPrintersElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      NetworkListenerBehavior,
-      RouteObserverBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+const SettingsCupsPrintersElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+          NetworkListenerBehavior,
+          RouteObserverBehavior,
+        ],
+        WebUiListenerMixin(PolymerElement)) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          NetworkListenerBehaviorInterface & RouteObserverBehaviorInterface &
+          WebUiListenerMixinInterface,
+    };
 
-/** @polymer */
+interface SettingsCupsPrintersElement {
+  $: {
+    errorToast: CrToastElement,
+    printServerErrorToast: CrToastElement,
+    addPrinterDialog: SettingsCupsAddPrinterDialogElement,
+  };
+}
+
 class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
   static get is() {
     return 'settings-cups-printers';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {!Array<!CupsPrinterInfo>} */
       printers: {
         type: Array,
         notify: true,
@@ -85,19 +94,16 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
 
       prefs: Object,
 
-      /** @type {?CupsPrinterInfo} */
       activePrinter: {
         type: Object,
         notify: true,
       },
 
-      /** @private {?WebUIListener} */
       onPrintersChangedListener_: {
         type: Object,
         value: null,
       },
 
-      /** @private {?WebUIListener} */
       onEnterprisePrintersChangedListener_: {
         type: Object,
         value: null,
@@ -107,73 +113,58 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
         type: String,
       },
 
-      /** This is also used as an attribute for css styling. */
+      /**
+       * This is also used as an attribute for css styling.
+       */
       canAddPrinter: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
-      /**
-       * @type {!Array<!PrinterListEntry>}
-       * @private
-       */
       savedPrinters_: {
         type: Array,
         value: () => [],
       },
 
-      /**
-       * @type {!Array<!PrinterListEntry>}
-       * @private
-       */
       enterprisePrinters_: {
         type: Array,
         value: () => [],
       },
 
-      /** @private */
       attemptedLoadingPrinters_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showCupsEditPrinterDialog_: Boolean,
 
-      /**@private */
       addPrinterResultText_: String,
 
-      /**@private */
       nearbyPrintersAriaLabel_: {
         type: String,
         computed: 'getNearbyPrintersAriaLabel_(nearbyPrinterCount_)',
       },
 
-      /**@private */
       savedPrintersAriaLabel_: {
         type: String,
         computed: 'getSavedPrintersAriaLabel_(savedPrinterCount_)',
       },
 
-      /**@private */
       enterprisePrintersAriaLabel_: {
         type: String,
         computed: 'getEnterprisePrintersAriaLabel_(enterprisePrinterCount_)',
       },
 
-      /**@private */
       nearbyPrinterCount_: {
         type: Number,
         value: 0,
       },
 
-      /**@private */
       savedPrinterCount_: {
         type: Number,
         value: 0,
       },
 
-      /** @private */
       enterprisePrinterCount_: {
         type: Number,
         value: 0,
@@ -181,7 +172,6 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -193,24 +183,42 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     };
   }
 
-  /** @override */
+  activePrinter: CupsPrinterInfo;
+  canAddPrinter: boolean;
+  prefs: Object;
+  printers: CupsPrinterInfo[];
+  searchTerm: string;
+
+  private addPrintServerResultText_: string;
+  private addPrinterResultText_: string;
+  private attemptedLoadingPrinters_: boolean;
+  private enterprisePrinterCount_: number;
+  private enterprisePrintersAriaLabel_: string;
+  private enterprisePrinters_: PrinterListEntry[];
+  private entryManager_: CupsPrintersEntryManager;
+  private nearbyPrinterCount_: number;
+  private nearbyPrintersAriaLabel_: string;
+  private networkConfig_: CrosNetworkConfigRemote;
+  private onEnterprisePrintersChangedListener_: WebUIListener;
+  private onPrintersChangedListener_: WebUIListener|null;
+  private savedPrinterCount_: number;
+  private savedPrintersAriaLabel_: string;
+  private savedPrinters_: PrinterListEntry[];
+  private showCupsEditPrinterDialog_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
 
-    /** @private {!CupsPrintersEntryManager} */
     this.entryManager_ = CupsPrintersEntryManager.getInstance();
 
-    /** @private */
     this.addPrintServerResultText_ = '';
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.networkConfig_
@@ -219,57 +227,54 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
           networkType: NetworkType.kAll,
           limit: NO_LIMIT,
         })
-        .then((responseParams) => {
+        .then((responseParams: {result: NetworkStateProperties[]}) => {
           this.onActiveNetworksChanged(responseParams.result);
         });
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.updateCupsPrintersList_();
 
     this.addEventListener(
         'edit-cups-printer-details', this.onShowCupsEditPrinterDialog_);
-    this.addEventListener('show-cups-printer-toast', (event) => {
-      this.openResultToast_(
-          /**
-           * @type {!CustomEvent<!{
-           *      resultCode: PrinterSetupResult,
-           *      printerName: string
-           * }>}
-           */
-          (event));
-    });
-    this.addEventListener('add-print-server-and-show-toast', (event) => {
-      this.addPrintServerAndShowResultToast_(
-          /** @type {!CustomEvent<!{printers: !CupsPrintersList}>} */ (event));
-    });
     this.addEventListener(
-        'open-manufacturer-model-dialog-for-specified-printer', (event) => {
-          this.openManufacturerModelDialogForSpecifiedPrinter_(
-              /** @type {!CustomEvent<{item: !CupsPrinterInfo}>} */ (event));
+        'show-cups-printer-toast',
+        (event: CustomEvent<
+            {resultCode: PrinterSetupResult, printerName: string}>) => {
+          this.openResultToast_(event);
+        });
+    this.addEventListener(
+        'add-print-server-and-show-toast',
+        (event: CustomEvent<{printers: CupsPrintersList}>) => {
+          this.addPrintServerAndShowResultToast_((event));
+        });
+    this.addEventListener(
+        'open-manufacturer-model-dialog-for-specified-printer',
+        (event: CustomEvent<{item: CupsPrinterInfo}>) => {
+          this.openManufacturerModelDialogForSpecifiedPrinter_(event);
         });
   }
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!Setting} settingId
-   * @return {boolean}
    */
-  beforeDeepLinkAttempt(settingId) {
-    // Manually show the deep links for settings nested within elements.
+  override beforeDeepLinkAttempt(settingId: Setting): boolean {
     if (settingId !== Setting.kSavedPrinters) {
       // Continue with deep link attempt.
       return true;
     }
 
     afterNextRender(this, () => {
-      const savedPrinters = this.shadowRoot.querySelector('#savedPrinters');
-      const printerEntry =
-          savedPrinters && savedPrinters.$$('settings-cups-printers-entry');
-      const deepLinkElement = printerEntry && printerEntry.$$('#moreActions');
+      const savedPrinters = this.shadowRoot!.querySelector('#savedPrinters');
+      const printerEntry = savedPrinters!.shadowRoot!.querySelector(
+          'settings-cups-printers-entry');
+
+      const deepLinkElement =
+          printerEntry!.shadowRoot!.querySelector<CrIconButtonElement>(
+              '#moreActions');
+
       if (!deepLinkElement || deepLinkElement.hidden) {
         console.warn(`Element with deep link id ${settingId} not focusable.`);
         return;
@@ -280,16 +285,10 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     return false;
   }
 
-  /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   * @protected
-   */
-  currentRouteChanged(route) {
+  override currentRouteChanged(route: Route): void {
     if (route !== routes.CUPS_PRINTERS) {
       if (this.onPrintersChangedListener_) {
-        removeWebUIListener(
-            /** @type {WebUIListener} */ (this.onPrintersChangedListener_));
+        removeWebUIListener(this.onPrintersChangedListener_);
         this.onPrintersChangedListener_ = null;
       }
       this.entryManager_.removeWebUIListeners();
@@ -308,11 +307,8 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
 
   /**
    * CrosNetworkConfigObserver impl
-   * @param {!Array<NetworkStateProperties>}
-   *     networks
-   * @private
    */
-  onActiveNetworksChanged(networks) {
+  override onActiveNetworksChanged(networks: NetworkStateProperties[]): void {
     this.canAddPrinter = networks.some((network) => {
       // Note: Check for kOnline rather than using
       // OncMojo.connectionStateIsConnected() since the latter could return true
@@ -321,14 +317,10 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     });
   }
 
-  /**
-   * @param {!CustomEvent<!{
-   *      resultCode: PrinterSetupResult,
-   *      printerName: string
-   * }>} event
-   * @private
-   */
-  openResultToast_(event) {
+  private openResultToast_(
+      event:
+          CustomEvent<{resultCode: PrinterSetupResult, printerName: string}>):
+      void {
     const printerName = event.detail.printerName;
     switch (event.detail.resultCode) {
       case PrinterSetupResult.SUCCESS:
@@ -350,13 +342,8 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     this.$.errorToast.show();
   }
 
-  /**
-   * @param {!CustomEvent<!{
-   *      printers: !CupsPrintersList
-   * }>} event
-   * @private
-   */
-  addPrintServerAndShowResultToast_(event) {
+  private addPrintServerAndShowResultToast_(
+      event: CustomEvent<{printers: CupsPrintersList}>): void {
     this.entryManager_.addPrintServerPrinters(event.detail.printers);
     const length = event.detail.printers.printerList.length;
     if (length === 0) {
@@ -372,18 +359,14 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     this.$.printServerErrorToast.show();
   }
 
-  /**
-   * @param {!CustomEvent<{item: !CupsPrinterInfo}>} e
-   * @private
-   */
-  openManufacturerModelDialogForSpecifiedPrinter_(e) {
+  private openManufacturerModelDialogForSpecifiedPrinter_(
+      e: CustomEvent<{item: CupsPrinterInfo}>): void {
     const item = e.detail.item;
     this.$.addPrinterDialog.openManufacturerModelDialogForSpecifiedPrinter(
         item);
   }
 
-  /** @private */
-  updateCupsPrintersList_() {
+  private updateCupsPrintersList_(): void {
     CupsPrintersBrowserProxyImpl.getInstance().getCupsSavedPrintersList().then(
         this.onSavedPrintersChanged_.bind(this));
 
@@ -392,11 +375,7 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
         .then(this.onEnterprisePrintersChanged_.bind(this));
   }
 
-  /**
-   * @param {!CupsPrintersList} cupsPrintersList
-   * @private
-   */
-  onSavedPrintersChanged_(cupsPrintersList) {
+  private onSavedPrintersChanged_(cupsPrintersList: CupsPrintersList): void {
     this.savedPrinters_ = cupsPrintersList.printerList.map(
         printer => /** @type {!PrinterListEntry} */ (
             {printerInfo: printer, printerType: PrinterType.SAVED}));
@@ -406,44 +385,36 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     this.attemptedLoadingPrinters_ = true;
   }
 
-  /**
-   * @param {!CupsPrintersList} cupsPrintersList
-   * @private
-   */
-  onEnterprisePrintersChanged_(cupsPrintersList) {
+  private onEnterprisePrintersChanged_(cupsPrintersList: CupsPrintersList):
+      void {
     this.enterprisePrinters_ = cupsPrintersList.printerList.map(
         printer => /** @type {!PrinterListEntry} */ (
             {printerInfo: printer, printerType: PrinterType.ENTERPRISE}));
     this.entryManager_.setEnterprisePrintersList(this.enterprisePrinters_);
   }
 
-  /** @private */
-  onAddPrinterTap_() {
+  private onAddPrinterTap_(): void {
     this.$.addPrinterDialog.open();
   }
 
-  /** @private */
-  onAddPrinterDialogClose_() {
-    focusWithoutInk(
-        assert(this.shadowRoot.querySelector('#addManualPrinterIcon')));
+  private onAddPrinterDialogClose_(): void {
+    const icon = this.shadowRoot!.querySelector('#addManualPrinterIcon');
+    assert(icon);
+    focusWithoutInk(icon);
   }
 
-  /** @private */
-  onShowCupsEditPrinterDialog_() {
+  private onShowCupsEditPrinterDialog_(): void {
     this.showCupsEditPrinterDialog_ = true;
   }
 
-  /** @private */
-  onEditPrinterDialogClose_() {
+  private onEditPrinterDialogClose_(): void {
     this.showCupsEditPrinterDialog_ = false;
   }
 
   /**
-   * @param {string} searchTerm
-   * @return {boolean} If the 'no-search-results-found' string should be shown.
-   * @private
+   * @return Returns if the 'no-search-results-found' string should be shown.
    */
-  showNoSearchResultsMessage_(searchTerm) {
+  private showNoSearchResultsMessage_(searchTerm: string): boolean {
     if (!searchTerm || !this.printers.length) {
       return false;
     }
@@ -453,36 +424,21 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     });
   }
 
-  /**
-   * @param {boolean} connectedToNetwork Whether the device is connected to
-         a network.
-   * @param {boolean} userPrintersAllowed Whether users are allowed to
-         configure their own native printers.
-   * @return {boolean} Whether the 'Add Printer' button is active.
-   * @private
-   */
-  addPrinterButtonActive_(connectedToNetwork, userPrintersAllowed) {
+
+  private addPrinterButtonActive_(
+      connectedToNetwork: boolean, userPrintersAllowed: boolean): boolean {
     return connectedToNetwork && userPrintersAllowed;
   }
 
-  /**
-   * @return {boolean} Whether |savedPrinters_| is empty.
-   * @private
-   */
-  doesAccountHaveSavedPrinters_() {
+  private doesAccountHaveSavedPrinters_(): boolean {
     return !!this.savedPrinters_.length;
   }
 
-  /**
-   * @return {boolean} Whether |enterprisePrinters_| is empty.
-   * @private
-   */
-  doesAccountHaveEnterprisePrinters_() {
+  private doesAccountHaveEnterprisePrinters_(): boolean {
     return !!this.enterprisePrinters_.length;
   }
 
-  /** @private */
-  getSavedPrintersAriaLabel_() {
+  private getSavedPrintersAriaLabel_(): string {
     let printerLabel = '';
     if (this.savedPrinterCount_ === 0) {
       printerLabel = 'savedPrintersCountNone';
@@ -494,8 +450,7 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     return loadTimeData.getStringF(printerLabel, this.savedPrinterCount_);
   }
 
-  /** @private */
-  getNearbyPrintersAriaLabel_() {
+  private getNearbyPrintersAriaLabel_(): string {
     let printerLabel = '';
     if (this.nearbyPrinterCount_ === 0) {
       printerLabel = 'nearbyPrintersCountNone';
@@ -507,8 +462,7 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     return loadTimeData.getStringF(printerLabel, this.nearbyPrinterCount_);
   }
 
-  /** @private */
-  getEnterprisePrintersAriaLabel_() {
+  private getEnterprisePrintersAriaLabel_(): string {
     let printerLabel = '';
     if (this.enterprisePrinterCount_ === 0) {
       printerLabel = 'enterprisePrintersCountNone';
@@ -518,6 +472,21 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
       printerLabel = 'enterprisePrintersCountMany';
     }
     return loadTimeData.getStringF(printerLabel, this.enterprisePrinterCount_);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-cups-printers': SettingsCupsPrintersElement;
+  }
+  interface HTMLElementEventMap {
+    'edit-cups-printer-details': CustomEvent;
+    'show-cups-printer-toast':
+        CustomEvent<{resultCode: PrinterSetupResult, printerName: string}>;
+    'add-print-server-and-show-toast':
+        CustomEvent<{printers: CupsPrintersList}>;
+    'open-manufacturer-model-dialog-for-specified-printer':
+        CustomEvent<{item: CupsPrinterInfo}>;
   }
 }
 
