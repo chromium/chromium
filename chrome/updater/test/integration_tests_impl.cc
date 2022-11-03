@@ -486,6 +486,7 @@ bool WaitFor(base::RepeatingCallback<bool()> predicate,
 bool RequestMatcherRegex(const std::string& request_body_regex,
                          const std::string& request_body) {
   if (!re2::RE2::PartialMatch(request_body, request_body_regex)) {
+    VLOG(0) << "Request match failed.";
     ADD_FAILURE() << "Request with body: " << request_body
                   << " did not match expected regex " << request_body_regex;
     return false;

@@ -54,6 +54,7 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
   VLOG(0) << "HandleRequest: " << request.content;
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   if (request_matchers_.empty()) {
+    VLOG(0) << "Unexpected request.";
     ADD_FAILURE() << "Unexpected request: " << request.content;
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
@@ -62,6 +63,7 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
                             [&request](RequestMatcherPredicate pred) {
                               return pred.Run(request.content);
                             })) {
+    VLOG(0) << "Request did not match.";
     ADD_FAILURE() << "Request did not match: " << request.content;
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
