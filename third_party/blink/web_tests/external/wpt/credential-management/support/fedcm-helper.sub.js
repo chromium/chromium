@@ -66,12 +66,12 @@ credential-management/support/fedcm/${manifest_filename}`;
 }
 
 // Test wrapper which does FedCM-specific setup.
-export function fedcm_test(test_func) {
+export function fedcm_test(test_func, test_name) {
   promise_test(async t => {
     await set_fedcm_cookie();
     await set_alt_fedcm_cookie();
     await test_func(t);
-  });
+  }, test_name);
 }
 
 function select_manifest_impl(manifest_url) {
