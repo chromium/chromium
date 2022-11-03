@@ -5,9 +5,13 @@
 /**
  * @fileoverview Class that formats the parsed output tree.
  */
+import {Msgs} from '../../common/msgs.js';
+
 import {OutputFormatParserObserver} from './output_format_parser.js';
 import {OutputInterface} from './output_interface.js';
 import * as outputTypes from './output_types.js';
+
+const StateType = chrome.automation.StateType;
 
 // TODO(anastasi): Move formatting logic to this class.
 /** @implements {OutputFormatParserObserver} */
@@ -35,7 +39,7 @@ export class OutputFormatter {
     }
 
     if (token === 'value') {
-      this.output_.formatValue_(this.params_, token, options);
+      this.formatValue_(this.params_, token, options);
     } else if (token === 'name') {
       this.output_.formatName_(this.params_, token, options);
     } else if (token === 'description') {
@@ -149,6 +153,45 @@ export class OutputFormatter {
         buff[buff.length - 1].setSpan(this.speechProps_, 0, 0);
         this.speechProps_ = null;
       }
+    }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatValue_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    const text = node.value || '';
+    if (!node.state[StateType.EDITABLE] && node.name === text) {
+      return;
+    }
+
+    let selectedText = '';
+    if (node.textSelStart !== undefined) {
+      options.annotation.push(new outputTypes.OutputSelectionSpan(
+          node.textSelStart || 0, node.textSelEnd || 0));
+
+      if (node.value) {
+        selectedText =
+            node.value.substring(node.textSelStart || 0, node.textSelEnd || 0);
+      }
+    }
+    options.annotation.push(token);
+    if (selectedText && !this.output_.formatAsBraille &&
+        node.state[StateType.FOCUSED]) {
+      this.output_.append_(buff, selectedText, options);
+      this.output_.append_(buff, Msgs.getMsg('selected'));
+      formatLog.writeTokenWithValue(token, selectedText);
+      formatLog.write('selected\n');
+    } else {
+      this.output_.append_(buff, text, options);
+      formatLog.writeTokenWithValue(token, text);
     }
   }
 }

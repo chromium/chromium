@@ -5,11 +5,21 @@
 /**
  * @fileoverview Interface for the central output class for ChromeVox.
  */
+import {Spannable} from '../../common/spannable.js';
+
 import {OutputFormatTree} from './output_format_tree.js';
 import {OutputFormattingData} from './output_types.js';
 
 /** @interface */
 export class OutputInterface {
+  /**
+   * Appends output to the |buff|.
+   * @param {!Array<Spannable>} buff
+   * @param {string|!Spannable} value
+   * @param {{annotation: Array<*>, isUnique: (boolean|undefined)}=} opt_options
+   */
+  append_(buff, value, opt_options) {}
+
   /**
    * @param {!OutputFormattingData} data
    * @param {string} token
@@ -186,13 +196,6 @@ export class OutputInterface {
   formatUrlFilename_(data, token, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatValue_(data, token, options) {}
-
-  /**
    * @param {string} token
    * @return {boolean}
    */
@@ -200,4 +203,7 @@ export class OutputInterface {
 
   /** @return {boolean} */
   get useAuralStyle() {}
+
+  /** @return {boolean} */
+  get formatAsBraille() {}
 }

@@ -684,40 +684,6 @@ export class Output {
   }
 
   /** @override */
-  formatValue_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    const text = node.value || '';
-    if (!node.state[StateType.EDITABLE] && node.name === text) {
-      return;
-    }
-
-    let selectedText = '';
-    if (node.textSelStart !== undefined) {
-      options.annotation.push(new outputTypes.OutputSelectionSpan(
-          node.textSelStart || 0, node.textSelEnd || 0));
-
-      if (node.value) {
-        selectedText =
-            node.value.substring(node.textSelStart || 0, node.textSelEnd || 0);
-      }
-    }
-    options.annotation.push(token);
-    if (selectedText && !this.formatOptions_.braille &&
-        node.state[StateType.FOCUSED]) {
-      this.append_(buff, selectedText, options);
-      this.append_(buff, Msgs.getMsg('selected'));
-      formatLog.writeTokenWithValue(token, selectedText);
-      formatLog.write('selected\n');
-    } else {
-      this.append_(buff, text, options);
-      formatLog.writeTokenWithValue(token, text);
-    }
-  }
-
-  /** @override */
   formatName_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
@@ -2166,12 +2132,7 @@ export class Output {
     return ret;
   }
 
-  /**
-   * Appends output to the |buff|.
-   * @param {!Array<Spannable>} buff
-   * @param {string|!Spannable} value
-   * @param {{annotation: Array<*>, isUnique: (boolean|undefined)}=} opt_options
-   */
+  /** @override */
   append_(buff, value, opt_options) {
     opt_options = opt_options || {isUnique: false, annotation: []};
 
@@ -2374,6 +2335,11 @@ export class Output {
   /** @override */
   get useAuralStyle() {
     return this.formatOptions_.auralStyle;
+  }
+
+  /** @override */
+  get formatAsBraille() {
+    return this.formatOptions_.braille;
   }
 }
 
