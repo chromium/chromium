@@ -20,6 +20,7 @@ import("//media/media_options.gni")
 import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
@@ -35,6 +36,7 @@ source_set("browser") {
   # Only the public target should depend on this. All other targets (even
   # internal content ones) should depend on the public one.
   visibility = [
+    ":content_sms_parser_fuzzer",
     ":for_content_tests",  # See top of //content/BUILD.gn for why.
     "//content/app:*",
     "//content/public/browser:browser_sources",
@@ -3266,4 +3268,13 @@ if (is_android) {
   java_cpp_enum("client_data_json_generated_enum") {
     sources = [ "webauth/client_data_json.h" ]
   }
+}
+
+fuzzer_test("content_sms_parser_fuzzer") {
+  sources = [ "sms/sms_parser_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//content/public/browser:browser_sources",
+  ]
 }
