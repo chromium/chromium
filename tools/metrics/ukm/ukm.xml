@@ -6724,6 +6724,37 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DIPS.TriggeringAction">
+  <owner>kaklilu@google.com</owner>
+  <summary>
+    Recorded on a repeated interval when DIPS may want to clear site storage to
+    improve user privacy. These metrics will be used to determine which
+    triggering action is most appropriate for our use case.
+
+    When these cases occur, the DIPS instance recording these metrics will keep
+    track of which triggering actions have already happened to prevent logging
+    duplicate metrics.
+  </summary>
+  <metric name="DidBounce" enum="Boolean">
+    <summary>
+      True for sites that redirected the user since the last time the DIPS
+      instance attempted to clear site storage.
+    </summary>
+  </metric>
+  <metric name="DidStatefulBounce" enum="Boolean">
+    <summary>
+      True for sites that redirected the user while accessing storage since the
+      last time the DIPS instance attempted to clear site storage.
+    </summary>
+  </metric>
+  <metric name="UsedStorage" enum="Boolean">
+    <summary>
+      True for sites wrote to the browser's storage since the last time the DIPS
+      instance attempted to clear site storage.
+    </summary>
+  </metric>
+</event>
+
 <event name="Document.OutliveTimeAfterShutdown">
   <obsolete>
     Removed January 2021
