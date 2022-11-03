@@ -58,6 +58,7 @@ class TestSearchController : public SearchController {
   std::unique_ptr<SearchProvider> provider_;
 
   Results last_results_;
+  ResultsChangedCallback results_changed_callback_;
 };
 
 }  // namespace app_list

@@ -63,6 +63,8 @@ size_t TestSearchController::ReplaceProvidersForResultTypeForTest(
 void TestSearchController::SetResults(const SearchProvider* provider,
                                       Results results) {
   last_results_ = std::move(results);
+  if (results_changed_callback_)
+    results_changed_callback_.Run(provider->ResultType());
 }
 
 void TestSearchController::Publish() {}
@@ -92,7 +94,9 @@ base::Time TestSearchController::session_start() {
 }
 
 void TestSearchController::set_results_changed_callback_for_test(
-    ResultsChangedCallback callback) {}
+    ResultsChangedCallback callback) {
+  results_changed_callback_ = callback;
+}
 
 void TestSearchController::disable_ranking_for_test() {}
 

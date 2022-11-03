@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/app_list/search/files/zero_state_drive_provider.h"
 
 #include "base/files/file_path.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -71,10 +73,12 @@ class ZeroStateDriveProviderTest : public testing::Test {
         FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
     session_manager_ = std::make_unique<session_manager::SessionManager>();
 
-    provider_ = std::make_unique<ZeroStateDriveProvider>(
-        profile_, nullptr,
+    auto provider = std::make_unique<ZeroStateDriveProvider>(
+        profile_, &search_controller_,
         drive::DriveIntegrationServiceFactory::GetForProfile(profile_),
         session_manager_.get());
+    provider_ = provider.get();
+    search_controller_.AddProvider(0, std::move(provider));
   }
 
   void FastForwardByMinutes(int minutes) {
@@ -91,7 +95,8 @@ class ZeroStateDriveProviderTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   TestingProfile* profile_ = nullptr;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
-  std::unique_ptr<ZeroStateDriveProvider> provider_;
+  TestSearchController search_controller_;
+  ZeroStateDriveProvider* provider_ = nullptr;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
   TestFileSuggestKeyedService* file_suggest_service_ = nullptr;
@@ -160,6 +165,22 @@ TEST_F(ZeroStateDriveProviderTest, UpdateOnWake) {
   idle_state.set_off(false);
   provider_->ScreenIdleStateChanged(idle_state);
   EXPECT_EQ(update_count(), 2);
+}
+
+TEST_F(ZeroStateDriveProviderTest, RespondOnDriveFailure) {
+  size_t results_update_count = 0u;
+  search_controller_.set_results_changed_callback_for_test(
+      base::BindLambdaForTesting([&](ash::AppListSearchResultType result_type) {
+        ASSERT_EQ(ash::AppListSearchResultType::kZeroStateDrive, result_type);
+        ++results_update_count;
+      }));
+
+  search_controller_.StartZeroState(base::DoNothing(), base::TimeDelta());
+
+  // The drive file suggest service is expected to fail because it's not fully
+  // initialized - the provider is expected to return empty set of results.
+  EXPECT_EQ(1u, results_update_count);
+  EXPECT_TRUE(search_controller_.last_results().empty());
 }
 
 }  // namespace app_list
