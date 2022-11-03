@@ -120,6 +120,7 @@
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/switches.h"
@@ -850,14 +851,25 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
   raw_ptr<content::WebContents, DanglingUntriaged> embedder_web_contents_;
 };
 
-class WebViewTest : public WebViewTestBase,
+class WebViewGuestSiteIsolationTest : public WebViewTestBase {
+ public:
+  explicit WebViewGuestSiteIsolationTest(
+      bool site_isolation_for_guests_enabled) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kSiteIsolationForGuests, site_isolation_for_guests_enabled);
+  }
+  ~WebViewGuestSiteIsolationTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class WebViewTest : public WebViewGuestSiteIsolationTest,
                     public testing::WithParamInterface<bool> {
  public:
-  WebViewTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kSiteIsolationForGuests,
-                                              /*enabled=*/GetParam());
-  }
-  ~WebViewTest() override = default;
+  WebViewTest()
+      : WebViewGuestSiteIsolationTest(
+            /*site_isolation_for_guests_enabled=*/GetParam()) {}
 
   // Provides meaningful param names instead of /0 and /1.
   static std::string DescribeParams(
@@ -5552,11 +5564,25 @@ IN_PROC_BROWSER_TEST_P(WebViewPPAPITest, Shim_TestPluginLoadPermission) {
 }
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
-// Helper class to set up a fake Chrome Web Store URL which can be loaded in
-// tests.
-class WebstoreWebViewTest : public WebViewTest {
+// Domain which the Webstore hosted app is associated with in production.
+constexpr char kWebstoreURL[] = "https://chrome.google.com/";
+// Domain which the new Webstore is associated with in production.
+constexpr char kNewWebstoreURL[] = "https://webstore.google.com/";
+// Domain for testing an overridden Webstore URL.
+constexpr char kWebstoreURLOverride[] = "https://webstore.override.test.com/";
+
+// Helper class for setting up and testing webview behavior with the Chrome
+// Webstore. The tuple param contains the Webstore URL under test and a boolen
+// that is passed to the base class to set if site isolation is enabled for
+// guests.
+class WebstoreWebViewTest
+    : public WebViewGuestSiteIsolationTest,
+      public testing::WithParamInterface<std::tuple<GURL, bool>> {
  public:
-  WebstoreWebViewTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  WebstoreWebViewTest()
+      : WebViewGuestSiteIsolationTest(::testing::get<1>(GetParam())),
+        https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
+        webstore_url_(std::move(::testing::get<0>(GetParam()))) {}
 
   WebstoreWebViewTest(const WebstoreWebViewTest&) = delete;
   WebstoreWebViewTest& operator=(const WebstoreWebViewTest&) = delete;
@@ -5564,44 +5590,71 @@ class WebstoreWebViewTest : public WebViewTest {
   ~WebstoreWebViewTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    // Serve files from the extensions test directory as it has a
+    // /webstore/ directory, which the Webstore hosted app expects for the URL
+    // it is associated with.
+    https_server_.ServeFilesFromSourceDirectory("chrome/test/data/extensions");
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
-    // Override the webstore URL.
     command_line->AppendSwitchASCII(
-        ::switches::kAppsGalleryURL,
-        https_server()->GetURL("chrome.foo.com", "/frame_tree").spec());
+        network::switches::kHostResolverRules,
+        "MAP * " + https_server_.host_port_pair().ToString());
+    // Only override the webstore URL if this test case is testing the override.
+    if (webstore_url().spec() == kWebstoreURLOverride) {
+      command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+                                      kWebstoreURLOverride);
+    }
     mock_cert_verifier_.SetUpCommandLine(command_line);
-    WebViewTest::SetUpCommandLine(command_line);
+    WebViewGuestSiteIsolationTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
     https_server_.StartAcceptingConnections();
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-    WebViewTest::SetUpOnMainThread();
+    WebViewGuestSiteIsolationTest::SetUpOnMainThread();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    WebViewTest::SetUpInProcessBrowserTestFixture();
+    WebViewGuestSiteIsolationTest::SetUpInProcessBrowserTestFixture();
     mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
-    WebViewTest::TearDownInProcessBrowserTestFixture();
+    WebViewGuestSiteIsolationTest::TearDownInProcessBrowserTestFixture();
     mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+  GURL webstore_url() { return webstore_url_; }
+
+  // Provides meaningful param names.
+  static std::string DescribeParams(
+      const testing::TestParamInfo<std::tuple<GURL, bool>>& info) {
+    std::string guest_isolation = ::testing::get<1>(info.param)
+                                      ? "SiteIsolationForGuestsEnabled"
+                                      : "SiteIsolationForGuestsDisabled";
+    GURL webstore_url(std::move(::testing::get<0>(info.param)));
+    if (webstore_url.spec() == kWebstoreURL)
+      return "OldWebstore_" + guest_isolation;
+    if (webstore_url.spec() == kWebstoreURLOverride)
+      return "WebstoreOverride_" + guest_isolation;
+    return "NewWebstore_" + guest_isolation;
+  }
 
  private:
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier mock_cert_verifier_;
+  GURL webstore_url_;
 };
 
-INSTANTIATE_TEST_SUITE_P(WebViewTests,
-                         WebstoreWebViewTest,
-                         testing::Bool(),
-                         WebViewTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    WebViewTests,
+    WebstoreWebViewTest,
+    testing::Combine(testing::Values(GURL(kWebstoreURL),
+                                     GURL(kWebstoreURLOverride),
+                                     GURL(kNewWebstoreURL)),
+                     testing::Bool()),
+    WebstoreWebViewTest::DescribeParams);
 
 // Ensure that an attempt to load Chrome Web Store in a <webview> is blocked
 // and does not result in a renderer kill.  See https://crbug.com/1197674.
@@ -5611,16 +5664,16 @@ IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
   ASSERT_TRUE(guest);
 
   // Navigate <webview> to a Chrome Web Store URL.  This should result in an
-  // error and shouldn't lead to a renderer kill.
-  const GURL webstore_url =
-      https_server()->GetURL("chrome.foo.com", "/frame_tree/simple.htm");
+  // error and shouldn't lead to a renderer kill. Note: the webstore hosted app
+  // requires the path to start with /webstore/, so for simplicity we serve a
+  // page from this path for all the different webstore URLs under test.
+  const GURL url = webstore_url().Resolve("/webstore/mock_store.html");
 
   content::TestNavigationObserver error_observer(
-      webstore_url, content::MessageLoopRunner::QuitMode::IMMEDIATE,
+      url, content::MessageLoopRunner::QuitMode::IMMEDIATE,
       /*ignore_uncommitted_navigations=*/false);
   error_observer.WatchExistingWebContents();
-  EXPECT_TRUE(
-      ExecuteScript(guest, "location.href = '" + webstore_url.spec() + "';"));
+  EXPECT_TRUE(ExecuteScript(guest, "location.href = '" + url.spec() + "';"));
   error_observer.Wait();
   EXPECT_FALSE(error_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());

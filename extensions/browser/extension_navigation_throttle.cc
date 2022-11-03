@@ -27,6 +27,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
@@ -173,6 +174,12 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
       const Extension* hosted_app =
           registry->enabled_extensions().GetHostedAppByURL(url);
       if (hosted_app && hosted_app->id() == kWebStoreAppId)
+        return content::NavigationThrottle::BLOCK_REQUEST;
+      // Also apply the same blocking if the URL maps to the new webstore
+      // domain. Note: We can't use the extension_urls::IsWebstoreDomain check
+      // here, as the webstore hosted app is associated with a specific path and
+      // we don't want to block navigations to other paths on that domain.
+      if (url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host()))
         return content::NavigationThrottle::BLOCK_REQUEST;
     }
 
