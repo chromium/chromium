@@ -65,6 +65,7 @@ public class PowerBookmarkUtilsTest {
         MockitoAnnotations.initMocks(this);
 
         when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
+        when(mMockBookmarkModel.isDestroyed()).thenReturn(false);
     }
 
     // Ensure a product that is not tracked locally is unsubscribed on the backend.

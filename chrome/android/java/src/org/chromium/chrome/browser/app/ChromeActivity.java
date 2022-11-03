@@ -294,7 +294,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     protected TabModelSelectorProfileSupplier mTabModelProfileSupplier =
             new TabModelSelectorProfileSupplier(mTabModelSelectorSupplier);
-    protected final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
+    protected ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
             new ObservableSupplierImpl<>();
     protected ObservableSupplierImpl<TabBookmarker> mTabBookmarkerSupplier =
             new ObservableSupplierImpl<>();
@@ -478,8 +478,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // There's no corresponding call to removeObserver() for this addObserver() because
         // mTabModelProfileSupplier has the same lifecycle as this activity.
         mTabModelProfileSupplier.addObserver((profile) -> {
-            mBookmarkModelSupplier.set(
-                    profile == null ? null : BookmarkModel.getForProfile(profile));
+            BookmarkModel oldBridge = mBookmarkModelSupplier.get();
+            if (oldBridge != null) oldBridge.destroy();
+            mBookmarkModelSupplier.set(profile == null ? null : new BookmarkModel(profile));
         });
 
         super.performPreInflationStartup();
@@ -1595,7 +1596,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         destroyTabModels();
 
-        mBookmarkModelSupplier.set(null);
+        if (mBookmarkModelSupplier != null) {
+            BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
+            if (bookmarkModel != null) bookmarkModel.destroy();
+            mBookmarkModelSupplier = null;
+        }
 
         if (mShareDelegateSupplier != null) {
             mShareDelegateSupplier.destroy();
@@ -2510,9 +2515,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.delete_from_reading_list_menu_id) {
-            assert mBookmarkModelSupplier.hasValue();
             ReadingListUtils.deleteFromReadingList(
-                    mBookmarkModelSupplier.get(), mSnackbarManager, /*activity=*/this, currentTab);
+                    new BookmarkModel(), mSnackbarManager, /*activity=*/this, currentTab);
             RecordUserAction.record("MobileMenuDeleteFromReadingList");
             return true;
         }

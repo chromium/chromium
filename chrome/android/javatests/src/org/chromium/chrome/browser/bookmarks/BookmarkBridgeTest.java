@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
@@ -22,6 +23,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.browser.Features;
@@ -48,6 +50,7 @@ public class BookmarkBridgeTest {
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private BookmarkBridge mBookmarkBridge;
+    private BookmarkBridge mDestroyedBookmarkBridge;
     private BookmarkId mMobileNode;
     private BookmarkId mOtherNode;
     private BookmarkId mDesktopNode;
@@ -56,8 +59,12 @@ public class BookmarkBridgeTest {
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
-            mBookmarkBridge = BookmarkBridge.getForProfile(profile);
+            mBookmarkBridge = new BookmarkBridge(profile);
             mBookmarkBridge.loadFakePartnerBookmarkShimForTesting();
+
+            mDestroyedBookmarkBridge = new BookmarkBridge(profile);
+            mDestroyedBookmarkBridge.loadFakePartnerBookmarkShimForTesting();
+            mDestroyedBookmarkBridge.destroy();
         });
 
         BookmarkTestUtil.waitForBookmarkModelLoaded();
@@ -338,6 +345,8 @@ public class BookmarkBridgeTest {
     @Feature({"Bookmark"})
     public void testGetUserBookmarkIdForTab() {
         Assert.assertNull(mBookmarkBridge.getUserBookmarkIdForTab(null));
+        Assert.assertNull(
+                mDestroyedBookmarkBridge.getUserBookmarkIdForTab(Mockito.mock(Tab.class)));
     }
 
     @Test

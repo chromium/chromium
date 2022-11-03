@@ -627,12 +627,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         assert !mWipeUserDataInProgress;
         mWipeUserDataInProgress = true;
 
-        final BookmarkModel model =
-                BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+        final BookmarkModel model = new BookmarkModel();
         model.finishLoadingBookmarkModel(new Runnable() {
             @Override
             public void run() {
                 model.removeAllUserBookmarks();
+                model.destroy();
                 BrowsingDataBridge.getInstance().clearBrowsingData(
                         new BrowsingDataBridge.OnClearBrowsingDataListener() {
                             @Override

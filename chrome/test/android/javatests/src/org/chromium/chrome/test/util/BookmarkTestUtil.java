@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
@@ -34,10 +33,12 @@ public class BookmarkTestUtil {
      * {@link BookmarkModel#isBookmarkModelLoaded()} is true.
      */
     public static void waitForBookmarkModelLoaded() {
-        final BookmarkModel bookmarkModel = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile()); });
+        final BookmarkModel bookmarkModel =
+                TestThreadUtils.runOnUiThreadBlockingNoException(BookmarkModel::new);
 
         CriteriaHelper.pollUiThread(bookmarkModel::isBookmarkModelLoaded);
+
+        TestThreadUtils.runOnUiThreadBlocking(bookmarkModel::destroy);
     }
 
     /**  Do not read partner bookmarks in setUp(), so that the lazy reading is covered. */
