@@ -430,9 +430,9 @@ x11::RandR::Mode DesktopResizerX11::UpdateMode(x11::RandR::Output output,
   x11::RandR::ModeInfo mode;
   mode.width = width;
   mode.height = height;
-  mode.dot_clock = 60;
-  mode.htotal = 1;
-  mode.vtotal = 1;
+  mode.dot_clock = 60 * 1e6;
+  mode.htotal = 1000;
+  mode.vtotal = 1000;
   mode.name_len = mode_name.size();
   if (auto reply =
           randr_->CreateMode({root_, mode, mode_name.c_str()}).Sync()) {
