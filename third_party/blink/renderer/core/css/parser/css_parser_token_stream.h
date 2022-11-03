@@ -94,12 +94,10 @@ class CORE_EXPORT CSSParserTokenStream {
   // the number of tokens in a declaration.
   // TODO(crbug.com/661854): Can we streamify at rule parsing so that this is
   // only needed for declarations which are easier to think about?
-  static constexpr size_t InitialBufferSize() { return 128; }
+  static constexpr int kInitialBufferSize = 128;
 
   explicit CSSParserTokenStream(CSSTokenizerWrapper tokenizer)
-      : tokenizer_(std::move(tokenizer)), next_(kEOFToken) {
-    buffer_.ReserveInitialCapacity(InitialBufferSize());
-  }
+      : tokenizer_(std::move(tokenizer)), next_(kEOFToken) {}
 
   explicit CSSParserTokenStream(CSSTokenizer& tokenizer)
       : CSSParserTokenStream(CSSTokenizerWrapper(tokenizer)) {}
@@ -234,7 +232,7 @@ class CORE_EXPORT CSSParserTokenStream {
 
   void UncheckedSkipToEndOfBlock();
 
-  Vector<CSSParserToken, 32> buffer_;
+  Vector<CSSParserToken, kInitialBufferSize> buffer_;
   CSSTokenizerWrapper tokenizer_;
   CSSParserToken next_;
   wtf_size_t offset_ = 0;

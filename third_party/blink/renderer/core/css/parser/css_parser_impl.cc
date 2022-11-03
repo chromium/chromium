@@ -1796,6 +1796,9 @@ CSSTokenizedValue CSSParserImpl::ConsumeValue(CSSParserTokenStream& stream) {
 
 bool CSSParserImpl::RemoveImportantAnnotationIfPresent(
     CSSTokenizedValue& tokenized_value) {
+  if (tokenized_value.range.size() == 0) {
+    return false;
+  }
   const CSSParserToken* first = tokenized_value.range.begin();
   const CSSParserToken* last = tokenized_value.range.end() - 1;
   while (last >= first && last->GetType() == kWhitespaceToken)
