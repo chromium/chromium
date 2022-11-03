@@ -271,8 +271,7 @@ bool CheckWasmEval(const network::mojom::blink::ContentSecurityPolicy& csp,
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list;
   return !directive || directive->allow_eval ||
          (SupportsWasmEval(csp, policy) && directive->allow_wasm_eval) ||
-         (RuntimeEnabledFeatures::WebAssemblyCSPEnabled() &&
-          directive->allow_wasm_unsafe_eval);
+         directive->allow_wasm_unsafe_eval;
 }
 
 bool CheckHash(const network::mojom::blink::CSPSourceList* directive,

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL default-src-wasm-unsafe-eval-allows-wasm promise_test: Unhandled rejection with value: object "CompileError: WebAssembly.instantiate(): Refused to compile or instantiate WebAssembly module because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "default-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'""
-Harness: the test ran to completion.
-

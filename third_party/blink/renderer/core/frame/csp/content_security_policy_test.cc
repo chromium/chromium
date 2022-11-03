@@ -1235,49 +1235,17 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
   EXPECT_FALSE(csp->HasPolicyFromSource(ContentSecurityPolicySource::kHTTP));
 }
 
-// Tests that WasmCSP runtime feature properly governs support for WasmEval.
-TEST_F(ContentSecurityPolicyTest, WasmEvalCSPEnable) {
-  auto test_wasm_eval_enabled = [&](bool enabled) {
-    ScopedWebAssemblyCSPForTest enable_wasp(enabled);
-
-    csp = MakeGarbageCollected<ContentSecurityPolicy>();
-    csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
-
-    csp->AddPolicies(ParseContentSecurityPolicies(
-        "script-src 'wasm-unsafe-eval'", ContentSecurityPolicyType::kEnforce,
-        ContentSecurityPolicySource::kHTTP, *secure_origin));
-
-    EXPECT_EQ(enabled, csp->AllowWasmCodeGeneration(
-                           ReportingDisposition::kReport,
-                           ContentSecurityPolicy::kWillNotThrowException,
-                           g_empty_string));
-  };
-
-  test_wasm_eval_enabled(true);
-  test_wasm_eval_enabled(false);
-}
-
-// Tests that WasmCSP runtime feature properly governs support for
-// WasmUnsafeEval.
 TEST_F(ContentSecurityPolicyTest, WasmUnsafeEvalCSPEnable) {
-  auto test_wasm_unsafe_eval_enabled = [&](bool enabled) {
-    ScopedWebAssemblyCSPForTest enable_wasp(enabled);
+  csp = MakeGarbageCollected<ContentSecurityPolicy>();
+  csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
 
-    csp = MakeGarbageCollected<ContentSecurityPolicy>();
-    csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "script-src 'wasm-unsafe-eval'", ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
 
-    csp->AddPolicies(ParseContentSecurityPolicies(
-        "script-src 'wasm-unsafe-eval'", ContentSecurityPolicyType::kEnforce,
-        ContentSecurityPolicySource::kHTTP, *secure_origin));
-
-    EXPECT_EQ(enabled, csp->AllowWasmCodeGeneration(
-                           ReportingDisposition::kReport,
-                           ContentSecurityPolicy::kWillNotThrowException,
-                           g_empty_string));
-  };
-
-  test_wasm_unsafe_eval_enabled(true);
-  test_wasm_unsafe_eval_enabled(false);
+  EXPECT_TRUE(csp->AllowWasmCodeGeneration(
+      ReportingDisposition::kReport,
+      ContentSecurityPolicy::kWillNotThrowException, g_empty_string));
 }
 
 TEST_F(ContentSecurityPolicyTest, OpaqueOriginBeforeBind) {

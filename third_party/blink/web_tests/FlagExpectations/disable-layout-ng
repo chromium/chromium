@@ -59,7 +59,6 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/cache
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/floats-aspect-ratio-001.html [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
 crbug.com/626703 external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
-crbug.com/626703 virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-writing-modes/abs-pos-border-offset-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/abs-pos-border-offset-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/abs-pos-vlr-border-001.html [ Failure ]

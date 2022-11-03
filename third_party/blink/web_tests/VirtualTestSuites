@@ -460,14 +460,6 @@
     "args": ["--js-flags=--allow-natives-syntax"]
   },
   {
-    "prefix": "wasm-csp",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "wasm",
-      "external/wpt/content-security-policy/wasm-unsafe-eval"],
-    "args": ["--disable-blink-features=WebAssemblyCSP"]
-  },
-  {
     "prefix": "split-http-cache-not-site-per-process",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/devtools/isolated-code-cache"],
