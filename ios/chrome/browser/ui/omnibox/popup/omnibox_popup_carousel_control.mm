@@ -193,6 +193,35 @@ CAGradientLayer* CarouselBackgroundGradientLayer() {
                                      fromView:self];
 }
 
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+    willDisplayMenuForConfiguration:(UIContextMenuConfiguration*)configuration
+                           animator:
+                               (id<UIContextMenuInteractionAnimating>)animator {
+  if (self.isSelected) {
+    __weak CAGradientLayer* weakHighlightLayer = self.gradientLayer;
+    [animator addAnimations:^{
+      [weakHighlightLayer removeFromSuperlayer];
+    }];
+  }
+  [super contextMenuInteraction:interaction
+      willDisplayMenuForConfiguration:configuration
+                             animator:animator];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  if (self.isSelected) {
+    __weak __typeof(self) weakSelf = self;
+    [animator addAnimations:^{
+      [weakSelf.backgroundView.layer addSublayer:weakSelf.gradientLayer];
+    }];
+  }
+  [super contextMenuInteraction:interaction
+        willEndForConfiguration:configuration
+                       animator:animator];
+}
+
 - (UITargetedPreview*)contextMenuInteraction:
                           (UIContextMenuInteraction*)interaction
                                configuration:
