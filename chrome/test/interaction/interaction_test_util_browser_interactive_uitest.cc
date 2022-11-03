@@ -46,12 +46,11 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
 }
 
 // This test checks that we can attach to a WebUI that is not embedded in a tab.
-// TODO(crbug.com/1354017): Re-enable this test
+// TODO(crbug.com/1354017): May be flaky. Reopen bug if necessary.
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
-                       DISABLED_CompareScreenshot_SecondaryWebUI) {
+                       CompareScreenshot_SecondaryWebUI) {
   // This will capture the tab search page when it is displayed.
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabSearchPageElementId);
-  std::unique_ptr<WebContentsInteractionTestUtil> tab_search_page;
 
   // Need to wait for the tab items to actually show up in the tab list (this
   // can be asynchronous).
@@ -70,31 +69,23 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
       PressButton(kTabSearchButtonElementId),
       // Wait for the tab search bubble to appear and instrument its WebUI.
       AfterShow(kTabSearchBubbleElementId,
-                base::BindLambdaForTesting([&](ui::InteractionSequence*,
-                                               ui::TrackedElement* element) {
+                base::BindLambdaForTesting([&](ui::TrackedElement* element) {
                   auto* const bubble_view =
-                      views::AsViewClass<WebUIBubbleDialogView>(
-                          element->AsA<views::TrackedElementViews>()->view());
-                  tab_search_page =
-                      WebContentsInteractionTestUtil::ForNonTabWebView(
-                          bubble_view->web_view(), kTabSearchPageElementId);
+                      AsView<WebUIBubbleDialogView>(element);
+                  InstrumentNonTabWebView(bubble_view->web_view(),
+                                          kTabSearchPageElementId);
                 })),
       // Wait for the tab search page to appear, and then ensure it is
       // rendered at an appropriate size.
       AfterShow(kTabSearchPageElementId,
-                base::BindLambdaForTesting(
-                    [&](ui::InteractionSequence*, ui::TrackedElement* element) {
-                      tab_search_page->SendEventOnWebViewMinimumSize(
-                          kMinimumBubbleSize, kTabDataDisplayedEvent,
-                          kTabSearchItemQuery, kMinimumEntrySize);
-                    })),
+                base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                  AsInstrumentedWebContents(el)->SendEventOnWebViewMinimumSize(
+                      kMinimumBubbleSize, kTabDataDisplayedEvent,
+                      kTabSearchItemQuery, kMinimumEntrySize);
+                })),
       // With both the bubble and data at nonzero size, it should be safe to
       // take a screenshot.
-      AfterEvent(
-          kTabSearchPageElementId, kTabDataDisplayedEvent,
-          base::BindLambdaForTesting([&](ui::InteractionSequence* sequence,
-                                         ui::TrackedElement* element) {
-            EXPECT_TRUE(InteractionTestUtilBrowser::CompareScreenshot(
-                element, std::string(), "3664291"));
-          })));
+      AfterEvent(kTabSearchPageElementId, kTabDataDisplayedEvent,
+                 base::DoNothing()),
+      Screenshot(kTabSearchPageElementId, std::string(), "3664291"));
 }
