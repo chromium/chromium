@@ -38,7 +38,7 @@
 
     // Commit editing.
     treeElement.valueElement.textContent = 'green';
-    treeElement.valueElement.firstChild.select();
+    TestRunner.selectTextInTextNode(treeElement.valueElement.firstChild);
     treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     uiSourceCode.addEventListener(Workspace.UISourceCode.Events.WorkingCopyCommitted, stylesEdited, this);
   }

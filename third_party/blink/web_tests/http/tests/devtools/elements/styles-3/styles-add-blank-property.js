@@ -28,7 +28,7 @@
     treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
 
     treeElement.valueElement.textContent = '1px';
-    treeElement.valueElement.firstChild.select();
+    TestRunner.selectTextInTextNode(treeElement.valueElement.firstChild);
     treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('ArrowUp'));
     ElementsTestRunner.waitForStyleApplied(incrementProperty);
   }

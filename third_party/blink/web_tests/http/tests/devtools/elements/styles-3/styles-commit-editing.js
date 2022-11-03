@@ -38,7 +38,7 @@
     function testCommitEditing(next) {
       // Commit editing.
       treeElement.valueElement.textContent = 'green';
-      treeElement.valueElement.firstChild.select();
+      TestRunner.selectTextInTextNode(treeElement.valueElement.firstChild);
       ElementsTestRunner.waitForStyleCommitted(next);
       treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     },
