@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_DOM_HOOKS_DELEGATE_H_
-#define EXTENSIONS_RENDERER_DOM_HOOKS_DELEGATE_H_
+#ifndef EXTENSIONS_RENDERER_API_DOM_HOOKS_DELEGATE_H_
+#define EXTENSIONS_RENDERER_API_DOM_HOOKS_DELEGATE_H_
 
 #include <string>
 
@@ -37,4 +37,4 @@ class DOMHooksDelegate : public APIBindingHooksDelegate {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_DOM_HOOKS_DELEGATE_H_
+#endif  // EXTENSIONS_RENDERER_API_DOM_HOOKS_DELEGATE_H_

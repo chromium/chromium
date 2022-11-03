@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/runtime_hooks_delegate.h"
+#include "extensions/renderer/api/runtime_hooks_delegate.h"
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -402,7 +402,7 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
   if (!arguments[1]->IsNull()) {
     options = messaging_util::ParseMessageOptions(
         script_context->v8_context(), arguments[1].As<v8::Object>(),
-            messaging_util::PARSE_CHANNEL_NAME);
+        messaging_util::PARSE_CHANNEL_NAME);
   }
 
   gin::Handle<GinPort> port = messaging_service_->Connect(

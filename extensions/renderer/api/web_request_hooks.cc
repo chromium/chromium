@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/web_request_hooks.h"
+#include "extensions/renderer/api/web_request_hooks.h"
 
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -25,10 +25,9 @@ namespace extensions {
 WebRequestHooks::WebRequestHooks() {}
 WebRequestHooks::~WebRequestHooks() = default;
 
-bool WebRequestHooks::CreateCustomEvent(
-    v8::Local<v8::Context> context,
-    const std::string& event_name,
-    v8::Local<v8::Value>* event_out) {
+bool WebRequestHooks::CreateCustomEvent(v8::Local<v8::Context> context,
+                                        const std::string& event_name,
+                                        v8::Local<v8::Value>* event_out) {
   // Don't create a custom event for the "onActionIgnored" event.
   if (event_name == api::web_request::OnActionIgnored::kEventName)
     return false;

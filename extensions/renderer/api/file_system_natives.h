@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_FILE_SYSTEM_NATIVES_H_
-#define EXTENSIONS_RENDERER_FILE_SYSTEM_NATIVES_H_
+#ifndef EXTENSIONS_RENDERER_API_FILE_SYSTEM_NATIVES_H_
+#define EXTENSIONS_RENDERER_API_FILE_SYSTEM_NATIVES_H_
 
 #include "base/compiler_specific.h"
 #include "extensions/renderer/object_backed_native_handler.h"
@@ -32,4 +32,4 @@ class FileSystemNatives : public ObjectBackedNativeHandler {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_FILE_SYSTEM_NATIVES_H_
+#endif  // EXTENSIONS_RENDERER_API_FILE_SYSTEM_NATIVES_H_

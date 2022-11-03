@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/feedback_private_hooks_delegate.h"
+#include "extensions/renderer/api/feedback_private_hooks_delegate.h"
 
 #include "base/bind.h"
 #include "base/check.h"

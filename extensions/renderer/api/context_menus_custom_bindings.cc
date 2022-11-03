@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/context_menus_custom_bindings.h"
+#include "extensions/renderer/api/context_menus_custom_bindings.h"
 
 #include <stdint.h>
 
@@ -34,4 +34,4 @@ void ContextMenusCustomBindings::AddRoutes() {
                        base::BindRepeating(&GetNextContextMenuId));
 }
 
-}  // extensions
+}  // namespace extensions

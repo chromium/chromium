@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_CONTEXT_MENUS_CUSTOM_BINDINGS_H_
-#define EXTENSIONS_RENDERER_CONTEXT_MENUS_CUSTOM_BINDINGS_H_
+#ifndef EXTENSIONS_RENDERER_API_CONTEXT_MENUS_CUSTOM_BINDINGS_H_
+#define EXTENSIONS_RENDERER_API_CONTEXT_MENUS_CUSTOM_BINDINGS_H_
 
 #include "extensions/renderer/object_backed_native_handler.h"
 
@@ -19,6 +19,6 @@ class ContextMenusCustomBindings : public ObjectBackedNativeHandler {
   void AddRoutes() override;
 };
 
-}  // extensions
+}  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_CONTEXT_MENUS_CUSTOM_BINDINGS_H_
+#endif  // EXTENSIONS_RENDERER_API_CONTEXT_MENUS_CUSTOM_BINDINGS_H_

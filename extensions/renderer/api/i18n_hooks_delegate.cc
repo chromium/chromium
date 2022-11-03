@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/i18n_hooks_delegate.h"
+#include "extensions/renderer/api/i18n_hooks_delegate.h"
 
 #include <vector>
 
