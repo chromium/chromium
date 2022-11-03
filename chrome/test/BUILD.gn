@@ -7365,6 +7365,7 @@ test("unit_tests") {
       "../browser/speech/cros_speech_recognition_service_factory_unittest.cc",
       "../browser/speech/tts_chromeos_unittest.cc",
       "../browser/speech/tts_controller_delegate_impl_unittest.cc",
+      "../browser/support_tool/ash/chrome_user_logs_data_collector_unittest.cc",
       "../browser/support_tool/ash/network_routes_data_collector_unittest.cc",
       "../browser/support_tool/ash/shill_data_collector_unittest.cc",
       "../browser/support_tool/ash/system_logs_data_collector_unittest.cc",

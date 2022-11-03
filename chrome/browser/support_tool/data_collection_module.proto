@@ -29,6 +29,7 @@ enum DataCollectorType {
   POLICIES = 15;
   CHROMEOS_SYSTEM_STATE = 16;
   CHROMEOS_SYSTEM_LOGS = 17;
+  CHROMEOS_CHROME_USER_LOGS = 18;
 }
 
 // Used for storing the information about which data colllectors will be used

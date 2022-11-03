@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
 #include "chrome/browser/ash/system_logs/touch_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
+#include "chrome/browser/support_tool/ash/chrome_user_logs_data_collector.h"
 #include "chrome/browser/support_tool/ash/network_routes_data_collector.h"
 #include "chrome/browser/support_tool/ash/shill_data_collector.h"
 #include "chrome/browser/support_tool/ash/system_logs_data_collector.h"
@@ -150,6 +151,10 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
         // Set `requested_logs` as empty to request all log for now.
         handler->AddDataCollector(std::make_unique<SystemLogsDataCollector>(
             /*requested_logs=*/std::set<base::FilePath>()));
+        break;
+      case support_tool::CHROMEOS_CHROME_USER_LOGS:
+        handler->AddDataCollector(
+            std::make_unique<ChromeUserLogsDataCollector>());
         break;
       case support_tool::CHROMEOS_REVEN:
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
