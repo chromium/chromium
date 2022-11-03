@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {decorate} from '../../../common/js/ui.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

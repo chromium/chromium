@@ -155,8 +155,8 @@ js_library("combobutton") {
     ":files_menu",
     ":menu_item",
     ":multi_menu_button",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr:ui",
   ]
 
   externs_list = [ "//ui/file_manager/file_manager/externs/paper_elements.js" ]
@@ -165,9 +165,9 @@ js_library("combobutton") {
 js_library("command") {
   deps = [
     "//ash/webui/common/resources:keyboard_shortcut_list_js",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr_deprecated",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -175,16 +175,16 @@ js_unittest("command_unittest") {
   deps = [
     ":command",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js/cr:ui",
+    "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
 
 js_library("commandbutton") {
   deps = [
     ":command",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr_deprecated",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -195,10 +195,10 @@ js_library("context_menu_handler") {
     ":menu_item",
     ":position_util",
     "//ash/webui/common/resources:event_tracker",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -207,7 +207,7 @@ js_unittest("context_menu_handler_unittest") {
     ":context_menu_handler",
     ":menu",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js/cr:ui",
+    "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
 
@@ -392,6 +392,7 @@ js_library("file_manager_ui") {
     ":search_box",
     ":splitter",
     "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -402,7 +403,6 @@ js_library("file_manager_ui") {
     "//ui/file_manager/file_manager/foreground/js:launch_param",
     "//ui/file_manager/file_manager/foreground/js:providers_model",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:ui",
   ]
 
   externs_list = [
@@ -540,7 +540,7 @@ js_library("grid") {
     ":list_item",
     ":list_selection_controller",
     ":list_selection_model",
-    "//ui/webui/resources/js/cr:ui",
+    "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
 
@@ -582,8 +582,8 @@ js_library("list") {
     ":list_selection_controller",
     ":list_selection_model",
     "//ui/file_manager/file_manager/common/js:array_data_model",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:cr_deprecated",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -592,7 +592,7 @@ js_unittest("list_unittest") {
     ":list",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:array_data_model",
-    "//ui/webui/resources/js/cr:ui",
+    "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
 
@@ -662,9 +662,9 @@ js_library("list_single_selection_model_unittest") {
 js_library("menu") {
   deps = [
     ":menu_item",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr_deprecated",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -674,7 +674,7 @@ js_unittest("menu_unittest") {
     ":menu",
     ":menu_item",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js/cr:ui",
+    "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
 
@@ -684,8 +684,8 @@ js_library("menu_button") {
     ":menu_item",
     ":position_util",
     "//ash/webui/common/resources:event_tracker",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -694,17 +694,17 @@ js_unittest("menu_button_unittest") {
     ":menu",
     ":menu_button",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js/cr:ui",
+    "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
 
 js_library("menu_item") {
   deps = [
     ":command",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -713,8 +713,8 @@ js_library("multi_menu") {
     ":menu",
     ":menu_item",
     "//ash/webui/common/resources:event_tracker",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -726,9 +726,9 @@ js_library("multi_menu_button") {
     ":multi_menu",
     ":position_util",
     "//ash/webui/common/resources:event_tracker",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -738,9 +738,9 @@ js_unittest("multi_menu_unittest") {
     ":menu",
     ":multi_menu_button",
     "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -768,10 +768,10 @@ js_library("providers_menu") {
   deps = [
     ":files_menu",
     ":menu",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:providers_model",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -792,8 +792,8 @@ js_library("search_box") {
 
 js_library("splitter") {
   deps = [
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:cr_deprecated",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -801,8 +801,8 @@ js_unittest("splitter_unittest") {
   deps = [
     ":splitter",
     "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr:ui",
   ]
 }
 

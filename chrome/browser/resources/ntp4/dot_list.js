@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+import {define as crUiDefine} from './ui.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 
 /**

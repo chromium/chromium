@@ -12,7 +12,7 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {dispatchPropertyChange} from 'chrome://resources/js/cr_deprecated.js';
-import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {decorate} from './ui.js';
 
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';

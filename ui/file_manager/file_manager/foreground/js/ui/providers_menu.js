@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {decorate} from '../../../common/js/ui.js';
 import {Menu} from './menu.js';
 
 import {util} from '../../../common/js/util.js';

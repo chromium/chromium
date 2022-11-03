@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+import {define as crUiDefine} from '../../../common/js/ui.js';
 
 import {ListSelectionModel} from './list_selection_model.js';
 import {ListSelectionController} from './list_selection_controller.js';

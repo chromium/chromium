@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
-import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {decorate} from './ui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$, isRTL} from 'chrome://resources/js/util.js';

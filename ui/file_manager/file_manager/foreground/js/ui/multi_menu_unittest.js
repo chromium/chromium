@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {decorate} from 'chrome://resources/js/cr/ui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {queryDecoratedElement} from '../../../common/js/dom_utils.js';
+import {decorate} from '../../../common/js/ui.js';
 import {util} from '../../../common/js/util.js';
 
 import {Command} from './command.js';

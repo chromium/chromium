@@ -42,6 +42,7 @@ group("js_modules") {
     ":recent_date_bucket",
     ":storage_adapter",
     ":trash",
+    ":ui",
     ":url_constants",
     ":util",
     ":volume_manager_types",
@@ -72,6 +73,7 @@ js_type_check("closure_compile_jsmodules") {
     ":recent_date_bucket",
     ":storage_adapter",
     ":trash",
+    ":ui",
     ":url_constants",
     ":util",
     ":volume_manager_types",
@@ -273,6 +275,9 @@ js_library("recent_date_bucket") {
   ]
 }
 
+js_library("ui") {
+}
+
 js_unittest("recent_date_bucket_unittest") {
   deps = [
     ":mock_chrome",
@@ -326,6 +331,7 @@ js_library("util") {
   deps = [
     ":files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:ui",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:file_manager_private",
@@ -334,7 +340,6 @@ js_library("util") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:ui",
   ]
 
   externs_list = [

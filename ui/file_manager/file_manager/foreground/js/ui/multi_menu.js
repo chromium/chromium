@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
-import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {decorate} from '../../../common/js/ui.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';

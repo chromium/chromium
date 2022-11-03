@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {decorate} from '../../common/js/ui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';

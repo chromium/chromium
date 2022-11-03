@@ -81,7 +81,6 @@ preprocess_if_expr("preprocess_src") {
     "cr.m.js",
     "cr_deprecated.js",
     "cr/event_target.js",
-    "cr/ui.js",
     "load_time_data.m.js",
     "load_time_data_deprecated.js",
     "promise_resolver.js",

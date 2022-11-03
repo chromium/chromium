@@ -156,7 +156,6 @@ generate_definitions_js_files = [
   "js/cr/event_target.js",
   "js/cr.m.js",
   "js/cr_deprecated.js",
-  "js/cr/ui.js",
   "js/load_time_data.m.js",
   "js/util.js",
 ]

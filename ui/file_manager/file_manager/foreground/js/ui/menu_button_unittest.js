@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {decorate} from '../../../common/js/ui.js';
 import {Menu} from './menu.js';
 import {MenuButton} from './menu_button.js';
 

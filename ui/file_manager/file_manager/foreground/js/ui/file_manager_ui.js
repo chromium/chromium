@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
-import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+import {decorate, define as crUiDefine} from '../../../common/js/ui.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';

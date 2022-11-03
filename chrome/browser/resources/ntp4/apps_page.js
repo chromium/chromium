@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
-import {decorate, toCssPx} from 'chrome://resources/js/cr/ui.js';
+import {decorate, toCssPx} from './ui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$, appendParam} from 'chrome://resources/js/util.js';
 

@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
-import {toCssPx} from 'chrome://resources/js/cr/ui.js';
+import {toCssPx} from './ui.js';
 import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

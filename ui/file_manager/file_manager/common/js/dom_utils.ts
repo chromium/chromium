@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
-import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {decorate} from './ui.js';
 
 /**
  * Function to be used as event listener for `mouseenter`, it sets the `title`

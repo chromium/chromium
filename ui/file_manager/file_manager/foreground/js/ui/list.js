@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+import {define as crUiDefine} from '../../../common/js/ui.js';
 import {getPropertyDescriptor, PropertyKind, dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';

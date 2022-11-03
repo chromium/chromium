@@ -4,7 +4,7 @@
 
 // clang-format off
 import {PropertyKind, getPropertyDescriptor} from 'chrome://resources/js/cr_deprecated.js';
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+import {define as crUiDefine} from '../../../common/js/ui.js';
 // clang-format on
 
 /**

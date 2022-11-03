@@ -66,6 +66,7 @@ static_js_files = [
   "file_manager/common/js/storage_adapter.js",
   "file_manager/common/js/test_error_reporting.js",
   "file_manager/common/js/trash.js",
+  "file_manager/common/js/ui.js",
   "file_manager/common/js/unittest_util.js",
   "file_manager/common/js/url_constants.js",
   "file_manager/common/js/util.js",
