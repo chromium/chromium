@@ -13,15 +13,13 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
-#include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/gpu/context_lost_reason.h"
-#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/output_surface.h"
@@ -34,13 +32,10 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
-#include "gpu/ipc/service/context_url.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -58,6 +53,7 @@ class GLSurface;
 }
 
 namespace gpu {
+class DisplayCompositorMemoryAndTaskControllerOnGpu;
 class SharedImageRepresentationFactory;
 class SharedImageFactory;
 class SyncPointClientState;
@@ -75,6 +71,7 @@ class AsyncReadResultHelper;
 class AsyncReadResultLock;
 class DawnContextProvider;
 class ImageContextImpl;
+class SkiaOutputSurfaceDependency;
 class VulkanContextProvider;
 
 namespace copy_output {
