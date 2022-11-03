@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.ScrollState;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -86,6 +87,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinatesImpl);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerImpl);
         TabInteractionRecorder.setInstanceForTesting(mTabInteractionRecorder);
+        RealtimeEngagementSignalObserver.ScrollState.setInstanceForTesting(new ScrollState());
         doReturn(true).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
     }
 
@@ -95,6 +97,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         GestureListenerManagerImpl.setInstanceForTesting(null);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(null);
         TabInteractionRecorder.setInstanceForTesting(null);
+        RealtimeEngagementSignalObserver.ScrollState.setInstanceForTesting(null);
     }
 
     @Test
@@ -138,6 +141,16 @@ public class RealtimeEngagementSignalObserverUnitTest {
         }
 
         verify(env.tabProvider.getTab().getWebContents()).removeObserver(webContentsObserver);
+        verify(mGestureListenerManagerImpl).removeListener(listener);
+    }
+
+    @Test
+    public void removesGestureStateListenerWhenTabSwitched() {
+        initializeTabForTest();
+        mEngagementSignalObserver.onFinishNativeInitialization();
+        GestureStateListener listener = captureGestureStateListener();
+
+        env.tabProvider.removeTab();
         verify(mGestureListenerManagerImpl).removeListener(listener);
     }
 
@@ -511,7 +524,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
                 .registerTabObserver(any());
 
         mEngagementSignalObserver = new RealtimeEngagementSignalObserver(
-                env.tabObserverRegistrar, initialTab, env.connection, env.session);
+                env.tabObserverRegistrar, env.tabProvider, env.connection, env.session);
         verify(env.tabObserverRegistrar).registerTabObserver(mEngagementSignalObserver);
 
         env.tabProvider.setInitialTab(initialTab, TabCreationMode.DEFAULT);

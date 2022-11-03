@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import android.graphics.Point;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.UserData;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -25,15 +28,25 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Tab observer that sends engagement signal via the CCT service connection.
+ * Tab observer that tracks and sends engagement signal via the CCT service connection. The
+ * engagement signals are sticky between tab switching (given the assumption that only one
+ * meaningful active tab will live in CCT).
  */
-public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
-    private final CustomTabsConnection mConnection;
+class RealtimeEngagementSignalObserver extends EmptyTabObserver {
+    private static final int SCROLL_STATE_MAX_PERCENTAGE_NOT_INCREASING = -1;
 
+    private final CustomTabsConnection mConnection;
+    private final CustomTabActivityTabProvider mActivityTabProvider;
     @Nullable
     private final CustomTabsSessionToken mSession;
 
+    private CustomTabActivityTabProvider.Observer mActivityTabObserver;
+
+    @Nullable
+    private WebContents mWebContents;
+    @Nullable
     private GestureStateListener mGestureStateListener;
+    @Nullable
     private WebContentsObserver mEngagementSignalWebContentsObserver;
     @Nullable
     private ScrollState mScrollState;
@@ -49,14 +62,17 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
      */
     // TODO(https://crbug.com/1378410): Inject this class and implement NativeInitObserver.
     public RealtimeEngagementSignalObserver(TabObserverRegistrar tabObserverRegistrar,
-            Tab initialTab, CustomTabsConnection connection,
+            CustomTabActivityTabProvider activityTabProvider, CustomTabsConnection connection,
             @Nullable CustomTabsSessionToken session) {
         mConnection = connection;
         mSession = session;
+        mActivityTabProvider = activityTabProvider;
+
+        mActivityTabObserver = createTabProviderObserver();
+        activityTabProvider.addObserver(mActivityTabObserver);
 
         // Do not register observer via tab#addObserver, so it can change tabs when necessary.
         tabObserverRegistrar.registerTabObserver(this);
-        maybeStartSendingRealTimeEngagementSignals(initialTab);
     }
 
     // TabObserver
@@ -67,13 +83,13 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
 
     @Override
     public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-        removeObserversFromWebContents(tab.getWebContents());
+        removeWebContentsDependencies(tab.getWebContents());
         super.onActivityAttachmentChanged(tab, window);
     }
 
     @Override
     public void webContentsWillSwap(Tab tab) {
-        removeObserversFromWebContents(tab.getWebContents());
+        removeWebContentsDependencies(tab.getWebContents());
     }
 
     @Override
@@ -86,12 +102,25 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
     @Override
     public void onDestroyed(Tab tab) {
         collectUserInteraction(tab);
-        removeObserversFromWebContents(tab.getWebContents());
+        removeWebContentsDependencies(tab.getWebContents());
     }
 
     public void onFinishNativeInitialization() {
         mConnection.setGreatestScrollPercentageSupplier(
                 () -> mScrollState != null ? mScrollState.mMaxReportedScrollPercentage : null);
+    }
+
+    /**
+     * Remove all the dependencies and destroy the instance.
+     */
+    public void destroy() {
+        if (mWebContents != null) {
+            removeWebContentsDependencies(mWebContents);
+        }
+        if (mActivityTabObserver != null) {
+            mActivityTabProvider.removeObserver(mActivityTabObserver);
+            mActivityTabObserver = null;
+        }
     }
 
     /**
@@ -101,13 +130,20 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
     private void maybeStartSendingRealTimeEngagementSignals(Tab tab) {
         if (!shouldSendEngagementSignal(tab)) return;
 
-        if (mScrollState == null) mScrollState = new ScrollState(mConnection, mSession);
+        if (mWebContents != null) {
+            removeWebContentsDependencies(mWebContents);
+        }
+
+        mWebContents = tab.getWebContents();
+        mScrollState = ScrollState.from(tab);
+
         if (mGestureStateListener == null) {
             mGestureStateListener = new GestureStateListener() {
                 @Override
                 public void onScrollStarted(
                         int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                     mScrollState.onScrollStarted(isDirectionUp);
+                    mConnection.notifyVerticalScrollEvent(mSession, isDirectionUp);
                 }
 
                 @Override
@@ -123,12 +159,18 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
                 @Override
                 public void onVerticalScrollDirectionChanged(
                         boolean directionUp, float currentScrollRatio) {
-                    mScrollState.onScrollDirectionChanged(directionUp);
+                    if (mScrollState.onScrollDirectionChanged(directionUp)) {
+                        mConnection.notifyVerticalScrollEvent(mSession, directionUp);
+                    }
                 }
 
                 @Override
                 public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
-                    mScrollState.onScrollEnded();
+                    int resultPercentage = mScrollState.onScrollEnded();
+                    if (resultPercentage != SCROLL_STATE_MAX_PERCENTAGE_NOT_INCREASING) {
+                        mConnection.notifyGreatestScrollPercentageIncreased(
+                                mSession, resultPercentage);
+                    }
                 }
             };
         }
@@ -146,11 +188,11 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
         }
 
         GestureListenerManager gestureListenerManager =
-                GestureListenerManager.fromWebContents(tab.getWebContents());
+                GestureListenerManager.fromWebContents(mWebContents);
         if (!gestureListenerManager.hasListener(mGestureStateListener)) {
             gestureListenerManager.addListener(mGestureStateListener);
         }
-        tab.getWebContents().addObserver(mEngagementSignalWebContentsObserver);
+        mWebContents.addObserver(mEngagementSignalWebContentsObserver);
     }
 
     private void collectUserInteraction(Tab tab) {
@@ -162,7 +204,7 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
         mConnection.notifyDidGetUserInteraction(mSession, recorder.didGetUserInteraction());
     }
 
-    private void removeObserversFromWebContents(@Nullable WebContents webContents) {
+    private void removeWebContentsDependencies(@Nullable WebContents webContents) {
         if (webContents == null) return;
 
         if (mGestureStateListener != null) {
@@ -172,6 +214,11 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
         if (mEngagementSignalWebContentsObserver != null) {
             webContents.removeObserver(mEngagementSignalWebContentsObserver);
         }
+
+        mGestureStateListener = null;
+        mEngagementSignalWebContentsObserver = null;
+        mScrollState = null;
+        mWebContents = null;
     }
 
     private boolean shouldSendEngagementSignal(Tab tab) {
@@ -181,25 +228,42 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
                 && PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted();
     }
 
-    private static class ScrollState {
+    private CustomTabActivityTabProvider.Observer createTabProviderObserver() {
+        return new CustomTabActivityTabProvider.Observer() {
+            @Override
+            public void onInitialTabCreated(@NonNull Tab tab, int mode) {
+                maybeStartSendingRealTimeEngagementSignals(tab);
+            }
+
+            @Override
+            public void onTabSwapped(@NonNull Tab tab) {
+                removeWebContentsDependencies(mWebContents);
+                maybeStartSendingRealTimeEngagementSignals(tab);
+            }
+
+            @Override
+            public void onAllTabsClosed() {
+                destroy();
+            }
+        };
+    }
+
+    /**
+     * Parameter tracking the entire scrolling journey for the associated tab.
+     */
+    @VisibleForTesting
+    static class ScrollState implements UserData {
+        private static ScrollState sTestInstance;
+
         boolean mIsScrollActive;
         boolean mIsDirectionUp;
         int mMaxScrollPercentage;
         int mMaxReportedScrollPercentage;
 
-        private final CustomTabsConnection mConnection;
-        private final CustomTabsSessionToken mSession;
-
-        ScrollState(CustomTabsConnection connection, CustomTabsSessionToken session) {
-            mConnection = connection;
-            mSession = session;
-        }
-
         void onScrollStarted(boolean isDirectionUp) {
             assert !mIsScrollActive;
             mIsScrollActive = true;
             mIsDirectionUp = isDirectionUp;
-            mConnection.notifyVerticalScrollEvent(mSession, mIsDirectionUp);
         }
 
         void onScrollUpdate(int verticalScrollOffset, int maxVerticalScrollOffset) {
@@ -213,27 +277,52 @@ public class RealtimeEngagementSignalObserver extends EmptyTabObserver {
             }
         }
 
-        void onScrollDirectionChanged(boolean isDirectionUp) {
+        /**
+         * @return Whether the scrolling direction actually changed during an active scroll.
+         */
+        boolean onScrollDirectionChanged(boolean isDirectionUp) {
             if (mIsScrollActive && isDirectionUp != mIsDirectionUp) {
                 mIsDirectionUp = isDirectionUp;
-                mConnection.notifyVerticalScrollEvent(mSession, mIsDirectionUp);
+                return true;
             }
+            return false;
         }
 
-        void onScrollEnded() {
+        /**
+         * @return the MaxReportedScrollPercentage, or SCROLL_STATE_MAX_PERCENTAGE_NOT_INCREASING if
+         *         we don't want to report.
+         */
+        int onScrollEnded() {
+            int reportedPercentage = SCROLL_STATE_MAX_PERCENTAGE_NOT_INCREASING;
             int maxScrollPercentageFivesMultiple =
                     mMaxScrollPercentage - (mMaxScrollPercentage % 5);
             if (maxScrollPercentageFivesMultiple > mMaxReportedScrollPercentage) {
                 mMaxReportedScrollPercentage = maxScrollPercentageFivesMultiple;
-                mConnection.notifyGreatestScrollPercentageIncreased(
-                        mSession, mMaxReportedScrollPercentage);
+                reportedPercentage = mMaxReportedScrollPercentage;
             }
             mIsScrollActive = false;
+            return reportedPercentage;
         }
 
         void resetMaxScrollPercentage() {
             mMaxScrollPercentage = 0;
             mMaxReportedScrollPercentage = 0;
+        }
+
+        static @NonNull ScrollState from(Tab tab) {
+            if (sTestInstance != null) return sTestInstance;
+
+            ScrollState scrollState = tab.getUserDataHost().getUserData(ScrollState.class);
+            if (scrollState == null) {
+                scrollState = new ScrollState();
+                tab.getUserDataHost().setUserData(ScrollState.class, scrollState);
+            }
+            return scrollState;
+        }
+
+        @VisibleForTesting
+        static void setInstanceForTesting(ScrollState instance) {
+            sTestInstance = instance;
         }
     }
 }
