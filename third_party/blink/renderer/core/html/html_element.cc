@@ -1911,21 +1911,8 @@ bool HTMLElement::DispatchFocusEvent(
     Element* old_focused_element,
     mojom::blink::FocusType type,
     InputDeviceCapabilities* source_capabilities) {
-  if (!Element::DispatchFocusEvent(old_focused_element, type,
-                                   source_capabilities))
-    return false;
-  Document& document = GetDocument();
-  if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-          document.GetExecutionContext()) &&
-      document.TopmostPopover()) {
-    // If there's a popover showing, and we focus an element, hide all popovers
-    // outside the that element's popover tree, including unrelated popovers.
-    HideAllPopoversUntil(
-        NearestOpenAncestralPopover(*this, PopoverAncestorType::kInclusive),
-        document, HidePopoverFocusBehavior::kNone,
-        HidePopoverForcingLevel::kHideAfterAnimations);
-  }
-  return true;
+  return Element::DispatchFocusEvent(old_focused_element, type,
+                                     source_capabilities);
 }
 
 const AtomicString& HTMLElement::autocapitalize() const {

@@ -171,17 +171,6 @@
       assert_false(popover.matches(':open'));
       assert_equals(document.activeElement, priorFocus, 'prior element should get focus on button-toggled hide');
       await finishAnimationsAndVerifyHide(popover);
-
-      // Focus another element:
-      const anotherFocus = addPriorFocus(t);
-      priorFocus.focus();
-      assert_equals(document.activeElement, priorFocus);
-      popover.showPopover();
-      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popover.showPopover()`);
-      anotherFocus.focus();
-      assert_false(popover.matches(':open'),'focusing another element should hide the popover');
-      assert_equals(document.activeElement, anotherFocus, 'prior element should *not* get focus in this case');
-      await finishAnimationsAndVerifyHide(popover);
     }, "Popover focus test: " + testName);
 
     promise_test(async t => {

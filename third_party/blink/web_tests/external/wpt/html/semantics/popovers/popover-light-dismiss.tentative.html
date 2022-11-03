@@ -97,8 +97,9 @@
     assert_true(popover1.matches(':open'));
     await sendTab();
     assert_equals(document.activeElement,afterp1,'Focus should move to a button outside the popover');
-    assert_false(popover1.matches(':open'));
-  },'Moving focus outside the popover will dismiss the popover');
+    assert_true(popover1.matches(':open'));
+    popover1.hidePopover();
+  },'Moving focus outside the popover should not dismiss the popover');
 
   promise_test(async () => {
     popover1.showPopover();

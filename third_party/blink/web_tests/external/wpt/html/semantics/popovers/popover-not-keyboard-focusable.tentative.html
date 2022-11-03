@@ -28,7 +28,8 @@ promise_test(async () => {
   // Tab once
   await new test_driver.send_keys(document.body,'\uE004'); // Tab
   assert_equals(document.activeElement, b2, 'Keyboard focus should skip the open popover');
-  assert_false(popover.matches(':open'),'changing focus should close the popover');
+  assert_true(popover.matches(':open'),'changing focus should not close the popover');
+  popover.hidePopover();
 
   // Add a focusable button to the popover and make sure we can focus that
   const button = document.createElement('button');
