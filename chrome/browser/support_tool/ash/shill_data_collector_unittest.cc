@@ -127,7 +127,8 @@ const PIIMap kPIIInTestData = {
     {feedback::PIIType::kIPAddress,
      {"100.0.0.1", "100.0.0.2", "0:0:0:0:100:0:0:1"}},
     {feedback::PIIType::kURL, {"http://wpad.com/wpad.dat"}},
-    {feedback::PIIType::kSSID, {"7769666931", "stub_wifi_device1", "wifi1"}}};
+    {feedback::PIIType::kSSID,
+     {"\"7769666931\"\n", "stub_wifi_device1", "wifi1"}}};
 
 // Types of all PII data contained in the test data
 const std::set<feedback::PIIType> kAllPIITypesInData = {

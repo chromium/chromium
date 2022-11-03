@@ -40,6 +40,20 @@ std::string GetString(const base::Value& value) {
   return value.GetString();
 }
 
+// Check the contents of `value` and returns true if its contents are empty. If
+// `value` contains literal types like int, bool, it'll return false.
+bool HasEmptyContents(const base::Value& value) {
+  // Check non-literal types to see if they have empty contents.
+  if (value.is_string())
+    return value.GetString().empty();
+  if (value.is_list())
+    return value.GetList().empty();
+  if (value.is_dict())
+    return value.GetDict().empty();
+  // The literal types can't be empty.
+  return false;
+}
+
 constexpr char kMaskedString[] = "*** MASKED ***";
 
 // Converts `shill_log` into std::string and detects PII sensitive data it
@@ -97,18 +111,25 @@ void DetectOrScrubPIIInDictionary(
     if (entry.second.is_dict()) {
       DetectOrScrubPIIInDictionary(entry.second.GetDict(), scrub,
                                    pii_types_to_keep, pii_map);
-    } else if (system_logs::kShillPIIMaskedMap.contains(entry.first) &&
-               (!entry.second.is_string() ||
-                !entry.second.GetString().empty())) {
-      if (scrub) {
-        if (!pii_types_to_keep.count(
-                system_logs::kShillPIIMaskedMap.at(entry.first)))
-          entry.second = base::Value(kMaskedString);
-      } else {
-        pii_map[system_logs::kShillPIIMaskedMap.at(entry.first)].emplace(
-            entry.second.GetString());
-      }
+      continue;
     }
+    if (!system_logs::kShillPIIMaskedMap.contains(entry.first))
+      continue;
+    // We don't add empty values to `pii_map` nor mask them because empty
+    // values don't contain PII anyway.
+    if (HasEmptyContents(entry.second))
+      continue;
+    if (scrub &&
+        !base::Contains(pii_types_to_keep,
+                        system_logs::kShillPIIMaskedMap.at(entry.first))) {
+      entry.second = base::Value(kMaskedString);
+      continue;
+    }
+    std::string value_as_string;
+    base::JSONWriter::WriteWithOptions(
+        entry.second, base::JSONWriter::OPTIONS_PRETTY_PRINT, &value_as_string);
+    pii_map[system_logs::kShillPIIMaskedMap.at(entry.first)].emplace(
+        value_as_string);
   }
 }
 

@@ -99,6 +99,8 @@ std::string GetPIITypeDescription(feedback::PIIType type_enum) {
     case feedback::PIIType::kVolumeLabel:
       // Volume labels are a part of removable storage paths in various logs.
       return support_tool_ui::kRemovableStorage;
+    case feedback::PIIType::kEAP:
+      return support_tool_ui::kEAP;
     default:
       return "Error: Undefined";
   }
