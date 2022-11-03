@@ -16,11 +16,24 @@ enum StylusWritingGestureAction {
   REMOVE_SPACES,
 };
 
+// This enum defines the different granularities which can be used when applying a gesture.
+enum StylusWritingGestureGranularity {
+  // Apply to the characters contained within the gesture's range.
+  CHARACTER,
+  // Apply to all words whose centers are contained within the gesture's range.
+  WORD,
+};
+
 // This structure contains the gesture data sent by the stylus writing service
 // to perform the corresponding gesture action in html input.
 struct StylusWritingGestureData {
   // The gesture action to be performed for this gesture.
   StylusWritingGestureAction action;
+
+  // The resolution with which to apply the gesture to the given text.
+  // This only applies to gestures which affect a range of text (eg. DELETE_TEXT)
+  // and should remain as the default value (CHARACTER) for other gestures.
+  StylusWritingGestureGranularity granularity;
 
   // The DELETE_TEXT, REMOVE_SPACES gestures would contain two points, that is
   // where the gesture started and ended to determine the text offset under the

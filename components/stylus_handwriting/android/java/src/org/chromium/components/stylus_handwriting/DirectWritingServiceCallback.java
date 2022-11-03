@@ -23,6 +23,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
+import org.chromium.blink.mojom.StylusWritingGestureGranularity;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.mojo_base.mojom.String16;
 
@@ -134,6 +135,7 @@ class DirectWritingServiceCallback
         // Populate gesture data as applicable for different gestures recognized.
         StylusWritingGestureData gestureData = new StylusWritingGestureData();
 
+        gestureData.granularity = StylusWritingGestureGranularity.CHARACTER;
         if (gestureType.equals(GESTURE_TYPE_BACKSPACE) || gestureType.equals(GESTURE_TYPE_ZIGZAG)) {
             startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_START_POINT);
             float[] endPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_END_POINT);
