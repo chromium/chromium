@@ -8,38 +8,27 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
-
-namespace ash {
-class WelcomeScreen;
-}
 
 namespace chromeos {
 class CoreOobeView;
 
 // Interface for WelcomeScreenHandler.
-class WelcomeView {
+class WelcomeView : public base::SupportsWeakPtr<WelcomeView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"connect"};
+  inline constexpr static StaticOobeScreenId kScreenId{"connect",
+                                                       "WelcomeScreen"};
 
-  virtual ~WelcomeView() {}
+  virtual ~WelcomeView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
 
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
-
-  // Binds `screen` to the view.
-  virtual void Bind(ash::WelcomeScreen* screen) = 0;
-
-  // Unbinds model from the view.
-  virtual void Unbind() = 0;
-
-  // Reloads localized contents.
-  virtual void ReloadLocalizedContent() = 0;
+  // Sets language list and reloads localized contents.
+  virtual void SetLanguageList(base::Value::List language_list) = 0;
 
   // Change the current input method.
   virtual void SetInputMethodId(const std::string& input_method_id) = 0;
@@ -83,10 +72,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
 
   // WelcomeView:
   void Show() override;
-  void Hide() override;
-  void Bind(ash::WelcomeScreen* screen) override;
-  void Unbind() override;
-  void ReloadLocalizedContent() override;
+  void SetLanguageList(base::Value::List language_list) override;
   void SetInputMethodId(const std::string& input_method_id) override;
   void ShowDemoModeConfirmationDialog() override;
   void ShowEditRequisitionDialog(const std::string& requisition) override;
@@ -100,31 +86,17 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
   void GetAdditionalParameters(base::Value::Dict* dict) override;
-  void InitializeDeprecated() override;
 
  private:
   // JS callbacks.
-  void HandleSetLocaleId(const std::string& locale_id);
-  void HandleSetInputMethodId(const std::string& input_method_id);
-  void HandleSetTimezoneId(const std::string& timezone_id);
-  void HandleEnableLargeCursor(bool enabled);
-  void HandleEnableHighContrast(bool enabled);
-  void HandleEnableVirtualKeyboard(bool enabled);
-  void HandleEnableScreenMagnifier(bool enabled);
-  void HandleEnableSpokenFeedback(bool /* enabled */);
-  void HandleEnableSelectToSpeak(bool /* enabled */);
-  void HandleEnableDockedMagnifier(bool /* enabled */);
-  void HandleSetDeviceRequisition(const std::string& requisition);
   void HandleRecordChromeVoxHintSpokenSuccess();
+
+  base::Value::List language_list_;
 
   // Returns available timezones.
   static base::Value::List GetTimezoneList();
 
-  CoreOobeView* core_oobe_view_ = nullptr;
-  ash::WelcomeScreen* screen_ = nullptr;
-
-  // Keeps whether screen should be shown right after initialization.
-  bool show_on_init_ = false;
+  const base::raw_ptr<CoreOobeView> core_oobe_view_;
 };
 
 }  // namespace chromeos

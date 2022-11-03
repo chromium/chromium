@@ -77,7 +77,8 @@ class WelcomeScreen : public BaseScreen,
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  WelcomeScreen(WelcomeView* view, const ScreenExitCallback& exit_callback);
+  WelcomeScreen(base::WeakPtr<WelcomeView> view,
+                const ScreenExitCallback& exit_callback);
 
   WelcomeScreen(const WelcomeScreen&) = delete;
   WelcomeScreen& operator=(const WelcomeScreen&) = delete;
@@ -86,14 +87,9 @@ class WelcomeScreen : public BaseScreen,
 
   static std::string GetResultString(Result result);
 
-  // Called when `view` has been destroyed. If this instance is destroyed before
-  // the `view` it should call view->Unbind().
-  void OnViewDestroyed(WelcomeView* view);
-
-  const std::string& language_list_locale() const {
-    return language_list_locale_;
+  bool language_list_updated_for_testing() const {
+    return !selected_language_code_.empty();
   }
-  const base::Value::List& language_list() const { return language_list_; }
 
   void UpdateLanguageList();
 
@@ -102,7 +98,6 @@ class WelcomeScreen : public BaseScreen,
   // don't change the current `input_method`.
   void SetApplicationLocaleAndInputMethod(const std::string& locale,
                                           const std::string& input_method);
-  std::string GetApplicationLocale();
   std::string GetInputMethod() const;
 
   void SetApplicationLocale(const std::string& locale, const bool is_from_ui);
@@ -130,7 +125,7 @@ class WelcomeScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& action_id) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   void CancelChromeVoxHintIdleDetection();
@@ -193,18 +188,13 @@ class WelcomeScreen : public BaseScreen,
   // exit_callback with given Result
   void Exit(Result result) const;
 
-  WelcomeView* view_ = nullptr;
+  base::WeakPtr<WelcomeView> view_;
   ScreenExitCallback exit_callback_;
 
   std::unique_ptr<ChromeVoxHintDetector> chromevox_hint_detector_;
 
   std::string input_method_;
   std::string timezone_;
-
-  // Creation of language list happens on Blocking Pool, so we cache
-  // resolved data.
-  std::string language_list_locale_;
-  base::Value::List language_list_;
 
   // The exact language code selected by user in the menu.
   std::string selected_language_code_;

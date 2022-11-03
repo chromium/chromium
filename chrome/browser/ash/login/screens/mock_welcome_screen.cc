@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/mock_welcome_screen.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
 MockWelcomeScreen::MockWelcomeScreen(
-    WelcomeView* view,
+    base::WeakPtr<WelcomeView> view,
     const WelcomeScreen::ScreenExitCallback& exit_callback)
-    : WelcomeScreen(view, exit_callback) {}
+    : WelcomeScreen(std::move(view), exit_callback) {}
 
 void MockWelcomeScreen::ExitScreen(Result result) {
   exit_callback()->Run(result);
@@ -19,19 +20,6 @@ MockWelcomeScreen::~MockWelcomeScreen() = default;
 
 MockWelcomeView::MockWelcomeView() = default;
 
-MockWelcomeView::~MockWelcomeView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void MockWelcomeView::Bind(WelcomeScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
-
-void MockWelcomeView::Unbind() {
-  screen_ = nullptr;
-  MockUnbind();
-}
+MockWelcomeView::~MockWelcomeView() = default;
 
 }  // namespace ash

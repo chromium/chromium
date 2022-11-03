@@ -425,7 +425,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * @private
    */
   applySelectedLanguage_(languageId) {
-    chrome.send('WelcomeScreen.setLocaleId', [languageId]);
+    this.userActed(['setLocaleId', languageId]);
   }
 
   /**
@@ -448,7 +448,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * @private
    */
   applySelectedLkeyboard_(inputMethodId) {
-    chrome.send('WelcomeScreen.setInputMethodId', [inputMethodId]);
+    this.userActed(['setInputMethodId', inputMethodId]);
   }
 
   onLanguagesChanged_() {
@@ -526,13 +526,13 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   }
 
   onEditRequisitionCancel_() {
-    chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
+    this.userActed(['setDeviceRequisition', 'none']);
     this.$.editRequisitionDialog.hideDialog();
   }
 
   onEditRequisitionConfirm_() {
     const requisition = this.$.editRequisitionInput.value;
-    chrome.send('WelcomeScreen.setDeviceRequisition', [requisition]);
+    this.userActed(['setDeviceRequisition', requisition]);
     this.$.editRequisitionDialog.hideDialog();
   }
 
@@ -547,7 +547,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * Shows the special remora/shark device requisition prompt.
    */
   onRemoraCancel_() {
-    chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
+    this.userActed(['setDeviceRequisition', 'none']);
     this.$.remoraRequisitionDialog.hideDialog();
   }
 
@@ -555,7 +555,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * Shows the special remora/shark device requisition prompt.
    */
   onRemoraConfirm_() {
-    chrome.send('WelcomeScreen.setDeviceRequisition', ['remora']);
+    this.userActed(['setDeviceRequisition', 'remora']);
     this.$.remoraRequisitionDialog.hideDialog();
   }
 
@@ -639,7 +639,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
       return;
     }
 
-    chrome.send('WelcomeScreen.setTimezoneId', [item.value]);
+    this.userActed(['setTimezoneId', item.value]);
   }
 
   /** ******************** AdvancedOptions section ******************* */

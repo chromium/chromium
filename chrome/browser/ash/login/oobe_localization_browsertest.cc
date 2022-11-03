@@ -72,7 +72,7 @@ class LanguageListWaiter : public WelcomeScreen::Observer {
 
  private:
   bool LanguageListReady() const {
-    return !welcome_screen_->language_list().empty();
+    return welcome_screen_->language_list_updated_for_testing();
   }
 
   void CheckLanguageList() {
@@ -334,8 +334,6 @@ std::string TranslateXKB2Extension(const std::string& src) {
 }
 
 void OobeLocalizationTest::RunLocalizationTest() {
-  const std::string initial_locale(GetParam()->initial_locale);
-  const std::string keyboard_layout(GetParam()->keyboard_layout);
   const std::string expected_locale(GetParam()->expected_locale);
   const std::string expected_keyboard_layout(
       GetParam()->expected_keyboard_layout);

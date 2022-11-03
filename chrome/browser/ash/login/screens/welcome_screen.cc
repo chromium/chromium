@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -92,6 +93,10 @@ constexpr const char kUserActionEditDeviceRequisition[] =
 constexpr const char kUserActionQuickStartClicked[] = "activateQuickStart";
 constexpr const char kWelcomeScreenLocaleChangeMetric[] =
     "OOBE.WelcomeScreen.UserChangedLocale";
+constexpr const char kSetLocaleId[] = "setLocaleId";
+constexpr const char kSetInputMethodId[] = "setInputMethodId";
+constexpr const char kSetTimezoneId[] = "setTimezoneId";
+constexpr const char kSetDeviceRequisition[] = "setDeviceRequisition";
 
 struct WelcomeScreenA11yUserAction {
   const char* name_;
@@ -157,6 +162,10 @@ bool IsRemoraRequisitionConfigurable() {
          switches::IsDeviceRequisitionConfigurable();
 }
 
+std::string GetApplicationLocale() {
+  return g_browser_process->GetApplicationLocale();
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -178,14 +187,11 @@ std::string WelcomeScreen::GetResultString(Result result) {
   }
 }
 
-WelcomeScreen::WelcomeScreen(WelcomeView* view,
+WelcomeScreen::WelcomeScreen(base::WeakPtr<WelcomeView> view,
                              const ScreenExitCallback& exit_callback)
     : BaseScreen(WelcomeView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
-  if (view_)
-    view_->Bind(this);
-
   input_method::InputMethodManager::Get()->AddObserver(this);
 
   ad_migration_utils::CheckChromadMigrationOobeFlow(
@@ -200,21 +206,12 @@ WelcomeScreen::WelcomeScreen(WelcomeView* view,
 }
 
 WelcomeScreen::~WelcomeScreen() {
-  if (view_)
-    view_->Unbind();
-
   input_method::InputMethodManager::Get()->RemoveObserver(this);
   CancelChromeVoxHintIdleDetection();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // WelcomeScreen, public API, setters and getters for input method and timezone.
-
-void WelcomeScreen::OnViewDestroyed(WelcomeView* view) {
-  if (view_ == view) {
-    view_ = nullptr;
-  }
-}
 
 void WelcomeScreen::UpdateLanguageList() {
   // Bail if there is already pending request.
@@ -228,7 +225,7 @@ void WelcomeScreen::UpdateLanguageList() {
 void WelcomeScreen::SetApplicationLocaleAndInputMethod(
     const std::string& locale,
     const std::string& input_method) {
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  const std::string& app_locale = GetApplicationLocale();
   if (app_locale == locale || locale.empty()) {
     // If the locale doesn't change, set input method directly.
     SetInputMethod(input_method);
@@ -250,19 +247,15 @@ void WelcomeScreen::SetApplicationLocaleAndInputMethod(
                               ProfileManager::GetActiveUserProfile());
 }
 
-std::string WelcomeScreen::GetApplicationLocale() {
-  return g_browser_process->GetApplicationLocale();
-}
-
 std::string WelcomeScreen::GetInputMethod() const {
   return input_method_;
 }
 
 void WelcomeScreen::SetApplicationLocale(const std::string& locale,
                                          const bool is_from_ui) {
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  const std::string& app_locale = GetApplicationLocale();
   if (app_locale == locale || locale.empty()) {
-    if (language_list_.empty())
+    if (selected_language_code_.empty())
       UpdateLanguageList();
     return;
   }
@@ -377,7 +370,7 @@ void WelcomeScreen::ShowImpl() {
   // BaseScreen:MaybeSkip().
   if (is_chromad_migration_oobe_flow_ ||
       WizardController::IsZeroTouchHandsOffOobeFlow()) {
-    OnUserActionDeprecated(kUserActionContinueButtonClicked);
+    OnContinueButtonPressed();
     return;
   }
 
@@ -406,8 +399,6 @@ void WelcomeScreen::ShowImpl() {
 }
 
 void WelcomeScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
   CancelChromeVoxHintIdleDetection();
 
   if (features::IsOobeQuickStartEnabled()) {
@@ -415,7 +406,8 @@ void WelcomeScreen::HideImpl() {
   }
 }
 
-void WelcomeScreen::OnUserActionDeprecated(const std::string& action_id) {
+void WelcomeScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionQuickStartClicked) {
     DCHECK(ash::features::IsOobeQuickStartEnabled());
     Exit(Result::QUICK_START);
@@ -461,6 +453,30 @@ void WelcomeScreen::OnUserActionDeprecated(const std::string& action_id) {
     return;
   }
 
+  if (action_id == kSetLocaleId) {
+    CHECK_EQ(args.size(), 2u);
+    SetApplicationLocale(args[1].GetString(), /*is_from_ui=*/true);
+    return;
+  }
+
+  if (action_id == kSetInputMethodId) {
+    CHECK_EQ(args.size(), 2u);
+    SetInputMethod(args[1].GetString());
+    return;
+  }
+
+  if (action_id == kSetTimezoneId) {
+    CHECK_EQ(args.size(), 2u);
+    SetTimezone(args[1].GetString());
+    return;
+  }
+
+  if (action_id == kSetDeviceRequisition) {
+    CHECK_EQ(args.size(), 2u);
+    SetDeviceRequisition(args[1].GetString());
+    return;
+  }
+
   if (IsA11yUserAction(action_id)) {
     RecordA11yUserAction(action_id);
     if (action_id == kUserActionEnableSpokenFeedback) {
@@ -497,7 +513,7 @@ void WelcomeScreen::OnUserActionDeprecated(const std::string& action_id) {
       AccessibilityManager::Get()->EnableVirtualKeyboard(false);
     }
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
@@ -620,14 +636,17 @@ void WelcomeScreen::OnLanguageListResolved(
     const std::string& new_selected_language) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  language_list_ = std::move(new_language_list);
-  language_list_locale_ = new_language_list_locale;
+  if (new_language_list_locale != GetApplicationLocale()) {
+    UpdateLanguageList();
+    return;
+  }
+
   selected_language_code_ = new_selected_language;
 
   g_browser_process->local_state()->SetString(
       language::prefs::kApplicationLocale, selected_language_code_);
   if (view_)
-    view_->ReloadLocalizedContent();
+    view_->SetLanguageList(std::move(new_language_list));
   for (auto& observer : observers_)
     observer.OnLanguageListReloaded();
 }
@@ -670,7 +689,7 @@ void WelcomeScreen::UpdateChromadMigrationOobeFlow(bool exists) {
 
   // Simulates a user action, in case this screen is already shown and this OOBE
   // flow is part of Chromad to cloud migration.
-  OnUserActionDeprecated(kUserActionContinueButtonClicked);
+  OnContinueButtonPressed();
 }
 
 void WelcomeScreen::OnAccessibilityStatusChanged(
