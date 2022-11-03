@@ -226,10 +226,6 @@ class ASH_EXPORT AppListPresenterImpl
   // Cached bounds of |view_| for snapping back animation after over-scroll.
   gfx::Rect view_bounds_;
 
-  // Data we need to store for metrics.
-  absl::optional<base::Time> last_open_time_;
-  absl::optional<AppListShowSource> last_open_source_;
-
   // Whether the presenter is currently changing app list view state to shown.
   // TODO(https://crbug.com/1307871): Remove this when the linked crash gets
   // diagnosed.
