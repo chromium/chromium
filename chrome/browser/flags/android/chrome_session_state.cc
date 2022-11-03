@@ -35,7 +35,7 @@ namespace android {
 // TODO(b/182286787): A/B experiment monitoring session/activity resume order.
 BASE_FEATURE(kFixedUmaSessionResumeOrder,
              "FixedUmaSessionResumeOrder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(
     ActivityType activity_type) {
