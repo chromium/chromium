@@ -301,9 +301,6 @@ try_.compilator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     goma_jobs = goma.jobs.J300,
-    # TODO(crbug.com/1298114): Remove and use default 32 cores once bots are
-    # moved to 32 cores
-    cores = "16|32",
 )
 
 try_.builder(
