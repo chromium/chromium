@@ -963,11 +963,11 @@ void DevToolsUIBindings::AppendToFile(const std::string& url,
 void DevToolsUIBindings::RequestFileSystems() {
   CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
         frontend_host_);
-  base::ListValue file_systems_value;
+  base::Value::List file_systems_value;
   for (auto const& file_system : file_helper_->GetFileSystems())
     file_systems_value.Append(CreateFileSystemValue(file_system));
   CallClientMethod("DevToolsAPI", "fileSystemsLoaded",
-                   std::move(file_systems_value));
+                   base::Value(std::move(file_systems_value)));
 }
 
 void DevToolsUIBindings::AddFileSystem(const std::string& type) {
@@ -1441,7 +1441,7 @@ void DevToolsUIBindings::FilePathsChanged(
          added_index < added_paths.size() ||
          removed_index < removed_paths.size()) {
     int budget = kMaxPathsPerMessage;
-    base::ListValue changed, added, removed;
+    base::Value::List changed, added, removed;
     while (budget > 0 && changed_index < changed_paths.size()) {
       changed.Append(changed_paths[changed_index++]);
       --budget;
@@ -1455,7 +1455,9 @@ void DevToolsUIBindings::FilePathsChanged(
       --budget;
     }
     CallClientMethod("DevToolsAPI", "fileSystemFilesChangedAddedRemoved",
-                     std::move(changed), std::move(added), std::move(removed));
+                     base::Value(std::move(changed)),
+                     base::Value(std::move(added)),
+                     base::Value(std::move(removed)));
   }
 }
 
@@ -1490,11 +1492,12 @@ void DevToolsUIBindings::SearchCompleted(
     const std::string& file_system_path,
     const std::vector<std::string>& file_paths) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::ListValue file_paths_value;
+  base::Value::List file_paths_value;
   for (auto const& file_path : file_paths)
     file_paths_value.Append(file_path);
   CallClientMethod("DevToolsAPI", "searchCompleted", base::Value(request_id),
-                   base::Value(file_system_path), std::move(file_paths_value));
+                   base::Value(file_system_path),
+                   base::Value(std::move(file_paths_value)));
 }
 
 void DevToolsUIBindings::ShowDevToolsInfoBar(

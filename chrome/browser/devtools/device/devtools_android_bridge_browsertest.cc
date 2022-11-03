@@ -65,18 +65,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DiscoveryListChanges) {
                AllTargetsString(provider).c_str());
 
   int invocations = called;
-  base::ListValue list;
+  base::Value::List list;
   list.Append("somehost:2000");
 
-  service->Set(prefs::kDevToolsTCPDiscoveryConfig, list);
+  service->SetList(prefs::kDevToolsTCPDiscoveryConfig, list.Clone());
 
   EXPECT_LT(invocations, called);
   EXPECT_NE(nullptr, provider);
   EXPECT_STREQ("somehost:2000", AllTargetsString(provider).c_str());
 
   invocations = called;
-  list.ClearList();
-  service->Set(prefs::kDevToolsTCPDiscoveryConfig, list);
+  list.clear();
+  service->SetList(prefs::kDevToolsTCPDiscoveryConfig, list.Clone());
 
   EXPECT_LT(invocations, called);
   EXPECT_EQ(nullptr, provider);
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DiscoveryListChanges) {
   list.Append("<not really a good address.");
   list.Append("d:3");
   list.Append("c:2");
-  service->Set(prefs::kDevToolsTCPDiscoveryConfig, list);
+  service->SetList(prefs::kDevToolsTCPDiscoveryConfig, std::move(list));
 
   EXPECT_LT(invocations, called);
   EXPECT_NE(nullptr, provider);
