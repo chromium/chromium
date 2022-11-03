@@ -6,10 +6,8 @@
 #define BASE_CPU_H_
 
 #include <string>
-#include <vector>
 
 #include "base/base_export.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -113,60 +111,6 @@ class BASE_EXPORT CPU final {
   IntelMicroArchitecture GetIntelMicroArchitecture() const;
 #endif
   const std::string& cpu_brand() const { return cpu_brand_; }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_AIX)
-  enum class CoreType {
-    kUnknown = 0,
-    kOther,
-    kSymmetric,
-    kBigLittle_Little,
-    kBigLittle_Big,
-    kBigLittleBigger_Little,
-    kBigLittleBigger_Big,
-    kBigLittleBigger_Bigger,
-    kMaxValue = kBigLittleBigger_Bigger
-  };
-
-  // Attempts to guess the core types of individual CPU cores based on frequency
-  // information from /sys/devices/system/cpu/cpuN/cpufreq/cpuinfo_max_freq.
-  // Beware that it is kernel/hardware dependent whether the information from
-  // sys is accurate. Returns a reference to a static-storage vector (leaked on
-  // shutdown) with the guessed type for core N at index N.
-  static const std::vector<CoreType>& GetGuessedCoreTypes();
-
-  struct TimeInStateEntry {
-    CPU::CoreType core_type;      // type of the cores in this cluster.
-    size_t cluster_core_index;    // index of the first core in the cluster.
-    uint64_t core_frequency_khz;
-    TimeDelta cumulative_time;
-  };
-  using TimeInState = std::vector<TimeInStateEntry>;
-
-  // For each CPU core, emits the cumulative time spent in different frequency
-  // states into the output parameter (replacing its current contents). One
-  // entry in the output parameter is added for each cluster core index
-  // + frequency state combination with a non-zero CPU time value. Returns false
-  // on failure. We return the usage via an output parameter to allow reuse of
-  // TimeInState's std::vector by the caller, e.g. to avoid allocations between
-  // repeated calls to this method.
-  //
-  // NOTE: Currently only supported on Linux/Android, and only on kernels with
-  // cpufreq-stats driver.
-  static bool GetTimeInState(TimeInState&);
-
-  // For each CPU core, emits the total cumulative wall time spent in any idle
-  // state into the output parameter (replacing its current contents). Returns
-  // false on failure. We return the usage via an output parameter to allow
-  // reuse of TimeInState's std::vector by the caller, e.g. to avoid allocations
-  // between repeated calls to this method.
-  //
-  // NOTE: Currently only supported on Linux/Android, and only on kernels with
-  // cpuidle driver.
-  using CoreIdleTimes = std::vector<TimeDelta>;
-  static bool GetCumulativeCoreIdleTimes(CoreIdleTimes&);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_AIX)
 
  private:
   // Query the processor for CPUID information.

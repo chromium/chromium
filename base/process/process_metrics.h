@@ -41,7 +41,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cpu.h"
 #include "base/threading/platform_thread.h"
 #endif
 
@@ -176,29 +175,6 @@ class BASE_EXPORT ProcessMetrics {
   // NOTE: Currently only supported on Linux/Android.
   using CPUUsagePerThread = std::vector<std::pair<PlatformThreadId, TimeDelta>>;
   bool GetCumulativeCPUUsagePerThread(CPUUsagePerThread&);
-
-  // Similar to GetCumulativeCPUUsagePerThread, but also splits the cumulative
-  // CPU usage by CPU cluster frequency states. One entry in the output
-  // parameter is added for each thread + cluster core index + frequency state
-  // combination with a non-zero CPU time value.
-  // NOTE: Currently only supported on Linux/Android, and only on devices that
-  // expose per-pid/tid time_in_state files in /proc.
-  struct ThreadTimeInState {
-    PlatformThreadId thread_id;
-    CPU::CoreType core_type;      // type of the cores in this cluster.
-    uint32_t cluster_core_index;  // index of the first core in the cluster.
-    uint64_t core_frequency_khz;
-    TimeDelta cumulative_cpu_time;
-  };
-  using TimeInStatePerThread = std::vector<ThreadTimeInState>;
-  bool GetPerThreadCumulativeCPUTimeInState(TimeInStatePerThread&);
-
-  // Parse the data found in /proc/<pid>/task/<tid>/time_in_state into
-  // TimeInStatePerThread (adding to existing entries). Returns false on error.
-  // Exposed for testing.
-  bool ParseProcTimeInState(const std::string& content,
-                            PlatformThreadId tid,
-                            TimeInStatePerThread& time_in_state_per_thread);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_AIX)
 
@@ -278,12 +254,6 @@ class BASE_EXPORT ProcessMetrics {
   int CalculatePackageIdleWakeupsPerSecond(
       uint64_t absolute_package_idle_wakeups);
 #endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_AIX)
-  CPU::CoreType GetCoreType(uint32_t core_index);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_AIX)
 
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle process_;

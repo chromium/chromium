@@ -521,77 +521,6 @@ TEST(ProcessMetricsTest, ParseProcStatCPU) {
       "140735857770737 140735857774557 0";
   EXPECT_EQ(5186 + 11, ParseProcStatCPU(kWeirdNameStat));
 }
-
-TEST(ProcessMetricsTest, ParseProcTimeInState) {
-  ProcessHandle handle = GetCurrentProcessHandle();
-  std::unique_ptr<ProcessMetrics> metrics(
-      ProcessMetrics::CreateProcessMetrics(handle));
-  ProcessMetrics::TimeInStatePerThread time_in_state;
-
-  const char kStatThread123[] =
-      "cpu0\n"
-      "100000 4\n"
-      "200000 5\n"
-      "300000 0\n"
-      "cpu4\n"
-      "400000 3\n"
-      "500000 2\n";
-  EXPECT_TRUE(
-      metrics->ParseProcTimeInState(kStatThread123, 123, time_in_state));
-
-  // Zero-valued entry should not exist.
-  ASSERT_EQ(time_in_state.size(), 4u);
-
-  EXPECT_EQ(time_in_state[0].thread_id, 123);
-  EXPECT_EQ(time_in_state[0].cluster_core_index, 0u);
-  EXPECT_EQ(time_in_state[0].core_frequency_khz, 100000u);
-  EXPECT_EQ(time_in_state[0].cumulative_cpu_time, base::Milliseconds(40));
-  EXPECT_EQ(time_in_state[1].thread_id, 123);
-  EXPECT_EQ(time_in_state[1].cluster_core_index, 0u);
-  EXPECT_EQ(time_in_state[1].core_frequency_khz, 200000u);
-  EXPECT_EQ(time_in_state[1].cumulative_cpu_time, base::Milliseconds(50));
-  EXPECT_EQ(time_in_state[2].thread_id, 123);
-  EXPECT_EQ(time_in_state[2].cluster_core_index, 4u);
-  EXPECT_EQ(time_in_state[2].core_frequency_khz, 400000u);
-  EXPECT_EQ(time_in_state[2].cumulative_cpu_time, base::Milliseconds(30));
-  EXPECT_EQ(time_in_state[3].thread_id, 123);
-  EXPECT_EQ(time_in_state[3].cluster_core_index, 4u);
-  EXPECT_EQ(time_in_state[3].core_frequency_khz, 500000u);
-  EXPECT_EQ(time_in_state[3].cumulative_cpu_time, base::Milliseconds(20));
-
-  // Calling ParseProcTimeInState again adds to the vector.
-  const char kStatThread456[] =
-      "cpu0\n"
-      "\n"           // extra empty line is fine.
-      "1000000 10";  // missing "\n" at end is fine.
-  EXPECT_TRUE(
-      metrics->ParseProcTimeInState(kStatThread456, 456, time_in_state));
-
-  ASSERT_EQ(time_in_state.size(), 5u);
-  EXPECT_EQ(time_in_state[4].thread_id, 456);
-  EXPECT_EQ(time_in_state[4].cluster_core_index, 0u);
-  EXPECT_EQ(time_in_state[4].core_frequency_khz, 1000000u);
-  EXPECT_EQ(time_in_state[4].cumulative_cpu_time, base::Milliseconds(100));
-
-  // Calling ParseProcTimeInState with invalid data returns false.
-  EXPECT_FALSE(
-      metrics->ParseProcTimeInState("100000 5\n"  // no header
-                                    "200000 6\n",
-                                    123, time_in_state));
-  EXPECT_FALSE(
-      metrics->ParseProcTimeInState("cpu0\n"
-                                    "100000\n",  // no time value
-                                    123, time_in_state));
-  EXPECT_FALSE(
-      metrics->ParseProcTimeInState("header0\n"  // invalid header / line
-                                    "100000 5\n",
-                                    123, time_in_state));
-  EXPECT_FALSE(
-      metrics->ParseProcTimeInState("cpu0\n"
-                                    "100000 5\n"
-                                    "invalid334 4\n",  // invalid header / line
-                                    123, time_in_state));
-}
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
@@ -833,59 +762,6 @@ TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
       EXPECT_GE(entry.second, prev_it->second);
   }
 }
-
-TEST(ProcessMetricsTestLinux, GetPerThreadCumulativeCPUTimeInState) {
-  ProcessHandle handle = GetCurrentProcessHandle();
-  std::unique_ptr<ProcessMetrics> metrics(
-      ProcessMetrics::CreateProcessMetrics(handle));
-
-  // Only some test systems will support GetPerThreadCumulativeCPUTimeInState,
-  // as it relies on /proc/pid/task/tid/time_in_state support in the kernel. In
-  // Android, this is only supported in newer kernels with a patch such as this:
-  // https://android-review.googlesource.com/c/kernel/common/+/610460/.
-  bool expect_success;
-  std::string contents;
-  {
-    FilePath time_in_state_path = FilePath("/proc")
-                                      .Append(NumberToString(handle))
-                                      .Append("task")
-                                      .Append(NumberToString(handle))
-                                      .Append("time_in_state");
-    expect_success = ReadFileToString(time_in_state_path, &contents) &&
-                     StartsWith(contents, "cpu", CompareCase::SENSITIVE);
-  }
-
-  ProcessMetrics::TimeInStatePerThread prev_thread_times;
-  EXPECT_EQ(metrics->GetPerThreadCumulativeCPUTimeInState(prev_thread_times),
-            expect_success)
-      << "time_in_state example contents: \n"
-      << contents;
-
-  // Only non-zero entries are reported.
-  for (const auto& entry : prev_thread_times) {
-    EXPECT_NE(entry.thread_id, 0);
-    EXPECT_GT(entry.cumulative_cpu_time, base::TimeDelta());
-  }
-
-  ProcessMetrics::TimeInStatePerThread current_thread_times;
-  EXPECT_EQ(metrics->GetPerThreadCumulativeCPUTimeInState(current_thread_times),
-            expect_success);
-
-  // Reported times should not decrease.
-  for (const auto& entry : current_thread_times) {
-    auto prev_it = ranges::find_if(
-        prev_thread_times,
-        [&entry](const ProcessMetrics::ThreadTimeInState& prev_entry) {
-          return entry.thread_id == prev_entry.thread_id &&
-                 entry.core_type == prev_entry.core_type &&
-                 entry.core_frequency_khz == prev_entry.core_frequency_khz;
-        });
-
-    if (prev_it != prev_thread_times.end())
-      EXPECT_GE(entry.cumulative_cpu_time, prev_it->cumulative_cpu_time);
-  }
-}
-
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
