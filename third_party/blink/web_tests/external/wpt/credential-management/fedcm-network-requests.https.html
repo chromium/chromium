@@ -9,6 +9,7 @@
 
 <script type="module">
 import {default_request_options,
+        default_alt_request_options,
         fedcm_test,
         select_manifest,
         set_fedcm_cookie} from './support/fedcm-helper.sub.js';
@@ -29,7 +30,7 @@ fedcm_test(async t => {
 
 fedcm_test(async t => {
   const first = navigator.credentials.get(default_request_options());
-  const second = navigator.credentials.get(default_request_options());
+  const second = navigator.credentials.get(default_alt_request_options());
 
   // We have to call promise_rejects_dom here, because if we call it after
   // the promise gets rejected, the unhandled rejection event handler is called

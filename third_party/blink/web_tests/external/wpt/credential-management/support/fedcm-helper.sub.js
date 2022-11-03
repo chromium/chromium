@@ -1,11 +1,30 @@
+const alt_manifest_origin = 'https://{{hosts[alt][]}}:{{ports[https][0]}}';
+
 // Set the identity provider cookie.
-export function set_fedcm_cookie() {
+export function set_fedcm_cookie(host) {
   return new Promise(resolve => {
-    const img = document.createElement('img');
-    img.src = 'support/set_cookie';
-    img.addEventListener('error', resolve);
-    document.body.appendChild(img);
+    if (host == undefined) {
+      document.cookie = 'cookie=1; SameSite=Strict; Secure';
+      resolve();
+    } else {
+      let popup_window = window.open(host + '/credential-management/support/set_cookie');
+
+      const popup_message_handler = (event) => {
+        if (event.origin == host) {
+          popup_window.close();
+          window.removeEventListener('message', popup_message_handler);
+          resolve();
+        }
+      };
+
+      window.addEventListener('message', popup_message_handler);
+    }
   });
+}
+
+// Set the alternate identity provider cookie.
+export function set_alt_fedcm_cookie() {
+  return set_fedcm_cookie(alt_manifest_origin);
 }
 
 // Returns FedCM CredentialRequestOptions for which navigator.credentials.get()
@@ -27,10 +46,30 @@ credential-management/support/fedcm/${manifest_filename}`;
   };
 }
 
+// Returns alternate FedCM CredentialRequestOptions for which navigator.credentials.get()
+// succeeds.
+export function default_alt_request_options(manifest_filename) {
+  if (manifest_filename === undefined) {
+    manifest_filename = "manifest.py";
+  }
+  const manifest_path = `${alt_manifest_origin}/\
+credential-management/support/fedcm/${manifest_filename}`;
+  return {
+    identity: {
+      providers: [{
+        configURL: manifest_path,
+        clientId: '1',
+        nonce: '2',
+      }]
+    }
+  };
+}
+
 // Test wrapper which does FedCM-specific setup.
 export function fedcm_test(test_func) {
   promise_test(async t => {
     await set_fedcm_cookie();
+    await set_alt_fedcm_cookie();
     await test_func(t);
   });
 }

@@ -239,6 +239,7 @@ void WebTestBrowserMainRunner::Initialize() {
   command_line.AppendSwitchASCII(network::switches::kHostResolverRules,
                                  "MAP nonexistent.*.test ~NOTFOUND,"
                                  "MAP web-platform.test:443 127.0.0.1:8444,"
+                                 "MAP not-web-platform.test:443 127.0.0.1:8444,"
                                  "MAP *.test. 127.0.0.1,"
                                  "MAP *.test 127.0.0.1");
 
