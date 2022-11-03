@@ -507,11 +507,6 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   /** @private */
-  onLearnMoreTap_() {
-    window.open(this.i18n('printingCUPSPrintPpdLearnMoreUrl'));
-  }
-
-  /** @private */
   onBrowseFile_() {
     this.browserProxy_.getCupsPrinterPPDPath().then(
         this.printerPPDPathChanged_.bind(this));

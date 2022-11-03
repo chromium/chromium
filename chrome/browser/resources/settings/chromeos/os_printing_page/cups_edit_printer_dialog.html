@@ -128,11 +128,13 @@
       <div id="ppdLabel" class="cr-form-field-label"
            hidden="[[pendingPrinter_.isManaged]]">
         <div class="select-ppd-and-view">
-          <span>$i18n{selectDriver}</span>
           <cr-button class="ppd-button" on-click="onViewPpd_"
                      disabled="[[printerInfoChanged_]]">
             $i18n{cupsPrintersViewPpd}
           </cr-button>
+          <localized-link localized-string="$i18n{selectDriver}"
+                          link-url="$i18n{printingCUPSPrintPpdLearnMoreUrl}">
+          </localized-link>
         </div>
       </div>
       <div class="settings-box two-line"
@@ -151,12 +153,6 @@
     </template>
   </div>
   <div slot="dialog-buttons">
-    <div>
-      <cr-button on-click="onLearnMoreTap_"
-                 hidden="[[pendingPrinter_.isManaged]]">
-        $i18n{cupsPrintersLearnMoreButtonTitle}
-      </cr-button>
-    </div>
     <div>
       <div class="eula" id="eulaUrl" hidden="[[!eulaUrl_]]">
         <a href="[[eulaUrl_]]" target="_blank">$i18n{printerEulaNotice}</a>

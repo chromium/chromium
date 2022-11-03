@@ -2618,11 +2618,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_MANUFACTURER" desc="Label for the dropdown menu to select a manufacturer for the printer.">
     Manufacturer
   </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_ADVANCED_CONFIG_SELECT_DRIVER" desc="Label for the file selector to manually select a PPD file from the user's file system.">
+    Alternatively, select printer PPD. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_SELECT_DRIVER" desc="Label for the file selector to manually select a PPD file from the user's file system.">
-    Or specify your printer PPD
+    or select PPD. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_VIEW_PPD" desc="Text for the button which allows the user to view the PPD for the active printer.">
-    View PPD
+    View printer PPD
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_VIEW_PPD_ERROR_MESSAGE" desc="The message shown when the request to view a PPD is unsuccessful.">
     Unable to retrieve PPD.

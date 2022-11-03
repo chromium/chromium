@@ -40,7 +40,9 @@
       </cr-searchable-drop-down>
     </div>
     <div id="ppdLabel" class="cr-form-field-label">
-      <span>$i18n{selectDriver}</span>
+      <localized-link localized-string="$i18n{advancedConfigSelectDriver}"
+                      link-url="$i18n{printingCUPSPrintPpdLearnMoreUrl}">
+      </localized-link>
     </div>
     <div class="settings-box two-line">
       <cr-input class="browse-file-input" readonly value="[[newUserPPD_]]"
@@ -55,11 +57,6 @@
   </div>
   <div slot="dialog-buttons">
     <div> <!-- Left group -->
-      <cr-button on-click="onLearnMoreTap_">
-        $i18n{cupsPrintersLearnMoreButtonTitle}
-      </cr-button>
-    </div>
-    <div> <!-- Middle group -->
       <div class="eula" id="eulaUrl" hidden="[[!eulaUrl_]]">
         <a href="[[eulaUrl_]]" target="_blank">$i18n{printerEulaNotice}</a>
       </div>
