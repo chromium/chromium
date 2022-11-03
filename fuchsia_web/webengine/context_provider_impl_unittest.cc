@@ -46,6 +46,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/widevine/cdm/buildflags.h"
 
 namespace {
 
@@ -655,9 +656,6 @@ TEST_F(ContextProviderImplTest, WithDataQuotaBytes) {
   loop.Run();
 }
 
-// TODO(crbug.com/1013412): This test doesn't actually exercise DRM, so could
-// be executed everywhere if DRM support were configurable.
-#if defined(ARCH_CPU_ARM64)
 TEST_F(ContextProviderImplTest, WithCdmDataQuotaBytes) {
   base::RunLoop loop;
   fake_environment_.fake_launcher().set_create_component_callback(
@@ -686,4 +684,3 @@ TEST_F(ContextProviderImplTest, WithCdmDataQuotaBytes) {
 
   loop.Run();
 }
-#endif  // defined(ARCH_CPU_ARM64)

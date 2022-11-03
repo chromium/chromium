@@ -47,10 +47,14 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "third_party/widevine/cdm/buildflags.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
+
+#if BUILDFLAG(ENABLE_WIDEVINE) && BUILDFLAG(ENABLE_CAST_RECEIVER)
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -87,9 +91,11 @@ constexpr char kDisableGpuSwitch[] = "disable-gpu";
 constexpr char kDisableSoftwareRasterizerSwitch[] =
     "disable-software-rasterizer";
 
+#if BUILDFLAG(ENABLE_WIDEVINE) && BUILDFLAG(ENABLE_CAST_RECEIVER)
 // Use a constexpr instead of the media::IsClearKey() helper, because of the
 // additional dependencies required.
 constexpr char kClearKeyKeySystem[] = "org.w3.clearkey";
+#endif
 
 // Registers product data for the web_instance Component, ensuring it is
 // registered regardless of how the Component is launched and without requiring
@@ -315,7 +321,7 @@ bool HandleKeyboardFeatureFlags(fuchsia::web::ContextFeatureFlags features,
 // FuchsiaCdm. Specifically we need to verify that protected memory is supported
 // and that mediacodec API provides hardware video decoders.
 bool IsFuchsiaCdmSupported() {
-#if defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(ENABLE_WIDEVINE) && defined(ARCH_CPU_ARM64)
   return true;
 #else
   return false;
@@ -350,9 +356,6 @@ std::vector<std::string> GetRequiredServicesForConfig(
 
   // Additional services are required depending on particular configuration
   // parameters.
-  if (params.has_playready_key_system()) {
-    services.emplace_back("fuchsia.media.drm.PlayReady");
-  }
 
   // Additional services are required dependent on the set of features specified
   // for the instance, as described at:
@@ -393,10 +396,18 @@ std::vector<std::string> GetRequiredServicesForConfig(
 
   // HARDWARE_VIDEO_DECODER_ONLY does not require any additional services.
 
+#if BUILDFLAG(ENABLE_WIDEVINE)
   if ((features & fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM) ==
       fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM) {
     services.emplace_back("fuchsia.media.drm.Widevine");
   }
+
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+  if (params.has_playready_key_system()) {
+    services.emplace_back("fuchsia.media.drm.PlayReady");
+  }
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
   // HEADLESS instances cannot create Views and therefore do not require access
   // to any View-based services.
@@ -567,10 +578,12 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     launch_args.AppendSwitch(kDisableSoftwareRasterizerSwitch);
   }
 
+#if BUILDFLAG(ENABLE_WIDEVINE)
   if (enable_widevine) {
     launch_args.AppendSwitch(switches::kEnableWidevine);
   }
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   if (enable_playready) {
     const std::string& key_system = params.playready_key_system();
     if (key_system == kWidevineKeySystem || key_system == kClearKeyKeySystem) {
@@ -581,6 +594,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     }
     launch_args.AppendSwitchNative(switches::kPlayreadyKeySystem, key_system);
   }
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
   bool enable_audio = (features & fuchsia::web::ContextFeatureFlags::AUDIO) ==
                       fuchsia::web::ContextFeatureFlags::AUDIO;

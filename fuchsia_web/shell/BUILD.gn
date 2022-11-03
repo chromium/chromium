@@ -88,6 +88,7 @@ executable("web_engine_shell_exec") {
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/widevine/cdm:buildflags",
     "//url",
   ]
 }

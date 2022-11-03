@@ -30,6 +30,7 @@
 #include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/shell/remote_debugging_port.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
+#include "third_party/widevine/cdm/buildflags.h"
 #include "url/gurl.h"
 
 fuchsia::sys::ComponentControllerPtr component_controller_;
@@ -179,7 +180,7 @@ int main(int argc, char** argv) {
       fuchsia::web::ContextFeatureFlags::KEYBOARD |
       fuchsia::web::ContextFeatureFlags::NETWORK |
       fuchsia::web::ContextFeatureFlags::VIRTUAL_KEYBOARD;
-#if defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(ENABLE_WIDEVINE)
   features |= fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM;
 #endif
   if (is_headless)

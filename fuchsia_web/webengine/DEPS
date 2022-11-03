@@ -13,7 +13,6 @@ include_rules = [
   "+media/fuchsia",
   "+mojo/public",
   "+net",
-  "+third_party/widevine/cdm/widevine_cdm_common.h",
   "+ui/base",
   "+ui/gfx/switches.h",
 ]
@@ -23,7 +22,9 @@ specific_include_rules = {
     "+fuchsia_web/webinstance_host"
   ],
   "context_provider_impl_unittest\.cc": [
-    "+services/network/public/cpp/network_switches.h"
+    "+services/network/public/cpp/network_switches.h",
+    # TODO(crbug.com/1013412): Remove when the TODO in the file is addressed.
+    "+third_party/widevine/cdm/buildflags.h",
   ],
   "web_engine_browser_main_parts\.cc": [
     "+components/fuchsia_legacymetrics/legacymetrics_client.h"

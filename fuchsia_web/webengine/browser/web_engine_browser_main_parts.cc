@@ -51,7 +51,7 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "third_party/widevine/cdm/buildflags.h"
 #include "ui/aura/screen_ozone.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
@@ -62,6 +62,10 @@
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 #include "components/fuchsia_legacymetrics/legacymetrics_client.h"  // nogncheck
 #include "fuchsia_web/webengine/common/cast_streaming.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_WIDEVINE)
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif
 
 namespace {
@@ -110,19 +114,27 @@ std::unique_ptr<media::FuchsiaCdmManager> CreateCdmManager() {
 
   const auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableWidevine)) {
+#if BUILDFLAG(ENABLE_WIDEVINE)
     create_key_system_callbacks.emplace(
         kWidevineKeySystem,
         base::BindRepeating(
             &ConnectToKeySystem<fuchsia::media::drm::Widevine>));
+#else
+    LOG(WARNING) << "Widevine is not supported.";
+#endif
   }
 
   std::string playready_key_system =
       command_line->GetSwitchValueASCII(switches::kPlayreadyKeySystem);
   if (!playready_key_system.empty()) {
+#if BUILDFLAG(ENABLE_WIDEVINE) && BUILDFLAG(ENABLE_CAST_RECEIVER)
     create_key_system_callbacks.emplace(
         playready_key_system,
         base::BindRepeating(
             &ConnectToKeySystem<fuchsia::media::drm::PlayReady>));
+#else
+    LOG(WARNING) << "PlayReady is not supported.";
+#endif
   }
 
   std::string cdm_data_directory =

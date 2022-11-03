@@ -47,6 +47,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+#include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -93,9 +94,13 @@ static constexpr char const* kRendererSwitchesToCopy[] = {
     switches::kUseOverlaysForVideo,
     switches::kMinVideoDecoderOutputBufferSize,
 
-    // TODO(crbug/1013412): Delete these two switches when fixed.
+// TODO(crbug/1013412): Delete these two switches when fixed.
+#if BUILDFLAG(ENABLE_WIDEVINE)
     switches::kEnableWidevine,
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
     switches::kPlayreadyKeySystem,
+#endif
+#endif
 
     // Pass to the renderer process for consistency with Chrome.
     network::switches::kUnsafelyTreatInsecureOriginAsSecure,

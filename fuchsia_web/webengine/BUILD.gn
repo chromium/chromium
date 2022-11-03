@@ -11,6 +11,7 @@ import("//build/config/locales.gni")
 import("//testing/test.gni")
 import("//third_party/fuchsia-sdk/sdk/build/component.gni")
 import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/repack.gni")
 
 # Only allow use by targets in this directory unless explicitly specified.
@@ -242,7 +243,6 @@ component("web_engine_core") {
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
     "//third_party/widevine/cdm:buildflags",
-    "//third_party/widevine/cdm:headers",
     "//ui/accessibility",
     "//ui/aura",
     "//ui/base",
@@ -257,6 +257,10 @@ component("web_engine_core") {
 
   if (enable_cast_receiver) {
     deps += [ "//components/fuchsia_legacymetrics" ]
+  }
+
+  if (enable_widevine) {
+    deps += [ "//third_party/widevine/cdm:headers" ]
   }
 
   # Technically the PAK files are only data dependencies, but specifying them
@@ -699,6 +703,7 @@ test("web_engine_unittests") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//third_party/widevine/cdm:buildflags",
     "//ui/events:test_support",
     "//ui/ozone",
   ]

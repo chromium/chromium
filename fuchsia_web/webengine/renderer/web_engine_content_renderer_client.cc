@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/chromecast_buildflags.h"
-#include "components/cdm/renderer/widevine_key_system_info.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
@@ -30,7 +29,11 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/widevine/cdm/buildflags.h"
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+
+#if BUILDFLAG(ENABLE_WIDEVINE)
+#include "components/cdm/renderer/widevine_key_system_info.h"
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 #include "components/cast_streaming/renderer/public/resource_provider.h"  // nogncheck
@@ -60,6 +63,7 @@ bool IsSupportedHardwareVideoCodec(const media::VideoType& type) {
   return false;
 }
 
+#if BUILDFLAG(ENABLE_WIDEVINE) && BUILDFLAG(ENABLE_CAST_RECEIVER)
 class PlayreadyKeySystemInfo : public ::media::KeySystemInfo {
  public:
   PlayreadyKeySystemInfo(const std::string& key_system_name,
@@ -122,6 +126,7 @@ class PlayreadyKeySystemInfo : public ::media::KeySystemInfo {
   const std::string key_system_name_;
   const media::SupportedCodecs supported_codecs_;
 };
+#endif  // BUILDFLAG(ENABLE_WIDEVINE) && BUILDFLAG(ENABLE_CAST_RECEIVER)
 
 }  // namespace
 

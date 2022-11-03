@@ -17,6 +17,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "web_instance_host\.cc": [
+    "+third_party/widevine/cdm/buildflags.h",
+  ],
   "web_instance_host_integration_test\.cc": [
     "+fuchsia_web/webengine/test/frame_for_test.h",
     "+net/test/embedded_test_server",
