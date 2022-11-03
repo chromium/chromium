@@ -148,18 +148,22 @@ bool SevenZipDelegateImpl::OnEntry(const seven_zip::EntryInfo& entry,
   // The target file is deleted by default unless extracting succeeds.
   current_file_.DeleteOnClose(true);
 
-  mapped_file_.emplace();
-  bool mapped_file_ok = mapped_file_->Initialize(
-      current_file_.Duplicate(), {0, static_cast<size_t>(entry.file_size)},
-      base::MemoryMappedFile::READ_WRITE_EXTEND);
-  if (!mapped_file_ok) {
-    PLOG(ERROR) << "Can't map file to memory";
-    error_code_ = ::GetLastError();
-    unpack_error_ = UNPACK_ALLOCATE_ERROR;
-    return false;
-  }
+  if (entry.file_size > 0) {
+    mapped_file_.emplace();
+    bool mapped_file_ok = mapped_file_->Initialize(
+        current_file_.Duplicate(), {0, static_cast<size_t>(entry.file_size)},
+        base::MemoryMappedFile::READ_WRITE_EXTEND);
+    if (!mapped_file_ok) {
+      PLOG(ERROR) << "Can't map file to memory";
+      error_code_ = ::GetLastError();
+      unpack_error_ = UNPACK_ALLOCATE_ERROR;
+      return false;
+    }
 
-  output = base::span<uint8_t>(mapped_file_->data(), mapped_file_->length());
+    output = base::span<uint8_t>(mapped_file_->data(), mapped_file_->length());
+  } else {
+    output = base::span<uint8_t>();
+  }
 
   // Clear the last error code before the entry is extracted to reduce the
   // likelihood that it will hold an unrelated error code in case extraction
@@ -210,20 +214,22 @@ bool SevenZipDelegateImpl::EntryDone(seven_zip::Result result,
     return false;
   }
 
-  // Modified pages are not written to disk until they're evicted from the
-  // working set. Explicitly kick off the write to disk now
-  // (asynchronously) to improve the odds that the file's contents are
-  // on-disk when another process (such as chrome.exe) would like to use
-  // them.
-  ::FlushViewOfFile(mapped_file_->data(), 0);
-  // Unmap the target file from the process's address space.
-  mapped_file_.reset();
-  // Flush to avoid odd behavior, such as the bug in Windows 7 through
-  // Windows 10 1809 for PE files described in
-  // https://randomascii.wordpress.com/2018/02/25/compiler-bug-linker-bug-windows-kernel-bug/.
-  // We've also observed oddly empty files on other Windows versions, so
-  // this is unconditional.
-  current_file.Flush();
+  if (mapped_file_) {
+    // Modified pages are not written to disk until they're evicted from the
+    // working set. Explicitly kick off the write to disk now
+    // (asynchronously) to improve the odds that the file's contents are
+    // on-disk when another process (such as chrome.exe) would like to use
+    // them.
+    ::FlushViewOfFile(mapped_file_->data(), 0);
+    // Unmap the target file from the process's address space.
+    mapped_file_.reset();
+    // Flush to avoid odd behavior, such as the bug in Windows 7 through
+    // Windows 10 1809 for PE files described in
+    // https://randomascii.wordpress.com/2018/02/25/compiler-bug-linker-bug-windows-kernel-bug/.
+    // We've also observed oddly empty files on other Windows versions, so
+    // this is unconditional.
+    current_file.Flush();
+  }
 
   // On success, `current_file` is kept.
   current_file.DeleteOnClose(false);

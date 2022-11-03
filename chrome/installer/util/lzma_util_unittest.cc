@@ -129,3 +129,11 @@ TEST_F(LzmaUtilTest, UnPackArchiveTest) {
   EXPECT_EQ(UNPACK_SZAREX_OPEN_ERROR,
             UnPackArchive(archive, extract_dir, &unpacked_file));
 }
+
+TEST_F(LzmaUtilTest, EmptyFile) {
+  base::FilePath extract_dir(temp_dir_.GetPath());
+  base::FilePath archive = data_dir_.AppendASCII("archive_with_empty_file.7z");
+  LzmaUtilImpl lzma_util;
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(archive));
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.UnPack(extract_dir, nullptr));
+}
