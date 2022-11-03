@@ -70,7 +70,8 @@
         "specifiers": ["Trusty", "Release"],
         "steps": {
             "wpt_tests_suite (experimental)": {}
-        }
+        },
+	"is_try_builder": true
     },
     "linux-wpt-content-shell-fyi-rel": {
         "main": "chromium.fyi",
