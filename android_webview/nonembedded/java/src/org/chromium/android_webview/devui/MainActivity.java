@@ -55,6 +55,7 @@ public class MainActivity extends FragmentActivity {
 
     // Keep in sync with DeveloperUiService.java
     public static final String FRAGMENT_ID_INTENT_EXTRA = "fragment-id";
+    public static final String RESET_FLAGS_INTENT_EXTRA = "reset-flags";
     public static final int FRAGMENT_ID_HOME = 0;
     public static final int FRAGMENT_ID_CRASHES = 1;
     public static final int FRAGMENT_ID_FLAGS = 2;
@@ -157,7 +158,7 @@ public class MainActivity extends FragmentActivity {
         View.OnClickListener listener = (View view) -> {
             assert mFragmentIdMap.containsKey(view.getId()) : "Unexpected view ID: " + view.getId();
             int fragmentId = mFragmentIdMap.get(view.getId());
-            switchFragment(fragmentId);
+            switchFragment(fragmentId, false);
             logFragmentNavigation("NavBar", fragmentId);
         };
         final int childCount = bottomNavBar.getChildCount();
@@ -184,7 +185,7 @@ public class MainActivity extends FragmentActivity {
         RecordHistogram.recordBooleanHistogram("Android.WebView.DevUi.AppLaunch", true);
     }
 
-    private void switchFragment(int chosenFragmentId) {
+    private void switchFragment(int chosenFragmentId, boolean onResume) {
         DevUiBaseFragment fragment = null;
         switch (chosenFragmentId) {
             default:
@@ -202,8 +203,16 @@ public class MainActivity extends FragmentActivity {
                     // Spawn the request permission check on top of the new fragment
                     requestPostNotificationPermission();
                 }
+
+                boolean shouldResetFlags = false;
+                // The flag reset is checked on resume so that
+                // it can only be triggered by a new intent.
+                if (onResume) {
+                    shouldResetFlags = IntentUtils.safeGetBooleanExtra(
+                            getIntent(), RESET_FLAGS_INTENT_EXTRA, false);
+                }
                 // Enable the UI if we don't need a permission check
-                fragment = new FlagsFragment(!needPermissionCheck);
+                fragment = new FlagsFragment(!needPermissionCheck, shouldResetFlags);
                 break;
             case FRAGMENT_ID_COMPONENTS:
                 fragment = new ComponentsListFragment();
@@ -275,7 +284,7 @@ public class MainActivity extends FragmentActivity {
         // moment, it's specified only by DeveloperUiService (so make sure these constants stay in
         // sync).
         fragmentId = IntentUtils.safeGetIntExtra(getIntent(), FRAGMENT_ID_INTENT_EXTRA, fragmentId);
-        switchFragment(fragmentId);
+        switchFragment(fragmentId, true);
         logFragmentNavigation("FromIntent", fragmentId);
     }
 
@@ -342,7 +351,7 @@ public class MainActivity extends FragmentActivity {
             return true;
         } else if (item.getItemId() == R.id.options_menu_components) {
             logMenuSelection(MenuChoice.COMPONENTS_UI);
-            switchFragment(FRAGMENT_ID_COMPONENTS);
+            switchFragment(FRAGMENT_ID_COMPONENTS, false);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -385,7 +394,7 @@ public class MainActivity extends FragmentActivity {
             editor.putBoolean(POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY, true);
             editor.apply();
             // Reset the UI to enable input fields.
-            switchFragment(FRAGMENT_ID_FLAGS);
+            switchFragment(FRAGMENT_ID_FLAGS, false);
         }
     }
 

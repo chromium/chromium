@@ -70,6 +70,7 @@ import org.chromium.android_webview.services.DeveloperUiService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
@@ -123,14 +124,7 @@ public class FlagsFragmentTest {
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_FLAGS);
         mRule.launchActivity(intent);
 
-        // Espresso is normally configured to automatically wait for the main thread to go idle, but
-        // BaseActivityTestRule turns that behavior off so we must explicitly wait for the View
-        // hierarchy to inflate.
-        ViewUtils.waitForView(withId(R.id.navigation_flags_ui));
-        ViewUtils.waitForView(withId(R.id.navigation_home));
-        ViewUtils.waitForView(withId(R.id.flag_search_bar));
-        ViewUtils.waitForView(withId(R.id.flags_list));
-        ViewUtils.waitForView(withId(R.id.reset_flags_button));
+        waitForInflatedFlagFragment();
 
         // Always close the soft keyboard when the activity is launched which is sometimes shown
         // because flags search TextView has input focus by default. The keyboard may cover up some
@@ -142,6 +136,17 @@ public class FlagsFragmentTest {
     public void tearDown() {
         // Make sure to clear shared preferences between tests to avoid any saved state.
         DeveloperUiService.clearSharedPrefsForTesting(InstrumentationRegistry.getTargetContext());
+    }
+
+    private void waitForInflatedFlagFragment() {
+        // Espresso is normally configured to automatically wait for the main thread to go idle, but
+        // BaseActivityTestRule turns that behavior off so we must explicitly wait for the View
+        // hierarchy to inflate.
+        ViewUtils.waitForView(withId(R.id.navigation_flags_ui));
+        ViewUtils.waitForView(withId(R.id.navigation_home));
+        ViewUtils.waitForView(withId(R.id.flag_search_bar));
+        ViewUtils.waitForView(withId(R.id.flags_list));
+        ViewUtils.waitForView(withId(R.id.reset_flags_button));
     }
 
     private CallbackHelper getFlagUiSearchBarListener() {
@@ -714,6 +719,60 @@ public class FlagsFragmentTest {
         flagInteraction.onChildView(withId(R.id.flag_toggle))
                 .check(matches(withSpinnerText(containsString("Default"))));
         Assert.assertTrue(
+                DeveloperModeUtils.getFlagOverrides(DeveloperUiTest.TEST_WEBVIEW_PACKAGE_NAME)
+                        .isEmpty());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testResetFlagsByIntent() throws Throwable {
+        // 1. First test that the intent resets the flags
+        // Given one flag is set
+        toggleFlag(onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(1), true);
+        Assert.assertFalse(
+                DeveloperModeUtils.getFlagOverrides(DeveloperUiTest.TEST_WEBVIEW_PACKAGE_NAME)
+                        .isEmpty());
+
+        // Close the activity
+        ApplicationTestUtils.finishActivity(mRule.getActivity());
+
+        // And when the activity is relaunched with the reset flag
+        // which should clear the flags
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), MainActivity.class);
+        intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_FLAGS);
+        intent.putExtra(MainActivity.RESET_FLAGS_INTENT_EXTRA, true);
+        mRule.launchActivity(intent);
+        waitForInflatedFlagFragment();
+
+        // Then the flags will be empty
+        DataInteraction flagInteraction =
+                onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(1);
+        flagInteraction.onChildView(withId(R.id.flag_name))
+                .check(matches(not(compoundDrawableVisible(CompoundDrawable.START))));
+        flagInteraction.onChildView(withId(R.id.flag_toggle))
+                .check(matches(withSpinnerText(containsString("Default"))));
+        Assert.assertTrue(
+                DeveloperModeUtils.getFlagOverrides(DeveloperUiTest.TEST_WEBVIEW_PACKAGE_NAME)
+                        .isEmpty());
+
+        // 2. Then test that the intent will not keep causing resets
+        // Given a flag is set again
+        toggleFlag(onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(1), true);
+        Assert.assertFalse(
+                DeveloperModeUtils.getFlagOverrides(DeveloperUiTest.TEST_WEBVIEW_PACKAGE_NAME)
+                        .isEmpty());
+
+        // And navigate away from flags
+        onView(withId(R.id.navigation_home)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_home));
+
+        // When navigating back to the flags fragment
+        onView(withId(R.id.navigation_flags_ui)).perform(click());
+        waitForInflatedFlagFragment();
+
+        // Then the flags should still be there
+        Assert.assertFalse(
                 DeveloperModeUtils.getFlagOverrides(DeveloperUiTest.TEST_WEBVIEW_PACKAGE_NAME)
                         .isEmpty());
     }

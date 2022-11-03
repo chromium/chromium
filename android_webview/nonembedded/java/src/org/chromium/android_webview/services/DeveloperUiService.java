@@ -53,6 +53,8 @@ public final class DeveloperUiService extends Service {
 
     // Keep in sync with MainActivity.java
     private static final String FRAGMENT_ID_INTENT_EXTRA = "fragment-id";
+    private static final String RESET_FLAGS_INTENT_EXTRA = "reset-flags";
+
     private static final int FRAGMENT_ID_HOME = 0;
     private static final int FRAGMENT_ID_CRASHES = 1;
     private static final int FRAGMENT_ID_FLAGS = 2;
@@ -233,6 +235,17 @@ public final class DeveloperUiService extends Service {
         return new Notification.Builder(this);
     }
 
+    private Intent createFlagsFragmentIntent(boolean resetFlags) {
+        Intent intent = new Intent("com.android.webview.SHOW_DEV_UI");
+        intent.setClassName(getPackageName(), "org.chromium.android_webview.devui.MainActivity");
+        intent.putExtra(FRAGMENT_ID_INTENT_EXTRA, FRAGMENT_ID_FLAGS);
+        if (resetFlags) {
+            intent.putExtra(RESET_FLAGS_INTENT_EXTRA, resetFlags);
+        }
+
+        return intent;
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private void registerDefaultNotificationChannel() {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
@@ -251,21 +264,32 @@ public final class DeveloperUiService extends Service {
             registerDefaultNotificationChannel();
         }
 
-        Intent notificationIntent = new Intent("com.android.webview.SHOW_DEV_UI");
-        notificationIntent.setClassName(
-                getPackageName(), "org.chromium.android_webview.devui.MainActivity");
-        notificationIntent.putExtra(FRAGMENT_ID_INTENT_EXTRA, FRAGMENT_ID_FLAGS);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this, 0, notificationIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
+        Intent openFlagsIntent = createFlagsFragmentIntent(false);
+        PendingIntent pendingOpenFlagsIntent = PendingIntent.getActivity(
+                this, 0, openFlagsIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
+
+        // While this service does ultimately manage writing the flag overrides, we would run
+        // into issues around synchronizing with the flags fragment if it's open because it holds
+        // onto the state of the flags so we send an intent to reset through there.
+        Intent resetIntent = createFlagsFragmentIntent(true);
+        PendingIntent pendingResetExperimentsIntent = PendingIntent.getActivity(
+                this, 1, resetIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
+
+        Notification.Action resetExperimentsAction =
+                new Notification.Action
+                        .Builder(org.chromium.android_webview.devui.R.drawable.ic_flag,
+                                "Disable experimental features", pendingResetExperimentsIntent)
+                        .build();
 
         Notification.Builder builder =
                 createNotificationBuilder()
                         .setContentTitle(NOTIFICATION_TITLE)
                         .setContentText(NOTIFICATION_CONTENT)
                         .setSmallIcon(org.chromium.android_webview.devui.R.drawable.ic_flag)
-                        .setContentIntent(pendingIntent)
+                        .setContentIntent(pendingOpenFlagsIntent)
                         .setOngoing(true)
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
+                        .addAction(resetExperimentsAction)
                         .setTicker(NOTIFICATION_TICKER);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {

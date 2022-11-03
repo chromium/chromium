@@ -82,6 +82,7 @@ public class FlagsFragment extends DevUiBaseFragment {
     };
 
     private boolean mEnabled;
+    private boolean mShouldReset;
 
     private Map<String, Boolean> mOverriddenFlags = new HashMap<>();
     private FlagsListAdapter mListAdapter;
@@ -94,8 +95,9 @@ public class FlagsFragment extends DevUiBaseFragment {
     // Must only be accessed on UI thread.
     private static @NonNull Flag[] sFlagList = ProductionSupportedFlagList.sFlagList;
 
-    public FlagsFragment(boolean enabled) {
+    public FlagsFragment(boolean enabled, boolean shouldReset) {
         mEnabled = enabled;
+        mShouldReset = shouldReset;
     }
 
     public FlagsFragment() {
@@ -136,6 +138,11 @@ public class FlagsFragment extends DevUiBaseFragment {
         }
         mListAdapter = new FlagsListAdapter(flagsAndWarningText);
         flagsListView.setAdapter(mListAdapter);
+
+        if (mShouldReset) {
+            mShouldReset = false;
+            resetAllFlags();
+        }
 
         Button resetFlagsButton = view.findViewById(R.id.reset_flags_button);
         resetFlagsButton.setOnClickListener((View flagButton) -> { resetAllFlags(); });
