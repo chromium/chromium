@@ -4214,3 +4214,23 @@ EVENT_TYPE(WEBSOCKET_INVALID_FRAME)
 //     "host_found_in_hsts_bypass_list": <boolean>,
 //   }
 EVENT_TYPE(TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL)
+
+// ------------------------------------------------------------------------
+// Oblivious HTTP
+// ------------------------------------------------------------------------
+
+// OBLIVIOUS_HTTP_REQUEST_START is emitted when an oblivious HTTP request is
+// started.
+EVENT_TYPE(OBLIVIOUS_HTTP_REQUEST_START)
+
+// OBLIVIOUS_HTTP_REQUEST_END is emitted when an oblivious HTTP request ends.
+// The net error "status" code for the request is attached.
+EVENT_TYPE(OBLIVIOUS_HTTP_REQUEST_END)
+
+// OBLIVIOUS_HTTP_REQUEST_DATA logs either just the headers of the request or
+// the entire request (depending on capture settings), before encryption.
+EVENT_TYPE(OBLIVIOUS_HTTP_REQUEST_DATA)
+
+// OBLIVIOUS_HTTP_RESPONSE_DATA logs either just the headers of the response or
+//  the entire response (depending on capture settings), after decryption.
+EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_DATA)

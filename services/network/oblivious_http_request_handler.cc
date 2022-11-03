@@ -7,6 +7,9 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
+#include "net/log/net_log_capture_mode.h"
+#include "net/log/net_log_values.h"
+#include "net/log/net_log_with_source.h"
 #include "net/third_party/quiche/src/quiche/binary_http/binary_http_message.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -61,6 +64,7 @@ class ObliviousHttpRequestHandler::RequestState {
   std::unique_ptr<SimpleURLLoader> loader;
   // Crypto stuff that needs to last from request to response.
   // TrustToken handler
+  net::NetLogWithSource net_log;
 };
 
 ObliviousHttpRequestHandler::ObliviousHttpRequestHandler(
@@ -118,6 +122,22 @@ void ObliviousHttpRequestHandler::StartRequest(
       std::move(ohttp_request->request_body->content_type),
       std::move(ohttp_request->request_body->content));
 
+  state->net_log = net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::URL_REQUEST);
+  state->net_log.BeginEvent(net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST_START);
+
+  state->net_log.AddEvent(
+      net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST_DATA,
+      [&](net::NetLogCaptureMode capture_mode) {
+        base::Value::Dict dict;
+        dict.Set("byte_count", static_cast<int>(bhttp_payload.size()));
+        if (net::NetLogCaptureIncludesSocketBytes(capture_mode)) {
+          dict.Set("bytes", net::NetLogBinaryValue(bhttp_payload.data(),
+                                                   bhttp_payload.size()));
+        }
+        return base::Value(std::move(dict));
+      });
+
   // TODO(behamilton): handle encryption, padding.
   std::string unencrypted_blob = bhttp_payload;
 
@@ -128,6 +148,8 @@ void ObliviousHttpRequestHandler::StartRequest(
   resource_request->redirect_mode = mojom::RedirectMode::kError;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags |= net::LOAD_DISABLE_CACHE;
+  // TODO(behamilton): Pass netlog source to resource request to link the outer
+  // request to this request.
 
   state->loader = SimpleURLLoader::Create(
       std::move(resource_request),
@@ -146,7 +168,12 @@ void ObliviousHttpRequestHandler::StartRequest(
 void ObliviousHttpRequestHandler::RespondWithError(mojo::RemoteSetElementId id,
                                                    int error_code) {
   mojom::ObliviousHttpClient* client = clients_.Get(id);
+  auto state_iter = client_state_.find(id);
   DCHECK(client);
+  DCHECK(state_iter != client_state_.end());
+  RequestState* state = state_iter->second.get();
+  state->net_log.EndEventWithIntParams(
+      net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST_END, "status", error_code);
   client->OnCompleted(absl::nullopt, error_code);
   clients_.Remove(id);
 
@@ -169,6 +196,18 @@ void ObliviousHttpRequestHandler::OnRequestComplete(
   }
   // TODO(behamilton): decrypt payload.
   std::string payload = std::move(*response);
+
+  state->net_log.AddEvent(
+      net::NetLogEventType::OBLIVIOUS_HTTP_RESPONSE_DATA,
+      [&](net::NetLogCaptureMode capture_mode) {
+        base::Value::Dict dict;
+        dict.Set("byte_count", static_cast<int>(payload.size()));
+        if (net::NetLogCaptureIncludesSocketBytes(capture_mode)) {
+          dict.Set("bytes",
+                   net::NetLogBinaryValue(payload.data(), payload.size()));
+        }
+        return base::Value(std::move(dict));
+      });
 
   auto bhttp_response = quiche::BinaryHttpResponse::Create(payload);
   if (!bhttp_response.ok()) {
