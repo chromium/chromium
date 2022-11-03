@@ -314,9 +314,9 @@ std::vector<std::string> AppServiceProxyLacros::GetAppIdsForUrl(
     const GURL& url,
     bool exclude_browsers,
     bool exclude_browser_tab_apps) {
-  auto intent_launch_info =
-      GetAppsForIntent(apps_util::CreateIntentFromUrl(url), exclude_browsers,
-                       exclude_browser_tab_apps);
+  auto intent_launch_info = GetAppsForIntent(
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
+      exclude_browsers, exclude_browser_tab_apps);
   std::vector<std::string> app_ids;
   for (auto& entry : intent_launch_info) {
     app_ids.push_back(std::move(entry.app_id));
@@ -325,17 +325,11 @@ std::vector<std::string> AppServiceProxyLacros::GetAppIdsForUrl(
 }
 
 std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
-    const apps::mojom::IntentPtr& mojom_intent,
+    const IntentPtr& intent,
     bool exclude_browsers,
     bool exclude_browser_tab_apps) {
   std::vector<IntentLaunchInfo> intent_launch_info;
-  if (apps_util::OnlyShareToDrive(mojom_intent) ||
-      !apps_util::IsIntentValid(mojom_intent)) {
-    return intent_launch_info;
-  }
-
-  auto intent = ConvertMojomIntentToIntent(mojom_intent);
-  if (!intent) {
+  if (!intent || intent->OnlyShareToDrive() || !intent->IsIntentValid()) {
     return intent_launch_info;
   }
 
@@ -385,7 +379,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForFiles(
     const std::vector<GURL>& filesystem_urls,
     const std::vector<std::string>& mime_types) {
   return GetAppsForIntent(
-      apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types));
+      apps_util::MakeShareIntent(filesystem_urls, mime_types));
 }
 
 void AppServiceProxyLacros::AddPreferredApp(const std::string& app_id,

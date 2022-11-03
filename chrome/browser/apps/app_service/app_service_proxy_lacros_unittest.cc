@@ -50,7 +50,8 @@ TEST(AppServiceProxyLacrosTest, Launch) {
   EXPECT_EQ(launched_app->disposition, expected_disposition);
   EXPECT_EQ(launched_app->launch_source, launch_source);
   auto intent = apps_util::ConvertAppServiceToCrosapiIntent(
-      apps_util::CreateIntentFromUrl(GURL(kUrl)), nullptr);
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView, GURL(kUrl)),
+      nullptr);
   EXPECT_EQ(launched_app->intent, intent);
 }
 
