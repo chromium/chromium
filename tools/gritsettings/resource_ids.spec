@@ -538,6 +538,10 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [2950],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/common/resources/office_fallback/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [2955],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/connectivity_diagnostics/resources/connectivity_diagnostics_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [2960],

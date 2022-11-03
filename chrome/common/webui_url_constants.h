@@ -326,6 +326,8 @@ extern const char kChromeUINotificationTesterURL[];
 extern const char kChromeUINotificationTesterHost[];
 extern const char kChromeUIOSCreditsHost[];
 extern const char kChromeUIOSCreditsURL[];
+extern const char kChromeUIOfficeFallbackHost[];
+extern const char kChromeUIOfficeFallbackURL[];
 extern const char kChromeUIOobeHost[];
 extern const char kChromeUIOobeURL[];
 extern const char kChromeUIParentAccessHost[];

@@ -99,9 +99,12 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_dialog.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "url/gurl.h"
+
+using storage::FileSystemURL;
 
 class PrefService;
 class Profile;
@@ -328,10 +331,16 @@ bool ExecuteFileTask(Profile* profile,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      FileTaskFinishedCallback done);
 
-// Executes QuickOffice file handler for each element of |file_urls|. Returns
-// |false| if the execution cannot be initiated. Otherwise returns |true|.
-bool LaunchQuickOffice(Profile* profile,
+// Executes QuickOffice file handler for each element of |file_urls|.
+void LaunchQuickOffice(Profile* profile,
                        const std::vector<storage::FileSystemURL>& file_urls);
+
+// Shows a new dialog for users to choose what to do next. Returns True
+// if a new dialog has been effectively created.
+bool GetUserFallbackChoice(Profile* profile,
+                           const TaskDescriptor& task,
+                           const std::vector<FileSystemURL>& file_urls,
+                           ash::office_fallback::FallbackReason failure_reason);
 
 // Callback function type for FindAllTypesOfTasks.
 typedef base::OnceCallback<void(

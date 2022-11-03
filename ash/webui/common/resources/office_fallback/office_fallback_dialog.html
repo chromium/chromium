@@ -1,0 +1,30 @@
+<style>
+  cr-dialog::part(dialog),
+  cr-dialog::part(wrapper) {
+    height: 100%;
+  }
+
+  [slot='button-container'] {
+    margin-block-start: auto;
+  }
+</style>
+
+<cr-dialog show-on-attach>
+  <div slot="title">
+    Office Fallback
+  </div>
+  <div slot="body">
+    <div id="fallback-message" style="margin-top: 1rem"></div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="quick-office-button" class="action-button" custom-tab-index="-1">
+      Open in offline editor
+    </cr-button>
+    <cr-button id="cancel-button" class="cancel-button">
+      Cancel
+    </cr-button>
+    <cr-button id="try-again-button">
+      Try again
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -1,0 +1,23 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  assert(is_chromeos_ash, "The office fallback dialog is ash-chrome only")
+  grd_prefix = "office_fallback"
+
+  static_files = [ "main.html" ]
+  web_component_files = [ "office_fallback_dialog.ts" ]
+  non_web_component_files = [ "office_fallback_browser_proxy.ts" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom-webui.js" ]
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/ash/office_fallback:mojo_bindings_webui_js" ]
+  ts_composite = true
+
+  html_to_wrapper_template = "native"
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [ "//ui/webui/resources:library" ]
+}

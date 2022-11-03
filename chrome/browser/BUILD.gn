@@ -5265,6 +5265,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
       "//chrome/browser/ui/webui/ash/launcher_internals:mojo_bindings",
       "//chrome/browser/ui/webui/ash/manage_mirrorsync:mojo_bindings",
+      "//chrome/browser/ui/webui/ash/office_fallback:mojo_bindings",
       "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",

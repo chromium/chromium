@@ -281,6 +281,8 @@
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/ash/network_ui.h"
+#include "chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom.h"
+#include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
@@ -1284,6 +1286,12 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::cloud_upload::mojom::PageHandlerFactory,
         ash::cloud_upload::CloudUploadUI>(map);
+  }
+
+  if (ash::features::IsUploadOfficeToCloudEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::office_fallback::mojom::PageHandlerFactory,
+        ash::office_fallback::OfficeFallbackUI>(map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
