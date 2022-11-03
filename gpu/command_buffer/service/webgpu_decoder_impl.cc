@@ -50,8 +50,11 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <dawn/native/D3D12Backend.h>
-#include <dawn/native/VulkanBackend.h>
 #include "ui/gl/gl_angle_util_win.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VULKAN)
+#include <dawn/native/VulkanBackend.h>
 #endif
 
 namespace gpu {
@@ -1515,14 +1518,16 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
   dawn::native::d3d12::AdapterDiscoveryOptions options(std::move(dxgi_adapter));
   dawn_instance_->DiscoverAdapters(&options);
 
+#if BUILDFLAG(ENABLE_VULKAN)
   // Also discover the SwiftShader adapter. It will be discovered by default
   // for other OSes in DiscoverDefaultAdapters.
   dawn::native::vulkan::AdapterDiscoveryOptions swiftShaderOptions;
   swiftShaderOptions.forceSwiftShader = true;
   dawn_instance_->DiscoverAdapters(&swiftShaderOptions);
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 #else
   dawn_instance_->DiscoverDefaultAdapters();
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   std::vector<dawn::native::Adapter> adapters = dawn_instance_->GetAdapters();
   for (dawn::native::Adapter& adapter : adapters) {
