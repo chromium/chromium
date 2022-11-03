@@ -480,6 +480,19 @@ class TaskSchedulerV2 final : public TaskScheduler {
       }
     }
 
+    Microsoft::WRL::ComPtr<IIdleSettings> idle_settings;
+    hr = task_settings->get_IdleSettings(&idle_settings);
+    if (FAILED(hr)) {
+      PLOG(ERROR) << "Can't get 'IdleSettings'. " << std::hex << hr;
+      return false;
+    }
+
+    hr = idle_settings->put_StopOnIdleEnd(VARIANT_FALSE);
+    if (FAILED(hr)) {
+      PLOG(ERROR) << "Can't put 'StopOnIdleEnd' to false. " << std::hex << hr;
+      return false;
+    }
+
     Microsoft::WRL::ComPtr<ITriggerCollection> trigger_collection;
     hr = task->get_Triggers(&trigger_collection);
     if (FAILED(hr)) {
