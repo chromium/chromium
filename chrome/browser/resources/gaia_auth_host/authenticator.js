@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {getPropertyDescriptor} from 'chrome://resources/js/cr_deprecated.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {$, appendParam} from 'chrome://resources/js/util.js';
@@ -385,18 +384,12 @@ export class Authenticator extends EventTarget {
   constructor(webview) {
     super();
 
-    // --------------------  SPECIAL PROPERTIES ---------------------
-    // Whenever these properties change, an event is fired to notify
-    // observers of the change. Event name: [propertyNameChange]
-    // Refer to the bottom of the class definition for more details.
-    //
-    /** @type {AuthFlow} The current auth flow of the hosted page.*/
-    this.authFlow = AuthFlow.DEFAULT;
-    /** @type {string} The domain name of the current auth page. */
-    this.authDomain = '';
-    /** @type {boolean}  Whether media access was requested. */
-    this.videoEnabled = false;
-    // --------------------  SPECIAL PROPERTIES ---------------------
+    /** @private {AuthFlow} The current auth flow of the hosted page.*/
+    this.authFlow_ = AuthFlow.DEFAULT;
+    /** @private {string} The domain name of the current auth page. */
+    this.authDomain_ = '';
+    /** @private {boolean}  Whether media access was requested. */
+    this.videoEnabled_ = false;
 
     this.isLoaded_ = false;
     this.email_ = null;
@@ -466,6 +459,69 @@ export class Authenticator extends EventTarget {
     } else {
       document.addEventListener(
           'DOMContentLoaded', () => this.initializeAfterDomLoaded_());
+    }
+  }
+
+  /** @return {AuthFlow} */
+  get authFlow() {
+    return this.authFlow_;
+  }
+
+  /**
+   * Dispatches 'authFlowChange' event if the value changes.
+   * @param {AuthFlow} value
+   */
+  set authFlow(value) {
+    const previous = this.authFlow_;
+    if (value !== previous) {
+      this.authFlow_ = value;
+      this.dispatchEvent(new CustomEvent('authFlowChange', {
+        bubbles: true,
+        composed: true,
+        detail: {oldValue: previous, newValue: value},
+      }));
+    }
+  }
+
+  /** @return {string} */
+  get authDomain() {
+    return this.authDomain_;
+  }
+
+  /**
+   * Dispatches 'authDomainChange' event if the value changes.
+   * @param {string} domain
+   */
+  set authDomain(domain) {
+    const previous = this.authDomain_;
+    if (domain !== previous) {
+      this.authDomain_ = domain;
+      this.dispatchEvent(new CustomEvent('authDomainChange', {
+        bubbles: true,
+        composed: true,
+        detail: {oldValue: previous, newValue: domain},
+      }));
+    }
+  }
+
+  /** @return {boolean} */
+  get videoEnabled() {
+    return this.videoEnabled_;
+  }
+
+  /**
+   * Dispatches 'videoEnabledChange' event if the value changes.
+   * @param {boolean} enabled
+   */
+  set videoEnabled(enabled) {
+    const previous = this.videoEnabled_;
+    if (enabled !== previous) {
+      this.videoEnabled_ = enabled;
+      this.dispatchEvent(new CustomEvent('videoEnabledChange', {
+        bubbles: true,
+        composed: true,
+        detail: {oldValue: previous, newValue: enabled},
+      }));
     }
   }
 
@@ -1445,15 +1501,3 @@ export class Authenticator extends EventTarget {
     this.samlHandler_.email = email;
   }
 }
-
-// ---------------------  SPECIAL PROPERTIES ----------------------
-// These properties are special since they fire an event whenever
-// they change. The event name is 'propertyNameChange' and it is
-// used by the Custom Elements that use the Authenticator to listen
-// for changes.
-Object.defineProperties(Authenticator.prototype, {
-  'authFlow': getPropertyDescriptor('authFlow'),
-  'authDomain': getPropertyDescriptor('authDomain'),
-  'videoEnabled': getPropertyDescriptor('videoEnabled'),
-});
-// ---------------------  SPECIAL PROPERTIES ----------------------

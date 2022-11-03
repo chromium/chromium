@@ -300,13 +300,13 @@ class GaiaDialog extends GaiaDialogBase {
         this.maybeClickPrimaryActionButtonForTesting_();
       },
       'videoEnabledChange': (e) => {
-        this.videoEnabled = e.newValue;
+        this.videoEnabled = e.detail.newValue;
       },
       'authFlowChange': (e) => {
-        this.authFlow = e.newValue;
+        this.authFlow = e.detail.newValue;
       },
       'authDomainChange': (e) => {
-        this.authDomain = e.newValue;
+        this.authDomain = e.detail.newValue;
       },
       'dialogShown': (e) => {
         this.navigationEnabled = false;

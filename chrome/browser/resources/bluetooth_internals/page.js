@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchPropertyChange} from 'chrome://resources/js/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
@@ -148,7 +147,5 @@ export class Page extends EventTarget {
 
     this.pageDiv.page = this;
     this.pageDiv.hidden = !visible;
-
-    dispatchPropertyChange(this, 'visible', visible, !visible);
   }
 }

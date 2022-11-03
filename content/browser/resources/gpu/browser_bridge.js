@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
-
 /**
  * This class provides a 'bridge' for communicating between javascript and the
  * browser. When run outside of WebUI, e.g. as a regular webpage, it provides
@@ -22,14 +20,19 @@ export class BrowserBridge extends EventTarget {
     this.beginRequestLogMessages_();
   }
 
+  dispatchEvent_(eventName) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true}));
+  }
+
   applySimulatedData_(data) {
     // set up things according to the simulated data
     this.gpuInfo_ = data.gpuInfo;
     this.clientInfo_ = data.clientInfo;
     this.logMessages_ = data.logMessages;
-    dispatchSimpleEvent(this, 'gpuInfoUpdate');
-    dispatchSimpleEvent(this, 'clientInfoChange');
-    dispatchSimpleEvent(this, 'logMessagesChange');
+    this.dispatchEvent_('gpuInfoUpdate');
+    this.dispatchEvent_('clientInfoChange');
+    this.dispatchEvent_('logMessagesChange');
   }
 
   /**
@@ -72,7 +75,7 @@ export class BrowserBridge extends EventTarget {
    */
   onGpuInfoUpdate(gpuInfo) {
     this.gpuInfo_ = gpuInfo;
-    dispatchSimpleEvent(this, 'gpuInfoUpdate');
+    this.dispatchEvent_('gpuInfoUpdate');
   }
 
   /**
@@ -87,7 +90,7 @@ export class BrowserBridge extends EventTarget {
             window.setTimeout(this.beginRequestClientInfo_.bind(this), 250);
           } else {
             this.clientInfo_ = data;
-            dispatchSimpleEvent(this, 'clientInfoChange');
+            this.dispatchEvent_('clientInfoChange');
           }
         }).bind(this));
   }
@@ -109,7 +112,7 @@ export class BrowserBridge extends EventTarget {
         (function(messages) {
           if (messages.length !== this.logMessages_.length) {
             this.logMessages_ = messages;
-            dispatchSimpleEvent(this, 'logMessagesChange');
+            this.dispatchEvent_('logMessagesChange');
           }
           // check again in 250 ms
           window.setTimeout(this.beginRequestLogMessages_.bind(this), 250);

@@ -149,7 +149,6 @@ js_library("authenticator") {
     ":saml_password_attributes",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js:util",
     "//ui/webui/resources/js/cr:event_target",
   ]
