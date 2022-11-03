@@ -28,8 +28,7 @@ static constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] =
      support_tool::CHROMEOS_NETWORK_ROUTES,
      support_tool::CHROMEOS_SHILL,
      support_tool::CHROMEOS_SYSTEM_STATE,
-     support_tool::CHROMEOS_SYSTEM_LOGS,
-     support_tool::CHROMEOS_CHROME_USER_LOGS};
+     support_tool::CHROMEOS_SYSTEM_LOGS};
 
 // Data collector types that can only work on if IS_CHROMEOS_WITH_HW_DETAILS
 // flag is turned on. IS_CHROMEOS_WITH_HW_DETAILS flag will be turned on for
