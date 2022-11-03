@@ -295,21 +295,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/249879125
   "launcher.SearchBuiltInApps.tablet_mode",
 
-  # http://b/250566486
-  "lacros.Basic",
-  "lacros.ShelfLaunch",
-  "lacros.ShelfLaunch.primary",
-  "lacros.AppLauncherLaunch",
-  "lacros.AudioPinnedStream.play",
-  "mlservice.WebHandwritingRecognitionNotSupported.lacros",
-  "platform.PerfettoChromeConsumer.lacros",
-  "power.SmartDim.lacros",
-
-  # https://crbug.com/1371407 and http://b/250566486.
-  "lacros.AudioPinnedStream.record",
-  "lacros.AudioPlay",
-  "lacros.AudioRecord",
-
   # https://crbug.com/1356506
   "inputs.PhysicalKeyboardCantoneseTyping",
   "inputs.PhysicalKeyboardCantoneseTyping.lacros",
