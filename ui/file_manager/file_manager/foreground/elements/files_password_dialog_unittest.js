@@ -27,20 +27,6 @@ let cancel;
 let unlock;
 
 /**
- * Mock LoadTimeData strings.
- */
-export function setUpPage() {
-  window.loadTimeData.getString = id => {
-    switch (id) {
-      case 'PASSWORD_DIALOG_INVALID':
-        return 'Invalid password';
-      default:
-        return id;
-    }
-  };
-}
-
-/**
  * Adds a FilesPasswordDialog element to the page.
  */
 export function setUp() {

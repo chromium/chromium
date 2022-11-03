@@ -10,7 +10,6 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
-import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -88,25 +87,6 @@ export function setUp() {
     '    <input type="button" id="button">',
     '</div>',
   ].join('');
-
-  // Mock LoadTimeData strings.
-  window.loadTimeData.getString = id => id;
-  window.loadTimeData.getBoolean = id => false;
-  window.loadTimeData.resetForTesting({});
-
-  // Mock chome APIs.
-  mockChrome = {
-    fileManagerPrivate: {
-      enableExternalFileScheme: () => {},
-      getProfiles: (callback) => {
-        setTimeout(callback, 0, [], '', '');
-      },
-      grantAccess: (entryURLs, callback) => {
-        setTimeout(callback, 0);
-      },
-    },
-  };
-  installMockChrome(mockChrome);
 
   // Initialize Command with the <command>s.
   decorate('command', Command);

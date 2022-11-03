@@ -5,10 +5,7 @@
 import './xf_dlp_restriction_details_dialog.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-import {installMockChrome} from '../common/js/mock_chrome.js';
 
 import {XfDlpRestrictionDetailsDialog} from './xf_dlp_restriction_details_dialog.js';
 
@@ -18,42 +15,6 @@ import {XfDlpRestrictionDetailsDialog} from './xf_dlp_restriction_details_dialog
 export function setUp() {
   document.body.innerHTML = '<xf-dlp-restriction-details-dialog>' +
       '</xf-dlp-restriction-details-dialog>';
-
-  // Mock LoadTimeData strings.
-  loadTimeData.resetForTesting({
-    'DLP_RESTRICTION_DETAILS_TITLE': 'Administrator policy',
-    'DLP_RESTRICTION_DETAILS_MESSAGE': 'This file is confidential and subject' +
-        'to administrator policy.',
-    'DLP_RESTRICTION_DETAILS_BLOCK': 'Administrator policy prevents:',
-    'DLP_RESTRICTION_DETAILS_WARN': 'Administrator policy doesn\'t recommend:',
-    'DLP_RESTRICTION_DETAILS_REPORT': 'Administrator monitors:',
-    'DLP_RESTRICTION_DETAILS_FILE_ACCESS': 'File access by $1',
-    'DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL': 'File access by all urls',
-    'DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL_EXCEPT':
-        'File access by all urls except $1',
-    'DLP_RESTRICTION_DETAILS_FILE_TRANSFER': 'File transfer to $1',
-    'DRIVE_DIRECTORY_LABEL': 'Google Drive',
-    'DLP_COMPONENT_REMOVABLE': 'removable storage',
-    'DLP_COMPONENT_LINUX': 'Linux',
-    'DLP_COMPONENT_PLAY': 'Play',
-    'DLP_COMPONENT_VM': 'virtual machine',
-  });
-
-  const mockChrome = {
-    fileManagerPrivate: {
-      DlpLevel:
-          {BLOCK: 'block', WARN: 'warn', REPORT: 'report', ALLOW: 'allow'},
-      VolumeType: {
-        DRIVE: 'drive',
-        REMOVABLE: 'removable',
-        CROSTINI: 'crostini',
-        ANDROID_FILES: 'android_files',
-        GUEST_OS: 'guest_os',
-      },
-    },
-    runtime: {},
-  };
-  installMockChrome(mockChrome);
 }
 
 /** Returns the <xf-dlp-restriction-details-dialog> element. */

@@ -14,9 +14,6 @@ let model;
 let columns;
 
 export function setUp() {
-  window.loadTimeData.getString = id => id;
-  window.loadTimeData.getBoolean = id => false;
-
   columns = [
     new TableColumn('col0', 'col0', 100),
     new TableColumn('col1', 'col1', 100),

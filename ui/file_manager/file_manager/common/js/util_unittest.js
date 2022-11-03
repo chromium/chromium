@@ -9,11 +9,10 @@ import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
 import {MockFileSystem} from './mock_entry.js';
 import {LEGACY_FILES_APP_URL, SWA_FILES_APP_URL} from './url_constants.js';
-import {util} from './util.js';
+import {str, util} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 let fileSystem;
-
 
 export function setUp() {
   fileSystem = new MockFileSystem('fake-volume');
@@ -27,19 +26,6 @@ export function setUp() {
     '/dir_a/dir_b/dir_c/file_g.txt',
   ];
   fileSystem.populate(filenames);
-
-  window.loadTimeData.resetForTesting({
-    SIZE_BYTES: '$1 bytes',
-    SIZE_KB: '$1 KB',
-    SIZE_MB: '$1 MB',
-    SIZE_GB: '$1 GB',
-    SIZE_TB: '$1 TB',
-    SIZE_PB: '$1 PB',
-  });
-
-  window.loadTimeData.getString = id => {
-    return window.loadTimeData.data_[id] || id;
-  };
 }
 
 export function testReadEntriesRecursively(callback) {
@@ -331,19 +317,19 @@ export function testGetFileErrorString() {
   let i18nErrorName;
 
   i18nErrorName = util.getFileErrorString(undefined);
-  assertEquals(i18nErrorName, 'FILE_ERROR_GENERIC');
+  assertEquals(i18nErrorName, str('FILE_ERROR_GENERIC'));
 
   i18nErrorName = util.getFileErrorString(null);
-  assertEquals(i18nErrorName, 'FILE_ERROR_GENERIC');
+  assertEquals(i18nErrorName, str('FILE_ERROR_GENERIC'));
 
   i18nErrorName = util.getFileErrorString('');
-  assertEquals(i18nErrorName, 'FILE_ERROR_GENERIC');
+  assertEquals(i18nErrorName, str('FILE_ERROR_GENERIC'));
 
   i18nErrorName = util.getFileErrorString('NotFoundError');
-  assertEquals(i18nErrorName, 'FILE_ERROR_NOT_FOUND');
+  assertEquals(i18nErrorName, str('FILE_ERROR_NOT_FOUND'));
 
   i18nErrorName = util.getFileErrorString('PathExistsError');
-  assertEquals(i18nErrorName, 'FILE_ERROR_PATH_EXISTS');
+  assertEquals(i18nErrorName, str('FILE_ERROR_PATH_EXISTS'));
 }
 
 export function testExtractFilePath() {

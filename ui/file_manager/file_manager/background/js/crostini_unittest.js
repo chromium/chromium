@@ -33,13 +33,6 @@ let crostini;
 
 // Set up the test components.
 export function setUp() {
-  // Mock LoadTimeData strings.
-  loadTimeData.resetForTesting({});
-  loadTimeData.getBoolean = function(key) {
-    return loadTimeData.data_[key];
-  };
-  loadTimeData.getString = id => id;
-
   // Mock fileManagerPrivate.onCrostiniChanged.
   const mockChrome = {
     fileManagerPrivate: {
@@ -72,12 +65,12 @@ export function setUp() {
  * Tests init sets crostini and PluginVm enabled status.
  */
 export function testInitCrostiniPluginVmEnabled() {
-  loadTimeData.data_['VMS_FOR_SHARING'] = [];
+  loadTimeData.overrideValues({'VMS_FOR_SHARING': []});
   crostini.initEnabled();
   assertFalse(crostini.isEnabled('termina'));
   assertFalse(crostini.isEnabled('PvmDefault'));
 
-  loadTimeData.data_['VMS_FOR_SHARING'] = ['termina', 'PvmDefault'];
+  loadTimeData.overrideValues({'VMS_FOR_SHARING': ['termina', 'PvmDefault']});
   crostini.initEnabled();
   assertTrue(crostini.isEnabled('termina'));
   assertTrue(crostini.isEnabled('PvmDefault'));

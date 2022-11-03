@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {hasOverflowEllipsis} from '../common/js/dom_utils.js';
@@ -16,11 +15,6 @@ import {BreadcrumbClickedEvent, XfBreadcrumb} from './xf_breadcrumb.js';
  * path using the element.path getter.
  */
 export function setUp() {
-  // mock string
-  loadTimeData.resetForTesting({
-    LOCATION_BREADCRUMB_ELIDER_BUTTON_LABEL: 'elider label',
-  });
-
   document.body.innerHTML = '<xf-breadcrumb></xf-breadcrumb>';
   const breadcrumb = document.querySelector('xf-breadcrumb');
   assertEquals('', breadcrumb!.path);

@@ -97,30 +97,10 @@ class MockUI {
 let ui;
 
 export function setUp() {
-  // Mock loadTimeData strings.
-  window.loadTimeData.getString = id => id;
-  window.loadTimeData.resetForTesting({});
-
   // Mock Chrome APIs.
   const mockChrome = {
     runtime: {
       lastError: null,
-    },
-    fileManagerPrivate: {
-      // The following closures are set per test case.
-      getCustomActions: null,
-      executeCustomAction: null,
-      pinDriveFile: null,
-      DriveConnectionStateType: {
-        ONLINE: 'ONLINE',
-        OFFLINE: 'OFFLINE',
-        METERED: 'METERED',
-      },
-      DriveOfflineReason: {
-        NOT_READY: 'NOT_READY',
-        NO_NETWORK: 'NO_NETWORK',
-        NO_SERVICE: 'NO_SERVICE',
-      },
     },
   };
   installMockChrome(mockChrome);

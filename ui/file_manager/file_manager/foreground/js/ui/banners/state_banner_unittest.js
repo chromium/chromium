@@ -20,11 +20,6 @@ let stateBanner;
  * @returns {{ restore: function(), getSubpage: (function(): string)}}
  */
 function mockOpenSettingsSubpage() {
-  /** @suppress {const} */
-  window.chrome = window.chrome || {};
-
-  /** @suppress {const} */
-  window.chrome.fileManagerPrivate = window.chrome.fileManagerPrivate || {};
   const actualOpenSettingsSubpage =
       chrome.fileManagerPrivate.openSettingsSubpage;
   /** @type {string} */

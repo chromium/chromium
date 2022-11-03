@@ -4,11 +4,16 @@
 
 /**
  * Installs a mock object to replace window.chrome in a unit test.
- * @param {Object} mockChrome
+ * @param {!Object} mockChrome
  */
 export function installMockChrome(mockChrome) {
   /** @suppress {const|checkTypes} */
-  chrome = mockChrome;
+  window.chrome = window.chrome || {};
+  const chrome = window.chrome;
+  for (const [key, value] of Object.entries(mockChrome)) {
+    const target = chrome[key] || {};
+    Object.assign(target, value);
+  }
 }
 
 /**

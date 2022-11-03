@@ -14,23 +14,10 @@ import {FileFilter, RecentContentScanner} from './directory_contents.js';
 
 /**
  * Mock chrome APIs.
- * @type {Object}
+ * @type {!Object}
  */
 const mockChrome = {
-  runtime: {lastError: ''},
   fileManagerPrivate: {
-    SearchType: {
-      ALL: 'ALL',
-      SHARED_WITH_ME: 'SHARED_WITH_ME',
-      EXCLUDE_DIRECTORIES: 'EXCLUDE_DIRECTORIES',
-      OFFLINE: 'OFFLINE',
-    },
-    SourceRestriction: {
-      ANY_SOURCE: 'any_source',
-    },
-    RecentFileType: {
-      ALL: 'all',
-    },
     getRecentFiles:
         (sourceRestriction, fileType, invalidateCache, callback) => {
           /** @type {!Array<!FileEntry>} */

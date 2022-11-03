@@ -9,15 +9,6 @@ import {waitUntil} from '../../../common/js/test_error_reporting.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 
-export function setUp() {
-  // Polyfill chrome.app.window.current().
-  /** @suppress {duplicate,checkTypes,const} */
-  chrome.app = {window: {current: () => null}};
-
-  // Mock loadTimeData.
-  window.loadTimeData.resetForTesting({});
-}
-
 export async function testShowDialogAfterHide(done) {
   const dialog = new FileManagerDialogBase(document.body);
 

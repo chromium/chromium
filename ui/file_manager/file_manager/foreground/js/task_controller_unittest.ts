@@ -4,7 +4,6 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {decorate} from 'chrome://resources/js/cr/ui.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertNotReached} from 'chrome://webui-test/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
@@ -39,10 +38,6 @@ let mockChrome: any;
 
 // Set up test components.
 export function setUp() {
-  // Mock LoadTimeData strings.
-  loadTimeData.getBoolean = (_key: string) => false;
-  loadTimeData.getString = (id: string) => id;
-
   // Mock chrome APIs.
   mockChrome = {
     commandLinePrivate: {
@@ -53,17 +48,6 @@ export function setUp() {
     runtime: {
       id: 'test-extension-id',
       lastError: null,
-    },
-    storage: {
-      onChanged: {
-        addListener: function(_callback: EventListener) {},
-      },
-      local: {
-        get: function(_key: string, callback: (v: any) => void) {
-          callback({});
-        },
-        set: function(_value: any) {},
-      },
     },
   };
 
@@ -117,20 +101,7 @@ function createTaskController(fileSelectionHandler: FileSelectionHandler):
  */
 function setupFileManagerPrivate() {
   mockChrome.fileManagerPrivate = {
-    DriveConnectionStateType: {
-      ONLINE: 'ONLINE',
-      OFFLINE: 'OFFLINE',
-      METERED: 'METERED',
-    },
-    DriveOfflineReason: {
-      NOT_READY: 'NOT_READY',
-      NO_NETWORK: 'NO_NETWORK',
-      NO_SERVICE: 'NO_SERVICE',
-    },
     getFileTaskCalledCount_: 0,
-    onIOTaskProgressStatus: {
-      addListener: function(_callback: EventListener) {},
-    },
     getFileTasks: function(_entries: Entry[], callback: (tasks: any) => void) {
       mockChrome.fileManagerPrivate.getFileTaskCalledCount_++;
       const fileTasks = ([
@@ -153,9 +124,6 @@ function setupFileManagerPrivate() {
       ]);
       setTimeout(callback.bind(null, {tasks: fileTasks}), 0);
     },
-    onAppsUpdated: {
-      addListener: function() {},
-    },
   };
 }
 
@@ -176,7 +144,7 @@ export function testExecuteEntryTask(callback: () => void) {
 
   reportPromise(
       new Promise<chrome.fileManagerPrivate.FileTaskDescriptor>((resolve) => {
-        mockChrome.fileManagerPrivate.executeTask = resolve;
+        chrome.fileManagerPrivate.executeTask = resolve;
       }).then((descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) => {
         assert(util.descriptorEqual(
             {appId: 'handler-extension-id', taskType: 'file', actionId: 'play'},

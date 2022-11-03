@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
-import {installMockChrome} from '../../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
@@ -54,25 +52,6 @@ function setupBody() {
 
 // Set up test components.
 export function setUp() {
-  // Mock LoadTimeData strings.
-  loadTimeData.getString = id => id;
-  loadTimeData.resetForTesting({});
-
-  // Set up mock of chrome.fileManagerPrivate APIs.
-  const mockChrome = {
-    fileManagerPrivate: {
-      RecentDateBucket: {
-        TODAY: 'today',
-        YESTERDAY: 'yesterday',
-        EARLIER_THIS_WEEK: 'earlier_this_week',
-        EARLIER_THIS_MONTH: 'earlier_this_month',
-        EARLIER_THIS_YEAR: 'earlier_this_year',
-        OLDER: 'older',
-      },
-    },
-  };
-  installMockChrome(mockChrome);
-
   // Setup mock components.
   volumeManager = new MockVolumeManager();
   metadataModel = new MockMetadataModel({});

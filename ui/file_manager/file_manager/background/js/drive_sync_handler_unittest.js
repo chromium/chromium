@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {installMockChrome} from '../../common/js/mock_chrome.js';
@@ -32,7 +31,7 @@ function asFileURL(name) {
 
 /**
  * Mock chrome APIs.
- * @type {Object}
+ * @type {!Object}
  */
 const mockChrome = {};
 
@@ -102,9 +101,6 @@ mockChrome.fileManagerPrivate = {
     },
     listener_: null,
   },
-  getPreferences: function() {},
-  setPreferences: function() {},
-
   getDriveConnectionState: function(callback) {
     callback({type: 'offline', reason: 'no_network'});
   },
@@ -145,10 +141,6 @@ window.webkitResolveLocalFileSystemURL =
 
 // Set up the test components.
 export function setUp() {
-  // Mock LoadTimeData strings.
-  loadTimeData.resetForTesting({});
-  loadTimeData.getString = id => id;
-
   // Install mock chrome APIs.
   installMockChrome(mockChrome);
 

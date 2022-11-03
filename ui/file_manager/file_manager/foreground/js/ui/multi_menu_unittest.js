@@ -4,7 +4,6 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {decorate} from 'chrome://resources/js/cr/ui.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {queryDecoratedElement} from '../../../common/js/dom_utils.js';
@@ -31,10 +30,6 @@ let initialWindowHeight;
 
 // Set up test components.
 export function setUp() {
-  // Internals of WebUI reference this property when processing
-  // keyboard events, so we need to prepare it to stop asserts.
-  loadTimeData.resetForTesting({'SHORTCUT_ENTER': 'Enter'});
-
   // Multiple tests rely on the window height, reset between tests to avoid
   // interference.
   if (!initialWindowHeight) {

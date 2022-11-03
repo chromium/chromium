@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
@@ -12,14 +11,6 @@ import {VolumeInfoList} from '../../externs/volume_info_list.js';
 
 import {FilteredVolumeManager} from './filtered_volume_manager.js';
 import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
-
-/**
- * Setup the test components.
- */
-export function setUp() {
-  loadTimeData.getString = id => id;
-  loadTimeData.resetForTesting({});
-}
 
 /**
  * Create a new MockVolumeManager for each test fixture.

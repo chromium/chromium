@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
@@ -16,42 +15,37 @@ import {VolumeManagerImpl} from './volume_manager_impl.js';
 import {volumeManagerUtil} from './volume_manager_util.js';
 
 let mockChrome;
+let mockData;
 let createVolumeInfoOriginal;
 
 export function setUp() {
-  loadTimeData.getString = id => id;
-  loadTimeData.resetForTesting({});
+  mockData = {
+    mountSourcePath_: null,
+    onMountCompletedListeners_: [],
+    onDriveConnectionStatusChangedListeners_: [],
+    driveConnectionState_: 'ONLINE',
+    volumeMetadataList_: [],
+    password: undefined,
+    setDriveConnectionState(state) {
+      mockData.driveConnectionState_ = state;
+      /** @type {!EventTarget} */ (
+          chrome.fileManagerPrivate.onDriveConnectionStatusChanged)
+          .dispatchEvent(new Event('anything'));
+    },
+  };
 
   // Set up mock of chrome.fileManagerPrivate APIs.
   mockChrome = {
-    runtime: {lastError: undefined},
     fileManagerPrivate: {
-      DriveConnectionStateType: {
-        ONLINE: 'ONLINE',
-        OFFLINE: 'OFFLINE',
-        METERED: 'METERED',
-      },
-      DriveOfflineReason: {
-        NOT_READY: 'NOT_READY',
-        NO_NETWORK: 'NO_NETWORK',
-        NO_SERVICE: 'NO_SERVICE',
-      },
-      mountSourcePath_: null,
-      onMountCompletedListeners_: [],
-      onDriveConnectionStatusChangedListeners_: [],
-      driveConnectionState_: 'ONLINE',
-      volumeMetadataList_: [],
-      password: undefined,
       addMount: function(fileUrl, password, callback) {
-        mockChrome.fileManagerPrivate.password = password;
-        callback(mockChrome.fileManagerPrivate.mountSourcePath_);
+        mockData.password = password;
+        callback(mockData.mountSourcePath_);
       },
       getVolumeRoot: function(options, callback) {
-        if (!(options.volumeId in chrome.fileManagerPrivate.fileSystemMap_)) {
+        if (!(options.volumeId in mockData.fileSystemMap_)) {
           chrome.runtime.lastError = {message: 'Not found.'};
         }
-        callback(
-            chrome.fileManagerPrivate.fileSystemMap_[options.volumeId].root);
+        callback(mockData.fileSystemMap_[options.volumeId].root);
       },
       removeMount: function(volumeId, callback) {
         const event = {
@@ -64,44 +58,36 @@ export function setUp() {
       },
       onDriveConnectionStatusChanged: {
         addListener: function(listener) {
-          mockChrome.fileManagerPrivate.onDriveConnectionStatusChangedListeners_
-              .push(listener);
+          mockData.onDriveConnectionStatusChangedListeners_.push(listener);
         },
         dispatchEvent: function(event) {
-          mockChrome.fileManagerPrivate.onDriveConnectionStatusChangedListeners_
-              .forEach(listener => {
+          mockData.onDriveConnectionStatusChangedListeners_.forEach(
+              listener => {
                 listener(event);
               });
         },
       },
       onMountCompleted: {
         addListener: function(listener) {
-          mockChrome.fileManagerPrivate.onMountCompletedListeners_.push(
-              listener);
+          mockData.onMountCompletedListeners_.push(listener);
         },
         dispatchEvent: function(event) {
-          mockChrome.fileManagerPrivate.onMountCompletedListeners_.forEach(
-              listener => {
-                listener(event);
-              });
+          mockData.onMountCompletedListeners_.forEach(
+              listener => listener(event));
         },
       },
       getDriveConnectionState: function(callback) {
-        callback(mockChrome.fileManagerPrivate.driveConnectionState_);
+        callback(mockData.driveConnectionState_);
       },
       getVolumeMetadataList: function(callback) {
-        callback(mockChrome.fileManagerPrivate.volumeMetadataList_);
-      },
-      set driveConnectionState(state) {
-        mockChrome.fileManagerPrivate.driveConnectionState_ = state;
-        mockChrome.fileManagerPrivate.onDriveConnectionStatusChanged
-            .dispatchEvent(null);
+        callback(mockData.volumeMetadataList_);
       },
     },
   };
+
   installMockChrome(mockChrome);
   new MockCommandLinePrivate();
-  chrome.fileManagerPrivate.volumeMetadataList_ = [
+  mockData.volumeMetadataList_ = [
     {
       volumeId: 'download:Downloads',
       volumeLabel: '',
@@ -133,7 +119,7 @@ export function setUp() {
       source: VolumeManagerCommon.Source.SYSTEM,
     },
   ];
-  chrome.fileManagerPrivate.fileSystemMap_ = {
+  mockData.fileSystemMap_ = {
     'download:Downloads': new MockFileSystem('download:Downloads'),
     'drive:drive-foobar%40chromium.org-hash':
         new MockFileSystem('drive:drive-foobar%40chromium.org-hash'),
@@ -192,7 +178,7 @@ export async function testGetVolumeInfo(done) {
  */
 export async function testUnresponsiveVolumeStartUp(done) {
   let unblock;
-  const fileManagerPrivate = mockChrome.fileManagerPrivate;
+  const fileManagerPrivate = chrome.fileManagerPrivate;
 
   // Replace chrome.fileManagerPrivate.getVolumeRoot() to emulate 1
   // volume not resolving.
@@ -230,15 +216,15 @@ export function testGetDriveConnectionState(callback) {
             volumeManager.getDriveConnectionState());
 
         // Sets it to offline.
-        chrome.fileManagerPrivate.driveConnectionState =
-            chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE;
+        mockData.setDriveConnectionState(
+            chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE);
         assertEquals(
             chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
             volumeManager.getDriveConnectionState());
 
         // Sets it back to online
-        chrome.fileManagerPrivate.driveConnectionState =
-            chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE;
+        mockData.setDriveConnectionState(
+            chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE);
         assertEquals(
             chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
             volumeManager.getDriveConnectionState());
@@ -250,8 +236,8 @@ export function testMountArchiveAndUnmount(callback) {
   const test = async () => {
     // Set states of mock fileManagerPrivate APIs.
     const mountSourcePath = '/usr/local/home/test/Downloads/foobar.zip';
-    chrome.fileManagerPrivate.mountSourcePath_ = mountSourcePath;
-    chrome.fileManagerPrivate.fileSystemMap_['archive:foobar.zip'] =
+    mockData.mountSourcePath_ = mountSourcePath;
+    mockData.fileSystemMap_['archive:foobar.zip'] =
         new MockFileSystem('archive:foobar.zip');
 
     const volumeManager = await volumeManagerFactory.getInstance();
@@ -286,7 +272,7 @@ export function testMountArchiveAndUnmount(callback) {
     await mounted;
 
     assertEquals(numberOfVolumes + 1, volumeManager.volumeInfoList.length);
-    assertEquals(password, mockChrome.fileManagerPrivate.password);
+    assertEquals(password, mockData.password);
 
     // Unmount the mounted archive
     const entry = MockFileEntry.create(
@@ -306,8 +292,8 @@ export function testCancelMountingArchive(callback) {
   const test = async () => {
     // Set states of mock fileManagerPrivate APIs.
     const mountSourcePath = '/usr/local/home/test/Downloads/foobar.zip';
-    chrome.fileManagerPrivate.mountSourcePath_ = mountSourcePath;
-    chrome.fileManagerPrivate.fileSystemMap_['archive:foobar.zip'] =
+    mockData.mountSourcePath_ = mountSourcePath;
+    mockData.fileSystemMap_['archive:foobar.zip'] =
         new MockFileSystem('archive:foobar.zip');
 
     const volumeManager = await volumeManagerFactory.getInstance();
@@ -581,11 +567,9 @@ export function testErrorPropagatedDuringInitialization(done) {
  */
 export async function testErrorInitializingVolume(done) {
   // Confirm that a Drive volume is on faked getVolumeMetadataList().
-  assertTrue(
-      chrome.fileManagerPrivate.volumeMetadataList_.some(volumeMetadata => {
-        return volumeMetadata.volumeType ===
-            VolumeManagerCommon.VolumeType.DRIVE;
-      }));
+  assertTrue(mockData.volumeMetadataList_.some(volumeMetadata => {
+    return volumeMetadata.volumeType === VolumeManagerCommon.VolumeType.DRIVE;
+  }));
 
   // Replace createVolumeInfo() to fail to create Drive volume.
   const createVolumeInfoFake = (volumeMetadata) => {
@@ -623,7 +607,7 @@ export async function testErrorInitializingVolume(done) {
 export async function testDriveWithNullFilesystem(done) {
   // Get Drive volume metadata from faked getVolumeMetadataList().
   const driveVolumeMetadata =
-      chrome.fileManagerPrivate.volumeMetadataList_.find(volumeMetadata => {
+      mockData.volumeMetadataList_.find(volumeMetadata => {
         return volumeMetadata.volumeType ===
             VolumeManagerCommon.VolumeType.DRIVE;
       });

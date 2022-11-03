@@ -118,10 +118,14 @@ const errorZipMountPanelId = 'Cannot mount: ' + fakeMountedZipUrl;
 
 // Set up test components.
 export function setUp() {
-  // Mock LoadTimeData strings.
-  loadTimeData.getString = id => id;
-  loadTimeData.getBoolean = _key => false;
-
+  // Override the translations used in the tests to make easier to compare.
+  loadTimeData.overrideValues({
+    NO_TASK_FOR_EXECUTABLE: 'NO_TASK_FOR_EXECUTABLE',
+    NO_TASK_FOR_DMG: 'NO_TASK_FOR_DMG',
+    NO_TASK_FOR_CRX_TITLE: 'NO_TASK_FOR_CRX_TITLE',
+    NO_TASK_FOR_CRX: 'NO_TASK_FOR_CRX',
+    NO_TASK_FOR_FILE: 'NO_TASK_FOR_FILE',
+  });
   const mockTask = {
     descriptor: {
       appId: 'handler-extension-id',
@@ -135,23 +139,6 @@ export function setUp() {
   // Mock chome APIs.
   mockChrome = {
     fileManagerPrivate: {
-      DriveConnectionStateType: {
-        ONLINE: 'ONLINE',
-        OFFLINE: 'OFFLINE',
-        METERED: 'METERED',
-      },
-      DriveOfflineReason: {
-        NOT_READY: 'NOT_READY',
-        NO_NETWORK: 'NO_NETWORK',
-        NO_SERVICE: 'NO_SERVICE',
-      },
-      Verb: {
-        SHARE_WITH: 'share_with',
-      },
-      TaskResult: {
-        MESSAGE_SENT: 'test_ms_task',
-        FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED: 'test_fpvdns_task',
-      },
       getFileTasks: function(
           _entries: Entry[], callback: (tasks: any) => void) {
         setTimeout(callback.bind(null, {tasks: [mockTask]}), 0);
@@ -167,7 +154,6 @@ export function setUp() {
         callback();
       },
     },
-    runtime: {},
   };
 
   installMockChrome(mockChrome);
@@ -362,7 +348,7 @@ export function testToOpenRtfFile(callback: () => void) {
  * but there are multiple apps that could open it.
  */
 export function testOpenTaskPicker(callback: () => void) {
-  window.chrome.fileManagerPrivate.getFileTasks =
+  chrome.fileManagerPrivate.getFileTasks =
       (_entries: Entry[], callback: (tasks: any) => void) => {
         setTimeout(
             callback.bind(null, {
@@ -415,7 +401,7 @@ export function testOpenWithMostRecentlyExecuted(callback: () => void) {
     actionId: 'any',
   };
 
-  window.chrome.fileManagerPrivate.getFileTasks =
+  chrome.fileManagerPrivate.getFileTasks =
       (_entries: Entry[],
        callback: (tasks: chrome.fileManagerPrivate.ResultingTasks|undefined) =>
            void) => {
@@ -469,11 +455,11 @@ export function testOpenWithMostRecentlyExecuted(callback: () => void) {
 
   type FileTaskDescriptor = chrome.fileManagerPrivate.FileTaskDescriptor;
   let executedTask: FileTaskDescriptor|null = null;
-  window.chrome.fileManagerPrivate.executeTask =
+  chrome.fileManagerPrivate.executeTask =
       (descriptor: FileTaskDescriptor, _entries: Entry[],
        onViewFiles: (result: chrome.fileManagerPrivate.TaskResult) => void) => {
         executedTask = descriptor;
-        onViewFiles('success');
+        onViewFiles(chrome.fileManagerPrivate.TaskResult.OPENED);
       };
 
   const mockFileSystem = new MockFileSystem('volumeId');
@@ -521,7 +507,7 @@ function setUpInstallLinuxPackage() {
     isGenericFileHandler: false,
     title: '__MSG_INSTALL_LINUX_PACKAGE__',
   };
-  window.chrome.fileManagerPrivate.getFileTasks =
+  chrome.fileManagerPrivate.getFileTasks =
       (_entries: Entry[], callback: (tasks: any) => void) => {
         setTimeout(callback.bind(null, {tasks: [fileTask]}), 0);
       };
@@ -564,7 +550,7 @@ export function testOpenInstallLinuxPackageDialog(callback: () => void) {
  */
 export function testToOpenTiniFileOpensImportCrostiniImageDialog(
     callback: () => void) {
-  window.chrome.fileManagerPrivate.getFileTasks =
+  chrome.fileManagerPrivate.getFileTasks =
       (_entries: Entry[], callback: (tasks: any) => void) => {
         setTimeout(
             callback.bind(null, {

@@ -146,10 +146,6 @@ function addProvidedVolume(volumeManager, providerId, volumeId) {
 }
 
 export function setUp() {
-  window.loadTimeData.getString = id => id;
-
-  // Create and install a mock fileManagerPrivate API for fetching the list of
-  // providers. TODO(mtomasz): Add some native (non-extension) providers.
   const mockChrome = {
     fileManagerPrivate: {
       getProviders: function(callback) {

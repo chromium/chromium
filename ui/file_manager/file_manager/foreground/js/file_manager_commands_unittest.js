@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
@@ -25,18 +24,9 @@ export async function testToggleHoldingSpaceCommand(done) {
 
   let getHoldingSpaceStateCalled = false;
 
-  // Enable the holding space feature and provide strings.
-  loadTimeData.resetForTesting({
-    HOLDING_SPACE_PIN_COMMAND_LABEL: 'Pin to shelf',
-    HOLDING_SPACE_UNPIN_COMMAND_LABEL: 'Unpin to shelf',
-  });
-  loadTimeData.getString = id => {
-    return loadTimeData.data_[id] || id;
-  };
-
   /**
    * Mock chrome APIs.
-   * @type {Object}
+   * @type {!Object}
    */
   const mockChrome = {
     fileManagerPrivate: {
@@ -217,20 +207,11 @@ export async function testExtractAllCommand(done) {
   const command = CommandHandler.getCommand('extract-all');
   assertNotEquals(command, undefined);
 
-  // Enable the extract all feature and provide strings.
-  loadTimeData.resetForTesting({
-    EXTRACT_ARCHIVE: true,
-    EXTRACT_ALL_BUTTON_LABEL: 'Extract all',
-  });
-  loadTimeData.getString = id => {
-    return loadTimeData.data_[id] || id;
-  };
-
   let startIOTaskCalled = false;
 
   /**
    * Mock chrome startIOTask API.
-   * @type {Object}
+   * @type {!Object}
    */
   const mockChrome = {
     fileManagerPrivate: {
@@ -335,8 +316,6 @@ export async function testExtractAllCommand(done) {
  * Tests that rename command should be disabled for Recent entry.
  */
 export async function testRenameCommand(done) {
-  loadTimeData.resetForTesting({});
-
   // Check: `rename` command exists.
   const command = CommandHandler.getCommand('rename');
   assertNotEquals(command, undefined);

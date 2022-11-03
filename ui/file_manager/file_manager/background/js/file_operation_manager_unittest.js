@@ -5,7 +5,6 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -14,16 +13,6 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {FileOperationManagerImpl} from './file_operation_manager.js';
 import {fileOperationUtil} from './file_operation_util.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
-
-/**
- * Mock chrome APIs.
- * @type {Object}
- */
-const mockChrome = {};
-
-mockChrome.runtime = {
-  lastError: null,
-};
 
 /**
  * Fake volume manager.
@@ -120,17 +109,7 @@ let fileOperationManager;
  * Initializes the test environment.
  */
 export function setUp() {
-  // Mock LoadTimeData strings.
-  loadTimeData.resetForTesting({
-    'FILES_TRASH_ENABLED': true,
-  });
-  loadTimeData.getBoolean = function(key) {
-    return loadTimeData.data_[key];
-  };
-  loadTimeData.getString = id => id;
-
-  // Install mock chrome APIs.
-  installMockChrome(mockChrome);
+  loadTimeData.overrideValues({'FILES_TRASH_ENABLED': true});
 }
 
 /**

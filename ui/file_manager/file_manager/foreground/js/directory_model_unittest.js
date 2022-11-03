@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockFileOperationManager} from '../../background/js/mock_file_operation_manager.js';
@@ -23,36 +22,12 @@ let onIOTaskProgressStatusCallback;
  * Initializes the test environment.
  */
 export function setUp() {
-  // Mock loadTimeData strings.
-  loadTimeData.resetForTesting({
-    DRIVE_DIRECTORY_LABEL: 'Google Drive',
-    DRIVE_OFFLINE_COLLECTION_LABEL: 'Offline',
-    DRIVE_SHARED_WITH_ME_COLLECTION_LABEL: 'Shared with me',
-    DOWNLOADS_DIRECTORY_LABEL: 'Downloads',
-    FILTERS_IN_RECENTS_V2_ENABLED: true,
-  });
-
   /**
    * Mock chrome APIs.
    * @type {!Object}
    */
   const mockChrome = {
     fileManagerPrivate: {
-      SourceRestriction: {
-        ANY_SOURCE: 'any_source',
-      },
-      RecentFileType: {
-        ALL: 'all',
-      },
-      SearchType: {
-        EXCLUDE_DIRECTORIES: 'EXCLUDE_DIRECTORIES',
-        SHARED_WITH_ME: 'SHARED_WITH_ME',
-        OFFLINE: 'OFFLINE',
-        ALL: 'ALL',
-      },
-      DriveConnectionStateType: {
-        OFFLINE: 'OFFLINE',
-      },
       onIOTaskProgressStatus: {
         /**
          * @param {?function(!chrome.fileManagerPrivate.ProgressStatus):void}
@@ -62,15 +37,6 @@ export function setUp() {
           onIOTaskProgressStatusCallback = callback;
         },
       },
-      IOTaskType: {
-        DELETE: 'delete',
-        COPY: 'copy',
-      },
-      IOTaskState: {
-        SUCCESS: 'success',
-      },
-      onDirectoryChanged: {addListener(callback) {}},
-      getRecentFiles: () => {},
     },
   };
 

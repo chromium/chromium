@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
@@ -25,8 +24,6 @@ let trashEnabled = true;
 
 // Set up the test components.
 export function setUp() {
-  loadTimeData.getString = id => id;
-
   util.isTrashEnabled = () => trashEnabled;
 
   volumeManager = new MockVolumeManager();

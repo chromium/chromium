@@ -4,7 +4,6 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
@@ -66,8 +65,6 @@ const entry5 = new MockEntry(fileSystem, '/Test5.jpg');
 const entry6 = new MockEntry(fileSystem, '/Test6.jpg');
 
 export function setUp() {
-  loadTimeData.resetForTesting({});
-
   currentVolumeType = ListThumbnailLoader.TEST_VOLUME_TYPE;
   /** @suppress {const} */
   ListThumbnailLoader.CACHE_SIZE = 5;
