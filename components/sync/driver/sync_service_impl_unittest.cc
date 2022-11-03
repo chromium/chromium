@@ -1210,6 +1210,13 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
 }
 
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
+       ShouldNotStartListeningInvalidationsWhenLocalSyncEnabled) {
+  CreateServiceWithLocalSyncBackend();
+  EXPECT_CALL(*sync_invalidations_service(), StartListening()).Times(0);
+  InitializeForFirstSync();
+}
+
+TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
        ShouldNotStopListeningPermanentlyOnShutdownBrowserAndKeepData) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
