@@ -101,10 +101,14 @@
     popover1.showPopover();
     await waitForRender();
     assert_true(popover1.matches(':open'));
-    outside.dispatchEvent(new PointerEvent('pointerdown'));
+    const actions = new test_driver.Actions();
+    await actions.pointerMove(0, 0, {origin: outside})
+      .pointerDown({button: actions.ButtonType.LEFT})
+      .send();
     await waitForRender();
     assert_true(popover1.matches(':open'),'pointerdown (outside the popover) should not hide the popover');
-    outside.dispatchEvent(new PointerEvent('pointerup'));
+    await actions.pointerUp({button: actions.ButtonType.LEFT})
+      .send();
     await waitForRender();
     assert_false(popover1.matches(':open'),'pointerup (outside the popover) should trigger light dismiss');
   },'Popovers close on pointerup, not pointerdown');
@@ -118,25 +122,14 @@
       document.body.dispatchEvent(new MouseEvent(eventName));
       document.body.dispatchEvent(new ProgressEvent(eventName));
       await waitForRender();
-      assert_true(popover1.matches(':open'),`The "${eventName}" event should not hide the popover`);
+      assert_true(popover1.matches(':open'),`A synthetic "${eventName}" event should not hide the popover`);
     }
+    await testOne('pointerup');
     await testOne('pointerdown');
     await testOne('mouseup');
     await testOne('mousedown');
     popover1.hidePopover();
-  },'Invalid or unrelated synthetic events don\'t close popovers');
-
-  promise_test(async () => {
-    popover1.showPopover();
-    assert_true(popover1.matches(':open'));
-    document.body.dispatchEvent(new MouseEvent('pointerup'));
-    document.body.dispatchEvent(new ProgressEvent('pointerup'));
-    await waitForRender();
-    assert_true(popover1.matches(':open'),`The 'pointerup' event with invalid event types should not hide the popover`);
-    document.body.dispatchEvent(new PointerEvent('pointerup'));
-    await waitForRender();
-    assert_false(popover1.matches(':open'),`A synthetic PointerEvent('pointerup') should hide the popover`);
-  },'The correct synthetic event closes a popover');
+  },'Synthetic events can\'t close popovers');
 
   promise_test(async () => {
     popover1.showPopover();

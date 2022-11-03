@@ -4,6 +4,9 @@
 <link rel=help href="https://open-ui.org/components/popup.research.explainer">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/popover-utils.js"></script>
 <script src="../../resources/common.js"></script>
 
@@ -29,6 +32,7 @@
 </div>
 
 <div popover class=animated>Animated popover</div>
+<div id=outside></div>
 <style>
 [popover].animated {
   opacity: 0;
@@ -37,9 +41,22 @@
 [popover].animated:open {
   opacity: 1;
 }
+[popover] {
+  inset:auto;
+  top:0;
+  left:0;
+}
+#outside {
+  position:fixed;
+  top:200px;
+  left:200px;
+  height:10px;
+  width:10px;
+}
 </style>
 
 <script>
+  const outsideElement = document.getElementById('outside');
   function assertPopoverVisibility(popover, isPopover, expectedVisibility, message) {
     const isVisible = isElementVisible(popover);
     assert_equals(isVisible, expectedVisibility,`${message}: Expected this element to be ${expectedVisibility ? "visible" : "not visible"}`);
@@ -312,7 +329,7 @@
     validTypes.forEach(type => {
       [...validTypes,"invalid",null,undefined].forEach(newType => {
         [...validTypes,"invalid",null,undefined].forEach(inEventType => {
-          test((t) => {
+          promise_test(async (t) => {
             const popover = createPopover(t);
             setPopoverValue(popover,type,method);
             popover.showPopover();
@@ -342,7 +359,7 @@
                 // Make sure the type is really correct, via behavior.
                 popover.showPopover(); // Show it
                 assert_true(popover.matches(':open'),'Popover should function');
-                document.body.dispatchEvent(new PointerEvent('pointerup')); // Try to light dismiss
+                await clickOn(outsideElement); // Try to light dismiss
                 switch (interpretedType(inEventType,method)) {
                   case 'manual':
                     assert_true(popover.matches(':open'),'A popover=manual should not light-dismiss');
