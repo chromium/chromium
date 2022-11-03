@@ -59,6 +59,30 @@ TEST_F(IsolatedWebAppUrlInfoTest, CreateFailsWithInvalidUrl) {
   EXPECT_THAT(url_info.error(), Eq("Invalid URL"));
 }
 
+TEST_F(IsolatedWebAppUrlInfoTest, CreateFailsWithSubdomain) {
+  GURL gurl(
+      "isolated-app://"
+      "foo.aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::Create(gurl);
+
+  EXPECT_THAT(url_info.error(),
+              StartsWith("The host of isolated-app:// URLs must be a valid"));
+}
+
+TEST_F(IsolatedWebAppUrlInfoTest, CreateFailsWithBadHostname) {
+  GURL gurl(
+      "isolated-app://"
+      "ßerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::Create(gurl);
+
+  EXPECT_THAT(url_info.error(),
+              StartsWith("The host of isolated-app:// URLs must be a valid"));
+}
+
 TEST_F(IsolatedWebAppUrlInfoTest,
        CreateFromSignedWebBundleIdSucceedsWithRandomId) {
   web_package::SignedWebBundleId random_id =
@@ -67,49 +91,6 @@ TEST_F(IsolatedWebAppUrlInfoTest,
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(random_id);
 
   EXPECT_THAT(url_info.has_value(), IsTrue());
-}
-
-TEST_F(IsolatedWebAppUrlInfoTest, ParseSignedWebBundleIdSucceedWithValidUrl) {
-  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
-  base::expected<web_package::SignedWebBundleId, std::string> bundle_id =
-      url_info->ParseSignedWebBundleId();
-
-  EXPECT_THAT(bundle_id.has_value(), IsTrue());
-  EXPECT_THAT(bundle_id->type(),
-              Eq(web_package::SignedWebBundleId::Type::kEd25519PublicKey));
-  EXPECT_THAT(bundle_id->id(),
-              Eq("aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"));
-}
-
-TEST_F(IsolatedWebAppUrlInfoTest, ParseSignedWebBundleIdFailsWithSubdomain) {
-  GURL gurl(
-      "isolated-app://"
-      "foo.aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
-
-  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(gurl);
-  base::expected<web_package::SignedWebBundleId, std::string> bundle_id =
-      url_info->ParseSignedWebBundleId();
-
-  EXPECT_THAT(bundle_id.has_value(), IsFalse());
-  EXPECT_THAT(bundle_id.error(),
-              StartsWith("The host of isolated-app:// URLs must be a valid"));
-}
-
-TEST_F(IsolatedWebAppUrlInfoTest, ParseSignedWebBundleIdFailsWithBadHostname) {
-  GURL gurl(
-      "isolated-app://"
-      "ßerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
-
-  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(gurl);
-  base::expected<web_package::SignedWebBundleId, std::string> bundle_id =
-      url_info->ParseSignedWebBundleId();
-
-  EXPECT_THAT(bundle_id.has_value(), IsFalse());
-  EXPECT_THAT(bundle_id.error(),
-              StartsWith("The host of isolated-app:// URLs must be a valid"));
 }
 
 TEST_F(IsolatedWebAppUrlInfoTest, OriginIsCorrect) {
@@ -126,6 +107,14 @@ TEST_F(IsolatedWebAppUrlInfoTest, AppIdIsHashedOrigin) {
       IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
 
   EXPECT_THAT(url_info->app_id(), Eq("ckmbeioemjmabdoddhjadagkjknpeigi"));
+}
+
+TEST_F(IsolatedWebAppUrlInfoTest, WebBundleIdIsCorrect) {
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
+
+  EXPECT_THAT(url_info->web_bundle_id().id(),
+              Eq("aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"));
 }
 
 TEST_F(IsolatedWebAppUrlInfoTest, StoragePartitionConfigUsesOrigin) {

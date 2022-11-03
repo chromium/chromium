@@ -9,6 +9,7 @@
 
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -16,10 +17,6 @@ namespace content {
 class BrowserContext;
 class StoragePartitionConfig;
 }  // namespace content
-
-namespace web_package {
-class SignedWebBundleId;
-}
 
 namespace web_app {
 
@@ -31,14 +28,12 @@ class IsolatedWebAppUrlInfo {
   // message if the URL isn't valid.
   //
   // Note that this only performs basic URL validation; a non-error value does
-  // not guarantee the URL contains a valid key in its hostname, or that it
-  // corresponds to an existing or installed app.
+  // not guarantee that it corresponds to an existing or installed app.
   static base::expected<IsolatedWebAppUrlInfo, std::string> Create(
       const GURL& url);
 
-  // Wraps Create() but accepts a SignedWebBundleId object.
-  static base::expected<IsolatedWebAppUrlInfo, std::string>
-  CreateFromSignedWebBundleId(
+  // Creates an IsolatedWebAppUrlInfo instance from a SignedWebBundleId object.
+  static IsolatedWebAppUrlInfo CreateFromSignedWebBundleId(
       const web_package::SignedWebBundleId& web_bundle_id);
 
   // Returns the origin of the IWA that this URL refers to.
@@ -48,21 +43,21 @@ class IsolatedWebAppUrlInfo {
   // this URL.
   const AppId& app_id() const;
 
+  // Returns the Web Bundle ID of the IWA that this URL refers to.
+  const web_package::SignedWebBundleId& web_bundle_id() const;
+
   // Returns the StoragePartitionConfig that should be used by the resource
   // hosted at this URL.
   content::StoragePartitionConfig storage_partition_config(
       content::BrowserContext* browser_context) const;
 
-  // Parses a `SignedWebBundleId` from the URL, verifying that it is a valid
-  // isolated-app:// URL. Returns an error message on failure.
-  base::expected<web_package::SignedWebBundleId, std::string>
-  ParseSignedWebBundleId() const;
-
  private:
-  explicit IsolatedWebAppUrlInfo(const url::Origin& url);
+  explicit IsolatedWebAppUrlInfo(
+      const web_package::SignedWebBundleId& web_bundle_id);
 
   url::Origin origin_;
   AppId app_id_;
+  web_package::SignedWebBundleId web_bundle_id_;
 };
 
 }  // namespace web_app

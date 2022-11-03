@@ -344,13 +344,6 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  base::expected<web_package::SignedWebBundleId, std::string> web_bundle_id =
-      url_info->ParseSignedWebBundleId();
-  if (!web_bundle_id.has_value()) {
-    LogErrorAndFail(web_bundle_id.error(), std::move(loader_client));
-    return;
-  }
-
   auto forward_request_to_isolation_data_content =
       [&](const IsolationData& isolation_data) {
         if (!IsSupportedHttpMethod(resource_request.method)) {
@@ -365,26 +358,28 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
             base::Overloaded{
                 [&](const IsolationData::InstalledBundle& content) {
                   DCHECK_EQ(
-                      web_bundle_id->type(),
+                      url_info->web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-                  HandleSignedBundle(
-                      content.path, *web_bundle_id, std::move(loader_receiver),
-                      resource_request, std::move(loader_client));
+                  HandleSignedBundle(content.path, url_info->web_bundle_id(),
+                                     std::move(loader_receiver),
+                                     resource_request,
+                                     std::move(loader_client));
                 },
                 [&](const IsolationData::DevModeBundle& content) {
                   DCHECK_EQ(
-                      web_bundle_id->type(),
+                      url_info->web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
                   // A Signed Web Bundle installed in dev mode is treated just
                   // like a properly installed Signed Web Bundle, with the only
                   // difference being that we implicitly trust its public
                   // key(s).
-                  HandleSignedBundle(
-                      content.path, *web_bundle_id, std::move(loader_receiver),
-                      resource_request, std::move(loader_client));
+                  HandleSignedBundle(content.path, url_info->web_bundle_id(),
+                                     std::move(loader_receiver),
+                                     resource_request,
+                                     std::move(loader_client));
                 },
                 [&](const IsolationData::DevModeProxy& content) {
-                  DCHECK_EQ(web_bundle_id->type(),
+                  DCHECK_EQ(url_info->web_bundle_id().type(),
                             web_package::SignedWebBundleId::Type::kDevelopment);
                   HandleDevModeProxy(*url_info, content,
                                      std::move(loader_receiver),

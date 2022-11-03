@@ -34,27 +34,35 @@ IsolatedWebAppUrlInfo::Create(const GURL& url) {
   DCHECK(!url.has_username() && !url.has_password() && !url.has_port() &&
          url.IsStandard());
 
-  return IsolatedWebAppUrlInfo(url::Origin::Create(url));
+  auto web_bundle_id = web_package::SignedWebBundleId::Create(url.host());
+  if (!web_bundle_id.has_value()) {
+    return base::unexpected(
+        base::StringPrintf("The host of isolated-app:// URLs must be a valid "
+                           "Signed Web Bundle ID (got %s): %s",
+                           url.host().c_str(), web_bundle_id.error().c_str()));
+  }
+
+  return IsolatedWebAppUrlInfo(*web_bundle_id);
 }
 
 // static
-base::expected<IsolatedWebAppUrlInfo, std::string>
-IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+IsolatedWebAppUrlInfo IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
     const web_package::SignedWebBundleId& web_bundle_id) {
-  const GURL url =
-      GURL(base::StrCat({chrome::kIsolatedAppScheme,
-                         url::kStandardSchemeSeparator, web_bundle_id.id()}));
-  return IsolatedWebAppUrlInfo::Create(url);
+  return IsolatedWebAppUrlInfo(web_bundle_id);
 }
 
-IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(const url::Origin& origin)
-    : origin_(origin),
+IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(
+    const web_package::SignedWebBundleId& web_bundle_id)
+    : origin_(url::Origin::CreateFromNormalizedTuple(chrome::kIsolatedAppScheme,
+                                                     web_bundle_id.id(),
+                                                     /*port=*/0)),
       // The manifest id of Isolated Web Apps must resolve to the app's origin.
       // The manifest parser will resolve "id" relative the origin of the app's
       // start_url, and then sets Manifest::id to the path of this resolved URL,
       // not including a leading slash. Because of this, the resolved manifest
       // id will always be empty string.
-      app_id_(GenerateAppId(/*manifest_id=*/"", origin_.GetURL())) {}
+      app_id_(GenerateAppId(/*manifest_id=*/"", origin_.GetURL())),
+      web_bundle_id_(web_bundle_id) {}
 
 const url::Origin& IsolatedWebAppUrlInfo::origin() const {
   return origin_;
@@ -62,6 +70,11 @@ const url::Origin& IsolatedWebAppUrlInfo::origin() const {
 
 const AppId& IsolatedWebAppUrlInfo::app_id() const {
   return app_id_;
+}
+
+const web_package::SignedWebBundleId& IsolatedWebAppUrlInfo::web_bundle_id()
+    const {
+  return web_bundle_id_;
 }
 
 content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
@@ -76,19 +89,6 @@ content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
       /*partition_domain=*/kIsolatedWebAppPartitionPrefix + origin().host(),
       /*partition_name=*/"",
       /*in_memory=*/false);
-}
-
-base::expected<web_package::SignedWebBundleId, std::string>
-IsolatedWebAppUrlInfo::ParseSignedWebBundleId() const {
-  auto web_bundle_id = web_package::SignedWebBundleId::Create(origin().host());
-  if (!web_bundle_id.has_value()) {
-    return base::unexpected(base::StringPrintf(
-        "The host of isolated-app:// URLs must be a valid "
-        "Signed Web Bundle ID (got %s): %s",
-        origin_.host().c_str(), web_bundle_id.error().c_str()));
-  }
-
-  return *web_bundle_id;
 }
 
 }  // namespace web_app

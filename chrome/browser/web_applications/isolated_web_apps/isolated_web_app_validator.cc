@@ -55,17 +55,13 @@ absl::optional<std::string> IsolatedWebAppValidator::ValidateMetadata(
           url_info.error().c_str());
     }
 
-    auto entry_web_bundle_id = url_info->ParseSignedWebBundleId();
-    if (!entry_web_bundle_id.has_value()) {
-      return base::StringPrintf(
-          "Invalid metadata: The URL of an exchange is invalid: %s",
-          entry_web_bundle_id.error().c_str());
-    }
+    const web_package::SignedWebBundleId& entry_web_bundle_id =
+        url_info->web_bundle_id();
     if (entry_web_bundle_id != web_bundle_id) {
       return base::StringPrintf(
           "Invalid metadata: The URL of an exchange contains the wrong Signed "
           "Web Bundle ID: %s",
-          entry_web_bundle_id->id().c_str());
+          entry_web_bundle_id.id().c_str());
     }
     if (entry.has_ref()) {
       return base::StringPrintf(
