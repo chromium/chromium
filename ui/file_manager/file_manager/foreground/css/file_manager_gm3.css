@@ -56,7 +56,7 @@ body {
 /* Main part of the dialog between header and footer. */
 .dialog-container {
   align-items: stretch;
-  background-color: var(--cros-sys-app_base);
+  background-color: var(--cros-sys-app_base_shaded);
   display: flex;
   flex: auto;
   flex-direction: row;
@@ -69,7 +69,7 @@ body {
 /* List and grid are inside this container. */
 .dialog-main {
   align-items: stretch;
-  background-color: var(--cros-sys-app_base_shaded);
+  background-color: var(--cros-sys-app_base);
   border-radius: 16px 16px 0 0;
   display: flex;
   flex: auto;
