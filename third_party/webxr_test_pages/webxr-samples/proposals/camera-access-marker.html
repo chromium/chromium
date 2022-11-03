@@ -509,10 +509,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 console.debug('finished frame ' + subtaskFrameNum + ' readPixels');
 
                 readPixelsStarted = false;
-                readPixelsDone = true;
 
                 // session ended?
                 if (!readback_pixels) return;
+
+                readPixelsDone = true;
 
                 pendingMarkerDetection = () => {
                   console.debug('async do frame ' + subtaskFrameNum + ' marker detection, texture ' + subtaskQuadCopyTexIdx);
