@@ -100,6 +100,14 @@ std::unique_ptr<NativePixmapGLBinding> GLOzoneEGLWayland::ImportNativePixmap(
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
     gl::GLDisplay* display,
     gfx::AcceleratedWidget widget) {
+  // If we run with software GL implementation, use GLSurface which will read
+  // pixels back and present via shared memory.
+  if (gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
+    return gl::InitializeGLSurface(
+        base::MakeRefCounted<GLSurfaceEglReadbackWayland>(
+            display->GetAs<gl::GLDisplayEGL>(), widget, buffer_manager_));
+  }
+
   // Only EGLGLES2 is supported with surfaceless view gl.
   if ((gl::GetGLImplementation() != gl::kGLImplementationEGLGLES2) ||
       !connection_)
@@ -123,9 +131,7 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
     gl::GLDisplay* display,
     gfx::AcceleratedWidget window) {
   if (gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
-    return gl::InitializeGLSurface(
-        base::MakeRefCounted<GLSurfaceEglReadbackWayland>(
-            display->GetAs<gl::GLDisplayEGL>(), window, buffer_manager_));
+    return nullptr;
   } else {
 #if defined(WAYLAND_GBM)
   // If there is a gbm device available, use surfaceless gl surface.
