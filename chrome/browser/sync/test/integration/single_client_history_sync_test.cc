@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/typed_urls_helper.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -635,5 +638,60 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       /*index=*/0, redirect_chain[1].url_id, &url_row2));
   EXPECT_EQ(url_row2.url(), url2);
 }
+
+// On Android, switches::kSyncUserForTest isn't supported (the passed-in
+// username gets ignored in SyncSigninDelegateAndroid::SigninFake()), so it's
+// not currently possible to simulate a non-@gmail.com account.
+#if !BUILDFLAG(IS_ANDROID)
+
+class SingleClientHistoryNonGmailSyncTest : public SingleClientHistorySyncTest {
+ public:
+  void SetUp() override {
+    // Set up a non-@gmail.com account, so that it'll be treated as a potential
+    // Dasher (aka managed aka enterprise) account.
+    // Note: This can't be done in SetUpCommandLine() because that happens
+    // slightly too late (SyncTest::SetUp() already consumes this param).
+    base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+    cl->AppendSwitchASCII(switches::kSyncUserForTest,
+                          "user@managed-domain.com");
+    SingleClientHistorySyncTest::SetUp();
+  }
+
+  void SignInAndSetAccountInfo(bool is_managed) {
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(GetProfile(0));
+    CoreAccountInfo account =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+
+    // A non-empty hosted domain means the account is managed.
+    std::string hosted_domain = is_managed ? "managed-domain.com" : "";
+    signin::SimulateSuccessfulFetchOfAccountInfo(
+        identity_manager, account.account_id, account.email, account.gaia,
+        hosted_domain, "Full Name", "Given Name", "en-US", "");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistoryNonGmailSyncTest,
+                       HistorySyncDisabledForManagedAccount) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  SignInAndSetAccountInfo(/*is_managed=*/true);
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Empty());
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistoryNonGmailSyncTest,
+                       HistorySyncEnabledForNonManagedAccount) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  SignInAndSetAccountInfo(/*is_managed=*/false);
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

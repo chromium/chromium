@@ -294,15 +294,15 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     // HistoryModelTypeController uses a proxy delegate internally, as
     // provided by HistoryService.
     controllers.push_back(std::make_unique<history::HistoryModelTypeController>(
-        syncer::TYPED_URLS, sync_service, sync_client_->GetHistoryService(),
-        sync_client_->GetPrefService()));
+        syncer::TYPED_URLS, sync_service, sync_client_->GetIdentityManager(),
+        sync_client_->GetHistoryService(), sync_client_->GetPrefService()));
   }
 
   if (!disabled_types.Has(syncer::HISTORY) &&
       base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
     controllers.push_back(std::make_unique<history::HistoryModelTypeController>(
-        syncer::HISTORY, sync_service, sync_client_->GetHistoryService(),
-        sync_client_->GetPrefService()));
+        syncer::HISTORY, sync_service, sync_client_->GetIdentityManager(),
+        sync_client_->GetHistoryService(), sync_client_->GetPrefService()));
   }
 
   // Delete directive sync is enabled by default.

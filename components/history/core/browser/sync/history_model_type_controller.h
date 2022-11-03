@@ -5,16 +5,19 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_MODEL_TYPE_CONTROLLER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_MODEL_TYPE_CONTROLLER_H_
 
+#include "base/scoped_observation.h"
 #include "components/history/core/browser/sync/history_model_type_controller_helper.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/model_type_controller.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 class PrefService;
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
+namespace signin {
+class AccountManagedStatusFinder;
+class IdentityManager;
+}  // namespace signin
 
 namespace history {
 
@@ -27,6 +30,7 @@ class HistoryModelTypeController : public syncer::ModelTypeController,
   // `model_type` must be either HISTORY or TYPED_URLS.
   HistoryModelTypeController(syncer::ModelType model_type,
                              syncer::SyncService* sync_service,
+                             signin::IdentityManager* identity_manager,
                              HistoryService* history_service,
                              PrefService* pref_service);
 
@@ -38,16 +42,20 @@ class HistoryModelTypeController : public syncer::ModelTypeController,
 
   // syncer::DataTypeController implementation.
   PreconditionState GetPreconditionState() const override;
-  void LoadModels(const syncer::ConfigureContext& configure_context,
-                  const ModelLoadCallback& model_load_callback) override;
-  void Stop(syncer::ShutdownReason shutdown_reason,
-            StopCallback callback) override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
+  void AccountTypeDetermined();
+
   HistoryModelTypeControllerHelper helper_;
+
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observation_{this};
+
+  signin::IdentityManager* const identity_manager_;
+  std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;
 };
 
 }  // namespace history
