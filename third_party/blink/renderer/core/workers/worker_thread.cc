@@ -30,7 +30,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -597,6 +596,7 @@ void WorkerThread::InitializeOnWorkerThread(
     const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
     std::unique_ptr<WorkerDevToolsParams> devtools_params) {
   DCHECK(IsCurrentThread());
+  backing_thread_weak_factory_.emplace(this);
   worker_reporting_proxy_.WillInitializeWorkerContext();
   {
     TRACE_EVENT0("blink.worker", "WorkerThread::InitializeWorkerContext");
@@ -738,11 +738,13 @@ void WorkerThread::PrepareForShutdownOnWorkerThread() {
     SetThreadState(ThreadState::kReadyToShutdown);
   }
 
+  backing_thread_weak_factory_ = absl::nullopt;
   if (pause_or_freeze_count_ > 0) {
     DCHECK(nested_runner_);
     pause_or_freeze_count_ = 0;
     nested_runner_->QuitNow();
   }
+  pause_handle_.reset();
 
   if (WorkerThreadDebugger* debugger = WorkerThreadDebugger::From(GetIsolate()))
     debugger->WorkerThreadDestroyed(this);
@@ -887,8 +889,7 @@ void WorkerThread::PauseOrFreezeOnWorkerThread(
   if (pause_or_freeze_count_ > 1)
     return;
 
-  std::unique_ptr<scheduler::WorkerScheduler::PauseHandle> pause_handle =
-      GetScheduler()->Pause();
+  pause_handle_ = GetScheduler()->Pause();
   {
     // Since the nested message loop runner needs to be created and destroyed on
     // the same thread we allocate and destroy a new message loop runner each
@@ -896,13 +897,20 @@ void WorkerThread::PauseOrFreezeOnWorkerThread(
     // the worker thread such that the resume/terminate can quit this runner.
     std::unique_ptr<Platform::NestedMessageLoopRunner> nested_runner =
         Platform::Current()->CreateNestedMessageLoopRunner();
-    base::AutoReset<Platform::NestedMessageLoopRunner*> nested_runner_autoreset(
-        &nested_runner_, nested_runner.get());
+    auto weak_this = backing_thread_weak_factory_->GetWeakPtr();
+    nested_runner_ = nested_runner.get();
     nested_runner->Run();
+
+    // Careful `this` may be destroyed.
+    if (!weak_this) {
+      return;
+    }
+    nested_runner_ = nullptr;
   }
   GlobalScope()->SetDefersLoadingForResourceFetchers(LoaderFreezeMode::kNone);
   GlobalScope()->SetIsInBackForwardCache(false);
   GlobalScope()->SetLifecycleState(mojom::blink::FrameLifecycleState::kRunning);
+  pause_handle_.reset();
 }
 
 void WorkerThread::ResumeOnWorkerThread() {
