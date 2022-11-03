@@ -119,18 +119,10 @@ apps::IntentPtr CreateShareIntentFromFiles(
 
 base::flat_map<std::string, std::string> CreateArcIntentExtras(
     const apps::IntentPtr& intent);
-// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-// interface.
-base::flat_map<std::string, std::string> CreateArcIntentExtras(
-    const apps::mojom::IntentPtr& intent);
 
 // Convert between App Service and ARC Intents.
 arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
     const apps::IntentPtr& intent);
-// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-// interface.
-arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
-    const apps::mojom::IntentPtr& intent);
 
 // Converts an ARC intent action to an App Service intent action. Returns
 // nullptr if |arc_action| is an action which is not supported by App Service.
