@@ -53,11 +53,11 @@ void HTMLDialogElement::SetFocusForDialog(HTMLDialogElement* dialog) {
 
   // Showing a <dialog> should hide all open popups, immediately.
   auto& document = dialog->GetDocument();
-  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+  if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           document.GetExecutionContext())) {
-    HTMLElement::HideAllPopupsUntil(nullptr, document,
-                                    HidePopupFocusBehavior::kNone,
-                                    HidePopupForcingLevel::kHideImmediately);
+    HTMLElement::HideAllPopoversUntil(
+        nullptr, document, HidePopoverFocusBehavior::kNone,
+        HidePopoverForcingLevel::kHideImmediately);
   }
 
   dialog->previously_focused_element_ = document.FocusedElement();

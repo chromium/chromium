@@ -1868,13 +1868,13 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
                : kExpandedCollapsed;
   }
 
-  // For form controls that act as triggering elements for popups of type
-  // kPopup, then set aria-expanded=false when the popup is hidden, and
+  // For form controls that act as triggering elements for popovers of type
+  // kAuto, then set aria-expanded=false when the popover is hidden, and
   // aria-expanded=true when it is showing.
   if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
-    if (auto popup = form_control->popupTargetElement().element;
-        popup && popup->PopupType() == PopupValueType::kAuto) {
-      return popup->popupOpen() ? kExpandedExpanded : kExpandedCollapsed;
+    if (auto popover = form_control->popoverTargetElement().element;
+        popover && popover->PopoverType() == PopoverValueType::kAuto) {
+      return popover->popoverOpen() ? kExpandedExpanded : kExpandedCollapsed;
     }
   }
 

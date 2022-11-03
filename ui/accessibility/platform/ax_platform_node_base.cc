@@ -1295,11 +1295,11 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
         from = "table-caption";
         break;
       case ax::mojom::DescriptionFrom::kTitle:
-      case ax::mojom::DescriptionFrom::kPopupElement:
+      case ax::mojom::DescriptionFrom::kPopoverAttribute:
         // The following types of markup are mapped to "tooltip":
         // * The title attribute.
-        // * A related popup=hint related via popuptoggletarget /
-        // popupshowtarget / popuphidetarget.
+        // * A related popover=something related via popovertoggletarget /
+        // popovershowtarget / popoverhidetarget.
         // * A tooltip related via aria-describedby (see kRelatedElement above).
         from = "tooltip";
         break;

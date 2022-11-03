@@ -65,11 +65,11 @@
     [ImplementedAs=offsetWidthForBinding] readonly attribute long offsetWidth;
     [ImplementedAs=offsetHeightForBinding] readonly attribute long offsetHeight;
 
-    // The Pop-up API
-    [MeasureAs=ElementShowPopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void showPopUp();
-    [MeasureAs=ElementHidePopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void hidePopUp();
-    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,MeasureAs=AnyPopupAttribute,Reflect,ReflectOnly=("auto","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popUp;
-    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute boolean defaultOpen;
+    // The Popover API
+    [MeasureAs=ElementShowPopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void showPopover();
+    [MeasureAs=ElementHidePopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void hidePopover();
+    [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,MeasureAs=AnyPopoverAttribute,Reflect,ReflectOnly=("auto","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
+    [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect] attribute boolean defaultOpen;
 
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([TreatNullAs=EmptyString] DOMString or TrustedScript) innerText;

@@ -204,12 +204,12 @@ void GoFullscreen(Element& element,
   else
     DCHECK(!HasFullscreenFlag(element));
 
-  // If there are any open popups, close them immediately.
-  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+  // If there are any open popovers, close them immediately.
+  if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           document.GetExecutionContext())) {
-    HTMLElement::HideAllPopupsUntil(nullptr, document,
-                                    HidePopupFocusBehavior::kNone,
-                                    HidePopupForcingLevel::kHideImmediately);
+    HTMLElement::HideAllPopoversUntil(
+        nullptr, document, HidePopoverFocusBehavior::kNone,
+        HidePopoverForcingLevel::kHideImmediately);
   }
 
   // To fullscreen an |element| within a |document|, set the |element|'s
@@ -403,10 +403,10 @@ bool RequestFullscreenConditionsMet(Element& pending, Document& document) {
   if (!pending.IsHTMLElement() && !IsA<SVGSVGElement>(pending))
     return false;
 
-  // |pending| is not a dialog or popup element.
+  // |pending| is not a dialog or popover element.
   if (IsA<HTMLDialogElement>(pending) ||
       (IsA<HTMLElement>(pending) &&
-       To<HTMLElement>(pending).HasPopupAttribute())) {
+       To<HTMLElement>(pending).HasPopoverAttribute())) {
     return false;
   }
 

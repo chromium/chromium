@@ -963,10 +963,10 @@
              "--force-color-profile=display-p3-d65"]
   },
   {
-    "prefix": "popup-disabled",
+    "prefix": "popover-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--disable-blink-features=HTMLSelectMenuElement,HTMLPopupAttribute"]
+    "args": ["--disable-blink-features=HTMLSelectMenuElement,HTMLPopoverAttribute"]
   },
   {
     "prefix": "object-param-url",

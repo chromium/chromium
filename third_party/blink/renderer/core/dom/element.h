@@ -99,7 +99,7 @@ class Locale;
 class MutableCSSPropertyValueSet;
 class NamedNodeMap;
 class PointerLockOptions;
-class PopupData;
+class PopoverData;
 class PseudoElement;
 class ResizeObservation;
 class ResizeObserver;
@@ -1165,9 +1165,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   CSSToggleMap* GetToggleMap();
   CSSToggleMap& EnsureToggleMap();
 
-  void RemovePopupData();
-  PopupData* EnsurePopupData();
-  PopupData* GetPopupData() const;
+  void RemovePopoverData();
+  PopoverData* EnsurePopoverData();
+  PopoverData* GetPopoverData() const;
 
   AnchorScrollData& EnsureAnchorScrollData();
   void RemoveAnchorScrollData();

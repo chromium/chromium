@@ -45,4 +45,4 @@
     readonly attribute NodeList labels;
 };
 
-HTMLButtonElement includes PopUpTargetElement;
+HTMLButtonElement includes PopoverTargetElement;

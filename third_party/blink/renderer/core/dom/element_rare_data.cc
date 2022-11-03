@@ -99,13 +99,13 @@ ElementRareData::EnsureResizeObserverData() {
   return *resize_observer_data_;
 }
 
-PopupData& ElementRareData::EnsurePopupData() {
-  if (!popup_data_)
-    popup_data_ = MakeGarbageCollected<PopupData>();
-  return *popup_data_;
+PopoverData& ElementRareData::EnsurePopoverData() {
+  if (!popover_data_)
+    popover_data_ = MakeGarbageCollected<PopoverData>();
+  return *popover_data_;
 }
-void ElementRareData::RemovePopupData() {
-  popup_data_.Clear();
+void ElementRareData::RemovePopoverData() {
+  popover_data_.Clear();
 }
 
 CSSToggleMap& ElementRareData::EnsureToggleMap(Element* owner_element) {
@@ -151,7 +151,7 @@ void ElementRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(resize_observer_data_);
   visitor->Trace(custom_element_definition_);
   visitor->Trace(last_intrinsic_size_);
-  visitor->Trace(popup_data_);
+  visitor->Trace(popover_data_);
   visitor->Trace(toggle_map_);
   visitor->Trace(anchor_scroll_data_);
   NodeRareData::Trace(visitor);

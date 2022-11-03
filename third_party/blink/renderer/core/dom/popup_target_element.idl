@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-interface mixin PopUpTargetElement {
-  [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString? popUpToggleTarget;
-  [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString? popUpHideTarget;
-  [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString? popUpShowTarget;
+interface mixin PopoverTargetElement {
+  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect] attribute DOMString? popoverToggleTarget;
+  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect] attribute DOMString? popoverHideTarget;
+  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect] attribute DOMString? popoverShowTarget;
 };

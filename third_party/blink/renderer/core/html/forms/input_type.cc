@@ -871,9 +871,9 @@ bool InputType::IsSteppable() const {
   return false;
 }
 
-HTMLFormControlElement::PopupTriggerSupport InputType::SupportsPopupTriggering()
-    const {
-  return HTMLFormControlElement::PopupTriggerSupport::kNone;
+HTMLFormControlElement::PopoverTriggerSupport
+InputType::SupportsPopoverTriggering() const {
+  return HTMLFormControlElement::PopoverTriggerSupport::kNone;
 }
 
 bool InputType::ShouldRespectHeightAndWidthAttributes() {

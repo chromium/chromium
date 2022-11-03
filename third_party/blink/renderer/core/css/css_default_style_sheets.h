@@ -79,7 +79,7 @@ class CSSDefaultStyleSheets final
 
   StyleSheetContents* DefaultStyleSheet() { return default_style_sheet_.Get(); }
   StyleSheetContents* QuirksStyleSheet() { return quirks_style_sheet_.Get(); }
-  StyleSheetContents* PopupStyleSheet() { return popup_style_sheet_.Get(); }
+  StyleSheetContents* PopoverStyleSheet() { return popover_style_sheet_.Get(); }
   StyleSheetContents* SelectMenuStyleSheet() {
     return selectmenu_style_sheet_.Get();
   }
@@ -147,7 +147,7 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> media_controls_style_sheet_;
   Member<StyleSheetContents> text_track_style_sheet_;
   Member<StyleSheetContents> fullscreen_style_sheet_;
-  Member<StyleSheetContents> popup_style_sheet_;
+  Member<StyleSheetContents> popover_style_sheet_;
   Member<StyleSheetContents> selectmenu_style_sheet_;
   Member<StyleSheetContents> webxr_overlay_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;

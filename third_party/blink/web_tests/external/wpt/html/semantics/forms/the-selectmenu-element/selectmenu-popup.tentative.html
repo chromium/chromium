@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>HTMLSelectMenuElement Test: popup</title>
+<title>HTMLSelectMenuElement Test: popover</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -18,7 +18,7 @@
   <div slot="button" behavior="button" class="button">
     Custom button
   </div>
-  <div popup slot="listbox" behavior="listbox">
+  <div popover slot="listbox" behavior="listbox">
     <option>one</option>
     <option class="child2">two</option>
     <option class="child3">three</option>
@@ -32,7 +32,7 @@
 
 <selectmenu id="selectMenu3">
   <div slot="listbox">
-    <div popup behavior="listbox" id="selectMenu3-listbox">
+    <div popover behavior="listbox" id="selectMenu3-listbox">
       <option>one</option>
     </div>
   </div>
@@ -66,7 +66,7 @@
     assert_equals(selectMenu0.open, true);
     await clickOn(selectMenu0Child2);
     assert_equals(selectMenu0.open, false);
-  }, "Opening the popup and clicking an option should change the selectmenu's value");
+  }, "Opening the popover and clicking an option should change the selectmenu's value");
 
   promise_test(async () => {
     const selectMenu1 = document.getElementById("selectMenu1");
@@ -86,14 +86,14 @@
     await clickOn(child3);
     assert_equals(selectMenu1.value, "three", "Clicking a <div part='option'> should change the value");
     assert_equals(selectMenu1.open, false);
-  }, "With custom button and popup: opening the popup and clicking an option should change the selectmenu's value");
+  }, "With custom button and popover: opening the popover and clicking an option should change the selectmenu's value");
 
   promise_test(async () => {
     const selectMenu2 = document.getElementById("selectMenu2");
     await clickOn(selectMenu2);
     assert_equals(selectMenu2.value, "");
     assert_equals(selectMenu2.open, false);
-  }, "Clicking a popup with no listbox part does nothing");
+  }, "Clicking a popover with no listbox part does nothing");
 
   promise_test(async () => {
     const selectMenu3 = document.getElementById("selectMenu3");
@@ -103,5 +103,5 @@
     await clickOn(selectMenu3);
     assert_equals(selectMenu3.value, "");
     assert_equals(selectMenu3.open, false);
-  }, "Clicking a popup with a listbox that was removed does nothing");
+  }, "Clicking a popover with a listbox that was removed does nothing");
 </script>

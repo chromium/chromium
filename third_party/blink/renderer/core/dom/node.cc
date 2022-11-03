@@ -2886,9 +2886,9 @@ void Node::NotifyMutationObserversNodeWillDetach() {
 }
 
 void Node::HandleLocalEvents(Event& event) {
-  if (UNLIKELY(IsDocumentNode() && GetDocument().TopmostPopUp())) {
-    // Check if this event should "light dismiss" one or more pop-ups.
-    HTMLElement::HandlePopupLightDismiss(event);
+  if (UNLIKELY(IsDocumentNode() && GetDocument().TopmostPopover())) {
+    // Check if this event should "light dismiss" one or more popovers.
+    HTMLElement::HandlePopoverLightDismiss(event);
   }
 
   if (!HasEventTargetData())

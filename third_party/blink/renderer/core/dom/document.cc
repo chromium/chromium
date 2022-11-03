@@ -3050,9 +3050,9 @@ static ui::AXMode ComputeAXModeFromAXContexts(Vector<AXContext*> ax_contexts) {
 
 void Document::AddAXContext(AXContext* context) {
   // The only case when |&cache_owner| is not |this| is when this is a
-  // pop-up. We want pop-ups to share the AXObjectCache of their parent
+  // popup. We want popups to share the AXObjectCache of their parent
   // document. However, there's no valid reason to explicitly create an
-  // AXContext for a pop-up document, so check to make sure we're not
+  // AXContext for a popup document, so check to make sure we're not
   // trying to do that here.
   DCHECK_EQ(&AXObjectCacheOwner(), this);
 
@@ -7694,17 +7694,17 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
-HTMLElement* Document::TopmostPopUp() const {
-  if (PopupStack().empty())
+HTMLElement* Document::TopmostPopover() const {
+  if (PopoverStack().empty())
     return nullptr;
-  return PopupStack().back();
+  return PopoverStack().back();
 }
 
-void Document::SetPopUpPointerdownTarget(const HTMLElement* pop_up) {
-  DCHECK(
-      RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(GetExecutionContext()));
-  DCHECK(!pop_up || pop_up->HasPopupAttribute());
-  pop_up_pointerdown_target_ = pop_up;
+void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+      GetExecutionContext()));
+  DCHECK(!popover || popover->HasPopoverAttribute());
+  popover_pointerdown_target_ = popover;
 }
 
 void Document::exitPointerLock() {
@@ -8463,9 +8463,9 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(lists_invalidated_at_document_);
   visitor->Trace(node_lists_);
   visitor->Trace(top_layer_elements_);
-  visitor->Trace(popup_stack_);
-  visitor->Trace(pop_up_pointerdown_target_);
-  visitor->Trace(popups_waiting_to_hide_);
+  visitor->Trace(popover_stack_);
+  visitor->Trace(popover_pointerdown_target_);
+  visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(elements_needing_style_recalc_for_toggle_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);

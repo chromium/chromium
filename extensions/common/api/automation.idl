@@ -477,7 +477,7 @@
     ariaDescription,
     attributeExplicitlyEmpty,
     buttonLabel,
-    popupElement,
+    popoverAttribute,
     relatedElement,
     rubyAnnotation,
     summary,

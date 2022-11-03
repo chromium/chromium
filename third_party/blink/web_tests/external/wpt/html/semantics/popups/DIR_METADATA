@@ -1,5 +1,0 @@
-monorail {
-  component: "Blink>HTML>Popup"
-}
-team_email: "dom-dev@chromium.org"
-

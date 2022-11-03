@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
-#include "third_party/blink/renderer/core/dom/popup_data.h"
+#include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -1502,12 +1502,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     }
     case CSSSelector::kPseudoOpen:
       if (auto* html_element = DynamicTo<HTMLElement>(element);
-          html_element && html_element->HasPopupAttribute()) {
-        return html_element->popupOpen();
+          html_element && html_element->HasPopoverAttribute()) {
+        return html_element->popoverOpen();
       }
       return false;
     case CSSSelector::kPseudoClosed:
-      if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
               element.GetDocument().GetExecutionContext())) {
         // The html.css UA stylesheet contains a rule for <dialog> elements
         // that uses :closed, with `dialog:not(:not(:closed))`, so it's
@@ -1515,9 +1515,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return true;
       }
       if (auto* html_element = DynamicTo<HTMLElement>(element);
-          html_element && html_element->HasPopupAttribute()) {
-        return html_element->GetPopupData()->visibilityState() ==
-               PopupVisibilityState::kHidden;
+          html_element && html_element->HasPopoverAttribute()) {
+        return html_element->GetPopoverData()->visibilityState() ==
+               PopoverVisibilityState::kHidden;
       }
       return false;
     case CSSSelector::kPseudoFullscreen:

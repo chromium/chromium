@@ -61,9 +61,9 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
 
-  // Buttons can trigger popups.
-  PopupTriggerSupport SupportsPopupTriggering() const override {
-    return PopupTriggerSupport::kSupported;
+  // Buttons can trigger popovers.
+  PopoverTriggerSupport SupportsPopoverTriggering() const override {
+    return PopoverTriggerSupport::kSupported;
   }
 
   void AppendToFormData(FormData&) override;

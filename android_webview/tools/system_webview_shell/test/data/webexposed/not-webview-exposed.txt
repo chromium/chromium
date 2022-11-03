@@ -258,15 +258,13 @@ interface LaunchQueue
 # crbug.com/1326898
 interface FontData
 
-# The Pop-Up API (crbug.com/1307772) is enabled by the fieldtrial_testing_config,
+# The Popover API (crbug.com/1307772) is enabled by the fieldtrial_testing_config,
 # but only for desktop and Android platforms. It is not shipped to stable yet,
 # on any platform.
 interface HTMLElement : Element
-	  getter popUp
-	  method hidePopUp
+	  method hidePopover
 	  setter defaultOpen
-	  method showPopUp
-	  setter popUp
+	  method showPopover
 	  getter defaultOpen
 
 # FedCM API is not implemented on WebView. crbug.com/1340252

@@ -41673,7 +41673,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3778" label="V8TCPSocket_RemoteAddress_AttributeGetter"/>
   <int value="3779" label="V8TCPSocket_RemotePort_AttributeGetter"/>
   <int value="3780" label="CSSSelectorTargetText"/>
-  <int value="3781" label="PopupElement"/>
+  <int value="3781" label="PopoverAttribute"/>
   <int value="3782" label="OBSOLETE_V8HTMLPopupElement_Show_Method"/>
   <int value="3783" label="OBSOLETE_V8HTMLPopupElement_Hide_Method"/>
   <int value="3784" label="OBSOLETE_WindowOpenWithAdditionalBoolParameter"/>
@@ -42096,9 +42096,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4186" label="PressureObserver_TakeRecords"/>
   <int value="4187" label="PrivacySandboxAdsAPIs"/>
   <int value="4188" label="Fledge"/>
-  <int value="4189" label="ElementShowPopup"/>
-  <int value="4190" label="ElementHidePopup"/>
-  <int value="4191" label="ValidPopupAttribute"/>
+  <int value="4189" label="ElementShowPopover"/>
+  <int value="4190" label="ElementHidePopover"/>
+  <int value="4191" label="ValidPopoverAttribute"/>
   <int value="4192" label="DeprecationExample"/>
   <int value="4193" label="RTCLocalSdpModificationOpusStereo"/>
   <int value="4194" label="NavigatorUAData_Mobile"/>
@@ -42169,7 +42169,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="CrossOriginOpenerPolicyRestrictPropertiesReportOnly"/>
   <int value="4256" label="EventTimingInteractionId"/>
   <int value="4257" label="SecurePaymentConfirmationOptOut"/>
-  <int value="4258" label="AnyPopupAttribute"/>
+  <int value="4258" label="AnyPopoverAttribute"/>
   <int value="4259" label="DeferredShapingWorked"/>
   <int value="4260" label="OBSOLETE_DeferredShapingReshapedByForceLayout"/>
   <int value="4261" label="MediaSourceGetHandle"/>

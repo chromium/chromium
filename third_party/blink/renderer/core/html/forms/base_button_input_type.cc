@@ -59,9 +59,9 @@ void BaseButtonInputType::CreateShadowSubtree() {
       GetElement().GetDocument(), GetElement().ValueOrDefaultLabel()));
 }
 
-HTMLFormControlElement::PopupTriggerSupport
-BaseButtonInputType::SupportsPopupTriggering() const {
-  return HTMLFormControlElement::PopupTriggerSupport::kSupported;
+HTMLFormControlElement::PopoverTriggerSupport
+BaseButtonInputType::SupportsPopoverTriggering() const {
+  return HTMLFormControlElement::PopoverTriggerSupport::kSupported;
 }
 
 void BaseButtonInputType::ValueAttributeChanged() {

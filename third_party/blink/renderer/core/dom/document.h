@@ -1545,19 +1545,19 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HTMLDialogElement* ActiveModalDialog() const;
 
-  HeapVector<Member<HTMLElement>>& PopupStack() { return popup_stack_; }
-  const HeapVector<Member<HTMLElement>>& PopupStack() const {
-    return popup_stack_;
+  HeapVector<Member<HTMLElement>>& PopoverStack() { return popover_stack_; }
+  const HeapVector<Member<HTMLElement>>& PopoverStack() const {
+    return popover_stack_;
   }
-  bool PopupAutoShowing() const { return !popup_stack_.empty(); }
-  HTMLElement* TopmostPopUp() const;
-  HeapHashSet<Member<HTMLElement>>& PopupsWaitingToHide() {
-    return popups_waiting_to_hide_;
+  bool PopoverAutoShowing() const { return !popover_stack_.empty(); }
+  HTMLElement* TopmostPopover() const;
+  HeapHashSet<Member<HTMLElement>>& PopoversWaitingToHide() {
+    return popovers_waiting_to_hide_;
   }
-  const HTMLElement* PopUpPointerdownTarget() const {
-    return pop_up_pointerdown_target_;
+  const HTMLElement* PopoverPointerdownTarget() const {
+    return popover_pointerdown_target_;
   }
-  void SetPopUpPointerdownTarget(const HTMLElement*);
+  void SetPopoverPointerdownTarget(const HTMLElement*);
 
   // Add an element to the set of elements that, because of CSS toggle
   // creation, need style recalc done later.
@@ -2395,14 +2395,14 @@ class CORE_EXPORT Document : public ContainerNode,
   // stack and is thus the one that will be visually on top.
   HeapVector<Member<Element>> top_layer_elements_;
 
-  // The stack of currently-displayed `popup=auto` elements. Elements in the
+  // The stack of currently-displayed `popover=auto` elements. Elements in the
   // stack go from earliest (bottom-most) to latest (top-most).
-  HeapVector<Member<HTMLElement>> popup_stack_;
-  // The pop-up (if any) that received the most recent pointerdown event.
-  Member<const HTMLElement> pop_up_pointerdown_target_;
-  // A set of popups for which hidePopUp() has been called, but animations are
-  // still running.
-  HeapHashSet<Member<HTMLElement>> popups_waiting_to_hide_;
+  HeapVector<Member<HTMLElement>> popover_stack_;
+  // The popover (if any) that received the most recent pointerdown event.
+  Member<const HTMLElement> popover_pointerdown_target_;
+  // A set of popovers for which hidePopover() has been called, but animations
+  // are still running.
+  HeapHashSet<Member<HTMLElement>> popovers_waiting_to_hide_;
 
   // Elements that need to be restyled because a toggle was created on them,
   // or a prior sibling, during the previous restyle.

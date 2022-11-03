@@ -141,7 +141,7 @@ namespace http://www.w3.org/1999/xhtml
     property hasChildNodes
     property hasPointerCapture
     property hidden
-    property hidePopUp
+    property hidePopover
     property id
     property inert
     property innerHTML
@@ -250,8 +250,8 @@ namespace http://www.w3.org/1999/xhtml
     property onpointerover
     property onpointerrawupdate
     property onpointerup
-    property onpopuphide
-    property onpopupshow
+    property onpopoverhide
+    property onpopovershow
     property onprogress
     property onratechange
     property onreset
@@ -294,7 +294,7 @@ namespace http://www.w3.org/1999/xhtml
     property parentElement
     property parentNode
     property part
-    property popUp
+    property popover
     property prefix
     property prepend
     property previousElementSibling
@@ -330,7 +330,7 @@ namespace http://www.w3.org/1999/xhtml
     property setHTML
     property setPointerCapture
     property shadowRoot
-    property showPopUp
+    property showPopover
     property slot
     property spellcheck
     property style
@@ -504,9 +504,9 @@ html element button
     property formTarget
     property labels
     property name
-    property popUpHideTarget
-    property popUpShowTarget
-    property popUpToggleTarget
+    property popoverHideTarget
+    property popoverShowTarget
+    property popoverToggleTarget
     property reportValidity
     property setCustomValidity
     property type
@@ -754,9 +754,9 @@ html element input
     property name
     property pattern
     property placeholder
-    property popUpHideTarget
-    property popUpShowTarget
-    property popUpToggleTarget
+    property popoverHideTarget
+    property popoverShowTarget
+    property popoverToggleTarget
     property readOnly
     property reportValidity
     property required
@@ -1482,8 +1482,8 @@ namespace http://www.w3.org/2000/svg
     property onpointerover
     property onpointerrawupdate
     property onpointerup
-    property onpopuphide
-    property onpopupshow
+    property onpopoverhide
+    property onpopovershow
     property onprogress
     property onratechange
     property onreset

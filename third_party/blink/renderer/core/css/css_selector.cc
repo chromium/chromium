@@ -584,15 +584,15 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled())
     return CSSSelector::kPseudoUnknown;
 
-  // We enable parsing of the pop-up pseudo classes in the case that we *don't*
+  // We enable parsing of the popover pseudo classes in the case that we *don't*
   // have a document, since that mostly/always occurs when parsing UA
   // stylesheets.
-  bool popup_attribute_enabled =
-      !document || RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+  bool popover_attribute_enabled =
+      !document || RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
                        document->GetExecutionContext());
-  if (match->type == CSSSelector::kPseudoOpen && !popup_attribute_enabled)
+  if (match->type == CSSSelector::kPseudoOpen && !popover_attribute_enabled)
     return CSSSelector::kPseudoUnknown;
-  if (match->type == CSSSelector::kPseudoClosed && !popup_attribute_enabled)
+  if (match->type == CSSSelector::kPseudoClosed && !popover_attribute_enabled)
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoHighlight &&

@@ -59,34 +59,34 @@ enum class ContentEditableType {
   kPlaintextOnly,
 };
 
-enum class PopupValueType {
+enum class PopoverValueType {
   kNone,
   kAuto,
   kManual,
 };
-constexpr const char* kPopupTypeValueAuto = "auto";
-constexpr const char* kPopupTypeValueManual = "manual";
+constexpr const char* kPopoverTypeValueAuto = "auto";
+constexpr const char* kPopoverTypeValueManual = "manual";
 
-enum class PopupTriggerAction {
+enum class PopoverTriggerAction {
   kNone,
   kToggle,
   kShow,
   kHide,
 };
 
-enum class HidePopupFocusBehavior {
+enum class HidePopoverFocusBehavior {
   kNone,
   kFocusPreviousElement,
 };
 
-enum class HidePopupForcingLevel {
+enum class HidePopoverForcingLevel {
   kHideAfterAnimations,
   kHideImmediately,
 };
 
-enum class PopUpAncestorType {
+enum class PopoverAncestorType {
   kDefault,
-  kNewPopUp,
+  kNewPopover,
   kInclusive,
 };
 
@@ -214,37 +214,37 @@ class CORE_EXPORT HTMLElement : public Element {
   // https://html.spec.whatwg.org/C/#potentially-render-blocking
   virtual bool IsPotentiallyRenderBlocking() const { return false; }
 
-  // Pop-up API related functions.
-  void UpdatePopupAttribute(String);
-  bool HasPopupAttribute() const;
-  PopupValueType PopupType() const;
-  bool popupOpen() const;
-  void showPopUp(ExceptionState& exception_state);
-  void hidePopUp(ExceptionState& exception_state);
-  void HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
-                         HidePopupForcingLevel forcing_level);
-  void PopupHideFinishIfNeeded();
-  static const HTMLElement* NearestOpenAncestralPopup(const Node&,
-                                                      PopUpAncestorType);
+  // Popover API related functions.
+  void UpdatePopoverAttribute(String);
+  bool HasPopoverAttribute() const;
+  PopoverValueType PopoverType() const;
+  bool popoverOpen() const;
+  void showPopover(ExceptionState& exception_state);
+  void hidePopover(ExceptionState& exception_state);
+  void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
+                           HidePopoverForcingLevel forcing_level);
+  void PopoverHideFinishIfNeeded();
+  static const HTMLElement* NearestOpenAncestralPopover(const Node&,
+                                                        PopoverAncestorType);
 
   // Retrieves the element pointed to by this element's 'anchor' content
-  // attribute, if that element exists, and if this element is a pop-up.
+  // attribute, if that element exists, and if this element is a popover.
   Element* anchorElement() const;
-  static void HandlePopupLightDismiss(const Event& event);
-  void InvokePopup(Element* invoker);
-  void SetPopupFocusOnShow();
-  // This hides all visible popups up to, but not including,
-  // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
-  static void HideAllPopupsUntil(const HTMLElement*,
-                                 Document&,
-                                 HidePopupFocusBehavior,
-                                 HidePopupForcingLevel);
+  static void HandlePopoverLightDismiss(const Event& event);
+  void InvokePopover(Element* invoker);
+  void SetPopoverFocusOnShow();
+  // This hides all visible popovers up to, but not including,
+  // |endpoint|. If |endpoint| is nullptr, all popovers are hidden.
+  static void HideAllPopoversUntil(const HTMLElement*,
+                                   Document&,
+                                   HidePopoverFocusBehavior,
+                                   HidePopoverForcingLevel);
 
-  // TODO(crbug.com/1197720): The popup position should be provided by the new
+  // TODO(crbug.com/1197720): The popover position should be provided by the new
   // anchored positioning scheme.
   void SetNeedsRepositioningForSelectMenu(bool flag);
   void SetOwnerSelectMenuElement(HTMLSelectMenuElement* element);
-  scoped_refptr<ComputedStyle> StyleForSelectMenuPopupstyle(
+  scoped_refptr<ComputedStyle> StyleForSelectMenuPopoverstyle(
       const StyleRecalcContext&);
 
   bool DispatchFocusEvent(
@@ -336,8 +336,8 @@ class CORE_EXPORT HTMLElement : public Element {
   static AttributeTriggers* TriggersForAttributeName(
       const QualifiedName& attr_name);
 
-  // Special focus handling for popups.
-  Element* GetPopupFocusableArea() const;
+  // Special focus handling for popovers.
+  Element* GetPopoverFocusableArea() const;
 
   void OnDirAttrChanged(const AttributeModificationParams&);
   void OnFormAttrChanged(const AttributeModificationParams&);

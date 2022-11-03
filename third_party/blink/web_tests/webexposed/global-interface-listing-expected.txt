@@ -1884,8 +1884,8 @@ interface Document : Node
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
-    getter onpopuphide
-    getter onpopupshow
+    getter onpopoverhide
+    getter onpopovershow
     getter onprerenderingchange
     getter onprogress
     getter onratechange
@@ -2099,8 +2099,8 @@ interface Document : Node
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
-    setter onpopuphide
-    setter onpopupshow
+    setter onpopoverhide
+    setter onpopovershow
     setter onprerenderingchange
     setter onprogress
     setter onratechange
@@ -3136,9 +3136,9 @@ interface HTMLButtonElement : HTMLElement
     getter formTarget
     getter labels
     getter name
-    getter popUpHideTarget
-    getter popUpShowTarget
-    getter popUpToggleTarget
+    getter popoverHideTarget
+    getter popoverShowTarget
+    getter popoverToggleTarget
     getter type
     getter validationMessage
     getter validity
@@ -3155,9 +3155,9 @@ interface HTMLButtonElement : HTMLElement
     setter formNoValidate
     setter formTarget
     setter name
-    setter popUpHideTarget
-    setter popUpShowTarget
-    setter popUpToggleTarget
+    setter popoverHideTarget
+    setter popoverShowTarget
+    setter popoverToggleTarget
     setter type
     setter value
 interface HTMLCanvasElement : HTMLElement
@@ -3318,8 +3318,8 @@ interface HTMLElement : Element
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
-    getter onpopuphide
-    getter onpopupshow
+    getter onpopoverhide
+    getter onpopovershow
     getter onprogress
     getter onratechange
     getter onreset
@@ -3354,7 +3354,7 @@ interface HTMLElement : Element
     getter onwebkittransitionend
     getter onwheel
     getter outerText
-    getter popUp
+    getter popover
     getter spellcheck
     getter style
     getter tabIndex
@@ -3366,8 +3366,8 @@ interface HTMLElement : Element
     method click
     method constructor
     method focus
-    method hidePopUp
-    method showPopUp
+    method hidePopover
+    method showPopover
     setter accessKey
     setter autocapitalize
     setter autofocus
@@ -3453,8 +3453,8 @@ interface HTMLElement : Element
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
-    setter onpopuphide
-    setter onpopupshow
+    setter onpopoverhide
+    setter onpopovershow
     setter onprogress
     setter onratechange
     setter onreset
@@ -3489,7 +3489,7 @@ interface HTMLElement : Element
     setter onwebkittransitionend
     setter onwheel
     setter outerText
-    setter popUp
+    setter popover
     setter spellcheck
     setter style
     setter tabIndex
@@ -3805,9 +3805,9 @@ interface HTMLInputElement : HTMLElement
     getter name
     getter pattern
     getter placeholder
-    getter popUpHideTarget
-    getter popUpShowTarget
-    getter popUpToggleTarget
+    getter popoverHideTarget
+    getter popoverShowTarget
+    getter popoverToggleTarget
     getter readOnly
     getter required
     getter selectionDirection
@@ -3863,9 +3863,9 @@ interface HTMLInputElement : HTMLElement
     setter name
     setter pattern
     setter placeholder
-    setter popUpHideTarget
-    setter popUpShowTarget
-    setter popUpToggleTarget
+    setter popoverHideTarget
+    setter popoverShowTarget
+    setter popoverToggleTarget
     setter readOnly
     setter required
     setter selectionDirection
@@ -5285,8 +5285,8 @@ interface MathMLElement : Element
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
-    getter onpopuphide
-    getter onpopupshow
+    getter onpopoverhide
+    getter onpopovershow
     getter onprogress
     getter onratechange
     getter onreset
@@ -5397,8 +5397,8 @@ interface MathMLElement : Element
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
-    setter onpopuphide
-    setter onpopupshow
+    setter onpopoverhide
+    setter onpopovershow
     setter onprogress
     setter onratechange
     setter onreset
@@ -7547,8 +7547,8 @@ interface SVGElement : Element
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
-    getter onpopuphide
-    getter onpopupshow
+    getter onpopoverhide
+    getter onpopovershow
     getter onprogress
     getter onratechange
     getter onreset
@@ -7661,8 +7661,8 @@ interface SVGElement : Element
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
-    setter onpopuphide
-    setter onpopupshow
+    setter onpopoverhide
+    setter onpopovershow
     setter onprogress
     setter onratechange
     setter onreset
@@ -11847,9 +11847,9 @@ namespace CSS
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
+    getter onpopoverhide
+    getter onpopovershow
     getter onpopstate
-    getter onpopuphide
-    getter onpopupshow
     getter onprogress
     getter onratechange
     getter onrejectionhandled
@@ -12070,9 +12070,9 @@ namespace CSS
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
+    setter onpopoverhide
+    setter onpopovershow
     setter onpopstate
-    setter onpopuphide
-    setter onpopupshow
     setter onprogress
     setter onratechange
     setter onrejectionhandled

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL popover anchor IDL property returns the anchor element assert_equals: expected (object) Element node <button id="b1">This is an anchor button</button> but got (undefined) undefined
+Harness: the test ran to completion.
+

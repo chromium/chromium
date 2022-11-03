@@ -47,7 +47,7 @@ class BaseButtonInputType : public InputType,
   BaseButtonInputType(Type, HTMLInputElement&);
   void ValueAttributeChanged() override;
   void CreateShadowSubtree() override;
-  HTMLFormControlElement::PopupTriggerSupport SupportsPopupTriggering()
+  HTMLFormControlElement::PopoverTriggerSupport SupportsPopoverTriggering()
       const override;
 
  private:

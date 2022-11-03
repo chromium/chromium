@@ -5227,7 +5227,7 @@
             ]
         }
     ],
-    "HTMLPopupAttribute": [
+    "HTMLPopoverAttribute": [
         {
             "platforms": [
                 "android",
@@ -5242,7 +5242,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "HTMLPopupAttribute"
+                        "HTMLPopoverAttribute"
                     ]
                 }
             ]

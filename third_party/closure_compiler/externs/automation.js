@@ -465,7 +465,7 @@ chrome.automation.DescriptionFromType = {
   ARIA_DESCRIPTION: 'ariaDescription',
   ATTRIBUTE_EXPLICITLY_EMPTY: 'attributeExplicitlyEmpty',
   BUTTON_LABEL: 'buttonLabel',
-  POPUP_ELEMENT: 'popupElement',
+  POPOVER_ATTRIBUTE: 'popoverAttribute',
   RELATED_ELEMENT: 'relatedElement',
   RUBY_ANNOTATION: 'rubyAnnotation',
   SUMMARY: 'summary',

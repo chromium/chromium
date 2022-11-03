@@ -1032,16 +1032,16 @@ inline ElementRareDataBase& Element::EnsureElementRareData() {
   return static_cast<ElementRareData&>(EnsureRareData());
 }
 
-void Element::RemovePopupData() {
+void Element::RemovePopoverData() {
   DCHECK(HasRareData());
-  GetElementRareData()->RemovePopupData();
+  GetElementRareData()->RemovePopoverData();
 }
 
-PopupData* Element::EnsurePopupData() {
-  return &EnsureElementRareData().EnsurePopupData();
+PopoverData* Element::EnsurePopoverData() {
+  return &EnsureElementRareData().EnsurePopoverData();
 }
-PopupData* Element::GetPopupData() const {
-  return HasRareData() ? GetElementRareData()->GetPopupData() : nullptr;
+PopoverData* Element::GetPopoverData() const {
+  return HasRareData() ? GetElementRareData()->GetPopoverData() : nullptr;
 }
 
 inline void Element::SynchronizeAttribute(const QualifiedName& name) const {

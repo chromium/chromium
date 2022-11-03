@@ -155,7 +155,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   text_track_style_sheet_.Clear();
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
-  popup_style_sheet_.Clear();
+  popover_style_sheet_.Clear();
   selectmenu_style_sheet_.Clear();
   webxr_overlay_style_sheet_.Clear();
   marker_style_sheet_.Clear();
@@ -297,14 +297,14 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     }
   }
 
-  if (!popup_style_sheet_ && IsA<HTMLElement>(element) &&
-      To<HTMLElement>(element).HasPopupAttribute()) {
-    // TODO: We should assert that this sheet only contains rules for popups.
-    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+  if (!popover_style_sheet_ && IsA<HTMLElement>(element) &&
+      To<HTMLElement>(element).HasPopoverAttribute()) {
+    // TODO: We should assert that this sheet only contains rules for popovers.
+    DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
         element.GetDocument().GetExecutionContext()));
-    popup_style_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_POPUP_CSS));
-    AddRulesToDefaultStyleSheets(popup_style_sheet_, NamespaceType::kHTML);
+    popover_style_sheet_ =
+        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_POPOVER_CSS));
+    AddRulesToDefaultStyleSheets(popover_style_sheet_, NamespaceType::kHTML);
     changed_default_style = true;
   }
 
@@ -430,7 +430,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(text_track_style_sheet_);
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
-  visitor->Trace(popup_style_sheet_);
+  visitor->Trace(popover_style_sheet_);
   visitor->Trace(selectmenu_style_sheet_);
   visitor->Trace(webxr_overlay_style_sheet_);
   visitor->Trace(marker_style_sheet_);

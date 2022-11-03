@@ -88,26 +88,26 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   virtual bool IsActivatedSubmit() const { return false; }
   virtual void SetActivatedSubmit(bool) {}
 
-  struct PopupTargetElement final {
+  struct PopoverTargetElement final {
    public:
     DISALLOW_NEW();
     WeakMember<HTMLElement> element;
-    PopupTriggerAction action;
+    PopoverTriggerAction action;
     QualifiedName attribute_name;
     void Trace(Visitor* visitor) const { visitor->Trace(element); }
   };
 
-  enum class PopupTriggerSupport {
+  enum class PopoverTriggerSupport {
     kNone,
     kSupported,
   };
 
-  // Retrieves the element pointed to by 'popuptoggletarget', 'popupshowtarget',
-  // and/or 'popuphidetarget' content attributes, if any, and only if this form
-  // control element supports popup triggering.
-  PopupTargetElement popupTargetElement() const;
-  virtual PopupTriggerSupport SupportsPopupTriggering() const {
-    return PopupTriggerSupport::kNone;
+  // Retrieves the element pointed to by 'popovertoggletarget',
+  // 'popovershowtarget', and/or 'popoverhidetarget' content attributes, if any,
+  // and only if this form control element supports popover triggering.
+  PopoverTargetElement popoverTargetElement() const;
+  virtual PopoverTriggerSupport SupportsPopoverTriggering() const {
+    return PopoverTriggerSupport::kNone;
   }
 
   void DefaultEventHandler(Event&) override;

@@ -1,0 +1,88 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Div popover'
+++++++listBox ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored name='Listbox role on ul'
+++++++listBox ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored name='Listbox role on ul'
+++++++details ignored invisible
+++++++button collapsed name='Button pointing to hidden popover'
+++++++++staticText name='Button pointing to hidden popover'
+++++++++++inlineTextBox name='Button pointing to hidden popover'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Text input pointing to hidden popover '
+++++++++inlineTextBox name='Text input pointing to hidden popover '
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Popover'
+++++++button description='Hint' name='Show button pointing to hidden hint' descriptionFrom=popoverElement
+++++++++staticText name='Show button pointing to hidden hint'
+++++++++++inlineTextBox name='Show button pointing to hidden hint'
+++++++searchBox
+++++++++genericContainer
+++++++staticText name='Search input pointing to hidden hint '
+++++++++inlineTextBox name='Search input pointing to hidden hint '
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Hint'
+++++++button name='Hide button pointing to hidden manual'
+++++++++staticText name='Hide button pointing to hidden manual'
+++++++++++inlineTextBox name='Hide button pointing to hidden manual'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Email input pointing to hidden manual '
+++++++++inlineTextBox name='Email input pointing to hidden manual '
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Manual'
+++++++button name='Button pointing to showing popover'
+++++++++staticText name='Button pointing to showing popover'
+++++++++++inlineTextBox name='Button pointing to showing popover'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Tel input pointing to showing popover '
+++++++++inlineTextBox name='Tel input pointing to showing popover '
+++++++button description='Hint (nested)' name='Show button pointing to showing hint' descriptionFrom=popoverElement
+++++++++staticText name='Show button pointing to showing hint'
+++++++++++inlineTextBox name='Show button pointing to showing hint'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Url input pointing to showing hint '
+++++++++inlineTextBox name='Url input pointing to showing hint '
+++++++genericContainer
+++++++++staticText name='Popover'
+++++++++++inlineTextBox name='Popover'
+++++++++genericContainer
+++++++++++staticText name='Hint (nested)'
+++++++++++++inlineTextBox name='Hint (nested)'
+++++++button name='Hide button pointing to showing manual'
+++++++++staticText name='Hide button pointing to showing manual'
+++++++++++inlineTextBox name='Hide button pointing to showing manual'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Text input pointing to showing manual '
+++++++++inlineTextBox name='Text input pointing to showing manual '
+++++++genericContainer
+++++++++staticText name='Manual'
+++++++++++inlineTextBox name='Manual'
+++++++button name='Button pointing to non-popover'
+++++++++staticText name='Button pointing to non-popover'
+++++++++++inlineTextBox name='Button pointing to non-popover'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Text input pointing to non-popover'
+++++++++inlineTextBox name='Text input pointing to non-popover'
+++++++genericContainer
+++++++++staticText name='No popover attribute'
+++++++++++inlineTextBox name='No popover attribute'
+++++++button name='Button pointing to invalid popover value'
+++++++++staticText name='Button pointing to invalid popover value'
+++++++++++inlineTextBox name='Button pointing to invalid popover value'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Text input pointing to invalid popover value'
+++++++++inlineTextBox name='Text input pointing to invalid popover value'
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Invalid popover attribute value'

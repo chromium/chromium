@@ -33,7 +33,7 @@ class ResizeObserver;
 class ResizeObservation;
 class CustomElementDefinition;
 class ResizeObserverSize;
-class PopupData;
+class PopoverData;
 class CSSToggleMap;
 
 enum class ElementFlags;
@@ -152,9 +152,9 @@ class ElementRareDataBase : public GarbageCollectedMixin {
   virtual void SaveLastIntrinsicSize(ResizeObserverSize* size) = 0;
   virtual const ResizeObserverSize* LastIntrinsicSize() const = 0;
 
-  virtual PopupData* GetPopupData() const = 0;
-  virtual PopupData& EnsurePopupData() = 0;
-  virtual void RemovePopupData() = 0;
+  virtual PopoverData* GetPopoverData() const = 0;
+  virtual PopoverData& EnsurePopoverData() = 0;
+  virtual void RemovePopoverData() = 0;
 
   virtual CSSToggleMap* GetToggleMap() const = 0;
   virtual CSSToggleMap& EnsureToggleMap(Element* owner_element) = 0;

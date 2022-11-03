@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
-#include "third_party/blink/renderer/core/dom/popup_data.h"
+#include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -275,9 +275,9 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
     return last_intrinsic_size_;
   }
 
-  PopupData* GetPopupData() const override { return popup_data_; }
-  PopupData& EnsurePopupData() override;
-  void RemovePopupData() override;
+  PopoverData* GetPopoverData() const override { return popover_data_; }
+  PopoverData& EnsurePopoverData() override;
+  void RemovePopoverData() override;
 
   CSSToggleMap* GetToggleMap() const override { return toggle_map_.Get(); }
   CSSToggleMap& EnsureToggleMap(Element* owner_element) override;
@@ -432,7 +432,7 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
   Member<ResizeObserverDataMap> resize_observer_data_;
   Member<CustomElementDefinition> custom_element_definition_;
   Member<ResizeObserverSize> last_intrinsic_size_;
-  Member<PopupData> popup_data_;
+  Member<PopoverData> popover_data_;
   Member<CSSToggleMap> toggle_map_;
   Member<AnchorScrollData> anchor_scroll_data_;
 

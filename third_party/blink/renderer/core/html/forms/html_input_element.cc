@@ -1985,9 +1985,9 @@ bool HTMLInputElement::ShouldAppearIndeterminate() const {
   return input_type_->ShouldAppearIndeterminate();
 }
 
-HTMLFormControlElement::PopupTriggerSupport
-HTMLInputElement::SupportsPopupTriggering() const {
-  return input_type_->SupportsPopupTriggering();
+HTMLFormControlElement::PopoverTriggerSupport
+HTMLInputElement::SupportsPopoverTriggering() const {
+  return input_type_->SupportsPopoverTriggering();
 }
 
 RadioButtonGroupScope* HTMLInputElement::GetRadioButtonGroupScope() const {

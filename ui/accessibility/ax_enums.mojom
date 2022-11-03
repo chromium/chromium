@@ -1284,9 +1284,9 @@ enum DescriptionFrom {
   // (SVG), or a View's tooltip.
   kTitle,
 
-  // The description comes from a non-tooltip popup, e.g. the |triggerpopup|
-  // attribute pointing to `popup=hint`.
-  kPopupElement,
+  // The description comes from a non-tooltip popover, e.g. the
+  // |popovertoggletarget| attribute pointing to `popover=auto`.
+  kPopoverAttribute,
 };
 
 // Next value: 4

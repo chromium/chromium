@@ -36,7 +36,7 @@ extern const char kLinkColorChange[];
 extern const char kPictureSourceChanged[];
 extern const char kPlatformColorChange[];
 extern const char kPluginChanged[];
-extern const char kPopupVisibilityChange[];
+extern const char kPopoverVisibilityChange[];
 extern const char kPropertyRegistration[];
 extern const char kPseudoClass[];
 extern const char kScrollTimeline[];

@@ -131,8 +131,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::AttributeChanged(
         SlotChanged(old_value);
         SlotChanged(new_value);
       }
-    } else if (name == html_names::kPopupAttr) {
-      // We unconditionally update the listbox part here, because this popup
+    } else if (name == html_names::kPopoverAttr) {
+      // We unconditionally update the listbox part here, because this popover
       // attribute change could either be on the existing listbox part, or on
       // an earlier child of the <selectmenu> which makes
       // FirstValidListboxPart() return a different element.
@@ -185,9 +185,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
 HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
     : HTMLFormControlElementWithState(html_names::kSelectmenuTag, document) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(
-      RuntimeEnabledFeatures::RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
-          document.GetExecutionContext()));
+  DCHECK(RuntimeEnabledFeatures::RuntimeEnabledFeatures::
+             HTMLPopoverAttributeEnabled(document.GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kSelectMenuElement);
 
   EnsureUserAgentShadowRoot();
@@ -256,13 +255,13 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   listbox_slot_->setAttribute(html_names::kNameAttr, kListboxPartName);
 
-  HTMLElement* new_popup;
-  new_popup = MakeGarbageCollected<HTMLDivElement>(document);
-  new_popup->setAttribute(html_names::kPopupAttr, kPopupTypeValueAuto);
-  new_popup->setAttribute(html_names::kPartAttr, kListboxPartName);
-  new_popup->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
-  new_popup->SetShadowPseudoId(AtomicString("-internal-selectmenu-listbox"));
-  SetListboxPart(new_popup);
+  HTMLElement* new_popover;
+  new_popover = MakeGarbageCollected<HTMLDivElement>(document);
+  new_popover->setAttribute(html_names::kPopoverAttr, kPopoverTypeValueAuto);
+  new_popover->setAttribute(html_names::kPartAttr, kListboxPartName);
+  new_popover->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
+  new_popover->SetShadowPseudoId(AtomicString("-internal-selectmenu-listbox"));
+  SetListboxPart(new_popover);
 
   auto* options_slot = MakeGarbageCollected<HTMLSlotElement>(document);
 
@@ -338,13 +337,13 @@ bool HTMLSelectMenuElement::open() const {
   // either of the key parts (button or listbox) are missing.
   if (!listbox_part_)
     return false;
-  return listbox_part_->HasPopupAttribute() && listbox_part_->popupOpen();
+  return listbox_part_->HasPopoverAttribute() && listbox_part_->popoverOpen();
 }
 
 void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
     listbox_part_->SetNeedsRepositioningForSelectMenu(true);
-    listbox_part_->showPopUp(ASSERT_NO_EXCEPTION);
+    listbox_part_->showPopover(ASSERT_NO_EXCEPTION);
     if (selectedOption()) {
       selectedOption()->Focus();
     }
@@ -354,11 +353,11 @@ void HTMLSelectMenuElement::OpenListbox() {
 
 void HTMLSelectMenuElement::CloseListbox() {
   if (listbox_part_ && open()) {
-    if (listbox_part_->HasPopupAttribute()) {
+    if (listbox_part_->HasPopoverAttribute()) {
       // We will handle focus directly.
-      listbox_part_->HidePopUpInternal(
-          HidePopupFocusBehavior::kNone,
-          HidePopupForcingLevel::kHideAfterAnimations);
+      listbox_part_->HidePopoverInternal(
+          HidePopoverFocusBehavior::kNone,
+          HidePopoverForcingLevel::kHideAfterAnimations);
     }
     if (button_part_) {
       button_part_->Focus();
@@ -418,14 +417,14 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Node* node,
     return false;
   }
 
-  if (!element->HasPopupAttribute()) {
+  if (!element->HasPopoverAttribute()) {
     if (show_warning) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          "Found non-popup element labeled as listbox under "
+          "Found non-popover element labeled as listbox under "
           "<selectmenu>, which is not allowed. The <selectmenu>'s "
-          "listbox element must have a valid value set for the 'popup' "
+          "listbox element must have a valid value set for the 'popover' "
           "attribute. This <selectmenu> will not be fully functional."));
     }
     return false;
