@@ -142,15 +142,23 @@ bool UseAshmemUnpinningForDiscardableMemory() {
 
 DiscardableSharedMemory::DiscardableSharedMemory()
     : mapped_size_(0), locked_page_count_(0) {
+  // https://linear.app/replay/issue/BAC-2426
+  recordreplay::RegisterPointer("DiscardableSharedMemory", this);
 }
 
 DiscardableSharedMemory::DiscardableSharedMemory(
     UnsafeSharedMemoryRegion shared_memory_region)
     : shared_memory_region_(std::move(shared_memory_region)),
       mapped_size_(0),
-      locked_page_count_(0) {}
+      locked_page_count_(0) {
+  // https://linear.app/replay/issue/BAC-2426
+  recordreplay::RegisterPointer("DiscardableSharedMemory", this);
+}
 
-DiscardableSharedMemory::~DiscardableSharedMemory() = default;
+DiscardableSharedMemory::~DiscardableSharedMemory() {
+  // https://linear.app/replay/issue/BAC-2426
+  recordreplay::UnregisterPointer(this);
+}
 
 bool DiscardableSharedMemory::CreateAndMap(size_t size) {
   CheckedNumeric<size_t> checked_size = size;
@@ -222,6 +230,11 @@ bool DiscardableSharedMemory::Unmap() {
 
 DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
     size_t offset, size_t length) {
+  // https://linear.app/replay/issue/BAC-2426
+  recordreplay::Assert("DiscardableSharedMemory::Lock Start %d %zu",
+                       recordreplay::PointerId(this),
+                       locked_page_count_);
+
   DCHECK_EQ(AlignToPageSize(offset), offset);
   DCHECK_EQ(AlignToPageSize(length), length);
 
@@ -236,6 +249,8 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
     // Return false when instance has been purged or not initialized properly
     // by checking if |last_known_usage_| is NULL.
     if (last_known_usage_.is_null()) {
+      // https://linear.app/replay/issue/BAC-2426
+      recordreplay::Assert("DiscardableSharedMemory::Lock #1");
       return FAILED;
     }
 
@@ -246,11 +261,16 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
         old_state.value.i, new_state.value.i));
     if (recordreplay::RecordReplayValue("DiscardableSharedMemory::Lock",
                                         result.value.u != old_state.value.u)) {
+      // https://linear.app/replay/issue/BAC-2426
+      recordreplay::Assert("DiscardableSharedMemory::Lock #2");
       // Update |last_known_usage_| in case the above CAS failed because of
       // an incorrect timestamp.
       last_known_usage_ = result.GetTimestamp();
       return FAILED;
     }
+
+    // https://linear.app/replay/issue/BAC-2426
+    recordreplay::Assert("DiscardableSharedMemory::Lock #3");
   }
 
   // Zero for length means "everything onward".
@@ -276,8 +296,13 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
 
   // Always behave as if memory was purged when trying to lock a 0 byte segment.
   if (!length) {
+    // https://linear.app/replay/issue/BAC-2426
+    recordreplay::Assert("DiscardableSharedMemory::Lock #4");
     return PURGED;
   }
+
+  // https://linear.app/replay/issue/BAC-2426
+  recordreplay::Assert("DiscardableSharedMemory::Lock Done");
 
 #if defined(OS_ANDROID)
   // Ensure that the platform won't discard the required pages.
