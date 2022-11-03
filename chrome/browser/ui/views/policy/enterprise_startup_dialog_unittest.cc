@@ -17,7 +17,7 @@ namespace policy {
 
 class HeadlessEnterpriseStartupDialogTest : public ::testing::Test {
  public:
-  static constexpr char kHeadlessSwitchValue[] = "chrome";
+  static constexpr char kHeadlessSwitchValue[] = "new";
 
   HeadlessEnterpriseStartupDialogTest() = default;
   HeadlessEnterpriseStartupDialogTest(
@@ -30,7 +30,7 @@ class HeadlessEnterpriseStartupDialogTest : public ::testing::Test {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kHeadless, kHeadlessSwitchValue);
 
-    ASSERT_TRUE(headless::IsChromeNativeHeadless());
+    ASSERT_TRUE(headless::IsHeadlessMode());
   }
 
   content::BrowserTaskEnvironment task_environment_;

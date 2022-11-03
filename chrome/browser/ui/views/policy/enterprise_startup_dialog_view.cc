@@ -336,7 +336,7 @@ std::unique_ptr<EnterpriseStartupDialog>
 EnterpriseStartupDialog::CreateAndShowDialog(DialogResultCallback callback) {
   // If running in headless mode use an alternate version of the enterprise
   // startup dialog.
-  if (headless::IsChromeNativeHeadless()) {
+  if (headless::IsHeadlessMode()) {
     return std::make_unique<HeadlessEnterpriseStartupDialogImpl>(
         std::move(callback));
   }
