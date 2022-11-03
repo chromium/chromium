@@ -155,6 +155,9 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // Returns the task runner where video frames will be delivered on.
   base::SequencedTaskRunner* io_task_runner() const;
 
+  // Static version of the above.
+  static scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner();
+
   // Implementations must return the capture format if available.
   // Implementations supporting devices of type MEDIA_DEVICE_VIDEO_CAPTURE
   // must return a value.

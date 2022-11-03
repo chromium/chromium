@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -168,7 +169,7 @@ class WebMediaPlayerMS::FrameDeliverer {
         media_task_runner_(media_task_runner),
         worker_task_runner_(worker_task_runner),
         gpu_factories_(gpu_factories) {
-    DETACH_FROM_THREAD(io_thread_checker_);
+    DETACH_FROM_SEQUENCE(io_sequence_checker_);
 
     CreateGpuMemoryBufferPoolIfNecessary();
   }
@@ -177,12 +178,12 @@ class WebMediaPlayerMS::FrameDeliverer {
   FrameDeliverer& operator=(const FrameDeliverer&) = delete;
 
   ~FrameDeliverer() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
     FreeGpuMemoryBufferPool();
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame) {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
 
 // On Android, stop passing frames.
 #if BUILDFLAG(IS_ANDROID)
@@ -239,7 +240,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   }
 
   void SetRenderFrameSuspended(bool render_frame_suspended) {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
     render_frame_suspended_ = render_frame_suspended;
     if (render_frame_suspended_) {
       // Drop GpuMemoryBuffer pool to free memory.
@@ -270,7 +271,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   }
 
   void FreeGpuMemoryBufferPool() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
 
     if (gpu_memory_buffer_pool_) {
       DropCurrentPoolTasks();
@@ -281,7 +282,7 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   void EnqueueFrame(media::VideoFrame::ID original_frame_id,
                     scoped_refptr<media::VideoFrame> frame) {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
 
     {
       bool tracing_enabled = false;
@@ -301,7 +302,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   }
 
   void DropCurrentPoolTasks() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
     DCHECK(gpu_memory_buffer_pool_);
 
     if (!weak_factory_for_pool_.HasWeakPtrs())
@@ -332,7 +333,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   media::GpuVideoAcceleratorFactories* const gpu_factories_;
 
   // Used for DCHECKs to ensure method calls are executed on the correct thread.
-  THREAD_CHECKER(io_thread_checker_);
+  SEQUENCE_CHECKER(io_sequence_checker_);
 
   base::WeakPtrFactory<FrameDeliverer> weak_factory_for_pool_{this};
   base::WeakPtrFactory<FrameDeliverer> weak_factory_{this};

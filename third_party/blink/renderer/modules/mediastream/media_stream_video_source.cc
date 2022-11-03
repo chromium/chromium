@@ -17,6 +17,9 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
@@ -31,6 +34,23 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
+
+BASE_DECLARE_FEATURE(kUseThreadPoolForMediaStreamIOTaskRunner){
+    "UseThreadPoolForMediaStreamIOTaskRunner",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+scoped_refptr<base::SequencedTaskRunner>
+MediaStreamVideoSource::GetIOTaskRunner() {
+  static scoped_refptr<base::SequencedTaskRunner> task_runner;
+  if (!task_runner) {
+    task_runner =
+        base::FeatureList::IsEnabled(kUseThreadPoolForMediaStreamIOTaskRunner)
+            ? base::ThreadPool::CreateSequencedTaskRunner(
+                  base::TaskTraits{base::MayBlock()})
+            : Platform::Current()->GetIOTaskRunner();
+  }
+  return task_runner;
+}
 
 // static
 MediaStreamVideoSource* MediaStreamVideoSource::GetVideoSource(
@@ -77,16 +97,30 @@ void MediaStreamVideoSource::AddTrack(
   switch (state_) {
     case NEW: {
       state_ = STARTING;
-      StartSourceImpl(
+      auto deliver_frame_on_io_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoTrackAdapter::DeliverFrameOnIO, GetTrackAdapter())),
+              &VideoTrackAdapter::DeliverFrameOnIO, GetTrackAdapter()));
+      auto deliver_encoded_frame_on_io_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::DeliverEncodedVideoFrameOnIO,
-              GetTrackAdapter())),
+              GetTrackAdapter()));
+      auto new_crop_version_on_io_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoTrackAdapter::NewCropVersionOnIO, GetTrackAdapter()))
-
-      );
+              &VideoTrackAdapter::NewCropVersionOnIO, GetTrackAdapter()));
+      if (base::FeatureList::IsEnabled(
+              kUseThreadPoolForMediaStreamIOTaskRunner)) {
+        StartSourceImpl(
+            base::BindPostTask(io_task_runner(),
+                               std::move(deliver_frame_on_io_callback)),
+            base::BindPostTask(io_task_runner(),
+                               std::move(deliver_encoded_frame_on_io_callback)),
+            base::BindPostTask(io_task_runner(),
+                               std::move(new_crop_version_on_io_callback)));
+      } else {
+        StartSourceImpl(std::move(deliver_frame_on_io_callback),
+                        std::move(deliver_encoded_frame_on_io_callback),
+                        std::move(new_crop_version_on_io_callback));
+      }
       break;
     }
     case STARTING:
@@ -358,7 +392,7 @@ void MediaStreamVideoSource::SetDeviceRotationDetection(bool enabled) {
 
 base::SequencedTaskRunner* MediaStreamVideoSource::io_task_runner() const {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return Platform::Current()->GetIOTaskRunner().get();
+  return GetIOTaskRunner().get();
 }
 
 absl::optional<media::VideoCaptureFormat>
