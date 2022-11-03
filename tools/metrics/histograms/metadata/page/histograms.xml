@@ -2453,7 +2453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.Renderer.PresentationTime.Valid"
-    enum="Boolean" expires_after="2022-11-13">
+    enum="Boolean" expires_after="2023-03-19">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
