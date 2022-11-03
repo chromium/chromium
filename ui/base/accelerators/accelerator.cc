@@ -485,13 +485,27 @@ std::u16string Accelerator::ApplyShortFormModifiers(
   if (IsCmdDown())
     result.push_back(u'⌘');  // U+2318, PLACE OF INTEREST SIGN
   if (IsFunctionDown()) {
-    // There's no Unicode symbol for the function key so fake it with
-    // characters. It's likely a special character in a special Apple
-    // font. Also on newer Macs the function key has a globe symbol, and a
-    // globe appears as the modifier key in the menus. Unfortunately it's not
-    // clear how to determine if a Mac has one of these newer keyboards. See
-    // https://crbug.com/1263737 which tracks finding and displaying these
-    // glyphs.
+    // The real "fn" used by menus is actually U+E23E in the Private Use Area in
+    // the keyboard font obtained with CTFontCreateUIFontForLanguage, with key
+    // kCTFontUIFontMenuItemCmdKey. Because this function must return a raw
+    // Unicode string with no specified font, return a string of characters.
+    //
+    // Newer Mac keyboards have a globe symbol on the fn key that is used in
+    // menus instead of "fn". That globe symbol is actually U+1F310 + U+FE0E,
+    // the emoji globe + the variation selector that indicates the text-style
+    // presentation. (🌐︎)
+    //
+    // Whether or not "fn" or the globe is displayed as the menu shortcut
+    // modifier depends on whether there is an attached keyboard with a globe
+    // symbol on it. Rather than rummaging around in the IORegistry, where the
+    // HID driver for the keyboard has a SupportsGlobeKey = True property, it's
+    // probably best to just make a call to the HIServices function
+    // HIS_XPC_GetGlobeKeyAvailability() and let it do the magic. See AppKit's
+    // -[NSKeyboardShortcut localizedModifierMaskDisplayName] for an example of
+    // this.
+    //
+    // TODO(https://crbug.com/1263737): Implement all of this when text-style
+    // presentations are implemented for Views in https://crbug.com/1099591.
     result.append(u"(fn) ");
   }
 
