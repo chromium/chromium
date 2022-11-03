@@ -76,7 +76,7 @@ ProcessSingleton::NotifyResult
   // In headless mode we don't want to hand off pages to an existing processes,
   // so short circuit process singleton creation and bail out if we're not
   // the only process using this user data dir.
-  if (headless::IsChromeNativeHeadless()) {
+  if (headless::IsHeadlessMode()) {
     return process_singleton_.Create() ? ProcessSingleton::PROCESS_NONE
                                        : ProcessSingleton::PROFILE_IN_USE;
   }
