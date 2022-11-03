@@ -25,6 +25,8 @@ static const char DirectorySeparator = '/';
 static const char DirectorySeparator = '\\';
 #endif
 
+static const char *AnnotationHookJSName = "__RECORD_REPLAY_ANNOTATION_HOOK__";
+
 namespace v8 {
 
 extern void FunctionCallbackRecordReplaySetCommandCallback(const FunctionCallbackInfo<Value>& args);
@@ -1548,6 +1550,31 @@ static void HandleBrowserEvent(const char* name, const char* payload) {
   }
 }
 
+// Called from page page javascript.
+// `function __RECORD_REPLAY_ANNOTATION_HOOK__(kind, contents)`
+// Since this function is called from userland JS, we avoid assertions.
+// We don't want flawed uses of the API to crash the recording.
+static void InvokeOnAnnotation(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (! (args.Length() >= 2 && args[0]->IsString())) {
+    recordreplay::Print("%s called with incorrect arguments",
+      AnnotationHookJSName);
+    return;
+  }
+  v8::Isolate* isolate = args.GetIsolate();
+
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::String> json;
+  if (!v8::JSON::Stringify(context, args[1]).ToLocal(&json)) {
+    recordreplay::Print("%s contents failed to json stringify",
+      AnnotationHookJSName);
+    return;
+  }
+
+  v8::String::Utf8Value kind(args.GetIsolate(), args[0]);
+  v8::String::Utf8Value contents(args.GetIsolate(), json);
+  recordreplay::OnAnnotation(*kind, *contents);
+}
+
 extern "C" void V8RecordReplaySetAPIObjectIdCallback(int (*callback)(v8::Local<v8::Object>));
 extern "C" void V8RecordReplayRegisterBrowserEventCallback(
   void (*callback)(const char* name, const char* payload)
@@ -1580,8 +1607,14 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
   v8::Local<v8::String> args_name_string =
     ToV8String(isolate, "__RECORD_REPLAY_ARGUMENTS__");
 
+  // Add the "__RECORD_REPLAY_ANNOTATION_HOOK__" hook function to
+  // the page window global.
+  SetFunctionProperty(isolate, context->Global(), AnnotationHookJSName,
+                      InvokeOnAnnotation);
+
   v8::Local<v8::Object> args = v8::Object::New(isolate);
   context->Global()->Set(context, args_name_string, args).Check();
+
 
   SetFunctionProperty(isolate, args, "log",
                       LogCallback);
