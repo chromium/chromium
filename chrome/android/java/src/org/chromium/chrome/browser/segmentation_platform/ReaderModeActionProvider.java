@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
@@ -41,9 +44,11 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
     @Override
     public void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action) {
         if (action == AdaptiveToolbarButtonVariant.READER_MODE) {
-            tab.getUserDataHost()
-                    .getUserData(ReaderModeManager.USER_DATA_KEY)
-                    .setReaderModeUiShown();
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                tab.getUserDataHost()
+                        .getUserData(ReaderModeManager.USER_DATA_KEY)
+                        .setReaderModeUiShown();
+            }, /* delayMillis= */ 500);
         }
     }
 

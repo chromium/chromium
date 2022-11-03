@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
+import static android.os.Looper.getMainLooper;
+
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.os.Handler;
 
@@ -19,6 +24,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
@@ -27,11 +34,13 @@ import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -48,6 +57,8 @@ public class ReaderModeActionProviderTest {
     private Tab mMockTab;
     @Mock
     private ReaderModeManager mMockReaderModeManager;
+    @Mock
+    private SignalAccumulator mMockSignalAccumulator;
 
     @Before
     public void setUp() {
@@ -81,5 +92,41 @@ public class ReaderModeActionProviderTest {
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, accumulator);
         Assert.assertTrue(accumulator.hasReaderMode());
+    }
+
+    @Test
+    public void testProviderDelaysSettingOnShown() throws TimeoutException {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                "reader_mode_session_rate_limiting", "true");
+        FeatureList.setTestValues(testValues);
+        when(mMockReaderModeManager.isReaderModeUiRateLimited()).thenReturn(false);
+
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        // Call onActionShown and wait 10 milliseconds.
+        provider.onActionShown(mMockTab, AdaptiveToolbarButtonVariant.READER_MODE);
+        shadowOf(getMainLooper()).idleFor(10, TimeUnit.MILLISECONDS);
+
+        // ReaderModeManager shouldn't be notified yet.
+        verify(mMockReaderModeManager, never()).setReaderModeUiShown();
+    }
+
+    @Test
+    public void testProviderSetsOnShownAfterDelay() throws TimeoutException {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                "reader_mode_session_rate_limiting", "true");
+        FeatureList.setTestValues(testValues);
+        when(mMockReaderModeManager.isReaderModeUiRateLimited()).thenReturn(false);
+
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        // Call onActionShown and wait 5 seconds.
+        provider.onActionShown(mMockTab, AdaptiveToolbarButtonVariant.READER_MODE);
+        shadowOf(getMainLooper()).idleFor(5, TimeUnit.SECONDS);
+
+        // ReaderModeManager should have been notified.
+        verify(mMockReaderModeManager).setReaderModeUiShown();
     }
 }
