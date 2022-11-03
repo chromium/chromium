@@ -22,8 +22,6 @@ source_set("crash_report") {
     "features.h",
     "main_thread_freeze_detector.h",
     "main_thread_freeze_detector.mm",
-    "synthetic_crash_report_util.h",
-    "synthetic_crash_report_util.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -101,7 +99,6 @@ source_set("unit_tests") {
     "crash_reporter_url_observer_unittest.mm",
     "crash_restore_helper_unittest.mm",
     "main_thread_freeze_detector_unittest.mm",
-    "synthetic_crash_report_util_unittest.mm",
   ]
   deps = [
     ":crash_report",

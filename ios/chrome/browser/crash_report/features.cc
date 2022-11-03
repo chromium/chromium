@@ -17,12 +17,3 @@ BASE_FEATURE(kCrashpadIOS,
 BASE_FEATURE(kMetrickitNonCrashReport,
              "MetrickitNonCrashReport",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSyntheticCrashReportsForUte,
-             "SyntheticCrashReportsForUte",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool EnableSyntheticCrashReportsForUte() {
-  return base::FeatureList::IsEnabled(kSyntheticCrashReportsForUte) &&
-         base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs);
-}

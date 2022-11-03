@@ -19,7 +19,6 @@
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/crash_report/features.h"
-#import "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -86,8 +85,9 @@ void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type) {
   if (!base::PathService::Get(base::DIR_CACHE, &cache_dir_path)) {
     return;
   }
-  NSError* error = nil;
+
   // Deflate the payload.
+  NSError* error = nil;
   NSData* payload = [diagnostic.JSONRepresentation
       compressedDataUsingAlgorithm:NSDataCompressionAlgorithmZlib
                              error:&error];
@@ -95,19 +95,7 @@ void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type) {
     return;
   }
 
-  if (crash_reporter::IsBreakpadRunning()) {
-    NSDictionary* info_dict = NSBundle.mainBundle.infoDictionary;
-    std::string stringpayload(reinterpret_cast<const char*>(payload.bytes),
-                              payload.length);
-    CreateSyntheticCrashReportForMetrickit(
-        cache_dir_path.Append(FILE_PATH_LITERAL("Breakpad")),
-        base::SysNSStringToUTF8(info_dict[@"BreakpadProductDisplay"]),
-        base::SysNSStringToUTF8([NSString
-            stringWithFormat:@"%@_MetricKit", info_dict[@"BreakpadProduct"]]),
-        base::SysNSStringToUTF8(diagnostic.metaData.applicationBuildVersion),
-        base::SysNSStringToUTF8(info_dict[@"BreakpadURL"]), type,
-        stringpayload);
-  } else {
+  if (crash_reporter::IsCrashpadRunning()) {
     base::span<const uint8_t> spanpayload(
         reinterpret_cast<const uint8_t*>(payload.bytes), payload.length);
 

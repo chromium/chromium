@@ -4292,11 +4292,6 @@
     "expiry_milestone": 109
   },
   {
-    "name": "ios-synthetic-crash-reports",
-    "owners": [ "olivierrobin", "justincohen", "bling-flags@google.com" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "ios-webpage-intent-annotations",
     "owners": [ "djean", "bling-flags@google.com" ],
     "expiry_milestone": 112

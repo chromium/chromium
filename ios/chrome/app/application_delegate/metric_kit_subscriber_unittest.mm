@@ -17,6 +17,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/crash/core/app/crashpad.h"
+#import "components/crash/core/common/reporter_running_ios.h"
 #import "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
 #import "testing/platform_test.h"
 #import "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -40,6 +41,7 @@ class MetricKitSubscriberTest : public PlatformTest {
     std::vector<crash_reporter::Report> reports;
     crash_reporter::GetReports(&reports);
     ASSERT_EQ(reports.size(), 0u);
+    crash_reporter::SetCrashpadRunning(true);
   }
 
   void TearDown() override {

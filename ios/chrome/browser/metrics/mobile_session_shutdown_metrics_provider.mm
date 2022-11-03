@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
-#import "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -258,27 +257,6 @@ void LogDeviceThermalState(DeviceThermalState thermal_state) {
                                       DeviceThermalState::kMaxValue);
 }
 
-// Creates Synthetic Crash Report for Unexplained Termination Event to be
-// uploaded by Breakpad.
-void CreateSyntheticCrashReportWithBreadcrumbs(
-    std::vector<std::string> breadcrumbs) {
-  base::FilePath cache_dir_path;
-  base::PathService::Get(base::DIR_CACHE, &cache_dir_path);
-  NSDictionary* info_dict = NSBundle.mainBundle.infoDictionary;
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          &CreateSyntheticCrashReportForUte,
-          cache_dir_path.Append(FILE_PATH_LITERAL("Breakpad")),
-          base::SysNSStringToUTF8(info_dict[@"BreakpadProductDisplay"]),
-          // Separate product makes throttling on the server easier.
-          base::SysNSStringToUTF8([NSString
-              stringWithFormat:@"%@_UTE", info_dict[@"BreakpadProduct"]]),
-          base::SysNSStringToUTF8(info_dict[@"BreakpadVersion"]),
-          base::SysNSStringToUTF8(info_dict[@"BreakpadURL"]), breadcrumbs));
-}
-
 }  // namespace
 
 const float kCriticallyLowBatteryLevel = 0.01;
@@ -386,18 +364,6 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
         "Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived",
         GetMobileSessionAppWillTerminateWasReceived(possible_explanation),
         MobileSessionAppWillTerminateWasReceived::kMaxValue);
-
-    if (!possible_explanation && EnableSyntheticCrashReportsForUte() &&
-        GetApplicationContext()->GetLocalState()->GetBoolean(
-            metrics::prefs::kMetricsReportingEnabled)) {
-      // UTEs are so common that there will be a little or no value from
-      // generating crash reports for XTEs.
-
-      GetApplicationContext()
-          ->GetBreadcrumbPersistentStorageManager()
-          ->GetStoredEvents(
-              base::BindOnce(CreateSyntheticCrashReportWithBreadcrumbs));
-    }
   } else if (shutdown_type ==
                  SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING ||
              shutdown_type ==

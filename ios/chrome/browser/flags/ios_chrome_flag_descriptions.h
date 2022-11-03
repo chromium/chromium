@@ -649,11 +649,6 @@ extern const char kStartSurfaceDescription[];
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
-// Title and description for the flag that controls synthetic crash reports
-// generation for Unexplained Termination Events.
-extern const char kSyntheticCrashReportsForUteName[];
-extern const char kSyntheticCrashReportsForUteDescription[];
-
 // Title and description for the flag to synthesize native restore web states.
 extern const char kSynthesizedRestoreSessionName[];
 extern const char kSynthesizedRestoreSessionDescription[];

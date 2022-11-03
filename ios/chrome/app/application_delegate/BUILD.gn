@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/crash/core/app",
+    "//components/crash/core/common:reporter_running_ios",
     "//components/handoff",
     "//components/metrics",
     "//components/previous_session_info",

@@ -728,12 +728,6 @@ const char kSynthesizedRestoreSessionDescription[] =
     "Enable instant session restoration by synthesizing WKWebView session "
     "restoration data (iOS15 only).";
 
-const char kSyntheticCrashReportsForUteName[] =
-    "Generate synthetic crash reports for UTE";
-const char kSyntheticCrashReportsForUteDescription[] =
-    "When enabled the app will create synthetic crash report when chrome "
-    "starts up after Unexplained Termination Event (UTE).";
-
 const char kSyncEnableHistoryDataTypeName[] = "Enable History sync data type";
 const char kSyncEnableHistoryDataTypeDescription[] =
     "Enables the History sync data type instead of TypedURLs";

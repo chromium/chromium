@@ -70,9 +70,6 @@ void PostTaskOnUIThread(base::OnceClosure closure) {
 }
 NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
-// Time interval used for startRecordingMemoryFootprintWithInterval:
-const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
-
 }  // namespace
 
 #pragma mark - AppStateObserverList
@@ -375,12 +372,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   base::RecordAction(base::UserMetricsAction("MobileWillEnterForeground"));
 
-  if (EnableSyntheticCrashReportsForUte()) {
-    [[PreviousSessionInfo sharedInstance]
-        startRecordingMemoryFootprintWithInterval:
-            base::Seconds(kMemoryFootprintRecordingTimeInterval)];
-  }
-
   // This will be a no-op if upload already started.
   crash_helper::UploadCrashReports();
 }
@@ -616,14 +607,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 - (void)completeUIInitialization {
   DCHECK([self.startupInformation isColdStart]);
-
-  if (EnableSyntheticCrashReportsForUte()) {
-    // Must be called after sequenced context creation, which happens in
-    // startUpBrowserToStage: method called above.
-    [[PreviousSessionInfo sharedInstance]
-        startRecordingMemoryFootprintWithInterval:
-            base::Seconds(kMemoryFootprintRecordingTimeInterval)];
-  }
 }
 
 #pragma mark - Internal methods.
