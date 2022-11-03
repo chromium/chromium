@@ -9,7 +9,7 @@ import './profile_picker_shared.css.js';
 import './strings.m.js';
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -185,7 +185,6 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
       default:
         // |this.currentRoute_| should be set by now.
         assertNotReached();
-        return Promise.reject();
     }
   }
 
