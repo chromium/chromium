@@ -4,28 +4,6 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("checkbox") {
-  sources = [
-    "checkbox.imageset/Contents.json",
-    "checkbox.imageset/checkbox.png",
-    "checkbox.imageset/checkbox@2x.png",
-    "checkbox.imageset/checkbox@2x~ipad.png",
-    "checkbox.imageset/checkbox@3x.png",
-    "checkbox.imageset/checkbox~ipad.png",
-  ]
-}
-
-imageset("checkbox_checked") {
-  sources = [
-    "checkbox_checked.imageset/Contents.json",
-    "checkbox_checked.imageset/checkbox_checked.png",
-    "checkbox_checked.imageset/checkbox_checked@2x.png",
-    "checkbox_checked.imageset/checkbox_checked@2x~ipad.png",
-    "checkbox_checked.imageset/checkbox_checked@3x.png",
-    "checkbox_checked.imageset/checkbox_checked~ipad.png",
-  ]
-}
-
 imageset("default_browser_screen_banner") {
   sources = [
     "default_browser_screen_banner.imageset/Contents.json",

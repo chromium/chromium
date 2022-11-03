@@ -358,10 +358,6 @@ enum AuthenticationButtonType {
 }
 
 - (NSString*)secondaryActionButtonTitle {
-  if (self.useFirstRunSkipButton) {
-    return l10n_util::GetNSString(
-        IDS_IOS_FIRSTRUN_ACCOUNT_CONSISTENCY_SKIP_BUTTON);
-  }
   return l10n_util::GetNSString(IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON);
 }
 

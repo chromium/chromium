@@ -71,22 +71,6 @@ using signin_metrics::PromoAction;
                   screenProvider:[[SigninScreenProvider alloc] init]];
 }
 
-+ (instancetype)firstRunCoordinatorWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                                        browser:
-                                                            (Browser*)browser {
-  DCHECK(!base::FeatureList::IsEnabled(kEnableFREUIModuleIOS));
-  UserSigninLogger* logger = [[FirstRunSigninLogger alloc]
-        initWithPromoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-      accountManagerService:ChromeAccountManagerServiceFactory::
-                                GetForBrowserState(browser->GetBrowserState())];
-  return [[UserSigninCoordinator alloc]
-      initWithBaseNavigationController:navigationController
-                               browser:browser
-                          signinIntent:UserSigninIntentFirstRun
-                                logger:logger];
-}
-
 + (instancetype)
     upgradeSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController

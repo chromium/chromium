@@ -63,7 +63,6 @@ TEST_F(FREFieldTrialTest, TestDefault) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
-  EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
   EXPECT_EQ(NewMobileIdentityConsistencyFRE::kOld,
             GetNewMobileIdentityConsistencyFRE());
 }
@@ -81,7 +80,6 @@ TEST_F(FREFieldTrialTest, TestFREControl) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
-  EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
   EXPECT_EQ(NewMobileIdentityConsistencyFRE::kOld,
             GetNewMobileIdentityConsistencyFRE());
 }
@@ -99,7 +97,6 @@ TEST_F(FREFieldTrialTest, TestTangibleSyncA) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
-  EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
   EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncA,
             GetNewMobileIdentityConsistencyFRE());
 }
@@ -117,7 +114,6 @@ TEST_F(FREFieldTrialTest, TestTangibleSyncB) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
-  EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
   EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncB,
             GetNewMobileIdentityConsistencyFRE());
 }
@@ -135,7 +131,6 @@ TEST_F(FREFieldTrialTest, TestTangibleSyncC) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
-  EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
   EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncC,
             GetNewMobileIdentityConsistencyFRE());
 }
@@ -153,7 +148,6 @@ TEST_F(FREFieldTrialTest, TestTwoSteps) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
-  EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
   EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTwoSteps,
             GetNewMobileIdentityConsistencyFRE());
 }

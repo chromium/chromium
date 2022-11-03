@@ -48,17 +48,6 @@ class PrefRegistrySyncable;
                                     promoAction:(signin_metrics::PromoAction)
                                                     promoAction;
 
-// Returns a coordinator for first run sign-in workflow. If the user tap on the
-// settings link to open the advanced settings sign-in, the SigninCoordinator
-// owner is in charge open this view, according to -[SigninCompletionInfo
-// signinCompletionAction] in `signinCompletionInfo` from `signinCompletion`.
-// `navigationController` presents the sign-in. Will be responsible for
-// dismissing itself upon sign-in completion.
-+ (instancetype)firstRunCoordinatorWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                                        browser:
-                                                            (Browser*)browser;
-
 // Returns a coordinator for forced sign-in workflow.
 // `viewController` presents the sign-in.
 + (instancetype)forcedSigninCoordinatorWithBaseViewController:

@@ -7,8 +7,6 @@ source_set("first_run") {
   sources = [
     "first_run.h",
     "first_run.mm",
-    "first_run_configuration.h",
-    "first_run_configuration.mm",
     "first_run_metrics.h",
   ]
   deps = [

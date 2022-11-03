@@ -2369,11 +2369,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-fre-ui-module-ios-with-options",
-    "owners": [ "gambard", "veronguyen", "vincb", "ginnyhuang" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-fullscreen-api",
     "owners": [ "ajuma", "bling-flags@google.com" ],
     "expiry_milestone": 110

@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
-#import "ios/chrome/browser/first_run/first_run_configuration.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -29,12 +28,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-NSString* const kChromeFirstRunUIWillFinishNotification =
-    @"kChromeFirstRunUIWillFinishNotification";
-
-NSString* const kChromeFirstRunUIDidFinishNotification =
-    @"kChromeFirstRunUIDidFinishNotification";
 
 constexpr BOOL kDefaultMetricsReportingCheckboxValue = YES;
 
@@ -55,25 +48,6 @@ void CreateSentinel() {
 }
 
 bool kFirstRunSentinelCreated = false;
-
-// Creates the First Run sentinel file so that the user will not be shown First
-// Run on subsequent cold starts. The user is considered done with First Run
-// only after a successful sign-in or explicitly skipping signing in. First Run
-// metrics are recorded iff the sentinel file didn't previous exist and was
-// successfully created.
-void WriteFirstRunSentinelAndRecordMetrics(
-    ChromeBrowserState* browserState,
-    first_run::SignInAttemptStatus sign_in_attempt_status,
-    BOOL has_sso_account) {
-  DCHECK(!base::FeatureList::IsEnabled(kEnableFREUIModuleIOS));
-  kFirstRunSentinelCreated = true;
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&CreateSentinel));
-  RecordFirstRunSignInMetrics(
-      IdentityManagerFactory::GetForBrowserState(browserState),
-      sign_in_attempt_status, has_sso_account);
-}
 
 }  // namespace
 
@@ -171,35 +145,11 @@ void RecordFirstRunScrollButtonVisibilityMetrics(
   }
 }
 
-void FinishFirstRun(ChromeBrowserState* browserState,
-                    web::WebState* web_state,
-                    FirstRunConfiguration* config,
-                    id<SyncPresenter> presenter) {
-  // This method souldn't be called with the new FRE, and should be removed
-  // after the new FRE module is shipped.
-  DCHECK(!base::FeatureList::IsEnabled(kEnableFREUIModuleIOS));
-
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:kChromeFirstRunUIWillFinishNotification
-                    object:nil];
-  WriteFirstRunSentinelAndRecordMetrics(
-      browserState, config.signInAttemptStatus, config.hasSSOAccount);
-
-  // Display the sync errors infobar.
-  DisplaySyncErrors(browserState, web_state, presenter);
-}
-
 void WriteFirstRunSentinel() {
   kFirstRunSentinelCreated = true;
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&CreateSentinel));
-}
-
-void FirstRunDismissed() {
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:kChromeFirstRunUIDidFinishNotification
-                    object:nil];
 }
 
 bool ShouldPresentFirstRunExperience() {

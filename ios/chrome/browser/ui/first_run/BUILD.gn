@@ -55,20 +55,13 @@ source_set("first_run") {
     "first_run_coordinator.mm",
     "orientation_limiting_navigation_controller.h",
     "orientation_limiting_navigation_controller.mm",
-    "welcome_to_chrome_view.h",
-    "welcome_to_chrome_view.mm",
-    "welcome_to_chrome_view_controller.h",
-    "welcome_to_chrome_view_controller.mm",
   ]
   deps = [
     ":constants",
     ":field_trial",
     ":first_run_provider",
     ":screen_delegate",
-    ":static_file_ui",
     ":utils",
-    "resources:checkbox",
-    "resources:checkbox_checked",
     "resources:read_more_arrow",
     "//base",
     "//base:i18n",
@@ -180,22 +173,6 @@ source_set("screen_delegate") {
   sources = [ "first_run_screen_delegate.h" ]
 }
 
-source_set("static_file_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "static_file_view_controller.h",
-    "static_file_view_controller.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui/icons",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/ui/colors",
-    "//ios/web/common:web_view_creation_util",
-  ]
-}
-
 source_set("interruptible_chrome_coordinator") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -216,7 +193,6 @@ source_set("unit_tests") {
   sources = [
     "fre_field_trial_unittest.mm",
     "trending_queries_field_trial_unittest.mm",
-    "welcome_to_chrome_view_controller_unittest.mm",
   ]
   deps = [
     ":field_trial",
@@ -259,7 +235,6 @@ source_set("eg2_tests") {
     "first_run_egtest.mm",
     "first_run_two_steps_egtest.mm",
     "first_run_uma_dialog_egtest.mm",
-    "legacy_first_run_egtest.mm",
   ]
   deps = [
     ":constants",

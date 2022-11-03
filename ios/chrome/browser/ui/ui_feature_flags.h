@@ -24,9 +24,6 @@ BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 // Settings.app.
 BASE_DECLARE_FEATURE(kEnableFREDefaultBrowserPromoScreen);
 
-// Feature flag that enables using the FRE UI module to show first run screens.
-BASE_DECLARE_FEATURE(kEnableFREUIModuleIOS);
-
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished. Flag to modernize the tabstrip without disturbing the existing one.
 BASE_DECLARE_FEATURE(kModernTabStrip);

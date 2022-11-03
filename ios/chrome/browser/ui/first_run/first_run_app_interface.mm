@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_controller_testing.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -37,10 +36,6 @@
   GetApplicationContext()->GetLocalState()->SetInteger(
       metrics::prefs::kMetricsDefaultOptIn,
       metrics::EnableMetricsDefault::DEFAULT_UNKNOWN);
-}
-
-+ (BOOL)isUMACollectionEnabledByDefault {
-  return [WelcomeToChromeViewController defaultStatsCheckboxValue];
 }
 
 + (BOOL)isSyncFirstSetupComplete {

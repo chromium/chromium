@@ -32,13 +32,6 @@
                                     logger:(UserSigninLogger*)logger
     NS_DESIGNATED_INITIALIZER;
 
-// Convenience initializer using UINavigationController.
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                                    signinIntent:(UserSigninIntent)signinIntent
-                                          logger:(UserSigninLogger*)logger;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_USER_SIGNIN_USER_SIGNIN_COORDINATOR_H_

@@ -1641,26 +1641,6 @@ bool IsSigninForcedByPolicy() {
   [self startSigninCoordinatorWithCompletion:command.callback];
 }
 
-- (void)showAdvancedSigninSettingsFromViewController:
-    (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  Browser* mainBrowser = self.mainInterface.browser;
-  // If the account is in the decoupled FRE then the user has already signed-in
-  // before opening advanced settings, otherwise they are signed out.
-  // Note that this method should only be used by the FRE.
-  IdentitySigninState signinState =
-      base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)
-          ? IdentitySigninStateSignedInWithSyncDisabled
-          : IdentitySigninStateSignedOut;
-  self.signinCoordinator = [SigninCoordinator
-      advancedSettingsSigninCoordinatorWithBaseViewController:baseViewController
-                                                      browser:mainBrowser
-                                                  signinState:signinState];
-  [self startSigninCoordinatorWithCompletion:nil];
-}
-
 - (void)
     showTrustedVaultReauthForFetchKeysFromViewController:
         (UIViewController*)viewController

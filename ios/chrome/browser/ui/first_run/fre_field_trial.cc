@@ -92,8 +92,7 @@ void AssociateFieldTrialParamsForNewMobileIdentityConsistency(
 namespace fre_field_trial {
 
 NewDefaultBrowserPromoFRE GetFREDefaultBrowserScreenPromoFRE() {
-  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS) &&
-      base::FeatureList::IsEnabled(kEnableFREDefaultBrowserPromoScreen)) {
+  if (base::FeatureList::IsEnabled(kEnableFREDefaultBrowserPromoScreen)) {
     return NewDefaultBrowserPromoFRE::kShortDelay;
   }
   return NewDefaultBrowserPromoFRE::kDisabled;
@@ -200,9 +199,7 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
   // The client would not be assigned to any group because features controlled
   // by the experiment if the feature is already overridden. This handles
   // scenarios where FRE is forced for testing purposes.
-  if (feature_list->IsFeatureOverriddenFromCommandLine(
-          kEnableFREUIModuleIOS.name) ||
-      feature_list->IsFeatureOverridden(
+  if (feature_list->IsFeatureOverridden(
           signin::kNewMobileIdentityConsistencyFRE.name)) {
     return;
   }

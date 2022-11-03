@@ -115,7 +115,6 @@ class UserSigninCoordinatorTest : public PlatformTest {
     user_signin_view_controller_mock_ =
         OCMStrictClassMock([UserSigninViewController class]);
     OCMExpect([user_signin_view_controller_mock_ setDelegate:[OCMArg any]]);
-    OCMExpect([user_signin_view_controller_mock_ setUseFirstRunSkipButton:NO]);
     OCMExpect([user_signin_view_controller_mock_
         setModalPresentationStyle:UIModalPresentationFormSheet]);
     // Method not used on iOS 12.

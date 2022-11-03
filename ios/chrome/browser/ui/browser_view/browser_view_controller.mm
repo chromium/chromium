@@ -65,7 +65,6 @@
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
@@ -1421,8 +1420,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         base::mac::ObjCCastStrict<UINavigationController>(
             viewControllerToPresent);
     if ([navController.topViewController
-            isMemberOfClass:[WelcomeToChromeViewController class]] ||
-        [navController.topViewController
             isKindOfClass:[PromoStyleViewController class]]) {
       self.hideStatusBar = YES;
 

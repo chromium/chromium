@@ -1047,17 +1047,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_MANAGED" desc="The disclaimer that the browser is managed on the welcome screen presented to the user on First Run when the browser is managed [iOS only]">
         Your administrator has control over Chrome and can access its data
       </message>
-      <message name="IDS_IOS_FIRSTRUN_BROWSER_MANAGED" desc="Label explaining that the app is managed by an organization. This is shown on the Welcome screen presented to the user on First Run. Only shown if some enterprise policies are set. [iOS only]">
-        Your browser is managed by your organization. Some features may be disabled.
-      </message>
       <message name="IDS_IOS_FIRSTRUN_TERMS_TITLE" desc="Title for the Terms of Service page shown to user on First Run. [Length: 20em] [iOS only]">
         Terms of Service
-      </message>
-      <message name="IDS_IOS_FIRSTRUN_ACCOUNT_CONSISTENCY_SKIP_BUTTON" desc="Title of the button to skip the selection of an account on First Run when account consistency is enabled. [Length: 10em] [iOS only]">
-        No Thanks
-      </message>
-      <message name="IDS_IOS_FIRSTRUN_OPT_IN_ACCEPT_BUTTON" desc="User metrics opt-in acceptance button label [iOS only]">
-        Accept &amp; Continue
       </message>
       <message name="IDS_IOS_GENERIC_PASSKIT_ERROR" desc="Generic error message on failure reading a PassKit object. [Length: 60em] [iOS only]">
         Sorry, your Pass cannot be installed to Passbook at this time.

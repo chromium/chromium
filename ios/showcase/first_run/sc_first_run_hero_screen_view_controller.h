@@ -18,7 +18,7 @@
 
 @end
 
-// A view controller to showcase an example hero screen for the new first run
+// A view controller to showcase an example hero screen for the first run
 // experience.
 @interface SCFirstRunHeroScreenViewController : PromoStyleViewController
 

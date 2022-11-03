@@ -265,10 +265,6 @@ extern const char kEnableFeedAblationDescription[];
 extern const char kEnableFREDefaultBrowserPromoScreenName[];
 extern const char kEnableFREDefaultBrowserPromoScreenDescription[];
 
-// Title and description for the flag to enable FRE UI module.
-extern const char kEnableFREUIModuleIOSName[];
-extern const char kEnableFREUIModuleIOSDescription[];
-
 // Title and description for the flag to enable the Fullscreen API.
 extern const char kEnableFullscreenAPIName[];
 extern const char kEnableFullscreenAPIDescription[];

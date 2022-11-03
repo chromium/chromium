@@ -38,10 +38,6 @@
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
-namespace {
-const CGFloat kFadeOutAnimationDuration = 0.16f;
-}  // namespace
-
 @interface UserSigninCoordinator () <UIAdaptivePresentationControllerDelegate,
                                      UnifiedConsentCoordinatorDelegate,
                                      UserSigninViewControllerDelegate,
@@ -87,24 +83,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 @implementation UserSigninCoordinator
 
-@synthesize baseNavigationController = _baseNavigationController;
-
 #pragma mark - Public
-
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                                    signinIntent:(UserSigninIntent)signinIntent
-                                          logger:(UserSigninLogger*)logger {
-  if (self = [self initWithBaseViewController:navigationController
-                                      browser:browser
-                                     identity:nil
-                                 signinIntent:signinIntent
-                                       logger:logger]) {
-    _baseNavigationController = navigationController;
-  }
-  return self;
-}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -178,8 +157,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
       [self generateUserSigninViewControllerWithUnifiedConsentViewController:
                 self.unifiedConsentCoordinator.viewController];
   self.viewController.delegate = self;
-  self.viewController.useFirstRunSkipButton =
-      self.signinIntent == UserSigninIntentFirstRun;
 
   // Start.
   [self presentUserSigninViewController];
@@ -293,7 +270,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 - (void)userSigninViewControllerDidTapOnAddAccount {
   DCHECK(!self.addAccountSigninCoordinator);
-  [self notifyUserSigninAttempted];
 
   self.addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.viewController
@@ -319,7 +295,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 }
 
 - (void)userSigninViewControllerDidTapOnSignin {
-  [self notifyUserSigninAttempted];
   [self startSigninFlow];
 }
 
@@ -365,33 +340,19 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
     [weakSelf viewControllerDismissedWithResult:signinResult
                                  completionInfo:completionInfo];
   };
-  switch (self.signinIntent) {
-    case UserSigninIntentFirstRun: {
-      // The caller is responsible for cleaning up the base view controller for
-      // first run sign-in.
-      if (completion) {
-        completion();
-      }
-      break;
-    }
-    case UserSigninIntentSignin:
-    case UserSigninIntentUpgrade: {
-      if (self.viewController.presentingViewController) {
-        [self.viewController.presentingViewController
-            dismissViewControllerAnimated:YES
-                               completion:completion];
-      } else {
-        // When the user swipes to dismiss the view controller. The sequence is:
-        //  * The user swipe the view controller
-        //  * The view controller is dismissed
-        //  * [self presentationControllerDidDismiss] is called
-        //  * The mediator is canceled
-        // And then this method is called by the mediator. Therefore the view
-        // controller already dismissed, and should not be dismissed again.
-        completion();
-      }
-      break;
-    }
+  if (self.viewController.presentingViewController) {
+    [self.viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:completion];
+  } else {
+    // When the user swipes to dismiss the view controller. The sequence is:
+    //  * The user swipe the view controller
+    //  * The view controller is dismissed
+    //  * [self presentationControllerDidDismiss] is called
+    //  * The mediator is canceled
+    // And then this method is called by the mediator. Therefore the view
+    // controller already dismissed, and should not be dismissed again.
+    completion();
   }
 }
 
@@ -409,13 +370,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 // if the sign-in is not in progress.
 - (void)cancelSignin {
   [self.mediator cancelSignin];
-}
-
-// Notifies the observers that the user is attempting sign-in.
-- (void)notifyUserSigninAttempted {
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:kUserSigninAttemptedNotification
-                    object:self];
 }
 
 // Called when `self.viewController` is dismissed. The sign-in is
@@ -470,19 +424,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   self.viewController.presentationController.delegate = self;
 
   switch (self.signinIntent) {
-    case UserSigninIntentFirstRun: {
-      // Displays the sign-in screen with transitions specific to first-run.
-      DCHECK(self.baseNavigationController);
-
-      CATransition* transition = [CATransition animation];
-      transition.duration = kFadeOutAnimationDuration;
-      transition.type = kCATransitionFade;
-      [self.baseNavigationController.view.layer addAnimation:transition
-                                                      forKey:kCATransition];
-      [self.baseNavigationController pushViewController:self.viewController
-                                               animated:NO];
-      break;
-    }
     case UserSigninIntentUpgrade: {
       // Avoid presenting the promo if the current device orientation is not
       // supported. The promo will be presented at a later moment, when the
@@ -509,10 +450,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   }
 }
 
-// Presents `self.viewController`. This method is only relevant when
-// `self.signinIntent` is not UserSigninIntentFirstRun.
+// Presents `self.viewController`.
 - (void)presentUserViewControllerToBaseViewController {
-  DCHECK_NE(UserSigninIntentFirstRun, self.signinIntent);
   DCHECK(self.baseViewController);
   self.viewControllerPresentingAnimation = YES;
   __weak __typeof(self) weakSelf = self;
@@ -578,8 +517,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
       break;
     }
     case SigninCoordinatorInterruptActionDismissWithAnimation: {
-      // The first run is in charge to dismiss the sign-in view controller.
-      DCHECK_NE(UserSigninIntentFirstRun, self.signinIntent);
       ProceduralBlock dismissViewController = ^() {
         [weakSelf.viewController.presentingViewController
             dismissViewControllerAnimated:YES
@@ -591,8 +528,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
       break;
     }
     case SigninCoordinatorInterruptActionDismissWithoutAnimation: {
-      // The first run is in charge to dismiss the sign-in view controller.
-      DCHECK_NE(UserSigninIntentFirstRun, self.signinIntent);
       ProceduralBlock dismissViewController = ^() {
         [weakSelf.viewController.presentingViewController
             dismissViewControllerAnimated:NO
@@ -672,19 +607,11 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
-  switch (self.signinIntent) {
-    case UserSigninIntentFirstRun: {
-      return NO;
-    }
-    case UserSigninIntentUpgrade:
-    case UserSigninIntentSignin: {
-      // Don't dismiss the view controller while the sign-in is in progress.
-      // To support this, the sign-in flow needs to be canceled after the view
-      // controller is dimissed, and the UI needs to be blocked until the
-      // sign-in flow is fully cancelled.
-      return !self.mediator.isAuthenticationInProgress;
-    }
-  }
+  // Don't dismiss the view controller while the sign-in is in progress.
+  // To support this, the sign-in flow needs to be canceled after the view
+  // controller is dimissed, and the UI needs to be blocked until the
+  // sign-in flow is fully cancelled.
+  return !self.mediator.isAuthenticationInProgress;
 }
 
 #pragma mark - NSObject

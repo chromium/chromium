@@ -8,7 +8,6 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kUserSigninAttemptedNotification = @"UserSigninAttempted";
 NSString* const kSkipSigninAccessibilityIdentifier =
     @"SkipSigninAccessibilityIdentifier";
 NSString* const kAddAccountAccessibilityIdentifier =

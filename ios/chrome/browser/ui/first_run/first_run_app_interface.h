@@ -21,9 +21,6 @@
 // Resets the UMA collection enabled by default pref to UNKNOWN.
 + (void)resetUMACollectionEnabledByDefault;
 
-// Returns whether the UMA collections checkbox is initially checked.
-+ (BOOL)isUMACollectionEnabledByDefault;
-
 // Returns whether sync has finished its first run setup.
 + (BOOL)isSyncFirstSetupComplete;
 

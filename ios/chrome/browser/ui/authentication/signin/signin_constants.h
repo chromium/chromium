@@ -35,8 +35,6 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorInterruptAction) {
   SigninCoordinatorInterruptActionDismissWithAnimation,
 };
 
-// Name of notification sent when the user has attempted a sign-in.
-extern NSString* const kUserSigninAttemptedNotification;
 // Name of accessibility identifier for the skip sign-in button.
 extern NSString* const kSkipSigninAccessibilityIdentifier;
 // Name of accessibility identifier for the add account button in the sign-in

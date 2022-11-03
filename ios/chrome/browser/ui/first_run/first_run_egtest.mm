@@ -123,7 +123,6 @@ GREYLayoutConstraint* BelowConstraint() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kEnableFREUIModuleIOS);
   config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.features_disabled.push_back(kEnableFREDefaultBrowserPromoScreen);
 

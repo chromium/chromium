@@ -9,8 +9,6 @@
 
 // Intent when the user begins a sign-in flow.
 typedef NS_ENUM(NSUInteger, UserSigninIntent) {
-  // First run sign-in flow.
-  UserSigninIntentFirstRun,
   // Upgrade sign-in flow.
   UserSigninIntentUpgrade,
   // Sign-in flow.

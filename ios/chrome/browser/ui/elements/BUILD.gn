@@ -19,8 +19,6 @@ source_set("elements") {
     "self_sizing_table_view.mm",
     "text_field_configuration.h",
     "text_field_configuration.mm",
-    "text_view_selection_disabled.h",
-    "text_view_selection_disabled.mm",
     "top_aligned_image_view.h",
     "top_aligned_image_view.mm",
     "windowed_container_view.h",

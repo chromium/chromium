@@ -527,16 +527,13 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   self.sceneInForeground =
       sceneState.activationLevel >= SceneActivationLevelForegroundInactive;
 
-  // Only handle app state for the new First Run UI.
-  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
-    AppState* appState = sceneState.appState;
-    [appState addObserver:self];
+  AppState* appState = sceneState.appState;
+  [appState addObserver:self];
 
-    // Do not focus on omnibox for voice over if there are other screens to
-    // show.
-    if (appState.initStage < InitStageFinal) {
-      self.headerController.focusOmniboxWhenViewAppears = NO;
-    }
+  // Do not focus on omnibox for voice over if there are other screens to
+  // show.
+  if (appState.initStage < InitStageFinal) {
+    self.headerController.focusOmniboxWhenViewAppears = NO;
   }
 }
 
@@ -1100,13 +1097,11 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
-    if (previousInitStage == InitStageFirstRun) {
-      self.headerController.focusOmniboxWhenViewAppears = YES;
-      [self.headerController focusAccessibilityOnOmnibox];
+  if (previousInitStage == InitStageFirstRun) {
+    self.headerController.focusOmniboxWhenViewAppears = YES;
+    [self.headerController focusAccessibilityOnOmnibox];
 
-      [appState removeObserver:self];
-    }
+    [appState removeObserver:self];
   }
 }
 

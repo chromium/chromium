@@ -335,15 +335,6 @@ Things to consider:
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE_ENTERPRISE" desc="The subtitle of the welcome screen presented to the user on First Run when the browser is managed [iOS only]">
         Chromium is simple, secure and faster-than-ever
       </message>
-      <message name="IDS_IOS_FIRSTRUN_AGREE_TO_TERMS" desc="Label containing a link to the Terms of Service, displayed in the first run flow. [Length: 117em] [iOS only]">
-        By using Chromium, you agree to the <ph name="BEGIN_LINK_TOS">BEGIN_LINK_TOS</ph>Terms of Service<ph name="END_LINK_TOS">END_LINK_TOS</ph>.
-      </message>
-      <message name="IDS_IOS_FIRSTRUN_NEW_OPT_IN_LABEL" desc="User metrics opt-in label [Length: 80em] [iOS only]">
-        Help make Chromium better by sending usage statistics and crash reports to Google.
-      </message>
-      <message name="IDS_IOS_FIRSTRUN_WELCOME_TO_CHROME" desc="Title on the Welcome to Chromium screen presented to the user on First Run. [iOS only]">
-        Welcome to Chromium
-      </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING" desc="The text is displayed in a footer on the very first screen of Chrome. Make sure 'usage' and 'crash' are translated consistently with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy). The ‘Manage’ link opens a dialog to change the corresponding setting. [iOS only]">
         To help improve the app, Chromium sends usage and crash data to Google. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Manage<ph name="END_LINK">END_LINK</ph>
       </message>

@@ -39,8 +39,6 @@
 
 @property(nonatomic, assign, readonly) int acceptSigninButtonStringId;
 
-@property(nonatomic, assign) BOOL useFirstRunSkipButton;
-
 // See `initWithEmbeddedViewController:`.
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;

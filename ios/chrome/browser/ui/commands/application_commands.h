@@ -103,11 +103,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the Settings UI, presenting from `baseViewController`.
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController;
 
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the advanced sign-in settings.
-- (void)showAdvancedSigninSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
 // Presents the Trusted Vault reauth dialog.
 // `baseViewController` presents the sign-in.
 // `trigger` UI elements where the trusted vault reauth has been triggered.

@@ -283,10 +283,6 @@ const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =
     "If Enabled the Feed will be removed from the NTP";
 
-const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
-const char kEnableFREUIModuleIOSDescription[] =
-    "Use the new FRE UI module for first run.";
-
 const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =
     "Enable the Fullscreen API for web content (iOS 16.0+).";
