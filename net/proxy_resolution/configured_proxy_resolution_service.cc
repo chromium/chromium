@@ -1329,7 +1329,7 @@ base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
 
       base::Value::Dict dict;
       dict.Set("proxy_uri", proxy_uri);
-      dict.Set("bad_until", NetLog::TickCountToValue(retry_info.bad_until));
+      dict.Set("bad_until", NetLog::TickCountToString(retry_info.bad_until));
 
       list.Append(base::Value(std::move(dict)));
     }

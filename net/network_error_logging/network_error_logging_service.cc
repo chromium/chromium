@@ -259,7 +259,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       policy_dict.Set("origin", key.origin.Serialize());
       policy_dict.Set("includeSubdomains", policy.include_subdomains);
       policy_dict.Set("reportTo", policy.report_to);
-      policy_dict.Set("expires", NetLog::TimeToValue(policy.expires));
+      policy_dict.Set("expires", NetLog::TimeToString(policy.expires));
       policy_dict.Set("successFraction", policy.success_fraction);
       policy_dict.Set("failureFraction", policy.failure_fraction);
       policy_list.Append(std::move(policy_dict));
