@@ -20,6 +20,8 @@ ChromeVoxUserActionMonitorTest = class extends ChromeVoxNextE2ETest {
         'BackgroundKeyboardHandler',
         '/chromevox/background/keyboard_handler.js');
     await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule(
         'UserActionMonitor', '/chromevox/background/user_action_monitor.js');
     await importModule(
         'ChromeVoxKbHandler', '/chromevox/common/keyboard_handler.js');
@@ -436,9 +438,11 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'CloseChromeVox', async function() {
 AX_TEST_F(
     'ChromeVoxUserActionMonitorTest', 'StopPropagation', async function() {
       await this.runWithLoadedTree(this.simpleDoc);
-      const keyboardHandler = BackgroundKeyboardHandler.instance;
       let finished = false;
       let executedCommand = false;
+      const keyboardHandler = BackgroundKeyboardHandler.instance;
+      keyboardHandler.commandHandlerForTesting_ = command => executedCommand =
+          true;
       const actions = [{
         type: 'key_sequence',
         value: {keys: {keyCode: [KeyCode.CONTROL]}},
@@ -446,7 +450,6 @@ AX_TEST_F(
       }];
       const onFinished = () => finished = true;
       UserActionMonitor.create(actions, onFinished);
-      ChromeVoxKbHandler.commandHandler = command => executedCommand = true;
       assertFalse(finished);
       assertFalse(executedCommand);
       keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.CONTROL));

@@ -7,6 +7,7 @@
  *
  */
 
+import {AbstractKeyboardHandler} from '../common/abstract_keyboard_handler.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {BrailleKeyCommand, BrailleKeyEvent} from '../common/braille/braille_key_types.js';
@@ -15,7 +16,6 @@ import {Command, CommandStore} from '../common/command_store.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
 import {KeyUtil} from '../common/key_util.js';
-import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
 import {Spannable} from '../common/spannable.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_interface.js';
@@ -24,10 +24,20 @@ import {QueueMode, TtsSpeechProperties} from '../common/tts_interface.js';
  * Class to manage the keyboard explorer.
  */
 export class LearnMode {
+  constructor() {
+    /** @private {!LearnModeKeyboardHandler} */
+    this.keyboardHandler_ = new LearnModeKeyboardHandler();
+  }
+
   /**
    * Initialize keyboard explorer.
    */
   static async init() {
+    if (LearnMode.instance) {
+      throw new Error('Cannot initialize LearnMode when it already exists');
+    }
+    LearnMode.instance = new LearnMode();
+
     // Export global objects from the background page context into this one.
     window.backgroundWindow = chrome.extension.getBackgroundPage();
     window.ChromeVox = window.backgroundWindow['ChromeVox'];
@@ -44,8 +54,6 @@ export class LearnMode {
     chrome.accessibilityPrivate.setKeyboardListener(true, true);
     BackgroundBridge.BrailleCommandHandler.setEnabled(false);
     BackgroundBridge.GestureCommandHandler.setEnabled(false);
-
-    ChromeVoxKbHandler.commandHandler = LearnMode.onCommand;
 
     $('instruction').textContent = Msgs.getMsg('learn_mode_intro');
     LearnMode.shouldFlushSpeech_ = true;
@@ -89,7 +97,8 @@ export class LearnMode {
       BackgroundBridge.UserActionMonitor.onKeyDown(evt).then(
           (shouldPropagate) => {
             if (shouldPropagate) {
-              ChromeVoxKbHandler.basicKeyDownActionsListener(evt);
+              LearnMode.instance.keyboardHandler_.basicKeyDownActionsListener(
+                  evt);
             }
             LearnMode.clearRange();
           });
@@ -366,3 +375,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function $(id) {
   return document.getElementById(id);
 }
+
+class LearnModeKeyboardHandler extends AbstractKeyboardHandler {
+  /** @override */
+  handleCommand(command) {
+    LearnMode.onCommand(command);
+  }
+}
+
+/** @type {LearnMode} */
+LearnMode.instance;
