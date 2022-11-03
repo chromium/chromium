@@ -287,4 +287,37 @@ TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 }
 
+// Tests if the notification `kPrivacyHubCameraOffNotificationId` is removed
+// when the number of active clients becomes 0.
+TEST_F(PrivacyHubCameraControllerTests, NotificationRemovedWhenNoClient) {
+  SetUserPref(true);
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  ASSERT_TRUE(message_center);
+
+  // The notification should not be in the message center initially.
+  EXPECT_FALSE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+
+  // A new client started using the camera.
+  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
+                                    true, {"0"});
+
+  // Disabling camera using the software switch.
+  SetUserPref(false);
+
+  // Notification `kPrivacyHubCameraOffNotificationId` should pop up.
+  EXPECT_TRUE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+
+  // The only active client stops using the camera.
+  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
+                                    false, {});
+
+  // Existing notification `kPrivacyHubCameraOffNotificationId` should be
+  // removed as the number of active clients is 0 now.
+  EXPECT_FALSE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+}
+
 }  // namespace ash

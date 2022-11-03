@@ -260,9 +260,18 @@ void CameraPrivacySwitchController::OnActiveClientChange(
     active_camera_client_count_--;
   }
 
-  if (active_camera_client_count_ > 0) {
-    if (GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kDisabled)
-      ShowCameraOffNotification();
+  // Notification should pop up when the number of active clients increases but
+  // the camera is disabled by the software switch.
+  if (is_new_active_client &&
+      GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kDisabled) {
+    ShowCameraOffNotification();
+  }
+
+  // Remove existing software switch notification when the number of active
+  // clients is 0.
+  if (active_camera_client_count_ == 0) {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kPrivacyHubCameraOffNotificationId, /*by_user=*/false);
   }
 }
 
