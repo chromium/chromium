@@ -1170,6 +1170,7 @@ void FeatureInfo::InitializeFeatures() {
   // GL_ETC1_RGB8 format.
   if (gfx::HasExtension(extensions, "GL_OES_compressed_ETC1_RGB8_texture")) {
     AddExtensionString("GL_OES_compressed_ETC1_RGB8_texture");
+    feature_flags_.oes_compressed_etc1_rgb8_texture = true;
     validators_.compressed_texture_format.AddValue(GL_ETC1_RGB8_OES);
     validators_.texture_internal_format_storage.AddValue(GL_ETC1_RGB8_OES);
   }
