@@ -420,6 +420,77 @@ async function iframeTest(t, { source, target, expected }) {
   assert_equals(result, expected);
 }
 
+const iframeGrandparentTest = ({
+  name,
+  grandparentServer,
+  child,
+  grandchild,
+  expected,
+}) => promise_test_parallel(async (t) => {
+  // Allows running tests in parallel.
+  const grandparentUuid = token();
+  const childUuid = token();
+  const grandchildUuid = token();
+
+  const grandparentUrl =
+      resolveUrl("resources/executor.html", grandparentServer);
+  grandparentUrl.searchParams.set("executor-uuid", grandparentUuid);
+
+  const childUrl = preflightUrl(child);
+  childUrl.searchParams.set("file", "executor.html");
+  childUrl.searchParams.set("executor-uuid", childUuid);
+
+  const grandchildUrl = preflightUrl(grandchild);
+  grandchildUrl.searchParams.set("file", "iframed.html");
+  grandchildUrl.searchParams.set("iframe-uuid", grandchildUuid);
+
+  const iframe = await appendIframe(t, document, grandparentUrl);
+
+  const addChild = (url) => new Promise((resolve) => {
+    const child = document.createElement("iframe");
+    child.src = url;
+    child.addEventListener("load", () => resolve(), { once: true });
+    document.body.appendChild(child);
+  });
+
+  const grandparentCtx = new RemoteContext(grandparentUuid);
+  await grandparentCtx.execute_script(addChild, [childUrl]);
+
+  // Add a blank grandchild frame inside the child.
+  // Apply a timeout to this step so that failures at this step do not block the
+  // execution of other tests.
+  const childCtx = new RemoteContext(childUuid);
+  await Promise.race([
+      childCtx.execute_script(addChild, ["about:blank"]),
+      new Promise((resolve, reject) => t.step_timeout(
+          () => reject("timeout adding grandchild"),
+          2000 /* ms */
+      )),
+  ]);
+
+  const messagePromise = futureMessage({
+    filter: (data) => data.uuid === grandchildUuid,
+  });
+  await grandparentCtx.execute_script((url) => {
+    const child = window.frames[0];
+    const grandchild = child.frames[0];
+    grandchild.location = url;
+  }, [grandchildUrl]);
+
+  // The great-grandchild frame posts a message iff it loads successfully.
+  // There exists no interoperable way to check whether an iframe failed to
+  // load, so we use a timeout.
+  // See: https://github.com/whatwg/html/issues/125
+  const result = await Promise.race([
+      messagePromise.then((data) => data.message),
+      new Promise((resolve) => {
+        t.step_timeout(() => resolve("timeout"), 2000 /* ms */);
+      }),
+  ]);
+
+  assert_equals(result, expected);
+}, name);
+
 const WebsocketTestResult = {
   SUCCESS: "open",
 

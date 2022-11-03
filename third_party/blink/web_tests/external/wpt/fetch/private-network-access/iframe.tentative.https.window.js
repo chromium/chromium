@@ -1,3 +1,4 @@
+// META: script=/common/dispatcher/dispatcher.js
 // META: script=/common/utils.js
 // META: script=resources/support.sub.js
 //
@@ -39,10 +40,11 @@ promise_test_parallel(t => iframeTest(t, {
 //
 // Scenarios:
 //
-// - preflight response has non-2xx HTTP code
-// - preflight response is missing CORS headers
-// - preflight response is missing the PNA-specific `Access-Control` header
-// - success
+// - parent navigates child:
+//   - preflight response has non-2xx HTTP code
+//   - preflight response is missing CORS headers
+//   - preflight response is missing the PNA-specific `Access-Control` header
+//   - success
 //
 function makePreflightTests({
   sourceName,
@@ -172,3 +174,44 @@ promise_test_parallel(t => iframeTest(t, {
   target: { server: Server.HTTPS_PUBLIC },
   expected: IframeTestResult.SUCCESS,
 }), "treat-as-public-address to public: no preflight required.");
+
+// The following tests verify that when a grandparent frame navigates its
+// grandchild, the IP address space of the grandparent is compared against the
+// IP address space of the response. Indeed, the navigation initiator in this
+// case is the grandparent, not the parent.
+
+iframeGrandparentTest({
+  name: "local to local, grandparent navigates: no preflight required.",
+  grandparentServer: Server.HTTPS_LOCAL,
+  child: { server: Server.HTTPS_PUBLIC },
+  grandchild: { server: Server.HTTPS_LOCAL },
+  expected: IframeTestResult.SUCCESS,
+});
+
+iframeGrandparentTest({
+  name: "public to local, grandparent navigates: failure.",
+  grandparentServer: Server.HTTPS_PUBLIC,
+  child: {
+    server: Server.HTTPS_LOCAL,
+    behavior: { preflight: PreflightBehavior.success(token()) },
+  },
+  grandchild: {
+    server: Server.HTTPS_LOCAL,
+    behavior: { preflight: PreflightBehavior.failure() },
+  },
+  expected: IframeTestResult.FAILURE,
+});
+
+iframeGrandparentTest({
+  name: "public to local, grandparent navigates: success.",
+  grandparentServer: Server.HTTPS_PUBLIC,
+  child: {
+    server: Server.HTTPS_LOCAL,
+    behavior: { preflight: PreflightBehavior.success(token()) },
+  },
+  grandchild: {
+    server: Server.HTTPS_LOCAL,
+    behavior: { preflight: PreflightBehavior.success(token()) },
+  },
+  expected: IframeTestResult.SUCCESS,
+});
