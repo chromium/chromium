@@ -277,7 +277,7 @@ void InterestGroupManagerImpl::EnqueueReports(
     const url::Origin& frame_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  // For memory usage reasons, purge the queue if it has no less than
+  // For memory usage reasons, purge the queue if it has at least
   // `max_report_queue_length_` entries at the time we're about to add new
   // entries.
   if (report_requests_.size() >=
@@ -285,17 +285,20 @@ void InterestGroupManagerImpl::EnqueueReports(
     report_requests_.clear();
   }
 
-  HandleReports(std::move(report_urls), frame_origin,
-                client_security_state.Clone(), "SendReportToReport",
-                url_loader_factory);
-  HandleReports(std::move(debug_loss_report_urls), frame_origin,
-                client_security_state.Clone(), "DebugLossReport",
-                url_loader_factory);
-  HandleReports(std::move(debug_win_report_urls), frame_origin,
-                client_security_state.Clone(), "DebugWinReport",
-                url_loader_factory);
-  if (!report_requests_.empty())
-    SendReports();
+  EnqueueReportsInternal(report_urls, frame_origin, client_security_state,
+                         "SendReportToReport", url_loader_factory);
+  EnqueueReportsInternal(debug_loss_report_urls, frame_origin,
+                         client_security_state, "DebugLossReport",
+                         url_loader_factory);
+  EnqueueReportsInternal(debug_win_report_urls, frame_origin,
+                         client_security_state, "DebugWinReport",
+                         url_loader_factory);
+
+  while (!report_requests_.empty() &&
+         num_active_ < max_active_report_requests_) {
+    ++num_active_;
+    TrySendingOneReport();
+  }
 }
 
 void InterestGroupManagerImpl::SetInterestGroupPriority(
@@ -419,11 +422,11 @@ void InterestGroupManagerImpl::NotifyInterestGroupAccessed(
   }
 }
 
-void InterestGroupManagerImpl::HandleReports(
+void InterestGroupManagerImpl::EnqueueReportsInternal(
     const std::vector<GURL>& report_urls,
     const url::Origin& frame_origin,
-    network::mojom::ClientSecurityStatePtr client_security_state,
-    const std::string& name,
+    const network::mojom::ClientSecurityStatePtr& client_security_state,
+    const char* name,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   for (const GURL& report_url : report_urls) {
     auto report_request = std::make_unique<ReportRequest>();
@@ -436,38 +439,21 @@ void InterestGroupManagerImpl::HandleReports(
   }
 }
 
-void InterestGroupManagerImpl::SendReports() {
-  if (reporting_started_ == base::TimeTicks::Min()) {
-    // It appears we're staring a new reporting round; mark the time we started
-    // the round.
-    reporting_started_ = base::TimeTicks::Now();
-  }
-
-  while (!report_requests_.empty() &&
-         num_active_ < max_active_report_requests_) {
-    num_active_++;
-    TrySendingOneReport();
-  }
-}
-
 void InterestGroupManagerImpl::TrySendingOneReport() {
-  if (base::TimeTicks::Now() - reporting_started_ >
-      max_reporting_round_duration_) {
-    // We've been reporting for too long; delete all pending reports in the
-    // queue.
-    // TODO(qingxinwu): maybe add UMA metrics to learn how often this happens.
-    report_requests_.clear();
-    reporting_started_ = base::TimeTicks::Min();
-  }
+  DCHECK_GT(num_active_, 0);
 
   if (report_requests_.empty()) {
-    DCHECK_GT(num_active_, 0);
-    num_active_--;
-    if (num_active_ == 0) {
-      // This reporting round is finished, there's no more work to do.
-      reporting_started_ = base::TimeTicks::Min();
-    }
+    --num_active_;
+    if (num_active_ == 0)
+      timeout_timer_.Stop();
     return;
+  }
+
+  if (!timeout_timer_.IsRunning()) {
+    timeout_timer_.Start(
+        FROM_HERE, max_reporting_round_duration_,
+        base::BindOnce(&InterestGroupManagerImpl::TimeoutReports,
+                       base::Unretained(this)));
   }
 
   std::unique_ptr<ReportRequest> report_request =
@@ -499,15 +485,16 @@ void InterestGroupManagerImpl::OnOneReportSent(
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
   DCHECK_GT(num_active_, 0);
 
-  if (!report_requests_.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&InterestGroupManagerImpl::TrySendingOneReport,
-                       weak_factory_.GetWeakPtr()),
-        reporting_interval_);
-    return;
-  }
-  num_active_--;
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&InterestGroupManagerImpl::TrySendingOneReport,
+                     weak_factory_.GetWeakPtr()),
+      reporting_interval_);
+}
+
+void InterestGroupManagerImpl::TimeoutReports() {
+  // TODO(qingxinwu): maybe add UMA metrics to learn how often this happens.
+  report_requests_.clear();
 }
 
 void InterestGroupManagerImpl::
