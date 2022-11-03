@@ -51,7 +51,6 @@ group("closure_compile") {
 group("polymer3_elements") {
   public_deps = [
                   "behaviors:modulize",
-                  "buttons:polymer3_elements",
                   "common_styles:polymer3_elements",
                   "dialogs:polymer3_elements",
                   "oobe_vars:polymer3_elements",
@@ -89,7 +88,7 @@ js_library("gaia_dialog") {
     "./behaviors:oobe_dialog_host_behavior.m",
     "./behaviors:oobe_i18n_behavior.m",
     "./buttons:oobe_back_button",
-    "./buttons:oobe_text_button.m",
+    "./buttons:oobe_text_button",
     "./dialogs:oobe_content_dialog.m",
     "//chrome/browser/resources/gaia_auth_host:authenticator",
     "//ui/webui/resources/js:cr.m",

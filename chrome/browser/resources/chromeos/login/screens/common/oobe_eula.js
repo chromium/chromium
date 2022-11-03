@@ -13,7 +13,7 @@ import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 import '../../components/dialogs/oobe_modal_dialog.m.js';
 import '../../components/buttons/oobe_back_button.js';
-import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/buttons/oobe_text_button.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';

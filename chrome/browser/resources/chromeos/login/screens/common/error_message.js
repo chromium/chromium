@@ -10,7 +10,7 @@ import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_back_button.js';
-import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 import '../../components/network_select_login.js';

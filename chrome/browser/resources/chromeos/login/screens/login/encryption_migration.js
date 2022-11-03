@@ -6,20 +6,20 @@
  * @fileoverview Polymer element for displaying encryption migration screen.
  */
 
-import {afterNextRender, Polymer, PolymerElement, html, flush, mixinBehaviors, dom} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
-
-import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.m.js';
 import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+
+import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
-import {OobeTextButton} from '../../components/buttons/oobe_text_button.m.js';
-import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
+import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.m.js';
 
 
 /**

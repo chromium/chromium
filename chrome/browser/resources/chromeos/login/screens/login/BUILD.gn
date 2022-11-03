@@ -42,7 +42,7 @@ js_library("active_directory_password_change") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button.m",
+    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog.m",
   ]
   externs_list =
@@ -69,7 +69,7 @@ js_library("encryption_migration") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button.m",
+    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_loading_dialog.m",
   ]
@@ -83,7 +83,7 @@ js_library("gaia_password_changed") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button.m",
+    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_loading_dialog.m",
   ]
@@ -121,7 +121,7 @@ js_library("management_transition") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button.m",
+    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog.m",
   ]
   extra_deps = [ ":web_components" ]
@@ -134,7 +134,7 @@ js_library("offline_login") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button.m",
+    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog.m",
   ]
   extra_deps = [ ":web_components" ]
@@ -150,7 +150,7 @@ js_library("update_required_card.m") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button.m",
+    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -164,7 +164,7 @@ js_library("checking_downloading_update.m") {
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button.m",
+    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

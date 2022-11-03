@@ -237,6 +237,7 @@ polymer_modulizer("assistant_loading") {
   html_file = "assistant_loading.html"
   html_type = "dom-module"
   auto_imports = assistant_auto_imports
+  migrated_imports = assistant_migrated_imports
   namespace_rewrites = assistant_namespace_rewrites
 }
 
@@ -272,6 +273,7 @@ polymer_modulizer("voice_match_entry") {
   html_file = "voice_match_entry.html"
   html_type = "dom-module"
   auto_imports = assistant_auto_imports
+  migrated_imports = assistant_migrated_imports
   namespace_rewrites = assistant_namespace_rewrites
 }
 
