@@ -282,10 +282,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   bool is_tablet_mode() const { return delegate_->IsInTabletMode(); }
 
-  void SetShelfHasRoundedCorners(bool shelf_has_rounded_corners);
-
-  bool shelf_has_rounded_corners() const { return shelf_has_rounded_corners_; }
-
   void set_onscreen_keyboard_shown(bool onscreen_keyboard_shown) {
     onscreen_keyboard_shown_ = onscreen_keyboard_shown;
   }
@@ -405,9 +401,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // The time the AppListView was requested to be shown. Used for metrics.
   absl::optional<base::Time> time_shown_;
-
-  // Whether the shelf has rounded corners.
-  bool shelf_has_rounded_corners_ = false;
 
   // Whether the view is being built.
   bool is_building_ = false;

@@ -87,23 +87,6 @@ void DidPresentCompositorFrame(base::TimeTicks event_time_stamp,
   }
 }
 
-// Whether the shelf background type indicates that shelf has rounded corners.
-bool IsShelfBackgroundTypeWithRoundedCorners(
-    ShelfBackgroundType background_type) {
-  switch (background_type) {
-    case ShelfBackgroundType::kDefaultBg:
-    case ShelfBackgroundType::kOverview:
-      return true;
-    case ShelfBackgroundType::kMaximized:
-    case ShelfBackgroundType::kOobe:
-    case ShelfBackgroundType::kHomeLauncher:
-    case ShelfBackgroundType::kLogin:
-    case ShelfBackgroundType::kLoginNonBlurredWallpaper:
-    case ShelfBackgroundType::kInApp:
-      return false;
-  }
-}
-
 // Invokes `complete_callback_` at the end of animation.
 class FullscreenLauncherAnimationObserver
     : public ui::ImplicitAnimationObserver,
@@ -256,7 +239,6 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
       Shelf::ForWindow(view_->GetWidget()->GetNativeView()->GetRootWindow());
   shelf->shelf_layout_manager()->UpdateAutoHideState();
 
-  // Observe the shelf for changes to rounded corners.
   // If presenter is observing a shelf instance different than `shelf`, it's
   // because the app list view on the associated display is closing. It's safe
   // to remove this observation (given that shelf background changes should not
@@ -270,8 +252,6 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   // ScrollableShelfView are deleted. https://crbug.com/1163332
   view_->SetDragAndDropHostOfCurrentAppList(
       shelf->shelf_widget()->GetDragAndDropHostForAppList());
-  view_->SetShelfHasRoundedCorners(
-      IsShelfBackgroundTypeWithRoundedCorners(shelf->GetBackgroundType()));
   std::unique_ptr<AppListView::ScopedAccessibilityAnnouncementLock>
       scoped_accessibility_lock;
 
@@ -766,13 +746,6 @@ void AppListPresenterImpl::OnShelfShuttingDown() {
   shelf_observer_.Reset();
   if (view_)
     view_->SetDragAndDropHostOfCurrentAppList(nullptr);
-}
-
-void AppListPresenterImpl::OnBackgroundTypeChanged(
-    ShelfBackgroundType background_type,
-    AnimationChangeType change_type) {
-  view_->SetShelfHasRoundedCorners(
-      IsShelfBackgroundTypeWithRoundedCorners(background_type));
 }
 
 void AppListPresenterImpl::SnapAppListBoundsToDisplayEdge() {

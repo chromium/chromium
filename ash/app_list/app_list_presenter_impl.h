@@ -182,8 +182,6 @@ class ASH_EXPORT AppListPresenterImpl
 
   // ShelfObserver overrides:
   void OnShelfShuttingDown() override;
-  void OnBackgroundTypeChanged(ShelfBackgroundType background_type,
-                               AnimationChangeType change_type) override;
 
   // Registers a callback that is run when the next frame successfully makes it
   // to the screen.

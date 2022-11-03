@@ -1253,16 +1253,6 @@ void AppListView::OnBoundsAnimationCompleted(AppListViewState target_state) {
                                                  was_animation_interrupted);
 }
 
-void AppListView::SetShelfHasRoundedCorners(bool shelf_has_rounded_corners) {
-  if (shelf_has_rounded_corners_ == shelf_has_rounded_corners)
-    return;
-  shelf_has_rounded_corners_ = shelf_has_rounded_corners;
-  absl::optional<base::TimeTicks> animation_end_timestamp;
-  if (GetWidget() && GetWidget()->GetLayer()->GetAnimator()->is_animating()) {
-    animation_end_timestamp = animation_end_timestamp_;
-  }
-}
-
 void AppListView::RedirectKeyEventToSearchBox(ui::KeyEvent* event) {
   if (event->handled())
     return;
