@@ -444,7 +444,7 @@ _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.scroll_jank_mobile')
 ])
 _ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS = PerfSuite(
-    [_GetBenchmarkConfig('jetstream2'),
+    [_GetBenchmarkConfig('startup.mobile'),
      _GetBenchmarkConfig('speedometer2')])
 _ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('system_health.scroll_jank_mobile')])
