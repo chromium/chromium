@@ -135,8 +135,8 @@ void Referrer::Deserialize(const base::Value& value) {
   }
 }
 
-std::unique_ptr<base::ListValue> Referrer::Serialize() const {
-  auto subresource_list = std::make_unique<base::ListValue>();
+std::unique_ptr<base::Value::List> Referrer::Serialize() const {
+  auto subresource_list = std::make_unique<base::Value::List>();
   for (auto it = begin(); it != end(); ++it) {
     subresource_list->Append(it->first.spec());
     subresource_list->Append(it->second.subresource_use_rate());

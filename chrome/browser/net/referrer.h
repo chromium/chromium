@@ -105,7 +105,7 @@ class Referrer : public SubresourceMap {
   void SuggestHost(const GURL& url);
 
   // Provide methods for persisting, and restoring contents into a Value class.
-  std::unique_ptr<base::ListValue> Serialize() const;
+  std::unique_ptr<base::Value::List> Serialize() const;
   void Deserialize(const base::Value& referrers);
 
  private:
