@@ -45,8 +45,16 @@ constexpr size_t kInputBufferMaxSizeFor4k = 4 * kInputBufferMaxSizeFor1080p;
 
 // Input format V4L2 fourccs this class supports.
 constexpr uint32_t kSupportedInputFourccs[] = {
-    V4L2_PIX_FMT_H264_SLICE, V4L2_PIX_FMT_VP8_FRAME, V4L2_PIX_FMT_VP9_FRAME,
-    V4L2_PIX_FMT_H264,       V4L2_PIX_FMT_VP8,       V4L2_PIX_FMT_VP9,
+    // V4L2 stateless formats
+    V4L2_PIX_FMT_H264_SLICE,
+    V4L2_PIX_FMT_VP8_FRAME,
+    V4L2_PIX_FMT_VP9_FRAME,
+    V4L2_PIX_FMT_AV1_FRAME,
+    // V4L2 stateful formats
+    V4L2_PIX_FMT_H264,
+    V4L2_PIX_FMT_VP8,
+    V4L2_PIX_FMT_VP9,
+    V4L2_PIX_FMT_AV1,
 };
 
 }  // namespace
