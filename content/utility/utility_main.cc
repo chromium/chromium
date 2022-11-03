@@ -33,6 +33,12 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
+#include "gpu/config/gpu_info_collector.h"
+#include "media/gpu/sandbox/hardware_video_encoding_sandbox_hook_linux.h"
+// gn check is not smart enough to realize that this include only applies to
+// Linux/ChromeOS and the BUILD.gn dependencies correctly account for that.
+#include "third_party/angle/src/gpu_info_util/SystemInfo.h"  //nogncheck
+
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "printing/sandbox/print_backend_sandbox_hook_linux.h"
 #endif
@@ -42,12 +48,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "gpu/config/gpu_info_collector.h"
 #include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
-
-// gn check is not smart enough to realize that this include only applies to
-// Linux/ash-chrome and the BUILD.gn dependencies correctly account for that.
-#include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -79,6 +80,30 @@ sandbox::TargetServices* g_utility_target_services = nullptr;
 #endif
 
 namespace content {
+
+namespace {
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+bool ShouldUseAmdGpuPolicy(sandbox::mojom::Sandbox sandbox_type) {
+  const bool obtain_gpu_info =
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+      sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoDecoding ||
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+      sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoEncoding;
+
+  if (obtain_gpu_info) {
+    // The kHardwareVideoDecoding and kHardwareVideoEncoding sandboxes need to
+    // know the GPU type in order to select the right policy.
+    gpu::GPUInfo gpu_info{};
+    gpu::CollectBasicGraphicsInfo(&gpu_info);
+    return angle::IsAMD(gpu_info.active_gpu().vendor_id);
+  }
+
+  return false;
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace
 
 // Mainline routine for running as the utility process.
 int UtilityMain(MainFunctionParams parameters) {
@@ -165,6 +190,10 @@ int UtilityMain(MainFunctionParams parameters) {
           base::BindOnce(&media::HardwareVideoDecodingPreSandboxHook);
       break;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+    case sandbox::mojom::Sandbox::kHardwareVideoEncoding:
+      pre_sandbox_hook =
+          base::BindOnce(&media::HardwareVideoEncodingPreSandboxHook);
+      break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kIme:
       pre_sandbox_hook = base::BindOnce(&ash::ime::ImePreSandboxHook);
@@ -185,16 +214,8 @@ int UtilityMain(MainFunctionParams parameters) {
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
       (parameters.zygote_child || !pre_sandbox_hook.is_null())) {
     sandbox::policy::SandboxLinux::Options sandbox_options;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-    if (sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoDecoding) {
-      // The kHardwareVideoDecoding sandbox needs to know the GPU type in order
-      // to select the right policy.
-      gpu::GPUInfo gpu_info{};
-      gpu::CollectBasicGraphicsInfo(&gpu_info);
-      sandbox_options.use_amd_specific_policies =
-          angle::IsAMD(gpu_info.active_gpu().vendor_id);
-    }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+    sandbox_options.use_amd_specific_policies =
+        ShouldUseAmdGpuPolicy(sandbox_type);
     sandbox::policy::Sandbox::Initialize(
         sandbox_type, std::move(pre_sandbox_hook), sandbox_options);
   }

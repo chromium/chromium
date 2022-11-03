@@ -5,13 +5,20 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
 
-assert(is_linux || is_chromeos_ash)
-
 source_set("sandbox") {
-  sources = [
-    "hardware_video_decoding_sandbox_hook_linux.cc",
-    "hardware_video_decoding_sandbox_hook_linux.h",
-  ]
+  sources = []
+  if (is_linux || is_chromeos_ash) {
+    sources += [
+      "hardware_video_decoding_sandbox_hook_linux.cc",
+      "hardware_video_decoding_sandbox_hook_linux.h",
+    ]
+  }
+  if (is_linux || is_chromeos) {
+    sources += [
+      "hardware_video_encoding_sandbox_hook_linux.cc",
+      "hardware_video_encoding_sandbox_hook_linux.h",
+    ]
+  }
   deps = [
     "//base",
     "//media/gpu:buildflags",
@@ -19,5 +26,8 @@ source_set("sandbox") {
   ]
   if (use_vaapi) {
     deps += [ "//media/gpu/vaapi:common" ]
+  }
+  if (use_v4l2_codec) {
+    deps += [ "//media/gpu/v4l2" ]
   }
 }
