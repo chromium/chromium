@@ -331,6 +331,11 @@ ssize_t PtraceClient::ReadUpTo(VMAddress address, size_t size, void* buffer) {
       return total_read;
     }
 
+    if (static_cast<size_t>(bytes_read) > size) {
+      LOG(ERROR) << "invalid size " << bytes_read;
+      return -1;
+    }
+
     if (!LoggingReadFileExactly(sock_, buffer_c, bytes_read)) {
       return -1;
     }
