@@ -152,10 +152,10 @@ class MetadataDatabase {
   bool HasSyncRoot() const;
 
   // Returns all file metadata for the given |app_id|.
-  std::unique_ptr<base::ListValue> DumpFiles(const std::string& app_id);
+  base::Value::List DumpFiles(const std::string& app_id);
 
   // Returns all database data.
-  std::unique_ptr<base::ListValue> DumpDatabase();
+  base::Value::List DumpDatabase();
 
   // TODO(tzik): Move GetLargestKnownChangeID() to private section, and hide its
   // handling in the class, instead of letting user do.

@@ -185,19 +185,19 @@ void SyncWorker::GetOriginStatusMap(
   std::move(callback).Run(std::move(status_map));
 }
 
-std::unique_ptr<base::ListValue> SyncWorker::DumpFiles(const GURL& origin) {
+base::Value::List SyncWorker::DumpFiles(const GURL& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!GetMetadataDatabase())
-    return nullptr;
+    return base::Value::List();
   return GetMetadataDatabase()->DumpFiles(origin.host());
 }
 
-std::unique_ptr<base::ListValue> SyncWorker::DumpDatabase() {
+base::Value::List SyncWorker::DumpDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!GetMetadataDatabase())
-    return nullptr;
+    return base::Value::List();
   return GetMetadataDatabase()->DumpDatabase();
 }
 

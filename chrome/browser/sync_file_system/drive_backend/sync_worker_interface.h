@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_action.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
@@ -18,7 +19,6 @@ class GURL;
 
 namespace base {
 class FilePath;
-class ListValue;
 }
 
 namespace storage {
@@ -79,8 +79,8 @@ class SyncWorkerInterface {
   virtual RemoteServiceState GetCurrentState() const = 0;
   virtual void GetOriginStatusMap(
       RemoteFileSyncService::StatusMapCallback callback) = 0;
-  virtual std::unique_ptr<base::ListValue> DumpFiles(const GURL& origin) = 0;
-  virtual std::unique_ptr<base::ListValue> DumpDatabase() = 0;
+  virtual base::Value::List DumpFiles(const GURL& origin) = 0;
+  virtual base::Value::List DumpDatabase() = 0;
   virtual void SetSyncEnabled(bool enabled) = 0;
   virtual void PromoteDemotedChanges(base::OnceClosure callback) = 0;
 

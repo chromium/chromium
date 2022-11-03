@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "chrome/browser/sync_file_system/conflict_resolution_policy.h"
 #include "chrome/browser/sync_file_system/file_status_observer.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
@@ -55,7 +56,7 @@ class SyncFileSystemService
       public extensions::ExtensionRegistryObserver,
       public base::SupportsWeakPtr<SyncFileSystemService> {
  public:
-  using DumpFilesCallback = base::OnceCallback<void(const base::ListValue&)>;
+  using DumpFilesCallback = base::OnceCallback<void(base::Value::List)>;
   using ExtensionStatusMapCallback =
       base::OnceCallback<void(const RemoteFileSyncService::OriginStatusMap&)>;
 
@@ -123,10 +124,9 @@ class SyncFileSystemService
                                       SyncStatusCode status);
   void DidDumpFiles(const GURL& app_origin,
                     DumpFilesCallback callback,
-                    std::unique_ptr<base::ListValue> files);
+                    base::Value::List files);
 
-  void DidDumpDatabase(DumpFilesCallback callback,
-                       std::unique_ptr<base::ListValue> list);
+  void DidDumpDatabase(DumpFilesCallback callback, base::Value::List list);
 
   void DidGetExtensionStatusMap(
       ExtensionStatusMapCallback callback,

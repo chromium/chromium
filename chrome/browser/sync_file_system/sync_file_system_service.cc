@@ -111,27 +111,26 @@ std::string SyncFileStatusToString(SyncFileStatus sync_file_status) {
 
 // Gets called repeatedly until every SyncFileStatus has been mapped.
 void DidGetFileSyncStatusForDump(
-    base::ListValue* files,
+    const base::Value::List& files,
     size_t* num_results,
     SyncFileSystemService::DumpFilesCallback& callback,
     base::DictionaryValue* file,
     SyncStatusCode sync_status_code,
     SyncFileStatus sync_file_status) {
-  DCHECK(files);
   DCHECK(num_results);
 
   if (file)
     file->SetString("status", SyncFileStatusToString(sync_file_status));
 
   // Once all results have been received, run the callback to signal end.
-  DCHECK_LE(*num_results, files->GetList().size());
-  if (++*num_results < files->GetList().size())
+  DCHECK_LE(*num_results, files.size());
+  if (++*num_results < files.size())
     return;
 
   // `callback` is a DumpFilesCallback, which should only be called
   // once. The callback will only be called a single time, even though
   // `DidGetFileSyncStatusForDump()` is called more than once.
-  std::move(callback).Run(*files);
+  std::move(callback).Run(files.Clone());
 }
 
 // We need this indirection because WeakPtr can only be bound to methods
@@ -545,7 +544,7 @@ void SyncFileSystemService::DidInitializeFileSystemForDump(
   DCHECK(!origin.is_empty());
 
   if (status != SYNC_STATUS_OK || !remote_service_) {
-    std::move(callback).Run(base::ListValue());
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
@@ -554,29 +553,27 @@ void SyncFileSystemService::DidInitializeFileSystemForDump(
                              origin, std::move(callback)));
 }
 
-void SyncFileSystemService::DidDumpFiles(
-    const GURL& origin,
-    DumpFilesCallback callback,
-    std::unique_ptr<base::ListValue> dump_files) {
-  if (!dump_files || dump_files->GetList().empty() || !local_service_ ||
-      !remote_service_) {
-    std::move(callback).Run(base::ListValue());
+void SyncFileSystemService::DidDumpFiles(const GURL& origin,
+                                         DumpFilesCallback callback,
+                                         base::Value::List dump_files) {
+  if (dump_files.empty() || !local_service_ || !remote_service_) {
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
-  base::ListValue* files = dump_files.get();
+  base::Value::List& files = dump_files;
 
   using AccumulateFileSyncStatusCallback = base::RepeatingCallback<void(
       base::DictionaryValue*, SyncStatusCode, SyncFileStatus)>;
 
   // |accumulate_callback| should only call |callback| once.
-  AccumulateFileSyncStatusCallback accumulate_callback = base::BindRepeating(
-      &DidGetFileSyncStatusForDump, base::Owned(dump_files.release()),
-      base::Owned(std::make_unique<size_t>(0)),
-      base::OwnedRef(std::move(callback)));
+  AccumulateFileSyncStatusCallback accumulate_callback =
+      base::BindRepeating(&DidGetFileSyncStatusForDump, std::move(dump_files),
+                          base::Owned(std::make_unique<size_t>(0)),
+                          base::OwnedRef(std::move(callback)));
 
   // After all metadata loaded, sync status can be added to each entry.
-  for (base::Value& file : files->GetList()) {
+  for (base::Value& file : files) {
     const std::string* path_string =
       file.is_dict() ? file.FindStringKey("path") : nullptr;
     if (!path_string) {
@@ -593,12 +590,9 @@ void SyncFileSystemService::DidDumpFiles(
   }
 }
 
-void SyncFileSystemService::DidDumpDatabase(
-    DumpFilesCallback callback,
-    std::unique_ptr<base::ListValue> list) {
-  if (!list)
-    list = std::make_unique<base::ListValue>();
-  std::move(callback).Run(*list);
+void SyncFileSystemService::DidDumpDatabase(DumpFilesCallback callback,
+                                            base::Value::List list) {
+  std::move(callback).Run(std::move(list));
 }
 
 void SyncFileSystemService::DidGetExtensionStatusMap(

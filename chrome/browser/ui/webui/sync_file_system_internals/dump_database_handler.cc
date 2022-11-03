@@ -38,8 +38,8 @@ void DumpDatabaseHandler::HandleGetDatabaseDump(const base::Value::List& args) {
 }
 
 void DumpDatabaseHandler::DidGetDatabaseDump(std::string callback_id,
-                                             const base::ListValue& list) {
-  ResolveJavascriptCallback(base::Value(callback_id), list);
+                                             base::Value::List list) {
+  ResolveJavascriptCallback(base::Value(callback_id), std::move(list));
 }
 
 }  // namespace syncfs_internals

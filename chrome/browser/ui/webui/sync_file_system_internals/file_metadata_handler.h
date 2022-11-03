@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SYNC_FILE_SYSTEM_INTERNALS_FILE_METADATA_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SYNC_FILE_SYSTEM_INTERNALS_FILE_METADATA_HANDLER_H_
 
-#include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -38,8 +39,7 @@ class FileMetadataHandler : public content::WebUIMessageHandler {
   void DidGetExtensions(std::string callback_id, base::Value::List list);
 
   void HandleGetFileMetadata(const base::Value::List& args);
-  void DidGetFileMetadata(std::string callback_id,
-                          const base::ListValue& files);
+  void DidGetFileMetadata(std::string callback_id, base::Value::List files);
 
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<FileMetadataHandler> weak_factory_{this};

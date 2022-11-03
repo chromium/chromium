@@ -90,8 +90,8 @@ void FileMetadataHandler::DidGetExtensions(std::string callback_id,
 }
 
 void FileMetadataHandler::DidGetFileMetadata(std::string callback_id,
-                                             const base::ListValue& files) {
-  ResolveJavascriptCallback(base::Value(callback_id), files);
+                                             base::Value::List files) {
+  ResolveJavascriptCallback(base::Value(callback_id), std::move(files));
 }
 
 }  // namespace syncfs_internals

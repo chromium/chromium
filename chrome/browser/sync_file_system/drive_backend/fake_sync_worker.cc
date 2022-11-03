@@ -109,14 +109,14 @@ void FakeSyncWorker::GetOriginStatusMap(
   std::move(callback).Run(std::move(status_map));
 }
 
-std::unique_ptr<base::ListValue> FakeSyncWorker::DumpFiles(const GURL& origin) {
+base::Value::List FakeSyncWorker::DumpFiles(const GURL& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return nullptr;
+  return base::Value::List();
 }
 
-std::unique_ptr<base::ListValue> FakeSyncWorker::DumpDatabase() {
+base::Value::List FakeSyncWorker::DumpDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return nullptr;
+  return base::Value::List();
 }
 
 void FakeSyncWorker::SetSyncEnabled(bool enabled) {

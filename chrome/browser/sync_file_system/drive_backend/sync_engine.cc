@@ -526,14 +526,14 @@ void SyncEngine::GetOriginStatusMap(StatusMapCallback callback) {
 
 void SyncEngine::DumpFiles(const GURL& origin, ListCallback callback) {
   if (!sync_worker_) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
 
   base::OnceClosure abort_closure =
-      base::BindOnce(std::move(split_callback.first), nullptr);
+      base::BindOnce(std::move(split_callback.first), base::Value::List());
 
   ListCallback tracked_callback = callback_tracker_.Register(
       std::move(abort_closure), std::move(split_callback.second));
@@ -547,14 +547,14 @@ void SyncEngine::DumpFiles(const GURL& origin, ListCallback callback) {
 
 void SyncEngine::DumpDatabase(ListCallback callback) {
   if (!sync_worker_) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
 
   base::OnceClosure abort_closure =
-      base::BindOnce(std::move(split_callback.first), nullptr);
+      base::BindOnce(std::move(split_callback.first), base::Value::List());
 
   ListCallback tracked_callback = callback_tracker_.Register(
       std::move(abort_closure), std::move(split_callback.second));

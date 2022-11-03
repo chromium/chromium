@@ -1157,12 +1157,12 @@ TEST_P(MetadataDatabaseTest, DumpFiles) {
   EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
   VerifyTrackedFiles(tracked_files, std::size(tracked_files));
 
-  std::unique_ptr<base::ListValue> files =
+  base::Value::List files =
       metadata_database()->DumpFiles(app_root.tracker.app_id());
-  ASSERT_EQ(2u, files->GetList().size());
+  ASSERT_EQ(2u, files.size());
 
   const std::string* str;
-  const base::Value& folder = files->GetList()[0];
+  const base::Value& folder = files[0];
   ASSERT_TRUE(folder.is_dict());
   str = folder.FindStringKey("title");
   EXPECT_TRUE(str && *str == "folder_0");
@@ -1170,7 +1170,7 @@ TEST_P(MetadataDatabaseTest, DumpFiles) {
   EXPECT_TRUE(str && *str == "folder");
   EXPECT_TRUE(folder.FindKey("details"));
 
-  const base::Value& file = files->GetList()[1];
+  const base::Value& file = files[1];
   ASSERT_TRUE(file.is_dict());
   str = file.FindStringKey("title");
   EXPECT_TRUE(str && *str == "file_0");

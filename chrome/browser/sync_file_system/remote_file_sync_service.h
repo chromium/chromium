@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "chrome/browser/sync_file_system/conflict_resolution_policy.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
@@ -20,10 +21,6 @@
 
 class BrowserContextKeyedServiceFactory;
 class GURL;
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 class BrowserContext;
@@ -117,8 +114,7 @@ class RemoteFileSyncService {
       base::OnceCallback<void(std::unique_ptr<OriginStatusMap> status_map)>;
 
   // For DumpFile.
-  using ListCallback =
-      base::OnceCallback<void(std::unique_ptr<base::ListValue> list)>;
+  using ListCallback = base::OnceCallback<void(base::Value::List list)>;
 
   // Creates an initialized RemoteFileSyncService for backend |version|
   // for |context|.

@@ -1562,9 +1562,8 @@ SyncStatusCode MetadataDatabase::WriteToDatabase() {
   return LevelDBStatusToSyncStatusCode(db_->Commit());
 }
 
-std::unique_ptr<base::ListValue> MetadataDatabase::DumpFiles(
-    const std::string& app_id) {
-  std::unique_ptr<base::ListValue> files(new base::ListValue);
+base::Value::List MetadataDatabase::DumpFiles(const std::string& app_id) {
+  base::Value::List files;
 
   FileTracker app_root_tracker;
   if (!FindAppRootTracker(app_id, &app_root_tracker))
@@ -1604,16 +1603,16 @@ std::unique_ptr<base::ListValue> MetadataDatabase::DumpFiles(
 
     file.Set("details", std::move(details));
 
-    files->Append(base::Value(std::move(file)));
+    files.Append(std::move(file));
   }
 
   return files;
 }
 
-std::unique_ptr<base::ListValue> MetadataDatabase::DumpDatabase() {
-  std::unique_ptr<base::ListValue> list(new base::ListValue);
-  list->Append(base::Value::FromUniquePtrValue(DumpTrackers()));
-  list->Append(base::Value::FromUniquePtrValue(DumpMetadata()));
+base::Value::List MetadataDatabase::DumpDatabase() {
+  base::Value::List list;
+  list.Append(base::Value::FromUniquePtrValue(DumpTrackers()));
+  list.Append(base::Value::FromUniquePtrValue(DumpMetadata()));
   return list;
 }
 
