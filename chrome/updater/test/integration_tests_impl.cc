@@ -255,15 +255,26 @@ base::FilePath GetLogDestinationDir() {
   return var ? base::FilePath::FromUTF8Unsafe(var) : base::FilePath();
 }
 
+// Copies the updater log file present in `src_dir` to a test-specific directory
+// name in Swarming/Isolate. Avoids overwriting the destination log file if
+// other instances of it exist in the destination directory. Swarming retries
+// each failed test. It is useful to capture a few logs from previous failures
+// instead of the log of the last run only.
 void CopyLog(const base::FilePath& src_dir) {
   // TODO(crbug.com/1159189): copy other test artifacts.
   base::FilePath dest_dir = GetLogDestinationDir();
   if (!dest_dir.empty() && base::PathExists(dest_dir) &&
       base::PathExists(src_dir)) {
-    base::FilePath test_name_path = dest_dir.AppendASCII(GetTestName());
-    EXPECT_TRUE(base::CreateDirectory(test_name_path));
-    base::FilePath dest_file_path = test_name_path.AppendASCII("updater.log");
-    base::FilePath log_path = src_dir.AppendASCII("updater.log");
+    dest_dir = dest_dir.AppendASCII(GetTestName());
+    EXPECT_TRUE(base::CreateDirectory(dest_dir));
+    const base::FilePath dest_file_path = [dest_dir]() {
+      base::FilePath path = dest_dir.AppendASCII("updater.log");
+      for (int i = 1; i < 3 && base::PathExists(path); ++i) {
+        path = dest_dir.AppendASCII(base::StringPrintf("updater.%d.log", i));
+      }
+      return path;
+    }();
+    const base::FilePath log_path = src_dir.AppendASCII("updater.log");
     VLOG(0) << "Copying updater.log file. From: " << log_path
             << ". To: " << dest_file_path;
     EXPECT_TRUE(base::CopyFile(log_path, dest_file_path));
