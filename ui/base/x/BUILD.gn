@@ -5,6 +5,7 @@
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(ozone_platform_x11)
 
@@ -168,5 +169,13 @@ source_set("unittests") {
     "//ui/base/cursor/mojom:cursor_type_shared",
     "//ui/gfx/geometry",
     "//ui/gfx/x",
+  ]
+}
+
+fuzzer_test("ui_x11_cursor_loader_fuzzer") {
+  sources = [ "x11_cursor_loader_fuzzer.cc" ]
+  deps = [
+    ":x",
+    "//base",
   ]
 }
