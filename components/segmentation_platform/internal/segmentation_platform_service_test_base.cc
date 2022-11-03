@@ -15,14 +15,10 @@
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
-#include "components/sync_device_info/device_info_tracker.h"
-#include "components/sync_device_info/fake_device_info_tracker.h"
 
 namespace segmentation_platform {
 
 namespace {
-
-using syncer::DeviceInfoTracker;
 
 class MockFieldTrialRegister : public FieldTrialRegister {
  public:
@@ -86,10 +82,8 @@ constexpr char kTestSegmentationKey2[] = "test_key2";
 constexpr char kTestSegmentationKey3[] = "test_key3";
 constexpr char kTestSegmentationKey4[] = "test_key4";
 
-SegmentationPlatformServiceTestBase::SegmentationPlatformServiceTestBase() {
-  device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
-}
-
+SegmentationPlatformServiceTestBase::SegmentationPlatformServiceTestBase() =
+    default;
 SegmentationPlatformServiceTestBase::~SegmentationPlatformServiceTestBase() =
     default;
 
@@ -137,7 +131,6 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
   params->clock = &test_clock_;
   params->configs = std::move(configs);
   params->field_trial_register = std::make_unique<MockFieldTrialRegister>();
-  params->device_info_tracker = device_info_tracker_.get();
   segmentation_platform_service_impl_ =
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 }

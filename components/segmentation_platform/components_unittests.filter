@@ -47,7 +47,6 @@ SignalKeyTest.*
 SignalStorageConfigTest.*
 SqlFeatureProcessorTest.*
 StatsTest.*
-SyncDeviceInfoObserverTest.*
 TrainingDataCacheTest.*
 TrainingDataCollectorImplTest.*
 UkmConfigTest.*
