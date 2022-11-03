@@ -140,7 +140,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2074131957428911366">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Opozovi</translation>
 <translation id="2080769225927880590">Prijavite se pomoću važećeg naloga</translation>
-<translation id="209018056901015185">Zahtevaj sajt za računar</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="2116625576999540962">Broj premeštenih stavki je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Pregledačem se upravlja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -387,7 +386,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3995521777587992544">Traka napretka učitavanja stranica, učitano je <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4004204301268239848">Lozinke se čuvaju na Google nalogu da biste mogli da ih koristite na bilo kom uređaju.</translation>
-<translation id="4006921758705478413">Pošaljite na svoje uređaje</translation>
 <translation id="4018310736049373830">Upravljajte aktivnostima</translation>
 <translation id="4038354071007134711">Nijedna aplikacija na ovom uređaju ne može da otvori datoteku.</translation>
 <translation id="4042870976416480368">Nađi na stranici</translation>
@@ -822,7 +820,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7133798577887235672">Ime i prezime</translation>
 <translation id="7136892417564438900">Kamera je nedostupna</translation>
 <translation id="7153999225810839758">Čita se za <ph name="TIME" /> min</translation>
-<translation id="7159472599653637159">Zahtevaj mobilni sajt</translation>
 <translation id="7162168282402939716">Otključaj kartice bez arhiviranja pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Zaštitite lozinke od bezbednosnih problema</translation>
 <translation id="7173114856073700355">Otvori Podešavanja</translation>
@@ -1068,7 +1065,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9124387962554796433">Google može da koristi istoriju za personalizaciju Pretrage i drugih Google usluga.</translation>
 <translation id="9137526406337347448">Google usluge</translation>
 <translation id="9148126808321036104">Prijavi me ponovo</translation>
-<translation id="9152539721251340337">Napravite QR kôd</translation>
 <translation id="9157836665414082580">Spreči dijaloge</translation>
 <translation id="9177438225260810839">Pretražite otvorene kartice</translation>
 <translation id="9188680907066685419">Odjavite se sa naloga kojim se upravlja</translation>

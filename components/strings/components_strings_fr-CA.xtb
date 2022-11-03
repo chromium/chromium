@@ -1382,6 +1382,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Entrée pour traduire cette page avec Google Traduction</translation>
 <translation id="4514308731478712184">Désactiver la fonctionnalité Explorations</translation>
 <translation id="4515275063822566619">Les cartes et les adresses proviennent de Chrome et de votre compte Google (<ph name="ACCOUNT_EMAIL" />). Vous pouvez les gérer dans <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">La politique de l'administrateur bloque le téléchargement de ce fichier</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Enveloppe Monarch</translation>
 <translation id="4521916730539354575">Plateau de gauche</translation>
@@ -1395,7 +1396,6 @@
 <translation id="4542971377163063093">Bac 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Essayez de désactiver vos extensions.</translation>
-<translation id="4559134504959026834">Ce site fait partie d'un groupe défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
 <translation id="4566017918361049074">Activités en plein air</translation>
 <translation id="4567686777917670400">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Livraison</translation>
@@ -2383,6 +2383,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Impossible d'effectuer une livraison à cette adresse. Sélectionnez une autre adresse.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Téléversement bloqué</translation>
 <translation id="7132939140423847331">Votre administrateur a interdit la copie de ces données.</translation>
 <translation id="7135130955892390533">Afficher l’état</translation>
 <translation id="7138472120740807366">Mode de livraison rapide</translation>
@@ -2615,6 +2616,7 @@ Détails supplémentaires :
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7659327900411729175">Enveloppe Kaku nᵒ 8</translation>
 <translation id="7659878911471462949">Larmes de joie</translation>
+<translation id="766014026101194726">{0,plural, =1{La politique de l'administrateur bloque le téléversement de ce fichier}one{La politique de l'administrateur bloque le téléversement de # fichier}other{La politique de l'administrateur bloque le téléversement de # fichiers}}</translation>
 <translation id="7662298039739062396">Paramètre commandé par une extension</translation>
 <translation id="7663736086183791259">Certificat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Non autorisé en navigation privée</translation>
@@ -2709,6 +2711,7 @@ Détails supplémentaires :
 <translation id="7939744324936979484">Musique folk et traditionnelle</translation>
 <translation id="7941628148012649605">Enveloppe Chou nᵒ 4</translation>
 <translation id="7942349550061667556">Rouge</translation>
+<translation id="7943397946612013052">Téléchargement bloqué</translation>
 <translation id="7943893128817522649">Les sites peuvent demander à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="7947285636476623132">Vérifiez l'année d'expiration et réessayez</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour en savoir plus sur les fonctionnalités de Chrome</translation>

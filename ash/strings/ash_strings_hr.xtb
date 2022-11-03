@@ -483,6 +483,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3633097874324966332">Otvorite postavke Bluetootha da biste uparili uređaj</translation>
 <translation id="3638400994746983214">Uključite/isključite zaslon privatnosti. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Zakašnjelo ažuriranje</translation>
+<translation id="3659444876902283058">(Dan <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Još oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Priključite uređaj na napajanje.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> upravljani korisnik</translation>
@@ -640,7 +641,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Sakrij zaporku</translation>
 <translation id="4566144812051858745">Ne zanima me nijedan prijedlog</translation>
-<translation id="4570957409596482333">Gumb Odabira za govor</translation>
 <translation id="4573176682887762361">"Upiši [riječ/izraz]"</translation>
 <translation id="4577274620589681794">Vrijeme je isteklo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaži preglede</translation>
@@ -1268,6 +1268,7 @@ Novo instaliranje</translation>
 <translation id="8052898407431791827">Kopirano u međuspremnik</translation>
 <translation id="8054466585765276473">Izračun vremena baterije.</translation>
 <translation id="8083540854303889870">Spremljeno za kasnije</translation>
+<translation id="8091153018031979607">Počinje u <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatska ažuriranja</translation>
 <translation id="8098591350844501178">Zaustavi emitiranje zaslona na prijamniku <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Uklj., sve ap.</translation>
@@ -1380,6 +1381,7 @@ Novo instaliranje</translation>
 <translation id="8703634754197148428">Početak snimanja. Kad snimanje započne, pomoću Alt + Shift + L možete se pomaknuti do police i pronaći gumb za zaustavljanje snimanja</translation>
 <translation id="8721053961083920564">Uključivanje ili isključivanje zvuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Snimka cijelog zaslona</translation>
+<translation id="8731487213223706745">Završava u <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Možda pokušava ukrasti podatke o pritisnutim tipkama</translation>
 <translation id="8735678380411481005">Boja pozadinskog svjetla tipkovnice</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

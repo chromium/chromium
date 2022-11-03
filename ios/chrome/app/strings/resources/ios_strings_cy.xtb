@@ -139,7 +139,6 @@
 <translation id="2074131957428911366">Gallwch bob amser ddewis beth i'w gysoni yn y <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2080769225927880590">Mewngofnodi gyda Chyfrif Dilys</translation>
-<translation id="209018056901015185">Gofyn am Wefan Bwrdd Gwaith</translation>
 <translation id="2103075008456228677">Agor history.google.com</translation>
 <translation id="2116625576999540962">Cafodd <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> eitem eu symud</translation>
 <translation id="2122754583996902531">Rheolir eich porwr. <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
@@ -383,7 +382,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3995521777587992544">Bar cynnydd llwytho tudalen, mae <ph name="EMAIL" /> wedi'i lwytho.</translation>
 <translation id="4002066346123236978">Teitl</translation>
 <translation id="4004204301268239848">Mae cyfrineiriau'n cael eu cadw yn eich Cyfrif Google fel y gallwch eu defnyddio ar unrhyw ddyfais.</translation>
-<translation id="4006921758705478413">Anfon At Eich Dyfeisiau</translation>
 <translation id="4018310736049373830">Rheoli gweithgarwch</translation>
 <translation id="4038354071007134711">Ni all unrhyw ap ar y ddyfais hon agor y ffeil.</translation>
 <translation id="4042870976416480368">Chwilio'r Dudalen</translation>
@@ -816,7 +814,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7133798577887235672">Enw Llawn</translation>
 <translation id="7136892417564438900">Nid yw'r camera ar gael</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> o funudau i'w darllen</translation>
-<translation id="7159472599653637159">Gofyn am Wefan Symudol</translation>
 <translation id="7162168282402939716">Datgloi Tabiau Anhysbys gyda <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Cadwch eich cyfrineiriau yn ddiogel rhag problemau diogelwch</translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>
@@ -1059,7 +1056,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9124387962554796433">Mae'n bosib y bydd Google yn defnyddio'ch hanes i bersonoleiddio Search a gwasanaethau Google eraill.</translation>
 <translation id="9137526406337347448">Gwasanaethau Google</translation>
 <translation id="9148126808321036104">Mewngofnodwch eto</translation>
-<translation id="9152539721251340337">Wrthi'n creu cod QR</translation>
 <translation id="9157836665414082580">Atal Deialogau</translation>
 <translation id="9177438225260810839">Chwilio Tabiau sydd ar Agor</translation>
 <translation id="9188680907066685419">Allgofnodi o'r cyfrif a reolir</translation>

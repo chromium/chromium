@@ -264,6 +264,7 @@
 <translation id="1567040042588613346">ഈ നയം ഉദ്ദേശിച്ചത് പോലെ പ്രവർത്തിക്കുന്നുണ്ട്, എന്നാൽ മറ്റൊരു ഉറവിടത്തിൽ അതേ മൂല്യം സജ്ജീകരിച്ചതിനെ തുടർന്ന് ഈ നയത്തിന് പകരം മറ്റൊന്ന് സജീവമായി.</translation>
 <translation id="1569487616857761740">കാലഹരണപ്പെടുന്ന തീയതി നൽകുക</translation>
 <translation id="1569694109004336106">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് Windows Hello ഓണാക്കാൻ Google Chrome ശ്രമിക്കുന്നു.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ഇഞ്ച്</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ഈ വെബ്‌പേജ് പ്രദർശിപ്പിക്കുമ്പോൾ എന്തോ കുഴപ്പം സംഭവിച്ചു.</translation>
 <translation id="1586541204584340881">ഏതൊക്കെ വിപുലീകരണങ്ങൾ നിങ്ങൾ ഇൻസ്‌റ്റാൾ ചെയ്തിട്ടുണ്ട് എന്നത്</translation>
@@ -1097,6 +1098,7 @@
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />-ൽ അവസാനിക്കുന്നു</translation>
 <translation id="3789155188480882154">വലുപ്പം 16</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ഇഞ്ച്)</translation>
 <translation id="3793574014653384240">അടുത്തിടെയുണ്ടായ ക്രാഷുകളുടെ എണ്ണവും കാരണങ്ങളും</translation>
 <translation id="3795344968043407227">ഇൻഡി, ആൾട്ടർനേറ്റീവ് ഗാനങ്ങൾ</translation>
 <translation id="3799805948399000906">അഭ്യർത്ഥിച്ച ഫോണ്ട്</translation>
@@ -1371,6 +1373,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="4514308731478712184">തിരയലുകൾ ഓഫാക്കുക</translation>
 <translation id="4515275063822566619">കാർഡുകളും വിലാസങ്ങളും Chrome-ൽ നിന്നും നിങ്ങളുടെ അ‌ക്കൗണ്ടിൽ (<ph name="ACCOUNT_EMAIL" />) നിന്നുമുള്ളതുമാണ്. നിങ്ങൾക്ക് ഇവ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാനേജ് ചെയ്യാം.</translation>
+<translation id="4520048001084013693">ഈ ഫയൽ ഡൗൺലോഡ് ചെയ്യുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> മി.മീ (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Envelope Monarch</translation>
 <translation id="4521916730539354575">ഇടത്ത് വശത്തുള്ള ട്രേ</translation>
@@ -1384,7 +1387,6 @@
 <translation id="4542971377163063093">ട്രേ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">നിങ്ങളുടെ വിപുലീകരണങ്ങൾ പ്രവർത്തനരഹിതമാക്കുന്നത് പരീക്ഷിക്കുക.</translation>
-<translation id="4559134504959026834"><ph name="SET_OWNER" /> നിർവചിച്ചിരിക്കുന്ന ഗ്രൂപ്പിലാണ് ഈ സൈറ്റുള്ളത്, അതിന് നിങ്ങളുടെ ആക്റ്റിവിറ്റി കാണാം</translation>
 <translation id="4566017918361049074">ഔട്ട്ഡോർ</translation>
 <translation id="4567686777917670400">നിങ്ങളുടെ അഡ്‌മിന് വിദൂരമായി ബ്രൗസർ സജ്ജീകരണം മാറ്റാനാകും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">ഡെലിവറി വിവരങ്ങൾ</translation>
@@ -2362,6 +2364,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ഈ വിലാസത്തിലേക്ക് ഷിപ്പ് ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">അപ്‌ലോഡ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7132939140423847331">ഈ ഡാറ്റ പകർത്തുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ നിരോധിച്ചിരിക്കുന്നു.</translation>
 <translation id="7135130955892390533">സ്‌റ്റാറ്റസ് കാണിക്കുക</translation>
 <translation id="7138472120740807366">ഡെലിവറി രീതി</translation>
@@ -2490,6 +2493,7 @@
 <translation id="7441627299479586546">തെറ്റായ നയ വിഷയം</translation>
 <translation id="7442725080345379071">ഇളം ഓറഞ്ച് നിറം</translation>
 <translation id="7445762425076701745">നിങ്ങള്‍ ബന്ധിപ്പിച്ച സെര്‍വറിന്‍റെ ഐഡന്‍റിറ്റി പൂര്‍ണ്ണമായി സാധൂകരിക്കാന്‍ കഴിയില്ല. നിങ്ങളുടെ നെറ്റ്‍വര്‍ക്കില്‍ മാത്രം സാധുവായ ഒരു നാമം ഉപയോഗിക്കുന്ന സെര്‍വറിലേക്ക് നിങ്ങള്‍ ബന്ധിപ്പിച്ചിരിക്കുന്നു, അതിന്‍റെ ഉടമസ്ഥാവകാശം ഒരു ബാഹ്യ അതോറിറ്റിയ്ക്ക് ഒരിക്കലും സാധൂകരിക്കാന്‍ കഴിയില്ല. ചില സാക്‍ഷ്യപത്ര അതോറിറ്റികള്‍ ഈ നാമങ്ങളെ കണക്കാക്കാതെ സാക്‍ഷ്യപത്രങ്ങള്‍ നല്‍കുന്നതിനാല്‍, ഉദ്ദേശിച്ച വെബ്സൈറ്റിലേക്കാണ് നിങ്ങള്‍ ബന്ധിപ്പിച്ചിരിക്കുന്നതെന്നും ഒരു ആക്രമണകാരിയല്ലെന്നും ഉറപ്പാക്കാന്‍ ഒരു മാര്‍ഗ്ഗവുമില്ല.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> മി.മീ)</translation>
 <translation id="7451311239929941790">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുന്നു<ph name="END_LINK" />.</translation>
 <translation id="7455133967321480974">ആഗോള ഡിഫോൾട്ട് ഉപയോഗിക്കുക (ബ്ലോക്ക് ചെയ്യുക)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2590,6 +2594,7 @@
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">ആനന്ദക്കണ്ണീർ</translation>
+<translation id="766014026101194726">{0,plural, =1{ഈ ഫയൽ അപ്‌ലോഡ് ചെയ്യുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}other{# ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}}</translation>
 <translation id="7662298039739062396">ക്രമീകരണം ഒരു വിപുലീകരണം മുഖേന നിയന്ത്രിച്ചിരിക്കുന്നു</translation>
 <translation id="7663736086183791259">സർട്ടിഫിക്കറ്റ് <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">അദൃശ്യ മോഡിൽ അനുവദനീയമല്ല</translation>
@@ -2684,6 +2689,7 @@
 <translation id="7939744324936979484">നാടൻ, പരമ്പരാഗത സംഗീതം</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
+<translation id="7943397946612013052">ഡൗൺലോഡ് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7943893128817522649">ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="7947285636476623132">കാലാവധി തീരുന്ന വർഷം പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ഫീച്ചറുകളെ കുറിച്ച് കൂടുതലറിയാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
@@ -2793,6 +2799,7 @@
 <translation id="8218327578424803826">നൽകിയിരിക്കുന്ന ലൊക്കേഷൻ:</translation>
 <translation id="8225771182978767009">ഈ കമ്പ്യൂട്ടർ സജ്ജമാക്കിയ വ്യക്തി, ഈ സൈറ്റ് ബ്ലോക്ക് ചെയ്യാൻ തീരുമാനിച്ചിരുന്നു.</translation>
 <translation id="8228419419708659934">രണ്ട് പേജ് കാഴ്ച</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> മി.മീ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">സ്‌പോർട്‌സ് ഗെയിമുകൾ</translation>
 <translation id="8232343881378637145">പ്ലാറ്റ്‌ഫോം താപനില</translation>

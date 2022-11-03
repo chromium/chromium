@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Отменить задание печати</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
-<translation id="2182088270354640012">Спасибо за отзыв! Он поможет улучшить Chrome OS и будет рассмотрен нашей командой. Мы получаем множество обращений, поэтому не сможем вам ответить.</translation>
 <translation id="2209788852729124853">Сбросить счетчики трафика</translation>
 <translation id="2212733584906323460">Разрешение имен</translation>
 <translation id="2217935453350629363">Текущая частота</translation>
@@ -689,7 +688,6 @@
 <translation id="773153675489693198">Количество циклов</translation>
 <translation id="7747039790905080783">Общий ключ</translation>
 <translation id="7762130827864645708">Вы установили новый пароль. В дальнейшем используйте его.</translation>
-<translation id="7762839321248874531">Отправить <ph name="BEGIN_LINK1" />сведения о системе и приложениях<ph name="END_LINK1" />, а также <ph name="BEGIN_LINK2" />статистику<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Совпадение с доменным суффиксом</translation>
 <translation id="7769672763586021400">Идентификатор модели</translation>
 <translation id="7784116172884276937">Нет настроенных DNS-серверов.</translation>
@@ -826,7 +824,6 @@
 <translation id="9082718469794970195">Использовать это видео</translation>
 <translation id="9087578468327036362">Сообщить о запросе</translation>
 <translation id="9088306295921699330">Используется</translation>
-<translation id="9092255287806472980">Ваш отзыв поможет улучшить Chrome OS и будет рассмотрен нашей командой. Мы получаем множество обращений, поэтому не сможем вам ответить.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>

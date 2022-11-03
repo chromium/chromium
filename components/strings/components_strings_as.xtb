@@ -264,6 +264,7 @@
 <translation id="1567040042588613346">এই নীতিটোৱে বিচৰা ধৰণে কাম কৰি আছে, কিন্তু অন্য কোনো ঠাইত একেটা মান ছেট কৰা হৈছে আৰু সেইটোক এই নীতিটোৱে অপসাৰণ কৰিছে।</translation>
 <translation id="1569487616857761740">ম্যাদ উকলাৰ তাৰিখ দিয়ক</translation>
 <translation id="1569694109004336106">Google Chromeএ পাছৱৰ্ড পূৰ কৰিবলৈ Windows Hello অন কৰিবলৈ চেষ্টা কৰি আছে।</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ইঞ্চি</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">এই ৱেবপৃষ্ঠাটো প্ৰদর্শন কৰোঁতে কিবা আসোঁৱাহ হ’ল।</translation>
 <translation id="1586541204584340881">আপুনি ইনষ্টল কৰা এক্সটেনশ্বনসমূহ</translation>
@@ -1095,6 +1096,7 @@
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />ত ম্যাদ উকলিব</translation>
 <translation id="3789155188480882154">আকাৰ ১৬</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ইঞ্চি)</translation>
 <translation id="3793574014653384240">শেহতীয়াকৈ হোৱা ক্রেশ্বসমূহৰ সংখ্যা আৰু কাৰণসমূহ</translation>
 <translation id="3795344968043407227">ইণ্ডী আৰু বিকল্প সংগীত</translation>
 <translation id="3799805948399000906">ফ’ণ্টৰ বাবে অনুৰোধ কৰা হৈছে</translation>
@@ -1368,6 +1370,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, এই পৃষ্ঠাখন Google Translateৰ জৰিয়তে অনুবাদ কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="4514308731478712184">যাত্ৰাৰ সুবিধাটো অফ কৰক</translation>
 <translation id="4515275063822566619">Chrome আৰু আপোনাৰ Google একাউণ্ট (<ph name="ACCOUNT_EMAIL" />)ৰ কার্ড আৰু ঠিকনাসমূহ। আপুনি সেইবোৰ <ph name="BEGIN_LINK" />ছেটিংসমূহ<ph name="END_LINK" />ত পৰিচালনা কৰক।</translation>
+<translation id="4520048001084013693">এই ফাইলটো ডাউনল’ড কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> মি.মি. (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">এনভেল’প ম’নাৰ্ক</translation>
 <translation id="4521916730539354575">বাওঁফালৰ ট্ৰে’</translation>
@@ -1381,7 +1384,6 @@
 <translation id="4542971377163063093">ট্ৰে’ ৬</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">আপোনাৰ এক্সটেনশ্বনসমূহ অক্ষম কৰিবলৈ চেষ্টা কৰক।</translation>
-<translation id="4559134504959026834">এই ছাইটটো এটা গোটত আছে, যাক <ph name="SET_OWNER" />এ সংজ্ঞায়িত কৰে আৰু সেইটোৱে আপোনাৰ কাৰ্যকলাপ চাব পাৰে</translation>
 <translation id="4566017918361049074">মুকলি ঠাইত হোৱা কাৰ্যকলাপ</translation>
 <translation id="4567686777917670400">আপোনাৰ প্ৰশাসকে দূৰৰ পৰাই আপোনাৰ ব্ৰাউজাৰৰ ছেটআপ সলনি কৰিব পাৰে। এই ডিভাইচটোত কৰা কাৰ্যকলাপ Chromiumৰ বাহিৰৰ পৰাও পৰিচালনা কৰা হ’ব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">ডেলিভাৰী সেৱাৰ তথ্য</translation>
@@ -2358,6 +2360,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">এই ঠিকনালৈ পঠিয়াব নোৱাৰি। অন্য এটা ঠিকনা বাছনি কৰক।</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">আপল’ড কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="7132939140423847331">আপোনাৰ প্ৰশাসকে এইখিনি ডেটা প্ৰতিলিপি কৰাটো নিষিদ্ধ কৰি থৈছে।</translation>
 <translation id="7135130955892390533">স্থিতি দেখুৱাওক</translation>
 <translation id="7138472120740807366">ডেলিভাৰীৰ পদ্ধতি</translation>
@@ -2488,6 +2491,7 @@
 <translation id="7441627299479586546">নীতিৰ বিষয় ভুল আছে</translation>
 <translation id="7442725080345379071">পাতল কমলা ৰং</translation>
 <translation id="7445762425076701745">আপুনি সংযোগ হৈ থকা ছাৰ্ভাৰটোৰ পৰিচয় সম্পূৰ্ণকৈ মান্য কৰিব নোৱাৰি। আপুনি কেৱল আপোনাৰ নেটৱৰ্কৰ ভিতৰত মান্য নাম এটা ব্যৱহাৰ কৰি এটা ছাৰ্ভাৰৰ সৈতে সংযোগ হৈ আছে আৰু বাহ্যিক কোনো প্ৰমাণপত্ৰৰ কৰ্তৃপক্ষই কোনো প্ৰকাৰে সেই নামটোৰ গৰাকীক মান্য কৰিব নোৱাৰে। প্ৰমাণপত্ৰ প্ৰদানকাৰী কিছুমান কৰ্তৃপক্ষই যিহেতু যিকোনো ধৰণৰ এই নামসমূহৰ বাবে প্ৰমাণপত্ৰ জাৰি কৰিব, আপুনি এটা সঠিক ৱেবছাইটৰ সৈতে সংযোগ হৈ আছে আৰু আপুনি এজন আক্ৰমণকাৰী নহয় বুলি নিশ্চিত কৰিবলৈ কোনো উপায় নাথাকে।</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> মি.মি.)</translation>
 <translation id="7451311239929941790">এই সমস্যাটোৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" />।</translation>
 <translation id="7455133967321480974">গ্ল’বেল ডিফ’ল্ট ব্যৱহাৰ কৰক (অৱৰোধ কৰক)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2588,6 +2592,7 @@
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7659327900411729175">এনভেল’প কাকু ৮</translation>
 <translation id="7659878911471462949">আনন্দৰ চকুলো</translation>
+<translation id="766014026101194726">{0,plural, =1{এই ফাইলটো আপল’ড কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে}one{# টা ফাইল আপল’ড কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে}other{# টা ফাইল আপল’ড কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে}}</translation>
 <translation id="7662298039739062396">এটা এক্সটেনশ্বনে ছেটিংটো নিয়ন্ত্ৰণ কৰিছে</translation>
 <translation id="7663736086183791259">প্ৰমাণপত্ৰ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ইনক’গনিট’ত অনুমতি নাই</translation>
@@ -2682,6 +2687,7 @@
 <translation id="7939744324936979484">লোক আৰু পৰম্পৰাগত সংগীত</translation>
 <translation id="7941628148012649605">এনভেল’প শ্বু ৪</translation>
 <translation id="7942349550061667556">ৰঙা</translation>
+<translation id="7943397946612013052">ডাউনল’ড কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="7943893128817522649">স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="7947285636476623132">আপোনাৰ ক্ৰেডিট কার্ডৰ ম্যাদ উকলাৰ বছৰ পৰীক্ষা কৰি আকৌ চেষ্টা কৰক</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ সুবিধাসমূহৰ বিষয়ে জানিবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
@@ -2791,6 +2797,7 @@
 <translation id="8218327578424803826">অভিযোজন কৰা অৱস্থান:</translation>
 <translation id="8225771182978767009">এই কম্পিউটাৰটো ছেট আপ কৰা লোকজনে এই ছাইটটো অৱৰোধ কৰিছে।</translation>
 <translation id="8228419419708659934">দুই পৃষ্ঠাৰ ভিউ</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> মি.মি.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">খেলৰ গে’ম</translation>
 <translation id="8232343881378637145">প্লেটফৰ্মৰ তাপমান</translation>

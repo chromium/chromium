@@ -266,6 +266,7 @@
 <translation id="1567040042588613346">ఈ పాలసీ అనుకున్నట్టుగా పని చేస్తోంది, కానీ అదే విలువ మరో చోట సెట్ చేయబడింది, అలాగే ఈ పాలసీ ద్వారా అధిగమించబడింది.</translation>
 <translation id="1569487616857761740">గడువు ముగింపు తేదీని నమోదు చేయండి</translation>
 <translation id="1569694109004336106">పాస్‌వర్డ్‌లను పూరించడం కోసం Windows Helloను ఆన్ చేయడానికి Google Chrome ట్రై చేస్తోంది.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> అంగుళాలు</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ఈ వెబ్ పేజీని ప్రదర్శిస్తున్నప్పుడు ఏదో తప్పు జరిగింది.</translation>
 <translation id="1586541204584340881">మీరు ఏ ఎక్స్‌టెన్షన్‌లను ఇన్ స్టాల్ చేసుకున్నారు</translation>
@@ -1100,6 +1101,7 @@
 <translation id="3787705759683870569">గడువు ముగింపు <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">సైజ్‌ 16</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> అంగుళాలు)</translation>
 <translation id="3793574014653384240">ఇటీవల ఏర్పడిన క్రాష్‌ల సంఖ్యలు, వాటికి గల కారణాలు</translation>
 <translation id="3795344968043407227">ఇండీ &amp; ఆల్టర్నేటివ్ మ్యూజిక్</translation>
 <translation id="3799805948399000906">రిక్వెస్ట్ చేసిన ఫాంట్</translation>
@@ -1374,6 +1376,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translateతో ఈ పేజీని అనువదించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="4514308731478712184">జర్నీస్ ఫీచర్‌ను ఆఫ్ చేయండి</translation>
 <translation id="4515275063822566619">కార్డ్‌లు, అడ్రస్‌లు- Chrome నుండి, మీ Google ఖాతా (<ph name="ACCOUNT_EMAIL" />) నుండి పొందినవి. మీరు <ph name="BEGIN_LINK" />సెట్టింగ్‌లు<ph name="END_LINK" />లో వాటిని నిర్వహించవచ్చు.</translation>
+<translation id="4520048001084013693">ఈ ఫైల్‌ను డౌన్‌లోడ్ చేయడాన్ని అడ్మినిస్ట్రేటర్ పాలసీ బ్లాక్ చేసింది</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> మి.మీ (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">ఎన్వలప్ మోనార్క్</translation>
 <translation id="4521916730539354575">లెఫ్ట్ ట్రే</translation>
@@ -1387,7 +1390,6 @@
 <translation id="4542971377163063093">ట్రే 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">మీ ఎక్స్‌టెన్షన్‌లను నిలిపివేయడం ప్రయత్నించండి.</translation>
-<translation id="4559134504959026834">ఈ సైట్ <ph name="SET_OWNER" /> ద్వారా నిర్వచించబడిన గ్రూప్‌లో ఉంది,  అది మీ యాక్టివిటీని చూడగలదు</translation>
 <translation id="4566017918361049074">అవుట్‌డోర్‌లు</translation>
 <translation id="4567686777917670400">మీ అడ్మినిస్ట్రేటర్ మీ బ్రౌజర్ సెటప్‌ను రిమోట్ విధానంలో మార్చవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chromium వెలుపల కూడా మేనేజ్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">డెలివరీ</translation>
@@ -2365,6 +2367,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ఈ అడ్రస్‌కు రవాణా చేయడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">అప్‌లోడ్ చేయకుండా బ్లాక్ చేయబడింది</translation>
 <translation id="7132939140423847331">మీ అడ్మిన్ ఈ డేటాను కాపీ చేయకుండా నిషేధించారు.</translation>
 <translation id="7135130955892390533">స్థితిని చూపు</translation>
 <translation id="7138472120740807366">డెలివరీ పద్ధతి</translation>
@@ -2495,6 +2498,7 @@
 <translation id="7441627299479586546">చెల్లని విధాన విషయం</translation>
 <translation id="7442725080345379071">లేత నారింజ రంగు</translation>
 <translation id="7445762425076701745">మీరు కనెక్ట్ చేసిన సర్వర్ యొక్క గుర్తింపు పూర్తిగా ధృవీకరించబడలేదు. మీరు దీని యొక్క యాజమాన్యాన్ని ధృవీకరించడానికి అంతర్గత స‌ర్టిఫికెట్‌ అధికారికి మరొక దాని లేని మీ నెట్‌వర్క్‌లో మాత్రమే చెల్లుబాటు అయ్యే పేరును ఉపయోగించి సర్వర్‌కు కనెక్ట్ చేశారు. కొన్ని స‌ర్టిఫికెట్‌ అధికారులు సంబంధం లేని ఈ పేర్లకు స‌ర్టిఫికెట్‌ను జారీ చేస్తారు. మీరు సరైన వెబ్‌సైట్‌కు మరియు అటాకర్‌కు కనెక్ట్ చేశారా అని నిర్ధారించడానికి వేరే మార్గం లేదు.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> మి.మీ.)</translation>
 <translation id="7451311239929941790">ఈ సమస్య గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" />.</translation>
 <translation id="7455133967321480974">సార్వజనీన డిఫాల్ట్‌ను ఉపయోగించు (బ్లాక్ చేయండి)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2595,6 +2599,7 @@
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7659327900411729175">ఎన్వలప్ కాకు 8</translation>
 <translation id="7659878911471462949">ఆనంద భాష్పాలు</translation>
+<translation id="766014026101194726">{0,plural, =1{ఈ ఫైల్‌ను అప్‌లోడ్ చేయకుండా అడ్మినిస్ట్రేటర్ పాలసీ బ్లాక్ చేసింది}other{# ఫైల్స్‌ను అప్‌లోడ్ చేయకుండా అడ్మినిస్ట్రేటర్ పాలసీ బ్లాక్ చేసింది}}</translation>
 <translation id="7662298039739062396">ఎక్స్‌టెన్షన్‌ ద్వారా సెట్టింగ్ నియంత్రించబడుతోంది</translation>
 <translation id="7663736086183791259">సర్టిఫికెట్ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">అజ్ఞాత మోడ్‌లో అనుమతించబడదు</translation>
@@ -2689,6 +2694,7 @@
 <translation id="7939744324936979484">జానపద &amp; సాంప్రదాయ సంగీతం</translation>
 <translation id="7941628148012649605">ఎన్వలప్ చౌ 4</translation>
 <translation id="7942349550061667556">ఎరుపు</translation>
+<translation id="7943397946612013052">డౌన్‌లోడ్ చేయకుండా బ్లాక్ చేయబడింది</translation>
 <translation id="7943893128817522649">అనేక ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="7947285636476623132">మీ గడువు ముగింపు సంవత్సరాన్ని చెక్ చేసి, మళ్లీ ప్రయత్నించండి</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ఫీచర్‌ల గురించి తెలుసుకోవడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
@@ -2798,6 +2804,7 @@
 <translation id="8218327578424803826">కేటాయించిన స్థానం:</translation>
 <translation id="8225771182978767009">ఈ కంప్యూటర్‌ను సెటప్ చేసిన వ్యక్తి ఈ సైట్‌ను బ్లాక్ చేయడం ఎంచుకున్నారు.</translation>
 <translation id="8228419419708659934">రెండు పేజీల వీక్షణ</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> మి.మీ.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">క్రీడల గేమ్‌లు</translation>
 <translation id="8232343881378637145">ప్లాట్‌ఫామ్ ఉష్ణోగ్రత</translation>

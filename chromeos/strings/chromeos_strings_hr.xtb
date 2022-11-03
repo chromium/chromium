@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Otkaži zadatak ispisa</translation>
 <translation id="2163937499206714165">Uključivanje tamnog načina</translation>
 <translation id="2180197493692062006">Nešto nije u redu. Pokušajte ponovo otvoriti aplikaciju.</translation>
-<translation id="2182088270354640012">Hvala na povratnim informacijama. Vaše povratne informacije pomažu poboljšati OS Chrome i pregledat će ih tim za OS Chrome. Zbog broja poslanih izvješća nećete dobiti izravan odgovor.</translation>
 <translation id="2209788852729124853">Poništi brojače prometa</translation>
 <translation id="2212733584906323460">Razlučivost naziva</translation>
 <translation id="2217935453350629363">Trenutačna brzina</translation>
@@ -690,7 +689,6 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7747039790905080783">Unaprijed podijeljen ključ</translation>
 <translation id="7762130827864645708">Promjena zaporke je uspjela. Od sad upotrebljavajte novu zaporku.</translation>
-<translation id="7762839321248874531">Pošalji <ph name="BEGIN_LINK1" />podatke o sustavu i aplikacijama<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />mjerne podatke<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Podudaranje domenskog nastavka</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7784116172884276937">Nije postavljen nijedan DNS poslužitelj</translation>
@@ -827,7 +825,6 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="9082718469794970195">Upotrijebi ovaj videozapis</translation>
 <translation id="9087578468327036362">Prijavite ovaj upit</translation>
 <translation id="9088306295921699330">Trenutačna upotreba</translation>
-<translation id="9092255287806472980">Vaše povratne informacije pomažu poboljšati OS Chrome i pregledat će ih naš tim. Zbog velikog broja izvješća nećemo moći poslati odgovor.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skeniranje stranice <ph name="PAGE_NUMBER" /></translation>

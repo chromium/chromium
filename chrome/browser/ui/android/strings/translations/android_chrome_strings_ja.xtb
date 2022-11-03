@@ -660,6 +660,7 @@
 <translation id="4668347365065281350">サイトによって保存されたすべてのデータ（Cookie やローカルに保存された他のデータを含む）</translation>
 <translation id="4678082183394354975">Chrome でサイトのダークモードがオンになっています</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
+<translation id="4685741273709472646">プルダウン リストから選択します</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}}</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4719927025381752090">翻訳するか尋ねる</translation>

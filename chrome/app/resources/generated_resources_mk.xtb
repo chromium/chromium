@@ -198,7 +198,6 @@
 <translation id="1174366174291287894">Вашата врска секогаш е безбедна освен ако Chrome не ви каже поинаку</translation>
 <translation id="117445914942805388">За да ги избришете податоците од прелистувањето од сите ваши синхронизирани уреди и од сметката на Google, <ph name="BEGIN_LINK" />одете на поставките за синхронизација<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Печати...</translation>
-<translation id="1176378369905028399">Веќе има зачувано лозинка за оваа сметка во Google Password Manager (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Не им е дозволено да ги изменуваат датотеките или папките на уредот</translation>
 <translation id="1177863135347784049">Приспособено</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -1839,7 +1838,6 @@
 <translation id="2643698698624765890">Уредувајте ги наставките со кликнување на Наставки во менито Прозорец.</translation>
 <translation id="2645047101481282803">Со уредот управува <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2645515095874728277">Веќе има зачувано лозинка за оваа сметка на уредов</translation>
 <translation id="2649045351178520408">Base64-шифриран ASCII, ланец на сертификати</translation>
 <translation id="2652129567809778422">Изберете лозинка</translation>
 <translation id="2653033005692233957">Пребарувањето не успеа</translation>
@@ -2629,7 +2627,6 @@
 <translation id="3399432415385675819">Известувањата ќе се оневозможат</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> Х <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) - испреплетено</translation>
 <translation id="3401484564516348917">да чита податоци за прелистувачот, оперативниот систем, уредот, инсталираниот софтвер, вредностите од регистарот и датотеките</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} лозинка е складирана на уредов}one{{COUNT} лозинка е складирана на уредов}other{{COUNT} лозинки се складирани на уредов}}</translation>
 <translation id="3402255108239926910">Изберете аватар</translation>
 <translation id="3402585168444815892">Се регистрира во демо-режим</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4730,7 +4727,6 @@
 <translation id="5392192690789334093">Дозволено им е да испраќаат известувања</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Линк}one{# линк}other{# линка}}</translation>
 <translation id="5395498824851198390">Стандарден фонт</translation>
-<translation id="5396325212236512832">Автоматски најавувајте се на сајтови и апликации со складираните акредитиви. Ако е исклучено, ќе ви се бара потврда пред секое најавување на сајт или апликација.</translation>
 <translation id="5397378439569041789">Регистрирајте киоск или уред за сигнализација</translation>
 <translation id="5397794290049113714">Вие</translation>
 <translation id="5398497406011404839">Сокриени обележувачи</translation>
@@ -6068,7 +6064,6 @@
 <translation id="6647441008198474441">URL-адресите што ги посетувате се испраќаат во Google за да се предвидат сајтовите што можеби ќе ги посетите следно</translation>
 <translation id="6648911618876616409">Важно ажурирање е подготвено да се инсталира. Најавете се за да започнете.</translation>
 <translation id="6649018507441623493">Само момент…</translation>
-<translation id="6650234781371031356">Вашата лозинка за <ph name="WEBSITE" /> е зачувана на уредов и во сметката на Google. Од каде сакате да ја избришете?</translation>
 <translation id="665061930738760572">Отвори во &amp;нов прозорец</translation>
 <translation id="6651237644330755633">Имајте доверба во сертификатов за идентификување на веб-сајтовите</translation>
 <translation id="6651495917527016072">Синхронизирајте ги Wi-Fi мрежите со телефонот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>

@@ -660,6 +660,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4668347365065281350">A webhelyek által tárolt összes adat, beleértve a cookie-kat és más, helyben tárolt adatokat</translation>
 <translation id="4678082183394354975">A sötét téma engedélyezve van a webhelyeknél a Chrome-ban</translation>
 <translation id="4684427112815847243">Az összes szinkronizálása</translation>
+<translation id="4685741273709472646">Választás a legördülő listából</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">A gyorsítótárban szereplő képek és fájlok</translation>
 <translation id="4719927025381752090">Fordítás felajánlása</translation>

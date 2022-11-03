@@ -139,7 +139,6 @@
 <translation id="2074131957428911366">ನೀವು ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಯಾವಾಗ ಬೇಕಾದರೂ ಆರಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="2079545284768500474">ರದ್ದುಮಾಡಿ</translation>
 <translation id="2080769225927880590">ಮಾನ್ಯವಾದ ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
-<translation id="209018056901015185">ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಸೈಟ್‌ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="2103075008456228677">history.google.com ತೆರೆಯಿರಿ</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ಐಟಂಗಳನ್ನು ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="2122754583996902531">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -383,7 +382,6 @@
 <translation id="3995521777587992544">ಪುಟ ಲೋಡ್ ಪ್ರಗತಿ ಪಟ್ಟಿ, <ph name="EMAIL" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4002066346123236978">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="4004204301268239848">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, ಇದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು.</translation>
-<translation id="4006921758705478413">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="4018310736049373830">ಚಟುವಟಿಕೆ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4038354071007134711">ಫೈಲ್‌ ತೆರೆಯಬಹುದಾದ ಯಾವುದೇ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಈ ಸಾಧನದಲ್ಲಿ ಇಲ್ಲ.</translation>
 <translation id="4042870976416480368">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
@@ -816,7 +814,6 @@
 <translation id="7133798577887235672">ಪೂರ್ಣ ಹೆಸರು</translation>
 <translation id="7136892417564438900">ಕ್ಯಾಮರಾ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> ನಿಮಿಷ ಓದಲಾಗಿದೆ</translation>
-<translation id="7159472599653637159">ಮೊಬೈಲ್ ಸೈಟ್‌ಗೆ ವಿನಂತಿಸಿ</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ಬಳಸಿಕೊಂಡು ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="7172852049901402487">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿರಿಸಿ</translation>
 <translation id="7173114856073700355">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1059,7 +1056,6 @@
 <translation id="9124387962554796433">Search ಮತ್ತು ಇತರ Google ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು Google ಬಳಸಬಹುದು.</translation>
 <translation id="9137526406337347448">Google ಸೇವೆಗಳು</translation>
 <translation id="9148126808321036104">ಪುನಃ ಸೈನ್ ಇನ್  ಆಗಿ</translation>
-<translation id="9152539721251340337">QR ಕೋಡ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="9157836665414082580">ಸಂವಾದಗಳನ್ನು ನಿಗ್ರಹಿಸಿ</translation>
 <translation id="9177438225260810839">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="9188680907066685419">ನಿರ್ವಹಿಸಲಾದ ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>

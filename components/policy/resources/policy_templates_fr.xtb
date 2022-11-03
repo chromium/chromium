@@ -1510,6 +1510,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Le champ "<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" />" est un ID unique permettant au fournisseur de services partenaire d'identifier le compte client. Quand un utilisateur est invité à se connecter au moment de configurer <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, seuls les comptes utilisateur associés au compte du fournisseur de services du client sont autorisés.
 
       Cette règle ne peut être configurée que dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
+<translation id="2452225615952836461">Toujours utiliser des méthodes de requête en majuscules</translation>
 <translation id="2454228136871844693">Privilégier la stabilité.</translation>
 <translation id="2455033019778127130">Utiliser le comportement par défaut du navigateur, afficher les conditions d'utilisation et attendre que l'utilisateur les accepte.</translation>
 <translation id="2460127623195247744">Cette règle est obsolète (veuillez utiliser la règle <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" /> à la place).
@@ -2206,6 +2207,17 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="3101035417394748390">La taille maximale, en octets, qui peut être transférée entre le client et l'hôte via la synchronisation du presse-papiers</translation>
 <translation id="3101501961102569744">Sélectionner le mode de spécification des paramètres de serveur proxy</translation>
 <translation id="3101709781009526431">Date et heure</translation>
+<translation id="3105764289283669411">Cette règle détermine si les méthodes de requête sont en majuscules lors de la mise en correspondance avec les en-têtes de réponse <ph name="ACAM_HEADER_NAME" /> dans la requête préliminaire <ph name="CORS" />.
+
+Si elle est désactivée, les méthodes de requête sont en majuscules.
+Ce comportement est en vigueur dans <ph name="PRODUCT_NAME" /> 108 et les versions antérieures.
+
+Si cette règle est activée ou qu'elle n'est pas configurée, les méthodes de requête ne sont pas en majuscules, sauf si elles correspondent à <ph name="DELETE_METHOD_NAME" />, <ph name="GET_METHOD_NAME" />, <ph name="HEAD_METHOD_NAME" />, <ph name="OPTIONS_METHOD_NAME" />, <ph name="POST_METHOD_NAME" /> ou <ph name="PUT_METHOD_NAME" /> sans tenir compte de la casse.
+Cette opération refuserait l'en-tête de réponse <ph name="REJECTED_CASE" /> et accepterait l'en-tête de réponse <ph name="ACCEPTED_CASE" />.
+
+Remarque : Les méthodes de requête <ph name="POST_LOWERCASE_METHOD_NAME" /> et <ph name="PUT_LOWERCASE_METHOD_NAME" /> ne sont pas concernées, contrairement à <ph name="PATCH_LOWERCASE_METHOD_NAME" />.
+
+Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="3110248563985502478">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Si cette règle est activée, les plug-ins obsolètes sont utilisés comme des plug-ins normaux. Si cette règle est désactivée, aucun plug-in obsolète n'est utilisé.
 
       Si cette règle n'est pas configurée, les plug-ins obsolètes ne peuvent être exécutés que sur autorisation des utilisateurs.</translation>
@@ -3733,6 +3745,13 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Si une règle ne figure pas dans la liste et qu'il y a conflit entre plusieurs sources, champs d'application ou niveaux, la règle ayant la plus haute priorité s'applique.</translation>
 <translation id="4646739075621507361">Transmettre les tâches d'impression</translation>
+<translation id="4647870063570047503">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racines du système.
+
+Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racines du système peuvent être utilisés indifféremment.
+
+Il est prévu que cette règle soit supprimée dans la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, car l'outil de vérification des certificats et les racines fournis par la plate-forme ne seront plus pris en charge.</translation>
 <translation id="4649395978608361979">Destinations des imprimantes locales</translation>
 <translation id="4650044303940238102">Paramètres de polices locales</translation>
 <translation id="4650759511838826572">Désactiver les schémas de protocole d'URL</translation>
@@ -4066,9 +4085,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="5073609397321802133">Si cette règle est définie sur "False", les utilisateurs ne peuvent pas personnaliser l'arrière-plan sur la page "Nouvel onglet". Tout arrière-plan personnalisé actuel sera définitivement supprimé, même si la règle est définie sur "True" par la suite.
 
       Si celle-ci est définie sur "True" ou si elle n'est pas configurée, les utilisateurs peuvent personnaliser l'arrière-plan sur la page "Nouvel onglet".</translation>
-<translation id="5075190314377370852">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> vérifie toujours la révocation des certificats de serveur qui sont validés et signés par des certificats CA installés localement. Si <ph name="PRODUCT_NAME" /> ne peut pas obtenir d'informations sur l'état de la révocation, <ph name="PRODUCT_NAME" /> considère ces certificats comme révoqués. Ils sont alors associés à la valeur "hard-fail" (échec).
-
-      Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise les paramètres actuels de vérification en ligne de la révocation.</translation>
 <translation id="5076953589932162038">Paramètres des ensembles propriétaires</translation>
 <translation id="5078623750797048009">Activer les annotations des PDF</translation>
 <translation id="5081204761483900654">Sessions Invité gérées restreintes</translation>
@@ -6726,6 +6742,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 <translation id="7724161903134898864">Si cette règle est définie sur "1", les sites Web peuvent afficher des pop-up. Si cette règle est définie sur "2", les sites ne sont pas autorisés à afficher de pop-up.
 
       Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
+<translation id="7728486978686128364">Ne pas utiliser de méthodes de requête en majuscules, sauf pour DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies sur tous les sites</translation>
 <translation id="7732907212083471072">Règles supprimées</translation>
 <translation id="7734212505800048991">
@@ -8011,6 +8028,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       La valeur doit être indiquée en secondes.</translation>
 <translation id="9015578113567730893">Fréquence de collecte par télémétrie audio en millisecondes.</translation>
+<translation id="9015952763003753868">Rendre la mise en correspondance <ph name="ACAM_HEADER_NAME" /> conforme dans les spécifications de la requête préliminaire <ph name="CORS" /></translation>
 <translation id="9031831501689819108">Activer Legacy Browser Support</translation>
 <translation id="9035086760683255833">Active la fonctionnalité d'accessibilité de mise en surbrillance au clavier.
 

@@ -1373,6 +1373,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para traducir esta página con Google Traductor</translation>
 <translation id="4514308731478712184">Desactivar Exploraciones</translation>
 <translation id="4515275063822566619">Las tarjetas y direcciones provienen de Chrome y de tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />). Puedes administrar esta información en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">La política del administrador no permite descargar este archivo</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Sobre monarca</translation>
 <translation id="4521916730539354575">Bandeja izquierda</translation>
@@ -1386,7 +1387,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4542971377163063093">Bandeja 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Intenta inhabilitar tus extensiones.</translation>
-<translation id="4559134504959026834">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
 <translation id="4566017918361049074">Al aire libre</translation>
 <translation id="4567686777917670400">El administrador puede cambiar la configuración de tu navegador de forma remota. Es posible que la actividad correspondiente a este dispositivo también se administre fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Entrega</translation>
@@ -2364,6 +2364,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">No se pueden realizar envíos a esa dirección. Selecciona una dirección diferente.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Carga bloqueada</translation>
 <translation id="7132939140423847331">Tu administrador prohíbe que se copien estos datos.</translation>
 <translation id="7135130955892390533">Mostrar estado</translation>
 <translation id="7138472120740807366">Método de entrega</translation>
@@ -2594,6 +2595,7 @@ Detalles adicionales:
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Sobre Kaku n.º 8</translation>
 <translation id="7659878911471462949">Lágrimas de felicidad</translation>
+<translation id="766014026101194726">{0,plural, =1{La política del administrador no permite subir este archivo}other{La política del administrador no permite subir # archivos}}</translation>
 <translation id="7662298039739062396">Configuración controlada por una extensión</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">No se permiten en Incógnito</translation>
@@ -2688,6 +2690,7 @@ Detalles adicionales:
 <translation id="7939744324936979484">Música folclórica y tradicional</translation>
 <translation id="7941628148012649605">Sobre Chou n.º 4</translation>
 <translation id="7942349550061667556">Rojo</translation>
+<translation id="7943397946612013052">Descarga bloqueada</translation>
 <translation id="7943893128817522649">Puede solicitar permiso para descargar múltiples archivos de forma automática</translation>
 <translation id="7947285636476623132">Comprueba el año de vencimiento y vuelve a intentarlo</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para conocer las funciones de Chrome</translation>

@@ -196,7 +196,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1174366174291287894">Je verbinding is altijd beveiligd, tenzij Chrome iets anders aangeeft</translation>
 <translation id="117445914942805388">Als je browsegegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />ga je naar synchronisatie-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Afdrukken...</translation>
-<translation id="1176378369905028399">Er is al een wachtwoord voor dit account opgeslagen in Google Wachtwoordmanager (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Geen toestemming om bestanden of mappen op je apparaat te bewerken</translation>
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
@@ -407,6 +406,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1388253969141979417">Toestemming om je microfoon te gebruiken</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> wordt opnieuw opgestart als de updates zijn voltooid.</translation>
 <translation id="1389601498324964367">Door quotum beheerde opslag</translation>
+<translation id="1390113502208199250">Je moet dit apparaat terugzetten op de fabrieksinstellingen om de functies van Chrome Education Upgrade te gebruiken.</translation>
 <translation id="139013308650923562">Mogen lettertypen gebruiken die zijn geïnstalleerd op je apparaat</translation>
 <translation id="1390548061267426325">Openen als normaal tabblad</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> is niet geautoriseerd om af te drukken naar <ph name="PRINTER_NAME" />. Neem contact op met je beheerder.</translation>
@@ -477,6 +477,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1436784010935106834">Verwijderd</translation>
 <translation id="1437986450143295708">Geef een gedetailleerde beschrijving van het probleem</translation>
 <translation id="1439671507542716852">langdurige support</translation>
+<translation id="1440090277117135316">Schoolinschrijving afgerond</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> geselecteerd</translation>
 <translation id="1442851588227551435">Actief Kerberos-ticket instellen</translation>
 <translation id="1444628761356461360">Deze instelling wordt beheerd door de eigenaar van het apparaat, <ph name="OWNER_EMAIL" />.</translation>
@@ -1382,6 +1383,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2256115617011615191">Nu opnieuw starten</translation>
 <translation id="2257053455312861282">Door een schoolaccount toe te voegen, kunnen kinderen gemakkelijk als leerling inloggen bij websites, extensies en apps terwijl ze nog steeds onder ouderlijk toezicht staan.</translation>
 <translation id="2261323523305321874">Je beheerder heeft een wijziging in het systeem gemaakt waardoor sommige oude profielen niet meer kunnen worden gebruikt.</translation>
+<translation id="22614517036276112">Dit document of je apparaat voldoet niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.</translation>
 <translation id="2262477216570151239">Vertraging vóór herhaling</translation>
 <translation id="2263189956353037928">Uitloggen en weer inloggen</translation>
 <translation id="2263371730707937087">Vernieuwingssnelheid van het scherm</translation>
@@ -1820,7 +1822,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2643698698624765890">Je kunt je extensies beheren door in het paginamenu te klikken op 'Extensies'.</translation>
 <translation id="2645047101481282803">Je apparaat wordt beheerd door <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2645515095874728277">Er is al een wachtwoord voor dit account opgeslagen op dit apparaat</translation>
 <translation id="2649045351178520408">Base64 Encoded ASCII, certificaatketen</translation>
 <translation id="2652129567809778422">Wachtwoord selecteren</translation>
 <translation id="2653033005692233957">Zoeken is mislukt</translation>
@@ -2395,6 +2396,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3170072451822350649">Je kunt het inloggen ook overslaan en <ph name="LINK_START" />browsen als gast<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nieuw tabblad aan de linkerkant</translation>
 <translation id="3177909033752230686">Brontaal:</translation>
+<translation id="3177914167275935955">Je apparaat bevat een Chrome Education Upgrade, maar je gebruikersnaam is niet gekoppeld aan een Google for Education-account. Ga op een secundair apparaat naar g.co/workspace/edusignup om een Google for Education-account te maken.</translation>
 <translation id="3179982752812949580">Lettertype</translation>
 <translation id="3181954750937456830">Safe Browsing (hiermee worden jij en je apparaat beschermd tegen gevaarlijke sites)</translation>
 <translation id="3182749001423093222">Spellingcontrole</translation>
@@ -2609,7 +2611,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3399432415385675819">Meldingen worden uitgezet</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - geïnterlinieerd</translation>
 <translation id="3401484564516348917">Informatie over je browser, OS, apparaat, geïnstalleerde software, registerwaarden en bestanden lezen</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{Op dit apparaat is {COUNT} wachtwoord opgeslagen}other{Op dit apparaat zijn {COUNT} wachtwoorden opgeslagen}}</translation>
 <translation id="3402255108239926910">Kies een avatar</translation>
 <translation id="3402585168444815892">Inschrijven in demomodus</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4062,6 +4063,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4762489666082647806">Kleur van aanwijzer</translation>
 <translation id="4762718786438001384">Er is zeer weinig schijfruimte beschikbaar op het apparaat</translation>
 <translation id="4763408175235639573">De volgende cookies zijn opgeslagen toen je deze pagina bekeek</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> is geen geldig Google for Education-account. Neem contact op met je beheerder. Als je een beheerder bent, kun je je organisatie instellen door naar g.co/workspace/edusignup te gaan.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Dit apparaat wordt 1 maand bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}other{Dit apparaat wordt {MONTHS} maanden bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}}</translation>
 <translation id="4765582662863429759">Hiermee kan Android Berichten sms'jes van je telefoon naar je Chromebook doorsturen</translation>
 <translation id="4766598565665644999">Alle extensies kunnen <ph name="HOST" /> lezen en wijzigen</translation>
@@ -4706,7 +4708,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5392192690789334093">Toestemming om meldingen te sturen</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
 <translation id="5395498824851198390">Standaardlettertype</translation>
-<translation id="5396325212236512832">Log automatisch in bij sites en apps met je opgeslagen inloggegevens. Als dit uitstaat, moet je elke keer je inloggegevens bevestigen voordat je inlogt op een website.</translation>
 <translation id="5397378439569041789">Kiosk of digitaal bord inschrijven</translation>
 <translation id="5397794290049113714">Jij</translation>
 <translation id="5398497406011404839">Verborgen bookmarks</translation>
@@ -4723,6 +4724,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5407167491482639988">Niet te begrijpen</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Uit je Google-account.</translation>
+<translation id="5411022484772257615">Kan schoolinschrijving niet afronden</translation>
 <translation id="5413640305322530561">Meer informatie over diagnostische en gebruiksgegevens</translation>
 <translation id="5414198321558177633">Lijst met profielen vernieuwen. Dit kan een paar minuten duren.</translation>
 <translation id="5414566801737831689">De pictogrammen lezen van websites die je bezoekt</translation>
@@ -5068,6 +5070,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5733866499231170760">Ongeldige ID. De opgegeven notatie is onjuist. Check de instructies die je hebt gekregen om te zorgen dat je de ID met de juiste notatie opgeeft. Als je dit probleem niet kunt verhelpen, laat je het veld leeg en ga je door met de installatie.</translation>
 <translation id="5734362860645681824">Communicatie</translation>
 <translation id="5734697361979786483">Fileshare toevoegen</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Deze gegevens of je apparaat voldoen niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}=1{Dit bestand of je apparaat voldoet niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}other{Deze bestanden voldoen niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}}</translation>
 <translation id="5736796278325406685">Geef een geldige gebruikersnaam op</translation>
 <translation id="5738093759615225354">Je hebt deze toegangscode nodig om in te loggen op je computer</translation>
 <translation id="5738329404678738022">Sla je bookmarks en meer op met synchronisatie</translation>
@@ -5504,6 +5507,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6129953537138746214">Spatie</translation>
 <translation id="6130692320435119637">Wifi toevoegen</translation>
 <translation id="6130887916931372608">Toetsenbordtoets</translation>
+<translation id="6132714462430777655">Schoolinschrijving overslaan?</translation>
 <translation id="6135823405800500595">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="6135826623269483856">Geen toestemming om vensters te beheren op al je schermen</translation>
 <translation id="6136114942382973861">Downloadbalk sluiten</translation>
@@ -6035,7 +6039,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6647441008198474441">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat</translation>
 <translation id="6648911618876616409">Er is een nieuwe essentiële update beschikbaar. Log in om aan de slag te gaan.</translation>
 <translation id="6649018507441623493">Een ogenblik…</translation>
-<translation id="6650234781371031356">Je wachtwoord voor <ph name="WEBSITE" /> is opgeslagen op dit apparaat en in je Google-account. Welke versie wil je verwijderen?</translation>
 <translation id="665061930738760572">Openen in &amp;nieuw venster</translation>
 <translation id="6651237644330755633">Dit certificaat vertrouwen voor het identificeren van websites</translation>
 <translation id="6651495917527016072">Wifi-netwerken synchroniseren met je telefoon. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -6556,6 +6559,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7123030151043029868">Toestemming om automatisch meerdere bestanden te downloaden</translation>
 <translation id="7123302939607518173">Voeg een interesse of site toe als je denkt dat advertenties gerelateerd aan dit item nuttig zouden zijn voor jou.</translation>
 <translation id="7124013154139278147">Schakelaar toewijzen voor Vorige</translation>
+<translation id="7124712201233930202">Er wordt niet voldaan aan het beleid van je organisatie</translation>
 <translation id="7125029162161377569">Met een Privacy Sandbox-proef kunnen sites dezelfde browsefunctionaliteit leveren terwijl er minder van je gegevens worden gebruikt. Dit betekent meer privacy voor jou en minder tracking op meerdere sites. Als andere proeven klaar zijn om te worden getest, voegen we deze toe.</translation>
 <translation id="7125148293026877011">Crostini verwijderen</translation>
 <translation id="7127980134843952133">Downloadgeschiedenis</translation>
@@ -6723,6 +6727,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7310598146671372464">Kan niet inloggen. De server ondersteunt de opgegeven Kerberos-versleutelingstypen niet. Neem contact op met je beheerder.</translation>
 <translation id="7311089766378749632">Verzoek om <ph name="SITE_NAME" /> te lezen en te wijzigen</translation>
 <translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
+<translation id="7317831949569936035">Schoolinschrijving</translation>
 <translation id="7320213904474460808">Standaardnetwerk gebruiken</translation>
 <translation id="7321545336522791733">Server niet bereikbaar</translation>
 <translation id="7323315405936922211">Grootte van cursorgebied</translation>
@@ -8516,6 +8521,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="897939795688207351">Op <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Feedbackrapporten</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: gecrasht</translation>
+<translation id="8981038076986775523">Meer informatie over het gebruik van een microfoon</translation>
 <translation id="8981825781894055334">Papier is bijna op</translation>
 <translation id="8983018820925880511">Dit nieuwe profiel wordt beheerd door <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bewerken</translation>

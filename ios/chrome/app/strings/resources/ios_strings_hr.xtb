@@ -140,7 +140,6 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="2074131957428911366">Uvijek možete odabrati u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> što će se sinkronizirati.</translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2080769225927880590">Prijavite se važećim računom</translation>
-<translation id="209018056901015185">Prikaži klasičnu stranicu</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="2116625576999540962">Broj premještenih stavki: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Vaš je preglednik upravljan. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -387,7 +386,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3995521777587992544">Traka napretka učitavanja stranice, učitano <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4004204301268239848">Zaporke se spremaju na vaš Google račun kako biste ih mogli upotrebljavati na bilo kojem uređaju.</translation>
-<translation id="4006921758705478413">Pošaljite na svoje uređaje</translation>
 <translation id="4018310736049373830">Upravljaj aktivnostima</translation>
 <translation id="4038354071007134711">Na ovom uređaju nema aplikacije za tu datoteku.</translation>
 <translation id="4042870976416480368">Traži na stranici</translation>
@@ -822,7 +820,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7133798577887235672">Ime i prezime</translation>
 <translation id="7136892417564438900">Fotoaparat nije dostupan</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> min čitanja</translation>
-<translation id="7159472599653637159">Prikaži mob. str.</translation>
 <translation id="7162168282402939716">Otključajte anonimne kartice pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Osigurajte svoje zaporke od sigurnosnih problema</translation>
 <translation id="7173114856073700355">Otvorite Postavke</translation>
@@ -1068,7 +1065,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9124387962554796433">Google može upotrebljavati vašu povijest za prilagodbu Pretraživanja i drugih Googleovih usluga.</translation>
 <translation id="9137526406337347448">Googleove usluge</translation>
 <translation id="9148126808321036104">Prijavite se ponovno</translation>
-<translation id="9152539721251340337">Izradi QR kôd</translation>
 <translation id="9157836665414082580">Izostavi dijaloge</translation>
 <translation id="9177438225260810839">Pretraživanje otvorenih kartica</translation>
 <translation id="9188680907066685419">Odjava s upravljanog računa</translation>

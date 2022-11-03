@@ -265,6 +265,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1567040042588613346">A política está funcionando da maneira esperada, mas o mesmo valor foi definido em outro lugar e foi substituído por esta política.</translation>
 <translation id="1569487616857761740">Informar data de validade</translation>
 <translation id="1569694109004336106">O Google Chrome está tentando ativar o Windows Hello para preencher senhas.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Algo deu errado ao exibir esta página da Web.</translation>
 <translation id="1586541204584340881">quais extensões você instalou;</translation>
@@ -1107,6 +1108,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3787705759683870569">Validade: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamanho 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.)</translation>
 <translation id="3793574014653384240">Números e causas das falhas que ocorreram recentemente</translation>
 <translation id="3795344968043407227">Música alternativa e indie</translation>
 <translation id="3799805948399000906">Fonte solicitada</translation>
@@ -1396,7 +1398,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4542971377163063093">Bandeja 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Tente desativar suas extensões.</translation>
-<translation id="4559134504959026834">Este site está em um grupo, definido por <ph name="SET_OWNER" />, que pode ver sua atividade</translation>
 <translation id="4566017918361049074">Ao ar livre</translation>
 <translation id="4567686777917670400">O administrador pode mudar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Entrega</translation>
@@ -2517,6 +2518,7 @@ Mais detalhes:
 <translation id="7441627299479586546">Assunto da política incorreto</translation>
 <translation id="7442725080345379071">Laranja-claro</translation>
 <translation id="7445762425076701745">A identidade do servidor ao qual você está conectado não pode ser validada completamente. Você está conectado ao servidor com um nome válido somente na sua rede e que, portanto, uma autoridade de certificação externa não consegue validar a propriedade. Como algumas autoridades de certificação emitem certificados para esses nomes mesmo assim, não é possível garantir que você esteja conectado ao site que gostaria e não a um invasor.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /> sobre esse problema.</translation>
 <translation id="7455133967321480974">Usar padrão global (Bloquear)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2824,6 +2826,7 @@ Mais detalhes:
 <translation id="8218327578424803826">Local designado:</translation>
 <translation id="8225771182978767009">A pessoa que configurou este computador optou por bloquear esse site.</translation>
 <translation id="8228419419708659934">Visualização de duas páginas</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Jogos de esportes</translation>
 <translation id="8232343881378637145">Temperatura da plataforma</translation>

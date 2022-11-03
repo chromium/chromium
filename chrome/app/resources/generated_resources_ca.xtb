@@ -196,7 +196,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1174366174291287894">La teva connexió és sempre segura tret que Chrome t'indiqui el contrari</translation>
 <translation id="117445914942805388">Per esborrar les dades de navegació de tots els dispositius sincronitzats i del Compte de Google, <ph name="BEGIN_LINK" />ves a la configuració de sincronització<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Imprimeix...</translation>
-<translation id="1176378369905028399">Ja hi ha una contrasenya d'aquest compte emmagatzemada al teu gestor de contrasenyes de Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Sense permís per editar els fitxers o les carpetes del dispositiu</translation>
 <translation id="1177863135347784049">Personalitzat</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
@@ -407,6 +406,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1388253969141979417">Amb permís per utilitzar el micròfon</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> es reiniciarà quan les actualitzacions s'hagin completat.</translation>
 <translation id="1389601498324964367">Emmagatzematge gestionat amb quota</translation>
+<translation id="1390113502208199250">Hauràs de restablir les dades de fàbrica d'aquest dispositiu per poder utilitzar les funcions de la Llicència de Chrome Education.</translation>
 <translation id="139013308650923562">Amb permís per utilitzar els tipus de lletra instal·lats al teu dispositiu</translation>
 <translation id="1390548061267426325">Obre com a pestanya normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> no té autorització per imprimir a <ph name="PRINTER_NAME" />. Contacta amb l'administrador.</translation>
@@ -477,6 +477,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1436784010935106834">Eliminat</translation>
 <translation id="1437986450143295708">Descriu el problema detalladament</translation>
 <translation id="1439671507542716852">assistència a llarg termini</translation>
+<translation id="1440090277117135316">La inscripció al centre educatiu s'ha completat</translation>
 <translation id="144283815522798837">Elements seleccionats: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Estableix el tiquet de Kerberos actiu</translation>
 <translation id="1444628761356461360">Aquesta configuració està gestionada pel propietari del dispositiu, <ph name="OWNER_EMAIL" />.</translation>
@@ -1820,7 +1821,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2643698698624765890">Per gestionar les extensions, feu clic a Extensions al menú Finestra.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> gestiona el teu dispositiu</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Ja hi ha una contrasenya d'aquest compte emmagatzemada en aquest dispositiu</translation>
 <translation id="2649045351178520408">ASCII codificat en Base64, cadena de certificats</translation>
 <translation id="2652129567809778422">Selecciona una contrasenya</translation>
 <translation id="2653033005692233957">Error de cerca</translation>
@@ -2395,6 +2395,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3170072451822350649">També podeu <ph name="LINK_START" />navegar com a convidat<ph name="LINK_END" /> sense iniciar sessió.</translation>
 <translation id="31774765611822736">Pestanya nova a l'esquerra</translation>
 <translation id="3177909033752230686">Idioma de la pàgina:</translation>
+<translation id="3177914167275935955">El teu dispositiu inclou una Llicència de Chrome Education, però el teu nom d'usuari no està associat a cap compte de Google for Education. Ves a g.co/workspace/edusignup des d'un dispositiu secundari i crea un compte de Google for Education.</translation>
 <translation id="3179982752812949580">Tipus de lletra del text</translation>
 <translation id="3181954750937456830">Navegació segura (us protegeix a tu i al teu dispositiu de llocs web perillosos)</translation>
 <translation id="3182749001423093222">Corrector ortogràfic</translation>
@@ -2609,7 +2610,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3399432415385675819">Les notificacions es desactivaran</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertzs), entrellaçat</translation>
 <translation id="3401484564516348917">Llegir informació sobre el navegador, el sistema operatiu, el dispositiu, el programari instal·lat, els valors del registre i els fitxers</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{S'ha emmagatzemat {COUNT} contrasenya en aquest dispositiu}other{S'han emmagatzemat {COUNT} contrasenyes en aquest dispositiu}}</translation>
 <translation id="3402255108239926910">Tria un avatar</translation>
 <translation id="3402585168444815892">S'està fent la inscripció en mode de demostració</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4063,6 +4063,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4762489666082647806">Color del punter</translation>
 <translation id="4762718786438001384">L'espai de disc del dispositiu és molt baix</translation>
 <translation id="4763408175235639573">S'han permès les galetes següents en visitar aquesta pàgina</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> no és un compte de Google for Education vàlid. Contacta amb l'administrador. Si ets administrador, pots configurar la teva organització a g.co/workspace/edusignup.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Aquest dispositiu es desarà durant 1 mes i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}other{Aquest dispositiu es desarà durant {MONTHS} mesos i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}}</translation>
 <translation id="4765582662863429759">Permet que Missatges Android retransmeti els missatges de text del telèfon al teu Chromebook</translation>
 <translation id="4766598565665644999">Totes les extensions poden llegir i canviar <ph name="HOST" /></translation>
@@ -4708,7 +4709,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5392192690789334093">Amb permís per enviar notificacions</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Enllaç}other{# enllaços}}</translation>
 <translation id="5395498824851198390">Font predeterminada</translation>
-<translation id="5396325212236512832">Inicia la sessió automàticament als llocs web i aplicacions amb les credencials emmagatzemades. Si aquesta opció està desactivada, se't demanarà sempre que confirmis les credencials per iniciar la sessió en un lloc web o aplicació.</translation>
 <translation id="5397378439569041789">Inscriu un dispositiu de quiosc o cartelleria</translation>
 <translation id="5397794290049113714">Usuari</translation>
 <translation id="5398497406011404839">Adreces d'interès amagades</translation>
@@ -4725,6 +4725,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5407167491482639988">Inintel·ligible</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Del teu Compte de Google</translation>
+<translation id="5411022484772257615">No s'ha pogut completar la inscripció al centre educatiu</translation>
 <translation id="5413640305322530561">Més informació sobre les dades de diagnòstic i d'ús</translation>
 <translation id="5414198321558177633">S'està actualitzant la llista de perfils. Aquest procés pot tardar uns minuts.</translation>
 <translation id="5414566801737831689">Llegeix les icones dels llocs web visitats</translation>
@@ -5508,6 +5509,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6129953537138746214">Espai</translation>
 <translation id="6130692320435119637">Afegeix una Wi‑Fi</translation>
 <translation id="6130887916931372608">Tecla del teclat</translation>
+<translation id="6132714462430777655">Vols ometre la inscripció al centre educatiu?</translation>
 <translation id="6135823405800500595">Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi-Fi activats</translation>
 <translation id="6135826623269483856">No tenen permís per gestionar finestres en totes les pantalles</translation>
 <translation id="6136114942382973861">Tanca la barra de baixades</translation>
@@ -6039,7 +6041,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6647441008198474441">Els URL que visites s'envien a Google per preveure quins llocs web és possible que visitis a continuació</translation>
 <translation id="6648911618876616409">Hi ha una actualització molt important a punt per instal·lar-se. Inicia la sessió per començar.</translation>
 <translation id="6649018507441623493">Un moment…</translation>
-<translation id="6650234781371031356">La contrasenya per a <ph name="WEBSITE" /> està emmagatzemada en aquest dispositiu i al teu Compte de Google. D'on la vols suprimir?</translation>
 <translation id="665061930738760572">Obre en una &amp;finestra nova</translation>
 <translation id="6651237644330755633">Confia en aquest certificat per identificar llocs web</translation>
 <translation id="6651495917527016072">Sincronitza les xarxes Wi‑Fi amb el teu telèfon. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -6728,6 +6729,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7310598146671372464">No s'ha pogut iniciar la sessió. El servidor no admet els tipus d'encriptació de Kerberos especificats. Contacta amb l'administrador.</translation>
 <translation id="7311089766378749632">S'està sol·licitant llegir i canviar <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">L'administrador està restablint l'eSIM. Aquest procés pot tardar uns minuts.</translation>
+<translation id="7317831949569936035">Inscripció en un centre educatiu</translation>
 <translation id="7320213904474460808">Estableix com a xarxa predeterminada</translation>
 <translation id="7321545336522791733">No s'ha pogut accedir al servidor</translation>
 <translation id="7323315405936922211">Mida de l'àrea del cursor</translation>

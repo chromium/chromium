@@ -1372,6 +1372,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për ta përkthyer këtë faqe me "Përkthe me Google"</translation>
 <translation id="4514308731478712184">Çaktivizo "Udhëtimet"</translation>
 <translation id="4515275063822566619">Kartat dhe adresat janë nga Chrome dhe llogaria jote e Google (<ph name="ACCOUNT_EMAIL" />). Ato mund t'i menaxhosh te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Shkarkimi i këtij skedari është bllokuar nga politika e administratorit</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Zarf monark</translation>
 <translation id="4521916730539354575">Tabakaja e majtë</translation>
@@ -1385,7 +1386,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4542971377163063093">Tabakaja 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Provo të çaktivizosh shtesat.</translation>
-<translation id="4559134504959026834">Ky sajt është në një grup, i përcaktuar nga <ph name="SET_OWNER" />, që mund ta shikojë aktivitetin tënd</translation>
 <translation id="4566017918361049074">Ambientet e hapura</translation>
 <translation id="4567686777917670400">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Dorëzimi</translation>
@@ -2362,6 +2362,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Nuk mund të dërgohet në këtë adresë. Zgjidh një adresë tjetër.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Ngarkimi u bllokua</translation>
 <translation id="7132939140423847331">Administratori yt e ka ndaluar kopjimin e këtyre të dhënave.</translation>
 <translation id="7135130955892390533">Shfaq statusin</translation>
 <translation id="7138472120740807366">Mënyra e dorëzimit</translation>
@@ -2592,6 +2593,7 @@ Detaje shtesë:
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7659327900411729175">Zarf Kaku 8</translation>
 <translation id="7659878911471462949">Lot gëzimi</translation>
+<translation id="766014026101194726">{0,plural, =1{Ngarkimi i këtij skedari është bllokuar nga politika e administratorit}other{Kopjimi i # skedarëve është bllokuar nga politika e administratorit}}</translation>
 <translation id="7662298039739062396">Cilësim i kontrolluar nga një shtesë</translation>
 <translation id="7663736086183791259">Certifikata <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nuk lejohet në "I fshehtë"</translation>
@@ -2686,6 +2688,7 @@ Detaje shtesë:
 <translation id="7939744324936979484">Muzika popullore dhe tradicionale</translation>
 <translation id="7941628148012649605">Zarf Chou 4</translation>
 <translation id="7942349550061667556">E kuqe</translation>
+<translation id="7943397946612013052">Shkarkimi u bllokua</translation>
 <translation id="7943893128817522649">Mund të kërkojë të shkarkojë automatikisht shumë skedarë</translation>
 <translation id="7947285636476623132">Kontrollo vitin e skadimit dhe provo përsëri</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të mësuar për veçoritë e Chrome</translation>

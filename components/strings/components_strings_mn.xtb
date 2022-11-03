@@ -264,6 +264,7 @@
 <translation id="1567040042588613346">Энэ бодлого нь хэвийн ажиллаж байгаа хэдий ч ижил утгыг өөр газар тохируулсан бөгөөд энэ бодлогоор хүчингүй болгосон байна.</translation>
 <translation id="1569487616857761740">Дуусах огноог оруулна уу</translation>
 <translation id="1569694109004336106">Google Chrome нууц үгийг бөглөхөд Windows Hello-г асаахаар оролдож байна.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> инч</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Энэхүү веб хуудсыг харуулахад ямар нэгэн алдаа гарлаа.</translation>
 <translation id="1586541204584340881">Таны ямар өргөтгөл суулгасан болох</translation>
@@ -1099,6 +1100,7 @@
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />-д дуусна</translation>
 <translation id="3789155188480882154">Хэмжээ 16</translation>
 <translation id="3789841737615482174">Суулгах</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> инч)</translation>
 <translation id="3793574014653384240">Сүүлийн үед гарсан гэмтлийн тоо болон шалтгаан</translation>
 <translation id="3795344968043407227">Инди, алтернатив хөгжим</translation>
 <translation id="3799805948399000906">Фонтын нэрийг шаардсан</translation>
@@ -1387,7 +1389,6 @@
 <translation id="4542971377163063093">Гарах цаасны тавиур 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Өргөтгөлүүдээ идэвхгүй болгоно уу.</translation>
-<translation id="4559134504959026834">Энэ сайт <ph name="SET_OWNER" />-с тодорхойлсон бүлэгт байгаа бөгөөд таны үйл ажиллагааг харах боломжтой</translation>
 <translation id="4566017918361049074">Гадаа</translation>
 <translation id="4567686777917670400">Таны администратор хөтчийн тань тохируулгыг алсаас өөрчилж болно. Энэ төхөөрөмж дээрх үйл ажиллагааг мөн Chromium-с гадуур удирддаг байж болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Хүргэлт</translation>
@@ -2495,6 +2496,7 @@
 <translation id="7441627299479586546">Буруу тохиргооны зүйл</translation>
 <translation id="7442725080345379071">Цайвар улбар шар</translation>
 <translation id="7445762425076701745">Таны холбогдсон байгаа серверийн Хувийн мэдээллийг бүрэн батлах боломжгүй. Та зөвхөн таны сүлжээнд хүчин төгөлдөр нэрийг ашиглан сервер уруу холбогддог бөгөөд энэ нь хөндлөнгийн гэрчилгээ нь эзэмшлийг батлах ямар ч боломжгүй гэсэн үг юм. Зарим гэрчилгээнүүдийн эрх нь эдгээр нэрүүдэд гэрчилгээ гаргаж өгдөг хэдий ч таныг зорьж буй вебсайт руугаа мөн халдагч бус сүлжээ рүү холбогдсон гэдгийг батлах ямар ч арга байхгүй юм.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
 <translation id="7451311239929941790">Уг асуудлын талаар <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэж байна<ph name="END_LINK" />.</translation>
 <translation id="7455133967321480974">Олон нийтээр хэрэглэдэг сонголтыг сонго (Блок)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2800,6 +2802,7 @@
 <translation id="8218327578424803826">Заасан байршил:</translation>
 <translation id="8225771182978767009">Энэ компьютерийг тохиуулсан хүн энэ сайтыг блоклосон байна.</translation>
 <translation id="8228419419708659934">Хоёр хуудсаар харах</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> х <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Спортын тоглоом</translation>
 <translation id="8232343881378637145">Платформын температур</translation>

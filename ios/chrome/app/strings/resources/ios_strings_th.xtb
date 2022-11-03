@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">ค้นหา ${searchPhrase} ใน Chrome</translation>
 <translation id="1242044645101871359">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="1254117744268754948">เลือกโฟลเดอร์</translation>
+<translation id="1254424942107648268">ค้นหาก่อนหน้า</translation>
 <translation id="1258491128795710625">มีอะไรใหม่</translation>
 <translation id="1265739287306757398">เรียนรู้วิธี</translation>
 <translation id="1272079795634619415">หยุด</translation>
@@ -139,7 +140,6 @@
 <translation id="2074131957428911366">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2080769225927880590">ลงชื่อเข้าใช้ด้วยบัญชีที่ถูกต้อง</translation>
-<translation id="209018056901015185">ขอไซต์สำหรับเดสก์ท็อป</translation>
 <translation id="2103075008456228677">เปิด history.google.com</translation>
 <translation id="2116625576999540962">ย้ายแล้ว <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
 <translation id="2122754583996902531">เบราว์เซอร์ของคุณมีการจัดการ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -187,6 +187,7 @@
 <translation id="2473876017985765807">คุณบันทึกรหัสผ่านสำหรับ <ph name="WEBSITE" /> ไว้แล้ว</translation>
 <translation id="2476359652512522418">ไม่ได้เลือก</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
+<translation id="2496626742194544812">ไปที่แท็บแรก</translation>
 <translation id="2500374554657206846">ตัวเลือกในการบันทึกรหัสผ่าน</translation>
 <translation id="2523363575747517183">เว็บไซต์นี้พยายามเปิดแอปพลิเคชันอื่นอยู่เรื่อยๆ</translation>
 <translation id="2529021024822217800">เปิดทั้งหมด</translation>
@@ -202,6 +203,7 @@
 <translation id="2647269890314209800">คุกกี้ที่ใช้งานอยู่</translation>
 <translation id="2648803196158606475">ลบรายการที่อ่านแล้ว</translation>
 <translation id="2653659639078652383">ส่ง</translation>
+<translation id="2664621323652615289">หยุด</translation>
 <translation id="2671426118752779020">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านของ Google ในแอปอื่นๆ บน iPhone ได้</translation>
 <translation id="2690858294534178585">ใช้กล้องถ่ายรูปอยู่</translation>
 <translation id="2691653761409724435">ไม่สามารถใช้ออฟไลน์</translation>
@@ -360,6 +362,7 @@
 <translation id="380329542618494757">ชื่อ</translation>
 <translation id="3803696231112616155">เสนอให้แปลเว็บไซต์นี้</translation>
 <translation id="3810973564298564668">จัดการ</translation>
+<translation id="3818293389945649617">ค้นหาถัดไป</translation>
 <translation id="3819183753496523827">คุณออฟไลน์อยู่ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="3835964409414434850">ไปที่แท็บถัดไป</translation>
 <translation id="385051799172605136">กลับ</translation>
@@ -383,7 +386,6 @@
 <translation id="3995521777587992544">แถบความคืบหน้าการโหลดหน้าเว็บ โหลดแล้ว <ph name="EMAIL" /></translation>
 <translation id="4002066346123236978">ชื่อ</translation>
 <translation id="4004204301268239848">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
-<translation id="4006921758705478413">ส่งไปยังอุปกรณ์</translation>
 <translation id="4018310736049373830">จัดการกิจกรรม</translation>
 <translation id="4038354071007134711">ไม่มีแอปพลิเคชันใดบนอุปกรณ์นี้ที่สามารถเปิดไฟล์ได้</translation>
 <translation id="4042870976416480368">ค้นหาในหน้าเว็บ</translation>
@@ -391,6 +393,7 @@
 <translation id="4049507953662678203">ตรวจสอบว่าคุณมีการเชื่อมต่อเครือข่าย และลองอีกครั้ง</translation>
 <translation id="4063300985191096908">ไปที่ฟีด</translation>
 <translation id="408404951701638773">เข้าถึงแถบค้นหาได้ง่ายขึ้นแล้ว</translation>
+<translation id="4092655288299341041">แสดงความช่วยเหลือ</translation>
 <translation id="4108998448622696017">ตรวจหาและเตือนคุณเมื่อเกิดเหตุการณ์อันตราย</translation>
 <translation id="411254640334432676">การดาวน์โหลดล้มเหลว</translation>
 <translation id="4112644173421521737">ค้นหา</translation>
@@ -783,6 +786,7 @@
 <translation id="6859944681507688231">หากต้องการสแกนคิวอาร์โค้ดหรือบัตรเครดิต ให้เปิดใช้กล้องถ่ายรูปจากการตั้งค่า</translation>
 <translation id="6867369562105931222">รหัสผ่าน</translation>
 <translation id="6869389390665537774">คุณดูหน้าที่เคยเข้าชมหรือล้างหน้าออกจากประวัติการเข้าชมได้</translation>
+<translation id="687135068089457384">แสดงการตั้งค่า</translation>
 <translation id="6873263987691478642">Split View</translation>
 <translation id="6882836635272038266">การปกป้องแบบมาตรฐานจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย</translation>
 <translation id="6888009575607455378">คุณแน่ใจไหมว่าต้องการทิ้งการเปลี่ยนแปลง</translation>
@@ -816,7 +820,6 @@
 <translation id="7133798577887235672">ชื่อและนามสกุล</translation>
 <translation id="7136892417564438900">กล้องถ่ายรูปไม่พร้อมใช้งาน</translation>
 <translation id="7153999225810839758">ใช้เวลาอ่าน <ph name="TIME" /> นาที</translation>
-<translation id="7159472599653637159">ขอเว็บไซต์สำหรับมือถือ</translation>
 <translation id="7162168282402939716">ปลดล็อกแท็บที่ไม่ระบุตัวตนด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">รักษารหัสผ่านให้ปลอดภัยจากปัญหาด้านความปลอดภัย</translation>
 <translation id="7173114856073700355">เปิดการตั้งค่า</translation>
@@ -889,11 +892,13 @@
 <translation id="7807060072011926525">ให้บริการโดย Google</translation>
 <translation id="7839985698273989086">หน้าแบบออฟไลน์</translation>
 <translation id="7840771868269352570">ระบบจะนำรายการที่คุณเลือกออก</translation>
+<translation id="7845466610722898">แสดงเรื่องรออ่าน</translation>
 <translation id="784551991304901159">หากต้องการดูเนื้อหา ให้เลือก "เปิด" จากเมนู</translation>
 <translation id="7853202427316060426">กิจกรรม</translation>
 <translation id="7856733331829174190">ดาวน์โหลดไม่ได้</translation>
 <translation id="785938070103630874">เปิดรหัสผ่าน วิธีการชําระเงิน หรือที่อยู่ และอื่นๆ</translation>
 <translation id="7859704718976024901">ประวัติการเข้าชม</translation>
+<translation id="7879275349003161544">แสดงการดาวน์โหลด</translation>
 <translation id="7884694604461143138">ประวัติการค้นหา (พบ <ph name="COUNT" /> รายการ)</translation>
 <translation id="7887198238286927132">Chrome จะไม่ป้อนข้อความลงในช่องนี้โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ</translation>
 <translation id="7911190106180361398">องค์กรของคุณไม่อนุญาตให้ซิงค์ทุกอย่าง</translation>
@@ -1006,6 +1011,7 @@
 <translation id="8741995161408053644">บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="8750037785291841318">คุณจะเห็นแท็บที่เปิดไว้ที่นี่</translation>
 <translation id="8756969031206844760">อัปเดตรหัสผ่านไหม</translation>
+<translation id="8763613688786959833">ไปที่แท็บสุดท้าย</translation>
 <translation id="8764015330924122850">เลิกติดตาม <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>
 <translation id="8787968206789828143">ค้นหาในเว็บ</translation>
@@ -1059,7 +1065,6 @@
 <translation id="9124387962554796433">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เหมาะกับคุณ</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
-<translation id="9152539721251340337">สร้างคิวอาร์โค้ด</translation>
 <translation id="9157836665414082580">ระงับกล่องโต้ตอบ</translation>
 <translation id="9177438225260810839">ค้นหาในแท็บที่เปิดอยู่</translation>
 <translation id="9188680907066685419">ออกจากระบบบัญชีที่มีการจัดการ</translation>

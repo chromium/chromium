@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">在 Chrome 中搜索 ${searchPhrase}</translation>
 <translation id="1242044645101871359">重新登录</translation>
 <translation id="1254117744268754948">选择文件夹</translation>
+<translation id="1254424942107648268">查找上一个</translation>
 <translation id="1258491128795710625">新变化</translation>
 <translation id="1265739287306757398">了解如何操作</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -139,7 +140,6 @@
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2080769225927880590">请使用一个有效的帐号登录</translation>
-<translation id="209018056901015185">请求切换到桌面版网站</translation>
 <translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="2116625576999540962">移动了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="2122754583996902531">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -187,6 +187,7 @@
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="2476359652512522418">未选中</translation>
 <translation id="2482878487686419369">通知</translation>
+<translation id="2496626742194544812">转到第一个标签页</translation>
 <translation id="2500374554657206846">保存密码的选项</translation>
 <translation id="2523363575747517183">该网站屡次尝试打开其他应用。</translation>
 <translation id="2529021024822217800">全部打开</translation>
@@ -202,6 +203,7 @@
 <translation id="2647269890314209800">正在使用的 Cookie</translation>
 <translation id="2648803196158606475">删除已读项</translation>
 <translation id="2653659639078652383">提交</translation>
+<translation id="2664621323652615289">停止</translation>
 <translation id="2671426118752779020">您可在 iPhone 上的其他应用内使用已保存至 Google 密码管理器的密码。</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
@@ -356,6 +358,7 @@
 <translation id="380329542618494757">名称</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3818293389945649617">查找下一个</translation>
 <translation id="3819183753496523827">您未联网。请检查您的互联网连接状况，然后重试。</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名称</translation>
@@ -377,7 +380,6 @@
 <translation id="3995521777587992544">网页加载进度条，已加载 <ph name="EMAIL" />。</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4004204301268239848">系统会将密码保存在您的 Google 帐号中，以便您在任意设备上使用。</translation>
-<translation id="4006921758705478413">发送到您的设备</translation>
 <translation id="4018310736049373830">管理我的活动记录</translation>
 <translation id="4038354071007134711">此设备上没有可以打开该文件的应用。</translation>
 <translation id="4042870976416480368">在网页中查找</translation>
@@ -385,6 +387,7 @@
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="4063300985191096908">前往 Feed</translation>
 <translation id="408404951701638773">现在可以更方便地使用搜索栏</translation>
+<translation id="4092655288299341041">显示帮助</translation>
 <translation id="4108998448622696017">检测危险事件并在此类事件发生时向您发出警告。</translation>
 <translation id="411254640334432676">下载失败。</translation>
 <translation id="4112644173421521737">搜索</translation>
@@ -770,6 +773,7 @@
 <translation id="6859944681507688231">要扫描二维码或信用卡，请在设置中允许该应用使用相机。</translation>
 <translation id="6867369562105931222">密码</translation>
 <translation id="6869389390665537774">您可以查看自己访问过的网页，也可将它们从历史记录中清除</translation>
+<translation id="687135068089457384">显示设置</translation>
 <translation id="6873263987691478642">拆分视图</translation>
 <translation id="6882836635272038266">针对已知危险网站、下载内容和扩展程序提供标准保护。</translation>
 <translation id="6888009575607455378">确定要舍弃您所做的更改吗？</translation>
@@ -803,7 +807,6 @@
 <translation id="7133798577887235672">全称</translation>
 <translation id="7136892417564438900">无法使用相机</translation>
 <translation id="7153999225810839758">预计的阅读用时：<ph name="TIME" /> 分钟</translation>
-<translation id="7159472599653637159">请求移动版网站</translation>
 <translation id="7162168282402939716">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁无痕式标签页</translation>
 <translation id="7172852049901402487">保护您的密码免受安全威胁</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
@@ -875,11 +878,13 @@
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7839985698273989086">离线网页</translation>
 <translation id="7840771868269352570">系统将会移除您所选的各项内容。</translation>
+<translation id="7845466610722898">显示阅读清单</translation>
 <translation id="784551991304901159">如需查看内容，请从菜单中选择“开启”</translation>
 <translation id="7853202427316060426">活动</translation>
 <translation id="7856733331829174190">无法下载</translation>
 <translation id="785938070103630874">打开“密码”“付款方式”或“地址”等</translation>
 <translation id="7859704718976024901">浏览记录</translation>
+<translation id="7879275349003161544">显示下载内容</translation>
 <translation id="7884694604461143138">在历史记录中搜索（找到了 <ph name="COUNT" /> 项结果）</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>
@@ -991,6 +996,7 @@
 <translation id="8741995161408053644">您的 Google 帐号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="8750037785291841318">您已打开的标签页会显示在此处</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
+<translation id="8763613688786959833">转到最后一个标签页</translation>
 <translation id="8764015330924122850">取消关注“<ph name="DOMAIN_NAME" />”</translation>
 <translation id="8775144690796719618">网址无效</translation>
 <translation id="8787968206789828143">在网络上搜索</translation>
@@ -1043,7 +1049,6 @@
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>
 <translation id="9137526406337347448">Google 服务</translation>
 <translation id="9148126808321036104">重新登录</translation>
-<translation id="9152539721251340337">生成二维码</translation>
 <translation id="9157836665414082580">禁止显示对话框</translation>
 <translation id="9177438225260810839">在打开的标签页中搜索</translation>
 <translation id="9188680907066685419">退出受管理的帐号</translation>

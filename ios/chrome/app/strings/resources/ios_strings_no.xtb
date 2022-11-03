@@ -139,7 +139,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2080769225927880590">Logg på med en gyldig konto</translation>
-<translation id="209018056901015185">Bruk skrivebordsversjon</translation>
 <translation id="2103075008456228677">Åpne history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementer er flyttet</translation>
 <translation id="2122754583996902531">Nettleseren din administreres. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -383,7 +382,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3995521777587992544">Fremdriftslinje for sideinnlasting, <ph name="EMAIL" /> er lastet inn.</translation>
 <translation id="4002066346123236978">Tittel</translation>
 <translation id="4004204301268239848">Passordene lagres i Google-kontoen din, slik at du kan bruke dem på alle enheter.</translation>
-<translation id="4006921758705478413">Send til enhetene dine</translation>
 <translation id="4018310736049373830">Administrer aktivitet</translation>
 <translation id="4038354071007134711">Ingen apper på denne enheten kan åpne filen.</translation>
 <translation id="4042870976416480368">Finn på siden</translation>
@@ -816,7 +814,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7133798577887235672">Fullt navn</translation>
 <translation id="7136892417564438900">Kameraet er utilgjengelig</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> minutt(er) å lese</translation>
-<translation id="7159472599653637159">Be om mobilversjonen av nettstedet</translation>
 <translation id="7162168282402939716">Lås opp inkognitofaner med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Beskytt passordene dine mot sikkerhetsproblemer</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
@@ -1059,7 +1056,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9124387962554796433">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9148126808321036104">Logg på igjen</translation>
-<translation id="9152539721251340337">Lag en QR-kode</translation>
 <translation id="9157836665414082580">Ignorer dialogbokser</translation>
 <translation id="9177438225260810839">Søk i åpne faner</translation>
 <translation id="9188680907066685419">Logg av administrert konto</translation>

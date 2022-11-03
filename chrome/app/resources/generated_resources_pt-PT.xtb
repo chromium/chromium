@@ -196,7 +196,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1174366174291287894">A sua ligação é sempre segura a menos que o Chrome indique o contrário</translation>
 <translation id="117445914942805388">Para limpar os dados de navegação de todos os seus dispositivos sincronizados e da sua Conta Google, <ph name="BEGIN_LINK" />aceda às definições de sincronização<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">Im&amp;primir...</translation>
-<translation id="1176378369905028399">Já foi armazenada uma palavra-passe para esta conta no seu Gestor de Palavras-passe da Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Sem autorização para editar ficheiros ou pastas no seu dispositivo</translation>
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1178581264944972037">Pausa</translation>
@@ -408,6 +407,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1388253969141979417">Com autorização para utilizar o seu microfone</translation>
 <translation id="1388728792929436380">O <ph name="DEVICE_TYPE" /> irá reiniciar quando as atualizações estiverem concluídas.</translation>
 <translation id="1389601498324964367">Armazenamento gerido por quota</translation>
+<translation id="1390113502208199250">Tem de fazer uma reposição de fábrica neste dispositivo para usar as funcionalidades da Atualização do Chrome Education.</translation>
 <translation id="139013308650923562">Com autorização para utilizar tipos de letra instalados no dispositivo</translation>
 <translation id="1390548061267426325">Abrir como Separador Normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> não tem autorização para imprimir para <ph name="PRINTER_NAME" />. Contacte o seu administrador.</translation>
@@ -478,6 +478,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1436784010935106834">Removido</translation>
 <translation id="1437986450143295708">Descreva o problema detalhadamente</translation>
 <translation id="1439671507542716852">apoio técnico a longo prazo</translation>
+<translation id="1440090277117135316">Inscrição escolar concluída</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selecionados</translation>
 <translation id="1442851588227551435">Definir permissão Kerberos ativa</translation>
 <translation id="1444628761356461360">Esta definição é gerida pelo proprietário do dispositivo, <ph name="OWNER_EMAIL" />.</translation>
@@ -1821,7 +1822,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2643698698624765890">Faça a gestão das suas extensões clicando em Extensões no menu Janela.</translation>
 <translation id="2645047101481282803">O seu dispositivo é gerido por <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Já foi armazenada uma palavra-passe para esta conta neste dispositivo</translation>
 <translation id="2649045351178520408">Cadeia de certificados ASCII codificados em Base64</translation>
 <translation id="2652129567809778422">Selecione a palavra-passe</translation>
 <translation id="2653033005692233957">Falha ao pesquisar</translation>
@@ -2397,6 +2397,7 @@ Pretende pará-lo?</translation>
 <translation id="3170072451822350649">Também pode ignorar o início de sessão e <ph name="LINK_START" />navegar como Convidado<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Novo separador à esquerda</translation>
 <translation id="3177909033752230686">Idioma da página:</translation>
+<translation id="3177914167275935955">O seu dispositivo inclui uma Atualização do Chrome Education, mas o seu nome de utilizador não está associado a uma conta do Google for Education. Crie uma conta do Google for Education ao visitar g.co/workspace/edusignup num dispositivo secundário.</translation>
 <translation id="3179982752812949580">Tipo de letra do texto</translation>
 <translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
 <translation id="3182749001423093222">Verificação ortográfica</translation>
@@ -2611,7 +2612,6 @@ Pretende pará-lo?</translation>
 <translation id="3399432415385675819">As notificações serão desativadas</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) – entrelaçado</translation>
 <translation id="3401484564516348917">Ler informações sobre o seu navegador, SO, dispositivo, software instalado, valores de registo e ficheiros</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} palavra-passe está armazenada neste dispositivo}other{{COUNT} palavras-passe estão armazenadas neste dispositivo}}</translation>
 <translation id="3402255108239926910">Escolha um avatar</translation>
 <translation id="3402585168444815892">A inscrever-se no modo de demonstração…</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4066,6 +4066,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4762489666082647806">Cor do ponteiro</translation>
 <translation id="4762718786438001384">Espaço em disco do dispositivo criticamente baixo</translation>
 <translation id="4763408175235639573">Foram definidos os seguintes cookies quando viu esta página</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> não é uma conta do Google for Education válida. Contacte o seu administrador. Se for um administrador, pode configurar a sua organização ao visitar: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Este dispositivo vai ser guardado durante 1 mês e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}other{Este dispositivo vai ser guardado durante {MONTHS} meses e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}}</translation>
 <translation id="4765582662863429759">Permite às Mensagens Android retransmitir as mensagens de texto do telemóvel para o Chromebook.</translation>
 <translation id="4766598565665644999">Todas as extensões podem ler e alterar <ph name="HOST" /></translation>
@@ -4710,7 +4711,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5392192690789334093">Com autorização para enviar notificações</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
 <translation id="5395498824851198390">Tipo de letra predefinido</translation>
-<translation id="5396325212236512832">Inicie sessão automaticamente nos sites e apps com as credenciais armazenadas. Se esta funcionalidade estiver desativada, ser-lhe-á pedida sempre uma confirmação antes de iniciar sessão num site ou app.</translation>
 <translation id="5397378439569041789">Inscrever dispositivo no modo quiosque ou sinalização</translation>
 <translation id="5397794290049113714">Utilizador</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
@@ -4727,6 +4727,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5407167491482639988">Ininteligível</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Da sua Conta Google</translation>
+<translation id="5411022484772257615">Não foi possível concluir a inscrição escolar</translation>
 <translation id="5413640305322530561">Saiba mais acerca dos dados de diagnóstico e utilização</translation>
 <translation id="5414198321558177633">A atualizar a lista de perfis. Esta ação pode demorar alguns minutos.</translation>
 <translation id="5414566801737831689">Ler os ícones dos Sites que visita</translation>
@@ -5514,6 +5515,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6129953537138746214">Espaço</translation>
 <translation id="6130692320435119637">Adicionar Wi-Fi</translation>
 <translation id="6130887916931372608">Tecla do teclado</translation>
+<translation id="6132714462430777655">Ignorar a inscrição escolar?</translation>
 <translation id="6135823405800500595">Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados</translation>
 <translation id="6135826623269483856">Sem autorização para gerir janelas em todos os seus ecrãs</translation>
 <translation id="6136114942382973861">Fechar barra de transferências</translation>
@@ -6045,7 +6047,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6647441008198474441">Os URLs que visitar são enviados para a Google para prever os sites que pode visitar a seguir</translation>
 <translation id="6648911618876616409">Existe uma nova atualização crítica pronta para instalação. Inicie sessão para começar.</translation>
 <translation id="6649018507441623493">Aguarde um momento...</translation>
-<translation id="6650234781371031356">A sua palavra-passe para <ph name="WEBSITE" /> está armazenada neste dispositivo e na sua Conta Google. Qual pretende eliminar?</translation>
 <translation id="665061930738760572">Abrir numa &amp;Nova Janela</translation>
 <translation id="6651237644330755633">Confiar neste certificado para identificar Sites</translation>
 <translation id="6651495917527016072">Sincronize redes Wi-Fi com o seu telemóvel. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -6734,6 +6735,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7310598146671372464">Não é possível iniciar sessão. O servidor não suporta os tipos de encriptação Kerberos especificados. Contacte o administrador.</translation>
 <translation id="7311089766378749632">A pedir para ler e alterar <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
+<translation id="7317831949569936035">Inscrição escolar</translation>
 <translation id="7320213904474460808">Predefinir rede</translation>
 <translation id="7321545336522791733">Servidor inacessível</translation>
 <translation id="7323315405936922211">Tamanho da área do cursor</translation>

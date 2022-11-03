@@ -139,7 +139,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="2074131957428911366">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2080769225927880590">Log ind med en gyldig konto</translation>
-<translation id="209018056901015185">Vis computerversion</translation>
 <translation id="2103075008456228677">Åbn history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> bogmærker blev flyttet</translation>
 <translation id="2122754583996902531">Din browser administreres. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -377,7 +376,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3995521777587992544">Statuslinje for sideindlæsning, <ph name="EMAIL" /> er indlæst.</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Adgangskoder gemmes på din Google-konto, så du kan bruge dem på enhver enhed.</translation>
-<translation id="4006921758705478413">Send til dine enheder</translation>
 <translation id="4018310736049373830">Administrer aktivitet</translation>
 <translation id="4038354071007134711">Ingen apps på denne enhed, der kan åbne filen.</translation>
 <translation id="4042870976416480368">Find på siden</translation>
@@ -803,7 +801,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7133798577887235672">Fulde navn</translation>
 <translation id="7136892417564438900">Kameraet er ikke tilgængeligt</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> min. læsning</translation>
-<translation id="7159472599653637159">Anmod om mobilversion</translation>
 <translation id="7162168282402939716">Lås inkognitofaner op med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Beskyt dine adgangskoder mod sikkerhedsproblemer</translation>
 <translation id="7173114856073700355">Åbn Indstillinger</translation>
@@ -1043,7 +1040,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9124387962554796433">Google kan bruge din historik til at tilpasse Søgning og andre Google-tjenester.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9148126808321036104">Log ind igen</translation>
-<translation id="9152539721251340337">Opret en QR-kode</translation>
 <translation id="9157836665414082580">Skjul dialogbokse</translation>
 <translation id="9177438225260810839">Søg i åbne faner</translation>
 <translation id="9188680907066685419">Log ud af den administrerede konto</translation>

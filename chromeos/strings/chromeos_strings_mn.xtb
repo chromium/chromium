@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
 <translation id="2180197493692062006">Алдаа гарлаа. Аппыг дахин нээж үзнэ үү.</translation>
-<translation id="2182088270354640012">Санал хүсэлт ирүүлсэнд баярлалаа. Таны санал хүсэлт ChromeOS-г сайжруулахад туслах бөгөөд манай Chrome OS баг үнэлэх болно. Илгээсэн мэдээллийн тооноос болж та шууд хариу хүлээж авахгүй.</translation>
 <translation id="2209788852729124853">Ачаалал тоологчийг шинэчлэх</translation>
 <translation id="2212733584906323460">Нэр тодорхойлох</translation>
 <translation id="2217935453350629363">Одоогийн хурд</translation>
@@ -689,7 +688,6 @@
 <translation id="773153675489693198">Мөчлөгийн тоо</translation>
 <translation id="7747039790905080783">Урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="7762130827864645708">Таны нууц үгийг амжилттай өөрчиллөө. Одооноос шинэ нууц үгийг ашиглана уу.</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Систем, аппын мэдээлэл<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />хэмжигдэхүүн<ph name="END_LINK2" /> илгээх</translation>
 <translation id="7763470514545477072">Домэйн дагаврын тохирол</translation>
 <translation id="7769672763586021400">Загварын ID</translation>
 <translation id="7784116172884276937">Тохируулсан DNS сервер байхгүй</translation>
@@ -826,7 +824,6 @@
 <translation id="9082718469794970195">Энэ видеог ашиглах</translation>
 <translation id="9087578468327036362">Энэ асуулгыг мэдээлэх</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>
-<translation id="9092255287806472980">Таны санал хүсэлт Chrome OS-г сайжруулахад туслах бөгөөд үүнийг манай баг шалгана. Олон тооны мэдээлэл ирдэг тул бид хариу илгээх боломжгүй.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>

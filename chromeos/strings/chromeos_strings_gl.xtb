@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
 <translation id="2163937499206714165">Poñer modo escuro</translation>
 <translation id="2180197493692062006">Produciuse un erro. Tenta volver abrir a aplicación.</translation>
-<translation id="2182088270354640012">Grazas polos comentarios. Os teus comentarios axudan a mellorar ChromeOS. O equipo de ChromeOS revisaraos. Non vas recibir unha resposta directa debido ao gran número de informes que se envían.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nomes</translation>
 <translation id="2217935453350629363">Velocidade actual</translation>
@@ -689,7 +688,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7747039790905080783">Clave compartida previamente</translation>
 <translation id="7762130827864645708">Cambiaches o contrasinal correctamente. A partir de agora, utiliza o novo.</translation>
-<translation id="7762839321248874531">Enviar <ph name="BEGIN_LINK1" />información do sistema e da aplicación<ph name="END_LINK1" />, así como <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Coincidencia do sufixo de dominio</translation>
 <translation id="7769672763586021400">ID do modelo</translation>
 <translation id="7784116172884276937">Non hai ningún servidor DNS configurado</translation>
@@ -826,7 +824,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9087578468327036362">Informar desta consulta</translation>
 <translation id="9088306295921699330">En uso</translation>
-<translation id="9092255287806472980">Os teus comentarios axudan a mellorar Chrome OS. O noso equipo revisaraos. Non imos poder enviar unha resposta debido ao gran número de informes que recibimos.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>

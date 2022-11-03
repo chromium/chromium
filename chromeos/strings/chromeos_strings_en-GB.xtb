@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Cancel print job</translation>
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
-<translation id="2182088270354640012">Thanks for the feedback. Your feedback helps improve Chrome OS and will be reviewed by the Chrome OS team. Because of the number of reports submitted, you won’t receive a direct reply.</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
 <translation id="2212733584906323460">Name resolution</translation>
 <translation id="2217935453350629363">Current speed</translation>
@@ -690,7 +689,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="773153675489693198">Cycle count</translation>
 <translation id="7747039790905080783">Pre-shared key</translation>
 <translation id="7762130827864645708">Your password change was successful. Please use the new password from now on.</translation>
-<translation id="7762839321248874531">Send <ph name="BEGIN_LINK1" />system and app info<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Domain suffix match</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7784116172884276937">No DNS servers are set up</translation>
@@ -827,7 +825,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="9082718469794970195">Use this video</translation>
 <translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
-<translation id="9092255287806472980">Your feedback helps improve Chrome OS and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>

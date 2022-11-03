@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
 <translation id="2163937499206714165">Activa el mode fosc</translation>
 <translation id="2180197493692062006">S'ha produït un error. Prova de tornar a obrir l'aplicació.</translation>
-<translation id="2182088270354640012">Gràcies pels teus suggeriments, que ajuden a millorar ChromeOS. El nostre equip de ChromeOS els revisarà. Com que s'envia un gran nombre d'informes, no rebràs una resposta directa.</translation>
 <translation id="2209788852729124853">Restableix els comptadors de trànsit</translation>
 <translation id="2212733584906323460">Resolució del nom</translation>
 <translation id="2217935453350629363">Velocitat actual</translation>
@@ -689,7 +688,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="773153675489693198">Nombre de cicles</translation>
 <translation id="7747039790905080783">Clau precompartida</translation>
 <translation id="7762130827864645708">La contrasenya s'ha canviat correctament. Utilitza la contrasenya nova a partir d'ara.</translation>
-<translation id="7762839321248874531">Envia <ph name="BEGIN_LINK2" />mètriques<ph name="END_LINK2" /> i <ph name="BEGIN_LINK1" />informació del sistema i de l'aplicació<ph name="END_LINK1" /></translation>
 <translation id="7763470514545477072">Sufix de domini coincident</translation>
 <translation id="7769672763586021400">Identificador del model</translation>
 <translation id="7784116172884276937">No hi ha cap servidor DNS configurat</translation>
@@ -826,7 +824,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="9082718469794970195">Utilitza aquest vídeo</translation>
 <translation id="9087578468327036362">Informa d'aquesta consulta</translation>
 <translation id="9088306295921699330">Ús actual</translation>
-<translation id="9092255287806472980">Els teus suggeriments ajuden a millorar Chrome OS. El nostre equip els revisarà. Com que hi ha un gran nombre d'informes, no podrem respondre.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>

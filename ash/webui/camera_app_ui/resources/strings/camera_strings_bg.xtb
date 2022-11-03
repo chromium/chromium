@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Файлът „<ph name="FILE" />“ не може да се експортира</translation>
 <translation id="1899697626337024495">Разделителна способност за снимките</translation>
 <translation id="1925845977604399247">Към галерията</translation>
+<translation id="199526504800285197">Записването е спряно</translation>
+<translation id="1995951722691075581">Записът ви спря поради недостатъчно място в хранилището на устройството. За да записвате още видеоклипове, трябва да освободите място.</translation>
 <translation id="2022953316617983419">QR код</translation>
 <translation id="2036868001356139588">Продължителност на таймера</translation>
 <translation id="2050339315714019657">Вертикално</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Правете снимки и записвайте видеоклипове с камерата си.</translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
+<translation id="2577915835281444458">Записването скоро ще спре. Отворете хранилището на устройството, за да освободите място.</translation>
 <translation id="2599796128805996109">Задна камера</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек</translation>
 <translation id="2761536921376153655">Тип сканиране</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Сканиране на баркод</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
+<translation id="4060608699153044055">Не можете да записвате поради недостатъчно място в хранилището на устройството. За целта трябва да освободите място.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> мегапиксела</translation>
 <translation id="4118525110028899586">Пауза на записа</translation>
 <translation id="4121305183798804752">Открит е документ</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">Горен десен ъгъл на документа</translation>
 <translation id="7933675232020478311">Премества се надолу и надясно</translation>
 <translation id="7983668134180549431">Разпознат е текст.</translation>
+<translation id="8079255378695216066">Записването не може да се стартира</translation>
 <translation id="8120146556401698679">Панорамно придвижване, накланяне и промяна на мащаба</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8145038249676204903">Превключване към режима за правене на снимки</translation>

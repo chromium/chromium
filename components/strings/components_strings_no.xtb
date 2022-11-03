@@ -264,6 +264,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1567040042588613346">Denne regelen fungerer som den skal, men den samme verdien er angitt et annet sted og overstyres av denne regelen.</translation>
 <translation id="1569487616857761740">Oppgi utløpsdato</translation>
 <translation id="1569694109004336106">Google Chrome prøver å slå på Windows Hello for utfylling av passord.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Noe gikk galt da denne nettsiden skulle åpnes.</translation>
 <translation id="1586541204584340881">hvilke utvidelser du har installert</translation>
@@ -1098,6 +1099,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3787705759683870569">Utløper <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Størrelse 16</translation>
 <translation id="3789841737615482174">Installer</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
 <translation id="3793574014653384240">Tall for og årsaker til krasjene som har forekommet nylig</translation>
 <translation id="3795344968043407227">Indie og alternativ musikk</translation>
 <translation id="3799805948399000906">Forespurt skrifttype</translation>
@@ -1386,7 +1388,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4542971377163063093">Skuff 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Prøv å slå av utvidelsene dine.</translation>
-<translation id="4559134504959026834">Dette nettstedet er med i en gruppe som er definert av <ph name="SET_OWNER" /> og kan se aktiviteten din</translation>
 <translation id="4566017918361049074">Utendørs</translation>
 <translation id="4567686777917670400">Administratoren kan endre nettleseroppsettet eksternt. Aktiviteten på denne enheten kan også administreres utenfor Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Levering</translation>
@@ -2494,6 +2495,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7441627299479586546">Feil emne for innstillinger</translation>
 <translation id="7442725080345379071">Lys oransje</translation>
 <translation id="7445762425076701745">Identiteten til tjernen du er tilkoblet kan ikke valideres. Du er tilkoblet en tjener som bruker et navn som kun er gyldig i ditt nettverk, som en ekstern sertifiseringsinstans ikke har noen mulighet til å validere eierskap for. Siden enkelte sertifiseringsinstanser likevel utsteder sertifikater for disse navnene, er det umulig å sikre at du er tilkoblet ønsket nettsted og ikke en angriper.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om dette problemet.</translation>
 <translation id="7455133967321480974">Bruk global standardinnstilling (Blokkér)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2799,6 +2801,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8218327578424803826">Tilordnet posisjon:</translation>
 <translation id="8225771182978767009">Personen som konfigurerte denne datamaskinen, har valgt å blokkere dette nettstedet.</translation>
 <translation id="8228419419708659934">Visning med to sider</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Sportsspill</translation>
 <translation id="8232343881378637145">Plattformtemperatur</translation>

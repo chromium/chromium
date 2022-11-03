@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
 <translation id="2163937499206714165">Włącz tryb ciemny</translation>
 <translation id="2180197493692062006">Coś poszło nie tak. Spróbuj ponownie otworzyć aplikację.</translation>
-<translation id="2182088270354640012">Dziękujemy za opinię. Twoją opinię przeczyta nasz zespół, bo opinie pomagają nam ulepszać Chrome OS. Ze względu na liczbę przesłanych zgłoszeń nie będziemy mogli wysłać bezpośredniej odpowiedzi.</translation>
 <translation id="2209788852729124853">Zresetuj liczniki natężenia ruchu</translation>
 <translation id="2212733584906323460">Rozwiązanie nazwy</translation>
 <translation id="2217935453350629363">Obecna szybkość</translation>
@@ -689,7 +688,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="773153675489693198">Liczba cykli</translation>
 <translation id="7747039790905080783">Klucz wstępny</translation>
 <translation id="7762130827864645708">Hasło zostało zmienione. Od teraz używaj nowego hasła.</translation>
-<translation id="7762839321248874531">Wyślij <ph name="BEGIN_LINK1" />informacje o systemie i aplikacjach<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />dane<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Dopasowanie sufiksu domeny</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
 <translation id="7784116172884276937">Nie skonfigurowano serwerów DNS</translation>
@@ -826,7 +824,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="9082718469794970195">Użyj tego filmu</translation>
 <translation id="9087578468327036362">Zgłoś to zapytanie</translation>
 <translation id="9088306295921699330">Obecne wykorzystanie</translation>
-<translation id="9092255287806472980">Twoją opinię przeczyta nasz zespół, bo takie informacje pomagają nam ulepszać Chrome OS. Ze względu na dużą liczbę zgłoszeń nie będziemy mogli wysłać odpowiedzi.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>

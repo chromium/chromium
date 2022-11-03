@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
 <translation id="2163937499206714165">Vklop temnega načina</translation>
 <translation id="2180197493692062006">Prišlo je do napake. Poskusite znova odpreti aplikacijo.</translation>
-<translation id="2182088270354640012">Hvala za povratne informacije. S povratnimi informacijami, ki jih pregleda skupina za Chrome OS, pomagate izboljšati Chrome OS. Zaradi velikega števila prejetih poročil ne boste prejeli neposrednega odgovora.</translation>
 <translation id="2209788852729124853">Ponastavi števce prometa</translation>
 <translation id="2212733584906323460">Ločljivost imena</translation>
 <translation id="2217935453350629363">Trenutna hitrost</translation>
@@ -689,7 +688,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="773153675489693198">Število ciklov</translation>
 <translation id="7747039790905080783">Vnaprej deljeni ključ</translation>
 <translation id="7762130827864645708">Sprememba gesla je bila uspešna. Od zdaj naprej uporabljajte novo geslo.</translation>
-<translation id="7762839321248874531">Pošlji <ph name="BEGIN_LINK1" />podatke o sistemu in aplikacijah<ph name="END_LINK1" /> ter <ph name="BEGIN_LINK2" />meritve<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Ujemanje pripone domene</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7784116172884276937">Strežniki DNS niso nastavljeni.</translation>
@@ -826,7 +824,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="9082718469794970195">Uporabi ta videoposnetek</translation>
 <translation id="9087578468327036362">Prijavite to poizvedbo</translation>
 <translation id="9088306295921699330">Trenutna poraba</translation>
-<translation id="9092255287806472980">S povratnimi informacijami, ki jih pregleda naša skupina, pomagate izboljšati Chrome OS. Zaradi velikega števila poročil vam ne bomo mogli odgovoriti.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>

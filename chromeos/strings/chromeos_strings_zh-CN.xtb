@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">取消打印任务</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
-<translation id="2182088270354640012">感谢您提供反馈。您的反馈将有助于我们改进 Chrome OS，并将由 Chrome OS 团队审核。由于我们收到的举报数量众多，您无法收到直接回复。</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
 <translation id="2212733584906323460">域名解析</translation>
 <translation id="2217935453350629363">当前速度</translation>
@@ -628,6 +627,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失败 - 授权失败</translation>
 <translation id="7103252855940681301">第 <ph name="INDEX" /> 部设备（共 <ph name="COUNT" /> 部），名称为“<ph name="NAME" />”。</translation>
+<translation id="7130438335435247835">接入点名称 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
@@ -689,7 +689,6 @@
 <translation id="773153675489693198">循环计数</translation>
 <translation id="7747039790905080783">预共享的密钥</translation>
 <translation id="7762130827864645708">您已成功更改了密码。从现在开始，请改用这个新密码。</translation>
-<translation id="7762839321248874531">发送<ph name="BEGIN_LINK1" />系统和应用信息<ph name="END_LINK1" />以及<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">域名后缀匹配</translation>
 <translation id="7769672763586021400">型号 ID</translation>
 <translation id="7784116172884276937">未设置 DNS 服务器</translation>
@@ -826,7 +825,6 @@
 <translation id="9082718469794970195">使用此视频</translation>
 <translation id="9087578468327036362">报告此次查询</translation>
 <translation id="9088306295921699330">目前用量</translation>
-<translation id="9092255287806472980">您的反馈将有助于我们改进 Chrome OS，并将由我们的团队审核。由于举报数量众多，我们无法发送回复。</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>

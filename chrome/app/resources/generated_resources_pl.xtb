@@ -196,7 +196,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1174366174291287894">Twoje połączenie jest zawsze bezpieczne, chyba że Chrome poinformuje Cię, że jest inaczej</translation>
 <translation id="117445914942805388">Aby wyczyścić dane przeglądania ze wszystkich swoich zsynchronizowanych urządzeń i z konta Google, <ph name="BEGIN_LINK" />otwórz ustawienia synchronizacji<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Drukuj...</translation>
-<translation id="1176378369905028399">Hasło do tego konta jest już zapisane w Menedżerze haseł Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Nie zezwolono na edytowanie plików ani folderów na urządzeniu</translation>
 <translation id="1177863135347784049">Niestandardowe</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
@@ -409,6 +408,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1388253969141979417">Zezwolono na używanie mikrofonu</translation>
 <translation id="1388728792929436380">Po ukończeniu aktualizacji <ph name="DEVICE_TYPE" /> uruchomi się ponownie.</translation>
 <translation id="1389601498324964367">Miejsce na dane objęte limitem</translation>
+<translation id="1390113502208199250">Aby używać funkcji licencji na Chrome Education, musisz przywrócić urządzenie do ustawień fabrycznych.</translation>
 <translation id="139013308650923562">Mogą używać czcionek zainstalowanych na urządzeniu</translation>
 <translation id="1390548061267426325">Otwórz jako zwykłą kartę</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> nie ma uprawnień do drukowania na urządzeniu <ph name="PRINTER_NAME" />. Skontaktuj się z administratorem.</translation>
@@ -479,6 +479,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1436784010935106834">Usunięto</translation>
 <translation id="1437986450143295708">Opisz szczegółowo problem</translation>
 <translation id="1439671507542716852">wsparcie długoterminowe</translation>
+<translation id="1440090277117135316">Rejestracja w szkole została zakończona</translation>
 <translation id="144283815522798837">Wybrane elementy: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Ustawianie aktywnego zgłoszenia Kerberos</translation>
 <translation id="1444628761356461360">Tym urządzeniem zarządza właściciel urządzenia: <ph name="OWNER_EMAIL" />.</translation>
@@ -1807,7 +1808,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2643698698624765890">Aby zarządzać zainstalowanymi rozszerzeniami, kliknij Rozszerzenia w menu Okno.</translation>
 <translation id="2645047101481282803">Twoim urządzeniem zarządza <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2645515095874728277">Hasło do tego konta jest już zapisane na tym urządzeniu</translation>
 <translation id="2649045351178520408">Plik ASCII z kodowaniem Base64, łańcuch certyfikatów</translation>
 <translation id="2652129567809778422">Wybierz hasło</translation>
 <translation id="2653033005692233957">Błąd wyszukiwania</translation>
@@ -2382,6 +2382,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3170072451822350649">Możesz też pominąć logowanie i <ph name="LINK_START" />przeglądać internet jako gość<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nowa karta po lewej</translation>
 <translation id="3177909033752230686">Język strony:</translation>
+<translation id="3177914167275935955">Twoje urządzenie ma licencję na Chrome Education, ale Twoja nazwa użytkownika nie jest powiązana z kontem Google for Education. Utwórz takie konto na stronie g.co/workspace/edusignup, korzystając z dodatkowego urządzenia.</translation>
 <translation id="3179982752812949580">Czcionka tekstu</translation>
 <translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
 <translation id="3182749001423093222">Sprawdzanie pisowni</translation>
@@ -2596,7 +2597,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3399432415385675819">Powiadomienia zostaną wyłączone</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – z przeplotem</translation>
 <translation id="3401484564516348917">Odczytywanie informacji o przeglądarce, systemie operacyjnym, urządzeniu, zainstalowanym oprogramowaniu, wartościach rejestru i plikach</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{Na tym urządzeniu jest zapisane {COUNT} hasło}few{Na tym urządzeniu są zapisane {COUNT} hasła}many{Na tym urządzeniu jest zapisanych {COUNT} haseł}other{Na tym urządzeniu jest zapisane {COUNT} hasła}}</translation>
 <translation id="3402255108239926910">Wybierz awatara</translation>
 <translation id="3402585168444815892">Rejestruję w trybie demonstracyjnym</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4051,6 +4051,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4762489666082647806">Kolor wskaźnika</translation>
 <translation id="4762718786438001384">Bardzo mało miejsca na dysku</translation>
 <translation id="4763408175235639573">Podczas wyświetlania strony zostały utworzone te pliki cookie</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> nie jest prawidłowym kontem Google for Education. Skontaktuj się z administratorem. Jeśli jesteś administratorem, możesz skonfigurować usługę dla swojej organizacji na stronie: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{To urządzenie będzie zapisane przez miesiąc. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}few{To urządzenie będzie zapisane przez {MONTHS} miesiące. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}many{To urządzenie będzie zapisane przez {MONTHS} miesięcy. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}other{To urządzenie będzie zapisane przez {MONTHS} miesiąca. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}}</translation>
 <translation id="4765582662863429759">Zezwala Wiadomościom na Androida przesyłać SMS-y z telefonu na Chromebooka</translation>
 <translation id="4766598565665644999">Wszystkie rozszerzenia mogą odczytywać i zmieniać dane w witrynie <ph name="HOST" /></translation>
@@ -4695,7 +4696,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5392192690789334093">Zezwolono na wysyłanie powiadomień</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}few{# linki}many{# linków}other{# linku}}</translation>
 <translation id="5395498824851198390">Czcionka domyślna</translation>
-<translation id="5396325212236512832">Loguj się automatycznie do witryn i aplikacji, korzystając z zapisanych danych logowania. Jeśli ta funkcja jest wyłączona, przed każdym zalogowaniem się w witrynie lub aplikacji zobaczysz prośbę o potwierdzenie.</translation>
 <translation id="5397378439569041789">Zarejestruj urządzenie działające w trybie kiosku lub znaku</translation>
 <translation id="5397794290049113714">Ty</translation>
 <translation id="5398497406011404839">Ukryte zakładki</translation>
@@ -4711,6 +4711,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5407167491482639988">Zniekształcenia</translation>
 <translation id="5408750356094797285">Powiększenie: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Z Twojego konta Google</translation>
+<translation id="5411022484772257615">Nie udało się ukończyć rejestracji w szkole</translation>
 <translation id="5413640305322530561">Więcej informacji o danych diagnostycznych i danych o korzystaniu</translation>
 <translation id="5414198321558177633">Odświeżam listę profili. Może to potrwać kilka minut.</translation>
 <translation id="5414566801737831689">Odczyt ikon otwieranych stron</translation>
@@ -5496,6 +5497,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6129953537138746214">Spacja</translation>
 <translation id="6130692320435119637">Dodaj Wi-Fi</translation>
 <translation id="6130887916931372608">Klawisz klawiatury</translation>
+<translation id="6132714462430777655">Pominąć rejestrację w szkole?</translation>
 <translation id="6135823405800500595">Sprawdź, czy telefon jest wystarczająco blisko, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi</translation>
 <translation id="6135826623269483856">Nie zezwolono na zarządzanie oknami na wszystkich wyświetlaczach</translation>
 <translation id="6136114942382973861">Zamknij pasek pobranych plików</translation>
@@ -6031,7 +6033,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6647441008198474441">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić</translation>
 <translation id="6648911618876616409">Masz gotową do zainstalowania aktualizację krytyczną. Zaloguj się, by zacząć.</translation>
 <translation id="6649018507441623493">Chwileczkę…</translation>
-<translation id="6650234781371031356">Hasło, którego używasz na stronie <ph name="WEBSITE" />, jest zapisane na tym urządzeniu i na koncie Google. Skąd chcesz je usunąć?</translation>
 <translation id="665061930738760572">Otwórz w &amp;nowym oknie</translation>
 <translation id="6651237644330755633">Ufaj temu certyfikatowi przy identyfikowaniu witryn internetowych</translation>
 <translation id="6651495917527016072">Zsynchronizuj sieci Wi-Fi z telefonem. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -6718,6 +6719,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7310598146671372464">Logowanie nie udało się. Serwer nie obsługuje wybranych typów szyfrowania Kerberos. Skontaktuj się z administratorem.</translation>
 <translation id="7311089766378749632">Prośby o uprawnienia do odczytywania i modyfikowania strony <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
+<translation id="7317831949569936035">Rejestracja w szkole</translation>
 <translation id="7320213904474460808">Łącz domyślnie z siecią</translation>
 <translation id="7321545336522791733">Serwer niedostępny</translation>
 <translation id="7323315405936922211">Rozmiar obszaru kursora</translation>

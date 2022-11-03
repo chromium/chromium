@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
 <translation id="2163937499206714165">Sötét mód bekapcsolása</translation>
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
-<translation id="2182088270354640012">Köszönjük a visszajelzést! A Chrome OS csapata átnézi a visszajelzését, így Ön is segíthet a Chrome OS fejlesztésében. A beküldött jelentések nagy száma miatt nem tudunk közvetlenül válaszolni.</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
 <translation id="2212733584906323460">Névfeloldás</translation>
 <translation id="2217935453350629363">Jelenlegi sebesség</translation>
@@ -628,6 +627,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Sikertelen – Sikertelen hitelesítés</translation>
 <translation id="7103252855940681301"><ph name="COUNT" />/<ph name="INDEX" />. eszköz, <ph name="NAME" /> néven.</translation>
+<translation id="7130438335435247835">Hozzáférési pont neve (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Névszerver}other{Névszerverek}}</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144878232160441200">Újra</translation>
@@ -689,7 +689,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="773153675489693198">Ciklusok száma</translation>
 <translation id="7747039790905080783">Előre megosztott kulcs</translation>
 <translation id="7762130827864645708">A jelszómódosítás sikeres volt. Mostantól használja az új jelszót.</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Rendszer- és alkalmazásadatok<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />mutatók<ph name="END_LINK2" /> küldése</translation>
 <translation id="7763470514545477072">Domainvégződés – egyezés</translation>
 <translation id="7769672763586021400">Modellazonosító</translation>
 <translation id="7784116172884276937">Nincsenek beállítva DNS-szerverek</translation>
@@ -826,7 +825,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="9082718469794970195">E videó használata</translation>
 <translation id="9087578468327036362">Bejelentheti ezt a lekérdezést.</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>
-<translation id="9092255287806472980">Csapatunk átnézi a visszajelzését, így Ön is segíthet a Chrome OS fejlesztésében. A jelentések nagy száma miatt nem tudunk válaszolni.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>

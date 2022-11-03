@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> eksport qilinmadi</translation>
 <translation id="1899697626337024495">Rasm tiniqligi</translation>
 <translation id="1925845977604399247">Galereyani ochish</translation>
+<translation id="199526504800285197">Yozib olish toʻxtatildi</translation>
+<translation id="1995951722691075581">Bu qurilma xotirasida joy oz qolgani uchun yozib olish toʻxtatildi. Koʻproq video yozish uchun qurilmangizda boʻsh joy oching.</translation>
 <translation id="2022953316617983419">QR kod</translation>
 <translation id="2036868001356139588">Taymer davomiyligi</translation>
 <translation id="2050339315714019657">Bo‘yiga</translation>
@@ -78,6 +80,7 @@ Xotiraga kirishga ruxsati bor ilovalar surat va videolaringiz bilan ishlay oladi
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Shtrix-kodni skanerlash</translation>
 <translation id="3892148308691398805">Matnni nusxalash</translation>
+<translation id="4060608699153044055">Bu qurilma xotirasida joy oz qolgani uchun yozib olish imkonsiz. Yozib olishni boshlash uchun qurilmangizda boʻsh joy oching.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pauza qilish</translation>
 <translation id="4121305183798804752">Hujjat aniqlandi</translation>
@@ -161,6 +164,7 @@ Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni bi
 <translation id="7748344063862150053">Hujjatning yuqori oʻng burchagi</translation>
 <translation id="7933675232020478311">Pastga va oʻngga surish</translation>
 <translation id="7983668134180549431">Matn aniqlandi.</translation>
+<translation id="8079255378695216066">Yozib olish boshlanmadi</translation>
 <translation id="8120146556401698679">Panorama qiyalash zum</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8145038249676204903">Suratga olish rejimi</translation>

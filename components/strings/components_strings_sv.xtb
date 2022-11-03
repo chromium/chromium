@@ -1372,6 +1372,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill översätta den här sidan med Google Översätt</translation>
 <translation id="4514308731478712184">Inaktivera Sökningar</translation>
 <translation id="4515275063822566619">Kort och adresser har hämtats från Chrome och ditt Google-konto (<ph name="ACCOUNT_EMAIL" />). Du hanterar dessa under <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Möjligheten att ladda ned den här filen blockeras av administratörspolicyn</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Monarch-kuvert</translation>
 <translation id="4521916730539354575">Vänster fack</translation>
@@ -1385,7 +1386,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4542971377163063093">Fack 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Testa att inaktivera tilläggen.</translation>
-<translation id="4559134504959026834">Den här webbplatsen ingår i en grupp definierad av <ph name="SET_OWNER" />, som kan se din aktivitet</translation>
 <translation id="4566017918361049074">Utomhusaktiviteter</translation>
 <translation id="4567686777917670400">Administratören kan ändra webbläsarinställningarna på distans. Aktivitet på den här enheten kan hanteras även utanför Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Leverans</translation>
@@ -2363,6 +2363,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Det går inte att skicka till den här adressen. Välj en annan adress.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Uppladdning blockeras</translation>
 <translation id="7132939140423847331">Administratören tillåter inte att denna data kopieras.</translation>
 <translation id="7135130955892390533">Visa status</translation>
 <translation id="7138472120740807366">Leveranssätt</translation>
@@ -2593,6 +2594,7 @@ Mer information.
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659327900411729175">Kaku 8-kuvert</translation>
 <translation id="7659878911471462949">Glädjetårar</translation>
+<translation id="766014026101194726">{0,plural, =1{Möjligheten att ladda upp den här filen blockeras av administratörspolicyn}other{Möjligheten att ladda upp # filer blockeras av administratörspolicyn}}</translation>
 <translation id="7662298039739062396">Inställningen styrs av ett tillägg</translation>
 <translation id="7663736086183791259">Certifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Tillåts inte i inkognitoläge</translation>
@@ -2687,6 +2689,7 @@ Mer information.
 <translation id="7939744324936979484">Folkmusik och traditionell musik</translation>
 <translation id="7941628148012649605">Chou 4-kuvert</translation>
 <translation id="7942349550061667556">Röd</translation>
+<translation id="7943397946612013052">Nedladdning blockeras</translation>
 <translation id="7943893128817522649">Får begära tillstånd att ladda ned flera filer automatiskt</translation>
 <translation id="7947285636476623132">Kontrollera utgångsår och försök igen</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill läsa mer om funktioner i Chrome</translation>

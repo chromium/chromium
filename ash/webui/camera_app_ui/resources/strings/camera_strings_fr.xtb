@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Impossible d'exporter <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Résolution photo</translation>
 <translation id="1925845977604399247">Accéder à la galerie</translation>
+<translation id="199526504800285197">L'enregistrement s'est arrêté</translation>
+<translation id="1995951722691075581">L'enregistrement s'est arrêté, car l'espace de stockage de votre appareil est insuffisant. Pour enregistrer plus de vidéos, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="2022953316617983419">Code QR</translation>
 <translation id="2036868001356139588">Durée du retardateur</translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -77,6 +79,7 @@
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3838931309141338733">Lire le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
+<translation id="4060608699153044055">Vous ne pouvez pas lancer l'enregistrement, car l'espace de stockage de votre appareil est insuffisant. Pour lancer l'enregistrement, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Suspendre l'enregistrement</translation>
 <translation id="4121305183798804752">Document détecté</translation>
@@ -160,6 +163,7 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="7748344063862150053">Angle supérieur droit du document</translation>
 <translation id="7933675232020478311">Déplacement vers le bas à droite</translation>
 <translation id="7983668134180549431">Texte détecté.</translation>
+<translation id="8079255378695216066">Impossible de lancer l'enregistrement</translation>
 <translation id="8120146556401698679">Panoramique, inclinaison, zoom</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8145038249676204903">Passer à la prise de photo</translation>

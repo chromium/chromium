@@ -139,7 +139,6 @@
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2080769225927880590">সঠিক অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
-<translation id="209018056901015185">ডেস্কটপ সাইট অনুরোধ করুন</translation>
 <translation id="2103075008456228677">history.google.com খুলুন</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি আইটেম সরানো হয়েছে</translation>
 <translation id="2122754583996902531">আপনার ব্রাউজার ম্যানেজ করা হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -226,6 +225,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">লিঙ্ক তৈরি করা যাচ্ছে না</translation>
 <translation id="2786701870377699570">সমস্ত সিঙ্ক করা ডিভাইসে ট্যাব সার্চ করুন</translation>
+<translation id="2797029671965852011">ইতিহাস দেখান</translation>
 <translation id="2800683595868705743">ট্যাব পরিবর্তনকারী থেকে বেরিয়ে যান</translation>
 <translation id="2815198996063984598">২. 'ডিফল্ট ব্রাউজার অ্যাপ' বিকল্পে ট্যাপ করুন</translation>
 <translation id="2820289420301699633">আপনার অ্যাডমিনিস্ট্রেটরের কাছে Chrome-এর নিয়ন্ত্রণ আছে এবং তিনি এর ডেটা অ্যাক্সেস করতে পারবেন</translation>
@@ -328,7 +328,9 @@
 <translation id="3530206579861815432">আপনার সমস্ত সিঙ্ক করা ডিভাইসে খোলা এবং সম্প্রতি বন্ধ হওয়া ট্যাব দ্রুত খুঁজুন।</translation>
 <translation id="3533202363250687977">সব ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
 <translation id="3533436815740441613">নতুন ট্যাব খুলুন</translation>
+<translation id="3540141921715814660">বুকমার্কে যোগ করুন</translation>
 <translation id="3551320343578183772">ট্যাব বন্ধ করুন</translation>
+<translation id="3565207542107370586">ব্রাউজ করা ডেটা মুছে দিন…</translation>
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="3581564640715911333">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3588820906588687999">নতুন ট্যাবে ছবি খুলুন</translation>
@@ -347,6 +349,7 @@
 <translation id="37207012422556617">জনপ্রিয় সার্চ</translation>
 <translation id="3740397331642243698">এটি ইনপুট করা ইউআরএলগুলিকে Google Chrome-এ, 'ছদ্মবেশী' মোডে খোলে।</translation>
 <translation id="3762232513783804601">আপনার iPad-এর জন্য তৈরি করা হয়েছে</translation>
+<translation id="3768725474733206671">শেষে বন্ধ হওয়া ট্যাবটি আবার খুলুন</translation>
 <translation id="3771033907050503522">ছদ্মবেশী ট্যাবগুলি</translation>
 <translation id="3775743491439407556">সিঙ্ক কাজ করছে না</translation>
 <translation id="3779810277399252432">কোনও ইন্টারনেট সংযোগ নেই৷</translation>
@@ -357,9 +360,11 @@
 <translation id="3803696231112616155">এই সাইট অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
 <translation id="3819183753496523827">আপনি অফলাইন আছেন। ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।</translation>
+<translation id="3835964409414434850">পরের ট্যাবে যান</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3861486700625780712">ফলো করা বন্ধ করুন</translation>
+<translation id="387280738075653372">এখান থেকে Chrome ডাউনলোড করুন।</translation>
 <translation id="3892144330757387737">আপনি এখানে আপনার ইতিহাস দেখতে পাবেন</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3904829425754749514">আপনার প্রতিষ্ঠান সিঙ্ক করার সুবিধা বন্ধ করে দিয়েছে। এখনও এই ডিভাইসে আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্য সেটিংস দেখতে পাবেন। আপনি কোনও পরিবর্তন করলে, তা আপনার অ্যাকাউন্টে সিঙ্ক হবে না।</translation>
@@ -377,7 +382,6 @@
 <translation id="3995521777587992544">পৃষ্ঠা লোড করার প্রগ্রেস বার, <ph name="EMAIL" /> লোড করা হয়েছে।</translation>
 <translation id="4002066346123236978">শিরোনাম</translation>
 <translation id="4004204301268239848">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করা থাকে যাতে আপনি যেকোনও ডিভাইসে সেগুলি ব্যবহার করতে পারেন।</translation>
-<translation id="4006921758705478413">আপনার অন্য ডিভাইসে পাঠান</translation>
 <translation id="4018310736049373830">অ্যাক্টিভিটি ম্যানেজ করুন</translation>
 <translation id="4038354071007134711">এই ডিভাইসের কোনো অ্যাপ্লিকেশান ফাইলটি খুলতে পারবে না।</translation>
 <translation id="4042870976416480368">পৃষ্ঠাতে খুঁজুন</translation>
@@ -545,6 +549,7 @@
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5339316356165661760">সিঙ্ক চালু করুন</translation>
+<translation id="536067926684072644">বুকমার্ক দেখান</translation>
 <translation id="5360976571138293719">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="5386314158584363703">আপনার ফলো করা সাইট এখানে দেখতে পাবেন</translation>
 <translation id="5388358297987318779">ছবি খুলুন</translation>
@@ -578,6 +583,7 @@
 <translation id="5631164295104953411">পেমেন্টের পদ্ধতি যোগ করুন</translation>
 <translation id="5636282538000367086">Chrome-এ নতুন কী ফিচার আছে তা খুঁজুন</translation>
 <translation id="5652623411397330904">আপনার ট্র্যাক করা প্রোডাক্ট এখানে দেখা যাবে।</translation>
+<translation id="5657859710142657190">ট্যাব গ্রিডে যান</translation>
 <translation id="5659593005791499971">ইমেল আইডি</translation>
 <translation id="5669335982068190158">আপনার iPhone রিসেটের অংশ হিসেবে আপনি সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য নিচে 'চালিয়ে যান' বোতামে ট্যাপ করুন।</translation>
 <translation id="5669528293118408608">www</translation>
@@ -594,6 +600,7 @@
 <translation id="5737974891429562743">অ্যাকাউন্ট সাইন-ইনের বিশদ বিবরণ পুরনো হয়ে গেছে। সিঙ্ক শুরু করার জন্য আপডেট করুন।</translation>
 <translation id="5738385766833540397">আপনার ট্র্যাক করা প্রোডাক্টের দাম কমার বিজ্ঞপ্তি কীভাবে পাবেন তা ম্যানেজ করুন</translation>
 <translation id="5738887413654608789">এই আদেশটি আপনার পারিপার্শ্বিক পরিবেশের উপর নির্ভর করে ওয়েব পৃষ্ঠার খোঁজ করতে দেয়।</translation>
+<translation id="5745916533876677730">আগের ট্যাবে যান</translation>
 <translation id="5758631781033351321">আপনি নিজের পড়ার তালিকা এখানে খুঁজে পাবেন</translation>
 <translation id="5765456154762864099">মেনু → সেটিংস → ডিফল্ট ব্রাউজার</translation>
 <translation id="5782227691023083829">অনুবাদ হচ্ছে...</translation>
@@ -610,6 +617,7 @@
 <translation id="5857090052475505287">নতুন ফোল্ডার</translation>
 <translation id="5857675236236529683">প্রস্তুত থাকলে, এখানে আপনার পড়ার তালিকা দেখুন</translation>
 <translation id="5857770089550859117">সিঙ্ক শুরু করতে পাসফ্রেজ প্রয়োজন।</translation>
+<translation id="5859715514067755465">ফরওয়ার্ড করা</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5869029295770560994">ঠিক আছে, বুঝেছি</translation>
 <translation id="5871497086027727873">১টি আইটেম সরানো হয়েছে</translation>
@@ -654,6 +662,7 @@
 <translation id="6152406514676263192">আপনার আগ্রহের উপর ভিত্তি করে সবচেয়ে প্রাসঙ্গিক কন্টেন্টের জন্য সিঙ্ক করুন।</translation>
 <translation id="6159839020698489198">ঐচ্ছিক</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
+<translation id="6170450281939467187">অনুবাদ করা যায়নি</translation>
 <translation id="6177442314419606057">Chrome-এ সার্চ করুন</translation>
 <translation id="6184086493125982861">ট্যাব দেখান</translation>
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
@@ -689,6 +698,7 @@
 <translation id="6374469231428023295">আবার চেষ্টা করুন</translation>
 <translation id="6377118281273296434">সাইটের নিরাপত্তা</translation>
 <translation id="6380866119319257197">আপনি যদি আপনার পাসফ্রেজ ভুলে যান বা এই সেটিং পরিবর্তন করতে চান, তাহলে <ph name="BEGIN_LINK" />সিঙ্ক পুনরায় সেট করুন<ph name="END_LINK" /></translation>
+<translation id="6383719166112032471">লোকেশন খুলুন…</translation>
 <translation id="6387994324662817823">শুধুমাত্র এই ডিভাইসের 'Google পাসওয়ার্ড ম্যানেজারে' পাসওয়ার্ড সেভ করা হয়।</translation>
 <translation id="6389470377220713856">কার্ডে থাকা নাম</translation>
 <translation id="6403371459378431832">সব ডিভাইসে আপনার ডেটা সিঙ্ক করুন</translation>
@@ -700,6 +710,7 @@
 আপনার সিঙ্ক পাসফ্রেজের মাধ্যমে আপনার ডেটা <ph name="TIME" /> এ এনক্রিপটেড হয়েছে। সিঙ্ক শুরু করতে এটি লিখুন।</translation>
 <translation id="6418346271604475326">পিডিএফ প্রস্তুত হচ্ছে</translation>
 <translation id="6434591244308415567">কোনও সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।</translation>
+<translation id="6435236283694032571">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="6439338047467462846">সব কুকিকে অনুমতি দিন</translation>
 <translation id="6445051938772793705">দেশ</translation>
 <translation id="6445981559479772097">বার্তা পাঠানো হয়েছে৷</translation>
@@ -804,7 +815,6 @@
 <translation id="7133798577887235672">সম্পূর্ণ নাম</translation>
 <translation id="7136892417564438900">ক্যামেরা অনুপলব্ধ</translation>
 <translation id="7153999225810839758">পড়তে <ph name="TIME" /> মিনিট সময় লাগবে</translation>
-<translation id="7159472599653637159">মোবাইল সাইটের জন্য অনুরোধ করুন</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে ছদ্মবেশী ট্যাব আনলক করুন</translation>
 <translation id="7172852049901402487">নিরাপত্তা সংক্রান্ত সমস্যাগুলি থেকে আপনার পাসওয়ার্ডকে সুরক্ষিত রাখুন</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
@@ -864,6 +874,7 @@
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7720410380936703141">আবার চেষ্টা করুন</translation>
 <translation id="7726702057919861819">মেনু → ইতিহাস → ব্রাউজ করা ডেটা মুছুন</translation>
+<translation id="7738120385185846461">সমস্যার বিষয়ে অভিযোগ জানান…</translation>
 <translation id="7741325291586284254">নতুন ছদ্মবেশী ট্যাব পৃষ্ঠা</translation>
 <translation id="7756478488453921771">মেনু → সেটিংস → পেমেন্ট পদ্ধতি</translation>
 <translation id="7765158879357617694">সরান</translation>
@@ -958,6 +969,7 @@
 <translation id="8459333855531264009">সুরক্ষিত নয়</translation>
 <translation id="8487667956631253959">চালু করা আছে</translation>
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
+<translation id="8488923644885757471">নতুন উইন্ডো</translation>
 <translation id="8490978609246021741">পরিবর্তনগুলি সেভ করুন</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="850600235656508448">ছদ্মবেশী ট্যাবে খুলুন</translation>
@@ -1010,6 +1022,7 @@
 <translation id="8881801611828450202">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" />-এ খুঁজুন</translation>
 <translation id="8891935667620843985">Chrome-কে আপনার ডিফল্ট ব্রাউজার অ্যাপ হিসেবে সেট করে এতে অটোমেটিক লিঙ্ক খুলতে পারবেন।</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
+<translation id="890565330728586731">ফিরে যান</translation>
 <translation id="8909135823018751308">শেয়ার করুন...</translation>
 <translation id="8911759861431145525">'যোগ করুন' বিকল্পে ট্যাপ করে আপনার তথ্য লিখুন</translation>
 <translation id="891658175948553296">সাইটে টেক্সট হাইলাইট করুন</translation>
@@ -1044,7 +1057,6 @@
 <translation id="9124387962554796433">সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>
-<translation id="9152539721251340337">একটি QR কোড তৈরি করুন</translation>
 <translation id="9157836665414082580">ডায়ালগ রুদ্ধ করুন</translation>
 <translation id="9177438225260810839">খুলে থাকা ট্যাবে সার্চ করুন</translation>
 <translation id="9188680907066685419">ম্যানেজ করা অ্যাকাউন্ট থেকে সাইন-আউট করুন</translation>

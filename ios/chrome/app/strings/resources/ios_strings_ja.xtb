@@ -136,7 +136,6 @@
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2080769225927880590">有効なアカウントでログインしてください</translation>
-<translation id="209018056901015185">PC版サイトをリクエスト</translation>
 <translation id="2103075008456228677">history.google.com を開く</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件の項目を移動しました</translation>
 <translation id="2122754583996902531">お使いのブラウザは管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -367,7 +366,6 @@
 <translation id="3995521777587992544">ページ読み込み状況バー、<ph name="EMAIL" /> 読み込み完了。</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4004204301268239848">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます。</translation>
-<translation id="4006921758705478413">お使いのデバイスに送信</translation>
 <translation id="4018310736049373830">アクティビティを管理</translation>
 <translation id="4038354071007134711">このデバイスのアプリケーションではファイルを開けません。</translation>
 <translation id="4042870976416480368">ページ内を検索</translation>
@@ -779,7 +777,6 @@
 <translation id="7133798577887235672">氏名</translation>
 <translation id="7136892417564438900">カメラを使用できません</translation>
 <translation id="7153999225810839758">所要時間: <ph name="TIME" /> 分</translation>
-<translation id="7159472599653637159">モバイルサイトをリクエスト</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でシークレット タブのロックを解除</translation>
 <translation id="7172852049901402487">セキュリティの問題からパスワードを保護します</translation>
 <translation id="7173114856073700355">設定を開く</translation>
@@ -1003,7 +1000,6 @@
 <translation id="9124387962554796433">検索やその他の Google サービスをカスタマイズする目的で、履歴が Google で使用されることがあります。</translation>
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
-<translation id="9152539721251340337">QR コードを作成</translation>
 <translation id="9157836665414082580">ダイアログを表示しない</translation>
 <translation id="9177438225260810839">開いているタブを検索</translation>
 <translation id="9188680907066685419">管理対象アカウントからログアウトする</translation>

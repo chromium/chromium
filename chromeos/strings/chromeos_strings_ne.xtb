@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
 <translation id="2180197493692062006">केही चिज गडबड भयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
-<translation id="2182088270354640012">प्रतिक्रिया दिनुभएकामा धन्यवाद। तपाईंले दिनुभएको प्रतिक्रियाले Chrome OS को गुणस्तर सुधार्न मद्दत गर्छ र Chrome OS को टोलीले सो प्रतिक्रियाको समीक्षा गर्ने छ। रिपोर्टहरूको सङ्ख्या धेरै भएकाले तपाईं सीधा जवाफ प्राप्त गर्नु हुने छैन।</translation>
 <translation id="2209788852729124853">ट्राफिक काउन्टर रिसेट गर्नुहोस्</translation>
 <translation id="2212733584906323460">नेम रिजोल्युसन</translation>
 <translation id="2217935453350629363">हालको गति</translation>
@@ -688,7 +687,6 @@
 <translation id="773153675489693198">साइकल काउन्ट</translation>
 <translation id="7747039790905080783">अग्रिम रूपमा सेयर गरिएको की</translation>
 <translation id="7762130827864645708">तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया अबदेखि नयाँ पासवर्ड प्रयोग गर्नुहोस्।</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />सिस्टम तथा एपसम्बन्धी जानकारी<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />मेट्रिक्स<ph name="END_LINK2" /> पठाउनुहोस्</translation>
 <translation id="7763470514545477072">डोमेन सफिक्ससँग मिल्दोजुल्दो</translation>
 <translation id="7769672763586021400">मोडेलको ID</translation>
 <translation id="7784116172884276937">कुनै पनि DNS सर्भर सेटअप गरिएको छैन</translation>
@@ -825,7 +823,6 @@
 <translation id="9082718469794970195">यो भिडियो प्रयोग गर्नुहोस्</translation>
 <translation id="9087578468327036362">यो क्वेरीका बारेमा रिपोर्ट गर्नुहोस्</translation>
 <translation id="9088306295921699330">हालको प्रयोग</translation>
-<translation id="9092255287806472980">तपाईंले दिनुभएको प्रतिक्रियाले Chrome OS को गुणस्तर सुधार्न मद्दत गर्छ र हाम्रो टोलीले सो प्रतिक्रियाको समीक्षा गर्ने छ। रिपोर्टहरूको सङ्ख्या अत्यन्त धेरै भएकाले हामी जवाफ दिन सक्ने छैनौँ।</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> को टिकट पुन: ताजा गर्नुहोस्</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ</translation>

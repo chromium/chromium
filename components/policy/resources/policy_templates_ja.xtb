@@ -3845,7 +3845,6 @@
 <translation id="5073609397321802133">このポリシーを false に設定した場合、ユーザーは新しいタブページの背景をカスタイマイズできなくなります。既存のカスタムの背景は削除され、後からこのポリシーを true に設定しても元に戻すことはできません。
 
       このポリシーを true に設定するか、未設定のままにした場合、ユーザーは新しいタブページの背景をカスタイマイズできます。</translation>
-<translation id="5075190314377370852">このポリシーを True に設定した場合、ローカルにインストールされた CA 証明書によって正常に確認されたサーバー証明書に対し、<ph name="PRODUCT_NAME" /> は常に失効確認を行います。<ph name="PRODUCT_NAME" /> が失効のステータス情報を取得できない場合、<ph name="PRODUCT_NAME" /> ではその証明書は失効したものとして扱われます（強制エラー）。このポリシーを False に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は既存のオンライン失効確認設定を使用します。</translation>
 <translation id="5076953589932162038">First-Party Sets 設定</translation>
 <translation id="5078623750797048009">PDF の注釈を有効にする</translation>
 <translation id="5081204761483900654">制限付き管理対象ゲスト セッション</translation>

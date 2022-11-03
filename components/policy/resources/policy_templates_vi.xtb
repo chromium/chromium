@@ -4140,9 +4140,6 @@ Chúng tôi dự định loại bỏ chính sách này khỏi <ph name="PRODUCT_
 <translation id="5073609397321802133">Nếu bạn đặt chính sách này thành false, thì trang Thẻ mới sẽ không cho phép người dùng tùy chỉnh nền. Các nền tùy chỉnh hiện có sẽ bị xóa vĩnh viễn ngay cả khi sau này, bạn đặt chính sách này thành true.
 
       Nếu bạn không đặt hoặc đặt chính sách này thành true, thì người dùng có thể tùy chỉnh nền trên trang Thẻ mới.</translation>
-<translation id="5075190314377370852">Nếu bạn đặt chính sách này thành True, thì <ph name="PRODUCT_NAME" /> sẽ luôn kiểm tra trạng thái thu hồi của các chứng chỉ máy chủ đã xác thực thành công, được ký theo chứng chỉ CA đã cài đặt trên máy. Nếu <ph name="PRODUCT_NAME" /> không lấy được thông tin về trạng thái thu hồi, thì <ph name="PRODUCT_NAME" /> sẽ coi những chứng chỉ này là đã thu hồi (không hợp lệ).
-
-      Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng tùy chọn kiểm tra trạng thái thu hồi trực tuyến hiện có.</translation>
 <translation id="5076953589932162038">Cài đặt First-Party Sets</translation>
 <translation id="5078623750797048009">Cho phép chú thích trong tệp PDF</translation>
 <translation id="5081204761483900654">Các phiên khách được quản lý và bị hạn chế</translation>

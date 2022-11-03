@@ -1372,6 +1372,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite prevesti to stran s Prevajalnikom Google</translation>
 <translation id="4514308731478712184">Izklop Poti</translation>
 <translation id="4515275063822566619">Kartice in naslovi so iz Chroma in Google Računa (<ph name="ACCOUNT_EMAIL" />). Upravljate jih lahko v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Prenos te datoteke blokira skrbniški pravilnik.</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" />×<ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Kuverta Monarch</translation>
 <translation id="4521916730539354575">Levi pladenj</translation>
@@ -1385,7 +1386,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4542971377163063093">Pladenj 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Poskusite onemogočiti razširitve.</translation>
-<translation id="4559134504959026834">To spletno mesto je v skupini, ki jo definiral(-a) <ph name="SET_OWNER" />, ki si lahko ogleda vašo dejavnost</translation>
 <translation id="4566017918361049074">Na prostem</translation>
 <translation id="4567686777917670400">Skrbnik lahko spremeni nastavitev brskalnika na daljavo. Dejavnost v tej napravi morda tudi upravljajo zunaj Chromiuma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Dostava</translation>
@@ -2363,6 +2363,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Pošiljanje na ta naslov ni mogoče. Izberite drugega.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Blokirano nalaganje</translation>
 <translation id="7132939140423847331">Skrbnik je prepovedal kopiranje teh podatkov.</translation>
 <translation id="7135130955892390533">Prikaz stanja</translation>
 <translation id="7138472120740807366">Način dostave</translation>
@@ -2593,6 +2594,7 @@ Dodatne podrobnosti:
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7659327900411729175">Kuverta Kaku 8</translation>
 <translation id="7659878911471462949">Solze sreče</translation>
+<translation id="766014026101194726">{0,plural, =1{Nalaganje te datoteke blokira skrbniški pravilnik}one{Nalaganje # datoteke blokira skrbniški pravilnik}two{Nalaganje # datotek blokira skrbniški pravilnik}few{Nalaganje # datotek blokira skrbniški pravilnik}other{Nalaganje # datotek blokira skrbniški pravilnik}}</translation>
 <translation id="7662298039739062396">Nastavitev nadzira razširitev</translation>
 <translation id="7663736086183791259">Potrdilo <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">V anonimnem načinu ni dovoljeno</translation>
@@ -2687,6 +2689,7 @@ Dodatne podrobnosti:
 <translation id="7939744324936979484">Folk in tradicionalna glasba</translation>
 <translation id="7941628148012649605">Kuverta Chou 4</translation>
 <translation id="7942349550061667556">Rdeča</translation>
+<translation id="7943397946612013052">Blokiran prenos</translation>
 <translation id="7943893128817522649">Lahko zahteva samodejno prenašanje več datotek.</translation>
 <translation id="7947285636476623132">Preverite leto poteka veljavnosti in poskusite znova</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite izvedeti več o funkcijah Chroma</translation>

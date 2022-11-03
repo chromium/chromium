@@ -198,7 +198,6 @@
 <translation id="1174366174291287894">ການເຊື່ອມຕໍ່ຂອງທ່ານຈະປອດໄພສະເໝີເວັ້ນເສຍແຕ່ Chrome ຈະບອກທ່ານວ່າບໍ່ແມ່ນ</translation>
 <translation id="117445914942805388">ເພື່ອລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບອອກຈາກອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນຂອງທ່ານທັງໝົດ ແລະ ບັນຊີ Google ຂອງທ່ານ, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າຫາການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">ພິມ...</translation>
-<translation id="1176378369905028399">ລະຫັດຜ່ານສຳລັບບັນຊີນີ້ໄດ້ຖືກຈັດເກັບໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານ Google ຂອງທ່ານແລ້ວ (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ແກ້ໄຂໄຟລ໌ ຫຼື ໂຟນເດີຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1177863135347784049">ກໍານົດເອງ</translation>
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
@@ -410,6 +409,7 @@
 <translation id="1388253969141979417">ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ຈະຣີສະຕາດເມື່ອການອັບເດດສຳເລັດແລ້ວ.</translation>
 <translation id="1389601498324964367">ບ່ອນຈັດເກັບຂໍ້ມູນທີ່ມີການຈັດການໂຄຕາ</translation>
+<translation id="1390113502208199250">ທ່ານຈະຕ້ອງຣີເຊັດອຸປະກອນນີ້ໃຫ້ເປັນຄ່າຈາກໂຮງງານເພື່ອນຳໃຊ້ຄຸນສົມບັດອັບເກຣດ Chrome Education</translation>
 <translation id="139013308650923562">ອະນຸຍາດໃຫ້ໃຊ້ຟອນທີ່ຕິດຕັ້ງຢູ່ອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="1390548061267426325">ເປີດເປັນແຖບທໍາມະດາ</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ພິມຫາ <ph name="PRINTER_NAME" />. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
@@ -480,6 +480,7 @@
 <translation id="1436784010935106834">ເອົາອອກໄປແລ້ວ</translation>
 <translation id="1437986450143295708">ອະທິບາຍບັນຫາລະອຽດ</translation>
 <translation id="1439671507542716852">ການຊ່ວຍເຫຼືອໄລຍະຍາວ</translation>
+<translation id="1440090277117135316">ການລົງທະບຽນເຂົ້າໂຮງຮຽນສຳເລັດແລ້ວ</translation>
 <translation id="144283815522798837">ເລືອກ <ph name="NUMBER_OF_ITEMS_SELECTED" /> ແລ້ວ</translation>
 <translation id="1442851588227551435">ຕັ້ງຄ່າປີ້ Kerberos ທີ່ນຳໃຊ້ຢູ່</translation>
 <translation id="1444628761356461360">ການຕັ້ງຄ່ານີ້ຖືກຈັດການໂດຍ​ເຈົ້າ​ຂອງ​ອຸ​ປະ​ກອນ​, <ph name="OWNER_EMAIL" />.</translation>
@@ -1835,7 +1836,6 @@
 <translation id="2643698698624765890">ຈັດການສ່ວນຂະຫຍາຍຂອງທ່ານໂດຍການຄລິກສ່ວນຂະຫຍາຍຢູ່ໃນເມນູໜ້າຕ່າງ.</translation>
 <translation id="2645047101481282803">ອຸປະກອນຂອງທ່ານຖືກຈັດການໂດຍ <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">ລະຫັດຜ່ານສຳລັບບັນຊີນີ້ໄດ້ຖືກຈັດເກັບໄວ້ໃນອຸປະກອນນີ້ແລ້ວ</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, ຕ່ອງໂສ້ໃບຢັ້ງຢືນ</translation>
 <translation id="2652129567809778422">ເລືອກລະຫັດຜ່ານ</translation>
 <translation id="2653033005692233957">ຊອກຫາບໍ່ສຳເລັດ</translation>
@@ -2410,6 +2410,7 @@
 <translation id="3170072451822350649">ທ່ານຍັງອາດຈະຂ້າມການລົງຊື່ເຂົ້າ​ໃຊ້ ແລະ <ph name="LINK_START" />ທ່ອງເນັດເປັນແຂກ<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">ແຖບໃໝ່ຢູ່ທາງຊ້າຍ</translation>
 <translation id="3177909033752230686">ພາ​ສາຂອງໜ້າເວັບ:</translation>
+<translation id="3177914167275935955">ອຸປະກອນຂອງທ່ານຮວມເອົາການອັບເກຣດ Chrome Education ແຕ່ຊື່ຜູ້ໃຊ້ຂອງທ່ານບໍ່ໄດ້ເຊື່ອມໂຍງກັບບັນຊີ Google ສຳລັບການສຶກສາ. ກະລຸນາສ້າງບັນຊີ Google ສຳລັບການສຶກສາໂດຍເຂົ້າໄປທີ່: g.co/workspace/edusignup ໃນອຸປະກອນສຳຮອງ.</translation>
 <translation id="3179982752812949580">ຟອນຂໍ້ຄວາມ</translation>
 <translation id="3181954750937456830">Safe Browsing (ປົກປ້ອງທ່ານ ແລະ ອຸປະກອນຂອງທ່ານຈາກເວັບໄຊອັນຕະລາຍ)</translation>
 <translation id="3182749001423093222">ກວດການສະກົດຄຳ</translation>
@@ -2624,7 +2625,6 @@
 <translation id="3399432415385675819">ການແຈ້ງເຕືອນຈະຖືກປິດ</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ເຮີດຊ) - ອິນເຕີເລດ</translation>
 <translation id="3401484564516348917">ອ່ານຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບ, OS, ອຸປະກອນ, ຊອບແວທີ່ໄດ້ຕິດຕັ້ງ, ຄ່າໃນທະບຽນ ແລະ ໄຟລ໌ຂອງທ່ານ.</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{ຈັດເກັບລະຫັດຜ່ານ {COUNT} ອັນຢູ່ອຸປະກອນນີ້ແລ້ວ}other{ຈັດເກັບລະຫັດຜ່ານ {COUNT} ອັນຢູ່ອຸປະກອນນີ້ແລ້ວ}}</translation>
 <translation id="3402255108239926910">ເລືອກຮູບແທນຕົວ</translation>
 <translation id="3402585168444815892">ການລົງທະບຽນໃນໂໝດສາທິດ</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4080,6 +4080,7 @@
 <translation id="4762489666082647806">ສີຕົວຊີ້</translation>
 <translation id="4762718786438001384">ພື້ນທີ່ດິສກ໌ໃນອຸປະກອນເຫຼືອໜ້ອຍທີ່ສຸດ</translation>
 <translation id="4763408175235639573">ຄຸກກີ້ຕໍ່ໄປນີ້ຖືກຕັ້ງຂຶ້ນ ເມື່ອທ່ານເບິ່ງໜ້ານີ້</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> ບໍ່ແມ່ນບັນຊີ Google ສຳລັບການສຶກສາທີ່ຖືກຕ້ອງ. ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ຫາກທ່ານເປັນຜູ້ເບິ່ງແຍງລະບົບ, ທ່ານຈະສາມາດຕັ້ງຄ່າອົງການຈັດຕັ້ງຂອງທ່ານໄດ້ໂດຍການເຂົ້າໄປທີ່: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{ອຸປະກອນນີ້ຈະຖືກບັນທຶກໄວ້ 1 ເດືອນ ແລະ ທ່ານສາມາດເຊື່ອມຕໍ່ໄດ້ໂດຍບໍ່ຕ້ອງໃຊ້ລະຫັດໃນເທື່ອຕໍ່ໄປ. ນີ້ແມ່ນຖືກຕັ້ງຄ່າໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}other{ອຸປະກອນນີ້ຈະຖືກບັນທຶກໄວ້ {MONTHS} ເດືອນ ແລະ ທ່ານສາມາດເຊື່ອມຕໍ່ໄດ້ໂດຍບໍ່ຕ້ອງໃຊ້ລະຫັດໃນເທື່ອຕໍ່ໄປ. ນີ້ແມ່ນຖືກຕັ້ງຄ່າໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}}</translation>
 <translation id="4765582662863429759">ອະນຸຍາດໃຫ້ Android Messages ສົ່ງຕໍ່ຂໍ້ຄວາມຈາກໂທລະສັບຂອງທ່ານໄປໃສ່ Chromebook ທ່ານ</translation>
 <translation id="4766598565665644999">ສ່ວນຂະຫຍາຍທັງໝົດສາມາດອ່ານ ແລະ ປ່ຽນແປງ <ph name="HOST" /> ໄດ້</translation>
@@ -4724,7 +4725,6 @@
 <translation id="5392192690789334093">ໄດ້ຮັບອະນຸຍາດໃຫ້ສົ່ງການແຈ້ງເຕືອນ</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ລິ້ງ}other{# ລິ້ງ}}</translation>
 <translation id="5395498824851198390">ຟອນເລີ່ມຕົ້ນ</translation>
-<translation id="5396325212236512832">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊ ແລະ ແອັບແບບອັດຕະໂນມັດໂດຍໃຊ້ຂໍ້ມູນການເຂົ້າສູ່ລະບົບທີ່ຈັດເກັບໄວ້. ຫາກປິດໄວ້ແລ້ວ, ທ່ານຈະຖືກຖາມຫາການຢືນຢັນທຸກເທື່ອກ່ອນການເຂົ້າສູ່ລະບົບຫາເວັບໄຊ ຫຼື ແອັບໃດໜຶ່ງ.</translation>
 <translation id="5397378439569041789">ລົງທະບຽນອຸປະກອນຄີອອສ ຫຼື ອຸປະກອນປ້າຍ</translation>
 <translation id="5397794290049113714">ທ່ານ</translation>
 <translation id="5398497406011404839">ບຸກມາກທີ່ເຊື່ອງໄວ້</translation>
@@ -4740,6 +4740,7 @@
 <translation id="5407167491482639988">ບໍ່ສາມາດເຂົ້າໃຈໄດ້</translation>
 <translation id="5408750356094797285">ຊູມ: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ຈາກບັນຊີ Google ຂອງທ່ານ</translation>
+<translation id="5411022484772257615">ການລົງທະບຽນເຂົ້າໂຮງຮຽນບໍ່ສຳເລັດ</translation>
 <translation id="5413640305322530561">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້</translation>
 <translation id="5414198321558177633">ກຳລັງໂຫຼດຂໍ້ມູນລາຍຊື່ໂປຣໄຟລ໌ຄືນໃໝ່. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="5414566801737831689">ອ່ານໄອຄອນຂອງເວັບໄຊທ໌ທີ່ທ່ານເຂົ້າເບິ່ງ</translation>
@@ -5526,6 +5527,7 @@
 <translation id="6129953537138746214">ຍະຫວ່າງ</translation>
 <translation id="6130692320435119637">ເພີ່ມ Wi-Fi</translation>
 <translation id="6130887916931372608">ປຸ່ມແປ້ນພິມ</translation>
+<translation id="6132714462430777655">ຂ້າມການລົງທະບຽນເຂົ້າໂຮງຮຽນບໍ?</translation>
 <translation id="6135823405800500595">ກະລຸນາກວດສອບວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້ໆ, ປົດລັອກແລ້ວ ແລະ ເປີດ Bluetooth ກັບ Wi-Fi ໄວ້ຢູ່</translation>
 <translation id="6135826623269483856">ບໍ່ອະນຸຍາດໃຫ້ຈັດການໜ້າຈໍຢູ່ການສະແດງຜົນທັງໝົດຂອງທ່ານ</translation>
 <translation id="6136114942382973861">ປິດແຖບການດາວໂຫຼດ</translation>
@@ -6057,7 +6059,6 @@
 <translation id="6647441008198474441">URL ທີ່ທ່ານເຂົ້າເບິ່ງຈະຖືກສົ່ງໄປໃຫ້ Google ເພື່ອຄາດເດົາເວັບໄຊທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງເປັນລຳດັບຕໍ່ໄປ</translation>
 <translation id="6648911618876616409">ການອັບເດດທີ່ສຳຄັນພ້ອມໃຫ້ຕິດຕັ້ງແລ້ວ. ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອເລີ່ມຕົ້ນ.</translation>
 <translation id="6649018507441623493">ຖ້າບຶດໜຶ່ງ...</translation>
-<translation id="6650234781371031356">ລະຫັດຜ່ານຂອງທ່ານສຳລັບ <ph name="WEBSITE" /> ຖືກເກັບໄວ້ໃນອຸປະກອນນີ້ ແລະ ໃນບັນຊີ Google ຂອງທ່ານ. ທ່ານຕ້ອງການລຶບອັນໃດ?</translation>
 <translation id="665061930738760572">ເປີດ​ຢູ່​ໃນໜ້າ​ຕ່າງ​ໃຫມ່</translation>
 <translation id="6651237644330755633">ເຊື່ອຖືໃບຢັ້ງຢືນນີ້ສຳລັບການລະບຸເວັບໄຊ</translation>
 <translation id="6651495917527016072">ຊິ້ງຂໍ້ມູນເຄືອຂ່າຍ Wi-Fi ກັບໂທລະສັບຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -6746,6 +6747,7 @@
 <translation id="7310598146671372464">ເຂົ້າສູ່ລະບົບບໍ່ໄດ້. ເຊີບເວີບໍ່ຮອງຮັບການເຂົ້າລະຫັດປະເພດ Kerberos. ກະລຸນາຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="7311089766378749632">ກຳລັງຮ້ອງຂໍໃຫ້ອ່ານ ແລະ ປ່ຽນ <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກຳລັງຣີເຊັດ eSIM ທ່ານຢູ່. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
+<translation id="7317831949569936035">ການລົງທະບຽນເຂົ້າໂຮງຮຽນ</translation>
 <translation id="7320213904474460808">ໃຫ້ເປັນເຄືອຂ່າຍເລີ່ມຕົ້ນ</translation>
 <translation id="7321545336522791733">ບໍ່ສາມາດຕິດຕໍ່ຫາເຊີບເວີໄດ້</translation>
 <translation id="7323315405936922211">ຂະໜາດພື້ນທີ່ເຄີເຊີ</translation>

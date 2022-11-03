@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> ကို ထုတ်ယူ၍မရပါ</translation>
 <translation id="1899697626337024495">ဓာတ်ပုံ ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="1925845977604399247">‘ပြခန်း’ သို့သွားရန်</translation>
+<translation id="199526504800285197">မှတ်တမ်းတင်ခြင်း ရပ်သွားသည်</translation>
+<translation id="1995951722691075581">စက်သိုလှောင်ခန်းနေရာ နည်းနေသဖြင့် မှတ်တမ်းတင်ခြင်း ရပ်သွားသည်။ နောက်ထပ်ဗီဒီယိုများ မှတ်တမ်းတင်ရန် သင့်စက်တွင် နေရာလွတ် ပြုလုပ်ရမည်။</translation>
 <translation id="2022953316617983419">QR ကုဒ်</translation>
 <translation id="2036868001356139588">တိုင်မာကြာချိန်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">သင့်ကင်မရာဖြင့် ဓာတ်ပုံနှင့် ဗီဒီယိုများ ရိုက်ကူးပါ။</translation>
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2549985041256363841">စတင်ရိုက်ကူးရန်</translation>
+<translation id="2577915835281444458">မှတ်တမ်းတင်ခြင်း မကြာမီ ရပ်မည်။ နေရာလွတ်ပြုလုပ်ရန် စက်သိုလှောင်ခန်းသို့ သွားပါ။</translation>
 <translation id="2599796128805996109">အနောက်ကင်မရာ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
 <translation id="2761536921376153655">ရှာဖွေမှုပုံစံ</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">ဗီဒီယို</translation>
 <translation id="3838931309141338733">ဘားကုဒ်ကို စကင်ဖတ်ရန်</translation>
 <translation id="3892148308691398805">စာသား မိတ္တူကူးရန်</translation>
+<translation id="4060608699153044055">စက်သိုလှောင်ခန်းနေရာ နည်းနေသဖြင့် မှတ်တမ်းတင်၍မရပါ။ စတင်မှတ်တမ်းတင်ရန် သင့်စက်တွင် နေရာလွတ် ပြုလုပ်ရမည်။</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ရိုက်ကူးမှု ခဏရပ်ရန်</translation>
 <translation id="4121305183798804752">စာရွက်စာတမ်းကို တွေ့ထားသည်</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">မှတ်တမ်း၏ ညာဘက်ထောင့်ထိပ်</translation>
 <translation id="7933675232020478311">ညာဘက် အောက်ခြေ ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
 <translation id="7983668134180549431">စာသား တွေ့ရှိသည်။</translation>
+<translation id="8079255378695216066">မှတ်တမ်းတင်ခြင်း မစတင်နိုင်ပါ</translation>
 <translation id="8120146556401698679">ရွှေ့ကြည့်ရန် စောင်းရန် ဇူးမ်ဆွဲရန်</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
 <translation id="8145038249676204903">ဓာတ်ပုံရိုက်ခြင်းမုဒ်သို့ ပြောင်းရန်</translation>

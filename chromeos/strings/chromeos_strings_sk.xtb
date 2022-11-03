@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Zrušiť tlačovú úlohu</translation>
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
 <translation id="2180197493692062006">Vyskytol sa problém. Skúste aplikáciu znova otvoriť.</translation>
-<translation id="2182088270354640012">Ďakujeme za spätnú väzbu. Vaša spätná väzba pomáha zlepšovať Chrome OS a skontroluje ju tím systému Chrome OS. Vzhľadom na veľký počet odoslaných hlásení vám priamo neodpovieme.</translation>
 <translation id="2209788852729124853">Resetovať počítadlá návštevnosti</translation>
 <translation id="2212733584906323460">Preklad názvu</translation>
 <translation id="2217935453350629363">Aktuálna rýchlosť</translation>
@@ -628,6 +627,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nepodarilo sa – nepodarilo sa autorizovať</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. zariadenie z <ph name="COUNT" /> s názvom <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Názov prístupového bodu (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Menný server}few{Menné servery}many{Name servers}other{Menné servery}}</translation>
 <translation id="7143207342074048698">Pripája sa</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
@@ -689,7 +689,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="773153675489693198">Počet cyklov</translation>
 <translation id="7747039790905080783">Predzdieľaný kľúč</translation>
 <translation id="7762130827864645708">Zmena hesla bola úspešná. Odteraz používajte nové heslo.</translation>
-<translation id="7762839321248874531">Odoslať <ph name="BEGIN_LINK1" />informácie o systéme a aplikáciách<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Zhoda prípony domény</translation>
 <translation id="7769672763586021400">ID modelu</translation>
 <translation id="7784116172884276937">Nie sú nastavené žiadne servery DNS</translation>
@@ -826,7 +825,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="9082718469794970195">Použiť toto video</translation>
 <translation id="9087578468327036362">Nahlásiť tento dopyt</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
-<translation id="9092255287806472980">Vaša spätná väzba pomáha zlepšovať ChromeOS a náš tím ju skontroluje. Vzhľadom na veľký počet hlásení vám nebudeme môcť odpovedať.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenuje sa <ph name="PAGE_NUMBER" />. strana</translation>

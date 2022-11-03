@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">เปิดการตั้งค่าบลูทูธเพื่อจับคู่อุปกรณ์</translation>
 <translation id="3638400994746983214">สลับหน้าจอส่วนตัว <ph name="STATE_TEXT" /></translation>
 <translation id="3649505501900178324">พ้นกำหนดการอัปเดต</translation>
+<translation id="3659444876902283058">(วันที่ <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">เหลืออีกประมาณ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)
 เชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
 <translation id="366222428570480733">ผู้ใช้ที่ได้รับการจัดการ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -641,7 +642,6 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ซ่อนรหัสผ่าน</translation>
 <translation id="4566144812051858745">ไม่สนใจคำแนะนำใดๆ</translation>
-<translation id="4570957409596482333">ปุ่มเลือกเพื่อให้อ่าน</translation>
 <translation id="4573176682887762361">"พิมพ์[คำหรือวลี]"</translation>
 <translation id="4577274620589681794">หมดเวลา · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">แสดงตัวอย่าง</translation>
@@ -918,6 +918,7 @@
 <translation id="6064463340679478396">ใช้ไฟล์เสร็จแล้ว</translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="6074087755403037157">เวอร์ชันเบต้า</translation>
+<translation id="6093867385179428431">ปิดใช้โดยผู้ดูแลระบบ</translation>
 <translation id="6095008505822982596">ความเร็วในการพูด</translation>
 <translation id="6099678161144790572">แก้ไขในเดือนที่ผ่านมา</translation>
 <translation id="6103838137565245112">ระบบ</translation>
@@ -1268,6 +1269,7 @@
 <translation id="8052898407431791827">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="8054466585765276473">กำลังคำนวณเวลาใช้งานแบตเตอรี่</translation>
 <translation id="8083540854303889870">บันทึกไว้ใช้ภายหลัง</translation>
+<translation id="8091153018031979607">เริ่มเวลา <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">การอัปเดตอัตโนมัติ</translation>
 <translation id="8098591350844501178">หยุดแคสต์หน้าจอไปยัง <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">เปิดไว้ทุกแอป</translation>
@@ -1380,6 +1382,7 @@
 <translation id="8703634754197148428">เริ่มบันทึก เมื่อการบันทึกเริ่มต้น ให้ใช้ Alt + Shift + L เพื่อไปที่แถบและหาปุ่มหยุดบันทึก</translation>
 <translation id="8721053961083920564">สลับเปิด/ปิดระดับเสียง <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">จับภาพแบบเต็มหน้าจอ</translation>
+<translation id="8731487213223706745">สิ้นสุดเวลา <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">แป้นพิมพ์นี้อาจพยายามขโมยการกดแป้นพิมพ์ของคุณ</translation>
 <translation id="8735678380411481005">สีไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

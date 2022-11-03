@@ -140,7 +140,6 @@
 <translation id="2074131957428911366">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2080769225927880590">Најавете се со важечка сметка</translation>
-<translation id="209018056901015185">Барај десктоп-локација</translation>
 <translation id="2103075008456228677">Отвори ја history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ставки се преместени</translation>
 <translation id="2122754583996902531">Прелистувачот е управуван. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -387,7 +386,6 @@
 <translation id="3995521777587992544">Лента за напредокот на вчитувањето на страницата. Вчитано: <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4004204301268239848">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред.</translation>
-<translation id="4006921758705478413">Испратете до вашите уреди</translation>
 <translation id="4018310736049373830">Управувајте со активноста</translation>
 <translation id="4038354071007134711">Ниедна апликација на уредот не може да ја отвори датотеката.</translation>
 <translation id="4042870976416480368">Пронајдете на страницата</translation>
@@ -822,7 +820,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7133798577887235672">Целосно име</translation>
 <translation id="7136892417564438900">Камерата е недостапна</translation>
 <translation id="7153999225810839758">Време на читање: <ph name="TIME" /> мин.</translation>
-<translation id="7159472599653637159">Барај мобилна верзија на сајтот</translation>
 <translation id="7162168282402939716">Отклучете ги картичките „Инкогнито“ со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Заштитете ги лозинките од безбедносни проблеми</translation>
 <translation id="7173114856073700355">Отвори „Поставки“</translation>
@@ -1068,7 +1065,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9124387962554796433">Google може да ја користи вашата историја за да ги персонализира „Пребарувањето“ и другите услуги на Google.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9148126808321036104">Најави се повторно</translation>
-<translation id="9152539721251340337">Создај QR-код</translation>
 <translation id="9157836665414082580">Отстрани дијалози</translation>
 <translation id="9177438225260810839">Пребарајте ги отворените картички</translation>
 <translation id="9188680907066685419">Одјавете се од управувана сметка</translation>

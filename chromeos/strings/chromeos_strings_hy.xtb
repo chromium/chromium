@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
 <translation id="2163937499206714165">Միացնել մուգ ռեժիմը</translation>
 <translation id="2180197493692062006">Սխալ առաջացավ։ Փորձեք նորից բացել հավելվածը։</translation>
-<translation id="2182088270354640012">Շնորհակալություն կարծիք հայտնելու համար։ Ձեր կարծիքն օգնում է բարելավել Chrome OS-ը և հաշվի կառնվի Chrome OS-ի թիմի կողմից։ Ուղարկված հաղորդումների մեծ քանակի պատճառով դուք ուղղակի պատասխան չեք ստանա։</translation>
 <translation id="2209788852729124853">Զրոյացնել թրաֆիկի հաշվիչները</translation>
 <translation id="2212733584906323460">Անվանել լուծաչափը</translation>
 <translation id="2217935453350629363">Ընթացիկ արագությունը</translation>
@@ -689,7 +688,6 @@
 <translation id="773153675489693198">Շրջափուլերի թիվը</translation>
 <translation id="7747039790905080783">Ընդհանուր բանալի</translation>
 <translation id="7762130827864645708">Ձեր գաղտնաբառը հաջողությամբ փոխվեց։ Այս պահից սկսած օգտագործեք նոր գաղտնաբառը։</translation>
-<translation id="7762839321248874531">Ուղարկել <ph name="BEGIN_LINK1" />համակարգի և հավելվածի մասին տեղեկություններ<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />ցուցանիշներ<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Համընկնում տիրույթի վերջածանցի հետ</translation>
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
 <translation id="7784116172884276937">DNS սերվերներ կարգավորված չեն</translation>
@@ -826,7 +824,6 @@
 <translation id="9082718469794970195">Օգտագործել այս տեսանյութը</translation>
 <translation id="9087578468327036362">Հաղորդել այս հարցման մասին</translation>
 <translation id="9088306295921699330">Օգտագործված տարածքը</translation>
-<translation id="9092255287806472980">Ձեր կարծիքն օգնում է բարելավել Chrome OS-ը և հաշվի կառնվի մեր թիմի կողմից։ Հաղորդումների մեծ քանակի պատճառով մենք չենք կարողանա պատասխան ուղարկել։</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>

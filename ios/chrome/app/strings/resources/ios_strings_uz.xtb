@@ -140,7 +140,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2074131957428911366">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali tanlash mumkin.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2080769225927880590">Yaroqli hisobdan kiring</translation>
-<translation id="209018056901015185">To‘liq versiya</translation>
 <translation id="2103075008456228677">history.google.com sahifasini ochish</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p ko‘chirildi</translation>
 <translation id="2122754583996902531">Bu brauzer nazorat ostida. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -387,7 +386,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3995521777587992544">Sahifa yuklanishidagi kutish qatori: <ph name="EMAIL" /> yuklandi.</translation>
 <translation id="4002066346123236978">Nomi</translation>
 <translation id="4004204301268239848">Google hisobingizga saqlangan parollardan har qanday qurilmada foydalanishingiz mumkin.</translation>
-<translation id="4006921758705478413">Qurilmalaringizga yuborish</translation>
 <translation id="4018310736049373830">Tarixni boshqarish</translation>
 <translation id="4038354071007134711">Bu faylni ochadigan ilova yo‘q.</translation>
 <translation id="4042870976416480368">Sahifa ichidan qidirish</translation>
@@ -822,7 +820,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7133798577887235672">To‘liq ism</translation>
 <translation id="7136892417564438900">Kamera ish faoliyatida emas</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> daqiqalik mutolaa</translation>
-<translation id="7159472599653637159">Mobil versiya</translation>
 <translation id="7162168282402939716">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan ochish</translation>
 <translation id="7172852049901402487">Parollaringizni mustahkam saqlang</translation>
 <translation id="7173114856073700355">Sozlamalarni ochish</translation>
@@ -1068,7 +1065,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9124387962554796433">Qidiruv va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin.</translation>
 <translation id="9137526406337347448">Google xizmatlari</translation>
 <translation id="9148126808321036104">Qaytadan kiring</translation>
-<translation id="9152539721251340337">QR kod yaratish</translation>
 <translation id="9157836665414082580">Muloqot oynalarini bloklash</translation>
 <translation id="9177438225260810839">Ochiq varaqlar ichidan qidirish</translation>
 <translation id="9188680907066685419">Boshqariladigan hisobdan chiqish</translation>

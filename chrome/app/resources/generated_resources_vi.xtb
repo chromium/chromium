@@ -198,7 +198,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1174366174291287894">Đường kết nối của bạn luôn an toàn, trừ phi Chrome thông báo cho bạn thông tin khác</translation>
 <translation id="117445914942805388">Để xóa dữ liệu duyệt web khỏi tất cả các thiết bị đã đồng bộ hóa và Tài khoản Google của bạn, hãy <ph name="BEGIN_LINK" />truy cập vào các tùy chọn cài đặt đồng bộ hóa<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;In...</translation>
-<translation id="1176378369905028399">Mật khẩu của tài khoản này đã được lưu trữ trong Trình quản lý mật khẩu của Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Không được phép chỉnh sửa tệp hoặc thư mục trên thiết bị của bạn</translation>
 <translation id="1177863135347784049">Tùy chỉnh</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
@@ -1838,7 +1837,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2643698698624765890">Quản lý tiện ích của bạn bằng cách nhấp vào Tiện ích trong menu Cửa sổ.</translation>
 <translation id="2645047101481282803">Thiết bị của bạn do <ph name="PROFILE_NAME" /> quản lý</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Mật khẩu của tài khoản này đã được lưu trữ trên thiết bị này</translation>
 <translation id="2649045351178520408">ASCII được mã hóa base64, chuỗi chứng chỉ</translation>
 <translation id="2652129567809778422">Chọn mật khẩu</translation>
 <translation id="2653033005692233957">Không tìm kiếm được</translation>
@@ -2628,7 +2626,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3399432415385675819">Thông báo sẽ bị tắt</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - đan xen</translation>
 <translation id="3401484564516348917">Đọc thông tin về trình duyệt, hệ điều hành, thiết bị, phần mềm đã cài đặt, giá trị trong sổ đăng ký và tệp</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} mật khẩu được lưu trữ trên thiết bị này}other{{COUNT} mật khẩu được lưu trữ trên thiết bị này}}</translation>
 <translation id="3402255108239926910">Chọn một hình đại diện</translation>
 <translation id="3402585168444815892">Đang đăng ký chế độ minh họa</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4729,7 +4726,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5392192690789334093">Được phép gửi thông báo</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Đường liên kết}other{# đường liên kết}}</translation>
 <translation id="5395498824851198390">Phông chữ mặc định</translation>
-<translation id="5396325212236512832">Tự động đăng nhập vào các trang web và ứng dụng bằng thông tin xác thực đã lưu trữ. Nếu bạn tắt tính năng này, bạn sẽ luôn được yêu cầu xác nhận trước khi đăng nhập vào một trang web hoặc ứng dụng.</translation>
 <translation id="5397378439569041789">Đăng ký thiết bị kiosk hoặc thiết bị bảng hiệu</translation>
 <translation id="5397794290049113714">Bạn</translation>
 <translation id="5398497406011404839">Dấu trang đã ẩn</translation>
@@ -6065,7 +6061,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6647441008198474441">Các URL bạn truy cập sẽ được gửi cho Google nhằm dự đoán những trang web có thể sắp tới bạn sẽ truy cập</translation>
 <translation id="6648911618876616409">Một bản cập nhật quan trọng đã sẵn sàng cài đặt. Hãy đăng nhập để bắt đầu.</translation>
 <translation id="6649018507441623493">Hãy đợi giây lát…</translation>
-<translation id="6650234781371031356">Mật khẩu bạn dùng cho <ph name="WEBSITE" /> được lưu trữ trên thiết bị này và trong Tài khoản Google của bạn. Bạn muốn xóa bản nào?</translation>
 <translation id="665061930738760572">Mở trong cửa sổ &amp;mới</translation>
 <translation id="6651237644330755633">Tin tưởng chứng chỉ này khi nhận dạng trang web</translation>
 <translation id="6651495917527016072">Đồng bộ hóa các mạng Wi-Fi với điện thoại của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>

@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" />-г экспорт хийх боломжгүй байна</translation>
 <translation id="1899697626337024495">Зургийн нягтрал</translation>
 <translation id="1925845977604399247">Зургийн цомог руу очих</translation>
+<translation id="199526504800285197">Бичлэг зогссон байна</translation>
+<translation id="1995951722691075581">Төхөөрөмжийн хадгалах сангийн зай бага байгаа тул таны бичлэг зогссон. Илүү олон видео бичихийн тулд та төхөөрөмждөө сул зай гаргах хэрэгтэй.</translation>
 <translation id="2022953316617983419">QR код</translation>
 <translation id="2036868001356139588">Цаг хэмжигчийн үргэлжлэх хугацаа</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
@@ -77,6 +79,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Баркодыг скан хийх</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
+<translation id="4060608699153044055">Төхөөрөмжийн хадгалах сангийн зай бага байгаа тул та бичлэг хийх боломжгүй. Бичлэг хийж эхлэхийн тулд та төхөөрөмждөө сул зай гаргах хэрэгтэй.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MП</translation>
 <translation id="4118525110028899586">Бичлэгийг түр зогсоох</translation>
 <translation id="4121305183798804752">Документ илэрлээ</translation>
@@ -160,6 +163,7 @@
 <translation id="7748344063862150053">Документын баруун дээд булан</translation>
 <translation id="7933675232020478311">Баруун доош зөөж байна</translation>
 <translation id="7983668134180549431">Текст илэрсэн.</translation>
+<translation id="8079255378695216066">Бичлэгийг эхлүүлэх боломжгүй</translation>
 <translation id="8120146556401698679">Чиглүүлэгч хазайлгалт томруулалт</translation>
 <translation id="8131740175452115882">Батлах</translation>
 <translation id="8145038249676204903">Зураг авах руу сэлгэх</translation>

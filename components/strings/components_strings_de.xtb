@@ -1370,6 +1370,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um diese Seite mit Google Übersetzer übersetzen zu lassen</translation>
 <translation id="4514308731478712184">„Recherchen“ deaktivieren</translation>
 <translation id="4515275063822566619">Karten und Adressen stammen aus Chrome und aus deinem Google-Konto (<ph name="ACCOUNT_EMAIL" />). Du kannst sie in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> verwalten.</translation>
+<translation id="4520048001084013693">Die Administratorrichtlinie blockiert das Herunterladen dieser Datei</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Umschlag Monarch</translation>
 <translation id="4521916730539354575">Linkes Fach</translation>
@@ -1383,7 +1384,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4542971377163063093">Fach 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Deaktiviere deine Erweiterungen.</translation>
-<translation id="4559134504959026834">Diese Website ist einer durch <ph name="SET_OWNER" /> definierten Gruppe zugeordnet, die deine Aktivitäten sehen kann</translation>
 <translation id="4566017918361049074">Outdoor</translation>
 <translation id="4567686777917670400">Dein Administrator kann die Browsereinstellungen per Remotezugriff ändern. Aktivitäten auf diesem Gerät können auch außerhalb von Chromium verwaltet werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Lieferung</translation>
@@ -2361,6 +2361,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Der Versand an diese Adresse ist nicht möglich. Bitte wähle eine andere Adresse aus.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Hochladen blockiert</translation>
 <translation id="7132939140423847331">Dein Administrator hat das Kopieren dieser Daten untersagt.</translation>
 <translation id="7135130955892390533">Status anzeigen</translation>
 <translation id="7138472120740807366">Lieferoption</translation>
@@ -2591,6 +2592,7 @@ Weitere Details:
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7659327900411729175">Umschlag Kaku 8</translation>
 <translation id="7659878911471462949">Freudentränen</translation>
+<translation id="766014026101194726">{0,plural, =1{Die Administratorrichtlinie blockiert das Hochladen dieser Datei}other{Die Administratorrichtlinie blockiert das Hochladen von # Dateien}}</translation>
 <translation id="7662298039739062396">Einstellung wird von einer Erweiterung gesteuert</translation>
 <translation id="7663736086183791259">Zertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nicht zulässig im Inkognitomodus</translation>
@@ -2685,6 +2687,7 @@ Weitere Details:
 <translation id="7939744324936979484">Volksmusik und traditionelle Musik</translation>
 <translation id="7941628148012649605">Umschlag Chou 4</translation>
 <translation id="7942349550061667556">Rot</translation>
+<translation id="7943397946612013052">Herunterladen blockiert</translation>
 <translation id="7943893128817522649">Darf nachfragen, wenn sie automatisch mehrere Dateien herunterladen möchte</translation>
 <translation id="7947285636476623132">Prüfe das Ablaufjahr und versuche es dann erneut</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um mehr über die Funktionen von Chrome zu erfahren</translation>

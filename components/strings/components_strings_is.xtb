@@ -1372,6 +1372,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að þýða þessa síðu með Google Translate</translation>
 <translation id="4514308731478712184">Slökkva á ferðum</translation>
 <translation id="4515275063822566619">Kort og heimilisföng eru fengin úr Chrome og Google reikningnum þínum (<ph name="ACCOUNT_EMAIL" />). Þú getur haft umsjón með þeim í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Regla stjórnanda kemur í veg fyrir að hægt sé að sækja þessa skrá</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Umslag: monarch</translation>
 <translation id="4521916730539354575">Bakki til vinstri</translation>
@@ -1385,7 +1386,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4542971377163063093">Bakki 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Prófaðu að slökkva á viðbótunum þínum.</translation>
-<translation id="4559134504959026834"><ph name="SET_OWNER" /> skilgreindi hópinn sem þetta vefsvæði er í og getur séð virkni þína</translation>
 <translation id="4566017918361049074">Útivist</translation>
 <translation id="4567686777917670400">Kerfisstjórinn þinn getur breytt uppsetningu vafrans með fjartengingu. Einnig er hægt er að hafa umsjón með aðgerðum í þessu tæki utan Chromium. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Sending</translation>
@@ -2363,6 +2363,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Ekki er hægt að senda á þetta heimilisfang. Veldu annað heimilisfang.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Lokað fyrir upphleðslu</translation>
 <translation id="7132939140423847331">Stjórnandi hefur bannað afritun þessara gagna.</translation>
 <translation id="7135130955892390533">Sýna stöðu</translation>
 <translation id="7138472120740807366">Afhendingarmáti</translation>
@@ -2593,6 +2594,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7659327900411729175">Umslag: kaku 8</translation>
 <translation id="7659878911471462949">Gleðitár</translation>
+<translation id="766014026101194726">{0,plural, =1{Regla stjórnanda kemur í veg fyrir að hægt sé að hlaða þessari skrá upp}one{Regla stjórnanda kemur í veg fyrir að hægt sé að hlaða # skrá upp}other{Regla stjórnanda kemur í veg fyrir að hægt sé að hlaða # skrám upp}}</translation>
 <translation id="7662298039739062396">Stillingu stýrt af viðbót</translation>
 <translation id="7663736086183791259">Vottorð <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Ekki heimilað í huliðsstillingu</translation>
@@ -2687,6 +2689,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7939744324936979484">Þjóðlagatónlist</translation>
 <translation id="7941628148012649605">Umslag: chou 4</translation>
 <translation id="7942349550061667556">Rauður</translation>
+<translation id="7943397946612013052">Lokað fyrir niðurhal</translation>
 <translation id="7943893128817522649">Getur beðið um að fá að hlaða sjálfkrafa niður mörgum skrám</translation>
 <translation id="7947285636476623132">Athugaðu ár gildistímans og reyndu aftur</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að fá frekari upplýsingar um eiginleika Chrome</translation>

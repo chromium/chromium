@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Peru tulostustyö</translation>
 <translation id="2163937499206714165">Ota tumma tila käyttöön</translation>
 <translation id="2180197493692062006">Jotain meni pieleen. Kokeile avata sovellus uudelleen.</translation>
-<translation id="2182088270354640012">Kiitos palautteesta. Palautteesi auttaa parantamaan Chrome-käyttöjärjestelmää, ja Chrome-käyttöjärjestelmätiimi tarkistaa sen. Lähetettyjen ilmoitusten määrän vuoksi et saa vastausta suoraan.</translation>
 <translation id="2209788852729124853">Nollaa liikennelaskurit</translation>
 <translation id="2212733584906323460">Verkkotunnuksen muuntaminen</translation>
 <translation id="2217935453350629363">Nykyinen nopeus</translation>
@@ -689,7 +688,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="773153675489693198">Syklien määrä</translation>
 <translation id="7747039790905080783">Esijaettu avain</translation>
 <translation id="7762130827864645708">Salasanasi vaihtaminen onnistui. Käytä jatkossa uutta salasanaa.</translation>
-<translation id="7762839321248874531">Lähetä <ph name="BEGIN_LINK1" />järjestelmä‐ ja sovellustietoja<ph name="END_LINK1" /> sekä <ph name="BEGIN_LINK2" />mittareita<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Verkkotunnuksen päätteen vastaavuus</translation>
 <translation id="7769672763586021400">Mallitunnus</translation>
 <translation id="7784116172884276937">DNS-palvelimia ei ole määritetty</translation>
@@ -826,7 +824,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="9082718469794970195">Käytä tätä videota</translation>
 <translation id="9087578468327036362">Ilmoita tästä kyselystä</translation>
 <translation id="9088306295921699330">Nykyinen käyttö</translation>
-<translation id="9092255287806472980">Palautteesi auttaa meitä parantamaan Chrome-käyttöjärjestelmää, ja tiimimme tarkistaa sen. Ilmoitusten suuren määrän vuoksi emme voi lähettää vastausta.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Päivitä tukipyyntö: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannataan sivu <ph name="PAGE_NUMBER" /></translation>

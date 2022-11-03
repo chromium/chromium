@@ -265,6 +265,7 @@
 <translation id="1567040042588613346">Ове смернице раде као што је предвиђено, али иста вредност је подешена на другом месту и замењују је ове смернице.</translation>
 <translation id="1569487616857761740">Унесите датум истека</translation>
 <translation id="1569694109004336106">Google Chrome покушава да укључи Windows Hello за попуњавање лозинки.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> in</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Дошло је до грешке при приказивању ове веб-странице.</translation>
 <translation id="1586541204584340881">додатке које сте инсталирали</translation>
@@ -1107,6 +1108,7 @@
 <translation id="3787705759683870569">Истиче <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Величина 16</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> in)</translation>
 <translation id="3793574014653384240">Број недавних отказивања и разлози</translation>
 <translation id="3795344968043407227">Независна и алтернативна музика</translation>
 <translation id="3799805948399000906">Фонт је затражен</translation>
@@ -1396,7 +1398,6 @@
 <translation id="4542971377163063093">6. фиока</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Покушајте да онемогућите додатке.</translation>
-<translation id="4559134504959026834">Овај сајт је у групи, коју дефинише <ph name="SET_OWNER" />, који може да види ваше активности</translation>
 <translation id="4566017918361049074">Рекреација на отвореном</translation>
 <translation id="4567686777917670400">Администратор може даљински да промени подешавање прегледача. Активностима на овом уређају може да се управља и ван Chromium-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Испорука</translation>
@@ -2516,6 +2517,7 @@
 <translation id="7441627299479586546">Погрешан субјекат смерница</translation>
 <translation id="7442725080345379071">Светлонаранџаста</translation>
 <translation id="7445762425076701745">Није могуће у потпуности потврдити идентитет сервера са којим сте повезани. Повезани сте са сервером који користи назив који је важећи само у вашој мрежи, а којем спољни ауторитет за издавање сертификата не може да провери власништво. Будући да неки ауторитети за издавање сертификата упркос томе издају сертификате за ове називе, ни на који начин не можете да будете сигурни да сте повезани са жељеним веб-сајтом, а не са нападачем.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />да сазнате више<ph name="END_LINK" /> о овом проблему.</translation>
 <translation id="7455133967321480974">Користи глобалну подразумевану вредност (Блокирај)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2823,6 +2825,7 @@
 <translation id="8218327578424803826">Додељена локација:</translation>
 <translation id="8225771182978767009">Особа која је подесила овај рачунар је одлучила да блокира овај сајт.</translation>
 <translation id="8228419419708659934">Приказ на две странице</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Спортске игре</translation>
 <translation id="8232343881378637145">Температура платформе</translation>

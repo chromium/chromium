@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Anulo printimin</translation>
 <translation id="2163937499206714165">Aktivizo modalitetin e errët</translation>
 <translation id="2180197493692062006">Ndodhi një gabim. Provo të rihapësh aplikacionin.</translation>
-<translation id="2182088270354640012">Faleminderit për komentet. Komentet e tua ndihmojnë në përmirësimin e Chrome OS dhe do të rishikohen nga ekipi i Chrome OS. Për shkak të numrit të raportimeve të dërguara, nuk do të marrësh një përgjigje të drejtpërdrejtë.</translation>
 <translation id="2209788852729124853">Rivendos matësit e trafikut</translation>
 <translation id="2212733584906323460">Zgjidhja e emrit</translation>
 <translation id="2217935453350629363">Shpejtësia aktuale</translation>
@@ -688,7 +687,6 @@
 <translation id="773153675489693198">Numri i cikleve</translation>
 <translation id="7747039790905080783">Çelës i ndarë paraprakisht</translation>
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>
-<translation id="7762839321248874531">Dërgo <ph name="BEGIN_LINK1" />informacionet e sistemit dhe të aplikacionit<ph name="END_LINK1" />, si dhe <ph name="BEGIN_LINK2" />metrikën<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Përputhje e prapashtesës së domenit</translation>
 <translation id="7769672763586021400">ID-ja e modelit</translation>
 <translation id="7784116172884276937">Nuk është konfiguruar asnjë server DNS</translation>
@@ -825,7 +823,6 @@
 <translation id="9082718469794970195">Përdor këtë video</translation>
 <translation id="9087578468327036362">Raportoje këtë kërkesë</translation>
 <translation id="9088306295921699330">Përdorimi aktual</translation>
-<translation id="9092255287806472980">Komentet e tua ndihmojnë në përmirësimin e Chrome OS dhe do të rishikohen nga ekipi ynë. Për shkak të numrit të lartë të raportimeve, nuk do të mund të dërgojmë një përgjigje.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>

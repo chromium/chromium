@@ -1372,6 +1372,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per traduir aquesta pàgina amb el Traductor de Google</translation>
 <translation id="4514308731478712184">Desactiva els recorreguts</translation>
 <translation id="4515275063822566619">Les targetes i les adreces s'obtenen de Chrome i del teu Compte de Google (<ph name="ACCOUNT_EMAIL" />). Pots gestionar-les des de <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">La política de l'administrador ha bloquejat l'opció de baixar aquest fitxer</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Sobre Monarch</translation>
 <translation id="4521916730539354575">Safata esquerre</translation>
@@ -1385,7 +1386,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4542971377163063093">Safata 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Desactiva les extensions</translation>
-<translation id="4559134504959026834">Aquest lloc web forma part d'un grup, definit per <ph name="SET_OWNER" />, que pot veure la teva activitat</translation>
 <translation id="4566017918361049074">Activitats a l'aire lliure</translation>
 <translation id="4567686777917670400">L'administrador pot modificar la configuració del navegador de manera remota. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chromium. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Entrega</translation>
@@ -2363,6 +2363,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">No es pot enviar a aquesta adreça. Selecciona'n una altra.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Pujada bloquejada</translation>
 <translation id="7132939140423847331">L'administrador ha prohibit copiar aquestes dades.</translation>
 <translation id="7135130955892390533">Mostra l'estat</translation>
 <translation id="7138472120740807366">Mètode d'entrega</translation>
@@ -2593,6 +2594,7 @@ Detalls addicionals:
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7659327900411729175">Sobre Kaku 8</translation>
 <translation id="7659878911471462949">Llàgrimes d'alegria</translation>
+<translation id="766014026101194726">{0,plural, =1{La política de l'administrador ha bloquejat l'opció de penjar aquest fitxer}other{La política de l'administrador ha bloquejat l'opció de penjar # fitxers}}</translation>
 <translation id="7662298039739062396">Configuració controlada per una extensió</translation>
 <translation id="7663736086183791259">Certificat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">No es permet en mode d'incògnit</translation>
@@ -2687,6 +2689,7 @@ Detalls addicionals:
 <translation id="7939744324936979484">Música folklòrica i tradicional</translation>
 <translation id="7941628148012649605">Sobre Chou 4</translation>
 <translation id="7942349550061667556">Vermell</translation>
+<translation id="7943397946612013052">Baixada bloquejada</translation>
 <translation id="7943893128817522649">Pot demanar permís per baixar automàticament diversos fitxers</translation>
 <translation id="7947285636476623132">Comprova l'any de caducitat i torna-ho a provar</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per obtenir informació sobre les funcions de Chrome</translation>

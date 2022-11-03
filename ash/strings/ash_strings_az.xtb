@@ -641,7 +641,6 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Parolu gizlədin</translation>
 <translation id="4566144812051858745">Heç bir təklif maraqlı deyil</translation>
-<translation id="4570957409596482333">Səsləndirmək üçün Seçim düyməsi</translation>
 <translation id="4573176682887762361">"[söz / ifadə] yazın"</translation>
 <translation id="4577274620589681794">Vaxt bitdi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Önbaxışları göstərin</translation>
@@ -918,6 +917,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6064463340679478396">Fayldan istifadə bitib</translation>
 <translation id="6073451960410192870">Çəkməyi dayandırın</translation>
 <translation id="6074087755403037157">Beta Kanalı</translation>
+<translation id="6093867385179428431">Admin tərəfindən deaktiv edildi</translation>
 <translation id="6095008505822982596">Nitq sürəti</translation>
 <translation id="6099678161144790572">Keçən ay redaktə edilib</translation>
 <translation id="6103838137565245112">sistem</translation>
@@ -1309,6 +1309,7 @@ Yeni quraşdırma</translation>
 <translation id="8297006494302853456">Zəif</translation>
 <translation id="8308637677604853869">Öncəki menyu</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8314772463905284467">Caps Lock aktivdir</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> pəncərəsi seçilib</translation>
 <translation id="8351131234907093545">Qeyd yaradın</translation>

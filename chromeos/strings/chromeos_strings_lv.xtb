@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Atcelt drukas uzdevumu</translation>
 <translation id="2163937499206714165">Ieslēgt tumšo režīmu</translation>
 <translation id="2180197493692062006">Radās kļūda. Mēģiniet atkārtoti atvērt lietotni.</translation>
-<translation id="2182088270354640012">Paldies par atsauksmēm! Jūsu atsauksmes palīdz uzlabot Chrome OS. Chrome OS komanda tās pārskatīs. Tā kā tiek iesniegts ļoti daudz ziņojumu, jūs nesaņemsiet tiešu atbildi.</translation>
 <translation id="2209788852729124853">Atiestatīt datplūsmas skaitītājus</translation>
 <translation id="2212733584906323460">Nosaukumu atrisināšana</translation>
 <translation id="2217935453350629363">Pašreizējais ātrums</translation>
@@ -689,7 +688,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="773153675489693198">Ciklu laiks</translation>
 <translation id="7747039790905080783">Iepriekš kopīgota atslēga</translation>
 <translation id="7762130827864645708">Parole ir sekmīgi nomainīta. Lūdzu, turpmāk izmantojiet jauno paroli.</translation>
-<translation id="7762839321248874531">Sūtīt <ph name="BEGIN_LINK1" />sistēmas un lietotņu informāciju<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />rādītājus<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Domēna sufiksa atbilstība</translation>
 <translation id="7769672763586021400">Modeļa ID</translation>
 <translation id="7784116172884276937">Neviens DNS serveris nav iestatīts</translation>
@@ -826,7 +824,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="9082718469794970195">Izmantot šo videoklipu</translation>
 <translation id="9087578468327036362">Ziņot par šo vaicājumu</translation>
 <translation id="9088306295921699330">Pašreizējais lietojums</translation>
-<translation id="9092255287806472980">Jūsu atsauksmes palīdz uzlabot Chrome OS. Mūsu komanda tās pārskatīs. Tā kā mēs saņemam ļoti daudz ziņojumu, nevarēsim atbildēt uz tiem visiem.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Atsvaidziniet <ph name="PRINCIPAL_NAME" /> biļeti</translation>
 <translation id="9106415115617144481">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana</translation>

@@ -484,6 +484,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3633097874324966332">Open Bluetooth settings to pair your device</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Update overdue</translation>
+<translation id="3659444876902283058">(Day <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">About <ph name="TIME_LEFT" /> left (<ph name="PERCENTAGE" />%).
 Connect your device to power.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> managed user</translation>
@@ -641,7 +642,6 @@ Connect your device to power.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Hide password</translation>
 <translation id="4566144812051858745">Not interested in any suggestions</translation>
-<translation id="4570957409596482333">Select-to-Speak button</translation>
 <translation id="4573176682887762361">'Type [word / phrase]'</translation>
 <translation id="4577274620589681794">Time's up · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Show previews</translation>
@@ -1269,6 +1269,7 @@ New install</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
 <translation id="8083540854303889870">Saved for later</translation>
+<translation id="8091153018031979607">Starts at <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatic updates</translation>
 <translation id="8098591350844501178">Stop casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">On, all apps</translation>
@@ -1381,6 +1382,7 @@ New install</translation>
 <translation id="8703634754197148428">Start recording. Once recording has started use Alt + Shift + L to navigate to the shelf and find the stop recording button</translation>
 <translation id="8721053961083920564">Toggle volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Full screen capture</translation>
+<translation id="8731487213223706745">Ends at <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
 <translation id="8735678380411481005">Keyboard backlight colour</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">取消列印工作</translation>
 <translation id="2163937499206714165">開啟暗光模式</translation>
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
-<translation id="2182088270354640012">感謝您提供意見！您的意見能協助我們改善 Chrome OS，而提交的內容將由 Google 團隊審核。由於報告數量眾多，我們將不會直接回覆您。</translation>
 <translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2212733584906323460">名稱解析</translation>
 <translation id="2217935453350629363">目前速度</translation>
@@ -690,7 +689,6 @@
 <translation id="773153675489693198">週期數</translation>
 <translation id="7747039790905080783">預先共用密鑰</translation>
 <translation id="7762130827864645708">已成功變更您的密碼。請從現在開始改用新的密碼。</translation>
-<translation id="7762839321248874531">傳送<ph name="BEGIN_LINK1" />系統和應用程式資訊<ph name="END_LINK1" />，以及<ph name="BEGIN_LINK2" />數據<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">域名尾碼相符</translation>
 <translation id="7769672763586021400">型號識別碼</translation>
 <translation id="7784116172884276937">沒有設定 DNS 伺服器</translation>
@@ -827,7 +825,6 @@
 <translation id="9082718469794970195">使用這段影片</translation>
 <translation id="9087578468327036362">報告此查詢</translation>
 <translation id="9088306295921699330">目前使用量</translation>
-<translation id="9092255287806472980">您的意見能協助我們改善 Chrome OS，而提交的內容將由 Google 團隊審核。由於報告數量眾多，我們將不會逐一回覆。</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃瞄第 <ph name="PAGE_NUMBER" /> 頁</translation>

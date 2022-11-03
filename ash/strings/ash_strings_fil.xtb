@@ -484,6 +484,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3633097874324966332">Buksan ang mga setting ng Bluetooth para ipares ang iyong device</translation>
 <translation id="3638400994746983214">I-toggle ang privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Overdue na ang update</translation>
+<translation id="3659444876902283058">(Araw <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Mga <ph name="TIME_LEFT" /> ang natitira (<ph name="PERCENTAGE" />%).
 Isaksak ang iyong device.</translation>
 <translation id="366222428570480733">Pinapamahalaang user na <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -641,7 +642,6 @@ Isaksak ang iyong device.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Itago ang password</translation>
 <translation id="4566144812051858745">Hindi interesado sa anumang suhestyon</translation>
-<translation id="4570957409596482333">Button ng Select-to-Speak</translation>
 <translation id="4573176682887762361">"I-type ang [salita / parirala]"</translation>
 <translation id="4577274620589681794">Oras na · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Magpakita ng mga preview</translation>
@@ -918,6 +918,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6064463340679478396">Tapos nang gamitin ang file</translation>
 <translation id="6073451960410192870">Ihinto ang pag-record</translation>
 <translation id="6074087755403037157">Beta Channel</translation>
+<translation id="6093867385179428431">Na-disable ng admin</translation>
 <translation id="6095008505822982596">Bilis ng pagsasalita</translation>
 <translation id="6099678161144790572">Na-edit sa nakalipas na buwan</translation>
 <translation id="6103838137565245112">system</translation>
@@ -1268,6 +1269,7 @@ Kaka-install lang</translation>
 <translation id="8052898407431791827">Kinopya sa clipboard</translation>
 <translation id="8054466585765276473">Kinakalkula ang oras ng baterya.</translation>
 <translation id="8083540854303889870">Naka-save para sa ibang pagkakataon</translation>
+<translation id="8091153018031979607">Magsisimula nang <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Mga awtomatikong update</translation>
 <translation id="8098591350844501178">Ihinto ang pag-cast ng screen sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Naka-on lahat</translation>
@@ -1380,6 +1382,7 @@ Kaka-install lang</translation>
 <translation id="8703634754197148428">Simulang mag-record. Kapag nagsimula na ang pag-record, gamitin ang Alt + Shift + L para mag-navigate papunta sa shelf at makita ang button na ihinto ang pag-record</translation>
 <translation id="8721053961083920564">I-toggle ang Volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Full screen capture</translation>
+<translation id="8731487213223706745">Matatapos nang <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Maaaring sinusubukan nitong nakawin ang iyong mga keystroke</translation>
 <translation id="8735678380411481005">Kulay ng backlight ng keyboard</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
 <translation id="2180197493692062006">حدث خطأ. يُرجى إعادة فتح التطبيق.</translation>
-<translation id="2182088270354640012">‏شكرًا على ملاحظاتك. تساعدنا ملاحظاتك في تحسين نظام التشغيل Chrome وسيراجعها فريق نظام التشغيل Chrome. بسبب العدد الكبير من البلاغات التي نتلقّاها، لن يصلك رد مباشر منّا.</translation>
 <translation id="2209788852729124853">إعادة ضبط عدّادات حركة بيانات الشبكة</translation>
 <translation id="2212733584906323460">تحليل الأسماء</translation>
 <translation id="2217935453350629363">السرعة الحالية</translation>
@@ -689,7 +688,6 @@
 <translation id="773153675489693198">عدد مرات تفريغ البطارية وشحنها</translation>
 <translation id="7747039790905080783">المفتاح المشترَك مسبقًا</translation>
 <translation id="7762130827864645708">تم تغيير كلمة المرور بنجاح. يُرجى استخدام كلمة المرور الجديدة من الآن فصاعدًا.</translation>
-<translation id="7762839321248874531">إرسال <ph name="BEGIN_LINK1" />معلومات النظام والتطبيق<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />المقاييس<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">مطابقة لاحقة النطاق</translation>
 <translation id="7769672763586021400">رقم تعريف النموذج</translation>
 <translation id="7784116172884276937">لم يتم ضبط أي خوادم لنظام أسماء النطاقات.</translation>
@@ -826,7 +824,6 @@
 <translation id="9082718469794970195">استخدام هذا الفيديو</translation>
 <translation id="9087578468327036362">الإبلاغ عن هذا الطلب</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>
-<translation id="9092255287806472980">‏تساعدنا تعليقاتك في تحسين نظام التشغيل Chrome وسيراجعها فريقنا. وبسبب التقارير التي تصلنا بأعداد هائلة، لن نتمكّن من إرسال ردّ إليك.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUMBER" />.</translation>

@@ -1384,6 +1384,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນກົດ Enter ເພື່ອແປໜ້ານີ້ດ້ວຍ Google ແປພາສາ</translation>
 <translation id="4514308731478712184">ປິດບັນທຶກ</translation>
 <translation id="4515275063822566619">ບັດ ແລະ ທີ່ຢູ່ມາຈາກ Chrome ແລະ ບັນຊີ Google ຂອງທ່ານ (<ph name="ACCOUNT_EMAIL" />). ທ່ານສາມາດຈັດການພວກມັນໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">ການດາວໂຫຼດໄຟລ໌ນີ້ຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ມມ (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Envelope Monarch</translation>
 <translation id="4521916730539354575">ຖາດຊ້າຍ</translation>
@@ -1397,7 +1398,6 @@
 <translation id="4542971377163063093">ຖາດ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ລອງປິດໃຊ້ສ່ວນຂະຫຍາຍຂອງທ່ານ.</translation>
-<translation id="4559134504959026834">ເວັບໄຊນີ້ຢູ່ໃນກຸ່ມ, ທີ່ກຳນົດໂດຍ <ph name="SET_OWNER" />, ທີ່ສາມາດເຫັນການເຄື່ອນໄຫວຂອງທ່ານໄດ້</translation>
 <translation id="4566017918361049074">ກາງແຈ້ງ</translation>
 <translation id="4567686777917670400">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດປ່ຽນການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກໄດ້. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chromium ໄດ້ເຊັ່ນກັນ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">ການຈັດສົ່ງ</translation>
@@ -2385,6 +2385,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ບໍ່ສາມາດຈັດສົ່ງຫາທີ່ຢູ່ນີ້ໄດ້. ກະລຸນາເລືອກທີ່ຢູ່ອື່ນ.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">ບອກການອັບໂຫຼດໄວ້ແລ້ວ</translation>
 <translation id="7132939140423847331">ຜູ້ເບິ່ງແຍງຂອງທ່ານຫ້າມບໍ່ໃຫ້ສຳເນົາຂໍ້ມູນນີ້.</translation>
 <translation id="7135130955892390533">ສະແດງສະຖານະ</translation>
 <translation id="7138472120740807366">ວິທີການສົ່ງ</translation>
@@ -2618,6 +2619,7 @@
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">ນ້ຳຕາແຫ່ງຄວາມສຸກ</translation>
+<translation id="766014026101194726">{0,plural, =1{ການອັບໂຫຼດໄຟລ໌ນີ້ຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ}other{ການອັບໂຫຼດ # ໄຟລ໌ຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ}}</translation>
 <translation id="7662298039739062396">ການຕັ້ງຄ່າຖືກຄວບຄຸມໂດຍສ່ວນຂະຫຍາຍ</translation>
 <translation id="7663736086183791259">ໃບຮັບຮອງ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -2712,6 +2714,7 @@
 <translation id="7939744324936979484">ດົນຕີພື້ນບ້ານ ແລະ ດົນຕີດັ້ງເດີມ</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
+<translation id="7943397946612013052">ບລັອກການດາວໂຫຼດໄວ້ແລ້ວ</translation>
 <translation id="7943893128817522649">ສາມາດຂໍດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດໄດ້</translation>
 <translation id="7947285636476623132">ກວດເບິ່ງປີໝົດອາຍຸຂອງທ່ານ ແລະ ລອງອີກຄັ້ງ</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສຶກສາກ່ຽວກັບຄຸນສົມບັດ Chrome</translation>

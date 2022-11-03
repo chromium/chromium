@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">Төхөөрөмжөө хослуулахын тулд Bluetooth-н тохиргоог нээнэ үү</translation>
 <translation id="3638400994746983214">Нууцлалын дэлгэцийг асаах/унтраах. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Шинэчлэлтийн хугацаа хэтэрсэн</translation>
+<translation id="3659444876902283058">(Өдөр <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Ойролцоогоор <ph name="TIME_LEFT" /> үлдлээ (<ph name="PERCENTAGE" />%).
 Төхөөрөмжөө тэжээлд залгана уу.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Хяналттай хэрэглэгч</translation>
@@ -642,7 +643,6 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Нууц үгийг нуух</translation>
 <translation id="4566144812051858745">Ямар ч зөвлөмж сонирхохгүй байна</translation>
-<translation id="4570957409596482333">Ярихаар сонгох товчлуур</translation>
 <translation id="4573176682887762361">"[Үг / хэллэг] бичих"</translation>
 <translation id="4577274620589681794">Цаг дууслаа · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Урьдчилан үзэлтийг харуулах</translation>
@@ -1269,6 +1269,7 @@
 <translation id="8052898407431791827">Түр санах ойд хуулсан</translation>
 <translation id="8054466585765276473">Цэнэгний хугацааг тооцож байна.</translation>
 <translation id="8083540854303889870">Дараа ашиглахаар хадгалсан</translation>
+<translation id="8091153018031979607"><ph name="START_TIME" />-д эхэлнэ <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автомат шинэчлэлт</translation>
 <translation id="8098591350844501178">Дэлгэцийг <ph name="RECEIVER_NAME" />-д дамжуулахыг зогсоох</translation>
 <translation id="8113423164597455979">Бүх аппд и.тэй</translation>
@@ -1382,6 +1383,7 @@
 <translation id="8703634754197148428">Бичиж эхэлнэ үү. Бичиж эхэлсэн үед Alt + Shift + L-г ашиглан тавиур луу шилжиж, бичлэгийг зогсоох товчлуурыг олно уу</translation>
 <translation id="8721053961083920564">Дууг хаах/нээх. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Бүтэн дэлгэцийн зураг авах</translation>
+<translation id="8731487213223706745"><ph name="END_TIME" />-д дуусна <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Энэ нь таны түлхүүрийн цуглуулгыг хулгайлахаар оролдож байж болзошгүй</translation>
 <translation id="8735678380411481005">Гарын арын гэрлийн өнгө</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

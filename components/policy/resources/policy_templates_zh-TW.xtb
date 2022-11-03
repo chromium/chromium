@@ -4061,9 +4061,6 @@
 <translation id="5073609397321802133">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
 
       如果不設定這項政策或將其設為 True，使用者可以自訂新分頁的背景。</translation>
-<translation id="5075190314377370852">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 一律會針對在本機上安裝的 CA 憑證所簽署的成功驗證伺服器憑證執行撤銷檢查。如果 <ph name="PRODUCT_NAME" /> 無法取得撤銷狀態資訊，<ph name="PRODUCT_NAME" /> 會將這些憑證視為已撤銷 (作業失敗)。
-
-      如果將這項政策設為 False 或不設定，<ph name="PRODUCT_NAME" /> 會使用現有的線上撤銷檢查設定。</translation>
 <translation id="5076953589932162038">First-Party Sets 設定</translation>
 <translation id="5078623750797048009">啟用 PDF 註解功能</translation>
 <translation id="5081204761483900654">有限制的受管理訪客工作階段</translation>

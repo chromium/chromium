@@ -32,7 +32,7 @@
 <translation id="1899697626337024495">相機解像度</translation>
 <translation id="1925845977604399247">前往相片集</translation>
 <translation id="199526504800285197">已停止錄影</translation>
-<translation id="1995951722691075581">裝置儲存空間不足，因此已停止錄影。如要錄製更多影片，請先釋出裝置空間。</translation>
+<translation id="1995951722691075581">由於裝置儲存空間不足，因此已停止錄影。如要錄製更多影片，請先騰出裝置空間。</translation>
 <translation id="2022953316617983419">二維條碼</translation>
 <translation id="2036868001356139588">計時器時間</translation>
 <translation id="2050339315714019657">直向</translation>
@@ -80,7 +80,7 @@
 <translation id="3810838688059735925">影片</translation>
 <translation id="3838931309141338733">掃描條碼</translation>
 <translation id="3892148308691398805">複製文字</translation>
-<translation id="4060608699153044055">裝置儲存空間不足，因此無法錄影。如要開始錄影，請先釋出裝置空間。</translation>
+<translation id="4060608699153044055">由於裝置儲存空間不足，因此無法錄影。如要開始錄影，請先騰出裝置空間。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> 百萬像素</translation>
 <translation id="4118525110028899586">暫停錄影</translation>
 <translation id="4121305183798804752">偵測到文件</translation>

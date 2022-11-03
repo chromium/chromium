@@ -1372,6 +1372,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate વડે આ પેજનો અનુવાદ કરવા માટે Tab પછી Enter દબાવો</translation>
 <translation id="4514308731478712184">પ્રવાસ બંધ કરો</translation>
 <translation id="4515275063822566619">કાર્ડ અને સરનામા Chrome અને Google એકાઉન્ટ (<ph name="ACCOUNT_EMAIL" />)માંથી છે. તમે તેને <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને મેનેજ કરી શકો છો.</translation>
+<translation id="4520048001084013693">ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર આ ફાઇલ ડાઉનલોડ કરવાનું બ્લૉક કરેલું છે</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> મિ.મી. (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">એન્વલપ મોનાર્ક</translation>
 <translation id="4521916730539354575">ડાબી બાજુની ટ્રે</translation>
@@ -1385,7 +1386,6 @@
 <translation id="4542971377163063093">ટ્રે 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">તમારા એક્સ્ટેન્શન્સને અક્ષમ કરવાનો પ્રયાસ કરો.</translation>
-<translation id="4559134504959026834">આ સાઇટ <ph name="SET_OWNER" /> દ્વારા નિર્ધારિત ગ્રૂપમાં છે, જે તમારી પ્રવૃત્તિ જોઈ શકે છે</translation>
 <translation id="4566017918361049074">આઉટડોર</translation>
 <translation id="4567686777917670400">તમારા વ્યવસ્થાપક તમારા બ્રાઉઝરનું સેટઅપ રિમોટલી બદલી શકે છે. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromiumની બહારથી પણ મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">ડિલિવરી</translation>
@@ -2363,6 +2363,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">આ સરનામે વિતરણ કરી શકાતું નથી. કોઈ ભિન્ન સરનામું પસંદ કરો.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">અપલોડ કરવાનું બ્લૉક કરેલું છે</translation>
 <translation id="7132939140423847331">તમારા ઍડમિન દ્વારા આ ડેટાને કૉપિ કરવાથી પ્રતિબંધિત કરવામાં આવ્યો છે.</translation>
 <translation id="7135130955892390533">સ્ટેટસ બતાવો</translation>
 <translation id="7138472120740807366">વિતરણ પદ્ધતિ</translation>
@@ -2593,6 +2594,7 @@
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7659327900411729175">એન્વલપ કાકૂ 8</translation>
 <translation id="7659878911471462949">ખુશીના આંસુ</translation>
+<translation id="766014026101194726">{0,plural, =1{ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર આ ફાઇલ અપલોડ કરવાનું બ્લૉક કરેલું છે}one{ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર # ફાઇલ અપલોડ કરવાનું બ્લૉક કરેલું છે}other{ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર # ફાઇલ અપલોડ કરવાનું બ્લૉક કરેલું છે}}</translation>
 <translation id="7662298039739062396">એક્સટેન્શન દ્વારા સેટિંગ નિયંત્રિત કરેલ છે</translation>
 <translation id="7663736086183791259">પ્રમાણપત્ર <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">છુપા મોડમાં મંજૂરી નથી</translation>
@@ -2687,6 +2689,7 @@
 <translation id="7939744324936979484">લોક અને પરંપરાગત સંગીત</translation>
 <translation id="7941628148012649605">એન્વલપ ચોઉ 4</translation>
 <translation id="7942349550061667556">લાલ</translation>
+<translation id="7943397946612013052">ડાઉનલોડ કરવાનું બ્લૉક કરેલું છે</translation>
 <translation id="7943893128817522649">એકથી વધારે ફાઇલોને ઑટોમૅટિક રીતે ડાઉનલોડ કરવાનું પૂછી શકે છે</translation>
 <translation id="7947285636476623132">તમારું સમાપ્તિ વર્ષ તપાસો અને ફરી પ્રયાસ કરો</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeની સુવિધાઓ વિશે જાણવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>

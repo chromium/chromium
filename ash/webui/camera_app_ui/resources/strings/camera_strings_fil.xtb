@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Hindi ma-export ang <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolution ng larawan</translation>
 <translation id="1925845977604399247">Pumunta sa Gallery</translation>
+<translation id="199526504800285197">Inihinto ang pag-record</translation>
+<translation id="1995951722691075581">Huminto ang iyong pag-record dahil sa mababang storage space ng device. Para mag-record ng higit pang video, kailangan mong magbakante ng espasyo sa iyong device.</translation>
 <translation id="2022953316617983419">QR code</translation>
 <translation id="2036868001356139588">Tagal ng timer</translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Kumuha ng mga larawan at mag-record ng mga video gamit ang iyong camera.</translation>
 <translation id="2517472476991765520">I-scan</translation>
 <translation id="2549985041256363841">Simulang mag-record</translation>
+<translation id="2577915835281444458">Malapit nang tumigil ang pag-record. Pumunta sa storage ng device para magbakante ng space.</translation>
 <translation id="2599796128805996109">Camera sa likod</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
 <translation id="2761536921376153655">Uri ng pag-scan</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">I-scan ang barcode</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
+<translation id="4060608699153044055">Hindi ka puwedeng mag-record dahil sa mababang storage space ng device. Para magsimulang mag-record, kailangan mong magbakante ng espasyo sa iyong device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">I-pause ang pag-record</translation>
 <translation id="4121305183798804752">Na-detect ang dokumento</translation>
@@ -160,6 +164,7 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="7748344063862150053">Kanang sulok sa itaas ng dokumento</translation>
 <translation id="7933675232020478311">Gumagalaw pakanan at pababa</translation>
 <translation id="7983668134180549431">Na-detect na text.</translation>
+<translation id="8079255378695216066">Hindi masimulan ang pag-record</translation>
 <translation id="8120146556401698679">I-pan i-tilt i-zoom</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8145038249676204903">Lumipat sa pagkuha ng larawan</translation>

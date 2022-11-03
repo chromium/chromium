@@ -140,7 +140,6 @@
 <translation id="2074131957428911366">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2080769225927880590">使用有效帳戶登入</translation>
-<translation id="209018056901015185">切換為電腦版網站</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="2116625576999540962">已移動 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
 <translation id="2122754583996902531">你的瀏覽器受到管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -387,7 +386,6 @@
 <translation id="3995521777587992544">網頁載入進度列，已載入 <ph name="EMAIL" />。</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4004204301268239848">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼。</translation>
-<translation id="4006921758705478413">傳送至你的裝置</translation>
 <translation id="4018310736049373830">管理活動</translation>
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
@@ -822,7 +820,6 @@
 <translation id="7133798577887235672">完整名稱</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
 <translation id="7153999225810839758">閱讀時間：<ph name="TIME" /> 分鐘</translation>
-<translation id="7159472599653637159">切換為行動版網站</translation>
 <translation id="7162168282402939716">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁</translation>
 <translation id="7172852049901402487">確保密碼安全，避免發生安全性問題</translation>
 <translation id="7173114856073700355">開啟設定</translation>
@@ -1068,7 +1065,6 @@
 <translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務。</translation>
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9148126808321036104">重新登入</translation>
-<translation id="9152539721251340337">建立 QR 圖碼</translation>
 <translation id="9157836665414082580">禁止顯示對話方塊</translation>
 <translation id="9177438225260810839">在開啟的分頁中搜尋</translation>
 <translation id="9188680907066685419">登出受管理的帳戶</translation>

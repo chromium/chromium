@@ -141,7 +141,6 @@
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2080769225927880590">التسجيل باستخدام حساب صالح</translation>
-<translation id="209018056901015185">طلب موقع سطح المكتب</translation>
 <translation id="2103075008456228677">‏فتح history.google.com</translation>
 <translation id="2116625576999540962">تم نقل <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> من العناصر</translation>
 <translation id="2122754583996902531">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -379,7 +378,6 @@
 <translation id="3995521777587992544">شريط تقدُّم تحميل الصفحة، تم تحميل <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="4004204301268239848">‏يتم حفظ كلمات المرور في حسابك على Google حتى تتمكَّن من استخدامها على أي جهاز.</translation>
-<translation id="4006921758705478413">الإرسال إلى أجهزتك</translation>
 <translation id="4018310736049373830">إدارة النشاط</translation>
 <translation id="4038354071007134711">لا يمكن فتح هذا الملف بأي تطبيق موجود على هذا الجهاز.</translation>
 <translation id="4042870976416480368">البحث في الصفحة</translation>
@@ -806,7 +804,6 @@
 <translation id="7133798577887235672">الاسم بالكامل</translation>
 <translation id="7136892417564438900">الكاميرا غير متاحة</translation>
 <translation id="7153999225810839758">تستغرق القراءة <ph name="TIME" /> دقيقة.</translation>
-<translation id="7159472599653637159">طلب موقع إلكتروني متوافق مع الجوّال</translation>
 <translation id="7162168282402939716">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">يمكنك حماية كلمات المرور والتحقق من مشاكل الأمان.</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
@@ -1046,7 +1043,6 @@
 <translation id="9124387962554796433">‏قد تستخدم Google سجلّك لتخصيص "بحث Google" وخدمات Google الأخرى.</translation>
 <translation id="9137526406337347448">‏خدمات Google</translation>
 <translation id="9148126808321036104">تسجيل الدخول مرة أخرى</translation>
-<translation id="9152539721251340337">إنشاء رمز استجابة سريعة</translation>
 <translation id="9157836665414082580">إيقاف مربعات الحوار</translation>
 <translation id="9177438225260810839">البحث في علامات التبويب المفتوحة</translation>
 <translation id="9188680907066685419">تسجيل الخروج من الحساب المُدار</translation>

@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> dışa aktarılamıyor</translation>
 <translation id="1899697626337024495">Fotoğraf Çözünürlüğü</translation>
 <translation id="1925845977604399247">Galeri'ye git</translation>
+<translation id="199526504800285197">Kayıt durduruldu</translation>
+<translation id="1995951722691075581">Cihazdaki depolama alanı azaldığı için kaydınız durduruldu. Daha fazla video kaydetmek için cihazınızda yer açmanız gerekiyor.</translation>
 <translation id="2022953316617983419">QR kodu</translation>
 <translation id="2036868001356139588">Zamanlayıcı süresi</translation>
 <translation id="2050339315714019657">Dikey</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Kameranızla fotoğraf çekin ve video kaydedin.</translation>
 <translation id="2517472476991765520">Tara</translation>
 <translation id="2549985041256363841">Kaydı başlat</translation>
+<translation id="2577915835281444458">Kayıt yakında durdurulacak. Yer açmak için cihazın depolama alanına gidin.</translation>
 <translation id="2599796128805996109">Arka kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> sn.</translation>
 <translation id="2761536921376153655">Tarama türü</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Barkodu tara</translation>
 <translation id="3892148308691398805">Metni kopyala</translation>
+<translation id="4060608699153044055">Cihazdaki depolama alanı azaldığı için kayıt yapamazsınız. Kaydı başlatmak için cihazınızda yer açmanız gerekiyor.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Kaydı duraklat</translation>
 <translation id="4121305183798804752">Doküman algılandı</translation>
@@ -160,6 +164,7 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="7748344063862150053">Dokümanın sağ üst köşesi</translation>
 <translation id="7933675232020478311">Sağ alta doğru hareket ediyor</translation>
 <translation id="7983668134180549431">Metin algılandı.</translation>
+<translation id="8079255378695216066">Kaydetmeye başlanamıyor</translation>
 <translation id="8120146556401698679">Yana kaydırın, eğin, zum yapın</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8145038249676204903">Fotoğraf çekme moduna geç</translation>

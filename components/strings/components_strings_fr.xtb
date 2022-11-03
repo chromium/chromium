@@ -264,6 +264,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1567040042588613346">Cette règle fonctionne comme prévu, mais notez que la même valeur a été définie ailleurs et que cette règle la remplace.</translation>
 <translation id="1569487616857761740">Saisir la date d'expiration</translation>
 <translation id="1569694109004336106">Google Chrome tente d'activer Windows Hello pour saisir les mots de passe.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> pouces</translation>
 <translation id="1581080074034554886">Code CVC :</translation>
 <translation id="1583429793053364125">Une erreur s'est produite lors de l'affichage de la page Web.</translation>
 <translation id="1586541204584340881">Les extensions que vous avez installées</translation>
@@ -1098,6 +1099,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3787705759683870569">Expire en <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Taille 16</translation>
 <translation id="3789841737615482174">Installer</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pouces)</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
 <translation id="3795344968043407227">Musique indie et alternative</translation>
 <translation id="3799805948399000906">Police demandée</translation>
@@ -1385,7 +1387,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4542971377163063093">Bac 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Essayez de désactiver les extensions.</translation>
-<translation id="4559134504959026834">Ce site fait partie d'un groupe, défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
 <translation id="4566017918361049074">Activités de plein air</translation>
 <translation id="4567686777917670400">Votre administrateur peut modifier à distance la configuration de votre navigateur. Il se peut que l'activité sur cet appareil soit gérée en dehors de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Livraison</translation>
@@ -2494,6 +2495,7 @@ Informations supplémentaires :
 <translation id="7441627299479586546">Objet de la règle incorrect.</translation>
 <translation id="7442725080345379071">Orange clair</translation>
 <translation id="7445762425076701745">Impossible de valider entièrement l'identité du serveur auquel vous êtes connecté. Le nom utilisé pour cette connexion n'est valide que sur votre réseau et aucune autorité de certification externe ne peut en vérifier la propriété. Certaines autorités de certification délivrent tout de même des certificats pour ces types de nom, par conséquent nous ne sommes pas en mesure de vérifier que vous êtes connecté au site voulu et non à un site malveillant.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur ce problème.</translation>
 <translation id="7455133967321480974">Utiliser le paramètre global par défaut ("Bloquer")</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2797,6 +2799,7 @@ Informations supplémentaires :
 <translation id="8218327578424803826">Position attribuée : </translation>
 <translation id="8225771182978767009">La personne qui a configuré cet ordinateur a choisi de bloquer ce site.</translation>
 <translation id="8228419419708659934">Vue sur deux pages</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Jeux de sport</translation>
 <translation id="8232343881378637145">Température de la plate-forme</translation>

@@ -198,7 +198,6 @@
 <translation id="1174366174291287894">Chrome থেকে কোনও সতর্কতা না পাওয়া পর্যন্ত আপনার সংযোগটি সুরক্ষিত</translation>
 <translation id="117445914942805388">আপনার সিঙ্ক করা সমস্ত ডিভাইস এবং Google অ্যাকাউন্ট থেকে ব্রাউজিং ডেটা খালি করার জন্য <ph name="BEGIN_LINK" />সিঙ্ক সেটিংস দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1175364870820465910">&amp;প্রিন্ট...</translation>
-<translation id="1176378369905028399">এই অ্যাকাউন্টের জন্য একটি পাসওয়ার্ড আগে থেকেই Google Password Manager (<ph name="USER_EMAIL" />)-এ স্টোর করা আছে</translation>
 <translation id="1176471985365269981">আপনার ডিভাইসে ফাইল অথবা ফোল্ডার এডিট করার অনুমতি নেই</translation>
 <translation id="1177863135347784049">কাস্টম</translation>
 <translation id="1178581264944972037">বিরতি</translation>
@@ -410,6 +409,7 @@
 <translation id="1388253969141979417">মাইক্রোফোন ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1388728792929436380">আপডেট সম্পূর্ণ হলে, <ph name="DEVICE_TYPE" /> রিস্টার্ট করা হবে।</translation>
 <translation id="1389601498324964367">কোটা-ম্যানেজ করা স্টোরেজ</translation>
+<translation id="1390113502208199250">Chrome Education আপগ্রেড করুন ফিচার ব্যবহার করতে, আপনাকে এই ডিভাইসটি ফ্যাক্টরি রিসেট করতে হবে।</translation>
 <translation id="139013308650923562">সাইটকে আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করতে দেয়</translation>
 <translation id="1390548061267426325">নিয়মিত ট্যাব রূপে খুলুন</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />-কে <ph name="PRINTER_NAME" />-এ প্রিন্ট করার অনুমতি দেওয়া নেই। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
@@ -480,6 +480,7 @@
 <translation id="1436784010935106834">সরানো হয়েছে</translation>
 <translation id="1437986450143295708">সমস্যাটির বিবরণ দিন</translation>
 <translation id="1439671507542716852">দীর্ঘ মেয়াদী সহায়তা</translation>
+<translation id="1440090277117135316">স্কুলে নথিভুক্ত করা হয়ে গেছে</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" />টি নির্বাচিত হয়েছে</translation>
 <translation id="1442851588227551435">অ্যাক্টিভ Kerberos টিকিট সেট করুন</translation>
 <translation id="1444628761356461360">এই সেটিংটি ডিভাইসের মালিকের দ্বারা <ph name="OWNER_EMAIL" /> পরিচালিত হয়৷</translation>
@@ -1836,7 +1837,6 @@
 <translation id="2643698698624765890">উইন্ডো মেনুতে এক্সটেনশান ক্লিক করে আপনার এক্সটেনশানগুলি পরিচালনা করুন৷</translation>
 <translation id="2645047101481282803">আপনার ডিভাইস <ph name="PROFILE_NAME" /> ম্যানেজ করে</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">এই অ্যাকাউন্টের জন্য একটি পাসওয়ার্ড আগে থেকেই এই ডিভাইসে স্টোর করা আছে</translation>
 <translation id="2649045351178520408">Base64-এনকোড হওয়া ASCII, সার্টিফিকেটের শৃঙ্খলা</translation>
 <translation id="2652129567809778422">পাসওয়ার্ড বেছে নিন</translation>
 <translation id="2653033005692233957">সার্চ করা যায়নি</translation>
@@ -1954,6 +1954,7 @@
 <translation id="274318651891194348">কীবোর্ড সার্চ করা হচ্ছে</translation>
 <translation id="2743301740238894839">শুরু করুন</translation>
 <translation id="2743387203779672305">ক্লিপবোর্ডে কপি করুন</translation>
+<translation id="274362947316498129">কোনও অ্যাপ <ph name="DEVICE_NAME" /> অ্যাক্সেস করা চেষ্টা করছে। অ্যাক্সেস করার অনুমতি দিতে, <ph name="DEVICE_NAME" />-এর প্রাইভেসি সুইচ বন্ধ করে দিন।</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />এ সাইন-ইন করুন</translation>
 <translation id="2749836841884031656">সিম (SIM)</translation>
@@ -2410,6 +2411,7 @@
 <translation id="3170072451822350649">এছাড়াও আপনি সাইন-ইন এড়িয়ে যেতে ও <ph name="LINK_START" />অতিথি হিসাবে ব্রাউজ<ph name="LINK_END" /> করতে পারেন৷</translation>
 <translation id="31774765611822736">বাঁদিকে নতুন ট্যাব</translation>
 <translation id="3177909033752230686">পৃষ্ঠার ভাষা:</translation>
+<translation id="3177914167275935955">আপনার ডিভাইসে Chrome Education আপগ্রেড অন্তর্ভুক্ত রয়েছে, কিন্তু আপনার ইউজারনেমটি কোনও Google for Education অ্যাকাউন্টের সাথে যুক্ত নয়। একটি সেকেন্ডারি ডিভাইসে g.co/workspace/edusignup-এ গিয়ে একটি Google for Education অ্যাকাউন্ট তৈরি করুন।</translation>
 <translation id="3179982752812949580">টেক্সটের ফন্ট</translation>
 <translation id="3181954750937456830">নিরাপদ ব্রাউজিং (বিপজ্জনক সাইট থেকে আপনাকে এবং আপনার ডিভাইসকে রক্ষা করে)</translation>
 <translation id="3182749001423093222">বানান পরীক্ষা</translation>
@@ -2624,7 +2626,6 @@
 <translation id="3399432415385675819">বিজ্ঞপ্তি অক্ষম করা হবে</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> হার্জ) - একত্রে</translation>
 <translation id="3401484564516348917">আপনার ব্রাউজার, OS, ডিভাইস, ইনস্টল করা সফ্টওয়্যার, রেজিস্ট্রি ভ্যালু এবং ফাইলের ব্যাপারে তথ্য পড়ুন</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{এই ডিভাইসে {COUNT}টি পাসওয়ার্ড সেভ করা আছে}one{এই ডিভাইসে {COUNT}টি পাসওয়ার্ড সেভ করা আছে}other{এই ডিভাইসে {COUNT}টি পাসওয়ার্ড সেভ করা আছে}}</translation>
 <translation id="3402255108239926910">অবতার বেছে নিন</translation>
 <translation id="3402585168444815892">ডেমো মোডে এনরোল করা হচ্ছে</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3123,6 +3124,7 @@
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3851428669031642514">অনিরাপদ স্ক্রিপ্টগুলি লোড করুন</translation>
 <translation id="3852215160863921508">ইনপুট সংক্রান্ত সহায়তা</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" /> চালু আছে</translation>
 <translation id="3854599674806204102">একটি বিকল্প বেছে নিন</translation>
 <translation id="3854967233147778866">অন্য ভাষাতে ওয়েবসাইট অনুবাদ করার সাজেশন দিন</translation>
 <translation id="3854976556788175030">আউটপুট ট্রেতে আর জায়গা নেই</translation>
@@ -3456,6 +3458,7 @@
 <translation id="4163560723127662357">অজানা কীবোর্ড</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" />-এর কোনও সঠিক সংস্থার সাথে সম্পর্ক নেই। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। আপনি অ্যাডমিনিস্ট্রেটর হলে এই ইউআরএলে গিয়ে আপনার সংস্থা সেট আপ করতে পারবেন: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">সাইটের সেটিংস</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" /> অ্যাক্সেস করার চেষ্টা করছে। অ্যাক্সেস করার অনুমতি দিতে, <ph name="DEVICE_NAME" />-এর প্রাইভেসি সুইচ বন্ধ করে দিন।</translation>
 <translation id="4167393659000039775">কোনও ডেটা হারিয়ে যাওয়ার ক্ষেত্রে Google দায়বদ্ধ নয় এবং <ph name="DEVICE_OS" /> সার্টিফায়েড নয় এমন মডেলে কাজ নাও করতে পারে। g.co/flex/InstallGuide থেকে আরও জানুন।</translation>
 <translation id="4167686856635546851">ভিডিও গেম অথবা ওয়েব ফর্মের মতো ইন্টার‌্যাক্টিভ ফিচার দেখাতে সাইট সাধারণত জাভাস্ক্রিপ্ট ব্যবহার করে</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />-এর কিছু সেটিংস আপনার সাথে শেয়ার করা হচ্ছে৷ এই সেটিংস শুধুমাত্র আপনার অ্যাকাউন্টে একাধিক সাইন-ইন ব্যবহারের সময় কাজ করে৷</translation>
@@ -3918,6 +3921,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> এ সমস্যা হয়েছে</translation>
 <translation id="4610637590575890427">আপনি <ph name="SITE" />-এ যাওয়ার কথা বলছেন কি?</translation>
 <translation id="4611114513649582138">ডেটা সংযোগ উপলভ্য নেই৷</translation>
+<translation id="4612841084470706111">অনুরোধ করা সমস্ত সাইটে অ্যাক্সেস দিন।</translation>
 <translation id="4613144866899789710">Linux ইনস্টলেশন বাতিল করা হচ্ছে…</translation>
 <translation id="4613271546271159013">আপনি যখন একটি নতুন ট্যাব খুলবেন তখন কোন পৃষ্ঠা দেখানো হবে, একটি এক্সটেনশন তার পরিবর্তন করেছে।</translation>
 <translation id="4615586811063744755">কোনও কুকি বেছে নেওয়া হয়নি</translation>
@@ -4078,6 +4082,7 @@
 <translation id="4762489666082647806">পয়েন্টার কালার</translation>
 <translation id="4762718786438001384">ডিভাইসের ডিস্কের স্থান আশংকাজনকভাবে কম</translation>
 <translation id="4763408175235639573">আপনি যখন এই পৃষ্ঠাটি দেখেছিলেন তখন নিম্নোক্ত কুকিগুলি সেট হয়েছিল</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> সঠিক Google for Education অ্যাকাউন্ট নয়। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। আপনি অ্যাডমিনিস্ট্রেটর হলে এই URL-এ গিয়ে আপনার সংস্থা সেট-আপ করতে পারবেন: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{এই ডিভাইসটি ১ মাসের জন্য সেভ করা হবে এবং পরের বার কোনও কোড ছাড়াই কানেক্ট করতে পারবেন। এটি আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে সেট করা হয়েছে।}one{এই ডিভাইসটি {MONTHS} মাসের জন্য সেভ করা হবে এবং পরের বার কোনও কোড ছাড়াই কানেক্ট করতে পারবেন। এটি আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে সেট করা হয়েছে।}other{এই ডিভাইসটি {MONTHS} মাসের জন্য সেভ করা হবে এবং পরের বার কোনও কোড ছাড়াই কানেক্ট করতে পারবেন। এটি আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে সেট করা হয়েছে।}}</translation>
 <translation id="4765582662863429759">Android Messages-কে আপনার ফোন থেকে Chromebook-এ টেক্সট রিলে করতে অনুমতি দেয়</translation>
 <translation id="4766598565665644999">সব এক্সটেনশন <ph name="HOST" /> পড়তে ও পরিবর্তন করতে পারবে</translation>
@@ -4722,7 +4727,6 @@
 <translation id="5392192690789334093">বিজ্ঞপ্তি পাঠানোর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{লিঙ্ক}one{#টি লিঙ্ক}other{#টি লিঙ্ক}}</translation>
 <translation id="5395498824851198390">ডিফল্ট ফন্ট</translation>
-<translation id="5396325212236512832">সেভ করা ক্রেডেনশিয়াল ব্যবহার করে সাইট ও অ্যাপে অটোমেটিক সাইন-ইন করুন। বন্ধ করা থাকলে, প্রত্যেকবার সাইট বা অ্যাপে সাইন-ইন করার সময় আপনাকে কনফার্ম করতে বলা হবে।</translation>
 <translation id="5397378439569041789">কিয়স্ক বা সাইনেজ ডিভাইসে নথিভুক্ত করুন</translation>
 <translation id="5397794290049113714">আপনি</translation>
 <translation id="5398497406011404839">লুকানো বুকমার্ক</translation>
@@ -4739,6 +4743,7 @@
 <translation id="5407167491482639988">দুর্বোধ্য</translation>
 <translation id="5408750356094797285">জুম করুন: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">আপনার Google অ্যাকাউন্ট থেকে</translation>
+<translation id="5411022484772257615">স্কুলে নথিভুক্ত করার বিকল্প সম্পূর্ণ করা যায়নি</translation>
 <translation id="5413640305322530561">ডায়াগনস্টিক এবং ব্যবহার ডেটা সম্পর্কে আরও জানুন</translation>
 <translation id="5414198321558177633">প্রোফাইলের তালিকা রিফ্রেশ করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="5414566801737831689">আপনার দেখা ওয়েবসাইটগুলির আইকনগুলি পড়ুন</translation>
@@ -5526,6 +5531,7 @@
 <translation id="6129953537138746214">ব্যবধান</translation>
 <translation id="6130692320435119637">ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করুন</translation>
 <translation id="6130887916931372608">কীবোর্ড কী</translation>
+<translation id="6132714462430777655">স্কুলে নথিভুক্ত করা এড়িয়ে যাবেন?</translation>
 <translation id="6135823405800500595">আপনার ফোন হাতের কাছে, আনলক অবস্থায় রয়েছে কিনা এবং তাতে ব্লুটুথ ও ওয়াই-ফাই চালু আছে কিনা দেখে নিন</translation>
 <translation id="6135826623269483856">আপনার সব ডিসপ্লেতে উইন্ডো ম্যানেজ করার অনুমতি নেই</translation>
 <translation id="6136114942382973861">ডাউনলোড বার বন্ধ করুন</translation>
@@ -5684,6 +5690,7 @@
 <translation id="6291949900244949761">কোনও সাইট ইউএসবি ডিভাইস অ্যাক্সেস করতে চাইলে আমাকে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="6291953229176937411">ফাইন্ডারে &amp;দেখান</translation>
 <translation id="6292699686837272722">ট্যাব মাঝারি সাইজে সঙ্কুচিত হয়</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" /> বন্ধ আছে</translation>
 <translation id="6294759976468837022">অটো-স্ক্যানের স্পিড</translation>
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
 <translation id="6295855836753816081">সংরক্ষণ করা হচ্ছে...</translation>
@@ -6058,7 +6065,6 @@
 <translation id="6647441008198474441">আপনি পরে কোন কোন সাইট ভিজিট করতে পারেন তা অনুমান করার জন্য আপনি যেসব URL দেখেন তা Google-এ পাঠানো হয়</translation>
 <translation id="6648911618876616409">একটি গুরুত্বপূর্ণ আপডেট ইনস্টল করার জন্য তৈরি। শুরু করতে সাইন-ইন করুন।</translation>
 <translation id="6649018507441623493">একটু অপেক্ষা করুন…</translation>
-<translation id="6650234781371031356">এই ডিভাইসে এবং আপনার Google অ্যাকাউন্টে <ph name="WEBSITE" />-এর পাসওয়ার্ড সেভ করা আছে। আপনি কোনটা মুছে দিতে চান?</translation>
 <translation id="665061930738760572">&amp;নতুন উইন্ডোতে খুলুন</translation>
 <translation id="6651237644330755633">ওয়েবসাইটগুলিকে শনাক্ত করার জন্য এই শংসপত্রটিকে বিশ্বাস করুন</translation>
 <translation id="6651495917527016072">আপনার ফোনের সাথে ওয়াই-ফাই নেটওয়ার্ক সিঙ্ক করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -6747,6 +6753,7 @@
 <translation id="7310598146671372464">লগ-ইন করা সম্ভব হয়নি। সার্ভারটি নির্দিষ্ট Kerberos এনক্রিপশনের ধরনগুলি সমর্থন করে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="7311089766378749632"><ph name="SITE_NAME" /> পড়ার এবং পরিবর্তন করার জন্য অনুরোধ করা হচ্ছে</translation>
 <translation id="7312210124139670355">আপনার অ্যাডমিনিস্ট্রেটর আপনার ই-সিম রিসেট করছেন। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
+<translation id="7317831949569936035">স্কুলে নথিভুক্ত করা</translation>
 <translation id="7320213904474460808">ডিফল্ট নেটওয়ার্ক</translation>
 <translation id="7321545336522791733">সার্ভারে সংযোগ করা যাচ্ছে না</translation>
 <translation id="7323315405936922211">কার্সর এরিয়া সাইজ</translation>
@@ -8495,6 +8502,7 @@
 <translation id="8940081510938872932">আপনার কম্পিউটারটি এই মুহুর্তে অনেকগুলি কাজ করছে৷ পরে আবার চেষ্টা করুন৷</translation>
 <translation id="8940381019874223173">আপনার Google Photos থেকে</translation>
 <translation id="8941173171815156065">অনুমতি '<ph name="PERMISSION" />' প্রত্যাহার করুন</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> বন্ধ আছে</translation>
 <translation id="894191600409472540">শক্তিশালী পাসওয়ার্ড তৈরি করুন</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ব্যাটারি আরও দ্রুত শেষ হবে (বর্তমানে <ph name="BATTERY_PERCENTAGE" />%)</translation>

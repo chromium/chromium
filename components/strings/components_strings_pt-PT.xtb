@@ -265,6 +265,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1567040042588613346">Esta política está a funcionar conforme esperado, mas o mesmo valor está definido noutro local e foi substituído por esta política.</translation>
 <translation id="1569487616857761740">Introduza a data de validade</translation>
 <translation id="1569694109004336106">O Google Chrome está a tentar ativar o Windows Hello para preencher palavras-passe.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Ocorreu um erro ao apresentar esta página Web.</translation>
 <translation id="1586541204584340881">As extensões que instalou.</translation>
@@ -1107,6 +1108,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3787705759683870569">Expira a <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamanho 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.)</translation>
 <translation id="3793574014653384240">Números e causas das falhas de sistema que ocorreram recentemente.</translation>
 <translation id="3795344968043407227">Música indie e alternativa</translation>
 <translation id="3799805948399000906">Tipo de letra solicitado</translation>
@@ -1382,6 +1384,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para traduzir esta página com o Google Tradutor.</translation>
 <translation id="4514308731478712184">Desativar os percursos</translation>
 <translation id="4515275063822566619">Os cartões e os endereços são provenientes do Chrome e da sua Conta Google (<ph name="ACCOUNT_EMAIL" />). Pode geri-los nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">A transferência deste ficheiro foi bloqueada pela política do administrador</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Envelope Monarch</translation>
 <translation id="4521916730539354575">Tabuleiro esquerdo</translation>
@@ -1395,7 +1398,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4542971377163063093">Tabuleiro 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Experimente desativar as extensões.</translation>
-<translation id="4559134504959026834">Este site está num grupo, definido por <ph name="SET_OWNER" />, que pode ver a sua atividade</translation>
 <translation id="4566017918361049074">Ar livre</translation>
 <translation id="4567686777917670400">O administrador pode alterar a configuração do navegador remotamente. A atividade neste dispositivo também pode ser gerida fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Entrega</translation>
@@ -2383,6 +2385,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Não é possível enviar para este endereço. Selecione um diferente.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Carregamento bloqueado</translation>
 <translation id="7132939140423847331">O seu administrador proibiu a cópia destes dados.</translation>
 <translation id="7135130955892390533">Mostrar estado</translation>
 <translation id="7138472120740807366">Método de fornecimento</translation>
@@ -2514,6 +2517,7 @@ Detalhes adicionais:
 <translation id="7441627299479586546">Assunto da política incorreto</translation>
 <translation id="7442725080345379071">Laranja-claro</translation>
 <translation id="7445762425076701745">Não é possível validar totalmente a identidade do servidor ao qual está ligado. Está ligado a um servidor com um nome que apenas é válido na sua rede, que não permite que uma autoridade de certificação externa valide a respectiva propriedade. Ainda assim, algumas autoridades emitem certificados para esses nomes, pelo que não há forma de garantir que está ligado ao Website que pretende e não a um site pirata.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /> sobre este problema.</translation>
 <translation id="7455133967321480974">Utilizar predefinição global (Bloquear)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2614,6 +2618,7 @@ Detalhes adicionais:
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">Lágrimas de alegria</translation>
+<translation id="766014026101194726">{0,plural, =1{O carregamento deste ficheiro foi bloqueado pela política do administrador}other{O carregamento de # ficheiros foi bloqueado pela política do administrador}}</translation>
 <translation id="7662298039739062396">Definição controlada por uma extensão</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Não permitida na Navegação anónima</translation>
@@ -2708,6 +2713,7 @@ Detalhes adicionais:
 <translation id="7939744324936979484">Música popular e tradicional</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="7942349550061667556">Vermelho</translation>
+<translation id="7943397946612013052">Transferência bloqueada</translation>
 <translation id="7943893128817522649">Pode solicitar a transferência automática de vários ficheiros</translation>
 <translation id="7947285636476623132">Verifique o ano de validade e tente novamente</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para saber mais acerca das funcionalidades do Chrome</translation>
@@ -2819,6 +2825,7 @@ Detalhes adicionais:
 <translation id="8218327578424803826">Localização atribuída:</translation>
 <translation id="8225771182978767009">A pessoa que configurou este computador optou por bloquear este site.</translation>
 <translation id="8228419419708659934">Vista de duas páginas</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Jogos de desporto</translation>
 <translation id="8232343881378637145">Temperatura da plataforma</translation>

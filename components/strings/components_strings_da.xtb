@@ -264,6 +264,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1567040042588613346">Denne politik fungerer efter hensigten, men et andet sted er den samme værdi blevet tilsidesat af denne politik.</translation>
 <translation id="1569487616857761740">Angiv udløbsdato</translation>
 <translation id="1569694109004336106">Google Chrome forsøger at aktivere Windows Hello for at udfylde adgangskoder.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Noget gik galt ved visningen af denne webside.</translation>
 <translation id="1586541204584340881">Hvilke udvidelser, du har installeret</translation>
@@ -1098,6 +1099,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3787705759683870569">Udløber <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Størrelse 16</translation>
 <translation id="3789841737615482174">Installer</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
 <translation id="3793574014653384240">Antallene af og årsagerne til de nedbrud, der opstod for nylig</translation>
 <translation id="3795344968043407227">Indie og alternativ musik</translation>
 <translation id="3799805948399000906">Der blev anmodet om skrifttype</translation>
@@ -1385,7 +1387,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4542971377163063093">Bakke 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Prøv at deaktivere dine udvidelser.</translation>
-<translation id="4559134504959026834">Dette website er i en gruppe, der er defineret af <ph name="SET_OWNER" />, og som kan se din aktivitet</translation>
 <translation id="4566017918361049074">Udendørsaktiviteter</translation>
 <translation id="4567686777917670400">Din administrator kan ændre konfigurationen af din browser via fjernadgang. Aktivitet på denne enhed administreres muligvis også uden for Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Levering</translation>
@@ -2493,6 +2494,7 @@ Yderligere oplysninger:
 <translation id="7441627299479586546">Forkert emne for politik</translation>
 <translation id="7442725080345379071">Lys orange</translation>
 <translation id="7445762425076701745">Identiteten på den server, som du er tilknyttet, kan ikke bekræftes. Du er tilknyttet en server via et navn, der kun er gyldigt i dit netværk, og som en ekstern certifikatautoritet derfor ikke har mulighed for at bekræfte ejerskabet på. Da enkelte certifikatautoriteter alligevel udsteder certifikater for disse navne, kan vi på ingen måde sikre, at du er tilknyttet det tilsigtede website og ikke til en forbryder.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om dette problem.</translation>
 <translation id="7455133967321480974">Brug global standard (bloker)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2796,6 +2798,7 @@ Yderligere oplysninger:
 <translation id="8218327578424803826">Tildelt placering:</translation>
 <translation id="8225771182978767009">Den person, der har konfigureret denne computer, har valgt at blokere dette website.</translation>
 <translation id="8228419419708659934">Tosidet visning</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Sportsspil</translation>
 <translation id="8232343881378637145">Platformstemperatur</translation>

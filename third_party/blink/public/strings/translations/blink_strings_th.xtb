@@ -79,6 +79,7 @@
 <translation id="5117590920725113268">แสดงเดือนถัดไป</translation>
 <translation id="5164977714490026579">ค่าต้องมากกว่าหรือเท่ากับ <ph name="MINIMUM" /></translation>
 <translation id="5196716972587102051">2</translation>
+<translation id="5199514351668672591">กลับไปที่ตัวเลือก</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5272594226096532950">ไม่ได้เลือกไว้ ในกลุ่ม ตัวเลือก <ph name="INDEX" /> จาก <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">โปรดป้อนส่วนหนึ่งโดยตามด้วย "<ph name="ATSIGN" />" "<ph name="INVALIDADDRESS" />" นั้นไม่สมบูรณ์</translation>

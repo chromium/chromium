@@ -196,7 +196,6 @@
 <translation id="1174366174291287894">您的连接始终是安全的，除非 Chrome 另有说明</translation>
 <translation id="117445914942805388">要想清除您的所有已同步设备中的浏览数据以及您的 Google 帐号中的浏览数据，请<ph name="BEGIN_LINK" />访问同步设置<ph name="END_LINK" />。</translation>
 <translation id="1175364870820465910">打印(&amp;P)...</translation>
-<translation id="1176378369905028399">此帐号的密码已经存储在您的 Google 密码管理工具 (<ph name="USER_EMAIL" />) 中</translation>
 <translation id="1176471985365269981">不得修改您设备上的文件或文件夹</translation>
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1178581264944972037">暂停</translation>
@@ -237,6 +236,7 @@
 <translation id="121384500095351701">无法安全地下载此文件</translation>
 <translation id="1215411991991485844">已添加新的后台应用</translation>
 <translation id="1216542092748365687">移除指纹</translation>
+<translation id="1216891999012841486">详细了解如何修正更新错误</translation>
 <translation id="1217114730239853757">您想为 ChromeOS Flex 启用 ChromeVox（内置屏幕阅读器）吗？如要启用，请按空格键。</translation>
 <translation id="1217483152325416304">您的本地数据即将被删除</translation>
 <translation id="1217668622537098248">执行完操作后还原到左键点击</translation>
@@ -1812,7 +1812,6 @@
 <translation id="2643698698624765890">您可以通过点击“窗口”菜单中的“扩展程序”，管理您的扩展程序。</translation>
 <translation id="2645047101481282803">您的设备由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645435784669275700">Chrome 操作系统</translation>
-<translation id="2645515095874728277">此帐号的密码已经存储在该设备上</translation>
 <translation id="2649045351178520408">Base64 编码 ASCII，证书链</translation>
 <translation id="2652129567809778422">选择密码</translation>
 <translation id="2653033005692233957">搜索失败</translation>
@@ -2601,7 +2600,6 @@
 <translation id="3399432415385675819">通知将被停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> 赫兹） - 交错</translation>
 <translation id="3401484564516348917">读取您的浏览器、操作系统、设备、已安装软件、注册表值和文件的相关信息</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{此设备上存储了 {COUNT} 个密码}other{此设备上存储了 {COUNT} 个密码}}</translation>
 <translation id="3402255108239926910">选择头像</translation>
 <translation id="3402585168444815892">正在注册演示模式</translation>
 <translation id="340282674066624">已下载 <ph name="DOWNLOAD_RECEIVED" />，还需 <ph name="TIME_LEFT" /></translation>
@@ -4697,7 +4695,6 @@
 <translation id="5392192690789334093">允许发送通知</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
 <translation id="5395498824851198390">默认字体</translation>
-<translation id="5396325212236512832">使用存储的凭据自动登录网站和应用。如果关闭了该功能，在您每次登录网站或应用之前，系统都会要求您确认。</translation>
 <translation id="5397378439569041789">注册自助服务终端或数字标牌设备</translation>
 <translation id="5397794290049113714">您</translation>
 <translation id="5398497406011404839">隐藏的书签</translation>
@@ -4963,6 +4960,7 @@
 <translation id="5632059346822207074">收到了权限请求，按 Ctrl + 前进键即可回复</translation>
 <translation id="5632566673632479864">您的帐号 <ph name="EMAIL" /> 已无法再用作主帐号。该帐号由 <ph name="DOMAIN" /> 管理，因此您的书签、历史记录、密码及其他设置将从此设备中清除。</translation>
 <translation id="5632592977009207922">正在下载，还剩 <ph name="PERCENT_REMAINING" />%</translation>
+<translation id="5633149627228920745">详细了解系统要求</translation>
 <translation id="563371367637259496">移动网络</translation>
 <translation id="5634446357546764049">查看近期旅行等活动的回忆集锦</translation>
 <translation id="5635312199252507107">在特定网站上允许</translation>
@@ -6027,7 +6025,6 @@
 <translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
 <translation id="6648911618876616409">有一项重要更新已可供安装。登录即可开始安装。</translation>
 <translation id="6649018507441623493">请稍候…</translation>
-<translation id="6650234781371031356">您为 <ph name="WEBSITE" /> 保存的密码已存储到此设备上和您的 Google 帐号中。您想删除存储在哪个位置的密码？</translation>
 <translation id="665061930738760572">在新窗口中打开(&amp;N)</translation>
 <translation id="6651237644330755633">信任该证书，以标识网站的身份</translation>
 <translation id="6651495917527016072">将 Wi-Fi 网络配置同步到您的手机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -8309,6 +8306,7 @@
 <translation id="8785622406424941542">触控笔</translation>
 <translation id="8786824282808281903">当您的孩子看到此图标时，他/她可以使用指纹验证身份或批准购买交易。</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{未命名群组 - 1 个标签页}other{未命名群组 - # 个标签页}}</translation>
+<translation id="8791157330927639737">详细了解更新</translation>
 <translation id="8791534160414513928">随浏览流量一起发送“不跟踪”请求</translation>
 <translation id="879413103056696865">开启热点后，您的 <ph name="PHONE_NAME" /> 将会：</translation>
 <translation id="8795916974678578410">打开新的窗口</translation>

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
 <translation id="2163937499206714165">Ativar modo escuro</translation>
 <translation id="2180197493692062006">Algo correu mal. Experimente reabrir a app.</translation>
-<translation id="2182088270354640012">Agradecemos o feedback. O seu feedback ajuda a melhorar o Chrome OS e o mesmo vai ser analisado pela equipa do Chrome OS. Devido ao número de relatórios enviados, não irá receber uma resposta direta.</translation>
 <translation id="2209788852729124853">Repor contadores de tráfego</translation>
 <translation id="2212733584906323460">Resolução de nomes</translation>
 <translation id="2217935453350629363">Velocidade atual</translation>
@@ -690,7 +689,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7747039790905080783">Chave pré-partilhada</translation>
 <translation id="7762130827864645708">A alteração da sua palavra-passe foi efetuada com êxito. A partir de agora, utilize a nova palavra-passe.</translation>
-<translation id="7762839321248874531">Enviar <ph name="BEGIN_LINK1" />informações<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /> do sistema e da app</translation>
 <translation id="7763470514545477072">Correspondência do sufixo do domínio</translation>
 <translation id="7769672763586021400">ID do modelo</translation>
 <translation id="7784116172884276937">Não foram configurados servidores DNS</translation>
@@ -827,7 +825,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="9082718469794970195">Utilizar este vídeo</translation>
 <translation id="9087578468327036362">Denunciar esta consulta</translation>
 <translation id="9088306295921699330">Utilização atual</translation>
-<translation id="9092255287806472980">O seu feedback ajuda a melhorar o Chrome OS e vai ser analisado pela nossa equipa. Devido ao elevado número de relatórios, não é possível enviar uma resposta.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Atualize a permissão para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>

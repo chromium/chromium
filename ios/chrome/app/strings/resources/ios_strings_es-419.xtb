@@ -139,7 +139,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2080769225927880590">Accede con una cuenta válida</translation>
-<translation id="209018056901015185">Versión para escritorio</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
 <translation id="2122754583996902531">Tu navegador está administrado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -226,6 +225,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">No se puede crear el vínculo</translation>
 <translation id="2786701870377699570">Busca en las pestañas de los dispositivos sincronizados</translation>
+<translation id="2797029671965852011">Mostrar Historial</translation>
 <translation id="2800683595868705743">Salir del alternador de pestañas</translation>
 <translation id="2815198996063984598">2. Presiona la app de navegador predeterminada.</translation>
 <translation id="2820289420301699633">Tu administrador controla Chrome y puede acceder a sus datos.</translation>
@@ -328,7 +328,9 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3530206579861815432">Encuentra rápidamente las pestañas que abriste y cerraste recientemente en tus dispositivos sincronizados.</translation>
 <translation id="3533202363250687977">Cerrar todas las pestañas de incógnito</translation>
 <translation id="3533436815740441613">Nueva pestaña</translation>
+<translation id="3540141921715814660">Agregar a Favoritos</translation>
 <translation id="3551320343578183772">Cerrar pestaña</translation>
+<translation id="3565207542107370586">Borrar datos de navegación…</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3581564640715911333">Ofrecer la traducción de páginas en otros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagen en nueva pestaña</translation>
@@ -347,6 +349,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="37207012422556617">Tendencias de búsquedas</translation>
 <translation id="3740397331642243698">Abre las URL ingresadas en Google Chrome en modo Incógnito.</translation>
 <translation id="3762232513783804601">Diseñado para tu iPad</translation>
+<translation id="3768725474733206671">Volver a abrir última pestaña</translation>
 <translation id="3771033907050503522">Pestañas de incógnito</translation>
 <translation id="3775743491439407556">La sincronización no funciona</translation>
 <translation id="3779810277399252432">Sin conexión a Internet</translation>
@@ -357,9 +360,11 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3803696231112616155">Ofrecer traducir este sitio</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3819183753496523827">No tienes conexión. Revisa tu conexión a Internet y vuelve a intentarlo.</translation>
+<translation id="3835964409414434850">Ir a la pestaña siguiente</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3861486700625780712">Dejar de seguir</translation>
+<translation id="387280738075653372">Descarga Chrome aquí.</translation>
 <translation id="3892144330757387737">Aquí encontrarás tu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3904829425754749514">Tu organización desactivó la sincronización. Podrás seguir viendo tus favoritos, el historial, las contraseñas y otras opciones de configuración en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
@@ -377,7 +382,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3995521777587992544">Barra de progreso de la carga de la página; se cargó <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Las contraseñas se guardan en tu Cuenta de Google para que puedas usarlas en cualquier dispositivo.</translation>
-<translation id="4006921758705478413">Enviar a tus dispositivos</translation>
 <translation id="4018310736049373830">Administrar actividad</translation>
 <translation id="4038354071007134711">Ninguna aplicación puede abrir el archivo.</translation>
 <translation id="4042870976416480368">Buscar en la página</translation>
@@ -545,6 +549,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5339316356165661760">Activar la sincronización</translation>
+<translation id="536067926684072644">Ver Favoritos</translation>
 <translation id="5360976571138293719">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Puedes encontrar los sitios que sigues aquí</translation>
 <translation id="5388358297987318779">Abrir imagen</translation>
@@ -577,6 +582,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5631164295104953411">Agregar forma de pago</translation>
 <translation id="5636282538000367086">Descubre las novedades de Chrome</translation>
 <translation id="5652623411397330904">Aquí se muestran los productos que sigues.</translation>
+<translation id="5657859710142657190">Ir a la cuadrícula de pestañas</translation>
 <translation id="5659593005791499971">Correo</translation>
 <translation id="5669335982068190158">Saliste de tu cuenta como parte del restablecimiento de tu iPhone. Presiona continuar para acceder.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -593,6 +599,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5737974891429562743">Los detalles de acceso de la cuenta están desactualizados. Actualízalos para comenzar la sincronización.</translation>
 <translation id="5738385766833540397">Administra cómo recibes alertas de descuentos para los productos que sigues.</translation>
 <translation id="5738887413654608789">Esta capacidad te permite descubrir páginas web relevantes en función de tu entorno.</translation>
+<translation id="5745916533876677730">Ir a la pestaña anterior</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
@@ -609,6 +616,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5857090052475505287">Nueva carpeta</translation>
 <translation id="5857675236236529683">Cuando todo esté listo, consulta tu lista de lectura aquí.</translation>
 <translation id="5857770089550859117">Se requiere la frase de contraseña para comenzar la sincronización.</translation>
+<translation id="5859715514067755465">Adelantar</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5869029295770560994">Entendido</translation>
 <translation id="5871497086027727873">1 artículo movido</translation>
@@ -653,6 +661,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6152406514676263192">Activa la sincronización para acceder al contenido más relevante según tus intereses.</translation>
 <translation id="6159839020698489198">opcional</translation>
 <translation id="6165508094623778733">Más información</translation>
+<translation id="6170450281939467187">Se produjo un error al traducir</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
 <translation id="6184086493125982861">Mostrar las pestañas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -688,6 +697,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6374469231428023295">Volver a intentar</translation>
 <translation id="6377118281273296434">Seguridad del sitio</translation>
 <translation id="6380866119319257197">Si olvidas la frase de contraseña o quieres cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /></translation>
+<translation id="6383719166112032471">Abrir ubicación…</translation>
 <translation id="6387994324662817823">Las contraseñas se guardan en el Administrador de contraseñas de Google solo en este dispositivo.</translation>
 <translation id="6389470377220713856">Nombre en tarj.</translation>
 <translation id="6403371459378431832">Sincroniza tus datos en todos los dispositivos</translation>
@@ -699,6 +709,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 Tus datos se encriptaron con tu frase de contraseña para sincronización el <ph name="TIME" />. Debes ingresarla para iniciar la sincronización.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
 <translation id="6434591244308415567">Se produjo un error. Vuelve a intentarlo más tarde.</translation>
+<translation id="6435236283694032571">Agregar a la Lista de lectura</translation>
 <translation id="6439338047467462846">Permitir todas</translation>
 <translation id="6445051938772793705">País</translation>
 <translation id="6445981559479772097">Mensaje enviado</translation>
@@ -803,7 +814,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7133798577887235672">Nombre completo</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>
 <translation id="7153999225810839758">Tiempo de lectura: <ph name="TIME" /> minuto(s)</translation>
-<translation id="7159472599653637159">Solicitar sitio móvil</translation>
 <translation id="7162168282402939716">Desbloquear pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Mantén protegidas tus contraseñas ante problemas de seguridad</translation>
 <translation id="7173114856073700355">Abrir la configuración</translation>
@@ -863,6 +873,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7720410380936703141">VOLVER A INTENTAR</translation>
 <translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
+<translation id="7738120385185846461">Informar un problema…</translation>
 <translation id="7741325291586284254">Nueva página de pestañas de incógnito</translation>
 <translation id="7756478488453921771">Menú → Configuración → Formas de pago</translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -957,6 +968,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8459333855531264009">No seguro</translation>
 <translation id="8487667956631253959">Encendida</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
+<translation id="8488923644885757471">Nueva ventana</translation>
 <translation id="8490978609246021741">Guardar cambios</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="850600235656508448">Abrir en incógnito</translation>
@@ -1009,6 +1021,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8881801611828450202">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8891935667620843985">Para que los vínculos se abran de forma automática en Chrome, elígelo como app de navegador predeterminada.</translation>
 <translation id="8898822736010347272">Envía a Google las URL de algunas páginas que visitas, información limitada del sistema y parte del contenido de las páginas para ayudar a detectar nuevas amenazas y proteger a todos los usuarios en la Web.</translation>
+<translation id="890565330728586731">Atrás</translation>
 <translation id="8909135823018751308">Compartir…</translation>
 <translation id="8911759861431145525">Presiona Agregar y, luego, ingresa tu información.</translation>
 <translation id="891658175948553296">Destaca texto en un sitio.</translation>
@@ -1043,7 +1056,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9124387962554796433">Es posible que Google use tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="9137526406337347448">Servicios de Google</translation>
 <translation id="9148126808321036104">Accede nuevamente</translation>
-<translation id="9152539721251340337">Crear un código QR</translation>
 <translation id="9157836665414082580">Suprimir diálogos</translation>
 <translation id="9177438225260810839">Buscar pestañas abiertas</translation>
 <translation id="9188680907066685419">Salir de la cuenta administrada</translation>

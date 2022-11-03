@@ -264,6 +264,7 @@
 <translation id="1567040042588613346">Правило работает корректно, но заменяет одинаковое значение, заданное где-то ещё.</translation>
 <translation id="1569487616857761740">Укажите дату окончания срока действия</translation>
 <translation id="1569694109004336106">Google Chrome пытается включить Windows Hello, чтобы указывать пароли.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" />"</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">При загрузке этой страницы возникли неполадки.</translation>
 <translation id="1586541204584340881">Установленные расширения.</translation>
@@ -1097,6 +1098,7 @@
 <translation id="3787705759683870569">Срок действия: до <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Размер: 16</translation>
 <translation id="3789841737615482174">Установить</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" />")</translation>
 <translation id="3793574014653384240">Количество недавних сбоев и их причины</translation>
 <translation id="3795344968043407227">Инди и альтернативная музыка</translation>
 <translation id="3799805948399000906">Шрифт запрошен</translation>
@@ -1371,6 +1373,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы с помощью Google Переводчика ознакомиться с содержанием страницы.</translation>
 <translation id="4514308731478712184">Отключить сеансы</translation>
 <translation id="4515275063822566619">Это карты и адреса, указанные в Chrome и вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />). Вы можете изменить их на странице <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Администратор запретил скачивать этот файл.</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Конверт Monarch</translation>
 <translation id="4521916730539354575">Левый лоток</translation>
@@ -1384,7 +1387,6 @@
 <translation id="4542971377163063093">Лоток 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Отключите расширения.</translation>
-<translation id="4559134504959026834">Этот сайт входит в группу <ph name="SET_OWNER" /> и может отслеживать ваши действия</translation>
 <translation id="4566017918361049074">Мероприятия на открытом воздухе</translation>
 <translation id="4567686777917670400">Администратор может удаленно менять настройки браузера и управлять действиями вне браузера Chromium на этом устройстве. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Доставка</translation>
@@ -2362,6 +2364,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Невозможно отправить заказ по этому адресу. Выберите другой вариант.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Загрузка остановлена</translation>
 <translation id="7132939140423847331">Администратор запретил копирование этих данных.</translation>
 <translation id="7135130955892390533">Показать статус</translation>
 <translation id="7138472120740807366">Способ доставки</translation>
@@ -2492,6 +2495,7 @@
 <translation id="7441627299479586546">Неверный субъект политики</translation>
 <translation id="7442725080345379071">Светло-оранжевый</translation>
 <translation id="7445762425076701745">Идентификация сервера, к которому вы подключились, не может быть полностью подтверждена. Вы подключились к серверу, используя название, которое действительно только в вашей сети; владелец этого сервера не может быть проверен или подтвержден внешним центром сертификации. Так как некоторые центры сертификации могут выдавать сертификаты для подобных названий, отсутствуют гарантии в том, что это действительно нужный вам сайт, а не сайт злоумышленника.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Узнайте больше<ph name="END_LINK" /> об этой проблеме.</translation>
 <translation id="7455133967321480974">Использовать глобальный параметр по умолчанию (блокировать)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2592,6 +2596,7 @@
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7659327900411729175">Конверт Kaku 8</translation>
 <translation id="7659878911471462949">Слезы счастья</translation>
+<translation id="766014026101194726">{0,plural, =1{Администратор запретил загружать этот файл}one{Администратор запретил загружать # файл}few{Администратор запретил загружать # файла}many{Администратор запретил загружать # файлов}other{Администратор запретил загружать # файла}}</translation>
 <translation id="7662298039739062396">Эта настройка управляется расширением</translation>
 <translation id="7663736086183791259">Сертификат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Запрещено в режиме инкогнито</translation>
@@ -2686,6 +2691,7 @@
 <translation id="7939744324936979484">Фолк и традиционная музыка</translation>
 <translation id="7941628148012649605">Конверт Chou 4</translation>
 <translation id="7942349550061667556">Красный</translation>
+<translation id="7943397946612013052">Скачивание остановлено</translation>
 <translation id="7943893128817522649">Разрешено отправлять запрос на автоматическое скачивание нескольких файлов</translation>
 <translation id="7947285636476623132">Проверьте год в сроке действия карты и повторите попытку</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы узнать больше о функциях Chrome, нажмите Tab, а затем Ввод.</translation>
@@ -2795,6 +2801,7 @@
 <translation id="8218327578424803826">Назначенное местоположение:</translation>
 <translation id="8225771182978767009">Тот, кто настраивал компьютер, заблокировал этот сайт.</translation>
 <translation id="8228419419708659934">Двухстраничный режим</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Спортивные игры</translation>
 <translation id="8232343881378637145">Температура платформы</translation>

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
 <translation id="2163937499206714165">Activar modo Oscuro</translation>
 <translation id="2180197493692062006">Algo ha fallado. Prueba a abrir de nuevo la aplicación.</translation>
-<translation id="2182088270354640012">Gracias por los comentarios. Tus comentarios ayudan a mejorar ChromeOS. El equipo de ChromeOS los revisará. Recibimos muchos informes, por lo que no recibirás una respuesta directa.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nombres</translation>
 <translation id="2217935453350629363">Velocidad actual</translation>
@@ -688,7 +687,6 @@
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7747039790905080783">Clave precompartida</translation>
 <translation id="7762130827864645708">Tu contraseña se ha cambiado correctamente. A partir de ahora, usa la nueva contraseña.</translation>
-<translation id="7762839321248874531">Enviar <ph name="BEGIN_LINK1" />información del sistema y de las aplicaciones<ph name="END_LINK1" />, y <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Coincidencia de sufijo de dominio</translation>
 <translation id="7769672763586021400">ID de modelo</translation>
 <translation id="7784116172884276937">No hay servidores DNS configurados</translation>
@@ -825,7 +823,6 @@
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9087578468327036362">Denunciar esta consulta</translation>
 <translation id="9088306295921699330">Uso actual</translation>
-<translation id="9092255287806472980">Tus comentarios ayudan a mejorar Chrome OS y nuestro equipo los revisará. Recibimos muchos informes, por lo que no podremos enviarte una respuesta.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>

@@ -1372,6 +1372,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Այս էջը Google Translate-ով թարգմանելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="4514308731478712184">Անջատել Այցելությունները</translation>
 <translation id="4515275063822566619">Քարտերն ու հասցեները նշված են ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />) և Chrome-ում: Դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Կարգավորումներում<ph name="END_LINK" />:</translation>
+<translation id="4520048001084013693">Ադմինիստրատորն արգելել է ներբեռնել այս ֆայլը</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> մմ (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Envelope Monarch</translation>
 <translation id="4521916730539354575">Ձախ կողմի դարակ</translation>
@@ -1385,7 +1386,6 @@
 <translation id="4542971377163063093">Դարակ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Փորձեք անջատել ձեր ընդլայնումները</translation>
-<translation id="4559134504959026834">Այս կայքը <ph name="SET_OWNER" />-ի կողմից սահմանված խմբում է և կարող է տեսնել ձեր գործողությունները</translation>
 <translation id="4566017918361049074">Բացօթյա ժամանց</translation>
 <translation id="4567686777917670400">Ձեր ադմինիստրատորը կարող է հեռակա փոխել ձեր դիտարկիչի կարգավորումները։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chromium-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Առաքում</translation>
@@ -2364,6 +2364,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Այս հասցեով հնարավոր չէ առաքել: Ընտրեք այլ հասցե:</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Վերբեռնումն արգելափակված է</translation>
 <translation id="7132939140423847331">Ձեր ադմինիստրատորն արգելել է այս տվյալների պատճենումը։</translation>
 <translation id="7135130955892390533">Ցուցադրել կարգավիճակը</translation>
 <translation id="7138472120740807366">Առաքման եղանակ</translation>
@@ -2594,6 +2595,7 @@
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">Ուրախության արցունքներ</translation>
+<translation id="766014026101194726">{0,plural, =1{Ադմինիստրատորն արգելել է վերբեռնել այս ֆայլը}one{Ադմինիստրատորն արգելել է վերբեռնել # ֆայլ}other{Ադմինիստրատորն արգելել է վերբեռնել # ֆայլ}}</translation>
 <translation id="7662298039739062396">Կարգավորումը կառավարվում է ընդլայնման կողմից</translation>
 <translation id="7663736086183791259">Հավաստագիր <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Արգելված է ինկոգնիտո ռեժիմում</translation>
@@ -2688,6 +2690,7 @@
 <translation id="7939744324936979484">Ազգային և ավանդական երաժշտություն</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
+<translation id="7943397946612013052">Ներբեռնումն արգելափակված է</translation>
 <translation id="7943893128817522649">Կարող է հայցել մի քանի ֆայլ ավտոմատ ներբեռնելու թույլտվություն</translation>
 <translation id="7947285636476623132">Ստուգեք սպառման տարին և նորից փորձեք</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի գործառույթների մասին տեղեկանալու համար սեղմեք Tab, ապա՝ Enter։</translation>

@@ -139,7 +139,6 @@
 <translation id="2074131957428911366">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2080769225927880590">עליך להיכנס באמצעות חשבון תקין</translation>
-<translation id="209018056901015185">טעינת גרסת האתר למחשב</translation>
 <translation id="2103075008456228677">‏פתיחת history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> פריטים הועברו</translation>
 <translation id="2122754583996902531">הדפדפן שלך מנוהל. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -377,7 +376,6 @@
 <translation id="3995521777587992544">סרגל התקדמות של טעינת דף, <ph name="EMAIL" /> נטענו.</translation>
 <translation id="4002066346123236978">כותרת</translation>
 <translation id="4004204301268239848">‏סיסמאות נשמרות בחשבון Google כדי לאפשר לך להשתמש בהן בכל המכשירים.</translation>
-<translation id="4006921758705478413">שליחה אל המכשירים שלך</translation>
 <translation id="4018310736049373830">ניהול פעילות</translation>
 <translation id="4038354071007134711">אין במכשיר זה אף אפליקציה שניתן לפתוח באמצעותה את הקובץ.</translation>
 <translation id="4042870976416480368">חיפוש בדף</translation>
@@ -802,7 +800,6 @@
 <translation id="7133798577887235672">שם מלא</translation>
 <translation id="7136892417564438900">המצלמה לא זמינה</translation>
 <translation id="7153999225810839758">זמן הקריאה: <ph name="TIME" /> דקות</translation>
-<translation id="7159472599653637159">בקשת אתר שמותאם לנייד</translation>
 <translation id="7162168282402939716">ביטול נעילת כרטיסיות מצב אנונימי עם <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">הגנה על הסיסמאות שלך מפני בעיות אבטחה</translation>
 <translation id="7173114856073700355">פתיחת ההגדרות</translation>
@@ -1042,7 +1039,6 @@
 <translation id="9124387962554796433">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך כדי להתאים אישית את החיפוש ושירותי Google נוספים.</translation>
 <translation id="9137526406337347448">‏שירותי Google</translation>
 <translation id="9148126808321036104">כניסה חוזרת</translation>
-<translation id="9152539721251340337">‏יצירת קוד QR</translation>
 <translation id="9157836665414082580">הסתרת תיבות דו-שיח</translation>
 <translation id="9177438225260810839">חיפוש בכרטיסיות הפתוחות</translation>
 <translation id="9188680907066685419">יציאה מהחשבון המנוהל</translation>

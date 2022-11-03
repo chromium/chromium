@@ -265,6 +265,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1567040042588613346">Hierdie beleid werk soos bedoel, maar dieselfde waarde is elders gestel en word deur hierdie beleid vervang.</translation>
 <translation id="1569487616857761740">Voer vervaldatum in</translation>
 <translation id="1569694109004336106">Google Chrome probeer tans om Windows Hello aan te skakel om wagwoorde in te vul.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> dm.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Kon nie hierdie webbladsy vertoon nie.</translation>
 <translation id="1586541204584340881">Watter uitbreidings jy geïnstalleer het</translation>
@@ -1107,6 +1108,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3787705759683870569">Verval <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Grootte 16</translation>
 <translation id="3789841737615482174">Installeer</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> dm.)</translation>
 <translation id="3793574014653384240">Aantal en oorsake van die omvalle wat onlangs voorgekom het</translation>
 <translation id="3795344968043407227">Indie- en alternatiewe musiek</translation>
 <translation id="3799805948399000906">Lettertipe versoek</translation>
@@ -1396,7 +1398,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4542971377163063093">Laai 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Probeer om jou uitbreidings te deaktiveer.</translation>
-<translation id="4559134504959026834">Hierdie werf is in ’n groep, wat deur <ph name="SET_OWNER" /> gedefinieer is, en wat jou aktiwiteit kan sien</translation>
 <translation id="4566017918361049074">Buitelug</translation>
 <translation id="4567686777917670400">Jou administrateur kan jou blaaieropstelling oor 'n afstand verander. Aktiwiteit op hierdie toestel kan ook buite Chromium bestuur word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Aflewering</translation>
@@ -2517,6 +2518,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7441627299479586546">Verkeerde beleidonderwerp</translation>
 <translation id="7442725080345379071">Ligoranje</translation>
 <translation id="7445762425076701745">Die identiteit van die bediener waaraan jy gekoppel is, kon nie ten volle gestaaf word nie. Jy is gekoppel aan 'n bediener met 'n naam wat net in jou netwerk geldig is, en 'n eksterne sertifikaatoutoriteit kan op geen manier die eienaarskap van hierdie identiteit staaf nie. Aangesien sommige sertifikaatoutoriteite nietemin sertifikate vir hierdie name sal uitreik, is daar geen manier om te verseker dat jy aan die bedoelde webwerf gekoppel is en nie aan 'n aanvaller nie.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /> oor hierdie probleem.</translation>
 <translation id="7455133967321480974">Gebruik globale verstek (Blokkeer)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2824,6 +2826,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8218327578424803826">Toegewysde ligging:</translation>
 <translation id="8225771182978767009">Die persoon wat hierdie rekenaar opgestel het, het besluit om hierdie werf te blokkeer.</translation>
 <translation id="8228419419708659934">Tweebladsyaansig</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Sportspeletjies</translation>
 <translation id="8232343881378637145">Platformtemperatuur</translation>

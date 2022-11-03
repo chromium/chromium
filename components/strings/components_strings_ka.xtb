@@ -265,6 +265,7 @@
 <translation id="1567040042588613346">ეს წესები სათანადოდ მუშაობს, თუმცა სხვაგან დაყენებულია იგივე მნიშვნელობა, რომელსაც ეს წესები ანაცვლებს.</translation>
 <translation id="1569487616857761740">შეიყვანეთ მოქმედების ვადის გასვლის თარიღი</translation>
 <translation id="1569694109004336106">Google Chrome ცდილობს, ჩართოს Windows Hello პაროლების შესავსებად.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> დუიმი</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ამ ვებგვერდის ჩვენებისას პრობლემა წარმოიქმნა.</translation>
 <translation id="1586541204584340881">თქვენ მიერ დაინსტალირებული გაფართოებები</translation>
@@ -1107,6 +1108,7 @@
 <translation id="3787705759683870569">ვადის გასვლის თარიღი: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">ზომა 16</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> დუიმი)</translation>
 <translation id="3793574014653384240">ახლახან დაფიქსირებული ავარიული გათიშვების ნომრები და გამომწვევი მიზეზები</translation>
 <translation id="3795344968043407227">ინდი და ალტერნატიული მუსიკა</translation>
 <translation id="3799805948399000906">შრიფტი მოთხოვნილია</translation>
@@ -1396,7 +1398,6 @@
 <translation id="4542971377163063093">ლანგარი 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ცადეთ გაფართოებების გათიშვა.</translation>
-<translation id="4559134504959026834">ეს საიტი არის <ph name="SET_OWNER" />-ის მიერ განსაზღვრულ ჯგუფში, რომელსაც შეუძლია თქვენი აქტივობის ნახვა</translation>
 <translation id="4566017918361049074">ღია ცის ქვეშ</translation>
 <translation id="4567686777917670400">თქვენს ადმინისტრატორს დისტანციურად შეუძლია ბრაუზერში დაყენებული პარამეტრების შეცვლა. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chromium-ს მიღმაც. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">მიწოდება</translation>
@@ -2517,6 +2518,7 @@
 <translation id="7441627299479586546">პოლიტიკის თემა არასწორია</translation>
 <translation id="7442725080345379071">ღია ნარინჯისფერი</translation>
 <translation id="7445762425076701745">შეუძლებელია იმ სერვერის იდენტურობის სრულად გადამოწმება, რომელთანაც დაკავშირებული ხართ. თქვენ დაკავშირებული ხართ სერვერთან ისეთი სახელის გამოყენებით, რომელიც მხოლოდ თქვენს ქსელში მოქმედებს და რომლის გადამოწმების საშუალება გარე სერტიფიკატის უფლებამოსილ ორგანიზაციას არ აქვს. სერტიფიკატის ზოგიერთმა უფლებამოსილმა ორგანიზაციამ შეიძლება მაინც გასცეს სერტიფიკატი ამ სახელისთვის, მიუხედავად იმისა, რომ არ არსებობს იმის გადამოწმების საშუალება, განზრახ ხართ დაკავშირებული ვებსაიტთან თუ ადგილი აქვს შეტევას.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> მმ)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />შეიტყოთ მეტი<ph name="END_LINK" /> ამ პრობლემის შესახებ.</translation>
 <translation id="7455133967321480974">გამოიყენეთ გლობალური ნაგულისხმევი (დაბლოკვა)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2824,6 +2826,7 @@
 <translation id="8218327578424803826">მიმაგრებული მდებარეობა:</translation>
 <translation id="8225771182978767009">პიროვნებამ, რომელმაც ეს კომპიუტერი გამართა, ამ საიტის დაბლოკვა აირჩია.</translation>
 <translation id="8228419419708659934">ორგვერდიანი ხედი</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> მმ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">სპორტული თამაშები</translation>
 <translation id="8232343881378637145">პლატფორმის ტემპერატურა</translation>

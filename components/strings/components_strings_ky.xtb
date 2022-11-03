@@ -1371,6 +1371,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Бул баракты Google Котормочу менен которуу үчүн, Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="4514308731478712184">Саякаттарды өчүрүү</translation>
 <translation id="4515275063822566619">Карточкалар жана даректер Chrome’дон жана Google аккаунтуңуздан (<ph name="ACCOUNT_EMAIL" />) алынган. Аларды <ph name="BEGIN_LINK" />Жөндөөлөрдөн<ph name="END_LINK" /> башкарсаңыз болот.</translation>
+<translation id="4520048001084013693">Бул файлды жүктөп алуу аракети администраторуңуздун саясаты менен бөгөттөлгөн</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Конверт Монарх</translation>
 <translation id="4521916730539354575">Сол жактагы түпкүч</translation>
@@ -1384,7 +1385,6 @@
 <translation id="4542971377163063093">6-түпкүч</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Кеңейтүүлөрүңүздү өчүрүп көрүңүз.</translation>
-<translation id="4559134504959026834">Бул сайт <ph name="SET_OWNER" /> аныктаган топко кирип, ал аракеттериңизди көрүп турат</translation>
 <translation id="4566017918361049074">Ачык абада</translation>
 <translation id="4567686777917670400">Администраторуңуз серепчини алыстан жөндөй алат. Бул түзмөктө аткарылган аракеттер Chromium'дан тышкары да башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Жеткирүү</translation>
@@ -2362,6 +2362,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Бул дарекке жөнөтүү мүмкүн эмес. Башка дарек тандаңыз.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Жүктөп берүү бөгөттөлгөн</translation>
 <translation id="7132939140423847331">Администратор бул маалыматты көчүрүүгө тыюу салды.</translation>
 <translation id="7135130955892390533">Абалын көрсөтүү</translation>
 <translation id="7138472120740807366">Жеткирүү ыкмасы</translation>
@@ -2592,6 +2593,7 @@
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7659327900411729175">Конверт Каку 8</translation>
 <translation id="7659878911471462949">Көздөрүнөн жаш чыккыча күлгөн жүз</translation>
+<translation id="766014026101194726">{0,plural, =1{Бул файлды жүктөп берүү аракети администраторуңуздун саясаты менен бөгөттөлгөн}other{# файлды жүктөп берүү аракети администраторуңуздун саясаты менен бөгөттөлгөн}}</translation>
 <translation id="7662298039739062396">Жөндөө кеңейтүү тарабынан көзөмөлдөнөт</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> тастыктамасы</translation>
 <translation id="7666397036351755929">Жашыруун режимде тыюу салынат</translation>
@@ -2686,6 +2688,7 @@
 <translation id="7939744324936979484">Элдик жана салттуу музыка</translation>
 <translation id="7941628148012649605">Конверт Чоу 4</translation>
 <translation id="7942349550061667556">Кызыл</translation>
+<translation id="7943397946612013052">Жүктөп алуу бөгөттөлгөн</translation>
 <translation id="7943893128817522649">Бир нече файлды автоматтык түрдө жүктөп алууга уруксат сурай алат</translation>
 <translation id="7947285636476623132">Мөөнөтү аяктоочу жылды текшерип, кайталап көрүңүз</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'догу функциялар жөнүндө толук маалымат алуу үчүн Tab, андан кийин Enter баскычтарын басыңыз</translation>

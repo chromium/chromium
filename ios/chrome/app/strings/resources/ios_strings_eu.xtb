@@ -140,7 +140,6 @@
 <translation id="2074131957428911366">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2080769225927880590">Hasi saioa balio duen kontu batekin</translation>
-<translation id="209018056901015185">Ordenagailuetarakoa</translation>
 <translation id="2103075008456228677">Ireki history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementu mugitu dira</translation>
 <translation id="2122754583996902531">Arakatzailea kudeatuta dago. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -381,7 +380,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3995521777587992544">Kargatzen ari den orriaren garapen-barra; kargatu da <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Izena</translation>
 <translation id="4004204301268239848">Pasahitzak Google-ko kontuan gordetzen dira, gailu guztietan eskura izan ditzazun.</translation>
-<translation id="4006921758705478413">Bidali zure gailuetara</translation>
 <translation id="4018310736049373830">Kudeatu jarduerak</translation>
 <translation id="4038354071007134711">Ez dago fitxategia ireki dezakeen aplikaziorik gailu honetan.</translation>
 <translation id="4042870976416480368">Bilatu orrian</translation>
@@ -809,7 +807,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7133798577887235672">Izen-abizenak</translation>
 <translation id="7136892417564438900">Kamera ez dago erabilgarri</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> minutu behar dira irakurtzeko</translation>
-<translation id="7159472599653637159">Mugikorrerakoa</translation>
 <translation id="7162168282402939716">Desblokeatu ezkutuko moduko fitxak <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
 <translation id="7172852049901402487">Babestu zure pasahitzak segurtasun-arazo guztietatik</translation>
 <translation id="7173114856073700355">Ireki Ezarpenak</translation>
@@ -1052,7 +1049,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9124387962554796433">Baliteke Google-k historia erabiltzea Bilaketa eta Google-ren beste zerbitzu batzuk pertsonalizatzeko.</translation>
 <translation id="9137526406337347448">Google-ren zerbitzuak</translation>
 <translation id="9148126808321036104">Hasi saioa berriro</translation>
-<translation id="9152539721251340337">Sortu QR kode bat</translation>
 <translation id="9157836665414082580">Ezkutatu leihoak</translation>
 <translation id="9177438225260810839">Bilatu fitxa irekietan</translation>
 <translation id="9188680907066685419">Amaitu saioa kontu kudeatuan</translation>

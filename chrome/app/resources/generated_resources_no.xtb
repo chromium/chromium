@@ -198,7 +198,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1174366174291287894">Tilkoblingen din er alltid sikker så lenge Chrome ikke forteller deg noe annet</translation>
 <translation id="117445914942805388">For å slette nettlesingsdata på alle synkroniserte enheter og Google-kontoen din <ph name="BEGIN_LINK" />går du til innstillingene for synkronisering<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Skriv ut...</translation>
-<translation id="1176378369905028399">Et passord for denne kontoen er allerede lagret i Google Passordlagring (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Nettsteder som ikke har lov til å redigere filer eller mapper på enheten</translation>
 <translation id="1177863135347784049">Tilpasset</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
@@ -1831,7 +1830,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2643698698624765890">Du kan administrere utvidelsene dine ved å klikke på Utvidelser i vindusmenyen.</translation>
 <translation id="2645047101481282803">Enheten administreres av <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Et passord for denne kontoen er allerede lagret på denne enheten</translation>
 <translation id="2649045351178520408">Base64-kodet ASCII, sertifikatkjede</translation>
 <translation id="2652129567809778422">Velg passord</translation>
 <translation id="2653033005692233957">Søket mislyktes</translation>
@@ -2621,7 +2619,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3399432415385675819">Varsler slås av</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) – linjefletting</translation>
 <translation id="3401484564516348917">lese informasjon om nettleseren, OS-et, enheten, installert programvare, registerverdier og filer</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} passord er lagret på denne enheten}other{{COUNT} passord er lagret på denne enheten}}</translation>
 <translation id="3402255108239926910">Velg et brukerbilde</translation>
 <translation id="3402585168444815892">Registrerer i demomodus</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4719,7 +4716,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5392192690789334093">Nettsteder som har lov til å sende varsler</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# linker}}</translation>
 <translation id="5395498824851198390">Standard skrifttype</translation>
-<translation id="5396325212236512832">Bruk lagret legitimasjon til å logge på nettsteder og apper automatisk. Hvis dette er slått av, blir du bedt om bekreftelse hver gang du logger på nettsteder og apper.</translation>
 <translation id="5397378439569041789">Registrer kiosk- eller skiltenhet</translation>
 <translation id="5397794290049113714">Deg</translation>
 <translation id="5398497406011404839">Skjulte bokmerker</translation>
@@ -6053,7 +6049,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6647441008198474441">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå</translation>
 <translation id="6648911618876616409">En kritisk oppdatering er klar for installasjon. Logg på for å komme i gang.</translation>
 <translation id="6649018507441623493">Vent litt</translation>
-<translation id="6650234781371031356">Passordet ditt for <ph name="WEBSITE" /> er lagret på denne enheten og i Google-kontoen din. Hvilket vil du slette?</translation>
 <translation id="665061930738760572">Åpne i &amp;nytt vindu</translation>
 <translation id="6651237644330755633">Stol på dette sertifikatet for identifisering av nettsteder.</translation>
 <translation id="6651495917527016072">Synkroniser Wifi-nettverk med telefonen din. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>

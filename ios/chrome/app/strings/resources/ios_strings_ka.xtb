@@ -140,7 +140,6 @@
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2080769225927880590">შედით სისტემაში სათანადო ანგარიშით</translation>
-<translation id="209018056901015185">დესკტოპის საიტის მოთხოვნა</translation>
 <translation id="2103075008456228677">history.google.com-ის გახსნა</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ელემენტი გადატანილია</translation>
 <translation id="2122754583996902531">თქვენი ბრაუზერი მართულია. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -387,7 +386,6 @@
 <translation id="3995521777587992544">გვერდის ჩატვირთვის პროგრესის ზოლი, ჩატვირთულია <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">სათაური</translation>
 <translation id="4004204301268239848">პაროლები ინახება თქვენს Google ანგარიშში, რაც ნიშნავს, რომ მათი გამოყენება ნებისმიერ მოწყობილობაზე შეგიძლიათ.</translation>
-<translation id="4006921758705478413">თქვენს მოწყობილობებზე გაგზავნა</translation>
 <translation id="4018310736049373830">აქტივობის მართვა</translation>
 <translation id="4038354071007134711">ამ მოწყობილობაში არ არსებობს პროგრამა ფაილის გასახსნელად.</translation>
 <translation id="4042870976416480368">ძიება გვერდზე</translation>
@@ -822,7 +820,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7133798577887235672">სრული სახელი</translation>
 <translation id="7136892417564438900">კამერა მიუწვდომელია</translation>
 <translation id="7153999225810839758"><ph name="TIME" />-წუთიანი საკითხავი</translation>
-<translation id="7159472599653637159">მობილური საიტის მოთხოვნა</translation>
 <translation id="7162168282402939716">ინკოგნიტო ჩანართების განსაბლოკად გამოყენებული იყოს <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">დაიცავით თქვენი პაროლები უსაფრთხოებასთან დაკავშირებული პრობლემებისგან</translation>
 <translation id="7173114856073700355">პარამეტრების გახსნა</translation>
@@ -1068,7 +1065,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="9124387962554796433">თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და Google-ის სხვა სერვისების თქვენზე მორგებას.</translation>
 <translation id="9137526406337347448">Google სერვისები</translation>
 <translation id="9148126808321036104">ხელახლა შედით</translation>
-<translation id="9152539721251340337">QR კოდის შექმნა</translation>
 <translation id="9157836665414082580">დიალოგების შეჩერება</translation>
 <translation id="9177438225260810839">ღია ჩანართებში ძიება</translation>
 <translation id="9188680907066685419">მართული ანგარიშიდან გასვლა</translation>

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Canslo'r dasg argraffu</translation>
 <translation id="2163937499206714165">Troi'r modd tywyll ymlaen</translation>
 <translation id="2180197493692062006">Aeth rhywbeth o'i le. Rhowch gynnig ar ailagor yr ap.</translation>
-<translation id="2182088270354640012">Diolch am yr adborth. Mae eich adborth yn helpu i wella Chrome OS a bydd yn cael ei adolygu gan dîm Chrome OS. Oherwydd nifer yr adroddiadau a gyflwynwyd, ni fyddwch yn derbyn ateb uniongyrchol.</translation>
 <translation id="2209788852729124853">Ailosod Rhifyddion Traffig</translation>
 <translation id="2212733584906323460">Cydraniad Enw</translation>
 <translation id="2217935453350629363">Cyflymder presennol</translation>
@@ -689,7 +688,6 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="773153675489693198">Cyfrif cylch gwefru</translation>
 <translation id="7747039790905080783">Allwedd a rannwyd ymlaen llaw</translation>
 <translation id="7762130827864645708">Gwnaethoch newid eich cyfrinair yn llwyddiannus. Defnyddiwch y cyfrinair newydd o hyn ymlaen.</translation>
-<translation id="7762839321248874531">Anfon <ph name="BEGIN_LINK1" />gwybodaeth system ac ap<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metrigau<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Cyfateb ôl-ddodiad parth</translation>
 <translation id="7769672763586021400">Rhif adnabod y Model</translation>
 <translation id="7784116172884276937">Nid oes unrhyw weinyddion DNS wedi'u gosod</translation>
@@ -826,7 +824,6 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="9082718469794970195">Defnyddio'r fideo hwn</translation>
 <translation id="9087578468327036362">Adrodd am yr ymholiad hwn</translation>
 <translation id="9088306295921699330">Defnydd presennol</translation>
-<translation id="9092255287806472980">Mae eich adborth yn helpu i wella Chrome OS a bydd yn cael ei adolygu gan ein tîm. Oherwydd y nifer fawr o adroddiadau, ni fyddwn yn gallu anfon ateb.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Adnewyddu'r tocyn ar gyfer <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Wrthi'n sganio'r dudalen <ph name="PAGE_NUMBER" /></translation>

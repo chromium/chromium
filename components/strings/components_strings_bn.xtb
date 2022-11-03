@@ -1373,6 +1373,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="4514308731478712184">অ্যাক্টিভিটির সিরিজ বন্ধ করুন</translation>
 <translation id="4515275063822566619">কার্ড ও ঠিকানাগুলি Chrome এবং আপনার Google অ্যাকাউন্ট (<ph name="ACCOUNT_EMAIL" />) থেকে এসেছে। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" />এ গিয়ে সেগুলি পরিচালনা করতে পারবেন।</translation>
+<translation id="4520048001084013693">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল ডাউনলোড করার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> মিলিমিটার (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">এনভেলপ মোনার্ক</translation>
 <translation id="4521916730539354575">বাঁদিকের ট্রে</translation>
@@ -1386,7 +1387,6 @@
 <translation id="4542971377163063093">ট্রে ৬</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">আপনার এক্সটেনশানগুলি অক্ষম করে দেখুন।</translation>
-<translation id="4559134504959026834">এই সাইটটি <ph name="SET_OWNER" /> দ্বারা সংজ্ঞায়িত গ্রুপে রয়েছে এবং  আপনার অ্যাক্টিভিটি দেখতে পাবে</translation>
 <translation id="4566017918361049074">আউটডোর</translation>
 <translation id="4567686777917670400">আপনার অ্যাডমিনিস্ট্রেটর দূরবর্তী স্থান থেকে আপনার ব্রাউজারের সেটআপ পরিবর্তন করতে পারেন। এই ডিভাইসের অ্যাক্টিভিটি Chromium-এর বাইরে থেকেও ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">ডেলিভারি</translation>
@@ -2363,6 +2363,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">এই ঠিকানায় শিপিং করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">ব্লক করা আপলোড</translation>
 <translation id="7132939140423847331">আপনার অ্যাডমিন এই ডেটা কপি করার থেকে সীমাবদ্ধ করেছেন।</translation>
 <translation id="7135130955892390533">স্ট্যাটাস দেখুন</translation>
 <translation id="7138472120740807366">ডেলিভারির পদ্ধতি</translation>
@@ -2593,6 +2594,7 @@
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7659327900411729175">এনভেলপ কাকু ৮</translation>
 <translation id="7659878911471462949">আনন্দের অশ্রু</translation>
+<translation id="766014026101194726">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল আপলোড করার সুবিধা ব্লক করা হয়েছে}one{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী #টি ফাইল আপলোড করার সুবিধা ব্লক করা হয়েছে}other{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী #টি ফাইল আপলোড করার সুবিধা ব্লক করা হয়েছে}}</translation>
 <translation id="7662298039739062396">সেটিংস একটি এক্সটেনশন দ্বারা নিয়ন্ত্রিত</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> সার্টিফিকেট</translation>
 <translation id="7666397036351755929">'ছদ্মবেশী মোড'-এ অনুমতি দেওয়া নেই</translation>
@@ -2687,6 +2689,7 @@
 <translation id="7939744324936979484">লোকগীতি ও ট্র্যাডিশনাল মিউজিক</translation>
 <translation id="7941628148012649605">এনভেলপ চৌ ৪</translation>
 <translation id="7942349550061667556">লাল</translation>
+<translation id="7943397946612013052">ব্লক করা ডাউনলোড</translation>
 <translation id="7943893128817522649">একাধিক ফাইল অটোমেটিক ডাউনলোড করতে অনুমতি চাইতে পারে</translation>
 <translation id="7947285636476623132">আপনার মেয়াদ শেষের বছর পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এর ফিচার সম্পর্কে জানতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>

@@ -198,7 +198,6 @@
 <translation id="1174366174291287894">जब तक Chrome से कोई चेतावनी न मिले, तब तक आपका कनेक्शन सुरक्षित है</translation>
 <translation id="117445914942805388">अपने सभी सिंक किए हुए डिवाइस और अपने 'Google खाते' से ब्राउज़िंग डेटा साफ़ करने के लिए, <ph name="BEGIN_LINK" />सिंक सेटिंग पर जाएं<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;प्रिंट करें...</translation>
-<translation id="1176378369905028399">इस खाते का पासवर्ड, पहले से ही आपके Google Password Manager (<ph name="USER_EMAIL" />) में सेव है</translation>
 <translation id="1176471985365269981">आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति नहीं है</translation>
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1178581264944972037">रोकें</translation>
@@ -240,6 +239,7 @@
 <translation id="121384500095351701">यह फ़ाइल सुरक्षित तरीके से डाउनलोड नहीं की जा सकती</translation>
 <translation id="1215411991991485844">नया बैकग्राउंड ऐप्लिकेशन जोड़ा गया</translation>
 <translation id="1216542092748365687">फ़िंगरप्रिंट हटाएं</translation>
+<translation id="1216891999012841486">अपडेट से जुड़ी गड़बड़ियां ठीक करने के बारे में ज़्यादा जानें</translation>
 <translation id="1217114730239853757">क्या आपको ChromeOS Flex के बिल्ट-इन स्क्रीन रीडर ChromeVox को चालू करना है? अगर हां, तो स्पेस बार दबाएं.</translation>
 <translation id="1217483152325416304">आपका स्थानीय डेटा जल्द ही मिटा दिया जाएगा</translation>
 <translation id="1217668622537098248">कार्रवाई के बाद बायां क्लिक वापस लाएं</translation>
@@ -410,6 +410,7 @@
 <translation id="1388253969141979417">आपका माइक्रोफ़ोन इस्तेमाल करने की अनुमति है</translation>
 <translation id="1388728792929436380">अपडेट पूरा होने पर <ph name="DEVICE_TYPE" /> रीस्टार्ट होगा.</translation>
 <translation id="1389601498324964367">कोटा के हिसाब से मैनेज होने वाला स्टोरेज</translation>
+<translation id="1390113502208199250">Chrome Education Upgrade की सुविधाओं का इस्तेमाल करने के लिए, आपको इस डिवाइस को फ़ैक्ट्री रीसेट करना होगा.</translation>
 <translation id="139013308650923562">साइटों को आपके डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट इस्तेमाल करने की अनुमति है</translation>
 <translation id="1390548061267426325">नियमित टैब के रूप में खोलें</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> को <ph name="PRINTER_NAME" /> प्रिंट करने की अनुमति नहीं है. कृपया अपने एडमिन से संपर्क करें.</translation>
@@ -480,6 +481,7 @@
 <translation id="1436784010935106834">निकाला गया</translation>
 <translation id="1437986450143295708">समस्या के बारे में ज़्यादा जानकारी दें</translation>
 <translation id="1439671507542716852">लंबे समय तक सहायता</translation>
+<translation id="1440090277117135316">स्कूल में नाम दर्ज करने की प्रक्रिया पूरी हो गई है</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> चयनित</translation>
 <translation id="1442851588227551435">चालू Kerberos टिकट सेट करें</translation>
 <translation id="1444628761356461360">यह सेटिंग डिवाइस मालिक, <ph name="OWNER_EMAIL" /> द्वारा प्रबंधित है.</translation>
@@ -1836,7 +1838,6 @@
 <translation id="2643698698624765890">विंडो मेन्यू में एक्सटेंशन पर क्लिक करके अपने एक्सटेंशन प्रबंधित करें.</translation>
 <translation id="2645047101481282803">आपके डिवाइस को <ph name="PROFILE_NAME" /> मैनेज करता है</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">इस खाते का पासवर्ड, पहले से ही इस डिवाइस में सेव है</translation>
 <translation id="2649045351178520408">Base64 में एन्कोड किया गया ASCII प्रमाणपत्र चेन</translation>
 <translation id="2652129567809778422">पासवर्ड चुनें</translation>
 <translation id="2653033005692233957">नहीं खोजा जा सका</translation>
@@ -2411,6 +2412,7 @@
 <translation id="3170072451822350649">आप प्रवेश करना छोड़ भी सकते हैं और <ph name="LINK_START" />अतिथि के रूप में ब्राउज़<ph name="LINK_END" /> कर सकते हैं.</translation>
 <translation id="31774765611822736">बाईं ओर का नया टैब</translation>
 <translation id="3177909033752230686">पेज की भाषा:</translation>
+<translation id="3177914167275935955">आपके डिवाइस में Chrome Education Upgrade शामिल है, लेकिन आपका उपयोगकर्ता नाम किसी Google for Education खाते से जुड़ा हुआ नहीं है. कृपया किसी दूसरे डिवाइस से g.co/workspace/edusignup पर जाकर, Google for Education खाता बनाएं.</translation>
 <translation id="3179982752812949580">टेक्स्ट का फ़ॉन्ट</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउज़िंग (आपकी और आपके डिवाइस की खतरनाक साइट से सुरक्षा करती है)</translation>
 <translation id="3182749001423093222">वर्तनी जांच</translation>
@@ -2625,7 +2627,6 @@
 <translation id="3399432415385675819">नोटिफ़िकेशन अक्षम हो जाएंगे</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> हर्ट्ज़) - जाली की तरह</translation>
 <translation id="3401484564516348917">आपके ब्राउज़र, ओएस, डिवाइस, इंस्टॉल किए गए सॉफ़्टवेयर, रजिस्ट्री वैल्यू, और फ़ाइलों की जानकारी का ऐक्सेस</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{इस डिवाइस पर {COUNT} पासवर्ड सेव है}one{इस डिवाइस पर {COUNT} पासवर्ड सेव है}other{इस डिवाइस पर {COUNT} पासवर्ड सेव हैं}}</translation>
 <translation id="3402255108239926910">कोई अवतार चुनें</translation>
 <translation id="3402585168444815892">डेमाे माेड में नाम दर्ज किया जा रहा है</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4080,6 +4081,7 @@
 <translation id="4762489666082647806">कर्सर का रंग बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4762718786438001384">डिवाइस के डिस्क में बहुत कम स्पेस है</translation>
 <translation id="4763408175235639573">जब आपने इस पेज को देखा था, तब इन कुकी को सेट किया गया था</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> का Google for Education पर कोई मान्य खाता नहीं है. अपने एडमिन से संपर्क करें. एडमिन, यहां जाकर आप अपना संगठन सेट अप कर सकते हैं: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{इस डिवाइस की पहचान को 1 महीने के लिए सेव किया जाएगा और इस दौरान, इसे बिना कोड के कनेक्ट किया जा सकता है. इसे आपका एडमिन सेट करता है.}one{इस डिवाइस की पहचान को {MONTHS} महीने के लिए सेव किया जाएगा और इस दौरान, इसे बिना कोड के कनेक्ट किया जा सकता है. इसे आपका एडमिन सेट करता है.}other{इस डिवाइस की पहचान को {MONTHS} महीनों के लिए सेव किया जाएगा और इस दौरान, इसे बिना कोड के कनेक्ट किया जा सकता है. इसे आपका एडमिन सेट करता है.}}</translation>
 <translation id="4765582662863429759">Android मैसेज को अपने Chromebook से अपने फ़ोन पर लेख भेजने की मंज़ूरी दें</translation>
 <translation id="4766598565665644999">सभी एक्सटेंशन, <ph name="HOST" /> को पढ़ सकते हैं और उसमें बदलाव कर सकते हैं</translation>
@@ -4724,7 +4726,6 @@
 <translation id="5392192690789334093">सूचनाएं भेजने की अनुमति दी गई</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{लिंक}one{# लिंक}other{# लिंक}}</translation>
 <translation id="5395498824851198390">डिफ़ॉल्ट फ़ॉन्ट</translation>
-<translation id="5396325212236512832">सेव किए गए क्रेडेंशियल का इस्तेमाल करके, साइटों और ऐप्लिकेशन में अपने-आप साइन इन की सुविधा. इस सुविधा के बंद होने पर, किसी साइट या ऐप्लिकेशन में साइन इन करने से पहले आपसे हर बार पुष्टि करने के लिए कहा जाएगा.</translation>
 <translation id="5397378439569041789">कीऑस्क या साइनेज डिवाइस का नाम दर्ज करें</translation>
 <translation id="5397794290049113714">आप</translation>
 <translation id="5398497406011404839">छिपे हुए बुकमार्क</translation>
@@ -4741,6 +4742,7 @@
 <translation id="5407167491482639988">धुंधला</translation>
 <translation id="5408750356094797285">ज़ूम करें: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">आपके Google खाते से</translation>
+<translation id="5411022484772257615">स्कूल में नाम दर्ज कराने की प्रक्रिया पूरी नहीं की जा सकी</translation>
 <translation id="5413640305322530561">ऐप्लिकेशन की परफ़ॉर्मेंस और उसके इस्तेमाल के बारे में ज़्यादा जानें</translation>
 <translation id="5414198321558177633">प्रोफ़ाइल की सूची रीफ़्रेश की जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="5414566801737831689">आप जिन वेबसाइट पर जाते हैं, उनके आइकॉन पढ़ें</translation>
@@ -4992,6 +4994,7 @@
 <translation id="5632059346822207074">अनुमति मांगी गई है, जवाब देने के लिए Ctrl + Forward बटन दबाएं</translation>
 <translation id="5632566673632479864">आपका खाता <ph name="EMAIL" /> अब प्राथमिक खाते के रूप में काम नहीं कर सकता. इस खाते का प्रबंधन <ph name="DOMAIN" /> करता है. इसलिए, आपके बुकमार्क, इतिहास, पासवर्ड, और दूसरी सेटिंग को इस डिवाइस से हटा दिया जाएगा.</translation>
 <translation id="5632592977009207922">डाउनलोड हो रहा है, <ph name="PERCENT_REMAINING" />% बचा है</translation>
+<translation id="5633149627228920745">सिस्टम से जुड़ी ज़रूरतों के बारे में ज़्यादा जानें</translation>
 <translation id="563371367637259496">मोबाइल</translation>
 <translation id="5634446357546764049">हाल ही में की गई अपनी यात्राओं से जुड़ी यादें वगैरह देखें</translation>
 <translation id="5635312199252507107">चुनिंदा साइटों पर अनुमति दें</translation>
@@ -5526,6 +5529,7 @@
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">वाई-फ़ाई जोड़ें</translation>
 <translation id="6130887916931372608">कीबोर्ड का बटन</translation>
+<translation id="6132714462430777655">अभी स्कूल में नाम दर्ज नहीं करना है?</translation>
 <translation id="6135823405800500595">पक्का करें कि आपका फ़ोन आस-पास हो और अनलॉक हो. साथ ही, उसका ब्लूटूथ और वाई-फ़ाई चालू हो</translation>
 <translation id="6135826623269483856">आपके सभी डिसप्ले पर, विंडो मैनेज करने की अनुमति नहीं है</translation>
 <translation id="6136114942382973861">डाउनलोड बार बंद करें</translation>
@@ -6059,7 +6063,6 @@
 <translation id="6647441008198474441">इस बात का अंदाज़ा लगाने के लिए कि आपको कौन-कौनसी साइटें पसंद हैं, Google को आपके देखे गए पेजों के यूआरएल भेजे जाते हैं</translation>
 <translation id="6648911618876616409">एक ज़रूरी अपडेट इंस्टॉल होने के लिए तैयार है. शुरू करने के लिए साइन इन करें.</translation>
 <translation id="6649018507441623493">बस एक सेकंड...</translation>
-<translation id="6650234781371031356"><ph name="WEBSITE" /> के लिए आपका पासवर्ड इस डिवाइस और आपके Google खाते में सेव हो गया है. आप इनमें से किसे मिटाना चाहते हैं?</translation>
 <translation id="665061930738760572">&amp;नई विंडो में खोलें</translation>
 <translation id="6651237644330755633">वेबसाइटों की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
 <translation id="6651495917527016072">वाई-फ़ाई नेटवर्क को अपने फ़ोन के साथ सिंक करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -6748,6 +6751,7 @@
 <translation id="7310598146671372464">लॉगिन नहीं कर पाए. सर्वर पर बताए गए केर्बेरोस सुरक्षा प्रकार काम नहीं करते हैं. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="7311089766378749632"><ph name="SITE_NAME" /> को पढ़ने और उसमें बदलाव करने का अनुरोध किया जा रहा है</translation>
 <translation id="7312210124139670355">आपका एडमिन ई-सिम को रीसेट कर रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
+<translation id="7317831949569936035">स्कूल में नाम दर्ज कराएं</translation>
 <translation id="7320213904474460808">नेटवर्क चुनें</translation>
 <translation id="7321545336522791733">सर्वर पहुंच योग्य नहीं है</translation>
 <translation id="7323315405936922211">कर्सर एरिया का साइज़</translation>
@@ -8341,6 +8345,7 @@
 <translation id="8785622406424941542">स्टाइलस</translation>
 <translation id="8786824282808281903">यह आइकॉन दिखने पर, आपका बच्चा पहचान के लिए या खरीदारी की मंज़ूरी देने के लिए, फिंगरप्रिंट का इस्तेमाल कर सकता है.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{ऐसा ग्रुप जिसका नाम नहीं है - 1 टैब}one{ऐसा ग्रुप जिसका नाम नहीं है - # टैब}other{ऐसा ग्रुप जिसका नाम नहीं है - # टैब}}</translation>
+<translation id="8791157330927639737">अपडेट करने के बारे में ज़्यादा जानें</translation>
 <translation id="8791534160414513928">अपने ब्राउज़िंग ट्रैफ़िक के साथ "ट्रैक न करें" अनुरोध भेजें</translation>
 <translation id="879413103056696865">हॉटस्पॉट चालू होने पर, आपका <ph name="PHONE_NAME" /> यह काम करेगा:</translation>
 <translation id="8795916974678578410">नई विंडो</translation>

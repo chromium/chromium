@@ -1523,6 +1523,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       O campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> é um ID exclusivo de um provedor de serviços parceiro que identifica a conta do cliente com o provedor. Quando o login é solicitado como parte da configuração do <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, apenas contas de usuário associadas à conta de provedor de serviços do cliente são permitidas.
 
       Esta política só pode ser definida pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
+<translation id="2452225615952836461">Sempre usar letra maiúscula para os métodos de solicitação</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
 <translation id="2455033019778127130">Usa o comportamento padrão do navegador, exibe os TOS e espera até eles serem aceitos pelo usuário.</translation>
 <translation id="2460127623195247744">Esta política foi suspensa. Use a <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
@@ -2240,6 +2241,18 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
 <translation id="3101035417394748390">O tamanho máximo, em bytes, que pode ser transferido entre cliente e host pela sincronização da área de transferência</translation>
 <translation id="3101501961102569744">Escolher o modo de especificar as configurações do servidor proxy</translation>
 <translation id="3101709781009526431">Data e hora</translation>
+<translation id="3105764289283669411">Esta política controla se os métodos de solicitação têm letras maiúsculas ao fazer a correspondência com os cabeçalhos de resposta <ph name="ACAM_HEADER_NAME" /> na simulação do <ph name="CORS" />.
+
+Se a política for desativada, os métodos de solicitação vão usar letras maiúsculas.
+Esse é o comportamento até a versão 108 do <ph name="PRODUCT_NAME" />.
+
+Se a política for ativada ou deixada sem definição, os métodos de solicitação não vão usar letras maiúsculas, a menos que haja correspondência com <ph name="DELETE_METHOD_NAME" />, <ph name="GET_METHOD_NAME" />, <ph name="HEAD_METHOD_NAME" />, <ph name="OPTIONS_METHOD_NAME" />, <ph name="POST_METHOD_NAME" /> ou <ph name="PUT_METHOD_NAME" /> sem diferenciar maiúsculas de minúsculas.
+Isso rejeitaria o cabeçalho de resposta <ph name="REJECTED_CASE" />
+e aceitaria o <ph name="ACCEPTED_CASE" />.
+
+Observação: os métodos de solicitação <ph name="POST_LOWERCASE_METHOD_NAME" /> e <ph name="PUT_LOWERCASE_METHOD_NAME" /> não são afetados, enquanto o <ph name="PATCH_LOWERCASE_METHOD_NAME" /> é.
+
+Essa política é temporária e vai ser removida.</translation>
 <translation id="3110248563985502478">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida como "Ativada" os plug-ins desatualizados serão usados como plug-ins normais. Se a política for definida como "Desativada", os plug-ins desatualizados não serão usados.
 
       Se a política não for definida, os usuários poderão dar permissão para que os plug-ins desatualizados sejam executados.</translation>
@@ -3801,6 +3814,19 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 
       Se uma política não estiver na lista e houver um conflito entre origens, escopos ou níveis, a política com a maior prioridade será aplicada.</translation>
 <translation id="4646739075621507361">Informar trabalhos de impressão</translation>
+<translation id="4647870063570047503">Quando a política é ativada, o <ph name="PRODUCT_NAME" />
+verifica os certificados do servidor usando o verificador de certificados integrado,
+com a Chrome Root Store como fonte de confiança pública.
+
+Se a política for desativada, o <ph name="PRODUCT_NAME" />
+vai usar o verificador de certificados e os certificados raiz do sistema.
+
+Quando ela for deixada sem definição, a Chrome Root Store ou as raízes fornecidas pelo sistema
+poderão ser usadas.
+
+Essa política vai ser removida na versão 113 do <ph name="PRODUCT_NAME" />
+para <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />.
+O suporte ao uso das raízes e do verificador de certificados disponibilizados pela plataforma também será removido nessa versão.</translation>
 <translation id="4649395978608361979">Destinos de impressoras locais</translation>
 <translation id="4650044303940238102">Configurações de fontes locais</translation>
 <translation id="4650759511838826572">Desativar esquemas do protocolo de URL</translation>
@@ -4141,9 +4167,6 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="5073609397321802133">Se a política for definida como falsa, a página "Nova guia" não permitirá que os usuários personalizem o plano de fundo. Qualquer plano de fundo personalizado já existente será removido permanentemente, mesmo que a política seja definida como verdadeira mais tarde.
 
       Se a política for definida como "verdadeira" ou não for definida, os usuários poderão personalizar o plano de fundo da página "Nova guia".</translation>
-<translation id="5075190314377370852">Se a política for definida como verdadeira, o <ph name="PRODUCT_NAME" /> sempre realizará verificações da revogação para certificados de servidor validados com assinatura dos certificados de CA locais. Se o <ph name="PRODUCT_NAME" /> não conseguir informações sobre o status de revogação, o <ph name="PRODUCT_NAME" /> tratará esses certificados como revogados ("falha forçada").
-
-      Se a política for definida como falsa ou não for definida, o <ph name="PRODUCT_NAME" /> usará configurações on-line existentes de verificação da revogação.</translation>
 <translation id="5076953589932162038">Configurações do First-Party Sets</translation>
 <translation id="5078623750797048009">Ativar anotações no PDF</translation>
 <translation id="5081204761483900654">Sessões de visitante gerenciadas restritas</translation>
@@ -6814,6 +6837,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7724161903134898864">Se a política for definida como 1, os sites poderão exibir pop-ups. Se ela for definida como 2, os pop-ups serão negados.
 
       Se a política não for definida, a <ph name="BLOCK_POPUPS_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
+<translation id="7728486978686128364">Não usar letra maiúscula para os métodos de solicitação, exceto em DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Reverter para o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado para os cookies em todos os sites</translation>
 <translation id="7732907212083471072">Políticas removidas</translation>
 <translation id="7734212505800048991">
@@ -8109,6 +8133,7 @@ vai ser definida como padrão durante o login do usuário.</translation>
 
       O valor da política precisa ser especificado em segundos.</translation>
 <translation id="9015578113567730893">Frequência de coleta da telemetria de áudio em milissegundos.</translation>
+<translation id="9015952763003753868">Fazer com que <ph name="ACAM_HEADER_NAME" /> corresponda à especificação de simulação do <ph name="CORS" /> em conformidade</translation>
 <translation id="9020630127193895800">Luz de fundo índigo do teclado</translation>
 <translation id="9031831501689819108">Ativar o Suporte a navegadores legados</translation>
 <translation id="9035086760683255833">Ativar o recurso de acessibilidade que destaca o objeto em foco por meio do teclado.

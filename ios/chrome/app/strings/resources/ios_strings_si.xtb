@@ -139,7 +139,6 @@
 <translation id="2074131957428911366">ඔබට සැමවිටම <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
 <translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="2080769225927880590">වලංගු ගිණුමක් සමගින් පුරන්න</translation>
-<translation id="209018056901015185">ඩෙක්ස්ටොප් අඩවිය ඉල්ලන්න</translation>
 <translation id="2103075008456228677">history.google.com විවෘත කරන්න</translation>
 <translation id="2116625576999540962">අයිතම <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ක් ගෙන යන ලදි</translation>
 <translation id="2122754583996902531">ඔබේ බ්‍රවුසරය කළමනාකරණය කෙරේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
@@ -383,7 +382,6 @@
 <translation id="3995521777587992544">පිටු පූරණ ප්‍රගති තීරුව, <ph name="EMAIL" /> පූරණ කළා.</translation>
 <translation id="4002066346123236978">සිරස්තලය</translation>
 <translation id="4004204301268239848">මුරපද ඔබගේ Google ගිණුමේ සුරකිනු ලබන අතර, එම නිසා ඔබට ඒවා ඕනෑම උපාංගයක භාවිත කළ හැක</translation>
-<translation id="4006921758705478413">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="4018310736049373830">ඉතිහාසය කළමනාකරණය කරන්න</translation>
 <translation id="4038354071007134711">ගොනුව විවෘත කිරීමට මෙම උපාංගයෙහි යෙදුමක් නැත</translation>
 <translation id="4042870976416480368">පිටුවෙහි සොයා ගන්න</translation>
@@ -816,7 +814,6 @@
 <translation id="7133798577887235672">සම්පූර්ණ නම</translation>
 <translation id="7136892417564438900">කැමරාව නොතිබේ</translation>
 <translation id="7153999225810839758">මිනිත්තු <ph name="TIME" /> කියවීම</translation>
-<translation id="7159472599653637159">ජංගම අඩවිය ඉල්ලන්න</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> සමගින් අප්‍රකට ටැබ අගුලු හරින්න</translation>
 <translation id="7172852049901402487">ඔබේ මුරපද ආරක්‍ෂක ගැටලුවලින් ආරක්ෂිතව තබා ගන්න</translation>
 <translation id="7173114856073700355">සැකසීම් විවෘත කරන්න</translation>
@@ -1059,7 +1056,6 @@
 <translation id="9124387962554796433">සෙවීම සහ අනෙකුත් Google සේවා පුද්ගලිකකරණය කිරීමට Google ඔබගේ ඉතිහාසය භාවිත කළ හැකිය</translation>
 <translation id="9137526406337347448">Google සේවා</translation>
 <translation id="9148126808321036104">නැවත පිවිසෙන්න</translation>
-<translation id="9152539721251340337">QR කේතයක් සාදන්න</translation>
 <translation id="9157836665414082580">සංවාද යටපත් කරන්න</translation>
 <translation id="9177438225260810839">විවෘත ටැබ සොයන්න</translation>
 <translation id="9188680907066685419">කළමනාකරණය කළ ගිණුමෙන් වරන්න</translation>

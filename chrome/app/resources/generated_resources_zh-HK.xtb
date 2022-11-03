@@ -198,7 +198,6 @@
 <translation id="1174366174291287894">除非 Chrome 另行通知，否則您的連線一律安全無虞</translation>
 <translation id="117445914942805388">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />前往同步處理設定<ph name="END_LINK" />。</translation>
 <translation id="1175364870820465910">列印(&amp;P)…</translation>
-<translation id="1176378369905028399">此帳戶的密碼已儲存在「Google 密碼管理工具」中 (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">不允許編輯裝置上的檔案或資料夾</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -410,7 +409,7 @@
 <translation id="1388253969141979417">已允許使用麥克風</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> 將在更新完成時重新啟動。</translation>
 <translation id="1389601498324964367">受配額管理的儲存空間</translation>
-<translation id="1390113502208199250">你必須將這部裝置恢復原廠設定，才能使用 Chrome Education 升級版功能。</translation>
+<translation id="1390113502208199250">您需要將此裝置回復原廠設定，才能使用 Chrome Education 升級功能。</translation>
 <translation id="139013308650923562">可以使用裝置上安裝的字型</translation>
 <translation id="1390548061267426325">在一般分頁中開啟</translation>
 <translation id="1390907927270446471">「<ph name="PROFILE_USERNAME" />」無權透過「<ph name="PRINTER_NAME" />」列印。請聯絡您的管理員。</translation>
@@ -1838,7 +1837,6 @@
 <translation id="2643698698624765890">如要管理擴充功能，只需按一下 [視窗] 選單中的 [擴充功能] 即可。</translation>
 <translation id="2645047101481282803">您的裝置由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2645515095874728277">此帳戶的密碼已儲存在此裝置上</translation>
 <translation id="2649045351178520408">Base64 編碼 ASCII，憑證鏈結</translation>
 <translation id="2652129567809778422">選擇密碼</translation>
 <translation id="2653033005692233957">搜尋失敗</translation>
@@ -2413,7 +2411,7 @@
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
 <translation id="31774765611822736">新分頁位於左側</translation>
 <translation id="3177909033752230686">網頁語言：</translation>
-<translation id="3177914167275935955">你的裝置含有 Chrome Education 升級版，但你的使用者名稱沒有相關聯的 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
+<translation id="3177914167275935955">您的裝置包含一項 Chrome Education 升級，但您的使用者名稱尚未連結 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
 <translation id="3179982752812949580">文字字型</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護您和裝置免受危險網站攻擊)</translation>
 <translation id="3182749001423093222">拼字檢查</translation>
@@ -2628,7 +2626,6 @@
 <translation id="3399432415385675819">通知將會停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) - 交錯顯示</translation>
 <translation id="3401484564516348917">讀取瀏覽器、OS、裝置、已安裝的軟件、登錄值和檔案的相關資料</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{此裝置已儲存 {COUNT} 個密碼}other{此裝置已儲存 {COUNT} 個密碼}}</translation>
 <translation id="3402255108239926910">選擇顯示圖片</translation>
 <translation id="3402585168444815892">註冊示範模式</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />，<ph name="TIME_LEFT" /></translation>
@@ -4084,7 +4081,7 @@
 <translation id="4762489666082647806">指標顏色</translation>
 <translation id="4762718786438001384">裝置磁碟的儲存空間嚴重不足</translation>
 <translation id="4763408175235639573">系統在您瀏覽此網頁時已設定下列 Cookie</translation>
-<translation id="4763757134413542119"><ph name="USER_EMAIL" /> 不是有效的 Google for Education 帳戶，請與系統管理員聯絡。如果你是系統管理員，可以前往 g.co/workspace/edusignup 設定貴機構</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> 並不是有效的 Google for Education 帳戶。請聯絡您的管理員。如果您是管理員，可前往 g.co/workspace/edusignup 設定機構</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{系統會記住此裝置，在 1 個月內無需輸入驗證碼即可再次連接。此設定由管理員設定。}other{系統會記住此裝置，在 {MONTHS} 個月內無需輸入驗證碼即可再次連接。此設定由管理員設定。}}</translation>
 <translation id="4765582662863429759">允許「Android 訊息」由您的手機轉送短訊至 Chromebook</translation>
 <translation id="4766598565665644999">所有擴充程式都可以讀取並變更 <ph name="HOST" /></translation>
@@ -4729,7 +4726,6 @@
 <translation id="5392192690789334093">已允許傳送通知</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
 <translation id="5395498824851198390">預設字型</translation>
-<translation id="5396325212236512832">使用已儲存的憑證自動登入網站和應用程式如果關閉此功能，系統將會在每次登入網站或應用程式前要求您進行確認。</translation>
 <translation id="5397378439569041789">註冊 Kiosk 或標牌裝置</translation>
 <translation id="5397794290049113714">您</translation>
 <translation id="5398497406011404839">已隱藏的書籤</translation>
@@ -6063,7 +6059,6 @@
 <translation id="6647441008198474441">系統會將您瀏覽的網址傳送至 Google，以便預測您接下來可能會瀏覽的網站</translation>
 <translation id="6648911618876616409">已準備好安裝重要更新。登入即可開始更新。</translation>
 <translation id="6649018507441623493">請稍候...</translation>
-<translation id="6650234781371031356">您已將 <ph name="WEBSITE" /> 的密碼儲存在此裝置和 Google 帳戶中。您要刪除哪一個密碼？</translation>
 <translation id="665061930738760572">在新視窗中開啟(&amp;N)</translation>
 <translation id="6651237644330755633">信任這個用來識別網站的憑證</translation>
 <translation id="6651495917527016072">將 Wi-Fi 網絡設定同步至您的手機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

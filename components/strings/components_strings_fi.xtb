@@ -264,6 +264,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1567040042588613346">Tämä käytäntö toimii odotetusti, mutta sama arvo on asetettu muualla, ja tämä käytäntö korvaa sen.</translation>
 <translation id="1569487616857761740">Lisää viimeinen voimassaolopäivä</translation>
 <translation id="1569694109004336106">Google Chrome yrittää laittaa Windows Hellon päälle salasanojen täyttämistä varten.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> tuumaa</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Jotain meni pieleen. tätä verkkosivua näytettäessä.</translation>
 <translation id="1586541204584340881">Asentamasi laajennukset</translation>
@@ -1099,6 +1100,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3787705759683870569">Vanhenee <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Koko 16</translation>
 <translation id="3789841737615482174">Asenna</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tuumaa)</translation>
 <translation id="3793574014653384240">Viime aikoina tapahtuneiden kaatumisten määrät ja syyt</translation>
 <translation id="3795344968043407227">Indie- ja vaihtoehtomusiikki</translation>
 <translation id="3799805948399000906">Fonttia pyydetty</translation>
@@ -1373,6 +1375,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, käännä tämä sivu Google Kääntäjällä painamalla sarkainta ja sitten Enter</translation>
 <translation id="4514308731478712184">Laita Matkat pois päältä</translation>
 <translation id="4515275063822566619">Kortit ja osoitteet ovat peräisin Chromesta ja Google-tililtäsi (<ph name="ACCOUNT_EMAIL" />). Voit hallinnoida niitä <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Järjestelmänvalvojakäytäntö on estänyt tämän tiedoston lataamisen</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Kirjekuori Monarkki</translation>
 <translation id="4521916730539354575">Vasen lokero</translation>
@@ -1386,7 +1389,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4542971377163063093">Lokero 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Poista laajennukset käytöstä.</translation>
-<translation id="4559134504959026834">Tämä sivusto kuuluu ryhmään, jonka <ph name="SET_OWNER" /> on määritellyt ja joka voi nähdä toimintasi</translation>
 <translation id="4566017918361049074">Ulkoilu</translation>
 <translation id="4567686777917670400">Järjestelmänvalvoja voi muuttaa selaimen määrityksiä etäyhteydellä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromiumin ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Toimitus</translation>
@@ -2364,6 +2366,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Lähetys tähän osoitteeseen ei onnistu. Valitse eri osoite.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Estetty lataus</translation>
 <translation id="7132939140423847331">Järjestelmänvalvojasi on kieltänyt tämän datan kopioimisen.</translation>
 <translation id="7135130955892390533">Näytä tila</translation>
 <translation id="7138472120740807366">Toimitustapa</translation>
@@ -2494,6 +2497,7 @@ Lisätietoja:
 <translation id="7441627299479586546">Väärä käytännön aihe</translation>
 <translation id="7442725080345379071">Vaaleanoranssi</translation>
 <translation id="7445762425076701745">Palvelimen, johon olet muodostanut yhteyden, identiteettiä ei voi täysin todentaa. Tietokoneesi on yhdistetty palvelimeen sellaisen nimen avulla, joka on kelvollinen vain verkkosi sisällä ja jonka omistajaa ulkopuolinen varmenteen myöntäjä ei pysty todentamaan. Koska jotkin varmenteen myöntäjät kuitenkin myöntävät varmenteita tällaisille nimille, et voi varmistaa, että olet muodostanut yhteyden haluamaasi verkkosivustoon etkä hakkeriin.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />tiedonhakua<ph name="END_LINK" /> ongelmaan liittyen</translation>
 <translation id="7455133967321480974">Käytä yleistä oletusasetusta (estä)</translation>
 <translation id="745640750744109667">A0 x 3</translation>
@@ -2594,6 +2598,7 @@ Lisätietoja:
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7659327900411729175">Kirjekuori Kaku 8</translation>
 <translation id="7659878911471462949">Ilon kyyneleet</translation>
+<translation id="766014026101194726">{0,plural, =1{Järjestelmänvalvojakäytäntö on estänyt tämän tiedoston lataamisen}other{Järjestelmänvalvojakäytäntö on estänyt # tiedoston lataamisen}}</translation>
 <translation id="7662298039739062396">Laajennuksen hallinnoima asetus</translation>
 <translation id="7663736086183791259">Varmenne <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Ei sallittu incognito-tilassa</translation>
@@ -2688,6 +2693,7 @@ Lisätietoja:
 <translation id="7939744324936979484">Kansanmusiikki</translation>
 <translation id="7941628148012649605">Kirjekuori Chou 4</translation>
 <translation id="7942349550061667556">Punainen</translation>
+<translation id="7943397946612013052">Lataus estetty</translation>
 <translation id="7943893128817522649">Saa pyytää lupaa ladata useita tiedostoja automaattisesti</translation>
 <translation id="7947285636476623132">Tarkista vanhentumisvuosi ja yritä uudelleen.</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, katso lisätietoja Chromen ominaisuuksista painamalla sarkainta ja sitten Enter</translation>
@@ -2797,6 +2803,7 @@ Lisätietoja:
 <translation id="8218327578424803826">Määrätty sijainti:</translation>
 <translation id="8225771182978767009">Tämän tietokoneen määrittänyt henkilö on estänyt tämän sivuston.</translation>
 <translation id="8228419419708659934">Kahden sivun näkymä</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Urheilupelit</translation>
 <translation id="8232343881378637145">Alustan lämpötila</translation>

@@ -198,7 +198,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1174366174291287894">Koneksi Anda selalu aman kecuali jika Chrome menyatakan sebaliknya</translation>
 <translation id="117445914942805388">Untuk menghapus data browsing dari semua perangkat yang disinkronkan dan dari Akun Google, <ph name="BEGIN_LINK" />buka setelan sinkronisasi<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Cetak...</translation>
-<translation id="1176378369905028399">Sandi untuk akun ini sudah disimpan di Pengelola Sandi Google Anda (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Tidak diizinkan mengedit file atau folder di perangkat Anda</translation>
 <translation id="1177863135347784049">Sesuaikan</translation>
 <translation id="1178581264944972037">Jeda</translation>
@@ -409,6 +408,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1388253969141979417">Diizinkan menggunakan mikrofon Anda</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> akan dimulai ulang saat update selesai.</translation>
 <translation id="1389601498324964367">Penyimpanan dengan kuota</translation>
+<translation id="1390113502208199250">Anda harus mereset perangkat ini ke setelan pabrik untuk menggunakan fitur Chrome Education Upgrade.</translation>
 <translation id="139013308650923562">Diizinkan menggunakan font yang diinstal di perangkat Anda</translation>
 <translation id="1390548061267426325">Buka sebagai Tab Biasa</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> tidak diizinkan untuk mencetak ke <ph name="PRINTER_NAME" />. Harap hubungi administrator Anda.</translation>
@@ -479,6 +479,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1436784010935106834">Dihapus</translation>
 <translation id="1437986450143295708">Jelaskan masalahnya secara mendetail</translation>
 <translation id="1439671507542716852">dukungan jangka panjang (LTS)</translation>
+<translation id="1440090277117135316">Pendaftaran sekolah selesai</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> dipilih</translation>
 <translation id="1442851588227551435">Setel tiket Kerberos aktif</translation>
 <translation id="1444628761356461360">Setelan ini dikelola oleh pemilik perangkat, <ph name="OWNER_EMAIL" />.</translation>
@@ -1835,7 +1836,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2643698698624765890">Kelola ekstensi Anda dengan mengklik Ekstensi pada menu Window.</translation>
 <translation id="2645047101481282803">Perangkat Anda dikelola oleh <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Sandi untuk akun ini sudah disimpan di perangkat ini</translation>
 <translation id="2649045351178520408">ASCII bersandiaksara Base64, rantai sertifikat</translation>
 <translation id="2652129567809778422">Pilih sandi</translation>
 <translation id="2653033005692233957">Penelusuran gagal</translation>
@@ -1953,6 +1953,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="274318651891194348">Menelusuri keyboard</translation>
 <translation id="2743301740238894839">Mulai</translation>
 <translation id="2743387203779672305">Salin ke papan klip</translation>
+<translation id="274362947316498129">Sebuah aplikasi sedang mencoba mengakses <ph name="DEVICE_NAME" />. Nonaktifkan tombol privasi <ph name="DEVICE_NAME" /> untuk mengizinkan akses.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528">Login ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2409,6 +2410,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3170072451822350649">Anda juga dapat melewati proses masuk dan <ph name="LINK_START" />menjelajah sebagai tamu<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Tab baru di sisi kiri</translation>
 <translation id="3177909033752230686">Bahasa Halaman:</translation>
+<translation id="3177914167275935955">Perangkat Anda menyertakan Chrome Education Upgrade, tetapi nama pengguna Anda tidak dikaitkan dengan akun Google for Education. Buat akun Google for Education dengan membuka g.co/workspace/edusignup di perangkat sekunder.</translation>
 <translation id="3179982752812949580">Font teks</translation>
 <translation id="3181954750937456830">Safe Browsing (melindungi Anda dan perangkat dari situs berbahaya)</translation>
 <translation id="3182749001423093222">Periksa ejaan</translation>
@@ -2623,7 +2625,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3399432415385675819">Notifikasi akan dinonaktifkan</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - saling bertautan</translation>
 <translation id="3401484564516348917">Membaca informasi tentang browser, OS, perangkat, software terinstal, nilai registry, dan file</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} sandi disimpan di perangkat ini}other{{COUNT} sandi disimpan di perangkat ini}}</translation>
 <translation id="3402255108239926910">Pilih avatar</translation>
 <translation id="3402585168444815892">Mendaftar ke Mode Demo</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3122,6 +3123,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3851428669031642514">Muat skrip yang tidak aman</translation>
 <translation id="3852215160863921508">Bantuan Input</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" /> diaktifkan</translation>
 <translation id="3854599674806204102">Pilih salah satu opsi</translation>
 <translation id="3854967233147778866">Menawarkan penerjemahan situs ke dalam bahasa lain</translation>
 <translation id="3854976556788175030">Baki hasil cetak penuh</translation>
@@ -3455,6 +3457,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4163560723127662357">Keyboard tidak dikenal</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> bukan milik organisasi yang valid. Hubungi administrator Anda. Jika Anda adalah administrator, Anda dapat menyiapkan organisasi dengan membuka: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Setelan situs</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" /> sedang mencoba mengakses <ph name="DEVICE_NAME" />. Nonaktifkan tombol privasi <ph name="DEVICE_NAME" /> untuk mengizinkan akses.</translation>
 <translation id="4167393659000039775">Google tidak bertanggung jawab atas hilangnya data apa pun, dan <ph name="DEVICE_OS" /> mungkin tidak akan berfungsi di model yang tidak tersertifikasi. Pelajari lebih lanjut di g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Situs biasanya menggunakan JavaScript untuk menampilkan fitur interaktif, seperti video game atau formulir web</translation>
 <translation id="4168015872538332605">Beberapa setelan milik <ph name="PRIMARY_EMAIL" /> digunakan bersama dengan Anda. Setelan ini akan memengaruhi akun Anda hanya jika memakai fitur masuk banyak akun.</translation>
@@ -3917,6 +3920,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> telah mengalami error</translation>
 <translation id="4610637590575890427">Apakah maksud Anda ingin mengunjungi <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Koneksi data tersedia</translation>
+<translation id="4612841084470706111">Berikan akses ke semua situs yang meminta.</translation>
 <translation id="4613144866899789710">Membatalkan penginstalan Linux...</translation>
 <translation id="4613271546271159013">Ekstensi telah mengubah apa yang ditampilkan halaman saat Anda membuka tab baru.</translation>
 <translation id="4615586811063744755">tidak ada cookie yang dipilih</translation>
@@ -4076,6 +4080,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4762489666082647806">Warna pointer</translation>
 <translation id="4762718786438001384">Ruang disk perangkat hampir habis</translation>
 <translation id="4763408175235639573">Cookie berikut disetel saat Anda melihat halaman ini</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> bukan akun Google for Education yang valid. Hubungi administrator Anda. Jika Anda adalah administrator, Anda dapat menyiapkan organisasi dengan membuka: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Perangkat ini akan disimpan selama 1 bulan dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}other{Perangkat ini akan disimpan selama {MONTHS} bulan dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}}</translation>
 <translation id="4765582662863429759">Mengizinkan Android Message mengirim teks dari ponsel Anda ke Chromebook Anda</translation>
 <translation id="4766598565665644999">Semua ekstensi dapat membaca &amp; mengubah <ph name="HOST" /></translation>
@@ -4720,7 +4725,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5392192690789334093">Diizinkan mengirimkan notifikasi</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# link}}</translation>
 <translation id="5395498824851198390">Font default</translation>
-<translation id="5396325212236512832">Otomatis login ke situs dan aplikasi menggunakan kredensial yang disimpan. Jika dinonaktifkan, Anda akan selalu dimintai konfirmasi sebelum login ke situs atau aplikasi.</translation>
 <translation id="5397378439569041789">Daftarkan perangkat kios atau reklame</translation>
 <translation id="5397794290049113714">Anda</translation>
 <translation id="5398497406011404839">Bookmark tersembunyi</translation>
@@ -4737,6 +4741,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5407167491482639988">Tidak dapat dipahami</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Dari Akun Google Anda</translation>
+<translation id="5411022484772257615">Tidak dapat menyelesaikan pendaftaran sekolah</translation>
 <translation id="5413640305322530561">Pelajari data penggunaan dan diagnostik lebih lanjut</translation>
 <translation id="5414198321558177633">Memperbarui daftar profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="5414566801737831689">Membaca ikon situs web yang Anda kunjungi</translation>
@@ -5522,6 +5527,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6129953537138746214">Spasi</translation>
 <translation id="6130692320435119637">Tambahkan Wi-Fi</translation>
 <translation id="6130887916931372608">Tombol keyboard</translation>
+<translation id="6132714462430777655">Lewati pendaftaran sekolah?</translation>
 <translation id="6135823405800500595">Pastikan ponsel di dekat Anda, tidak terkunci, serta Bluetooth dan Wi-Fi aktif</translation>
 <translation id="6135826623269483856">Tidak diizinkan untuk mengelola jendela di semua layar</translation>
 <translation id="6136114942382973861">Tutup kotak download</translation>
@@ -5680,6 +5686,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6291949900244949761">Tanyakan saat situs ingin mengakses perangkat USB (direkomendasikan)</translation>
 <translation id="6291953229176937411">&amp;Tampilkan di Penemu</translation>
 <translation id="6292699686837272722">Tab dikecilkan ke lebar sedang</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" /> dinonaktifkan</translation>
 <translation id="6294759976468837022">Kecepatan pemindaian otomatis</translation>
 <translation id="6295158916970320988">Semua situs</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
@@ -6052,7 +6059,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6647441008198474441">URL yang Anda buka akan dikirim ke Google untuk memprediksi situs yang mungkin Anda buka berikutnya</translation>
 <translation id="6648911618876616409">Update penting siap diinstal. Login untuk memulai.</translation>
 <translation id="6649018507441623493">Tunggu sebentar...</translation>
-<translation id="6650234781371031356">Sandi Anda untuk <ph name="WEBSITE" /> disimpan di perangkat ini dan Akun Google Anda. Mana yang ingin Anda hapus?</translation>
 <translation id="665061930738760572">Buka di &amp;Jendela Baru</translation>
 <translation id="6651237644330755633">Percayai sertifikat ini untuk mengidentifikasi situs web</translation>
 <translation id="6651495917527016072">Sinkronkan jaringan Wi-Fi dengan ponsel. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -6741,6 +6747,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7310598146671372464">Gagal login. Server tidak mendukung jenis enkripsi Kerberos yang ditentukan. Harap hubungi administrator.</translation>
 <translation id="7311089766378749632">Meminta untuk membaca dan mengubah <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Administrator sedang mereset eSIM Anda. Proses ini mungkin perlu waktu beberapa menit.</translation>
+<translation id="7317831949569936035">Pendaftaran sekolah</translation>
 <translation id="7320213904474460808">Jadikan jaringan default</translation>
 <translation id="7321545336522791733">Server tidak dapat dijangkau</translation>
 <translation id="7323315405936922211">Ukuran area kursor</translation>
@@ -8489,6 +8496,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8940081510938872932">Komputer Anda melakukan terlalu banyak hal saat ini. Coba lagi nanti.</translation>
 <translation id="8940381019874223173">Dari Google Foto Anda</translation>
 <translation id="8941173171815156065">Cabut izin '<ph name="PERMISSION" />'</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> nonaktif</translation>
 <translation id="894191600409472540">Buat sandi yang kuat</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Menghabiskan baterai lebih cepat (saat ini <ph name="BATTERY_PERCENTAGE" />%)</translation>

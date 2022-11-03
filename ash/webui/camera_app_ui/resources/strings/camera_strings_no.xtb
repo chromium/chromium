@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Kan ikke eksportere <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Bildeoppløsning</translation>
 <translation id="1925845977604399247">Gå til galleriet</translation>
+<translation id="199526504800285197">Opptaket er stanset</translation>
+<translation id="1995951722691075581">Opptaket er stanset på grunn av lite lagringsplass på enheten. For å ta opp flere videoer må du frigjøre plass på enheten.</translation>
 <translation id="2022953316617983419">QR-kode</translation>
 <translation id="2036868001356139588">Nedtellervarighet</translation>
 <translation id="2050339315714019657">Stående</translation>
@@ -77,6 +79,7 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skann strekkoden</translation>
 <translation id="3892148308691398805">Kopiér teksten</translation>
+<translation id="4060608699153044055">Du kan ikke ta opp på grunn av lite lagringsplass på enheten. For å starte opptaket må du frigjøre plass på enheten.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Sett opptaket på pause</translation>
 <translation id="4121305183798804752">Et dokument er oppdaget</translation>
@@ -160,6 +163,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="7748344063862150053">Dokumentets øvre høyre hjørne</translation>
 <translation id="7933675232020478311">Beveger seg nedover mot høyre</translation>
 <translation id="7983668134180549431">Oppdaget tekst.</translation>
+<translation id="8079255378695216066">Kan ikke starte opptak</translation>
 <translation id="8120146556401698679">Panorering, vipping, zooming</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8145038249676204903">Bytt til foto</translation>

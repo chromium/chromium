@@ -196,7 +196,6 @@
 <translation id="1174366174291287894">Chrome-ը կզգուշացնի ձեզ, եթե միացումը վտանգավոր լինի</translation>
 <translation id="117445914942805388">Այցելությունների պատմությունը բոլոր համաժամացված սարքերից և Google հաշվից ջնջելու համար <ph name="BEGIN_LINK" />անցեք համաժամացման կարգավորումներ<ph name="END_LINK" />:</translation>
 <translation id="1175364870820465910">&amp;Տպել…</translation>
-<translation id="1176378369905028399">Այս հաշվի գաղտնաբառն արդեն պահված է Google գաղտնաբառերի կառավարիչում (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Չի թույլատրվում ձեր սարքում խմբագրել ֆայլեր և պանակներ</translation>
 <translation id="1177863135347784049">Անհատականացված</translation>
 <translation id="1178581264944972037">Դադար</translation>
@@ -409,6 +408,7 @@
 <translation id="1388253969141979417">Թույլատրվում է օգտագործել ձեր խոսափողը</translation>
 <translation id="1388728792929436380">Հենց որ թարմացումները տեղադրվեն, <ph name="DEVICE_TYPE" /> սարքը կվերագործարկվի։</translation>
 <translation id="1389601498324964367">Սահմանաչափով կառավարվող հիշողություն</translation>
+<translation id="1390113502208199250">Chrome Education-ի լիցենզիայի գործառույթներից օգտվելու համար հարկավոր է վերականգնել այս սարքի գործարանային կարգավորումները։</translation>
 <translation id="139013308650923562">Կայքեր, որոնց թույլատրված է օգտագործել ձեր սարքում տեղադրված տառատեսակները</translation>
 <translation id="1390548061267426325">Բացել որպես սովորական ներդիր</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> օգտատերը <ph name="PRINTER_NAME" /> տպիչի միջոցով տպելու թույլտվություն չունի։ Դիմեք ձեր ադմինիստրատորին։</translation>
@@ -479,6 +479,7 @@
 <translation id="1436784010935106834">Հեռացված</translation>
 <translation id="1437986450143295708">Մանրամասն նկարագրեք խնդիրը</translation>
 <translation id="1439671507542716852">երկարաժամկետ աջակցություն</translation>
+<translation id="1440090277117135316">Ուսումնական հաստատության հաշվում գրանցումն արված է</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ընտրված</translation>
 <translation id="1442851588227551435">Կարգավորել ակտիվ Kerberos տոմս</translation>
 <translation id="1444628761356461360">Այս կարգավորումը կառավարվում է սարքի սեփականատիրոջ կողմից՝ <ph name="OWNER_EMAIL" />:</translation>
@@ -1822,7 +1823,6 @@
 <translation id="2643698698624765890">Կառավարեք ընդլայնումները` Պատուհանի ցանկում սեղմելով Ընդլայնումներ:</translation>
 <translation id="2645047101481282803">Ձեր սարքը կառավարվում է <ph name="PROFILE_NAME" /> տիրույթի կողմից</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Այս հաշվի գաղտնաբառն արդեն պահված է այս սարքում</translation>
 <translation id="2649045351178520408">Base64-գաղտնագրված ASCII, վկայագրերի շղթա</translation>
 <translation id="2652129567809778422">Ընտրել գաղտնաբառ</translation>
 <translation id="2653033005692233957">Չհաջողվեց որոնել</translation>
@@ -1940,6 +1940,7 @@
 <translation id="274318651891194348">Ստեղնաշարի որոնում</translation>
 <translation id="2743301740238894839">Սկսել</translation>
 <translation id="2743387203779672305">Պատճենել սեղմատախտակին</translation>
+<translation id="274362947316498129">Հավելվածը փորձում է օգտագործել <ph name="DEVICE_NAME" />ը։ Թույլատրելու համար անջատեք <ph name="DEVICE_NAME" />ի գաղտնիության փոխանջատիչը։</translation>
 <translation id="2745080116229976798">Microsoft որակավորված ստորակարգություն</translation>
 <translation id="2749756011735116528">Մուտք գործել <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2396,6 +2397,7 @@
 <translation id="3170072451822350649">Դուք կարող եք նաև մուտք չգործել և <ph name="LINK_START" />սկսել հյուրի աշխատաշրջան<ph name="LINK_END" />:</translation>
 <translation id="31774765611822736">Նոր ներդիր ձախ կողմում</translation>
 <translation id="3177909033752230686">Էջի լեզուն՝</translation>
+<translation id="3177914167275935955">Ձեր սարքում առկա է Chrome Education-ի լիցենզիա, բայց ձեր օգտանունը կապված չէ Google for Education հաշվի հետ։ Ստեղծեք Google for Education հաշիվ՝ մեկ այլ սարքում անցնելով g.co/workspace/edusignup էջ։</translation>
 <translation id="3179982752812949580">Տեքստի տառատեսակը</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
 <translation id="3182749001423093222">Ուղղագրության ստուգում</translation>
@@ -2610,7 +2612,6 @@
 <translation id="3399432415385675819">Ծանուցումները կանջատվեն</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Հց), միահյուսված</translation>
 <translation id="3401484564516348917">Կարդալ տեղեկություններ ձեր դիտարկիչի, օպերացիոն համակարգի, սարքի, տեղադրված ծրագրերի, գրանցամատյանի արժեքների և ֆայլերի մասին</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{Այս սարքում պահված է {COUNT} գաղտնաբառ}one{Այս սարքում պահված է {COUNT} գաղտնաբառ}other{Այս սարքում պահված է {COUNT} գաղտնաբառ}}</translation>
 <translation id="3402255108239926910">Ընտրեք ավատար</translation>
 <translation id="3402585168444815892">Գրանցում դեմո ռեժիմում</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3109,6 +3110,7 @@
 <translation id="385051799172605136">Հետ</translation>
 <translation id="3851428669031642514">Բեռնել վտանգավոր սկրիպտները</translation>
 <translation id="3852215160863921508">Ներածման աջակցում</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" />ը միացված է</translation>
 <translation id="3854599674806204102">Ընտրեք տարբերակ</translation>
 <translation id="3854967233147778866">Առաջարկել կայքերի թարգմանությունն այլ լեզուներով</translation>
 <translation id="3854976556788175030">Արտածման պնակը լցված է</translation>
@@ -3442,6 +3444,7 @@
 <translation id="4163560723127662357">Անհայտ ստեղնաշար</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> հասցեն չի պատկանում վավեր կազմակերպության։ Դիմեք ձեր ադմինիստրատորին։ Եթե դուք ադմինիստրատոր եք, կարող եք ձեր կազմակերպության հաշիվը կարգավորել այստեղ՝ g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" /> hավելվածը փորձում է օգտագործել <ph name="DEVICE_NAME" />ը։ Թույլատրելու համար անջատեք <ph name="DEVICE_NAME" />ի գաղտնիության փոխանջատիչը։</translation>
 <translation id="4167393659000039775">Google-ը պատասխանատվություն չի կրում տվյալների կորստի համար, իսկ <ph name="DEVICE_OS" />-ը կարող է չաշխատել չստուգված մոդելների վրա։ Իմացեք ավելին g.co/flex/InstallGuide էջում։</translation>
 <translation id="4167686856635546851">Կայքերը սովորաբար օգտագործում են JavaScript՝ ինտերակտիվ գործառույթների, օրինակ՝ տեսախաղերի կամ վեբ ձևերի համար</translation>
 <translation id="4168015872538332605">Որոշ կարգավորումներ, որոնք պատկանում են <ph name="PRIMARY_EMAIL" />-ին, համօգտագործվում են ձեզ հետ: Այս կարգավորումները ներգործում են ձեր հաշվի վրա միայն բազմակի մուտքի ժամանակ:</translation>
@@ -3903,6 +3906,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> փլագինում սխալ է առաջացել</translation>
 <translation id="4610637590575890427">Արդյո՞ք ուզում էիք այցելել <ph name="SITE" /> կայքը:</translation>
 <translation id="4611114513649582138">Հասանելի է բջջային ինտերնետ</translation>
+<translation id="4612841084470706111">Տրամադրել օգտագործման թույլտվություն բոլոր պահանջվող կայքերին։</translation>
 <translation id="4613144866899789710">Linux-ի տեղադրումը չեղարկվում է...</translation>
 <translation id="4613271546271159013">Նոր ներդիր բացելիս ցուցադրվող էջը փոխվել է ընդլայնման կողմից:</translation>
 <translation id="4615586811063744755">քուքիներ ընտրված չեն</translation>
@@ -4062,6 +4066,7 @@
 <translation id="4762489666082647806">Ցուցիչի գույնը</translation>
 <translation id="4762718786438001384">Սարքի սկավառակում տարածքը ծայրահեղ քիչ է</translation>
 <translation id="4763408175235639573">Այս էջը դիտելիս տեղակայվել են հետևյալ քուքիները</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> հաշիվը վավեր Google for Education հաշիվ չէ։ Դիմեք ձեր ադմինիստրատորին։ Եթե դուք ադմինիստրատոր եք, կարող եք ձեր կազմակերպության հաշիվը կարգավորել այստեղ՝ g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Այս սարքը կպահվի 1 ամսով։ Հաջորդ անգամ դուք կարող եք միանալ առանց կոդի։ Այս պարամետրը կարգավորվում է ադմինիստրատորի կողմից։}one{Այս սարքը կպահվի {MONTHS} ամսով։ Հաջորդ անգամ դուք կարող եք միանալ առանց կոդի։ Այս պարամետրը կարգավորվում է ադմինիստրատորի կողմից։}other{Այս սարքը կպահվի {MONTHS} ամսով։ Հաջորդ անգամ դուք կարող եք միանալ առանց կոդի։ Այս պարամետրը կարգավորվում է ադմինիստրատորի կողմից։}}</translation>
 <translation id="4765582662863429759">Թույլ է տալիս Android Messages հավելվածին հեռարձակել ձեր հեռախոսի հաղորդագրությունները Chromebook-ին</translation>
 <translation id="4766598565665644999">Բոլոր ընդլայնումները կարող են դիտել և փոխել <ph name="HOST" /> կայքը</translation>
@@ -4709,7 +4714,6 @@
 <translation id="5392192690789334093">Ծանուցումների ուղարկումը թույլատրված է</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Հղում}one{# հղում}other{# հղում}}</translation>
 <translation id="5395498824851198390">Կանխադրված տառատեսակ</translation>
-<translation id="5396325212236512832">Ավտոմատ կերպով մուտք գործել կայքեր և հավելվածներ պահված մուտքի տվյալների միջոցով։ Եթե այս գործառույթն անջատված է, ամեն անգամ մուտք գործելուց առաջ ձեզանից հաստատում կպահանջվի։</translation>
 <translation id="5397378439569041789">Գրանցել կրպակի կամ ցուցանակի սարք</translation>
 <translation id="5397794290049113714">Դուք</translation>
 <translation id="5398497406011404839">Թաքցված էջանիշներ</translation>
@@ -4726,6 +4730,7 @@
 <translation id="5407167491482639988">Անհասկանալի</translation>
 <translation id="5408750356094797285">Մասշտաբ՝ <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Ձեր Google հաշվից</translation>
+<translation id="5411022484772257615">Չհաջողվեց ավարտել գրանցումն ուսումնական հաստատության հաշվում</translation>
 <translation id="5413640305322530561">Իմանալ ավելին դիագնոստիկ և օգտագործման տվյալների մասին</translation>
 <translation id="5414198321558177633">Պրոֆիլների ցանկը թարմացվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="5414566801737831689">Կարդալ այն վեբէջերի պատկերակները, որոնք դուք այցելում եք</translation>
@@ -5508,6 +5513,7 @@
 <translation id="6129953537138746214">Բացատ</translation>
 <translation id="6130692320435119637">Ավելացնել Wi-Fi</translation>
 <translation id="6130887916931372608">Ստեղնաշարի ստեղն</translation>
+<translation id="6132714462430777655">Բաց թողնե՞լ գրանցումն ուսումնական հաստատության հաշվում</translation>
 <translation id="6135823405800500595">Համոզվեք, որ ձեր հեռախոսը մոտակայքում է, ապակողպված, և որ Bluetooth-ն ու Wi-Fi-ը միացված են</translation>
 <translation id="6135826623269483856">Չի թույլատրվում կառավարել պատուհանները բոլոր էկրաններին</translation>
 <translation id="6136114942382973861">Փակել ներբեռնումների գոտին</translation>
@@ -5666,6 +5672,7 @@
 <translation id="6291949900244949761">Հարցնել, երբ որևէ կայք ուզում է օգտագործել USB սարքեր (խորհուրդ է տրվում)</translation>
 <translation id="6291953229176937411">&amp;Ցույց տալ Finder-ում</translation>
 <translation id="6292699686837272722">Ներդիրները փոքրացվում են չորս անգամ</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" />ն անջատված է</translation>
 <translation id="6294759976468837022">Ավտոմատ սկանավորման արագությունը</translation>
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
 <translation id="6295855836753816081">Պահում...</translation>
@@ -6040,7 +6047,6 @@
 <translation id="6647441008198474441">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին՝ կանխատեսելու, թե հաջորդիվ ինչ կայքեր կարող եք այցելել։</translation>
 <translation id="6648911618876616409">Առկա է կարևոր թարմացում։ Տեղադրելու համար մուտք գործեք:</translation>
 <translation id="6649018507441623493">Մի վայրկյան...</translation>
-<translation id="6650234781371031356"><ph name="WEBSITE" /> կայքի ձեր գաղտնաբառը պահվել է այս սարքում և ձեր Google հաշվում։ Ո՞րն եք ուզում ջնջել։</translation>
 <translation id="665061930738760572">Բացել &amp;նոր պատուհանում</translation>
 <translation id="6651237644330755633">Վստահել այս հավաստագրին կայքերի նույնականացման համար</translation>
 <translation id="6651495917527016072">Համաժամացնել Wi-Fi ցանցերը հեռախոսի հետ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -6729,6 +6735,7 @@
 <translation id="7310598146671372464">Չհաջողվեց մտնել հաշիվ: Սերվերը չի աջակցում Kerberos գաղտնագրման նշված տեսակները: Կապվեք ձեր ադմինիստրատորի հետ:</translation>
 <translation id="7311089766378749632">Կայքի (<ph name="SITE_NAME" />) տվյալները կարդալու և փոփոխելու հարցում</translation>
 <translation id="7312210124139670355">Ադմինիստրատորը վերակայում է ձեր eSIM-ը։ Դա կարող է մի քանի րոպե տևել։</translation>
+<translation id="7317831949569936035">Գրանցում ուսումնական հաստատության հաշվում</translation>
 <translation id="7320213904474460808">Կանխադրված ցանց</translation>
 <translation id="7321545336522791733">Սերվերն անհասանելի է</translation>
 <translation id="7323315405936922211">Նշորդի տարածքի չափ</translation>
@@ -8476,6 +8483,7 @@
 <translation id="8940081510938872932">Ձեր համակարգիչը ծանրաբեռնված է: Փորձեք ավելի ուշ:</translation>
 <translation id="8940381019874223173">Ձեր Google Լուսանկարներից</translation>
 <translation id="8941173171815156065">Հետ կանչել «<ph name="PERMISSION" />» թույլտվությունը</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" />ն անջատված է</translation>
 <translation id="894191600409472540">Ստեղծեք հուսալի գաղտնաբառեր</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Մարտկոցի լիցքավորումն ավելի արագ կսպառվի (այժմ լիցքավորված է <ph name="BATTERY_PERCENTAGE" />%)</translation>

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
-<translation id="2182088270354640012">फीडबॅक दिल्याबद्दल धन्यवाद. तुमचा फीडबॅक Chrome OS मध्ये सुधारणा करण्यात मदत करतो आणि त्याचे आमच्या टीमद्वारे पुनरावलोकन केले जाईल. मोठ्या प्रमाणात तक्रारी सबमिट केल्यामुळे, तुम्हाला थेट उत्तर मिळणार नाही.</translation>
 <translation id="2209788852729124853">ट्रॅफिक काउंटर रीसेट करा</translation>
 <translation id="2212733584906323460">नाव रेझोल्यूशन</translation>
 <translation id="2217935453350629363">सध्याचा वेग</translation>
@@ -628,6 +627,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">अयशस्वी झाले - ऑथोरायझेशन करता आले नाही</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> नावाची <ph name="COUNT" /> पैकी <ph name="INDEX" /> डिव्हाइस.</translation>
+<translation id="7130438335435247835">अ‍ॅक्सेस पॉइंट नाव (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्व्हर}other{नेम सर्व्हर}}</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
@@ -689,7 +689,6 @@
 <translation id="773153675489693198">सायकलची संख्या</translation>
 <translation id="7747039790905080783">आधीपासून शेअर केलेली की</translation>
 <translation id="7762130827864645708">तुमचा पासवर्ड यशस्वीरीत्या बदलला होता. कृपया आतापासून नवीन पासवर्ड वापरा.</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />सिस्टीम आणि ॲप माहिती<ph name="END_LINK1" /> व <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> पाठवा</translation>
 <translation id="7763470514545477072">डोमेन सफिक्स जुळणी</translation>
 <translation id="7769672763586021400">मॉडेल आयडी</translation>
 <translation id="7784116172884276937">कोणतेही DNS सर्व्हर सेट केलेले नाहीत</translation>
@@ -826,7 +825,6 @@
 <translation id="9082718469794970195">हा व्हिडिओ वापरा</translation>
 <translation id="9087578468327036362">या क्वेरीची तक्रार करा</translation>
 <translation id="9088306295921699330">सद्य वापर</translation>
-<translation id="9092255287806472980">तुमचा फीडबॅक Chrome OS मध्ये सुधारणा करण्यात मदत करतो आणि त्याचे आमच्या टीमद्वारे पुनरावलोकन केले जाईल. मोठ्या प्रमाणात तक्रारी मिळाल्यामुळे, आम्हाला उत्तर पाठवता येणार नाही.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>

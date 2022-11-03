@@ -641,7 +641,6 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4566144812051858745">对任何建议都不感兴趣</translation>
-<translation id="4570957409596482333">随选朗读按钮</translation>
 <translation id="4573176682887762361">“输入 [字词/短语]”</translation>
 <translation id="4577274620589681794">时间到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">显示预览</translation>
@@ -918,6 +917,7 @@
 <translation id="6064463340679478396">已用完此文件</translation>
 <translation id="6073451960410192870">停止录制</translation>
 <translation id="6074087755403037157">Beta 渠道</translation>
+<translation id="6093867385179428431">已被管理员停用</translation>
 <translation id="6095008505822982596">语速</translation>
 <translation id="6099678161144790572">过去一个月内修改过</translation>
 <translation id="6103838137565245112">系统</translation>

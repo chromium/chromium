@@ -139,7 +139,6 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2080769225927880590">Inicia sesión cunha conta válida</translation>
-<translation id="209018056901015185">Ver como ordenador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
 <translation id="2122754583996902531">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -377,7 +376,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3995521777587992544">Barra de progreso de carga de páxinas: cargouse <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo.</translation>
-<translation id="4006921758705478413">Enviar pestana aos teus dispositivos</translation>
 <translation id="4018310736049373830">Xestionar actividade</translation>
 <translation id="4038354071007134711">Ningunha aplicación do dispositivo pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Buscar na páxina</translation>
@@ -803,7 +801,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
 <translation id="7153999225810839758">Tempo de lectura: <ph name="TIME" /> min</translation>
-<translation id="7159472599653637159">Solicitar sitio para móbiles</translation>
 <translation id="7162168282402939716">Desbloquear pestanas do modo de incógnito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Protexe os teus contrasinais fronte a problemas de seguranza</translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>
@@ -1043,7 +1040,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9124387962554796433">Google pode usar o teu historial de para personalizar a Busca e outros servizos seus.</translation>
 <translation id="9137526406337347448">Servizos de Google</translation>
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
-<translation id="9152539721251340337">Crear código QR</translation>
 <translation id="9157836665414082580">Suprimir cadros de diálogos</translation>
 <translation id="9177438225260810839">Realiza buscas nas pestanas abertas</translation>
 <translation id="9188680907066685419">Pechar sesión na conta xestionada</translation>

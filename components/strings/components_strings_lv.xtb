@@ -1371,6 +1371,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai tulkotu šo lapu, izmantojot Google tulkotāju, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu.</translation>
 <translation id="4514308731478712184">Izslēgt funkciju Meklēšanas ceļi</translation>
 <translation id="4515275063822566619">Kartes un adreses tiek iegūtas no Chrome un jūsu Google konta (<ph name="ACCOUNT_EMAIL" />). Varat tās pārvaldīt <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Administratora politika bloķē šī faila lejupielādi.</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Aploksne Monarch</translation>
 <translation id="4521916730539354575">Kreisā paplāte</translation>
@@ -1384,7 +1385,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4542971377163063093">6. paplāte</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Atspējojiet paplašinājumus.</translation>
-<translation id="4559134504959026834">Šī vietne ir uzņēmuma <ph name="SET_OWNER" /> definētā grupā, un jūsu darbības ir redzamas visai grupai</translation>
 <translation id="4566017918361049074">Aktivitātes brīvā dabā</translation>
 <translation id="4567686777917670400">Jūsu administrators var attālināti mainīt jūsu pārlūka iestatījumus. Darbības šajā ierīcē var pārvaldīt arī ārpus pārlūka Chromium. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="457875822857220463">Piegāde</translation>
@@ -2362,6 +2362,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Nevar nosūtīt uz šo adresi. Atlasiet citu adresi.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Bloķēta augšupielāde</translation>
 <translation id="7132939140423847331">Jūsu administrators ir aizliedzis šo datu kopēšanu.</translation>
 <translation id="7135130955892390533">Rādīt statusu</translation>
 <translation id="7138472120740807366">Piegādes veids</translation>
@@ -2592,6 +2593,7 @@ Papildu informācija:
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7659327900411729175">Aploksne Kaku 8</translation>
 <translation id="7659878911471462949">Prieka asaras</translation>
+<translation id="766014026101194726">{0,plural, =1{Administratora politika bloķē šī faila augšupielādi}zero{Administratora politika bloķē # failu augšupielādi}one{Administratora politika bloķē # faila augšupielādi}other{Administratora politika bloķē # failu augšupielādi}}</translation>
 <translation id="7662298039739062396">Iestatījumu kontrolē paplašinājums</translation>
 <translation id="7663736086183791259">Sertifikāts <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nav atļauts inkognito režīmā</translation>
@@ -2686,6 +2688,7 @@ Papildu informācija:
 <translation id="7939744324936979484">Tautas un tradicionālā mūzika</translation>
 <translation id="7941628148012649605">Aploksne Chou 4</translation>
 <translation id="7942349550061667556">Sarkana</translation>
+<translation id="7943397946612013052">Bloķēta lejupielāde</translation>
 <translation id="7943893128817522649">Var pieprasīt atļauju automātiski lejupielādēt vairākus failus</translation>
 <translation id="7947285636476623132">Pārbaudiet derīguma termiņa gadu un mēģiniet vēlreiz.</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai uzzinātu vairāk par Chrome funkcijām, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>

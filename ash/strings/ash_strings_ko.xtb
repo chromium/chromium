@@ -641,7 +641,6 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">비밀번호 숨김</translation>
 <translation id="4566144812051858745">어떤 제안에도 관심 없음</translation>
-<translation id="4570957409596482333">텍스트 읽어주기 버튼</translation>
 <translation id="4573176682887762361">"[단어/구문] 입력"</translation>
 <translation id="4577274620589681794">타이머 종료 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">미리보기 표시</translation>
@@ -918,6 +917,7 @@
 <translation id="6064463340679478396">파일 사용 완료</translation>
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6074087755403037157">베타 채널</translation>
+<translation id="6093867385179428431">관리자가 사용 중지함</translation>
 <translation id="6095008505822982596">말하는 속도</translation>
 <translation id="6099678161144790572">지난달에 수정됨</translation>
 <translation id="6103838137565245112">시스템</translation>

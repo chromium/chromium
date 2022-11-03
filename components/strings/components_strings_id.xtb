@@ -1371,6 +1371,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menerjemahkan halaman ini dengan Google Terjemahan</translation>
 <translation id="4514308731478712184">Nonaktifkan Perjalanan</translation>
 <translation id="4515275063822566619">Kartu dan alamat berasal dari Chrome dan Akun Google (<ph name="ACCOUNT_EMAIL" />). Anda dapat mengelolanya di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Download file ini diblokir oleh kebijakan administrator</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Envelope Monarch</translation>
 <translation id="4521916730539354575">Baki Kiri</translation>
@@ -1384,7 +1385,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4542971377163063093">Baki 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Coba nonaktifkan ekstensi.</translation>
-<translation id="4559134504959026834">Situs ini berada dalam grup, yang ditentukan oleh <ph name="SET_OWNER" />, yang dapat melihat aktivitas Anda</translation>
 <translation id="4566017918361049074">Luar ruangan</translation>
 <translation id="4567686777917670400">Administrator dapat mengubah penyiapan browser Anda dari jarak jauh. Aktivitas di perangkat ini mungkin juga dikelola di luar Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Pengiriman</translation>
@@ -2362,6 +2362,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Tidak dapat mengirim ke alamat ini. Pilih alamat lain.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Upload yang diblokir</translation>
 <translation id="7132939140423847331">Admin Anda telah melarang data ini disalin.</translation>
 <translation id="7135130955892390533">Tampilkan status</translation>
 <translation id="7138472120740807366">Metode pengiriman</translation>
@@ -2590,6 +2591,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">Air Mata Kebahagiaan</translation>
+<translation id="766014026101194726">{0,plural, =1{Upload file ini diblokir oleh kebijakan administrator}other{Upload # file diblokir oleh kebijakan administrator}}</translation>
 <translation id="7662298039739062396">Setelan yang dikontrol oleh ekstensi</translation>
 <translation id="7663736086183791259">Sertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Tidak diizinkan di Samaran</translation>
@@ -2684,6 +2686,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7939744324936979484">Musik rakyat &amp; tradisional</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="7942349550061667556">Merah</translation>
+<translation id="7943397946612013052">Download yang diblokir</translation>
 <translation id="7943893128817522649">Dapat meminta untuk otomatis mendownload beberapa file</translation>
 <translation id="7947285636476623132">Periksa tahun kedaluwarsa dan coba lagi</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mempelajari fitur-fitur Chrome</translation>

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
 <translation id="2163937499206714165">Уключыць цёмны рэжым</translation>
 <translation id="2180197493692062006">Нешта пайшло не так. Паспрабуйце адкрыць праграму паўторна.</translation>
-<translation id="2182088270354640012">Дзякуй за водгук. Ваш водгук дапаможа нам палепшыць Chrome OS і будзе разгледжаны нашай камандай. Да нас звяртаецца вялікая колькасць людзей, і таму вы не атрымаеце непасрэднага адказу.</translation>
 <translation id="2209788852729124853">Скінуць лічыльнікі трафіка</translation>
 <translation id="2212733584906323460">Пераўтварэнне імён</translation>
 <translation id="2217935453350629363">Бягучая хуткасць</translation>
@@ -689,7 +688,6 @@
 <translation id="773153675489693198">Колькасць цыклаў</translation>
 <translation id="7747039790905080783">Папярэдне абагулены ключ</translation>
 <translation id="7762130827864645708">Пароль зменены. У далейшым выкарыстоўвайце яго.</translation>
-<translation id="7762839321248874531">Адправіць <ph name="BEGIN_LINK1" />звесткі пра сістэму і праграмы<ph name="END_LINK1" />, а таксама <ph name="BEGIN_LINK2" />паказчыкі<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Супадзенне па суфіксе дамена</translation>
 <translation id="7769672763586021400">Ідэнтыфікатар мадэлі</translation>
 <translation id="7784116172884276937">DNS-серверы не наладжаны</translation>
@@ -826,7 +824,6 @@
 <translation id="9082718469794970195">Выкарыстоўваць гэта відэа</translation>
 <translation id="9087578468327036362">Паскардзіцца на гэты запыт</translation>
 <translation id="9088306295921699330">Бягучае выкарыстанне</translation>
-<translation id="9092255287806472980">Ваш водгук дапаможа нам палепшыць Chrome OS і будзе разгледжаны нашай камандай. Да нас звяртаецца вялікая колькасць людзей, і таму мы не зможам адправіць вам адказ.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Абнавіце білет для <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканіруецца старонка <ph name="PAGE_NUMBER" /></translation>

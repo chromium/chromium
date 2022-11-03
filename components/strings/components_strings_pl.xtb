@@ -264,6 +264,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1567040042588613346">Ta zasada działa w oczekiwany sposób, ale zastąpiła tę samą wartość ustawioną w innym miejscu.</translation>
 <translation id="1569487616857761740">Wpisz datę ważności</translation>
 <translation id="1569694109004336106">Google Chrome próbuje włączyć Windows Hello, aby wypełniać hasła.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (cale)</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Podczas wyświetlania strony wystąpił błąd.</translation>
 <translation id="1586541204584340881">Zainstalowane przez Ciebie rozszerzenia</translation>
@@ -1098,6 +1099,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3787705759683870569">Wygasa: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Rozmiar 16</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" /> (cale)</translation>
 <translation id="3793574014653384240">Liczba i przyczyny niedawnych awarii</translation>
 <translation id="3795344968043407227">Muzyka indie i alternatywna</translation>
 <translation id="3799805948399000906">Zażądano czcionki</translation>
@@ -1372,6 +1374,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by Tłumacz Google przetłumaczył tę stronę.</translation>
 <translation id="4514308731478712184">Wyłącz Serie czynności</translation>
 <translation id="4515275063822566619">Karty i adresy pochodzą z Chrome i Twojego konta Google (<ph name="ACCOUNT_EMAIL" />). Możesz nimi zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Pobieranie tego pliku jest zablokowane przez zasady administratora</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Koperta Monarch</translation>
 <translation id="4521916730539354575">Taca lewa</translation>
@@ -1385,7 +1388,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4542971377163063093">Taca 8</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Spróbuj wyłączyć rozszerzenia.</translation>
-<translation id="4559134504959026834">Ta witryna należy do zdefiniowanej przez firmę <ph name="SET_OWNER" /> grupy, która ma dostęp do danych o Twojej aktywności</translation>
 <translation id="4566017918361049074">Rekreacja w plenerze</translation>
 <translation id="4567686777917670400">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Dostawa</translation>
@@ -2363,6 +2365,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Nie można wysłać pod ten adres. Wybierz inny.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Przesyłanie jest zablokowane</translation>
 <translation id="7132939140423847331">Administrator nie zezwala na kopiowanie tych danych.</translation>
 <translation id="7135130955892390533">Wyświetlanie informacji o obecności</translation>
 <translation id="7138472120740807366">Metoda dostawy</translation>
@@ -2493,6 +2496,7 @@ Dodatkowe informacje:
 <translation id="7441627299479586546">Nieprawidłowy podmiot zasady</translation>
 <translation id="7442725080345379071">Jasnopomarańczowy</translation>
 <translation id="7445762425076701745">Nie można w pełni zweryfikować tożsamości serwera, z którym nawiązano połączenie. Nawiązano połączenie z serwerem przy użyciu nazwy obowiązującej jedynie w Twojej sieci i której własności zewnętrzny urząd certyfikacji nie jest w stanie zweryfikować. Niektóre urzędy certyfikacji wydają certyfikaty dla takich nazw bez względu na to, że nie można upewnić się, iż nawiązano połączenie z witryną, z którą zamierzano, a nie z intruzem.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o tym problemie.</translation>
 <translation id="7455133967321480974">Użyj globalnej wartości domyślnej (Blokuj)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2593,6 +2597,7 @@ Dodatkowe informacje:
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7659327900411729175">Koperta Kaku 8</translation>
 <translation id="7659878911471462949">Płacz ze szczęścia</translation>
+<translation id="766014026101194726">{0,plural, =1{Przesyłanie tego pliku jest zablokowane przez zasady administratora}few{Przesyłanie # plików jest zablokowane przez zasady administratora}many{Przesyłanie # plików jest zablokowane przez zasady administratora}other{Przesyłanie # pliku jest zablokowane przez zasady administratora}}</translation>
 <translation id="7662298039739062396">Ustawienie kontrolowane przez rozszerzenie</translation>
 <translation id="7663736086183791259">Certyfikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Niedozwolone w trybie incognito</translation>
@@ -2687,6 +2692,7 @@ Dodatkowe informacje:
 <translation id="7939744324936979484">Folk i muzyka tradycyjna</translation>
 <translation id="7941628148012649605">Koperta Chou 4</translation>
 <translation id="7942349550061667556">Czerwony</translation>
+<translation id="7943397946612013052">Pobieranie jest zablokowane</translation>
 <translation id="7943893128817522649">Może prosić o zgodę na automatyczne pobieranie wielu plików</translation>
 <translation id="7947285636476623132">Sprawdź rok ważności i spróbuj ponownie</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby poznać funkcje Chrome</translation>
@@ -2796,6 +2802,7 @@ Dodatkowe informacje:
 <translation id="8218327578424803826">Przypisana lokalizacja:</translation>
 <translation id="8225771182978767009">Administrator tego komputera zablokował tę witrynę.</translation>
 <translation id="8228419419708659934">Widok dwóch stron</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Gry sportowe</translation>
 <translation id="8232343881378637145">Temperatura platformy</translation>

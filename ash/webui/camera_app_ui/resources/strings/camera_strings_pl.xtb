@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Nie udało się wyeksportować pliku <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Rozdzielczość zdjęcia</translation>
 <translation id="1925845977604399247">Otwórz galerię</translation>
+<translation id="199526504800285197">Nagrywanie zostało zatrzymane</translation>
+<translation id="1995951722691075581">Nagrywanie zostało zatrzymane z powodu zbyt małej ilości miejsca na urządzeniu. Aby nagrać więcej filmów, musisz zwolnić miejsce.</translation>
 <translation id="2022953316617983419">Kod QR</translation>
 <translation id="2036868001356139588">Czas samowyzwalacza</translation>
 <translation id="2050339315714019657">Pionowo</translation>
@@ -77,6 +79,7 @@
 <translation id="3810838688059735925">Wideo</translation>
 <translation id="3838931309141338733">Zeskanuj kod kreskowy</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
+<translation id="4060608699153044055">Nie możesz nagrywać, ponieważ na urządzeniu brakuje miejsca. Najpierw musisz zwolnić miejsce.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpix</translation>
 <translation id="4118525110028899586">Wstrzymaj nagrywanie</translation>
 <translation id="4121305183798804752">Wykryto dokument</translation>
@@ -160,6 +163,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="7748344063862150053">Prawy górny róg dokumentu</translation>
 <translation id="7933675232020478311">Przesuwam w kierunku prawego dolnego rogu</translation>
 <translation id="7983668134180549431">Wykryto tekst.</translation>
+<translation id="8079255378695216066">Nie można rozpocząć nagrywania</translation>
 <translation id="8120146556401698679">Przesuń, przechyl, powiększ</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8145038249676204903">Przełącz, by zrobić zdjęcie</translation>

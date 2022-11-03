@@ -139,7 +139,6 @@
 <translation id="2074131957428911366">Та синк хийх зүйлээ хүссэн үедээ <ph name="BEGIN_LINK" />тохиргооноос<ph name="END_LINK" /> сонгож болно.</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2080769225927880590">Хүчинтэй бүртгэлээр нэвтрэх</translation>
-<translation id="209018056901015185">Дэлгэцийн сайтын хүсэлт</translation>
 <translation id="2103075008456228677">History.google.com-г нээх</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> зүйлүүдийг зөөсөн байна</translation>
 <translation id="2122754583996902531">Таны хөтчийг удирдаж байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -383,7 +382,6 @@
 <translation id="3995521777587992544"><ph name="EMAIL" /> хуудас ачаалах явцын заалтыг ачаалсан.</translation>
 <translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4004204301268239848">Нууц үгнүүдийr таны Google Бүртгэлд хадгалсан тул тэдгээрийг та дурын төхөөрөмжид ашиглаж болно.</translation>
-<translation id="4006921758705478413">Төхөөрөмждөө илгээх</translation>
 <translation id="4018310736049373830">Үйл ажиллагааг удирдах</translation>
 <translation id="4038354071007134711">Энэ төхөөрөмж дээрх ямар ч апп файлыг нээж чадахгүй.</translation>
 <translation id="4042870976416480368">Хуудаснаас хайх</translation>
@@ -815,7 +813,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7133798577887235672">Овог нэр</translation>
 <translation id="7136892417564438900">Камер боломжгүй</translation>
 <translation id="7153999225810839758">Уншихад <ph name="TIME" /> минут болно</translation>
-<translation id="7159472599653637159">Мобайл сайтын хүсэлт</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-р Нууцлалтай табуудын түгжээг тайлах</translation>
 <translation id="7172852049901402487">Нууц үгнүүдээ аюулгүй байдлын асуудлаас хамгаална уу</translation>
 <translation id="7173114856073700355">Тохиргоог нээх</translation>
@@ -1058,7 +1055,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9124387962554796433">Хайлт болон Google-н бусад үйлчилгээг хувийн болгохын тулд Google таны түүхийг ашиглаж магадгүй.</translation>
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9148126808321036104">Дансандаа дахин нэвтрэх</translation>
-<translation id="9152539721251340337">QR код үүсгэх</translation>
 <translation id="9157836665414082580">Харилцах цонхыг зогсоох</translation>
 <translation id="9177438225260810839">Нээлттэй табуудыг хайх</translation>
 <translation id="9188680907066685419">Удирдсан бүртгэлээс гарах</translation>

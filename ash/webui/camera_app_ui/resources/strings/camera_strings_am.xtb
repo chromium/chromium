@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" />ን ወደ ውጭ መላክ አልተቻለም</translation>
 <translation id="1899697626337024495">የፎቶ ምስል ጥራት</translation>
 <translation id="1925845977604399247">ወደ ማዕከለ-ሥዕላት ሂድ</translation>
+<translation id="199526504800285197">ቀረጻ ቆሟል</translation>
+<translation id="1995951722691075581">በዝቅተኛ የመሣሪያ የማከማቻ ቦታ ምክንያት የእርስዎ ቀረጻ ቆሟል። ተጨማሪ ቪድዮዎችን ለመቅረጽ በመሣሪያዎ ላይ ቦታ ማስለቀቅ አለብዎት።</translation>
 <translation id="2022953316617983419">QR ኮድ</translation>
 <translation id="2036868001356139588">የሰዓት ቆጣሪ ቆይታ ጊዜ</translation>
 <translation id="2050339315714019657">በቁመት</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">በካሜራዎ ፎቶዎችን ያንሱ እና ቪዲዮዎችን ይቅረጹ።</translation>
 <translation id="2517472476991765520">ቃኝ</translation>
 <translation id="2549985041256363841">መቅረጽ ጀምር</translation>
+<translation id="2577915835281444458">መቅዳት በቅርቡ ያቆማል። ቦታ ነፃ ለማድረግ ወደ መሣሪያ ማከማቻ ይሂዱ።</translation>
 <translation id="2599796128805996109">የኋላ ካሜራ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />ሰ</translation>
 <translation id="2761536921376153655">የቅኝት ዓይነት</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">ቪዲዮ</translation>
 <translation id="3838931309141338733">የአሞሌ ኮድ ይቃኙ</translation>
 <translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
+<translation id="4060608699153044055">በዝቅተኛ የመሣሪያ የማከማቻ ቦታ ምክንያት መቅረጽ አይችሉም። ቀረጻ ለመጀመር መሣሪያዎ ላይ ቦታ ማስለቀቅ አለብዎት።</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ሜፒ</translation>
 <translation id="4118525110028899586">ቀረጻን ለአፍታ አቁም</translation>
 <translation id="4121305183798804752">ሰነድ ተገኝቷል</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">የሰነድ ከላይ-ቀኝ ጥግ</translation>
 <translation id="7933675232020478311">ወደ ታች-ቀኝ አቅጣጫ በመንቀሳቀስ ላይ</translation>
 <translation id="7983668134180549431">ጽሁፍ ተገኝቷል።</translation>
+<translation id="8079255378695216066">ቀረጻን መጀመር አልተቻለም</translation>
 <translation id="8120146556401698679">ማንፏቀቅ- ማጋደል-አጉላ/አሳንስ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
 <translation id="8145038249676204903">ፎቶ ለማንሳት ይቀይሩ</translation>

@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">无法导出“<ph name="FILE" />”</translation>
 <translation id="1899697626337024495">照片分辨率</translation>
 <translation id="1925845977604399247">转至“图库”</translation>
+<translation id="199526504800285197">录制已停止</translation>
+<translation id="1995951722691075581">录制已停止，因为设备存储空间不足。若要录制更多视频，您需先释放设备上的空间。</translation>
 <translation id="2022953316617983419">二维码</translation>
 <translation id="2036868001356139588">定时器时长</translation>
 <translation id="2050339315714019657">纵向</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">使用相机拍照和录制视频。</translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2549985041256363841">开始录制</translation>
+<translation id="2577915835281444458">录制即将停止。请前往设备存储空间以释放空间。</translation>
 <translation id="2599796128805996109">后置摄像头</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> 秒</translation>
 <translation id="2761536921376153655">扫描类型</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">视频</translation>
 <translation id="3838931309141338733">扫描条形码</translation>
 <translation id="3892148308691398805">复制文字</translation>
+<translation id="4060608699153044055">无法录制，因为设备存储空间不足。若要开始录制，您需先释放设备上的空间。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">暂停录制</translation>
 <translation id="4121305183798804752">检测到文件</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">文件右上角</translation>
 <translation id="7933675232020478311">正在向右下角移动</translation>
 <translation id="7983668134180549431">检测到文字。</translation>
+<translation id="8079255378695216066">无法开始录制</translation>
 <translation id="8120146556401698679">平移，倾斜，缩放</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8145038249676204903">切换到拍照模式</translation>

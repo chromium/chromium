@@ -1372,6 +1372,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage selle lehe tõlkimiseks rakendusega Google'i tõlge tabulaatorit ja siis sisestusklahvi</translation>
 <translation id="4514308731478712184">Lülita funktsioon Teekonnad välja</translation>
 <translation id="4515275063822566619">Kaardid ja aadressid pärinevad Chrome'ist ning teie Google'i kontolt (<ph name="ACCOUNT_EMAIL" />). Neid saate hallata menüüs <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Selle faili allalaadimine on administraatori reegliga blokeeritud</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Ümbrik Monarh</translation>
 <translation id="4521916730539354575">Vasakpoolne salv</translation>
@@ -1385,7 +1386,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4542971377163063093">Salv 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Keelake laiendused.</translation>
-<translation id="4559134504959026834">See sait on omaniku <ph name="SET_OWNER" /> määratletud grupis, mis näeb teie tegevusi</translation>
 <translation id="4566017918361049074">Vabaõhutegevused</translation>
 <translation id="4567686777917670400">Teie administraator saab brauseri seadistust kaugühenduse kaudu muuta. Selle seadme tegevusi võidakse hallata ka väljaspool Chromiumi. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Kohaletoimetamine</translation>
@@ -2363,6 +2363,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Sellele aadressile ei saa tarnida. Valige mõni teine aadress.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Blokeeritud üleslaadimine</translation>
 <translation id="7132939140423847331">Teie administraator on keelanud nende andmete kopeerimise.</translation>
 <translation id="7135130955892390533">Kuva olek</translation>
 <translation id="7138472120740807366">Kohaletoimetamisviis</translation>
@@ -2593,6 +2594,7 @@ Lisateave:
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7659327900411729175">Ümbrik Kaku 8</translation>
 <translation id="7659878911471462949">Rõõmupisarad</translation>
+<translation id="766014026101194726">{0,plural, =1{Selle faili üleslaadimine on administraatori reegliga blokeeritud}other{# faili üleslaadimine on administraatori reegliga blokeeritud}}</translation>
 <translation id="7662298039739062396">Seadet juhib laiendus</translation>
 <translation id="7663736086183791259">Sertifikaat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Pole inkognito režiimis lubatud</translation>
@@ -2687,6 +2689,7 @@ Lisateave:
 <translation id="7939744324936979484">Folk- ja pärimusmuusika</translation>
 <translation id="7941628148012649605">Ümbrik Chou 4</translation>
 <translation id="7942349550061667556">Punane</translation>
+<translation id="7943397946612013052">Blokeeritud allalaadimine</translation>
 <translation id="7943893128817522649">Saab küsida luba automaatselt mitu faili alla laadida</translation>
 <translation id="7947285636476623132">Kontrollige aegumisaastat ja proovige uuesti</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'i funktsioonide kohta lisateabe saamiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>

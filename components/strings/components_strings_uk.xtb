@@ -1374,6 +1374,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб перекласти цю сторінку в Google Перекладачі</translation>
 <translation id="4514308731478712184">Вимкнути функцію "Сеанси"</translation>
 <translation id="4515275063822566619">Дані картки та список адрес містяться в Chrome і вашому обліковому записі Google (<ph name="ACCOUNT_EMAIL" />). Ними можна керувати в <ph name="BEGIN_LINK" />Налаштуваннях<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Адміністратор заборонив завантажувати цей файл</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Конверт Monarch</translation>
 <translation id="4521916730539354575">Лівий лоток</translation>
@@ -1387,7 +1388,6 @@
 <translation id="4542971377163063093">Лоток 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Спробуйте вимкнути розширення.</translation>
-<translation id="4559134504959026834">Цей сайт належить до групи, визначеної сайтом-власником <ph name="SET_OWNER" />, і інші сайти-учасники можуть бачити ваші дії</translation>
 <translation id="4566017918361049074">Дозвілля на природі</translation>
 <translation id="4567686777917670400">Адміністратор може змінити налаштування веб-переглядача віддалено. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Доставка</translation>
@@ -2365,6 +2365,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Неможливо відправити замовлення на цю адресу. Укажіть іншу адресу.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Завантаження заборонено</translation>
 <translation id="7132939140423847331">Ваш адміністратор заборонив копіювати ці дані.</translation>
 <translation id="7135130955892390533">Показати статус</translation>
 <translation id="7138472120740807366">Спосіб доставки</translation>
@@ -2596,6 +2597,7 @@
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7659327900411729175">Конверт Kaku 8</translation>
 <translation id="7659878911471462949">Сльози радості</translation>
+<translation id="766014026101194726">{0,plural, =1{Адміністратор заборонив завантажувати цей файл}one{Адміністратор заборонив завантажувати # файл}few{Адміністратор заборонив завантажувати # файли}many{Адміністратор заборонив завантажувати # файлів}other{Адміністратор заборонив завантажувати # файлу}}</translation>
 <translation id="7662298039739062396">Налаштуванням керує розширення</translation>
 <translation id="7663736086183791259">Сертифікат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Заборонено в анонімному режимі</translation>
@@ -2690,6 +2692,7 @@
 <translation id="7939744324936979484">Народна й традиційна музика</translation>
 <translation id="7941628148012649605">Конверт Chou 4</translation>
 <translation id="7942349550061667556">Червоний</translation>
+<translation id="7943397946612013052">Завантаження заборонено</translation>
 <translation id="7943893128817522649">Може просити дозвіл автоматично завантажувати кілька файлів</translation>
 <translation id="7947285636476623132">Перевірте рік закінчення терміну дії та повторіть спробу</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб дізнатися про функції Chrome</translation>

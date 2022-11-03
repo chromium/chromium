@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">ส่งออก <ph name="FILE" /> ไม่ได้</translation>
 <translation id="1899697626337024495">ความละเอียดรูปภาพ</translation>
 <translation id="1925845977604399247">ไปที่แกลเลอรี</translation>
+<translation id="199526504800285197">หยุดบันทึกแล้ว</translation>
+<translation id="1995951722691075581">หยุดบันทึกแล้วเนื่องจากพื้นที่เก็บข้อมูลในอุปกรณ์เหลือน้อย คุณต้องเพิ่มพื้นที่ว่างในอุปกรณ์เพื่อบันทึกวิดีโอมากขึ้น</translation>
 <translation id="2022953316617983419">คิวอาร์โค้ด</translation>
 <translation id="2036868001356139588">ระยะเวลาของตัวจับเวลา</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">ถ่ายภาพและบันทึกวิดีโอด้วยกล้อง</translation>
 <translation id="2517472476991765520">สแกน</translation>
 <translation id="2549985041256363841">เริ่มบันทึก</translation>
+<translation id="2577915835281444458">การบันทึกจะหยุดเร็วๆ นี้ ไปยังพื้นที่เก็บข้อมูลของอุปกรณ์เพื่อเพิ่มพื้นที่ว่าง</translation>
 <translation id="2599796128805996109">กล้องหลัง</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> วินาที</translation>
 <translation id="2761536921376153655">ประเภทการสแกน</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">วิดีโอ</translation>
 <translation id="3838931309141338733">สแกนบาร์โค้ด</translation>
 <translation id="3892148308691398805">คัดลอกข้อความ</translation>
+<translation id="4060608699153044055">คุณบันทึกไม่ได้เนื่องจากพื้นที่เก็บข้อมูลในอุปกรณ์เหลือน้อย คุณต้องเพิ่มพื้นที่ว่างในอุปกรณ์เพื่อเริ่มบันทึก</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ล้านพิกเซล</translation>
 <translation id="4118525110028899586">หยุดบันทึกชั่วคราว</translation>
 <translation id="4121305183798804752">ตรวจพบเอกสาร</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">มุมขวาบนของเอกสาร</translation>
 <translation id="7933675232020478311">ย้ายไปทางด้านขวาล่าง</translation>
 <translation id="7983668134180549431">ตรวจพบข้อความ</translation>
+<translation id="8079255378695216066">เริ่มบันทึกไม่ได้</translation>
 <translation id="8120146556401698679">เลื่อน เอียง ซูม</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8145038249676204903">เปลี่ยนเป็นโหมดถ่ายภาพ</translation>

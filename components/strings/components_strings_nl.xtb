@@ -264,6 +264,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1567040042588613346">Dit beleid werkt zoals bedoeld, maar ergens anders is dezelfde waarde ingesteld die wordt vervangen door dit beleid.</translation>
 <translation id="1569487616857761740">Vervaldatum invoeren</translation>
 <translation id="1569694109004336106">Google Chrome probeert Windows Hello aan te zetten voor het invullen van wachtwoorden.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Er is iets misgegaan met het bekijken van deze webpagina.</translation>
 <translation id="1586541204584340881">Welke extensies je hebt geïnstalleerd</translation>
@@ -1093,6 +1094,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3787705759683870569">Verloopt: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Grootte 16</translation>
 <translation id="3789841737615482174">Installeren</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3793574014653384240">Aantallen en oorzaken van de crashes die onlangs hebben plaatsgevonden</translation>
 <translation id="3795344968043407227">Indie en alternatieve muziek</translation>
 <translation id="3799805948399000906">Lettertype aangevraagd</translation>
@@ -1367,6 +1369,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om deze pagina te vertalen met Google Translate.</translation>
 <translation id="4514308731478712184">Trajecten uitzetten</translation>
 <translation id="4515275063822566619">Passen en adressen zijn afkomstig uit Chrome en je Google-account (<ph name="ACCOUNT_EMAIL" />). Je kunt ze beheren in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Dit bestand downloaden is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Envelop Monarch</translation>
 <translation id="4521916730539354575">Linkerlade</translation>
@@ -1380,7 +1383,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4542971377163063093">Lade 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Probeer je extensies uit te zetten.</translation>
-<translation id="4559134504959026834">Deze site maakt deel uit van een groep die is gedefinieerd door <ph name="SET_OWNER" /> en die je activiteit kan bekijken</translation>
 <translation id="4566017918361049074">Buitenactiviteiten</translation>
 <translation id="4567686777917670400">Je beheerder kan je browserinstellingen op afstand wijzigen. Activiteit op dit apparaat kan ook buiten Chromium worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Bezorging</translation>
@@ -2357,6 +2359,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Kan niet verzenden naar dit adres. Selecteer een ander adres.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Upload geblokkeerd</translation>
 <translation id="7132939140423847331">Je beheerder heeft voorkomen dat deze gegevens worden gekopieerd.</translation>
 <translation id="7135130955892390533">Status bekijken</translation>
 <translation id="7138472120740807366">Bezorgingsmethode</translation>
@@ -2487,6 +2490,7 @@ Aanvullende informatie:
 <translation id="7441627299479586546">Onjuist beleidsonderwerp</translation>
 <translation id="7442725080345379071">Lichtoranje</translation>
 <translation id="7445762425076701745">De identiteit van de server waarmee je verbinding maakt, kan niet volledig worden geverifieerd. Je hebt verbinding gemaakt met een server die een naam gebruikt die alleen binnen je netwerk geldig is. Een externe certificeringsinstantie kan hiervoor nooit het eigendom verifiëren. Aangezien sommige certificeringsinstanties toch certificaten voor deze namen verlenen, kun je nooit zeker weten of je verbinding hebt met de bedoelde website en niet met een aanvaller.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over dit probleem.</translation>
 <translation id="7455133967321480974">Algemene standaardinstelling gebruiken (Blokkeren)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2587,6 +2591,7 @@ Aanvullende informatie:
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7659327900411729175">Envelop Kaku 8</translation>
 <translation id="7659878911471462949">Vreugdetranen</translation>
+<translation id="766014026101194726">{0,plural, =1{Dit bestand uploaden is geblokkeerd door het beheerdersbeleid}other{# bestanden kopiëren is geblokkeerd door het beheerdersbeleid}}</translation>
 <translation id="7662298039739062396">Instelling beheerd door een extensie</translation>
 <translation id="7663736086183791259">Certificaat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Niet toegestaan in incognitomodus</translation>
@@ -2681,6 +2686,7 @@ Aanvullende informatie:
 <translation id="7939744324936979484">Traditionele en folkmuziek</translation>
 <translation id="7941628148012649605">Envelop Chou 4</translation>
 <translation id="7942349550061667556">Rood</translation>
+<translation id="7943397946612013052">Download geblokkeerd</translation>
 <translation id="7943893128817522649">Kan vragen of deze site automatisch meerdere bestanden mag downloaden</translation>
 <translation id="7947285636476623132">Controleer het vervaljaar en probeer het opnieuw</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter voor meer informatie over Chrome-functies</translation>
@@ -2790,6 +2796,7 @@ Aanvullende informatie:
 <translation id="8218327578424803826">Toegewezen locatie:</translation>
 <translation id="8225771182978767009">De persoon die deze computer heeft geconfigureerd, heeft deze site geblokkeerd.</translation>
 <translation id="8228419419708659934">Weergave met twee pagina's</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Sportgames</translation>
 <translation id="8232343881378637145">Temperatuur van plateau</translation>

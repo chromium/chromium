@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
 <translation id="2163937499206714165">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="2180197493692062006">कोई गड़बड़ी हुई. ऐप्लिकेशन को फिर से खोलने की कोशिश करें.</translation>
-<translation id="2182088270354640012">शिकायत, सुझाव या राय देने के लिए, आपका धन्यवाद. Chrome OS की टीम आपकी शिकायत, सुझाव या राय की समीक्षा करेगी. इससे, हमें इस प्रॉडक्ट को बेहतर बनाने में मदद मिलती है. हमें बहुत सारी रिपोर्ट मिलती हैं. इसलिए, आपको सीधे जवाब नहीं मिल पाएगा.</translation>
 <translation id="2209788852729124853">ट्रैफ़िक काउंटर रीसेट करें</translation>
 <translation id="2212733584906323460">होस्ट के नाम से आईपी पता बनाएं</translation>
 <translation id="2217935453350629363">मौजूदा स्पीड</translation>
@@ -628,6 +627,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">नहीं मिल सकी - अनुमति नहीं मिल सकी</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> में से <ph name="INDEX" /> डिवाइस, जिसका नाम <ph name="NAME" /> है.</translation>
+<translation id="7130438335435247835">ऐक्सेस पॉइंट नेम (एपीएन)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नाम सर्वर}one{नाम सर्वर}other{नाम सर्वर}}</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
@@ -689,7 +689,6 @@
 <translation id="773153675489693198">साइकल काउंट</translation>
 <translation id="7747039790905080783">पहले से शेयर की गई कुंजी</translation>
 <translation id="7762130827864645708">आपने अपना पासवर्ड बदल लिया है. कृपया अपना नया पासवर्ड इस्तेमाल करना शुरू करें.</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />सिस्टम और ऐप्लिकेशन की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> भेजें</translation>
 <translation id="7763470514545477072">डोमेन सफ़िक्स से मिलते-जुलते</translation>
 <translation id="7769672763586021400">मॉडल आईडी</translation>
 <translation id="7784116172884276937">कोई भी डीएनएस सर्वर सेट अप नहीं है</translation>
@@ -826,7 +825,6 @@
 <translation id="9082718469794970195">इस वीडियो का इस्तेमाल करें</translation>
 <translation id="9087578468327036362">इस क्वेरी की शिकायत करें</translation>
 <translation id="9088306295921699330">मौजूदा इस्तेमाल</translation>
-<translation id="9092255287806472980">हमारी टीम आपकी शिकायत, राय या सुझाव की समीक्षा करेगी. इससे, हमें Chrome OS को बेहतर बनाने में मदद मिलती है. फ़िलहाल, हमारे पास बहुत सारी रिपोर्ट आ रही हैं. इसलिए, हम जवाब नहीं दे पाएंगे.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>

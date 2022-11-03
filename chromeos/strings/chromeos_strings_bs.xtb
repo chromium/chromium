@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2163937499206714165">Uključi tamni način rada</translation>
 <translation id="2180197493692062006">Nešto nije uredu. Pokušajte ponovo otvoriti aplikaciju.</translation>
-<translation id="2182088270354640012">Hvala na povratnim informacijama. Vaše povratne informacije pomažu nam poboljšati Chrome OS i Chrome OS tim će ih pregledati. Zbog velikog broj poslanih prijava, nećete dobiti direktan odgovor.</translation>
 <translation id="2209788852729124853">Poništi brojače saobraćaja</translation>
 <translation id="2212733584906323460">Razrješavanje naziva</translation>
 <translation id="2217935453350629363">Trenutna brzina</translation>
@@ -628,7 +627,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nije uspjelo – autorizacija nije uspjela</translation>
 <translation id="7103252855940681301">Uređaj <ph name="INDEX" /> od <ph name="COUNT" /> pod nazivom <ph name="NAME" />.</translation>
-<translation id="7130438335435247835">Pristupna točka (APN)</translation>
+<translation id="7130438335435247835">Naziv pristupne tačke (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Postavite naziv servera}one{Postavite naziv servera}few{Postavite naziv servera}other{Postavite naziv servera}}</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Pokušajte ponovo.</translation>
@@ -690,7 +689,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7747039790905080783">Unaprijed dijeljeni ključ</translation>
 <translation id="7762130827864645708">Uspješno ste promijenili lozinku. Od sada koristite novu lozinku.</translation>
-<translation id="7762839321248874531">Pošalji <ph name="BEGIN_LINK1" />sistemske informacije i informacije o aplikacijama<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />metriku<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Podudaranje sufiksa domene</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7784116172884276937">Nije postavljen nijedan DNS server</translation>
@@ -827,7 +825,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="9082718469794970195">Koristi ovaj videozapis</translation>
 <translation id="9087578468327036362">Prijavite ovaj upit</translation>
 <translation id="9088306295921699330">Trenutno korištenje</translation>
-<translation id="9092255287806472980">Vaše povratne informacije pomažu nam da poboljšamo ChromeOS i naš tim će ih pregledati. Zbog velikog broja prijava, nećemo moći poslati odgovor.</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se stranica broj <ph name="PAGE_NUMBER" /></translation>

@@ -42,6 +42,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1229222343402087523">Cari ${searchPhrase} dalam Chrome</translation>
 <translation id="1242044645101871359">Log Masuk Semula</translation>
 <translation id="1254117744268754948">Pilih Folder</translation>
+<translation id="1254424942107648268">Cari Sebelumnya</translation>
 <translation id="1258491128795710625">Perkara Baharu</translation>
 <translation id="1265739287306757398">Ketahui Caranya</translation>
 <translation id="1272079795634619415">Berhenti</translation>
@@ -139,7 +140,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="2080769225927880590">Log masuk dengan Akaun yang Sah</translation>
-<translation id="209018056901015185">Minta Tapak Desktop</translation>
 <translation id="2103075008456228677">Buka history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dialihkan</translation>
 <translation id="2122754583996902531">Penyemak imbas anda diurus. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -187,6 +187,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2473876017985765807">Anda telah pun menyimpan kata laluan untuk <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Tidak Dipilih</translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
+<translation id="2496626742194544812">Pergi ke Tab Pertama</translation>
 <translation id="2500374554657206846">Pilihan untuk Menyimpan Kata Laluan</translation>
 <translation id="2523363575747517183">Tapak web ini berulang kali cuba membuka aplikasi lain.</translation>
 <translation id="2529021024822217800">Buka Semua</translation>
@@ -202,6 +203,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2647269890314209800">Kuki yang Digunakan</translation>
 <translation id="2648803196158606475">Padamkan Dibaca</translation>
 <translation id="2653659639078652383">Serah</translation>
+<translation id="2664621323652615289">Berhenti</translation>
 <translation id="2671426118752779020">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan Google dalam apl lain pada iPhone anda.</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia di luar talian</translation>
@@ -360,6 +362,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803696231112616155">Tawarkan untuk menterjemahkan tapak ini</translation>
 <translation id="3810973564298564668">Urus</translation>
+<translation id="3818293389945649617">Cari Seterusnya</translation>
 <translation id="3819183753496523827">Anda di luar talian. Periksa sambungan Internet anda dan cuba lagi.</translation>
 <translation id="3835964409414434850">Pergi ke Tab Seterusnya</translation>
 <translation id="385051799172605136">Kembali</translation>
@@ -383,7 +386,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3995521777587992544">Bar kemajuan pemuatan halaman, <ph name="EMAIL" /> dimuatkan.</translation>
 <translation id="4002066346123236978">Tajuk</translation>
 <translation id="4004204301268239848">Kata laluan disimpan dalam Google Account anda supaya anda dapat menggunakannya pada mana-mana peranti.</translation>
-<translation id="4006921758705478413">Hantar ke Peranti Anda</translation>
 <translation id="4018310736049373830">Urus Aktiviti</translation>
 <translation id="4038354071007134711">Tiada aplikasi pada peranti ini yang dapat membuka fail itu.</translation>
 <translation id="4042870976416480368">Cari dalam Halaman</translation>
@@ -391,6 +393,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4049507953662678203">Pastikan anda mempunyai sambungan rangkaian dan cuba lagi.</translation>
 <translation id="4063300985191096908">Pergi Ke Suapan</translation>
 <translation id="408404951701638773">Kini bar Carian lebih mudah dicapai</translation>
+<translation id="4092655288299341041">Tunjukkan Bantuan</translation>
 <translation id="4108998448622696017">Mengesan dan memberikan amaran kepada anda tentang acara berbahaya apabila berlaku.</translation>
 <translation id="411254640334432676">Muat turun gagal.</translation>
 <translation id="4112644173421521737">Cari</translation>
@@ -783,6 +786,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6859944681507688231">Untuk mengimbas kod QR atau kad kredit, dayakan kamera daripada tetapan.</translation>
 <translation id="6867369562105931222">kata laluan</translation>
 <translation id="6869389390665537774">Anda dapat melihat halaman yang telah dilawati atau memadamkan halaman tersebut daripada sejarah anda</translation>
+<translation id="687135068089457384">Tunjukkan Tetapan</translation>
 <translation id="6873263987691478642">Paparan Pisah</translation>
 <translation id="6882836635272038266">Perlindungan standard daripada laman web, muat turun dan sambungan yang diketahui berbahaya.</translation>
 <translation id="6888009575607455378">Adakah anda pasti anda mahu membuang perubahan anda?</translation>
@@ -816,7 +820,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7133798577887235672">Nama Penuh</translation>
 <translation id="7136892417564438900">Kamera tidak tersedia</translation>
 <translation id="7153999225810839758">Bacaan <ph name="TIME" /> minit</translation>
-<translation id="7159472599653637159">Minta Tapak Mudah Alih</translation>
 <translation id="7162168282402939716">Buka Kunci Tab Inkognito dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Pastikan kata laluan anda selamat daripada isu keselamatan</translation>
 <translation id="7173114856073700355">Buka Tetapan</translation>
@@ -889,11 +892,13 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
 <translation id="7839985698273989086">Halaman Luar Talian</translation>
 <translation id="7840771868269352570">Item yang anda pilih akan dialih keluar.</translation>
+<translation id="7845466610722898">Paparkan Senarai Bacaan</translation>
 <translation id="784551991304901159">Untuk melihat kandungan, pilih Hidupkan daripada menu</translation>
 <translation id="7853202427316060426">Aktiviti</translation>
 <translation id="7856733331829174190">Tidak Dapat Memuat Turun</translation>
 <translation id="785938070103630874">Buka Kata Laluan, Kaedah Pembayaran atau Alamat dan Pelbagai Lagi</translation>
 <translation id="7859704718976024901">Sejarah Penyemakan Imbas</translation>
+<translation id="7879275349003161544">Tunjukkan Muat Turun</translation>
 <translation id="7884694604461143138">Sejarah Carian (<ph name="COUNT" /> Ditemukan)</translation>
 <translation id="7887198238286927132">Untuk melindungi privasi anda, Chrome tidak akan mengisi medan ini secara automatik.</translation>
 <translation id="7911190106180361398">Organisasi anda tidak membenarkan anda menyegerakkan semua.</translation>
@@ -1006,6 +1011,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8741995161408053644">Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Anda dapat menemukan tab anda di sini</translation>
 <translation id="8756969031206844760">Kemas kini kata laluan?</translation>
+<translation id="8763613688786959833">Pergi ke Tab Terakhir</translation>
 <translation id="8764015330924122850">Berhenti mengikuti <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">URL tidak sah</translation>
 <translation id="8787968206789828143">Cari di Web</translation>
@@ -1059,7 +1065,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9124387962554796433">Google mungkin menggunakan sejarah anda untuk memperibadikan Carian dan perkhidmatan Google yang lain.</translation>
 <translation id="9137526406337347448">Perkhidmatan Google</translation>
 <translation id="9148126808321036104">Log masuk semula</translation>
-<translation id="9152539721251340337">Buat Kod QR</translation>
 <translation id="9157836665414082580">Sekat Dialog</translation>
 <translation id="9177438225260810839">Cari Tab Terbuka</translation>
 <translation id="9188680907066685419">Log keluar daripada akaun terurus</translation>

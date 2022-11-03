@@ -484,6 +484,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3633097874324966332">Open de bluetooth-instellingen om je apparaat te koppelen</translation>
 <translation id="3638400994746983214">Privacyscherm aan/uit. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Update vereist</translation>
+<translation id="3659444876902283058">(Dag <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Ongeveer <ph name="TIME_LEFT" /> resterend (<ph name="PERCENTAGE" />%).
 Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="366222428570480733">Beheerde gebruiker <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -641,7 +642,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Wachtwoord verbergen</translation>
 <translation id="4566144812051858745">Niet geïnteresseerd in suggesties</translation>
-<translation id="4570957409596482333">Knop 'Selecteer om uitgesproken te worden'</translation>
 <translation id="4573176682887762361">'Typ [woord/woordgroep]'</translation>
 <translation id="4577274620589681794">De tijd is om · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Voorbeelden bekijken</translation>
@@ -1265,6 +1265,7 @@ Nieuwe installatie</translation>
 <translation id="8052898407431791827">Gekopieerd naar klembord</translation>
 <translation id="8054466585765276473">Accuduur berekenen.</translation>
 <translation id="8083540854303889870">Opgeslagen voor later</translation>
+<translation id="8091153018031979607">Begint om <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatische updates</translation>
 <translation id="8098591350844501178">Schermcast naar <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="8113423164597455979">Aan, alle apps</translation>
@@ -1377,6 +1378,7 @@ Nieuwe installatie</translation>
 <translation id="8703634754197148428">Opname starten. Nadat de opname is gestart, gebruik je Alt + Shift + L om op de plank naar de knop voor het stoppen van de opname te gaan.</translation>
 <translation id="8721053961083920564">Volume aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Volledig scherm opnemen</translation>
+<translation id="8731487213223706745">Eindigt om <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Mogelijk wordt geprobeerd om je toetsaanslagen te stelen</translation>
 <translation id="8735678380411481005">Achtergrondverlichtingskleur van het toetsenbord</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

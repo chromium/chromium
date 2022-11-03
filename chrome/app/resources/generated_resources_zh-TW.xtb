@@ -196,7 +196,6 @@
 <translation id="1174366174291287894">除非 Chrome 另行通知，否則你的連線都安全無虞</translation>
 <translation id="117445914942805388">如要從所有同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />前往同步處理設定<ph name="END_LINK" />。</translation>
 <translation id="1175364870820465910">列印(&amp;P)...</translation>
-<translation id="1176378369905028399">這個帳戶的密碼已儲存在你的 Google 密碼管理工具 (<ph name="USER_EMAIL" />) 中</translation>
 <translation id="1176471985365269981">不得編輯裝置上的檔案或資料夾</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -1823,7 +1822,6 @@
 <translation id="2643698698624765890">如要管理擴充功能，只要按一下 [視窗] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="2645047101481282803">你的裝置是由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">這個帳戶的密碼已儲存在這部裝置上</translation>
 <translation id="2649045351178520408">Base64 編碼 ASCII，憑證鏈結</translation>
 <translation id="2652129567809778422">選取密碼</translation>
 <translation id="2653033005692233957">搜尋失敗</translation>
@@ -2613,7 +2611,6 @@
 <translation id="3399432415385675819">通知功能會遭到停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> 赫茲) - 交錯顯示</translation>
 <translation id="3401484564516348917">讀取瀏覽器、OS、裝置、已安裝的軟體、登錄值和檔案的相關資訊</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{這部裝置中已經儲存了 {COUNT} 組密碼}other{這部裝置中已經儲存了 {COUNT} 組密碼}}</translation>
 <translation id="3402255108239926910">請選擇顯示圖片</translation>
 <translation id="3402585168444815892">正在註冊展示模式</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />，<ph name="TIME_LEFT" /></translation>
@@ -4712,7 +4709,6 @@
 <translation id="5392192690789334093">允許傳送通知</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
 <translation id="5395498824851198390">預設字型</translation>
-<translation id="5396325212236512832">使用儲存的憑證自動登入網站和應用程式。如果停用這項設定，系統會在你每次登入網站或應用程式前詢問是否要登入。</translation>
 <translation id="5397378439569041789">註冊資訊站或看板裝置</translation>
 <translation id="5397794290049113714">你</translation>
 <translation id="5398497406011404839">隱藏的書籤</translation>
@@ -6045,7 +6041,6 @@
 <translation id="6647441008198474441">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站</translation>
 <translation id="6648911618876616409">已準備好安裝重大更新。登入即可開始更新。</translation>
 <translation id="6649018507441623493">請稍候...</translation>
-<translation id="6650234781371031356">你已將 <ph name="WEBSITE" /> 的密碼儲存在這部裝置上和 Google 帳戶中。你要從哪個位置刪除密碼？</translation>
 <translation id="665061930738760572">在新視窗中開啟(&amp;N)</translation>
 <translation id="6651237644330755633">信任這個用於識別網站的憑證</translation>
 <translation id="6651495917527016072">將 Wi-Fi 網路同步至你的手機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

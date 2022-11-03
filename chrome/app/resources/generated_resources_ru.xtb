@@ -196,7 +196,6 @@
 <translation id="1174366174291287894">Если подключение небезопасно, браузер Chrome предупредит вас об этом.</translation>
 <translation id="117445914942805388">Чтобы удалить данные о работе в браузере со всех синхронизированных устройств и из аккаунта Google, перейдите в <ph name="BEGIN_LINK" />настройки синхронизации<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Печать...</translation>
-<translation id="1176378369905028399">Пароль этого аккаунта уже хранится в Google Менеджере паролей (<ph name="USER_EMAIL" />).</translation>
 <translation id="1176471985365269981">Сайты, которым запрещено изменять файлы и папки на устройстве:</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -410,6 +409,7 @@
 <translation id="1388253969141979417">Разрешить сайтам использовать микрофон</translation>
 <translation id="1388728792929436380">После установки обновлений <ph name="DEVICE_TYPE" /> перезагрузится.</translation>
 <translation id="1389601498324964367">Хранилище с квотой</translation>
+<translation id="1390113502208199250">Чтобы использовать возможности лицензии Chrome Education, сбросьте настройки этого устройства.</translation>
 <translation id="139013308650923562">Сайты, которым разрешено использовать шрифты, установленные на устройстве</translation>
 <translation id="1390548061267426325">Открыть в обычной вкладке</translation>
 <translation id="1390907927270446471">У пользователя <ph name="PROFILE_USERNAME" /> нет прав для печати на принтере "<ph name="PRINTER_NAME" />". Обратитесь к администратору.</translation>
@@ -480,6 +480,7 @@
 <translation id="1436784010935106834">Удалено</translation>
 <translation id="1437986450143295708">Подробно опишите проблему</translation>
 <translation id="1439671507542716852">долгосрочная поддержка</translation>
+<translation id="1440090277117135316">Регистрация в учебном заведении завершена</translation>
 <translation id="144283815522798837">Выбрано: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задать активный билет Kerberos</translation>
 <translation id="1444628761356461360">Этот аккаунт контролируется владельцем устройства (<ph name="OWNER_EMAIL" />)</translation>
@@ -1822,7 +1823,6 @@
 <translation id="2643698698624765890">Управлять расширениями можно на вкладке "Расширения" в меню "Окно".</translation>
 <translation id="2645047101481282803">Вашим устройством управляет администратор домена <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Пароль аккаунта уже хранится на этом устройстве.</translation>
 <translation id="2649045351178520408">ASCII с кодировкой Base64, цепочка сертификатов</translation>
 <translation id="2652129567809778422">Выберите пароль</translation>
 <translation id="2653033005692233957">Ошибка поиска</translation>
@@ -1940,6 +1940,7 @@
 <translation id="274318651891194348">Поиск клавиатуры</translation>
 <translation id="2743301740238894839">Начать</translation>
 <translation id="2743387203779672305">Скопировать в буфер</translation>
+<translation id="274362947316498129">Приложение пытается получить доступ к устройству "<ph name="DEVICE_NAME" />". Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2745080116229976798">Квалифицированное подчинение Microsoft</translation>
 <translation id="2749756011735116528">Войти в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2396,6 +2397,7 @@
 <translation id="3170072451822350649">Можно пропустить это действие и начать <ph name="LINK_START" />гостевой сеанс<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Новая вкладка слева</translation>
 <translation id="3177909033752230686">Язык страницы:</translation>
+<translation id="3177914167275935955">На этом устройстве есть лицензия Chrome Education, но ваше имя пользователя не связано с аккаунтом Google for Education. Создайте аккаунт Google for Education на странице g.co/workspace/edusignup, используя другое устройство.</translation>
 <translation id="3179982752812949580">Шрифт текста</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
 <translation id="3182749001423093222">Проверка правописания</translation>
@@ -2610,7 +2612,6 @@
 <translation id="3399432415385675819">Уведомления будут отключены</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Гц) – чересстрочная развертка</translation>
 <translation id="3401484564516348917">Доступ к информации о вашем устройстве, браузере, ОС, установленном ПО, значениях реестра и файлах.</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{На этом устройстве сохранен {COUNT} пароль}one{На этом устройстве сохранен {COUNT} пароль}few{На этом устройстве сохранено {COUNT} пароля}many{На этом устройстве сохранено {COUNT} паролей}other{На этом устройстве сохранено {COUNT} пароля}}</translation>
 <translation id="3402255108239926910">Выберите аватар</translation>
 <translation id="3402585168444815892">Регистрация для использования демонстрационного режима</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3109,6 +3110,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851428669031642514">Загрузить небезопасные скрипты</translation>
 <translation id="3852215160863921508">Помощь при вводе</translation>
+<translation id="3853549894831560772">Устройство "<ph name="DEVICE_NAME" />" включено.</translation>
 <translation id="3854599674806204102">Выберите нужный вариант.</translation>
 <translation id="3854967233147778866">Предлагать перевести страницы на других языках</translation>
 <translation id="3854976556788175030">Выходной лоток заполнен</translation>
@@ -3442,6 +3444,7 @@
 <translation id="4163560723127662357">Неизвестная клавиатура</translation>
 <translation id="4165942112764990069">Адрес <ph name="USER_EMAIL" /> не принадлежит действительной организации. Обратитесь к администратору. Если вы администратор, перейдите на страницу g.co/ChromeEnterpriseAccount и настройте аккаунт организации.</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
+<translation id="4167212649627589331">Приложение "<ph name="APP_NAME" />" пытается получить доступ к устройству "<ph name="DEVICE_NAME" />". Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="4167393659000039775">Google не несет ответственности за потерю данных. Операционная система <ph name="DEVICE_OS" /> может не работать на несертифицированных моделях устройств. Подробная информация доступна на странице g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Обычно сайты используют JavaScript, чтобы показывать интерактивный контент.</translation>
 <translation id="4168015872538332605">Некоторые настройки пользователя <ph name="PRIMARY_EMAIL" /> влияют на ваш аккаунт, когда используется система множественного входа.</translation>
@@ -3903,6 +3906,7 @@
 <translation id="4610162781778310380">Ошибка в плагине <ph name="PLUGIN_NAME" /></translation>
 <translation id="4610637590575890427">Возможно, вы хотели перейти на <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Доступно Интернет-подключение</translation>
+<translation id="4612841084470706111">Предоставить доступ ко всем запрашиваемым сайтам</translation>
 <translation id="4613144866899789710">Отмена установки Linux…</translation>
 <translation id="4613271546271159013">Одно из расширений изменило страницу, которая открывается в новой вкладке.</translation>
 <translation id="4615586811063744755">файлы cookie не выбраны</translation>
@@ -4062,6 +4066,7 @@
 <translation id="4762489666082647806">Цвет указателя мыши</translation>
 <translation id="4762718786438001384">Свободное пространство почти закончилось</translation>
 <translation id="4763408175235639573">При посещении этой страницы на вашем компьютере были сохранены следующие файлы cookie:</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> – недопустимый аккаунт Google for Education. Обратитесь к администратору. Если вы администратор, перейдите на страницу g.co/workspace/edusignup и настройте аккаунт организации.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Устройство будет сохранено на 1 месяц. При следующем подключении код не потребуется. Этот параметр задается администратором.}one{Устройство будет сохранено на {MONTHS} месяц. При следующем подключении код не потребуется. Этот параметр задается администратором.}few{Устройство будет сохранено на {MONTHS} месяца. При следующем подключении код не потребуется. Этот параметр задается администратором.}many{Устройство будет сохранено на {MONTHS} месяцев. При следующем подключении код не потребуется. Этот параметр задается администратором.}other{Устройство будет сохранено на {MONTHS} месяца. При следующем подключении код не потребуется. Этот параметр задается администратором.}}</translation>
 <translation id="4765582662863429759">Позволяет приложению "Android Сообщения" ретранслировать сообщения с вашего телефона на Chromebook</translation>
 <translation id="4766598565665644999">Все расширения могут читать и изменять данные <ph name="HOST" />.</translation>
@@ -4706,7 +4711,6 @@
 <translation id="5392192690789334093">Разрешить сайтам показывать уведомления</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Ссылка}one{# ссылка}few{# ссылки}many{# ссылок}other{# ссылки}}</translation>
 <translation id="5395498824851198390">Шрифт по умолчанию</translation>
-<translation id="5396325212236512832">Автоматически входить на сайты и в приложения с помощью сохраненных учетных данных. Если функция отключена, система будет запрашивать подтверждение при каждом входе.</translation>
 <translation id="5397378439569041789">Зарегистрировать киоск или цифровую вывеску</translation>
 <translation id="5397794290049113714">Вы</translation>
 <translation id="5398497406011404839">Скрытые закладки</translation>
@@ -4723,6 +4727,7 @@
 <translation id="5407167491482639988">Неразборчивое</translation>
 <translation id="5408750356094797285">Масштаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Из аккаунта Google</translation>
+<translation id="5411022484772257615">Не удалось зарегистрироваться в учебном заведении</translation>
 <translation id="5413640305322530561">Подробнее об отправке данных об использовании и диагностике…</translation>
 <translation id="5414198321558177633">Список профилей обновляется. Это может занять несколько минут.</translation>
 <translation id="5414566801737831689">Доступ к значкам посещаемых сайтов</translation>
@@ -5508,6 +5513,7 @@
 <translation id="6129953537138746214">Пробел</translation>
 <translation id="6130692320435119637">Добавить сеть Wi-Fi</translation>
 <translation id="6130887916931372608">Клавиша</translation>
+<translation id="6132714462430777655">Пропустить регистрацию в учебном заведении?</translation>
 <translation id="6135823405800500595">Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="6135826623269483856">Сайты, которым запрещено управление окнами на всех ваших экранах</translation>
 <translation id="6136114942382973861">Закрыть панель загрузок</translation>
@@ -5666,6 +5672,7 @@
 <translation id="6291949900244949761">Запрашивать мое разрешение на доступ сайтов к USB-устройствам (рекомендуется)</translation>
 <translation id="6291953229176937411">Показать в Finder</translation>
 <translation id="6292699686837272722">вкладки уменьшаются в четыре раза</translation>
+<translation id="6293862149782163840">Устройство "<ph name="DEVICE_NAME" />" выключено.</translation>
 <translation id="6294759976468837022">Скорость автосканирования</translation>
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6295855836753816081">Сохранение...</translation>
@@ -6044,7 +6051,6 @@
 <translation id="6647441008198474441">Чтобы предсказать ваши дальнейшие запросы, URL посещенных вами страниц отправляются в Google.</translation>
 <translation id="6648911618876616409">Доступно новое критическое обновление. Войдите, чтобы установить его.</translation>
 <translation id="6649018507441623493">Подождите...</translation>
-<translation id="6650234781371031356">Пароль для сайта <ph name="WEBSITE" /> сохранен на этом устройстве и в вашем аккаунте Google. Откуда вы хотите его удалить?</translation>
 <translation id="665061930738760572">Открыть в &amp;новом окне</translation>
 <translation id="6651237644330755633">Доверять этому сертификату при идентификации сайтов</translation>
 <translation id="6651495917527016072">Синхронизировать сети Wi-Fi с телефоном. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -6733,6 +6739,7 @@
 <translation id="7310598146671372464">Не удалось выполнить вход. Сервер не поддерживает выбранные типы шифрования Kerberos. Обратитесь к администратору.</translation>
 <translation id="7311089766378749632">Запрос на чтение и изменение данных сайта <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
+<translation id="7317831949569936035">Регистрация в учебном заведении</translation>
 <translation id="7320213904474460808">Выбрать сеть по умолчанию</translation>
 <translation id="7321545336522791733">Сервер недоступен</translation>
 <translation id="7323315405936922211">Область незначительного движения</translation>
@@ -8484,6 +8491,7 @@
 <translation id="8940081510938872932">В данный момент выполняется слишком много процессов. Повторите попытку позже.</translation>
 <translation id="8940381019874223173">Из Google Фото</translation>
 <translation id="8941173171815156065">Отозвать разрешение "<ph name="PERMISSION" />"</translation>
+<translation id="8941688920560496412">Устройство "<ph name="DEVICE_NAME" />" отключено</translation>
 <translation id="894191600409472540">Создайте надежные пароли</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Начнет быстрее расходовать заряд батареи (сейчас она заряжена на <ph name="BATTERY_PERCENTAGE" />%)</translation>

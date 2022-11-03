@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
 <translation id="2163937499206714165">የጨለማ ሁነታን አብራ</translation>
 <translation id="2180197493692062006">የሆነ ችግር ተፈጥሯል። መተግበሪያውን ዳግም ለመክፈት ይሞክሩ።</translation>
-<translation id="2182088270354640012">ለግብረመልሱ እናመሰግናለን። ግብረመልስዎ የChrome ስርዓተ ክወናን ለማሻሽል ይረዳል እና በChrome ስርዓተ ክወና ቡድን ይገመገማል። በገቡት የሪፖርቶች ቁጥር ብዛት ምክንያት ቀጥተኛ መልስ አይደርስዎትም።</translation>
 <translation id="2209788852729124853">የትራፊክ ቆጣሪዎችን ዳግም ያስጀምሩ</translation>
 <translation id="2212733584906323460">የስም ጥራት</translation>
 <translation id="2217935453350629363">የአሁኑ ፍጥነት</translation>
@@ -628,6 +627,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">አልተሳካም - ማረጋግጥ አልተሳካም</translation>
 <translation id="7103252855940681301">መሣሪያ <ph name="INDEX" /> ከ<ph name="COUNT" /> <ph name="NAME" /> ተብሎ ተሰይሟል</translation>
+<translation id="7130438335435247835">የመድረሻ ነጥብ ስም (ኤፒኤን)</translation>
 <translation id="7134436342991564651">{0,plural, =1{የስም አገልጋይ}one{የስም አገልጋዩች}other{የስም አገልጋዩች}}</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
@@ -689,7 +689,6 @@
 <translation id="773153675489693198">የዑደት ብዛት</translation>
 <translation id="7747039790905080783">ቅድሚያ የተጋራ ቁልፍ</translation>
 <translation id="7762130827864645708">የይለፍ ቃልዎ ለውጥ ተሳክቷል። እባክዎ ከአሁን በኋላ አዲሱን የይለፍ ቃል ይጠቀሙ።</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />የስርዓት እና መተግበሪያ መረጃ<ph name="END_LINK1" />ን እና <ph name="BEGIN_LINK2" />መለኪያዎች<ph name="END_LINK2" />ን ላክ</translation>
 <translation id="7763470514545477072">የጎራ ድኅረ ቅጥያ ዝምድና</translation>
 <translation id="7769672763586021400">የሞዴል መታወቂያ</translation>
 <translation id="7784116172884276937">ምንም የዲኤንኤስ አገልጋዮች አልተዋቀሩም</translation>
@@ -826,7 +825,6 @@
 <translation id="9082718469794970195">ይህን ቪዲዮ ተጠቀም</translation>
 <translation id="9087578468327036362">ይህንን መጠይቅ ሪፖርት ያድርጉ</translation>
 <translation id="9088306295921699330">የአሁኑ አጠቃቀም</translation>
-<translation id="9092255287806472980">ግብረመልስዎ የChrome ስርዓተ ክወናን ለማሻሽል ይረዳል እና በእኛ ቡድን የሚገመገም ይሆናል። በሪፖርቶች ብዛት ምክንያት መልስ መላክ አንችልም።</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9106415115617144481">ገጽ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ</translation>

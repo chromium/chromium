@@ -198,7 +198,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1174366174291287894">Sua conexão é sempre segura, a menos que o Chrome informe o contrário</translation>
 <translation id="117445914942805388">Para limpar os dados de navegação de todos os dispositivos sincronizados e da sua Conta do Google, <ph name="BEGIN_LINK" />acesse as configurações de sincronização<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Imprimir...</translation>
-<translation id="1176378369905028399">Uma senha para essa conta já está armazenada no Gerenciador de senhas do Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Sem permissão para editar arquivos ou pastas no dispositivo</translation>
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1178581264944972037">Pausar</translation>
@@ -1839,7 +1838,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2643698698624765890">Gerencie suas extensões clicando em Extensões no menu Janela.</translation>
 <translation id="2645047101481282803">Seu dispositivo é gerenciado por <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Uma senha para essa conta já está armazenada no dispositivo</translation>
 <translation id="2649045351178520408">ASCII codificado na Base64, cadeia de certificados</translation>
 <translation id="2652129567809778422">Selecionar senha</translation>
 <translation id="2653033005692233957">Falha ao pesquisar</translation>
@@ -2630,7 +2628,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3399432415385675819">As notificações serão desativadas</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) - entrelaçado</translation>
 <translation id="3401484564516348917">Ler informações sobre seu navegador, SO, dispositivo, softwares instalados, valores de registro e arquivos</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} senha está armazenada no dispositivo}one{{COUNT} senha está armazenada no dispositivo}other{{COUNT} senhas estão armazenadas no dispositivo}}</translation>
 <translation id="3402255108239926910">Escolha um avatar</translation>
 <translation id="3402585168444815892">Inscrevendo-se no modo de demonstração</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4731,7 +4728,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5392192690789334093">Permitir o envio de notificações</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}other{# links}}</translation>
 <translation id="5395498824851198390">Fonte padrão</translation>
-<translation id="5396325212236512832">Faça login automaticamente em sites e aplicativos usando as credenciais salvas. Se o recurso estiver desativado, será necessário fornecer uma confirmação todas as vezes que fizer login em um site ou app.</translation>
 <translation id="5397378439569041789">Registrar quiosque ou dispositivo de sinalização</translation>
 <translation id="5397794290049113714">Você</translation>
 <translation id="5398497406011404839">Favoritos ocultos</translation>
@@ -6070,7 +6066,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6647441008198474441">Os URLs que você acessa são enviados ao Google para prever quais sites podem ser do seu interesse</translation>
 <translation id="6648911618876616409">Uma atualização crítica está pronta para ser instalada. Faça login para começar.</translation>
 <translation id="6649018507441623493">Só um segundo…</translation>
-<translation id="6650234781371031356">Sua senha para <ph name="WEBSITE" /> foi armazenada neste dispositivo e na sua Conta do Google. Qual você quer excluir?</translation>
 <translation id="665061930738760572">Abrir em &amp;nova janela</translation>
 <translation id="6651237644330755633">Confiar neste certificado para a identificação de websites.</translation>
 <translation id="6651495917527016072">Sincronizar redes Wi-Fi com seu smartphone. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>

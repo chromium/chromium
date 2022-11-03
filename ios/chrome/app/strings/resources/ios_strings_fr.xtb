@@ -139,7 +139,6 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2080769225927880590">Connectez-vous avec un compte valide</translation>
-<translation id="209018056901015185">Voir version ordinateur</translation>
 <translation id="2103075008456228677">Ouvrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments déplacés.</translation>
 <translation id="2122754583996902531">Votre navigateur est géré. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -377,7 +376,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3995521777587992544">Barre de progression du chargement de page, <ph name="EMAIL" /> chargé(s).</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4004204301268239848">Les mots de passe sont enregistrés dans votre compte Google, afin que vous puissiez les utiliser sur tous vos appareils.</translation>
-<translation id="4006921758705478413">Envoyer à vos appareils</translation>
 <translation id="4018310736049373830">Gérer l'activité</translation>
 <translation id="4038354071007134711">Aucune appli sur appareil ne peut ouvrir fichier.</translation>
 <translation id="4042870976416480368">Rechercher sur la page</translation>
@@ -803,7 +801,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7133798577887235672">Nom complet</translation>
 <translation id="7136892417564438900">Appareil photo non disponible</translation>
 <translation id="7153999225810839758">Temps de lecture : <ph name="TIME" /> min</translation>
-<translation id="7159472599653637159">Voir version mobile</translation>
 <translation id="7162168282402939716">Déverrouiller les onglets de navigation privée avec "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />"</translation>
 <translation id="7172852049901402487">Protéger vos mots de passe</translation>
 <translation id="7173114856073700355">Paramètres</translation>
@@ -1044,7 +1041,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9124387962554796433">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Nouvelle connexion</translation>
-<translation id="9152539721251340337">Créer un code QR</translation>
 <translation id="9157836665414082580">Supprimer les boîtes de dialogue</translation>
 <translation id="9177438225260810839">Rechercher dans les onglets ouverts</translation>
 <translation id="9188680907066685419">Se déconnecter d'un compte géré</translation>

@@ -196,7 +196,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1174366174291287894">Votre connexion est toujours sécuritaire, à moins que Chrome vous indique le contraire</translation>
 <translation id="117445914942805388">Pour effacer les données de navigation de tous vos appareils synchronisés et de votre compte Google, <ph name="BEGIN_LINK" />accédez aux paramètres de synchronisation<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">Im&amp;primer...</translation>
-<translation id="1176378369905028399">Un mot de passe est déjà stocké dans votre gestionnaire de mots de passe Google pour ce compte (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Non autorisés à modifier les fichiers ni les dossiers qui se trouvent sur votre appareil</translation>
 <translation id="1177863135347784049">Personnalisé</translation>
 <translation id="1178581264944972037">Interrompre</translation>
@@ -409,6 +408,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1388253969141979417">Autorisés à utiliser votre microphone</translation>
 <translation id="1388728792929436380">L'appareil <ph name="DEVICE_TYPE" /> redémarrera lorsque l'installation des mises à jour sera terminée.</translation>
 <translation id="1389601498324964367">Espace de stockage géré par quota</translation>
+<translation id="1390113502208199250">Vous devrez rétablir les paramètres par défaut de cet appareil pour utiliser les fonctionnalités de mise à niveau de Chrome Education.</translation>
 <translation id="139013308650923562">Autorisés à utiliser les polices installées sur votre appareil</translation>
 <translation id="1390548061267426325">Ouvrir dans un onglet ordinaire</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> n'est pas autorisé à imprimer de documents sur l'imprimante <ph name="PRINTER_NAME" />. Veuillez communiquer avec votre administrateur.</translation>
@@ -479,6 +479,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1436784010935106834">Supprimés</translation>
 <translation id="1437986450143295708">Décrivez attentivement le problème</translation>
 <translation id="1439671507542716852">assistance à long terme</translation>
+<translation id="1440090277117135316">Inscription scolaire terminée</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> sélectionné(s)</translation>
 <translation id="1442851588227551435">Définir le ticket Kerberos actif</translation>
 <translation id="1444628761356461360">Ce paramètre est géré par le propriétaire de l'appareil : <ph name="OWNER_EMAIL" />.</translation>
@@ -1823,7 +1824,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2643698698624765890">Pour gérer vos extensions, cliquez sur « Extensions » dans le menu « Fenêtre ».</translation>
 <translation id="2645047101481282803">Votre appareil est géré par <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2645515095874728277">Un mot de passe est déjà stocké sur cet appareil pour ce compte</translation>
 <translation id="2649045351178520408">Chaîne de certificats codés Base 64 ASCII</translation>
 <translation id="2652129567809778422">Sélectionner un mot de passe</translation>
 <translation id="2653033005692233957">Échec de la recherche</translation>
@@ -2398,6 +2398,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3170072451822350649">Vous pouvez également sauter l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nouvel onglet à gauche</translation>
 <translation id="3177909033752230686">Langue de la page :</translation>
+<translation id="3177914167275935955">Votre appareil comprend une mise à niveau de Chrome Education, mais votre nom d'utilisateur n'est pas associé à un compte Google for Education. Veuillez créer un compte Google for Education en accédant à la page g.co/workspace/edusignup sur un autre appareil.</translation>
 <translation id="3179982752812949580">Police du texte</translation>
 <translation id="3181954750937456830">Navigation sécurisée (vous protège, vous et votre appareil, des sites dangereux)</translation>
 <translation id="3182749001423093222">Correcteur orthographique</translation>
@@ -2612,7 +2613,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz), entrelacé</translation>
 <translation id="3401484564516348917">Lire de l'information à propos de votre navigateur, de votre système d'exploitation, de votre appareil, des logiciels installés, des valeurs de registre et des fichiers</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} mot de passe est stocké sur cet appareil}one{{COUNT} mot de passe est stocké sur cet appareil}other{{COUNT} mots de passe sont stockés sur cet appareil}}</translation>
 <translation id="3402255108239926910">Choisissez un avatar</translation>
 <translation id="3402585168444815892">Inscription au mode Démo en cours…</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4067,6 +4067,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4762489666082647806">Couleur du pointeur</translation>
 <translation id="4762718786438001384">Vous n'avez presque plus d'espace disque sur votre appareil</translation>
 <translation id="4763408175235639573">Les témoins suivants ont été définis lorsque vous avez consulté cette page</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> n'est pas un compte Google for Education valide. Communiquez avec votre administrateur. Si vous êtes administrateur, vous pouvez configurer votre organisation en accédant à la page g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Cet appareil sera mémorisé pendant 1 mois, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}one{Cet appareil sera mémorisé pendant {MONTHS} mois, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}other{Cet appareil sera mémorisé pendant {MONTHS} mois, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="4765582662863429759">Autorise Android Messages à rediriger des messages texte de votre téléphone à votre Chromebook</translation>
 <translation id="4766598565665644999">Toutes les extensions peuvent lire et modifier <ph name="HOST" /></translation>
@@ -4711,7 +4712,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5392192690789334093">Autorisés à envoyer des notifications</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lien}one{# lien}other{# liens}}</translation>
 <translation id="5395498824851198390">Police par défaut</translation>
-<translation id="5396325212236512832">Connectez-vous automatiquement aux sites et aux applications au moyen de l'authentifiant enregistré. Si cette fonctionnalité est désactivée, une confirmation vous sera demandée avant chaque connexion à un site ou à une application.</translation>
 <translation id="5397378439569041789">Inscrire l'appareil kiosk ou d'affichage</translation>
 <translation id="5397794290049113714">Vous</translation>
 <translation id="5398497406011404839">Favoris masqués</translation>
@@ -4728,6 +4728,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5407167491482639988">Inintelligible</translation>
 <translation id="5408750356094797285">Zoom : <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">De votre compte Google</translation>
+<translation id="5411022484772257615">Impossible de terminer l'inscription scolaire</translation>
 <translation id="5413640305322530561">En savoir plus sur les données de diagnostic et d'utilisation</translation>
 <translation id="5414198321558177633">Actualisation de la liste de profils en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="5414566801737831689">Lire les icônes des sites que vous visitez</translation>
@@ -5514,6 +5515,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6129953537138746214">Espace</translation>
 <translation id="6130692320435119637">Ajouter un réseau Wi-Fi</translation>
 <translation id="6130887916931372608">Touche de clavier</translation>
+<translation id="6132714462430777655">Ignorer l'inscription scolaire?</translation>
 <translation id="6135823405800500595">Assurez-vous que votre téléphone est à proximité et déverrouillé, et que le Bluetooth et le Wi-Fi sont activés</translation>
 <translation id="6135826623269483856">Non autorisé à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="6136114942382973861">Fermer la barre des téléchargements</translation>
@@ -6047,7 +6049,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6647441008198474441">Les URL des pages que vous visitez sont envoyées à Google aux fins de prédiction des sites que vous êtes susceptible de visiter ultérieurement</translation>
 <translation id="6648911618876616409">Une mise à jour essentielle est prête pour l'installation. Connectez-vous pour commencer.</translation>
 <translation id="6649018507441623493">Un instant…</translation>
-<translation id="6650234781371031356">Votre mot de passe pour <ph name="WEBSITE" /> est stocké sur cet appareil et dans votre compte Google. Lequel souhaitez-vous supprimer?</translation>
 <translation id="665061930738760572">Ouvrir dans une &amp;nouvelle fenêtre</translation>
 <translation id="6651237644330755633">Considérer ce certificat comme fiable pour identifier les sites Web</translation>
 <translation id="6651495917527016072">Synchronisez les réseaux Wi-Fi avec votre téléphone. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -6736,6 +6737,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7310598146671372464">Échec de la connexion. Le serveur ne prend pas en charge les types de chiffrement Kerberos spécifiés. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="7311089766378749632">Demande à lire et à modifier <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Votre administrateur est en train de réinitialiser votre carte eSIM. Cette opération peut prendre quelques minutes.</translation>
+<translation id="7317831949569936035">Inscription scolaire</translation>
 <translation id="7320213904474460808">Définir un réseau comme favori</translation>
 <translation id="7321545336522791733">Serveur inaccessible</translation>
 <translation id="7323315405936922211">Taille de la zone du curseur</translation>

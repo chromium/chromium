@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">印刷ジョブをキャンセル</translation>
 <translation id="2163937499206714165">ダークモードをオンにする</translation>
 <translation id="2180197493692062006">エラーが発生しました。アプリをもう一度開いてください。</translation>
-<translation id="2182088270354640012">ご報告ありがとうございました。お寄せいただいたフィードバックは Chrome OS チームが内容を確認したうえで、Chrome OS の改善に役立てられます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
 <translation id="2209788852729124853">トラフィック カウンタをリセット</translation>
 <translation id="2212733584906323460">名前解決</translation>
 <translation id="2217935453350629363">現在の速度</translation>
@@ -689,7 +688,6 @@
 <translation id="773153675489693198">サイクル回数</translation>
 <translation id="7747039790905080783">事前共有キー</translation>
 <translation id="7762130827864645708">パスワードを変更しました。今後は新しいパスワードを使用してください。</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />システムとアプリの情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" />を送信する</translation>
 <translation id="7763470514545477072">ドメイン サフィックス マッチ</translation>
 <translation id="7769672763586021400">モデル ID</translation>
 <translation id="7784116172884276937">DNS サーバーが設定されていません</translation>
@@ -826,7 +824,6 @@
 <translation id="9082718469794970195">この動画を使う</translation>
 <translation id="9087578468327036362">このクエリを報告</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
-<translation id="9092255287806472980">お寄せいただいたフィードバックは担当チームが内容を確認したうえで、Chrome OS の改善に役立てられます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>

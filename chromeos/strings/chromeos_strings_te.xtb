@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయి</translation>
 <translation id="2163937499206714165">డార్క్ మోడ్‌ను ఆన్ చేయండి</translation>
 <translation id="2180197493692062006">ఏదో తప్పు జరిగింది. యాప్‌ను తిరిగి తెరవడానికి ట్రై చేయండి.</translation>
-<translation id="2182088270354640012">ఫీడ్‌బ్యాక్‌ను ఇచ్చినందుకు ధన్యవాదాలు. మీ ఫీడ్‌బ్యాక్ Chrome OSను మెరుగుపరచడంలో సహాయం చేస్తుంది, దీనిని Chrome OS టీమ్ రివ్యూ చేస్తుంది. పెద్ద సంఖ్యలో రిపోర్ట్‌లను సబ్మిట్ చేసినందున, మీరు నేరుగా రిప్లయిని పొందలేరు.</translation>
 <translation id="2209788852729124853">ట్రాఫిక్ కౌంటర్‌లను రీసెట్ చేయండి</translation>
 <translation id="2212733584906323460">పేరు రిజల్యూషన్</translation>
 <translation id="2217935453350629363">ప్రస్తుత వేగం</translation>
@@ -688,7 +687,6 @@
 <translation id="773153675489693198">సైకిల్ సంఖ్య</translation>
 <translation id="7747039790905080783">ముందే షేర్ చేసిన కీ</translation>
 <translation id="7762130827864645708">మీ పాస్‌వర్డ్ మార్పు విజయవంతమైంది. ఇప్పటి నుండి కొత్త పాస్‌వర్డ్‌ను ఉపయోగించండి.</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />సిస్టమ్, యాప్ సమాచారాన్ని<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />కొలమానాలను<ph name="END_LINK2" /> పంపండి</translation>
 <translation id="7763470514545477072">డొమైన్ సఫిక్స్ మ్యాచ్</translation>
 <translation id="7769672763586021400">మోడల్ ID</translation>
 <translation id="7784116172884276937">DNS సర్వర్‌లు ఏవీ సెటప్ చేయబడలేదు</translation>
@@ -825,7 +823,6 @@
 <translation id="9082718469794970195">ఈ వీడియోను ఉపయోగించండి</translation>
 <translation id="9087578468327036362">ఈ క్వెరీని రిపోర్ట్ చేయండి</translation>
 <translation id="9088306295921699330">ప్రస్తుత వినియోగం</translation>
-<translation id="9092255287806472980">మీ ఫీడ్‌బ్యాక్ Chrome OSను మెరుగుపరచడంలో సహాయం చేస్తుంది, దీనిని మా టీమ్ రివ్యూ చేస్తుంది. పెద్ద సంఖ్యలో రిపోర్ట్‌లు ఉన్నందున మేము రిప్లయిని పంపడం సాధ్యం కాదు.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> సంబంధిత టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="9106415115617144481">పేజీ <ph name="PAGE_NUMBER" />ని స్కాన్ చేస్తోంది</translation>

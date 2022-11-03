@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">ပရင့်ထုတ်ရန်ဖိုင် မထုတ်တော့ပါ</translation>
 <translation id="2163937499206714165">အမှောင်မုဒ် ဖွင့်ရန်</translation>
 <translation id="2180197493692062006">တစ်ခုခုမှားသွားသည်။ အက်ပ်ကို ပြန်ဖွင့်ကြည့်ပါ။</translation>
-<translation id="2182088270354640012">အကြံပြုချက်အတွက် ကျေးဇူးတင်ပါသည်။ သင့်အကြံပြုချက်သည် Chrome OS ပိုမိုကောင်းမွန်စေရန် ကူညီပေးနိုင်ပြီး ၎င်းကို Chrome OS အဖွဲ့က စိစစ်ပါမည်။ ပေးပို့မှု အရေအတွက်များသဖြင့် သင့်ထံ တိုက်ရိုက်စာပြန်နိုင်မည် မဟုတ်ပါ။</translation>
 <translation id="2209788852729124853">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2212733584906323460">ပုံရိပ်ပြတ်သားကိန်းကို အမည်ပေးရန်</translation>
 <translation id="2217935453350629363">လက်ရှိ မြန်နှုန်း</translation>
@@ -627,6 +626,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">မအောင်မြင်ပါ - ခွင့်ပြုချက်ပေး၍ မရပါ</translation>
 <translation id="7103252855940681301">ကိရိယာသည် <ph name="COUNT" /> ခုအနက် <ph name="INDEX" /> ခုမြောက်ဖြစ်ပြီး <ph name="NAME" /> ဟု အမည်ပေးထားသည်။</translation>
+<translation id="7130438335435247835">APN အချိတ်အဆက် (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ဆာဗာအမည်}other{ဆာဗာများအမည်}}</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
@@ -688,7 +688,6 @@
 <translation id="773153675489693198">သုံးစွဲမှု အကြိမ်ရေ</translation>
 <translation id="7747039790905080783">ကြိုတင်မျှဝေထားသည့် ကီး</translation>
 <translation id="7762130827864645708">သင်၏စကားဝှက်ကို ပြောင်းပြီးပြီ။ ယခုမှစ၍ စကားဝှက်အသစ် သုံးပါ။</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />စနစ်နှင့် အက်ပ်အချက်အလက်<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />မက်ထရစ်များ<ph name="END_LINK2" /> ပို့ရန်</translation>
 <translation id="7763470514545477072">ဒိုမိန်းနောက်ဆက် ကိုက်ညီမှု</translation>
 <translation id="7769672763586021400">မော်ဒယ်နံပါတ်</translation>
 <translation id="7784116172884276937">DNS ဆာဗာများ စနစ်ထည့်သွင်းမထားပါ</translation>
@@ -825,7 +824,6 @@
 <translation id="9082718469794970195">ဤဗီဒီယိုသုံးရန်</translation>
 <translation id="9087578468327036362">ဤမေးမြန်းချက်ကို အကြောင်းကြားရန်</translation>
 <translation id="9088306295921699330">လက်ရှိ အသုံးပြုမှု</translation>
-<translation id="9092255287806472980">သင့်အကြံပြုချက်သည် Chrome OS ပိုမိုကောင်းမွန်စေရန် ကူညီပေးနိုင်ပြီး ၎င်းကို ကျွန်ုပ်တို့အဖွဲ့က စိစစ်ပါမည်။ အကြောင်းကြားချက်ပေးပို့မှု အလွန်များသဖြင့် အကြောင်းပြန်နိုင်မည် မဟုတ်ပါ။</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> အတွက် လက်မှတ်ကို ပြန်လည်စတင်ပါ</translation>
 <translation id="9106415115617144481">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်</translation>

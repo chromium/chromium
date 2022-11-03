@@ -1372,6 +1372,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili utafsiri ukurasa huu kwa kutumia Google Tafsiri</translation>
 <translation id="4514308731478712184">Zima kipengele cha Ziara</translation>
 <translation id="4515275063822566619">Kadi na anwani zinatoka Chrome na Akaunti yako ya Google (<ph name="ACCOUNT_EMAIL" />). Unaweza kuzidhibiti katika <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Sera ya msimamizi inazuia kupakua faili hii</translation>
 <translation id="4521157617044179198">Milimita <ph name="WIDTH" /> kwa <ph name="HEIGHT" /> (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Bahasha ya muundo wa Monarch</translation>
 <translation id="4521916730539354575">Trei ya Kushoto</translation>
@@ -1385,7 +1386,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4542971377163063093">Trei ya sita</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Jaribu kuzima viendelezi vyako.</translation>
-<translation id="4559134504959026834">Tovuti hii ipo katika kikundi, kilichobainishwa na <ph name="SET_OWNER" />, ambacho kinaweza kuona shughuli zako</translation>
 <translation id="4566017918361049074">Nje</translation>
 <translation id="4567686777917670400">Msimamizi wako anaweza kubadilisha mipangilio ya kivinjari chako akiwa mbali. Huenda pia shughuli kwenye kifaa hiki zikadhibitiwa nje ya Chromium. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Usafirishaji</translation>
@@ -2363,6 +2363,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Haiwezi kusafirisha kwenda kwenye anwani hii. Chagua anwani tofauti.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Upakiaji umezuiwa</translation>
 <translation id="7132939140423847331">Msimamizi wako amezuia data hii isinakiliwe.</translation>
 <translation id="7135130955892390533">Onyesha hali</translation>
 <translation id="7138472120740807366">Njia ya kusafirisha</translation>
@@ -2591,6 +2592,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7659327900411729175">Bahasha ya muundo wa Kaku ya ukubwa wa 8</translation>
 <translation id="7659878911471462949">Machozi ya Furaha</translation>
+<translation id="766014026101194726">{0,plural, =1{Sera ya msimamizi inazuia kupakia faili hii}other{Sera ya msimamizi inazuia kupakia faili #}}</translation>
 <translation id="7662298039739062396">Mipangilio inadhibitiwa na kiendelezi</translation>
 <translation id="7663736086183791259">Cheti <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Hairuhusiwi katika hali fiche</translation>
@@ -2685,6 +2687,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7939744324936979484">Muziki wa jadi na asili</translation>
 <translation id="7941628148012649605">Bahasha ya muundo wa Chou ya ukubwa wa 4</translation>
 <translation id="7942349550061667556">Nyekundu</translation>
+<translation id="7943397946612013052">Upakuaji umezuiwa</translation>
 <translation id="7943893128817522649">Inaweza kuomba ruhusa ya kupakua faili nyingi kiotomatiki</translation>
 <translation id="7947285636476623132">Angalia mwaka kuisha kwa muda wa matumizi halafu ujajibu tena</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili upate maelezo kuhusu vipengele vya Chrome</translation>

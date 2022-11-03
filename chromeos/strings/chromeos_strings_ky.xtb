@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
 <translation id="2163937499206714165">Караңгы теманы күйгүзүү</translation>
 <translation id="2180197493692062006">Бир жерден ката кетти. Колдонмону кайрадан ачып көрүңүз.</translation>
-<translation id="2182088270354640012">Сын-пикириңиз үчүн чоң рахмат. Пикириңиз Chrome OS'ту жакшыртууга жардам берип, Chrome OS жамааты тарабынан каралып чыгат. Кабарлар көп тапшырылгандыктан, ар бирине жооп жаза албайбыз.</translation>
 <translation id="2209788852729124853">Трафикти эсептегичтерди баштапкы абалга келтирүү</translation>
 <translation id="2212733584906323460">Аталышын чечмелөө</translation>
 <translation id="2217935453350629363">Учурдагы ылдамдык</translation>
@@ -689,7 +688,6 @@
 <translation id="773153675489693198">Циклдердин саны</translation>
 <translation id="7747039790905080783">Алдын ала бөлүшүлгөн ачкыч</translation>
 <translation id="7762130827864645708">Сырсөзүңүз өзгөрдү. Мындан кийин жаңы сырсөздү колдонуңуз.</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Тутум жана колдонмо тууралуу маалыматты<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />көрсөткүчтөрдү<ph name="END_LINK2" /> жөнөтүү</translation>
 <translation id="7763470514545477072">Домен суффиксине окшош</translation>
 <translation id="7769672763586021400">Үлгү ID'си</translation>
 <translation id="7784116172884276937">DNS серверлери туураланган жок</translation>
@@ -826,7 +824,6 @@
 <translation id="9082718469794970195">Ушул видеону колдонуу</translation>
 <translation id="9087578468327036362">Бул сурам тууралуу кабарлоо</translation>
 <translation id="9088306295921699330">Учурдагы колдонулушу</translation>
-<translation id="9092255287806472980">Пикириңиз Chrome OS'ту жакшыртууга жардам берип, жамаатыбыз тарабынан каралып чыгат. Кабарлардын көп болгонуна байланыштуу жооп жаза албайбыз.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>

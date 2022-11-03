@@ -198,7 +198,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1174366174291287894">Tengingin þín er alltaf örugg nema Chrome taki annað fram</translation>
 <translation id="117445914942805388">Til að hreinsa vafragögn úr öllum samstilltum tækjum og af Google reikningnum þínum skaltu <ph name="BEGIN_LINK" />skoða samstillingarkosti<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Prenta...</translation>
-<translation id="1176378369905028399">Aðgangsorð fyrir þennan reikning er nú þegar geymt í Google aðgangsorðastjórnun (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Mega ekki breyta skrám og möppum í tækinu</translation>
 <translation id="1177863135347784049">Sérsniðið</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
@@ -410,6 +409,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1388253969141979417">Mega nota hljóðnemann</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> mun endurræsast að uppfærslum loknum.</translation>
 <translation id="1389601498324964367">Kvótastýrt geymslurými</translation>
+<translation id="1390113502208199250">Þú þarft að núllstilla tækið til að nota eiginleika Chrome Education-uppfærslu.</translation>
 <translation id="139013308650923562">Mega nota leturgerðir sem eru uppsettar í tækinu þínu</translation>
 <translation id="1390548061267426325">Opna sem venjulegan flipa</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> hefur ekki heimild til að prenta út með <ph name="PRINTER_NAME" />. Hafðu samband við kerfisstjórann.</translation>
@@ -480,6 +480,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1436784010935106834">Fjarlægð</translation>
 <translation id="1437986450143295708">Lýstu vandamálinu í smáatriðum</translation>
 <translation id="1439671507542716852">langtímastuðningur</translation>
+<translation id="1440090277117135316">Skólaskráningu lokið</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> valin</translation>
 <translation id="1442851588227551435">Stilla virkan Kerberos miða</translation>
 <translation id="1444628761356461360">Eigandi tækisins, <ph name="OWNER_EMAIL" />, stjórnar þessari stillingu.</translation>
@@ -1836,7 +1837,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2643698698624765890">Stjórnaðu viðbótunum þínum með því að smella á Viðbætur í gluggavalmyndinni.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> hefur umsjón með tækinu þínu</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Aðgangsorð fyrir þennan reikning er nú þegar geymt í tækinu</translation>
 <translation id="2649045351178520408">Base64-kóðað ASCII, vottorðakeðja</translation>
 <translation id="2652129567809778422">Velja aðgangsorð</translation>
 <translation id="2653033005692233957">Leit mistókst</translation>
@@ -2411,6 +2411,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3170072451822350649">Þú getur líka sleppt því að skrá þig inn og verið <ph name="LINK_START" />gestanotandi<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nýr flipi vinstra megin</translation>
 <translation id="3177909033752230686">Tungumál síðu:</translation>
+<translation id="3177914167275935955">Tækið þitt er með Chrome Education-uppfærslu en notandanafnið þitt er ekki tengt við Google for Education-reikning. Stofnaðu Google for Education-reikning með því að opna g.co/workspace/edusignup í öðru tæki.</translation>
 <translation id="3179982752812949580">Leturgerð texta</translation>
 <translation id="3181954750937456830">Örugg vefnotkun (verndar þig og tækið þitt fyrir hættulegum vefsvæðum)</translation>
 <translation id="3182749001423093222">Villuleit</translation>
@@ -2625,7 +2626,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3399432415385675819">Tilkynningar verða gerðar óvirkar</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> herts) – samfléttað</translation>
 <translation id="3401484564516348917">Lestu upplýsingar um vafrann, stýrikerfið, tækið, uppsettan hugbúnað, stýriskáargildi og skýrslur</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} aðgangsorð er geymt í þessu tæki}one{{COUNT} aðgangsorð er geymt í þessu tæki}other{{COUNT} aðgangsorð eru geymd í þessu tæki}}</translation>
 <translation id="3402255108239926910">Veldu notandamynd</translation>
 <translation id="3402585168444815892">Skráning í prufustillingu</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4081,6 +4081,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4762489666082647806">Litur bendils</translation>
 <translation id="4762718786438001384">Allt of lítið geymslupláss er eftir á tækinu</translation>
 <translation id="4763408175235639573">Eftirfarandi fótspor voru vistuð þegar þú skoðaðir þessa síðu</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> er ekki gildur Google for Education-reikningur. Hafðu samband við stjórnandann þinn. Ef þú ert stjórnandi geturðu sett upp fyrirtækið þitt á: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Þetta tæki verður vistað í 1 mánuð og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}one{Þetta tæki verður vistað í {MONTHS} mánuð og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}other{Þetta tæki verður vistað í {MONTHS} mánuði og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}}</translation>
 <translation id="4765582662863429759">Leyfir Android Messages að áframsenda skilaboð úr símanum þínum í Chromebook tækið þitt</translation>
 <translation id="4766598565665644999">Allar viðbætur mega lesa og breyta <ph name="HOST" /></translation>
@@ -4725,7 +4726,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5392192690789334093">Mega senda tilkynningar</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Tengill}one{# tengill}other{# tenglar}}</translation>
 <translation id="5395498824851198390">Sjálfgefin leturgerð</translation>
-<translation id="5396325212236512832">Skráðu þig sjálfkrafa inn á vefsvæði og forrit með vistuðum skilríkjum. Þú verður beðin(n) um staðfestingu í hvert sinn sem þú skráir þig inn á vefsvæði eða forrit ef slökkt er á þessu.</translation>
 <translation id="5397378439569041789">Skrá tæki í sjálfsala- eða merkingastillingu</translation>
 <translation id="5397794290049113714">Þú</translation>
 <translation id="5398497406011404839">Falin bókamerki</translation>
@@ -4742,6 +4742,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5407167491482639988">Óskýrt</translation>
 <translation id="5408750356094797285">Aðdráttur: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Af Google reikningnum þínum</translation>
+<translation id="5411022484772257615">Ekki tókst að ljúka við skólaskráningu</translation>
 <translation id="5413640305322530561">Nánar um greiningar- og notkunargögn</translation>
 <translation id="5414198321558177633">Endurnýjar prófílalista. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="5414566801737831689">Lesa tákn vefsvæðanna sem þú heimsækir</translation>
@@ -5527,6 +5528,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6129953537138746214">Bil</translation>
 <translation id="6130692320435119637">Bæta Wi-Fi við</translation>
 <translation id="6130887916931372608">Lykill á lyklaborði</translation>
+<translation id="6132714462430777655">Sleppa skólaskráningu?</translation>
 <translation id="6135823405800500595">Gakktu úr skugga um að síminn sé nálægt þér, ólæstur og með kveikt á Bluetooth og Wi-Fi</translation>
 <translation id="6135826623269483856">Ekki leyft að stjórna gluggum á öllum skjáum</translation>
 <translation id="6136114942382973861">Loka niðurhalsstiku</translation>
@@ -6060,7 +6062,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6647441008198474441">Vefslóðir sem þú opnar eru sendar til Google til að spá fyrir um hvaða vefsvæði þú kannt að opna næst</translation>
 <translation id="6648911618876616409">Áríðandi uppfærsla bíður uppsetningar. Skráðu þig inn til að hefjast handa.</translation>
 <translation id="6649018507441623493">Augnablik...</translation>
-<translation id="6650234781371031356">Aðgangsorðið fyrir <ph name="WEBSITE" /> er vistað í þessu tæki og á Google reikningnum þínum. Hvoru þeirra viltu eyða?</translation>
 <translation id="665061930738760572">Opna í &amp;nýjum glugga</translation>
 <translation id="6651237644330755633">Treysta þessu vottorði til að auðkenna vefsvæði</translation>
 <translation id="6651495917527016072">Samstilltu Wi-Fi net við símann þinn. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -6749,6 +6750,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7310598146671372464">Ekki tókst að skrá þig inn. Þjónninn styður ekki Kerberos-dulkóðunargerðirnar sem eru tilgreindar. Hafðu samband við kerfisstjóra.</translation>
 <translation id="7311089766378749632">Beiðni um að lesa og breyta <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Stjórnandinn er að endurstilla eSIM. Þetta gæti tekið nokkrar mínútur.</translation>
+<translation id="7317831949569936035">Skólaskráning</translation>
 <translation id="7320213904474460808">Sjálfgefið eftir netkerfi</translation>
 <translation id="7321545336522791733">Ekki næst í þjón</translation>
 <translation id="7323315405936922211">Stærð bendilssvæðis</translation>

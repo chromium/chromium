@@ -641,7 +641,6 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="4566144812051858745">ບໍ່ສົນໃຈການແນະນຳໃດໆ</translation>
-<translation id="4570957409596482333">ປຸ່ມເລືອກເພື່ອເວົ້າ</translation>
 <translation id="4573176682887762361">"ພິມ [ຄຳສັບ / ວະລີ]"</translation>
 <translation id="4577274620589681794">ໝົດເວລາແລ້ວ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ສະແດງຕົວຢ່າງ</translation>
@@ -1310,6 +1309,7 @@
 <translation id="8297006494302853456">ອ່ອນ</translation>
 <translation id="8308637677604853869">ເມ​ນູ​ຜ່ານ​ມາ</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8314772463905284467">Caps Lock ເປີດຢູ່</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">ເລືອກໜ້າຈໍ <ph name="WINDOW_TITLE" /> ແລ້ວ</translation>
 <translation id="8351131234907093545">ສ້າງບັນທຶກ</translation>

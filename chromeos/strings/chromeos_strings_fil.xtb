@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Kanselahin ang pag-print</translation>
 <translation id="2163937499206714165">I-on ang dark mode</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
-<translation id="2182088270354640012">Salamat sa feedback. Tumutulong ang iyong feedback na pahusayin ang Chrome OS at susuriin ito ng Chrome OS team. Dahil sa dami ng ulat na isinumite, hindi ka makakatanggap ng direktang pagsagot.</translation>
 <translation id="2209788852729124853">I-reset ang Mga Traffic Counter</translation>
 <translation id="2212733584906323460">Name Resolution</translation>
 <translation id="2217935453350629363">Kasalukuyang bilis</translation>
@@ -628,6 +627,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nabigo - Hindi Nabigyan ng Pahintulot</translation>
 <translation id="7103252855940681301">Device <ph name="INDEX" /> sa <ph name="COUNT" /> na nagngangalang <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Access point name (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}one{Mga name server}other{Mga name server}}</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
@@ -689,7 +689,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="773153675489693198">Bilang ng cycke</translation>
 <translation id="7747039790905080783">Preshared key</translation>
 <translation id="7762130827864645708">Matagumpay ang iyong pagpapalit ng password. Pakigamit ang bagong password mula ngayon.</translation>
-<translation id="7762839321248874531">Ipadala ang <ph name="BEGIN_LINK1" />impormasyon ng system at app<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />mga sukatan<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Pagtugma sa domain suffix</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7784116172884276937">Walang naka-set up na DNS server</translation>
@@ -826,7 +825,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="9082718469794970195">Gamitin ang video na ito</translation>
 <translation id="9087578468327036362">Iulat ang query na ito</translation>
 <translation id="9088306295921699330">Kasalukuyang paggamit</translation>
-<translation id="9092255287806472980">Tumutulong ang iyong feedback na pahusayin ang Chrome OS at susuriin ito ng aming team. Dahil sa napakaraming ulat, hindi kami makakapagpadala ng sagot.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">I-refresh ang ticket para sa <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Sina-scan ang pahina <ph name="PAGE_NUMBER" /></translation>

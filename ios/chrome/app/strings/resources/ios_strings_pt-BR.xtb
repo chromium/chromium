@@ -140,7 +140,6 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2080769225927880590">Faça login com uma conta válida</translation>
-<translation id="209018056901015185">Versão para computador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens movidos</translation>
 <translation id="2122754583996902531">Seu navegador é gerenciado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -387,7 +386,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3995521777587992544">Barra de progresso do carregamento de página, <ph name="EMAIL" /> carregada.</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">As senhas são salvas na sua Conta do Google para que você possa usá-las em qualquer dispositivo.</translation>
-<translation id="4006921758705478413">Enviar para seus dispositivos</translation>
 <translation id="4018310736049373830">Gerenciar atividade</translation>
 <translation id="4038354071007134711">Nenhum app deste dispositivo pode abrir o arquivo.</translation>
 <translation id="4042870976416480368">Buscar na página</translation>
@@ -822,7 +820,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A câmera não está disponível</translation>
 <translation id="7153999225810839758">Tempo de leitura: <ph name="TIME" />min</translation>
-<translation id="7159472599653637159">Solicitar um site móvel</translation>
 <translation id="7162168282402939716">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Manter suas senhas protegidas contra problemas de segurança</translation>
 <translation id="7173114856073700355">Abrir "Configurações"</translation>
@@ -1068,7 +1065,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9124387962554796433">O Google pode usar seu histórico para personalizar a Pesquisa e outros Serviços do Google.</translation>
 <translation id="9137526406337347448">Serviços do Google</translation>
 <translation id="9148126808321036104">Faça login novamente</translation>
-<translation id="9152539721251340337">Criar um código QR</translation>
 <translation id="9157836665414082580">Bloquear caixas de diálogo</translation>
 <translation id="9177438225260810839">Pesquisar guias abertas</translation>
 <translation id="9188680907066685419">Sair da conta gerenciada</translation>

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
 <translation id="2180197493692062006">Xəta oldu. Tətbiqi yenidən açmağa çalışın.</translation>
-<translation id="2182088270354640012">Rəyiniz üçün təşəkkür edirik. Rəyiniz Chrome OS'i təkmilləşdirməyə kömək edir və Chrome OS komandası tərəfindən nəzərdən keçiriləcək. Təqdim olunan hesabatların çoxluğuna görə birbaşa cavab ala bilməyəcəksiniz.</translation>
 <translation id="2209788852729124853">Nəqliyyat Sayğaclarını sıfırlayın</translation>
 <translation id="2212733584906323460">Ad Həlli</translation>
 <translation id="2217935453350629363">Cari sürət</translation>
@@ -627,6 +626,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Alınmadı - Doğrulama Alınmadı</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> adlı cihaz <ph name="INDEX" />/<ph name="COUNT" />.</translation>
+<translation id="7130438335435247835">Giriş nöqtəsi adı (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
@@ -688,7 +688,6 @@
 <translation id="773153675489693198">Dövrə sayı</translation>
 <translation id="7747039790905080783">Öncədən paylaşılan açar</translation>
 <translation id="7762130827864645708">Parolunuz uğurla dəyişdirildi. Bundan sonra yeni paroldan istifadə edin.</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Sistem və tətbiq məlumatı<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />göstəriciləri<ph name="END_LINK2" /> göndərin</translation>
 <translation id="7763470514545477072">Domen sonluğunun uyğunluğu</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7784116172884276937">DNS serveri ayarlanmayıb</translation>
@@ -825,7 +824,6 @@
 <translation id="9082718469794970195">Bu videonu istifadə edin</translation>
 <translation id="9087578468327036362">Bu sorğunu bildirin</translation>
 <translation id="9088306295921699330">Cari istifadə</translation>
-<translation id="9092255287806472980">Rəyiniz Chrome OS'i təkmilləşdirməyə kömək edir və komandamız tərəfindən nəzərdən keçiriləcək. Çox sayda hesabat olduğu üçün cavab göndərə bilməyəcəyik.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> üçün bileti yeniləyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır</translation>

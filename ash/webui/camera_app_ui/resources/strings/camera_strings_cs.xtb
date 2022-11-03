@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Soubor <ph name="FILE" /> nelze exportovat</translation>
 <translation id="1899697626337024495">Rozlišení fotografií</translation>
 <translation id="1925845977604399247">Přejít do galerie</translation>
+<translation id="199526504800285197">Nahrávání bylo ukončeno</translation>
+<translation id="1995951722691075581">Nahrávání bylo ukončeno kvůli nedostatku místa v úložišti. Pokud chcete nahrát další videa, je třeba v zařízení uvolnit místo.</translation>
 <translation id="2022953316617983419">QR kód</translation>
 <translation id="2036868001356139588">Trvání časovače</translation>
 <translation id="2050339315714019657">Na výšku</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenovat čárový kód</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
+<translation id="4060608699153044055">Nahrávat nelze kvůli nedostatku místa v úložišti. Nejprve je třeba v zařízení uvolnit místo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pozastavit nahrávání</translation>
 <translation id="4121305183798804752">Byl zjištěn dokument</translation>
@@ -161,6 +164,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="7748344063862150053">Pravý horní roh dokumentu</translation>
 <translation id="7933675232020478311">Pohyb doprava dolů</translation>
 <translation id="7983668134180549431">Byl zjištěn text.</translation>
+<translation id="8079255378695216066">Nahrávání nelze zahájit</translation>
 <translation id="8120146556401698679">Posunutí, náklon, přiblížení</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8145038249676204903">Přepnout na focení</translation>

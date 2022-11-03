@@ -196,7 +196,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1174366174291287894">Vaše pripojenie je vždy bezpečné, pokiaľ vás Chrome neupozorní</translation>
 <translation id="117445914942805388">Ak chcete vymazať dáta prehliadania zo všetkých synchronizovaných zariadení a účtu Google, <ph name="BEGIN_LINK" />prejdite do nastavení synchronizácie<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Tlačiť...</translation>
-<translation id="1176378369905028399">Heslo tohto účtu je už uložené v Správcovi hesiel Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Nie je povolená úprava súborov ani priečinkov v zariadení</translation>
 <translation id="1177863135347784049">Vlastné</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
@@ -239,6 +238,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="121384500095351701">Tento súbor nie je možné bezpečne stiahnuť</translation>
 <translation id="1215411991991485844">Bola pridaná nová aplikácia na pozadí</translation>
 <translation id="1216542092748365687">Odstrániť odtlačok prsta</translation>
+<translation id="1216891999012841486">Ďalšie informácie o oprave chýb aktualizácie</translation>
 <translation id="1217114730239853757">Chcete aktivovať vstavanú čítačku obrazovky ChromeVox pre Chrome OS Flex? Ak áno, stlačte medzerník.</translation>
 <translation id="1217483152325416304">Vaše miestne údaje budú čoskoro odstránené</translation>
 <translation id="1217668622537098248">Po akcii sa vrátiť na kliknutie ľavým tlačidlom myši</translation>
@@ -1824,7 +1824,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2643698698624765890">Ak chcete spravovať rozšírenia, kliknite na možnosť Rozšírenia v ponuke Okno.</translation>
 <translation id="2645047101481282803">Vaše zariadenie spravuje <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Heslo tohto účtu je už v tomto zariadení uložené</translation>
 <translation id="2649045351178520408">ASCII s kódovaním Base64, certifikačná reťaz</translation>
 <translation id="2652129567809778422">Vyberte heslo</translation>
 <translation id="2653033005692233957">Nepodarilo sa vyhľadať</translation>
@@ -2614,7 +2613,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3399432415385675819">Upozornenia budú zakázané</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – prekladané</translation>
 <translation id="3401484564516348917">Čítanie informácií o prehliadači, operačnom systéme, zariadení, nainštalovanom softvéri, hodnotách databázy Registry a súboroch</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{V tomto zariadení je uložené {COUNT} heslo}few{V tomto zariadení sú uložené {COUNT} heslá}many{{COUNT} passwords are stored on this device}other{V tomto zariadení je uložených {COUNT} hesiel}}</translation>
 <translation id="3402255108239926910">Vyberte si avatar</translation>
 <translation id="3402585168444815892">Prebieha registrácia do ukážkového režimu</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4714,7 +4712,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5392192690789334093">Môže odosielať upozornenia</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Odkaz}few{# odkazy}many{# links}other{# odkazov}}</translation>
 <translation id="5395498824851198390">Predvolené písmo</translation>
-<translation id="5396325212236512832">Automaticky sa prihlasujte na weboch a v aplikáciách uloženými prihlasovacími údajmi. Ak túto funkciu vypnete, pred každým prihlásením na webe alebo v aplikácii sa vám bude zobrazovať výzva na ich potvrdenie.</translation>
 <translation id="5397378439569041789">Registrovať zariadenie v režime verejného terminálu alebo zariadenie so softvérom digital signage</translation>
 <translation id="5397794290049113714">Vy</translation>
 <translation id="5398497406011404839">Skryté záložky</translation>
@@ -4983,6 +4980,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5632059346822207074">Vyžaduje sa povolenie, reagujte stlačením klávesov Ctrl + Ďalej</translation>
 <translation id="5632566673632479864">Účet <ph name="EMAIL" /> už nemôžete použiť ako hlavný účet. Keďže tento účet spravuje doména <ph name="DOMAIN" />, budú z tohto zariadenia vymazané vaše záložky, história, heslá a ďalšie nastavenia.</translation>
 <translation id="5632592977009207922">Sťahuje sa, zostáva <ph name="PERCENT_REMAINING" /> %</translation>
+<translation id="5633149627228920745">Ďalšie informácie o systémových požiadavkách</translation>
 <translation id="563371367637259496">Mobilná</translation>
 <translation id="5634446357546764049">Pozrite si spomienky z nedávnych ciest a viac</translation>
 <translation id="5635312199252507107">Povoliť na konkrétnych weboch</translation>
@@ -6053,7 +6051,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6647441008198474441">Webové adresy, ktoré navštevujete, sa odosielajú Googlu, aby mohol vytvárať predpokladané dopyty webov, ktoré pravdepodobne navštívite</translation>
 <translation id="6648911618876616409">K dispozícii na inštaláciu je kritická aktualizácia. Prihláste sa a spustite ju.</translation>
 <translation id="6649018507441623493">Moment...</translation>
-<translation id="6650234781371031356">Heslo pre web <ph name="WEBSITE" /> máte uložené v tomto zariadení aj účte Google. Ktoré chcete odstrániť?</translation>
 <translation id="665061930738760572">Otvoriť v &amp;novom okne</translation>
 <translation id="6651237644330755633">Dôverovať tomuto certifikátu na identifikáciu webových stránok</translation>
 <translation id="6651495917527016072">Synchronizujte siete Wi‑Fi so svojím telefónom. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -8338,6 +8335,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8785622406424941542">Dotykové pero</translation>
 <translation id="8786824282808281903">Keď sa dieťaťu zobrazí táto ikona, bude možné na identifikáciu alebo schválenie nákupov použiť odtlačok prsta.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Skupina bez názvu – 1 karta}few{Skupina bez názvu – # karty}many{Unnamed Group - # Tabs}other{Skupina bez názvu – # kariet}}</translation>
+<translation id="8791157330927639737">Ďalšie informácie o aktualizovaní</translation>
 <translation id="8791534160414513928">Posielať pri prehliadaní webov požiadavku Do Not Track</translation>
 <translation id="879413103056696865">Keď je hotspot zapnutý, telefón <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nové okno</translation>

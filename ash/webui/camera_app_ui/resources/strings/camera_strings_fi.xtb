@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Vienti epäonnistui: <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Kuvaresoluutio</translation>
 <translation id="1925845977604399247">Siirry galleriaan</translation>
+<translation id="199526504800285197">Tallennus on päättynyt</translation>
+<translation id="1995951722691075581">Tallennus päättyi, koska laitteen tallennustila on vähissä. Sinun on vapautettava tilaa laitteelta, jotta voit tallentaa lisää videoita.</translation>
 <translation id="2022953316617983419">QR-koodi</translation>
 <translation id="2036868001356139588">Ajastimen kesto</translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
@@ -77,6 +79,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skannaa viivakoodi</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>
+<translation id="4060608699153044055">Et voi tallentaa, koska laitteen tallennustila on vähissä. Sinun on vapautettava tilaa laitteelta, jotta voit aloittaa tallennuksen.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Keskeytä tallennus</translation>
 <translation id="4121305183798804752">Dokumentti havaittiin</translation>
@@ -160,6 +163,7 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="7748344063862150053">Dokumentin oikea yläkulma</translation>
 <translation id="7933675232020478311">Siirretään alaoikealla</translation>
 <translation id="7983668134180549431">Tekstiä havaittu.</translation>
+<translation id="8079255378695216066">Tallennusta ei voi aloittaa</translation>
 <translation id="8120146556401698679">Panoroi kallista zoomaa</translation>
 <translation id="8131740175452115882">Vahvista</translation>
 <translation id="8145038249676204903">Vaihda kuvan ottamiseen</translation>

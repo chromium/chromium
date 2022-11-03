@@ -198,7 +198,6 @@
 <translation id="1174366174291287894">Chrome तुम्हाला सांगत नाही तोपर्यंत तुमचे कनेक्शन नेहमी सुरक्षित असते</translation>
 <translation id="117445914942805388">तुमच्या सिंक केलेल्या सर्व डिव्हाइसमधून आणि तुमच्या Google खात्यामधून ब्राउझ केलेला डेटा साफ करण्यासाठी, <ph name="BEGIN_LINK" />सिंक सेटिंग्जला भेट द्या<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;मुद्रण...</translation>
-<translation id="1176378369905028399">या खात्याचा पासवर्ड आधीपासून तुमच्या Google Password Manager (<ph name="USER_EMAIL" />) मध्ये स्टोअर केला आहे</translation>
 <translation id="1176471985365269981">तुमच्या डिव्हाइसवरील फाइल किंवा फोल्डर संपादित करण्याची अनुमती नाही</translation>
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
@@ -239,6 +238,7 @@
 <translation id="121384500095351701">ही फाइल सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही</translation>
 <translation id="1215411991991485844">नवीन पार्श्वभूमी ॲप्लिकेशन जोडला</translation>
 <translation id="1216542092748365687">फिंगरप्रिंट काढा</translation>
+<translation id="1216891999012841486">अपडेटशी संबंधित एररचे निराकरण करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="1217114730239853757">तुम्हाला ChromeOS Flex साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का? करायचे असल्यास, स्पेस बार दाबा.</translation>
 <translation id="1217483152325416304">तुमचा स्थानिक डेटा लवकरच हटवला जाईल</translation>
 <translation id="1217668622537098248">क्रिया केल्यानंतर डाव्या क्लिकवर परत जा</translation>
@@ -409,6 +409,7 @@
 <translation id="1388253969141979417">तुमचा मायक्रोफोन वापरण्याची अनुमती आहे</translation>
 <translation id="1388728792929436380">अपडेट पूर्ण झाल्यावर <ph name="DEVICE_TYPE" /> रीस्टार्ट होईल.</translation>
 <translation id="1389601498324964367">कोट्याद्वारे व्यवस्थापित स्टोरेज</translation>
+<translation id="1390113502208199250">Chrome Education अपग्रेड वैशिष्ट्ये वापरण्यासाठी तुम्हाला हे डिव्हाइस फॅक्टरी रीसेट करावे लागेल.</translation>
 <translation id="139013308650923562">तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्याची अनुमती द्या</translation>
 <translation id="1390548061267426325">नियमित टॅब म्हणून उघडा</translation>
 <translation id="1390907927270446471"><ph name="PRINTER_NAME" /> वर प्रिंट करण्यासाठी<ph name="PROFILE_USERNAME" /> ना परवानगी नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
@@ -479,6 +480,7 @@
 <translation id="1436784010935106834">काढली</translation>
 <translation id="1437986450143295708">समस्येचे तपशीलवार वर्णन करा</translation>
 <translation id="1439671507542716852">दीर्घकालीन सपोर्ट</translation>
+<translation id="1440090277117135316">शाळेशी संबंधित नोंदणी पूर्ण झाली आहे</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> निवडले</translation>
 <translation id="1442851588227551435">अ‍ॅक्टिव्ह Kerberos तिकीट सेट करा</translation>
 <translation id="1444628761356461360">ही सेटिंग डिव्हाइस मालक, <ph name="OWNER_EMAIL" /> द्वारे व्यवस्थापित केली आहे.</translation>
@@ -1834,7 +1836,6 @@
 <translation id="2643698698624765890">विंडो मेनूमध्‍ये विस्तारांवर क्लिक करुन ‍तुमचे विस्तार व्यवस्थापित करा.</translation>
 <translation id="2645047101481282803">तुमचे डिव्हाइस <ph name="PROFILE_NAME" /> द्वारे व्यवस्थापित केले आहे</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">या खात्याचा पासवर्ड आधीपासून या डिव्हाइसवर स्टोअर केला आहे</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, सर्टिफिकेट श्रृंखला</translation>
 <translation id="2652129567809778422">पासवर्ड निवडा</translation>
 <translation id="2653033005692233957">शोधता आले नाही</translation>
@@ -1952,6 +1953,7 @@
 <translation id="274318651891194348">कीबोर्ड शोधत आहे</translation>
 <translation id="2743301740238894839">सुरू करा</translation>
 <translation id="2743387203779672305">क्लिपबोर्डवर कॉपी करा</translation>
+<translation id="274362947316498129">अ‍ॅप <ph name="DEVICE_NAME" /> अ‍ॅक्सेस करण्याचा प्रयत्न करत आहे. अ‍ॅक्सेसला अनुमती देण्यासाठी <ph name="DEVICE_NAME" /> चा गोपनीयता स्विच बंद करा.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> मध्ये साइन इन करा</translation>
 <translation id="2749836841884031656">सिम</translation>
@@ -2408,6 +2410,7 @@
 <translation id="3170072451822350649">तुम्ही साइन इन वगळुन <ph name="LINK_START" />अतिथी म्हणून ब्राउझ<ph name="LINK_END" /> देखील करू शकता.</translation>
 <translation id="31774765611822736">डावीकडील नवीन टॅब</translation>
 <translation id="3177909033752230686">पृष्ठ भाषा:</translation>
+<translation id="3177914167275935955">तुमच्या डिव्हाइसमध्ये Chrome Education अपग्रेड याचा समावेश आहे, पण तुमचे वापरकर्ता नाव हे Google for Education खात्याशी संबंधित नाही. कृपया दुय्यम डिव्हाइसवर g.co/workspace/edusignup ला भेट देऊन Google for Education खाते तयार करा.</translation>
 <translation id="3179982752812949580">मजकुराचा फाँट</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउझिंग (तुम्हाला आणि तुमच्या डिव्हाइसना धोकादायक साइटपासून सुरक्षित ठेवते)</translation>
 <translation id="3182749001423093222">स्पेल चेक</translation>
@@ -2622,7 +2625,6 @@
 <translation id="3399432415385675819">सूचना बंद केल्या जातील</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - हस्तक्षेप केला</translation>
 <translation id="3401484564516348917">तुमचा ब्राउझर, OS, डिव्हाइस, इंस्टॉल केलेले सॉफ्टवेअर, नोंदणी मूल्ये आणि फाइल याविषयीची माहिती वाचा</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{या डिव्हाइसवर {COUNT} पासवर्ड स्टोअर केला आहे}other{या डिव्हाइसवर {COUNT} पासवर्ड स्टोअर केले आहेत}}</translation>
 <translation id="3402255108239926910">अवतार निवडा</translation>
 <translation id="3402585168444815892">डेमो मोड मध्ये नोंदणी करत आहे</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3121,6 +3123,7 @@
 <translation id="385051799172605136">मागील</translation>
 <translation id="3851428669031642514">असुरक्षित स्क्रिप्ट लोड करा</translation>
 <translation id="3852215160863921508">इनपुट साहाय्य</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" /> सुरू केला आहे</translation>
 <translation id="3854599674806204102">पर्याय निवडा</translation>
 <translation id="3854967233147778866">वेबसाइटचे दुसर्‍या भाषांमध्ये भाषांतर करण्याची ऑफर</translation>
 <translation id="3854976556788175030">आउटपुट ट्रे भरला आहे</translation>
@@ -3452,6 +3455,7 @@
 <translation id="4163560723127662357">अज्ञात कीबोर्ड</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> हा कोणत्याही नोंदणीकृत संस्थेशी संबंधित नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. तुम्ही ॲडमिनिस्ट्रेटर असल्यास, पुढील लिंकला भेट देऊन तुमची संस्था सेट करू शकता: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" /> हे <ph name="DEVICE_NAME" /> अ‍ॅक्सेस करण्याचा प्रयत्न करत आहे. अ‍ॅक्सेसला अनुमती देण्यासाठी <ph name="DEVICE_NAME" /> चा गोपनीयता स्विच बंद करा.</translation>
 <translation id="4167393659000039775">कोणत्याही डेटाच्या नुकसानासाठी Google जबाबदार नाही आणि <ph name="DEVICE_OS" /> हे कदाचित अप्रमाणित मॉडेलवर काम करणार नाही. g.co/flex/InstallGuide येथे अधिक जाणून घ्या.</translation>
 <translation id="4167686856635546851">व्हिडिओ गेम किंवा वेब फॉर्म यांसारखी सुसंवादी वैशिष्ट्ये दाखवण्यासाठी साइट सामान्यपणे JavaScript वापरतात</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> च्या मालकीच्या काही सेटिंग्जतुमच्याशी शेअर केल्या जात आहेत. एकाधिक साइन इन वापरताना या सेटिंग्ज फक्त तुम्हाला खात्यावर प्रभाव करतात.</translation>
@@ -3914,6 +3918,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ला एरर आली</translation>
 <translation id="4610637590575890427">तुम्हाला <ph name="SITE" /> कडे जायचे असे म्हणायचे होते काय?</translation>
 <translation id="4611114513649582138">डेटा कनेक्शन उपलब्ध आहे</translation>
+<translation id="4612841084470706111">सर्व विनंती केलेल्या साइटचा अ‍ॅक्सेस द्या.</translation>
 <translation id="4613144866899789710">Linux चे इंस्टॉलेशन रद्द करत आहे…</translation>
 <translation id="4613271546271159013">तुम्ही नवीन टॅब उघडता तेव्हा कोणते पेज दर्शविले जाते हे एक्स्टेंशनने बदलले आहे.</translation>
 <translation id="4615586811063744755">कोणत्याही कुकीज निवडलेल्या नाही</translation>
@@ -4073,6 +4078,7 @@
 <translation id="4762489666082647806">पॉइंटरचा रंग</translation>
 <translation id="4762718786438001384">डिव्हाइस डिस्क स्थान खूपच कमी आहे</translation>
 <translation id="4763408175235639573">तुम्ही हे पेज पाहिले तेव्हा पुढील कुकीज सेट केल्या गेल्या</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> हे वैध Google for Education खाते नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. तुम्ही ॲडमिनिस्ट्रेटर असल्यास, पुढील लिंकला भेट देऊन तुमची संस्था सेट करू शकता: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{हे डिव्हाइस एका महिन्यासाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}other{हे डिव्हाइस {MONTHS} महिन्यांसाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}}</translation>
 <translation id="4765582662863429759">Android Messages ला तुमच्या फोनवरून तुमच्या Chromebook मध्ये एसएमएस रीले करण्याची अनुमती देते</translation>
 <translation id="4766598565665644999">सर्व एक्स्टेंशन <ph name="HOST" /> रीड करू शकतात आणि बदलू शकतात</translation>
@@ -4717,7 +4723,6 @@
 <translation id="5392192690789334093">सूचना पाठवण्याची अनुमती आहे</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{लिंक}other{# लिंक}}</translation>
 <translation id="5395498824851198390">डीफॉल्ट फॉंट</translation>
-<translation id="5396325212236512832">स्टोअर केलेली क्रेडेंशियल वापरून साइट आणि अ‍ॅप्समध्ये आपोआप साइन इन करा. तुम्ही ते बंद केल्यास, तुम्ही साइट किंवा अ‍ॅपमध्ये साइन इन करण्यापूर्वी तुम्हाला प्रत्येक वेळी कंफर्मेशनसाठी विचारले जाईल.</translation>
 <translation id="5397378439569041789">कियोस्क किंवा सायनेज डिव्हाइसची नोंदणी करा</translation>
 <translation id="5397794290049113714">तुम्ही</translation>
 <translation id="5398497406011404839">लपवलेले बुकमार्क</translation>
@@ -4734,6 +4739,7 @@
 <translation id="5407167491482639988">समजण्यास अवघड आहे</translation>
 <translation id="5408750356094797285">झूम करा: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">तुमच्या Google खाते मधून</translation>
+<translation id="5411022484772257615">शाळेशी संबंधित नोंदणी पूर्ण करता आली नाही</translation>
 <translation id="5413640305322530561">निदान आणि वापर डेटा याबद्दल अधिक जाणून घ्या</translation>
 <translation id="5414198321558177633">प्रोफाइल सूची रिफ्रेश करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="5414566801737831689">तुम्ही भेट देता त्या वेबसाइटची चिन्हे वाचा</translation>
@@ -4985,6 +4991,7 @@
 <translation id="5632059346822207074">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी Ctrl + Forward दाबा</translation>
 <translation id="5632566673632479864">तुमच्या <ph name="EMAIL" /> खात्याला यापुढे प्राथमिक खाते म्हणून अनुमती नाही. हे खाते <ph name="DOMAIN" /> ने व्यवस्थापित केले असल्याने, तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज या डिव्हाइस वरून साफ केले जाईल.</translation>
 <translation id="5632592977009207922">डाउनलोड करत आहे, <ph name="PERCENT_REMAINING" />% शिल्लक</translation>
+<translation id="5633149627228920745">सिस्टीमशी संबंधित आवश्यकतांबद्दल अधिक जाणून घ्या</translation>
 <translation id="563371367637259496">मोबाइल</translation>
 <translation id="5634446357546764049">तुमच्या अलीकडील प्रवासांच्या आणि आणखी बऱ्याच गोष्टींच्या आठवणी पहा</translation>
 <translation id="5635312199252507107">विशिष्ट साइटवर अनुमती द्या</translation>
@@ -5520,6 +5527,7 @@
 <translation id="6129953537138746214">जागा</translation>
 <translation id="6130692320435119637">वाय-फाय जोडा</translation>
 <translation id="6130887916931372608">कीबोर्ड की</translation>
+<translation id="6132714462430777655">शाळेशी संबंधित नोंदणी वगळायची आहे का?</translation>
 <translation id="6135823405800500595">तुमचा फोन जवळ आहे, अनलॉक केलेला आहे आणि ब्लूटूथ व वाय-फाय सुरू आहे, याची खात्री करा</translation>
 <translation id="6135826623269483856">तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची परवानगी नाही</translation>
 <translation id="6136114942382973861">डाउनलोड बार बंद करा</translation>
@@ -5678,6 +5686,7 @@
 <translation id="6291949900244949761">साइटला केव्हा USB डिव्हाइस ॲक्सेस करायचे आहेत हे विचारा (शिफारस केलेले)</translation>
 <translation id="6291953229176937411">फाइंडर मध्ये &amp;दर्शवा</translation>
 <translation id="6292699686837272722">टॅब मध्यम रुंदीवर आक्रसतात</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" /> सुरू केला आहे</translation>
 <translation id="6294759976468837022">ऑटो-स्कॅनची गती</translation>
 <translation id="6295158916970320988">सर्व साइट</translation>
 <translation id="6295855836753816081">सेव्ह करत आहे...</translation>
@@ -6050,7 +6059,6 @@
 <translation id="6647441008198474441">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी Google ला पाठवल्या जातात</translation>
 <translation id="6648911618876616409">महत्वाचे अपडेट इंस्टॉल करण्यासाठी तयार आहे. सुरुवात करण्यासाठी साइन इन करा.</translation>
 <translation id="6649018507441623493">फक्त एक सेकंद…</translation>
-<translation id="6650234781371031356">तुमचा <ph name="WEBSITE" /> चा पासवर्ड या डिव्हाइसवर आणि तुमच्या Google खाते मध्ये स्टोअर केला आहे. तुम्हाला कोणता पासवर्ड हटवायचा आहे?</translation>
 <translation id="665061930738760572">&amp;नवीन विंडोमध्ये उघडा</translation>
 <translation id="6651237644330755633">वेबसाइट ओळखण्‍यासाठी या सर्टिफिकेटवर विश्‍वास ठेवा</translation>
 <translation id="6651495917527016072">तुमच्या फोनसह वाय-फाय नेटवर्क सिंक करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -6739,6 +6747,7 @@
 <translation id="7310598146671372464">लॉग इन करता आले नाही. सर्व्हर नमूद केलेल्या Kerberos एंक्रिप्शन प्रकारांना सपोर्ट करत नाही. कृपया तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="7311089766378749632"><ph name="SITE_NAME" /> वाचण्याची आणि बदलण्याची विनंती करत आहे</translation>
 <translation id="7312210124139670355">तुमचा ॲडमिनिस्ट्रेटर तुमचा eSIM रीसेट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
+<translation id="7317831949569936035">शाळेशी संबंधित नोंदणी</translation>
 <translation id="7320213904474460808">नेटवर्कवर डीफॉल्ट करा</translation>
 <translation id="7321545336522791733">सर्व्हर आवाक्याबाहेर आहे</translation>
 <translation id="7323315405936922211">कर्सरच्या भागाचा आकार</translation>
@@ -8330,6 +8339,7 @@
 <translation id="8785622406424941542">स्टायलस</translation>
 <translation id="8786824282808281903">तुमचे लहान मूल हा आयकन पाहते तेव्हा, ओळखीसाठी किंवा खरेदीला मंजुरी देण्यासाठी फिंगरप्रिंट वापरले जाऊ शकते.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{नाव नसलेला गट - एक टॅब}other{नाव नसलेला गट - # टॅब}}</translation>
+<translation id="8791157330927639737">अपडेट करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="8791534160414513928">तुमच्या ब्राउझिंग ट्रॅफिकसह "Do Not Track" विनंती पाठवा</translation>
 <translation id="879413103056696865">हॉटस्पॉट सुरू असताना, तुमचा <ph name="PHONE_NAME" /> हे करेल:</translation>
 <translation id="8795916974678578410">नवीन विंडो</translation>
@@ -8486,6 +8496,7 @@
 <translation id="8940081510938872932">तुमचे कॉंप्युटर यावेळी असंख्य गोष्‍टी करत आहे. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="8940381019874223173">तुमच्या Google Photos मधील</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' परवानगी मागे घ्या</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> बंद आहे</translation>
 <translation id="894191600409472540">क्लिष्ट पासवर्ड तयार करा</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">अधिक द्रुतपणे बॅटरी वापरा (सध्या <ph name="BATTERY_PERCENTAGE" />%)</translation>

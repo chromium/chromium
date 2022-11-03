@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Tühista prinditöö</translation>
 <translation id="2163937499206714165">Tumeda režiimi sisselülitamine</translation>
 <translation id="2180197493692062006">Midagi läks valesti. Proovige rakendus uuesti avada.</translation>
-<translation id="2182088270354640012">Täname tagasiside eest. Teie tagasiside aitab Chrome OS-i täiustada ja meie Chrome OS-i tiim vaatab selle üle. Kuna meile saadetakse rohkelt teavitusi, ei saada me teile otsevastust.</translation>
 <translation id="2209788852729124853">Liiklusloendurite lähtestamine</translation>
 <translation id="2212733584906323460">Nime lahendamine</translation>
 <translation id="2217935453350629363">Praegune kiirus</translation>
@@ -689,7 +688,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="773153675489693198">Tsüklite arv</translation>
 <translation id="7747039790905080783">Eeljagatud võti</translation>
 <translation id="7762130827864645708">Parooli muutmine õnnestus. Edaspidi kasutage uut parooli.</translation>
-<translation id="7762839321248874531">Saada <ph name="BEGIN_LINK1" />süsteemi ja rakenduste teave<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />mõõdikud<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Domeenisufiksi vaste</translation>
 <translation id="7769672763586021400">Mudeli ID</translation>
 <translation id="7784116172884276937">Seadistatud pole ühtegi DNS-serverit</translation>
@@ -826,7 +824,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="9082718469794970195">Kasuta seda videot</translation>
 <translation id="9087578468327036362">Teatage sellest päringust</translation>
 <translation id="9088306295921699330">Praegune kasutus</translation>
-<translation id="9092255287806472980">Teie tagasiside aitab Chrome OS-i täiustada ja meie tiim vaatab selle üle. Kuna saame rohkelt teavitusi, ei saa me vastust saata.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>
 <translation id="9106415115617144481">Lehe <ph name="PAGE_NUMBER" /> skannimine</translation>

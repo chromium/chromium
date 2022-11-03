@@ -198,7 +198,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1174366174291287894">Your connection is always secure unless Chrome tells you otherwise</translation>
 <translation id="117445914942805388">To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK" />visit sync settings<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Print...</translation>
-<translation id="1176378369905028399">A password for this account is already stored in your Google Password Manager (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Not allowed to edit files or folders on your device</translation>
 <translation id="1177863135347784049">Customised</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -1397,6 +1396,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2256115617011615191">Restart now</translation>
 <translation id="2257053455312861282">Adding a school account enables easy sign-in to websites, extensions and apps as a student while still operating under parental controls.</translation>
 <translation id="2261323523305321874">Your administrator has made a system-wide change that disables some old profiles.</translation>
+<translation id="22614517036276112">This document or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.</translation>
 <translation id="2262477216570151239">Delay before repeat</translation>
 <translation id="2263189956353037928">Sign out &amp; sign back in</translation>
 <translation id="2263371730707937087">Screen refresh rate</translation>
@@ -1838,7 +1838,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2643698698624765890">Manage your extensions by clicking Extensions in the Window menu.</translation>
 <translation id="2645047101481282803">Your device is managed by <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2645515095874728277">A password for this account is already stored on this device</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, certificate chain</translation>
 <translation id="2652129567809778422">Select password</translation>
 <translation id="2653033005692233957">Search failed</translation>
@@ -2628,7 +2627,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3399432415385675819">Notifications will be disabled</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – interlaced</translation>
 <translation id="3401484564516348917">Read information about your browser, OS, device, installed software, registry values and files</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} password is stored on this device}other{{COUNT} passwords are stored on this device}}</translation>
 <translation id="3402255108239926910">Pick an avatar</translation>
 <translation id="3402585168444815892">Enrolling in demo mode</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4729,7 +4727,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5392192690789334093">Allowed to send notifications</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
 <translation id="5395498824851198390">Default font</translation>
-<translation id="5396325212236512832">Automatically sign in to sites and apps using stored credentials. If turned off, you'll be asked for confirmation every time before signing in to a site or app.</translation>
 <translation id="5397378439569041789">Enrol kiosk or signage device</translation>
 <translation id="5397794290049113714">You</translation>
 <translation id="5398497406011404839">Hidden bookmarks</translation>
@@ -5095,6 +5092,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5733866499231170760">Invalid ID. The format that you entered is incorrect. Please check the instructions to ensure that you are entering the ID in the correct format. If you’re unable to resolve this issue, please leave the field blank and continue with installation.</translation>
 <translation id="5734362860645681824">Communications</translation>
 <translation id="5734697361979786483">Add file share</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{This data or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}=1{This file or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}other{These files don't meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}}</translation>
 <translation id="5736796278325406685">Please enter a valid username</translation>
 <translation id="5738093759615225354">You need this passkey to sign in to your computer</translation>
 <translation id="5738329404678738022">Store your bookmarks and more with Sync</translation>
@@ -6065,7 +6063,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6647441008198474441">URLs that you visit are sent to Google to predict what sites you might visit next</translation>
 <translation id="6648911618876616409">A critical update is ready to install. Sign in to get started.</translation>
 <translation id="6649018507441623493">Just a sec...</translation>
-<translation id="6650234781371031356">Your password for <ph name="WEBSITE" /> is stored on this device and in your Google Account. Which one do you want to delete?</translation>
 <translation id="665061930738760572">Open in &amp;New Window</translation>
 <translation id="6651237644330755633">Trust this certificate for identifying websites</translation>
 <translation id="6651495917527016072">Sync Wi-Fi networks with your phone. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -6587,6 +6584,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7123030151043029868">Allowed to automatically download multiple files</translation>
 <translation id="7123302939607518173">Add an interest or site if you think that ads related to the item would be useful to you.</translation>
 <translation id="7124013154139278147">Assign switch for 'Previous'</translation>
+<translation id="7124712201233930202">Your organisation's policies aren't met</translation>
 <translation id="7125029162161377569">With Privacy Sandbox trials, sites can deliver the same browsing experience using less of your info. That means more privacy for you and less cross-site tracking. We'll add new trials as they're ready to test.</translation>
 <translation id="7125148293026877011">Delete Crostini</translation>
 <translation id="7127980134843952133">Download history</translation>
@@ -8550,6 +8548,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="897939795688207351">On <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Feedback reports</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Crashed</translation>
+<translation id="8981038076986775523">Learn more about using a microphone</translation>
 <translation id="8981825781894055334">Low on paper</translation>
 <translation id="8983018820925880511">This new profile will be managed by <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> can edit <ph name="FILENAME" /></translation>

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
 <translation id="2180197493692062006">Der opstod en fejl. Prøv at åbne appen igen.</translation>
-<translation id="2182088270354640012">Tak for din feedback. Din feedback er med til at forbedre ChromeOS og gennemgås af ChromeOS-teamet. Vi modtager et stort antal rapporter, så du modtager ikke et direkte svar.</translation>
 <translation id="2209788852729124853">Nulstil trafiktællere</translation>
 <translation id="2212733584906323460">Navneløsning</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
@@ -688,7 +687,6 @@
 <translation id="773153675489693198">Antal gennemførte cyklusser</translation>
 <translation id="7747039790905080783">Forhåndsdelt nøgle</translation>
 <translation id="7762130827864645708">Din adgangskode er ændret. Brug den nye adgangskode fremover.</translation>
-<translation id="7762839321248874531">Send <ph name="BEGIN_LINK1" />system- og appoplysninger<ph name="END_LINK1" /> samt <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Match af domænesuffiks</translation>
 <translation id="7769672763586021400">Model-id</translation>
 <translation id="7784116172884276937">Der er ikke konfigureret nogen DNS-servere</translation>
@@ -825,7 +823,6 @@
 <translation id="9082718469794970195">Brug denne video</translation>
 <translation id="9087578468327036362">Rapportér denne forespørgsel</translation>
 <translation id="9088306295921699330">Aktuelt forbrug</translation>
-<translation id="9092255287806472980">Din feedback er med til at forbedre ChromeOS og gennemgås af vores team. Vi modtager et stort antal rapporter, så vi kan ikke sende dig et svar.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanner side <ph name="PAGE_NUMBER" /></translation>

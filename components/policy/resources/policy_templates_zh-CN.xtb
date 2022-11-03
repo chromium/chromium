@@ -1498,6 +1498,7 @@
       <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> 字段用于填写合作伙伴服务提供商的唯一 ID，以指明客户为使用该服务提供商而创建的帐号。在用户设置<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的过程中，当系统要求登录时，只能使用与此客户的服务提供商帐号关联的用户帐号。
 
       此政策只能通过 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />进行设置。</translation>
+<translation id="2452225615952836461">始终大写请求方法</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
 <translation id="2455033019778127130">使用默认浏览器行为，显示《服务条款》并等待用户接受。</translation>
 <translation id="2460127623195247744">此政策已被弃用，请改用“<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />”政策。
@@ -2176,6 +2177,17 @@
 <translation id="3101035417394748390">可通过剪贴板同步功能在客户端和主机之间传输的数据的大小上限（以字节为单位）</translation>
 <translation id="3101501961102569744">选择如何指定代理服务器设置</translation>
 <translation id="3101709781009526431">日期和时间</translation>
+<translation id="3105764289283669411">此政策用于控制是否应大写与 <ph name="CORS" /> 预检请求中的 <ph name="ACAM_HEADER_NAME" /> 响应标头匹配的请求方法。
+
+如果此政策已停用，请求方法都会采用大写形式。
+这是 <ph name="PRODUCT_NAME" /> 108 版或之前版本上的行为。
+
+如果此政策已启用或未设置，请求方法都不会采用大写形式，除非在不区分大小写的情况下与 <ph name="DELETE_METHOD_NAME" />、<ph name="GET_METHOD_NAME" />、<ph name="HEAD_METHOD_NAME" />、<ph name="OPTIONS_METHOD_NAME" />、<ph name="POST_METHOD_NAME" /> 或 <ph name="PUT_METHOD_NAME" /> 匹配。
+这样会拒绝 <ph name="REJECTED_CASE" /> 响应标头但接受 <ph name="ACCEPTED_CASE" /> 响应标头。
+
+注意：请求方法 <ph name="POST_LOWERCASE_METHOD_NAME" /> 和 <ph name="PUT_LOWERCASE_METHOD_NAME" /> 不受影响，而 <ph name="PATCH_LOWERCASE_METHOD_NAME" /> 会受到影响。
+
+此政策只是暂时性措施，日后会被移除。</translation>
 <translation id="3110248563985502478">此政策已在 M88 中弃用，而且 Chrome 已不再支持 Flash。如果此政策已启用，过期插件可作为正常插件使用。如果此政策已停用，系统将不会使用过期插件。
 
       如果您未设置此政策，系统会请求用户授权其运行过期插件。</translation>
@@ -3687,6 +3699,13 @@
 
       如果某项政策不在列表中，而且来源、范围或级别之间存在冲突，系统将会应用优先级最高的政策。</translation>
 <translation id="4646739075621507361">报告打印任务</translation>
+<translation id="4647870063570047503">如果此政策已启用，<ph name="PRODUCT_NAME" /> 会使用内置的证书验证程序来验证服务器证书，并会将 Chrome 根存储区作为公共信任来源。
+
+如果此政策已停用，<ph name="PRODUCT_NAME" /> 会使用系统证书验证程序和系统根证书。
+
+如果此政策未设置，则既可能会使用 Chrome 根存储区，也可能会使用系统提供的根目录。
+
+按照我们的计划，此政策将会从 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 上的 <ph name="PRODUCT_NAME" /> 113 版中移除，该版本将不再支持使用平台提供的证书验证程序和根目录。</translation>
 <translation id="4649395978608361979">本地打印机目的地</translation>
 <translation id="4650044303940238102">本地字体设置</translation>
 <translation id="4650759511838826572">停用网址协议架构</translation>
@@ -4022,9 +4041,6 @@
 <translation id="5073609397321802133">如果此政策设为 false，“新标签页”页面将不允许用户自定义背景。所有现有的自定义背景都将被永久移除，即使此政策后来又改设为 true 也是如此。
 
       如果此政策设为 true 或未设置，用户便能够在“新标签页”页面上自定义背景。</translation>
-<translation id="5075190314377370852">如果此政策设为 True，对于已成功通过验证且已由安装在本地的 CA 证书签名的服务器证书，<ph name="PRODUCT_NAME" /> 始终会执行撤消检查。如果 <ph name="PRODUCT_NAME" /> 无法获取撤消状态信息，<ph name="PRODUCT_NAME" /> 会将此类证书视为已撤消（硬性失败）。
-
-      如果此政策设为 False 或未设置，<ph name="PRODUCT_NAME" /> 会使用现有的在线撤消检查设置。</translation>
 <translation id="5076953589932162038">First-Party Sets 功能设置</translation>
 <translation id="5078623750797048009">启用 PDF 注释</translation>
 <translation id="5081204761483900654">受限受管理访客会话</translation>
@@ -6665,6 +6681,7 @@
 <translation id="7724161903134898864">如果此政策设为 1，系统会允许网站显示弹出式窗口。如果此政策设为 2，系统会禁止网站显示弹出式窗口。
 
       如果此政策未设置，则意味着 <ph name="BLOCK_POPUPS_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
+<translation id="7728486978686128364">不大写除 DELETE/GET/HEAD/OPTIONS/POST/PUT 之外的请求方法</translation>
 <translation id="7731026922044991970">将所有网站上的 Cookie 都恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为</translation>
 <translation id="7732907212083471072">已移除的政策</translation>
 <translation id="7734212505800048991">
@@ -7938,6 +7955,7 @@
 
       此政策的值应以秒为单位。</translation>
 <translation id="9015578113567730893">音频遥测收集时间间隔（以毫秒为单位）。</translation>
+<translation id="9015952763003753868">使 <ph name="CORS" /> 预检请求中的 <ph name="ACAM_HEADER_NAME" /> 匹配合乎规范</translation>
 <translation id="9031831501689819108">启用旧版浏览器支持</translation>
 <translation id="9035086760683255833">启用“键盘焦点突出显示”无障碍功能。
 

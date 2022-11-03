@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Ayiwkazi ukukhipha i-<ph name="FILE" /></translation>
 <translation id="1899697626337024495">Ukulungiswa kwesithombe</translation>
 <translation id="1925845977604399247">Iya Kugalari</translation>
+<translation id="199526504800285197">Ukurekhoda kumisiwe</translation>
+<translation id="1995951722691075581">Ukurekhoda kwakho kumisiwe ngenxa yesikhala sesitoreji sedivayisi esiphansi. Ukuze urekhode amavidiyo wakho, udinga ukukhulula isikhala kudivayisi yakho.</translation>
 <translation id="2022953316617983419">Ikhodi ye-QR</translation>
 <translation id="2036868001356139588">Ubude besikhathi</translation>
 <translation id="2050339315714019657">Ukuma ngobude</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Thatha izithombe uphinde urekhode amavidiyo ngekhamera yakho.</translation>
 <translation id="2517472476991765520">Skena</translation>
 <translation id="2549985041256363841">Qala ukuqopha</translation>
+<translation id="2577915835281444458">Ukurekhoda kuzomisa maduze. Hamba kusitoreji sedivayisi ukuze uvule isikhala.</translation>
 <translation id="2599796128805996109">Ikhamera engemuva</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
 <translation id="2761536921376153655">Uhlobo lokuskena</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Ividiyo</translation>
 <translation id="3838931309141338733">Skena ibhakhodi</translation>
 <translation id="3892148308691398805">Kopisha umbhalo</translation>
+<translation id="4060608699153044055">Awukwazi ukurekhoda ngenxa yesikhala sesitoreji esincane. Ukuze uqale ukurekhoda, udinga ukukhulula isikhala kudivayisi yakho.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Misa okwesikhashana ukurekhoda</translation>
 <translation id="4121305183798804752">Idokhumenti itholiwe</translation>
@@ -160,6 +164,7 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="7748344063862150053">Idokhumenti ekhoneni eliphezulu kwesokudla</translation>
 <translation id="7933675232020478311">Ihambela ngasohlangothini lwesokudla phansi</translation>
 <translation id="7983668134180549431">Umbhalo utholiwe.</translation>
+<translation id="8079255378695216066">Ayikwazi ukuqala ukurekhoda</translation>
 <translation id="8120146556401698679">Ukusondeza kokutshekisa i-pan</translation>
 <translation id="8131740175452115882">Qinisekisa</translation>
 <translation id="8145038249676204903">Shintshela ekuthatheni isithombe</translation>

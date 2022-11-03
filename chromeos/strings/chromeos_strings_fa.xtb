@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
 <translation id="2163937499206714165">روشن کردن حالت تاریک</translation>
 <translation id="2180197493692062006">مشکلی پیش آمد. برنامه را دوباره باز کنید.</translation>
-<translation id="2182088270354640012">‏از بازخوردتان سپاس‌گزاریم. بازخورد شما به بهبود Chrome OS کمک می‌کند و تیم Chrome OS آن را مرور خواهد کرد. به‌دلیل تعداد بالای گزارش‌های ارسالی، پاسخ مستقیم دریافت نخواهید کرد.</translation>
 <translation id="2209788852729124853">بازنشانی شمارش‌گرهای ترافیک</translation>
 <translation id="2212733584906323460">حل‌وفصل نام</translation>
 <translation id="2217935453350629363">سرعت کنونی</translation>
@@ -628,6 +627,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /><ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ناموفق - مجوز صادر نشد</translation>
 <translation id="7103252855940681301">نام دستگاه <ph name="INDEX" /> از <ph name="COUNT" /> <ph name="NAME" /> است.</translation>
+<translation id="7130438335435247835">‏نام نقطه دسترسی (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{سرور نام}one{سرور نام}other{سرورهای نام}}</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
@@ -689,7 +689,6 @@
 <translation id="773153675489693198">تعداد چرخه‌ها</translation>
 <translation id="7747039790905080783">کلید ازپیش هم‌رسانی‌شده</translation>
 <translation id="7762130827864645708">گذرواژه‌تان تغییر کرد. لطفاً ازاین‌پس، از گذرواژه جدید استفاده کنید.</translation>
-<translation id="7762839321248874531">ارسال <ph name="BEGIN_LINK1" />اطلاعات<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />سنجه‌های سیستم و برنامه<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">مطابقت پسوند دامنه</translation>
 <translation id="7769672763586021400">شناسه مدل</translation>
 <translation id="7784116172884276937">هیچ سرور سانادی راه‌اندازی نشده است</translation>
@@ -826,7 +825,6 @@
 <translation id="9082718469794970195">استفاده از این ویدیو</translation>
 <translation id="9087578468327036362">گزارش کردن این پرسمان</translation>
 <translation id="9088306295921699330">مصرف فعلی</translation>
-<translation id="9092255287806472980">‏بازخورد شما به بهبود Chrome OS کمک می‌کند و تیم ما آن را مرور خواهد کرد. به‌دلیل تعداد بالای گزارش‌ها، قادر به ارسال پاسخ نخواهیم بود.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">بازآوری بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>

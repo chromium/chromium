@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Khansela umsebenzi wokuphrinta</translation>
 <translation id="2163937499206714165">Vula imodi emnyama</translation>
 <translation id="2180197493692062006">Kunento engahambanga kahle. Zama ukuvula kabusha i-app.</translation>
-<translation id="2182088270354640012">Siyabonga ngempendulo. Impendulo yakho isiza ukuthuthukisa i-Chrome OS futhi izobuyekezwa ithimba le-Chrome OS. Ngenxa yenani lemibiko ethunyelwe, ngeke uthole impendulo eqondile.</translation>
 <translation id="2209788852729124853">Setha Kabusha Izibalo Zethrafikhi</translation>
 <translation id="2212733584906323460">Igama Lokucaca</translation>
 <translation id="2217935453350629363">Isivinini samanje</translation>
@@ -628,6 +627,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Kwehlulekile - Ukugunyaza Kwehlulekile</translation>
 <translation id="7103252855940681301">Idivayisi engu-<ph name="INDEX" /> kwangu-<ph name="COUNT" /> ebizwa ngokuthi i-<ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Igama lephoyinti lokufinyelela (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Igama leseva}one{Igama lamaseva}other{Igama lamaseva}}</translation>
 <translation id="7143207342074048698">Iyaxhuma</translation>
 <translation id="7144878232160441200">Zama futhi</translation>
@@ -689,7 +689,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="773153675489693198">Isibalo somjikelezo</translation>
 <translation id="7747039790905080783">Ukhiye owabiwe ngaphambilini</translation>
 <translation id="7762130827864645708">Iphasiwedi yakho ishintshwe ngempumelelo. Sicela usebenzise iphasiwedi entsha kusuka manje.</translation>
-<translation id="7762839321248874531">Thumela <ph name="BEGIN_LINK1" />ulwazi lwesistimu ne-app<ph name="END_LINK1" /> kanye <ph name="BEGIN_LINK2" />nama-metric<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Ukufana kwesiqede sesizinda</translation>
 <translation id="7769672763586021400">I-ID yemodeli</translation>
 <translation id="7784116172884276937">Awekho amaseva we-DNS asethiwe</translation>
@@ -826,7 +825,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="9082718469794970195">Sebenzisa le vidiyo</translation>
 <translation id="9087578468327036362">Bika lo mbuzo</translation>
 <translation id="9088306295921699330">Ukusetshenziswa kwamanje</translation>
-<translation id="9092255287806472980">Impendulo yakho isiza ukuthuthukisa i-ChromeOS futhi izobuyekezwa yithimba lethu. Ngenxa yenani elikhulu lemibiko, ngeke sikwazi ukuthumela impendulo.</translation>
 <translation id="9095775724867566971">I-Pluginvm</translation>
 <translation id="910415269708673980">Vuselela ithikithi le-<ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Iskena ikhasi <ph name="PAGE_NUMBER" /></translation>

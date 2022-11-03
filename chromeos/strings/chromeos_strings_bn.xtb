@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">প্রিন্ট জবটি বাতিল করা হয়েছে</translation>
 <translation id="2163937499206714165">'ডার্ক মোড' চালু করুন</translation>
 <translation id="2180197493692062006">কোনও সমস্যা হয়েছে। অ্যাপটি আবার খোলার চেষ্টা করে দেখুন।</translation>
-<translation id="2182088270354640012">মতামত দেওয়ার জন্য ধন্যবাদ। আপনার মতামত Chrome OS-কে উন্নত করতে সাহায্য করে এবং আমাদের Chrome OS টিম তা পর্যালোচনা করবে। যত সংখ্যক রিপোর্ট জমা হয়েছে তার কারণে আপনি সরাসরি কোনও উত্তর পাবেন না।</translation>
 <translation id="2209788852729124853">ট্রাফিক কাউন্টার্স রিসেট করুন</translation>
 <translation id="2212733584906323460">নামের রেজোলিউশন</translation>
 <translation id="2217935453350629363">বর্তমান স্পিড</translation>
@@ -688,7 +687,6 @@
 <translation id="773153675489693198">সাইকেল কাউন্ট</translation>
 <translation id="7747039790905080783">আগে থাকতে শেয়ার করা 'কী'</translation>
 <translation id="7762130827864645708">আপনার পাসওয়ার্ড পরিবর্তন করা হয়ে গেছে। এখন থেকে নতুন পাসওয়ার্ড ব্যবহার করুন।</translation>
-<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />সিস্টেম ও অ্যাপ সংক্রান্ত তথ্য<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />মেট্রিক<ph name="END_LINK2" /> পাঠান।</translation>
 <translation id="7763470514545477072">ডোমেন সাফিক্সের সাথে মিল থাকা</translation>
 <translation id="7769672763586021400">মডেল আইডি</translation>
 <translation id="7784116172884276937">কোনও ডিএনএস সার্ভার সেট আপ করা হয়নি</translation>
@@ -825,7 +823,6 @@
 <translation id="9082718469794970195">এই ভিডিওটি ব্যবহার করুন</translation>
 <translation id="9087578468327036362">এই কোয়েরি সম্পর্কে রিপোর্ট করুন</translation>
 <translation id="9088306295921699330">বর্তমান ব্যবহার</translation>
-<translation id="9092255287806472980">আপনার মতামত ChromeOS-কে উন্নত করতে সাহায্য করে এবং আমাদের টিম তা পর্যালোচনা করবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>

@@ -264,6 +264,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1567040042588613346">Bu parametr xatosiz ishlayapti, lekin boshqa qaysidir parametr qiymati bilan almashtirildi.</translation>
 <translation id="1569487616857761740">Amal qilish muddatini kiriting</translation>
 <translation id="1569694109004336106">Google Chrome parollarni kiritishda Windows Hello himoyasini yoqishga urinmoqda.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Veb-sahifani ochish vaqtida kutilmagan xatolik yuz berdi.</translation>
 <translation id="1586541204584340881">Oʻrnatilgan kengaytmalar</translation>
@@ -1102,6 +1103,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3787705759683870569">Muddati: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Hajmi: 16</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" />)</translation>
 <translation id="3793574014653384240">Oxirgi ishdan chiqishlar va ularning sabablari</translation>
 <translation id="3795344968043407227">Indi va alternativ musiqa</translation>
 <translation id="3799805948399000906">Shrift talabi qilindi</translation>
@@ -1391,7 +1393,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4542971377163063093">Tarnov 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Brauzer kengaytmalarini o‘chirib qo‘yib, keyin tekshirib ko‘ring.</translation>
-<translation id="4559134504959026834">Bu sayt <ph name="SET_OWNER" />ning guruhiga kiradi va u guruhdagi faoliyatni koʻra oladi</translation>
 <translation id="4566017918361049074">Ochiq havoda</translation>
 <translation id="4567686777917670400">Adminitratoringiz brauzerni masofadan sozlashi mumkin. Bu qurilmadagi amallar Chromium tashqarisidan boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Yetkazib berish</translation>
@@ -2511,6 +2512,7 @@ Batafsil axborot:
 <translation id="7441627299479586546">Noma’lum subyekt siyosati</translation>
 <translation id="7442725080345379071">Och apelsinrang</translation>
 <translation id="7445762425076701745">Siz ulangan server haqiqiyligi to‘liq tekshirilmadi. Siz serverga tarmog‘ingizdagi nom bilan ulandingiz, bu server haqiqiyligini tekshirib bo‘lmaydi yoki server tashqi sertifikatlash markazi tomonidan tasdiqlangan. Tashqi sertifikatlash markazlari tomonidan berilgan bunday sertifikatlar aynan sizga kerakli sayt ekanligiga kafolat bermaydi, siz firibgarlar saytiga kirgan bo‘lishingiz mumkin.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790">Bu muammo haqidagi <ph name="BEGIN_LINK" />tafsilotlar<ph name="END_LINK" /> bilan tanishing.</translation>
 <translation id="7455133967321480974">Global birlamchi parametrdan foydalanish (Bloklash)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2818,6 +2820,7 @@ Batafsil axborot:
 <translation id="8218327578424803826">Tayinlangan joylashuv:</translation>
 <translation id="8225771182978767009">Bu saytga kirish ushbu kompyuter sozlamalarida taqiqlab qo‘yilgan.</translation>
 <translation id="8228419419708659934">Ikkita sahifani chiqarish</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Sport oʻyinlari</translation>
 <translation id="8232343881378637145">Platforma harorati</translation>

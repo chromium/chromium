@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
 <translation id="2163937499206714165">Увімкнути темний режим</translation>
 <translation id="2180197493692062006">Сталася помилка. Відкрийте додаток ще раз.</translation>
-<translation id="2182088270354640012">Дякуємо за відгук. Наша команда розгляне його. Він допоможе покращити ОС Chrome. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
 <translation id="2209788852729124853">Скинути лічильники трафіку</translation>
 <translation id="2212733584906323460">Перетворення імені</translation>
 <translation id="2217935453350629363">Поточна швидкість</translation>
@@ -689,7 +688,6 @@
 <translation id="773153675489693198">Кількість циклів</translation>
 <translation id="7747039790905080783">Спільний ключ</translation>
 <translation id="7762130827864645708">Ваш пароль змінено. Відтепер використовуйте новий.</translation>
-<translation id="7762839321248874531">Надсилати <ph name="BEGIN_LINK1" />інформацію про систему й додатки<ph name="END_LINK1" />, а також <ph name="BEGIN_LINK2" />показники<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Збіг із суфіксом домену</translation>
 <translation id="7769672763586021400">Ідентифікатор моделі</translation>
 <translation id="7784116172884276937">DNS-сервери не налаштовано</translation>
@@ -826,7 +824,6 @@
 <translation id="9082718469794970195">Використати це відео</translation>
 <translation id="9087578468327036362">Повідомити про проблеми із запитом</translation>
 <translation id="9088306295921699330">Використовується</translation>
-<translation id="9092255287806472980">Наша команда розгляне ваш відгук. Він допоможе покращити ОС Chrome. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>

@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
 <translation id="2163937499206714165">Activează modul întunecat</translation>
 <translation id="2180197493692062006">A apărut o eroare. Încearcă să redeschizi aplicația.</translation>
-<translation id="2182088270354640012">Mulțumim pentru feedback. Feedbackul tău ne ajută să îmbunătățim sistemul de operare Chrome și va fi examinat de echipa noastră. Din cauza numărului de rapoarte trimise, nu vei primi un răspuns direct.</translation>
 <translation id="2209788852729124853">Resetează contoarele de trafic</translation>
 <translation id="2212733584906323460">Rezolvarea pentru nume</translation>
 <translation id="2217935453350629363">Viteza actuală</translation>
@@ -628,6 +627,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nu a reușit – Autorizarea nu a reușit</translation>
 <translation id="7103252855940681301">Dispozitivul <ph name="INDEX" /> din <ph name="COUNT" /> numit <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Numele punctului de acces (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server de nume}few{Servere de nume}other{Servere de nume}}</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
@@ -689,7 +689,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="773153675489693198">Numărul de cicluri</translation>
 <translation id="7747039790905080783">Cheie predistribuită</translation>
 <translation id="7762130827864645708">Parola a fost schimbată. Folosește noua parolă de acum înainte.</translation>
-<translation id="7762839321248874531">Trimite <ph name="BEGIN_LINK1" />informații despre sistem și aplicații<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />valori<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Potrivire a sufixului de domeniu</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
 <translation id="7784116172884276937">Nu există servere DNS configurate</translation>
@@ -826,7 +825,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9082718469794970195">Folosește videoclipul</translation>
 <translation id="9087578468327036362">Raportează interogarea</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
-<translation id="9092255287806472980">Feedbackul tău ne ajută să îmbunătățim sistemul de operare Chrome și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Se scanează pagina <ph name="PAGE_NUMBER" /></translation>

@@ -198,7 +198,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1174366174291287894">Din anslutning är alltid säker, så länge det inte visas en varning i Chrome</translation>
 <translation id="117445914942805388"><ph name="BEGIN_LINK" />Besök inställningarna för synkronisering<ph name="END_LINK" /> om du vill rensa webbinformation från alla synkroniserade enheter och ditt Google-konto.</translation>
 <translation id="1175364870820465910">Skriv &amp;ut...</translation>
-<translation id="1176378369905028399">Ett lösenord för det här kontot har redan sparats i Google Lösenordshantering (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Får inte redigera filer eller mappar på enheten</translation>
 <translation id="1177863135347784049">Anpassat</translation>
 <translation id="1178581264944972037">Paus</translation>
@@ -409,6 +408,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1388253969141979417">Får använda mikrofonen</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> startas om när uppdateringarna har slutförts.</translation>
 <translation id="1389601498324964367">Kvothanterad lagring</translation>
+<translation id="1390113502208199250">Du måste återställa enheten till standardinställningarna för att använda funktionerna i Chrome Education Upgrade.</translation>
 <translation id="139013308650923562">Har tillåtelse att använda teckensnitt som har installerats på enheten</translation>
 <translation id="1390548061267426325">Öppna som en vanlig flik</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> har inte behörighet att skriva ut på <ph name="PRINTER_NAME" />. Kontakta administratören.</translation>
@@ -479,6 +479,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1436784010935106834">Borttagna</translation>
 <translation id="1437986450143295708">Beskriv problemet utförligt</translation>
 <translation id="1439671507542716852">långsiktig support</translation>
+<translation id="1440090277117135316">Registrering i skolan har slutförts</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> markerade</translation>
 <translation id="1442851588227551435">Konfigurera aktiv Kerberos-biljett</translation>
 <translation id="1444628761356461360">Den här inställningen hanteras av enhetens ägare, <ph name="OWNER_EMAIL" />.</translation>
@@ -1835,7 +1836,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2643698698624765890">Hantera tillägg genom att klicka på Tillägg på menyn Fönster.</translation>
 <translation id="2645047101481282803">Enheten hanteras av <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2645515095874728277">Ett lösenord för det här kontot har redan sparats på den här enheten</translation>
 <translation id="2649045351178520408">Base64-kodad ASCII, certifikatkedja</translation>
 <translation id="2652129567809778422">Välj lösenord</translation>
 <translation id="2653033005692233957">Sökningen misslyckades</translation>
@@ -2410,6 +2410,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3170072451822350649">Du kan även hoppa över inloggningen och <ph name="LINK_START" />surfa som gäst<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Ny flik till vänster</translation>
 <translation id="3177909033752230686">Sidans språk:</translation>
+<translation id="3177914167275935955">Chrome Education Upgrade ingår med enheten, men ditt användarnamn är inte kopplat till ett Google for Education-konto. Skapa ett Google for Education-konto genom att besöka g.co/workspace/edusignup på en annan enhet.</translation>
 <translation id="3179982752812949580">Textens teckensnitt</translation>
 <translation id="3181954750937456830">Säker webbsökning (skyddar dig och enheten från skadliga webbplatser)</translation>
 <translation id="3182749001423093222">Stavningskontroll</translation>
@@ -2624,7 +2625,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3399432415385675819">Aviseringar inaktiveras</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – flätade</translation>
 <translation id="3401484564516348917">Läsa information om webbläsaren, operativsystemet, enheten, installerad programvara, registervärden och filer</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} lösenord har sparats på den här enheten}other{{COUNT} lösenord har sparats på den här enheten}}</translation>
 <translation id="3402255108239926910">Välj en avatar</translation>
 <translation id="3402585168444815892">Registrerar dig för demoläget</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4080,6 +4080,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4762489666082647806">Pekarens färg</translation>
 <translation id="4762718786438001384">Mycket ont om diskutrymme på enheten</translation>
 <translation id="4763408175235639573">Följande cookies sparades när du visade denna sida</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> är inte ett giltigt Google for Education-konto. Kontakta administratören. Om du är administratör kan du konfigurera organisationen genom att besöka g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Den här enheten sparas i en månad. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}other{Den här enheten sparas i {MONTHS} månader. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}}</translation>
 <translation id="4765582662863429759">Tillåter Android Messages att dirigera sms från mobilen till Chromebook</translation>
 <translation id="4766598565665644999">Alla tillägg kan läsa och ändra <ph name="HOST" /></translation>
@@ -4724,7 +4725,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5392192690789334093">Får skicka aviseringar</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Länk}other{# länkar}}</translation>
 <translation id="5395498824851198390">Standardteckensnitt</translation>
-<translation id="5396325212236512832">Logga automatiskt in på webbplatser och i appar automatiskt med hjälp av lagrade användaruppgifter. När funktionen är inaktiverad måste du bekräfta inloggningen varje gång du besöker en webbplats eller app.</translation>
 <translation id="5397378439569041789">Registrera kioskenhet eller digital skyltningsenhet</translation>
 <translation id="5397794290049113714">Du</translation>
 <translation id="5398497406011404839">Dolda bokmärken</translation>
@@ -4741,6 +4741,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5407167491482639988">Ohörbart</translation>
 <translation id="5408750356094797285">Zoomar: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Från Google-kontot</translation>
+<translation id="5411022484772257615">Det gick inte att slutföra registrering i skolan</translation>
 <translation id="5413640305322530561">Läs mer om diagnostik och data om användning</translation>
 <translation id="5414198321558177633">Uppdaterar listan över profiler. Det kan ta några minuter.</translation>
 <translation id="5414566801737831689">Läsa in ikonerna för de webbplatser du besöker</translation>
@@ -5526,6 +5527,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6129953537138746214">Blanksteg</translation>
 <translation id="6130692320435119637">Lägg till wifi-nätverk</translation>
 <translation id="6130887916931372608">Tangent på tangentbordet</translation>
+<translation id="6132714462430777655">Vill du hoppa över registrering i skolan?</translation>
 <translation id="6135823405800500595">Kontrollera att telefonen är i närheten, olåst och att Bluetooth och wifi har aktiverats</translation>
 <translation id="6135826623269483856">Tillåts inte hantera fönster på alla skärmar</translation>
 <translation id="6136114942382973861">Stäng nedladdningsfältet</translation>
@@ -6057,7 +6059,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6647441008198474441">Webbadresser som du besöker skickas till Google för att förutse vilka webbplatser du kanske vill besöka härnäst</translation>
 <translation id="6648911618876616409">En viktig uppdatering är klar för installation. Logga in för att komma igång.</translation>
 <translation id="6649018507441623493">Ett ögonblick …</translation>
-<translation id="6650234781371031356">Ditt lösenord på <ph name="WEBSITE" /> har sparats på den här enheten och i Google-kontot. Vilket vill du radera?</translation>
 <translation id="665061930738760572">Öppna i &amp;nytt fönster</translation>
 <translation id="6651237644330755633">Lita på detta certifikat för identifiering av webbplatser</translation>
 <translation id="6651495917527016072">Synkronisera wifi-nätverk med telefonen. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -6746,6 +6747,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7310598146671372464">Det gick inte att logga in. Servern har inte stöd för de angivna typerna av Kerberos-kryptering. Kontakta administratören.</translation>
 <translation id="7311089766378749632">Begär att få läsa och ändra <ph name="SITE_NAME" />:</translation>
 <translation id="7312210124139670355">eSIM-kortet återställs av administratören. Det kan ta några minuter.</translation>
+<translation id="7317831949569936035">Registrering i skolan</translation>
 <translation id="7320213904474460808">Standardnätverk</translation>
 <translation id="7321545336522791733">Servern kan inte nås</translation>
 <translation id="7323315405936922211">Markörområdets storlek</translation>

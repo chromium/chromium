@@ -139,7 +139,6 @@
 <translation id="2074131957428911366">У <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" /> заўсёды можна выбраць, што трэба сінхранізаваць.</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2080769225927880590">Увайдзіце ў сапраўдны ўліковы запіс</translation>
-<translation id="209018056901015185">Запытаць версію для настольнага камп'ютара</translation>
 <translation id="2103075008456228677">Адкрыць history.google.com</translation>
 <translation id="2116625576999540962">Перамешчана элементаў: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Ваш браўзер знаходзіцца пад кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -226,6 +225,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Не ўдалося стварыць спасылку</translation>
 <translation id="2786701870377699570">Шукайце ўкладкі на сінхранізаваных прыладах</translation>
+<translation id="2797029671965852011">Паказаць гісторыю</translation>
 <translation id="2800683595868705743">Выйсці з пераключальніка ўкладак</translation>
 <translation id="2815198996063984598">2. Націсніце "Стандартны браўзер".</translation>
 <translation id="2820289420301699633">Ваш адміністратар можа кіраваць браўзерам Chrome і мае доступ да даных у ім</translation>
@@ -328,7 +328,9 @@
 <translation id="3530206579861815432">Хутка знаходзьце адкрытыя і нядаўна закрытыя ўкладкі на сінхранізаваных прыладах.</translation>
 <translation id="3533202363250687977">Закрыць усе ўкладкі інкогніта</translation>
 <translation id="3533436815740441613">Новая ўкладка</translation>
+<translation id="3540141921715814660">Дадаць у закладкі</translation>
 <translation id="3551320343578183772">Закрыць укладку</translation>
+<translation id="3565207542107370586">Выдаліць даныя прагляду…</translation>
 <translation id="3575234738189584619">Пошук з дапамогай Аб'ектыва</translation>
 <translation id="3581564640715911333">Прапаноўваць перакладаць старонкі на іншых мовах</translation>
 <translation id="3588820906588687999">Адкрыць відарыс у новай укладцы</translation>
@@ -347,6 +349,7 @@
 <translation id="37207012422556617">Папулярныя пошукавыя запыты</translation>
 <translation id="3740397331642243698">Адкрывае ўведзеныя URL-адрасы ў Google Chrome у рэжыме інкогніта.</translation>
 <translation id="3762232513783804601">Распрацавана для iPad</translation>
+<translation id="3768725474733206671">Паўторна адкрыць апошнюю закрытую ўкладку</translation>
 <translation id="3771033907050503522">Укладкі інкогніта</translation>
 <translation id="3775743491439407556">Сінхранізацыя не працуе</translation>
 <translation id="3779810277399252432">Няма падключэння да інтэрнэту.</translation>
@@ -357,9 +360,11 @@
 <translation id="3803696231112616155">Прапаноўваць перакласці гэты сайт</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="3819183753496523827">Вы па-за сеткай. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
+<translation id="3835964409414434850">Перайсці на наступную ўкладку</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3861486700625780712">Адпісацца</translation>
+<translation id="387280738075653372">Спампуйце Chrome тут.</translation>
 <translation id="3892144330757387737">Ваша гісторыя знаходзіцца тут</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3904829425754749514">Ваша арганізацыя выключыла сінхранізацыю. Як і раней, вы можаце праглядаць свае закладкі, гісторыю, паролі і іншыя налады на гэтай прыладзе. Зробленыя вамі змяненні не будуць сінхранізавацца з вашым уліковым запісам.</translation>
@@ -377,7 +382,6 @@
 <translation id="3995521777587992544">Індыкатар стану загрузкі старонкі, загружана <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4004204301268239848">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады.</translation>
-<translation id="4006921758705478413">Адправіць на вашы прылады</translation>
 <translation id="4018310736049373830">Кіраваць дзеяннямі</translation>
 <translation id="4038354071007134711">На прыладзе няма праграм, у якіх можна адкрыць гэты файл.</translation>
 <translation id="4042870976416480368">Знайсці на старонцы</translation>
@@ -545,6 +549,7 @@
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5339316356165661760">Уключыць сінхранізацыю</translation>
+<translation id="536067926684072644">Паказаць закладкі</translation>
 <translation id="5360976571138293719">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце на старонцы <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Тут будуць пералічаны сайты, на якія вы падпісаліся</translation>
 <translation id="5388358297987318779">Адкрыць відарыс</translation>
@@ -577,6 +582,7 @@
 <translation id="5631164295104953411">Дадаванне спосабу аплаты</translation>
 <translation id="5636282538000367086">Што новага ў Chrome</translation>
 <translation id="5652623411397330904">Тавары, якія вы адсочваеце, будуць паказвацца тут.</translation>
+<translation id="5657859710142657190">Перайсці да ўкладак</translation>
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
 <translation id="5669335982068190158">У выніку скіду налад iPhone адбыўся выхад з уліковага запісу. Каб увайсці ў яго, націсніце Continue ("Працягнуць") ніжэй.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -593,6 +599,7 @@
 <translation id="5737974891429562743">Даныя ўліковага запісу для ўваходу састарэлі. Каб запусціць сінхранізацыю, абнавіце іх.</translation>
 <translation id="5738385766833540397">Выберыце, куды павінны прыходзіць абвесткі пра зніжэнне цэн на тавары, за якімі вы сочыце</translation>
 <translation id="5738887413654608789">Гэта дазваляе на аснове даных пра наваколле знаходзіць адпаведныя вэб-старонкі.</translation>
+<translation id="5745916533876677730">Вярнуцца на папярэднюю ўкладку</translation>
 <translation id="5758631781033351321">Ваш спіс чытання знаходзіцца тут</translation>
 <translation id="5765456154762864099">Меню → Налады → Стандартны браўзер</translation>
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
@@ -609,6 +616,7 @@
 <translation id="5857090052475505287">Новая папка</translation>
 <translation id="5857675236236529683">Калі захочаце пабачыць свой спіс на прагляд, вы знойдзеце яго тут</translation>
 <translation id="5857770089550859117">Фраза-пароль для запуску сінхранізацыі.</translation>
+<translation id="5859715514067755465">Далей</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1 элемент перамешчаны</translation>
@@ -653,6 +661,7 @@
 <translation id="6152406514676263192">Каб атрымліваць найбольш адпаведнае змесціва на падставе сваіх інтарэсаў, уключыце сінхранізацыю.</translation>
 <translation id="6159839020698489198">неабавязкова</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
+<translation id="6170450281939467187">Збой перакладу</translation>
 <translation id="6177442314419606057">Шукаць у Chrome</translation>
 <translation id="6184086493125982861">Паказваць укладкі</translation>
 <translation id="6187302354554850004">Апошняя сінхранізацыя: <ph name="LAST_USED_TIME" /></translation>
@@ -688,6 +697,7 @@
 <translation id="6374469231428023295">Паўтарыць спробу</translation>
 <translation id="6377118281273296434">Бяспека сайта</translation>
 <translation id="6380866119319257197">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />скіньце параметры сінхранізацыі<ph name="END_LINK" /></translation>
+<translation id="6383719166112032471">Адкрыць адрас…</translation>
 <translation id="6387994324662817823">Паролі захоўваюцца ў Менеджары пароляў Google толькі на гэтай прыладзе.</translation>
 <translation id="6389470377220713856">Імя на картцы</translation>
 <translation id="6403371459378431832">Сінхранізуйце даныя на ўсіх прыладах</translation>
@@ -699,6 +709,7 @@
 Вашы даныя былі зашыфраваны з дапамогай фразы-пароля <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="6418346271604475326">PDF рыхтуецца</translation>
 <translation id="6434591244308415567">Адбылася памылка. Паўтарыце спробу пазней.</translation>
+<translation id="6435236283694032571">Дадаць у Спіс на прагляд</translation>
 <translation id="6439338047467462846">Дазволіць усе</translation>
 <translation id="6445051938772793705">Краіна</translation>
 <translation id="6445981559479772097">Паведамленне адпраўлена.</translation>
@@ -803,7 +814,6 @@
 <translation id="7133798577887235672">Поўнае імя</translation>
 <translation id="7136892417564438900">Камера недаступная</translation>
 <translation id="7153999225810839758">Час чытання: <ph name="TIME" /> хв</translation>
-<translation id="7159472599653637159">Запытаць мабільную версію сайта</translation>
 <translation id="7162168282402939716">Разблакіраваць укладкі ў рэжыме інкогніта, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Захоўвайце паролі ў бяспечным месцы, каб прадухіліць іх раскрыццё ў выпадку праблем з бяспекай</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
@@ -863,6 +873,7 @@
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7720410380936703141">ПАЎТАРЫЦЬ СПРОБУ</translation>
 <translation id="7726702057919861819">Меню → Гісторыя → Выдаліць гісторыю праглядаў</translation>
+<translation id="7738120385185846461">Паведаміць аб праблеме…</translation>
 <translation id="7741325291586284254">Старонка "Новая ўкладка ў рэжыме інкогніта"</translation>
 <translation id="7756478488453921771">Меню → Налады → Спосабы аплаты</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
@@ -957,6 +968,7 @@
 <translation id="8459333855531264009">Небяспечны сайт</translation>
 <translation id="8487667956631253959">Уключаны</translation>
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
+<translation id="8488923644885757471">Новае акно</translation>
 <translation id="8490978609246021741">Захаваць змяненні</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="850600235656508448">Адкрыць у рэжыме інкогніта</translation>
@@ -1009,6 +1021,7 @@
 <translation id="8881801611828450202">Шукаць гэты відарыс праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8891935667620843985">Спасылкі будуць аўтаматычна адкрывацца ў Chrome, калі вы зробіце яго стандартным браўзерам.</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
+<translation id="890565330728586731">Назад</translation>
 <translation id="8909135823018751308">Абагуліць…</translation>
 <translation id="8911759861431145525">Націсніце Add ("Дадаць") і ўвядзіце свае звесткі</translation>
 <translation id="891658175948553296">Вылучыце тэкст на сайце</translation>
@@ -1043,7 +1056,6 @@
 <translation id="9124387962554796433">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук і іншыя сэрвісы Google.</translation>
 <translation id="9137526406337347448">Сэрвісы Google</translation>
 <translation id="9148126808321036104">Увайсці зноў</translation>
-<translation id="9152539721251340337">Стварыць QR-код</translation>
 <translation id="9157836665414082580">Не паказваць дыялогі</translation>
 <translation id="9177438225260810839">Пошук у адкрытых укладках</translation>
 <translation id="9188680907066685419">Выйсці з уліковага запісу пад кіраваннем</translation>

@@ -140,7 +140,6 @@
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2080769225927880590">請使用有效的帳戶登入</translation>
-<translation id="209018056901015185">切換為電腦版網站</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="2116625576999540962">已移動 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
 <translation id="2122754583996902531">您的瀏覽器受管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -229,7 +228,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">無法建立連結</translation>
 <translation id="2786701870377699570">搜尋所有已同步裝置的分頁</translation>
-<translation id="2797029671965852011">顯示歷史記錄</translation>
+<translation id="2797029671965852011">顯示記錄</translation>
 <translation id="2800683595868705743">退出分頁切換選項</translation>
 <translation id="2815198996063984598">2. 輕按 [預設瀏覽器應用程式]</translation>
 <translation id="2820289420301699633">管理員可控制 Chrome，並存取其中的資料</translation>
@@ -369,7 +368,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3861486700625780712">取消追蹤</translation>
-<translation id="387280738075653372">在這裡下載 Chrome。</translation>
+<translation id="387280738075653372">在此下載 Chrome。</translation>
 <translation id="3892144330757387737">您可在此查看記錄</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3904829425754749514">您的機構已關閉同步功能。您仍可在此裝置上查看自己的書籤、記錄、密碼和其他設定，但作出的變更將不會同步到您的帳戶。</translation>
@@ -387,7 +386,6 @@
 <translation id="3995521777587992544">網頁載入進度列，已經載入咗 <ph name="EMAIL" />。</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4004204301268239848">密碼會儲存在您的 Google 帳戶中，讓您在任何裝置上使用。</translation>
-<translation id="4006921758705478413">傳送至您的裝置</translation>
 <translation id="4018310736049373830">管理活動</translation>
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
@@ -589,7 +587,7 @@
 <translation id="5631164295104953411">新增付款方法</translation>
 <translation id="5636282538000367086">瞭解 Chrome 最新功能</translation>
 <translation id="5652623411397330904">您追蹤的產品會在此顯示。</translation>
-<translation id="5657859710142657190">前往頁方格</translation>
+<translation id="5657859710142657190">前往「分頁網格」</translation>
 <translation id="5659593005791499971">電郵</translation>
 <translation id="5669335982068190158">您已在重設 iPhone 時登出，輕按下方的 [繼續] 即可登入。</translation>
 <translation id="5669528293118408608">www</translation>
@@ -820,7 +818,6 @@
 <translation id="7133798577887235672">完整名稱</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
 <translation id="7153999225810839758">閱讀時間：<ph name="TIME" /> 分鐘</translation>
-<translation id="7159472599653637159">切換至流動網站</translation>
 <translation id="7162168282402939716">用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁</translation>
 <translation id="7172852049901402487">確保密碼安全，避免發生安全性問題</translation>
 <translation id="7173114856073700355">開啟設定</translation>
@@ -880,7 +877,7 @@
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7720410380936703141">再試一次</translation>
 <translation id="7726702057919861819">「選單」→「記錄」→「清除瀏覽資料」</translation>
-<translation id="7738120385185846461">回報問題…</translation>
+<translation id="7738120385185846461">報告問題…</translation>
 <translation id="7741325291586284254">新無痕式分頁頁面</translation>
 <translation id="7756478488453921771">「選單」→「設定」→「付款方法」</translation>
 <translation id="7765158879357617694">移動</translation>
@@ -977,7 +974,7 @@
 <translation id="8459333855531264009">不安全</translation>
 <translation id="8487667956631253959">開</translation>
 <translation id="8487700953926739672">可離線使用</translation>
-<translation id="8488923644885757471">開新視窗</translation>
+<translation id="8488923644885757471">開啟新視窗</translation>
 <translation id="8490978609246021741">儲存變更</translation>
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="850600235656508448">以無痕模式開啟</translation>
@@ -1066,7 +1063,6 @@
 <translation id="9124387962554796433">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務。</translation>
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9148126808321036104">重新登入</translation>
-<translation id="9152539721251340337">建立二維條碼</translation>
 <translation id="9157836665414082580">隱藏對話框</translation>
 <translation id="9177438225260810839">在開啟的分頁中搜尋</translation>
 <translation id="9188680907066685419">登出受管理的帳戶</translation>

@@ -196,7 +196,6 @@
 <translation id="1174366174291287894">Веза је увек безбедна ако вам Chrome не каже другачије</translation>
 <translation id="117445914942805388">Да бисте обрисали податке прегледања са свих синхронизованих уређаја и са Google налога, <ph name="BEGIN_LINK" />идите у подешавања синхронизације<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Одштампај...</translation>
-<translation id="1176378369905028399">Лозинка за овај налог је већ сачувана у Google менаџеру лозинки (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Није им дозвољено да мењају фајлове или фолдере на уређају</translation>
 <translation id="1177863135347784049">Прилагођено</translation>
 <translation id="1178581264944972037">Паузирај</translation>
@@ -1822,7 +1821,6 @@
 <translation id="2643698698624765890">Управљајте додацима кликом на ставку Додаци у менију Прозор.</translation>
 <translation id="2645047101481282803">Уређајем управља <ph name="PROFILE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome ОС</translation>
-<translation id="2645515095874728277">Лозинка за овај налог је већ сачувана на овом уређају</translation>
 <translation id="2649045351178520408">ASCII датотека шифрована методом „Base64“, ланац сертификата</translation>
 <translation id="2652129567809778422">Изаберите лозинку</translation>
 <translation id="2653033005692233957">Претрага није успела</translation>
@@ -2612,7 +2610,6 @@
 <translation id="3399432415385675819">Обавештења ће бити онемогућена</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />×<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> херца) – преплетено</translation>
 <translation id="3401484564516348917">Читање информација о прегледачу, ОС-у, уређају, инсталираном софтверу, вредностима регистра и фајловима</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} лозинка се чува на овом уређају}one{{COUNT} лозинка се чува на овом уређају}few{{COUNT} лозинке се чувају на овом уређају}other{{COUNT} лозинки се чува на овом уређају}}</translation>
 <translation id="3402255108239926910">Изаберите аватар</translation>
 <translation id="3402585168444815892">Регистровање за режим демонстрације</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4712,7 +4709,6 @@
 <translation id="5392192690789334093">Дозвољено је слање обавештења</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Линк}one{# линк}few{# линка}other{# линкова}}</translation>
 <translation id="5395498824851198390">Подразумевани фонт</translation>
-<translation id="5396325212236512832">Аутоматски се пријављујте на сајтове и у апликације помоћу сачуваних акредитива. Ако је ова функција искључена, тражићемо потврду пре сваког пријављивања на веб-сајт или у апликацију.</translation>
 <translation id="5397378439569041789">Региструј киоск или уређај за пријављивање</translation>
 <translation id="5397794290049113714">Ви</translation>
 <translation id="5398497406011404839">Сакривени обележивачи</translation>
@@ -6052,7 +6048,6 @@
 <translation id="6647441008198474441">URL-ови које посећујете се шаљу Google-у да би се предвидели сајтови које ћете можда следеће посетити</translation>
 <translation id="6648911618876616409">Важно ажурирање је спремно за инсталацију. Пријавите се да бисте започели.</translation>
 <translation id="6649018507441623493">Само тренутак…</translation>
-<translation id="6650234781371031356">Лозинка за <ph name="WEBSITE" /> се чува на овом уређају и на вашем Google налогу. Где желите да је избришете?</translation>
 <translation id="665061930738760572">Отвори у &amp;новом прозору</translation>
 <translation id="6651237644330755633">Веруј овом сертификату за идентификацију веб-сајтова</translation>
 <translation id="6651495917527016072">Синхронизујте WiFi мреже помоћу телефона. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>

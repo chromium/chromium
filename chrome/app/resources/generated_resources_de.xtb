@@ -196,7 +196,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1174366174291287894">Deine Verbindung ist immer sicher, solange Chrome dich nicht auf eine unsichere Verbindung hinweist</translation>
 <translation id="117445914942805388">Wenn du Browserdaten von allen deinen synchronisierten Geräten und aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />rufe die Synchronisierungseinstellungen auf<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Drucken...</translation>
-<translation id="1176378369905028399">In deinem Google Passwortmanager (<ph name="USER_EMAIL" />) ist bereits ein Passwort für dieses Konto gespeichert</translation>
 <translation id="1176471985365269981">Dürfen keine Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
 <translation id="1177863135347784049">Benutzerdefiniert</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -407,6 +406,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1388253969141979417">Dürfen mein Mikrofon verwenden</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> wird neu gestartet, wenn die Updates abgeschlossen sind.</translation>
 <translation id="1389601498324964367">Kontingentierter Speicherplatz</translation>
+<translation id="1390113502208199250">Wenn du die Funktionen des Chrome Education-Upgrades nutzen möchtest, musst du das Gerät auf die Werkseinstellungen zurücksetzen.</translation>
 <translation id="139013308650923562">Darf auf meinem Gerät installierte Schriftarten verwenden</translation>
 <translation id="1390548061267426325">In normalem Tab öffnen</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> ist nicht autorisiert, über den Drucker „<ph name="PRINTER_NAME" />“ zu drucken. Bitte wende dich an deinen Administrator.</translation>
@@ -477,6 +477,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1436784010935106834">Entfernt</translation>
 <translation id="1437986450143295708">Beschreibe ausführlich das Problem</translation>
 <translation id="1439671507542716852">Langzeitsupport</translation>
+<translation id="1440090277117135316">Registrierung bei einer Bildungseinrichtung abgeschlossen</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ausgewählt</translation>
 <translation id="1442851588227551435">Aktives Kerberos-Ticket festlegen</translation>
 <translation id="1444628761356461360">Diese Einstellung wird vom Geräteinhaber, <ph name="OWNER_EMAIL" />, verwaltet.</translation>
@@ -1817,7 +1818,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2643698698624765890">Klicke zum Verwalten deiner Erweiterungen im Menü „Fenster“ auf „Erweiterungen“.</translation>
 <translation id="2645047101481282803">Das Gerät wird von <ph name="PROFILE_NAME" /> verwaltet</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2645515095874728277">Auf diesem Gerät ist bereits ein Passwort für dieses Konto gespeichert</translation>
 <translation id="2649045351178520408">Base64-codierter ASCII-Code, Zertifikatkette</translation>
 <translation id="2652129567809778422">Passwort auswählen</translation>
 <translation id="2653033005692233957">Fehler bei der Suche</translation>
@@ -1935,6 +1935,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="274318651891194348">Suche nach Tastatur läuft</translation>
 <translation id="2743301740238894839">Starten</translation>
 <translation id="2743387203779672305">In Zwischenablage kopieren</translation>
+<translation id="274362947316498129">Eine App versucht, auf <ph name="DEVICE_NAME" /> zuzugreifen. Deaktivieren Sie den Datenschutzschalter von <ph name="DEVICE_NAME" />, um den Zugriff zu erlauben.</translation>
 <translation id="2745080116229976798">Microsoft - Qualifizierte Unterordnung</translation>
 <translation id="2749756011735116528">In <ph name="PRODUCT_NAME" /> anmelden</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2391,6 +2392,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3170072451822350649">Du kannst die Anmeldung auch überspringen und <ph name="LINK_START" />als Gast surfen<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Neuer Tab links</translation>
 <translation id="3177909033752230686">Sprache der Seite:</translation>
+<translation id="3177914167275935955">Dein Gerät beinhaltet ein Chrome Education-Upgrade, aber dein Nutzername ist nicht mit einem Google for Education-Konto verknüpft. Rufe g.co/workspace/edusignup auf einem Zweitgerät auf und erstelle ein Google for Education-Konto.</translation>
 <translation id="3179982752812949580">Schriftart für Text</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
 <translation id="3182749001423093222">Rechtschreibprüfung</translation>
@@ -2605,7 +2607,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3399432415385675819">Benachrichtigungen werden deaktiviert</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – Zeilensprung</translation>
 <translation id="3401484564516348917">Informationen zu deinem Browser, Betriebssystem, Gerät, der installierten Software, den Registrierungswerten und Dateien abrufen</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} Passwort ist auf diesem Gerät gespeichert}other{{COUNT} Passwörter sind auf diesem Gerät gespeichert}}</translation>
 <translation id="3402255108239926910">Avatar auswählen</translation>
 <translation id="3402585168444815892">Im Demomodus anmelden</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3104,6 +3105,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3851428669031642514">Unsichere Skripts laden</translation>
 <translation id="3852215160863921508">Eingabehilfe</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" /> ist aktiviert</translation>
 <translation id="3854599674806204102">Wähle eine Option aus</translation>
 <translation id="3854967233147778866">Übersetzung von fremdsprachigen Websites anbieten</translation>
 <translation id="3854976556788175030">Ausgabefach ist voll</translation>
@@ -3437,6 +3439,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4163560723127662357">Unbekannte Tastatur</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> gehört nicht zu einer gültigen Organisation. Wende dich an deinen Administrator. Wenn du ein Administrator bist, kannst du deine Organisation unter g.co/ChromeEnterpriseAccount einrichten.</translation>
 <translation id="4165986682804962316">Website-Einstellungen</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" /> versucht, auf <ph name="DEVICE_NAME" /> zuzugreifen. Deaktivieren Sie den Datenschutzschalter von <ph name="DEVICE_NAME" />, um den Zugriff zu erlauben.</translation>
 <translation id="4167393659000039775">Google übernimmt keine Verantwortung für Datenverluste. Auf nicht zertifizierten Modellen funktioniert <ph name="DEVICE_OS" /> möglicherweise nicht. Weitere Informationen findest du unter g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Websites verwenden normalerweise JavaScript zum Anzeigen interaktiver Funktionen, wie Videospiele oder Webformulare</translation>
 <translation id="4168015872538332605">Einige Einstellungen, die <ph name="PRIMARY_EMAIL" /> gehören, werden mit dir geteilt. Diese Einstellungen wirken sich nur dann auf dein Konto aus, wenn die Mehrfachanmeldung verwendet wird.</translation>
@@ -3898,6 +3901,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4610162781778310380">Bei <ph name="PLUGIN_NAME" /> ist ein Fehler aufgetreten</translation>
 <translation id="4610637590575890427">Wolltest du <ph name="SITE" /> aufrufen?</translation>
 <translation id="4611114513649582138">Datenverbindung verfügbar</translation>
+<translation id="4612841084470706111">Zugriff auf alle angeforderten Websites erlauben.</translation>
 <translation id="4613144866899789710">Linux-Installation wird abgebrochen…</translation>
 <translation id="4613271546271159013">Die Seite, die beim Öffnen eines neuen Tabs angezeigt wird, wurde durch eine Erweiterung geändert.</translation>
 <translation id="4615586811063744755">Kein Cookie ausgewählt</translation>
@@ -4057,6 +4061,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4762489666082647806">Cursorfarbe</translation>
 <translation id="4762718786438001384">Speicherplatz auf Gerät äußerst niedrig</translation>
 <translation id="4763408175235639573">Beim Anzeigen dieser Seite wurden die folgenden Cookies eingerichtet</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> ist kein gültiges Google for Education-Konto. Wende dich an deinen Administrator. Wenn du ein Administrator bist, kannst du deine Organisation unter g.co/workspace/edusignup einrichten.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Dieses Gerät wird für einen Monat gespeichert und du kannst dich das nächste Mal ohne einen Code verbinden. Dies wird von deinem Administrator festgelegt.}other{Dieses Gerät wird für {MONTHS} Monate gespeichert und du kannst dich das nächste Mal ohne einen Code verbinden. Dies wird von deinem Administrator festgelegt.}}</translation>
 <translation id="4765582662863429759">Zulassen, dass Android Messages SMS von deinem Smartphone an dein Chromebook übermittelt</translation>
 <translation id="4766598565665644999">Alle Erweiterungen können <ph name="HOST" /> lesen und ändern</translation>
@@ -4701,7 +4706,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5392192690789334093">Dürfen Benachrichtigungen senden</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# Links}}</translation>
 <translation id="5395498824851198390">Standardschriftart</translation>
-<translation id="5396325212236512832">Die automatische Anmeldung bei Websites und Apps ist bei gespeicherten Anmeldedaten verfügbar. Wenn diese Funktion deaktiviert ist, musst du bei jeder Anmeldung bei einer Website oder App deine Anmeldedaten eingeben.</translation>
 <translation id="5397378439569041789">Kiosk- und Beschilderungsgeräte anmelden</translation>
 <translation id="5397794290049113714">Ich</translation>
 <translation id="5398497406011404839">Ausgeblendete Lesezeichen</translation>
@@ -4718,6 +4722,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5407167491482639988">Unverständlich</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Aus deinem Google-Konto</translation>
+<translation id="5411022484772257615">Registrierung bei einer Bildungseinrichtung konnte nicht abgeschlossen werden</translation>
 <translation id="5413640305322530561">Weitere Informationen über Diagnose und Nutzungsdaten</translation>
 <translation id="5414198321558177633">Profilliste wird aktualisiert. Das kann einige Minuten dauern.</translation>
 <translation id="5414566801737831689">Die Symbole der von dir besuchten Websites lesen</translation>
@@ -5500,6 +5505,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6129953537138746214">Leertaste</translation>
 <translation id="6130692320435119637">WLAN hinzufügen</translation>
 <translation id="6130887916931372608">Taste</translation>
+<translation id="6132714462430777655">Registrierung bei einer Bildungseinrichtung überspringen?</translation>
 <translation id="6135823405800500595">Dein Smartphone muss sich in der Nähe befinden und entsperrt sein. Außerdem müssen Bluetooth und die WLAN-Funktion aktiviert sein.</translation>
 <translation id="6135826623269483856">Websites dürfen Fenster auf allen deinen Bildschirmen nicht verwalten</translation>
 <translation id="6136114942382973861">Downloadleiste schließen</translation>
@@ -5658,6 +5664,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6291949900244949761">Nachfragen, wenn eine Website auf USB-Geräte zugreifen möchte (empfohlen)</translation>
 <translation id="6291953229176937411">Im Finder &amp;zeigen</translation>
 <translation id="6292699686837272722">Tabs werden auf eine mittlere Breite verkleinert</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ist deaktiviert</translation>
 <translation id="6294759976468837022">Geschwindigkeit des automatischen Scans</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6295855836753816081">Wird gespeichert...</translation>
@@ -6030,7 +6037,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6647441008198474441">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du voraussichtlich als Nächstes besuchen wirst</translation>
 <translation id="6648911618876616409">Ein wichtiges Update ist zur Installation bereit. Melde dich an, um die Installation zu starten.</translation>
 <translation id="6649018507441623493">Bitte warten...</translation>
-<translation id="6650234781371031356">Dein Passwort für <ph name="WEBSITE" /> ist auf diesem Gerät und in deinem Google-Konto gespeichert. Von wo möchtest du es löschen?</translation>
 <translation id="665061930738760572">In &amp;neuem Fenster öffnen</translation>
 <translation id="6651237644330755633">Diesem Zertifikat zur Identifizierung von Websites vertrauen</translation>
 <translation id="6651495917527016072">WLAN-Netzwerke mit Smartphone synchronisieren. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -6719,6 +6725,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7310598146671372464">Fehler beim Anmelden. Der Server unterstützt keine angegebenen Kerberos-Verschlüsselungstypen. Bitte wende dich an deinen Administrator.</translation>
 <translation id="7311089766378749632">Anfrage zum Lesen und Ändern von <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Dein Administrator setzt deine eSIM zurück. Das kann einige Minuten dauern.</translation>
+<translation id="7317831949569936035">Registrierung bei einer Bildungseinrichtung</translation>
 <translation id="7320213904474460808">Netzwerk als Standard festlegen</translation>
 <translation id="7321545336522791733">Server nicht erreichbar</translation>
 <translation id="7323315405936922211">Größe des Cursorbereichs</translation>
@@ -8467,6 +8474,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8940081510938872932">Dein Computer erledigt momentan zu viele Aufgaben gleichzeitig. Bitte versuche es später erneut.</translation>
 <translation id="8940381019874223173">Aus deinen Google Fotos</translation>
 <translation id="8941173171815156065">Berechtigung "<ph name="PERMISSION" />" aufheben</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> ist deaktiviert</translation>
 <translation id="894191600409472540">Erstelle starke Passwörter</translation>
 <translation id="894360074127026135">Netscape International Step-up</translation>
 <translation id="8944099748578356325">Den Akku schneller verbrauchen (aktueller Stand: <ph name="BATTERY_PERCENTAGE" /> %)</translation>

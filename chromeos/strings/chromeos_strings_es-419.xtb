@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">Cancelar el trabajo de impresión</translation>
 <translation id="2163937499206714165">Activar el modo oscuro</translation>
 <translation id="2180197493692062006">Se produjo un error. Intenta volver a abrir la app.</translation>
-<translation id="2182088270354640012">Gracias por los comentarios. Tus comentarios ayudan a mejorar Chrome OS. Nuestro equipo los revisará. Debido a la cantidad de informes enviados, no recibirás una respuesta directa.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nombres</translation>
 <translation id="2217935453350629363">Velocidad actual</translation>
@@ -689,7 +688,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="773153675489693198">Conteo de ciclos</translation>
 <translation id="7747039790905080783">Clave compartida previamente</translation>
 <translation id="7762130827864645708">El cambio de contraseña se hizo correctamente. De ahora en más, utiliza la nueva contraseña.</translation>
-<translation id="7762839321248874531">Enviar <ph name="BEGIN_LINK1" />información del sistema y las apps<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Coincidencia del sufijo de dominio</translation>
 <translation id="7769672763586021400">ID del modelo</translation>
 <translation id="7784116172884276937">No hay ningún servidor DNS configurado</translation>
@@ -826,7 +824,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="9082718469794970195">Usar este video</translation>
 <translation id="9087578468327036362">Denuncia esta búsqueda</translation>
 <translation id="9088306295921699330">Uso actual</translation>
-<translation id="9092255287806472980">Tus comentarios ayudan a mejorar Chrome OS. Nuestro equipo los revisará. Debido a la gran cantidad de informes, no podremos enviarte una respuesta.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualizar ticket para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>

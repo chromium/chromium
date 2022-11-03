@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Nije moguće izvesti fajl <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Rezolucija fotografije</translation>
 <translation id="1925845977604399247">Idi u galeriju</translation>
+<translation id="199526504800285197">Snimanje je zaustavljeno</translation>
+<translation id="1995951722691075581">Snimanje je zaustavljeno zbog malo prostora za pohranu na uređaju. Da snimite više videozapisa, morate osloboditi prostor na uređaju.</translation>
 <translation id="2022953316617983419">QR kôd</translation>
 <translation id="2036868001356139588">Trajanje tajmera</translation>
 <translation id="2050339315714019657">Uspravno</translation>
@@ -47,7 +49,7 @@
 <translation id="2501953888035679275">Snimajte fotografije i videozapise kamerom.</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2549985041256363841">Započni snimanje</translation>
-<translation id="2577915835281444458">Snimanje će se uskoro zaustaviti. Otvorite pohranu uređaja da biste oslobodili prostor.</translation>
+<translation id="2577915835281444458">Snimanje će se uskoro zaustaviti. Idite u pohranu na uređaju da oslobodite prostor.</translation>
 <translation id="2599796128805996109">Zadnja kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Vrsta skeniranja</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">Videozapis</translation>
 <translation id="3838931309141338733">Skeniraj bar kôd</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
+<translation id="4060608699153044055">Ne možete snimati zbog malo prostora za pohranu na uređaju. Da započnete snimanje, morate osloboditi prostor na uređaju.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pauziraj snimanje</translation>
 <translation id="4121305183798804752">Otkriven je dokument</translation>
@@ -161,6 +164,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="7748344063862150053">Gornji desni ugao dokumenta</translation>
 <translation id="7933675232020478311">Pomjeranje prema donjem desnom uglu</translation>
 <translation id="7983668134180549431">Tekst je otkriven.</translation>
+<translation id="8079255378695216066">Nije moguće započeti snimanje</translation>
 <translation id="8120146556401698679">Pomicanje, naginjanje, zumiranje</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8145038249676204903">Prebaci na snimanje fotografija</translation>

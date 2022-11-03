@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
 <translation id="2163937499206714165">ເປີດໃຊ້ໂໝດມືດ</translation>
 <translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
-<translation id="2182088270354640012">ຂໍຂອບໃຈສຳລັບຄຳຕິຊົມ. ຄຳຕິຊົມຂອງທ່ານຈະຊ່ວຍປັບປຸງ Chrome OS ແລະ ຈະຖືກກວດສອບໂດຍທີມງານ Chrome OS. ເນື່ອງຈາກມີລາຍງານຈຳນວນຫຼາຍທີ່ສົ່ງເຂົ້າມາ, ທ່ານຈະບໍ່ໄດ້ຮັບການຕອບກັບໂດຍກົງ.</translation>
 <translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
 <translation id="2212733584906323460">ການຈຳແນກຊື່</translation>
 <translation id="2217935453350629363">ຄວາມໄວປັດຈຸບັນ</translation>
@@ -691,7 +690,6 @@
 <translation id="773153675489693198">ຈຳນວນຮອບ</translation>
 <translation id="7747039790905080783">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
 <translation id="7762130827864645708">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານສຳເລັດແລ້ວ. ກະລຸນາໃຊ້ລະຫັດຜ່ານໃໝ່ນັບຈາກນີ້ໄປ.</translation>
-<translation id="7762839321248874531">ສົ່ງ <ph name="BEGIN_LINK1" />ຂໍ້ມູນລະບົບ ແລະ ແອັບ<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ການວັດແທກ<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">ຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນ</translation>
 <translation id="7769672763586021400">ID ຮຸ່ນ</translation>
 <translation id="7784116172884276937">ບໍ່ໄດ້ຕັ້ງຄ່າ DNS ເທື່ອ</translation>
@@ -828,7 +826,6 @@
 <translation id="9082718469794970195">ໃຊ້ວິດີໂອ</translation>
 <translation id="9087578468327036362">ລາຍງານຄຳຊອກຫານີ້</translation>
 <translation id="9088306295921699330">ການນຳໃຊ້ໃນປັດຈຸບັນ</translation>
-<translation id="9092255287806472980">ຄຳຕິຊົມຂອງທ່ານຈະຊ່ວຍປັບປຸງລະບົບປະຕິບັດການ Chrome ແລະ ຈະຖືກກວດສອບໂດຍທີມງານຂອງພວກເຮົາ. ເນື່ອງຈາກມີລາຍງານຈຳນວນຫຼາຍ, ພວກເຮົາຈະບໍ່ສາມາດຕອບກັບໄດ້.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">ໂຫຼດຂໍ້ມູນປີ້ສຳລັບ <ph name="PRINCIPAL_NAME" /> ໃໝ່</translation>
 <translation id="9106415115617144481">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" /></translation>
