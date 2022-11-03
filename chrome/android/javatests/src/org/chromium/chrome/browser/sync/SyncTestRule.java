@@ -191,8 +191,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
             mSyncService.setSyncRequested(false);
             mFakeServerHelper = null;
             FakeServerHelper.destroyInstance();
+            SyncService.resetForTests();
+            mSyncService = null;
         });
-        SyncService.resetForTests();
     }
 
     public SyncTestRule() {}

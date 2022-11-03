@@ -66,6 +66,7 @@ public abstract class SyncService {
      */
     @VisibleForTesting
     public static void resetForTests() {
+        ThreadUtils.assertOnUiThread();
         sInitialized = false;
         sSyncService = null;
     }
