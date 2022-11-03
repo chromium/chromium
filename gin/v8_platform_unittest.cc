@@ -7,6 +7,7 @@
 #include <atomic>
 
 #include "base/barrier_closure.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_waitable_event.h"

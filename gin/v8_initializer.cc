@@ -14,6 +14,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"

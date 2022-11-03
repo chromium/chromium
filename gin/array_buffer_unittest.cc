@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "gin/array_buffer.h"
+
+#include "base/check_op.h"
 #include "build/build_config.h"
 #include "gin/per_isolate_data.h"
 #include "gin/public/isolate_holder.h"

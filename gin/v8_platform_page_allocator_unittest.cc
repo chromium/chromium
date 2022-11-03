@@ -4,6 +4,7 @@
 
 #include "gin/v8_platform_page_allocator.h"
 
+#include "base/check_op.h"
 #include "base/cpu.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
