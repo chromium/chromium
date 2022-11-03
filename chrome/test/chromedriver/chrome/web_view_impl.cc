@@ -478,9 +478,10 @@ Status WebViewImpl::GetUrl(std::string* url) {
 Status WebViewImpl::Load(const std::string& url, const Timeout* timeout) {
   // Javascript URLs will cause a hang while waiting for the page to stop
   // loading, so just disallow.
-  if (base::StartsWith(url, "javascript:",
-                       base::CompareCase::INSENSITIVE_ASCII))
+  if (base::StartsWith(url,
+                       "javascript:", base::CompareCase::INSENSITIVE_ASCII)) {
     return Status(kUnknownError, "unsupported protocol");
+  }
   base::Value::Dict params;
   params.Set("url", url);
   if (IsNonBlocking()) {
@@ -638,7 +639,7 @@ Status WebViewImpl::CallFunctionWithTimeout(
   Status status =
       EvaluateScriptWithTimeout(frame, expression, timeout, true, &temp_result);
   if (status.IsError())
-      return status;
+    return status;
   return internal::ParseCallFunctionResult(*temp_result, result);
 }
 
@@ -1078,8 +1079,7 @@ Status WebViewImpl::IsPendingNavigation(const Timeout* timeout,
                                         bool* is_pending) const {
   if (navigation_tracker_)
     return navigation_tracker_->IsPendingNavigation(timeout, is_pending);
-  else
-    return parent_->IsPendingNavigation(timeout, is_pending);
+  return parent_->IsPendingNavigation(timeout, is_pending);
 }
 
 JavaScriptDialogManager* WebViewImpl::GetJavaScriptDialogManager() {
@@ -1103,9 +1103,10 @@ Status WebViewImpl::OverrideNetworkConditions(
 
 Status WebViewImpl::OverrideDownloadDirectoryIfNeeded(
     const std::string& download_directory) {
-  if (download_directory_override_manager_)
+  if (download_directory_override_manager_) {
     return download_directory_override_manager_
         ->OverrideDownloadDirectoryWhenConnected(download_directory);
+  }
   return Status(kOk);
 }
 
@@ -1292,11 +1293,10 @@ Status WebViewImpl::StopProfileInternal() {
   Status status_debug = client_->SendCommand("Debugger.disable", params);
   Status status_profiler = client_->SendCommand("Profiler.disable", params);
 
-  if (status_debug.IsError()) {
+  if (status_debug.IsError())
     return status_debug;
-  } else if (status_profiler.IsError()) {
+  if (status_profiler.IsError())
     return status_profiler;
-  }
 
   return Status(kOk);
 }
@@ -1321,11 +1321,9 @@ Status WebViewImpl::EndProfile(std::unique_ptr<base::Value>* profile_data) {
 
   if (status.IsError()) {
     Status disable_profile_status = StopProfileInternal();
-    if (disable_profile_status.IsError()) {
+    if (disable_profile_status.IsError())
       return disable_profile_status;
-    } else {
-      return status;
-    }
+    return status;
   }
 
   *profile_data = std::move(profile_result);
@@ -1464,8 +1462,7 @@ Status WebViewImpl::IsNotPendingNavigation(const std::string& frame_id,
 bool WebViewImpl::IsNonBlocking() const {
   if (navigation_tracker_)
     return navigation_tracker_->IsNonBlocking();
-  else
-    return parent_->IsNonBlocking();
+  return parent_->IsNonBlocking();
 }
 
 FrameTracker* WebViewImpl::GetFrameTracker() const {

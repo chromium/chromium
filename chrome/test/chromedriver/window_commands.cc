@@ -116,61 +116,57 @@ Status GetUrl(WebView* web_view, const std::string& frame, std::string* url) {
 MouseEventType StringToMouseEventType(std::string action_type) {
   if (action_type == "pointerDown")
     return kPressedMouseEventType;
-  else if (action_type == "pointerUp")
+  if (action_type == "pointerUp")
     return kReleasedMouseEventType;
-  else if (action_type == "pointerMove")
+  if (action_type == "pointerMove")
     return kMovedMouseEventType;
-  else if (action_type == "scroll")
+  if (action_type == "scroll")
     return kWheelMouseEventType;
-  else if (action_type == "pause")
+  if (action_type == "pause")
     return kPauseMouseEventType;
-  else
-    return kPressedMouseEventType;
+  return kPressedMouseEventType;
 }
 
 MouseButton StringToMouseButton(std::string button_type) {
   if (button_type == "left")
     return kLeftMouseButton;
-  else if (button_type == "middle")
+  if (button_type == "middle")
     return kMiddleMouseButton;
-  else if (button_type == "right")
+  if (button_type == "right")
     return kRightMouseButton;
-  else if (button_type == "back")
+  if (button_type == "back")
     return kBackMouseButton;
-  else if (button_type == "forward")
+  if (button_type == "forward")
     return kForwardMouseButton;
-  else
-    return kNoneMouseButton;
+  return kNoneMouseButton;
 }
 
 TouchEventType StringToTouchEventType(std::string action_type) {
   if (action_type == "pointerDown")
     return kTouchStart;
-  else if (action_type == "pointerUp")
+  if (action_type == "pointerUp")
     return kTouchEnd;
-  else if (action_type == "pointerMove")
+  if (action_type == "pointerMove")
     return kTouchMove;
-  else if (action_type == "pointerCancel")
+  if (action_type == "pointerCancel")
     return kTouchCancel;
-  else if (action_type == "pause")
+  if (action_type == "pause")
     return kPause;
-  else
-    return kTouchStart;
+  return kTouchStart;
 }
 
 int StringToModifierMouseButton(std::string button_type) {
   if (button_type == "left")
     return 1;
-  else if (button_type == "right")
+  if (button_type == "right")
     return 2;
-  else if (button_type == "middle")
+  if (button_type == "middle")
     return 4;
-  else if (button_type == "back")
+  if (button_type == "back")
     return 8;
-  else if (button_type == "forward")
+  if (button_type == "forward")
     return 16;
-  else
-    return 0;
+  return 0;
 }
 
 int MouseButtonToButtons(MouseButton button) {
@@ -191,25 +187,22 @@ int MouseButtonToButtons(MouseButton button) {
 }
 
 int KeyToKeyModifiers(std::string key) {
-  if (key == "Shift") {
+  if (key == "Shift")
     return kShiftKeyModifierMask;
-  } else if (key == "Control") {
+  if (key == "Control")
     return kControlKeyModifierMask;
-  } else if (key == "Alt") {
+  if (key == "Alt")
     return kAltKeyModifierMask;
-  } else if (key == "Meta") {
+  if (key == "Meta")
     return kMetaKeyModifierMask;
-  } else {
-    return 0;
-  }
+  return 0;
 }
 
 PointerType StringToPointerType(std::string pointer_type) {
   CHECK(pointer_type == "pen" || pointer_type == "mouse");
   if (pointer_type == "pen")
     return kPen;
-  else
-    return kMouse;
+  return kMouse;
 }
 
 struct Cookie {
@@ -335,8 +328,9 @@ Status ScrollCoordinateInToView(
   *offset_x = x - view_x;
   *offset_y = y - view_y;
   if (*offset_x < 0 || *offset_x >= view_width || *offset_y < 0 ||
-      *offset_y >= view_height)
+      *offset_y >= view_height) {
     return Status(kUnknownError, "Failed to scroll coordinate into view");
+  }
   return Status(kOk);
 }
 
@@ -781,25 +775,24 @@ Status ExecuteExecuteScript(Session* session,
   if (!maybe_script)
     return Status(kInvalidArgument, "'script' must be a string");
   std::string script = *maybe_script;
-  if (script == ":takeHeapSnapshot") {
+  if (script == ":takeHeapSnapshot")
     return web_view->TakeHeapSnapshot(value);
-  } else if (script == ":startProfile") {
+  if (script == ":startProfile")
     return web_view->StartProfile();
-  } else if (script == ":endProfile") {
+  if (script == ":endProfile")
     return web_view->EndProfile(value);
-  } else {
-    const base::Value::List* args = params.FindList("args");
-    // Need to support line oriented comment
-    if (script.find("//") != std::string::npos)
-      script = script + "\n";
 
-    Status status =
-        web_view->CallUserSyncScript(session->GetCurrentFrameId(), script,
-                                     *args, session->script_timeout, value);
-    if (status.code() == kTimeout)
-      return Status(kScriptTimeout);
-    return status;
-  }
+  const base::Value::List* args = params.FindList("args");
+  // Need to support line oriented comment
+  if (script.find("//") != std::string::npos)
+    script = script + "\n";
+
+  Status status =
+      web_view->CallUserSyncScript(session->GetCurrentFrameId(), script, *args,
+                                   session->script_timeout, value);
+  if (status.code() == kTimeout)
+    return Status(kScriptTimeout);
+  return status;
 }
 
 Status ExecuteExecuteAsyncScript(Session* session,

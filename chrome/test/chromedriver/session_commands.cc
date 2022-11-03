@@ -520,35 +520,34 @@ bool MatchCapabilities(const base::Value::Dict& capabilities) {
 
   const base::Value* platform_name_value = capabilities.Find("platformName");
   if (platform_name_value && !platform_name_value->is_none()) {
-    if (platform_name_value->is_string()) {
-      std::string requested_platform_name = platform_name_value->GetString();
-      std::string requested_first_token =
+    if (!platform_name_value->is_string())
+      return false;
+
+    std::string requested_platform_name = platform_name_value->GetString();
+    std::string requested_first_token =
         requested_platform_name.substr(0, requested_platform_name.find(' '));
 
-      std::string actual_platform_name =
+    std::string actual_platform_name =
         base::ToLowerASCII(base::SysInfo::OperatingSystemName());
-      std::string actual_first_token =
+    std::string actual_first_token =
         actual_platform_name.substr(0, actual_platform_name.find(' '));
 
-      bool is_remote = has_chrome_options &&
-                       chrome_options->FindString("debuggerAddress") != nullptr;
-      if (requested_platform_name == "any" || is_remote ||
-          (is_android && requested_platform_name == "android")) {
-        // "any" can be used as a wild card for platformName.
-        // if |is_remote| there is no easy way to know
-        // target platform. Android check also occurs here.
-        // If any of the above cases pass, we return true.
-      } else if (is_android && requested_platform_name != "android") {
+    bool is_remote = has_chrome_options &&
+                     chrome_options->FindString("debuggerAddress") != nullptr;
+    if (requested_platform_name == "any" || is_remote ||
+        (is_android && requested_platform_name == "android")) {
+      // "any" can be used as a wild card for platformName.
+      // if |is_remote| there is no easy way to know
+      // target platform. Android check also occurs here.
+      // If any of the above cases pass, we return true.
+    } else if (is_android && requested_platform_name != "android") {
+      return false;
+    } else if (requested_first_token == "mac" ||
+               requested_first_token == "windows" ||
+               requested_first_token == "linux") {
+      if (actual_first_token != requested_first_token)
         return false;
-      } else if (requested_first_token == "mac" ||
-                 requested_first_token == "windows" ||
-                 requested_first_token == "linux") {
-        if (actual_first_token != requested_first_token)
-          return false;
-      } else if (requested_platform_name != actual_platform_name) {
-        return false;
-      }
-    } else {
+    } else if (requested_platform_name != actual_platform_name) {
       return false;
     }
   }
@@ -700,8 +699,7 @@ Status ExecuteQuit(bool allow_detach,
   session->quit = true;
   if (allow_detach && session->detach)
     return Status(kOk);
-  else
-    return session->chrome->Quit();
+  return session->chrome->Quit();
 }
 
 Status ExecuteGetSessionCapabilities(Session* session,
@@ -971,16 +969,15 @@ Status ExecuteSetTimeoutsW3C(Session* session,
     base::TimeDelta timeout;
     const std::string& type = setting.first;
     if (setting.second.is_none()) {
-      if (type == "script")
-        timeout = base::TimeDelta::Max();
-      else
+      if (type != "script")
         return Status(kInvalidArgument, "timeout can not be null");
+      timeout = base::TimeDelta::Max();
     } else {
       if (!GetOptionalSafeInt(params, setting.first, &timeout_ms_int64) ||
-          timeout_ms_int64 < 0)
+          timeout_ms_int64 < 0) {
         return Status(kInvalidArgument, "value must be a non-negative integer");
-      else
-        timeout = base::Milliseconds(timeout_ms_int64);
+      }
+      timeout = base::Milliseconds(timeout_ms_int64);
     }
     if (type == "script") {
       session->script_timeout = timeout;
@@ -999,11 +996,9 @@ Status ExecuteSetTimeouts(Session* session,
   // TODO(crbug.com/chromedriver/2596): Remove legacy version support when we
   // stop supporting non-W3C protocol. At that time, we can delete the legacy
   // function and merge the W3C function into this function.
-  if (params.contains("ms")) {
+  if (params.contains("ms"))
     return ExecuteSetTimeoutLegacy(session, params, value);
-  } else {
-    return ExecuteSetTimeoutsW3C(session, params, value);
-  }
+  return ExecuteSetTimeoutsW3C(session, params, value);
 }
 
 Status ExecuteGetTimeouts(Session* session,

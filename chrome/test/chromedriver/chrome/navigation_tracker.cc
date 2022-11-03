@@ -23,11 +23,12 @@ Status MakeNavigationCheckFailedStatus(Status command_status) {
   // Report specific errors to callers for proper handling
   if (command_status.code() == kUnexpectedAlertOpen ||
       command_status.code() == kTimeout ||
-      command_status.code() == kNoSuchExecutionContext)
+      command_status.code() == kNoSuchExecutionContext) {
     return command_status;
-  else
-    return Status(kUnknownError, "cannot determine loading status",
-                  command_status);
+  }
+
+  return Status(kUnknownError, "cannot determine loading status",
+                command_status);
 }
 std::unordered_map<std::string, int> error_codes({
 #define NET_ERROR(label, value) {#label, value},
@@ -39,8 +40,9 @@ const char kNetErrorStart[] = "net::ERR_";
 
 bool isNetworkError(const std::string& errorText) {
   if (!base::StartsWith(errorText, kNetErrorStart,
-                        base::CompareCase::SENSITIVE))
+                        base::CompareCase::SENSITIVE)) {
     return false;
+  }
 
   auto it = error_codes.find(errorText.substr(strlen(kNetErrorStart)));
   if (it == error_codes.end())
@@ -129,29 +131,33 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     // events from it until we reconnect.
     *is_pending = false;
     return Status(kOk);
-  } else if (status.code() == kTargetDetached) {
+  }
+  if (status.code() == kTargetDetached) {
     // If we receive a kTargetDetached status code from Runtime.evaluate, don't
     // wait for pending navigations to complete, since the page has been closed.
     *is_pending = false;
     return status;
-  } else if (status.code() == kUnexpectedAlertOpen) {
+  }
+  if (status.code() == kUnexpectedAlertOpen) {
     // The JS event loop is paused while modal dialogs are open, so return
     // control to the test so that it can dismiss the dialog.
     *is_pending = false;
     return Status(kOk);
-  } else if (status.code() == kUnknownError &&
-             status.message().find(kTargetClosedMessage) != std::string::npos) {
+  }
+  if (status.code() == kUnknownError &&
+      status.message().find(kTargetClosedMessage) != std::string::npos) {
     *is_pending = true;
     return Status(kOk);
-  } else if (status.IsError() ||
-             result.FindIntPath("result.value").value_or(0) != 1) {
+  }
+  if (status.IsError() || result.FindIntPath("result.value").value_or(0) != 1) {
     return MakeNavigationCheckFailedStatus(status);
   }
 
   if (!hasCurrentFrame()) {
     *is_pending = false;
     return Status(kOk);
-  } else if (loadingState() == kUnknown) {
+  }
+  if (loadingState() == kUnknown) {
     // In the case that a http request is sent to server to fetch the page
     // content and the server hasn't responded at all, a dummy page is created
     // for the new window. In such case, the baseURL will be 'about:blank'.
@@ -229,7 +235,8 @@ Status NavigationTracker::OnEvent(DevToolsClient* client,
        (is_eager_ && method == "Page.domContentEventFired"))) {
     frame_to_state_map_[top_frame_id_] = kNotLoading;
     return UpdateCurrentLoadingState();
-  } else if (method == "Page.frameAttached") {
+  }
+  if (method == "Page.frameAttached") {
     std::string frame_id;
     if (!params.GetString("frameId", &frame_id))
       return Status(kUnknownError, "missing or invalid 'frameId'");
@@ -287,7 +294,8 @@ Status NavigationTracker::UpdateCurrentLoadingState() {
     *loading_state_ = kLoading;
     // result is not set in this case, so return here
     return Status(kOk);
-  } else if (status.IsError()) {
+  }
+  if (status.IsError()) {
     return MakeNavigationCheckFailedStatus(status);
   }
   std::string ready_state = result->GetString();
@@ -333,8 +341,10 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
   // Check if Page.navigate has any error from top frame
   std::string error_text;
   if (method == "Page.navigate" && result &&
-      result->GetString("errorText", &error_text) && isNetworkError(error_text))
+      result->GetString("errorText", &error_text) &&
+      isNetworkError(error_text)) {
     return Status(kUnknownError, error_text);
+  }
 
   // Check for start of navigation. In some case response to navigate is delayed
   // until after the command has already timed out, in which case it has already
@@ -375,10 +385,8 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
     for (int attempt = 0; attempt < 3; attempt++) {
       status = client_->SendCommandAndGetResultWithTimeout(
           "Runtime.evaluate", params, &command_timeout, &result_dict);
-      if (status.code() == kUnknownError &&
-          status.message().find(kTargetClosedMessage) != std::string::npos) {
-        continue;
-      } else {
+      if (status.code() != kUnknownError ||
+          status.message().find(kTargetClosedMessage) == std::string::npos) {
         break;
       }
     }
