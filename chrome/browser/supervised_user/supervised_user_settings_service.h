@@ -55,9 +55,9 @@ class SupervisedUserSettingsService : public KeyedService,
                                       public PrefStore::Observer {
  public:
   // A callback whose first parameter is a dictionary containing all supervised
-  // user settings. If the dictionary is NULL, it means that the service is
+  // user settings. If the dictionary is empty, it means that the service is
   // inactive, i.e. the user is not supervised.
-  using SettingsCallbackType = void(const base::DictionaryValue*);
+  using SettingsCallbackType = void(const base::Value::Dict&);
   using SettingsCallback = base::RepeatingCallback<SettingsCallbackType>;
   using SettingsCallbackList =
       base::RepeatingCallbackList<SettingsCallbackType>;
@@ -185,8 +185,8 @@ class SupervisedUserSettingsService : public KeyedService,
   base::Value::Dict* GetQueuedItems() const;
 
   // Returns a dictionary with all supervised user settings if the service is
-  // active, or NULL otherwise.
-  std::unique_ptr<base::DictionaryValue> GetSettings();
+  // active, or empty dictionary otherwise.
+  base::Value::Dict GetSettingsWithDefault();
 
   // Sends the settings to all subscribers. This method should be called by the
   // subclass whenever the settings change.

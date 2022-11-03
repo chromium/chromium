@@ -29,7 +29,6 @@
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 #include "content/public/browser/browser_thread.h"
 
-using base::DictionaryValue;
 using base::JSONReader;
 using base::UserMetricsAction;
 using base::Value;
@@ -122,8 +121,8 @@ base::CallbackListSubscription
 SupervisedUserSettingsService::SubscribeForSettingsChange(
     const SettingsCallback& callback) {
   if (IsReady()) {
-    std::unique_ptr<base::DictionaryValue> settings = GetSettings();
-    callback.Run(settings.get());
+    base::Value::Dict settings = GetSettingsWithDefault();
+    callback.Run(std::move(settings));
   }
 
   return settings_callback_list_.Add(callback);
@@ -505,11 +504,10 @@ base::Value::Dict* SupervisedUserSettingsService::GetQueuedItems() const {
   return GetOrCreateDictionary(kQueuedItems);
 }
 
-std::unique_ptr<base::DictionaryValue>
-SupervisedUserSettingsService::GetSettings() {
+base::Value::Dict SupervisedUserSettingsService::GetSettingsWithDefault() {
   DCHECK(IsReady());
   if (!active_ || initialization_failed_)
-    return nullptr;
+    return base::Value::Dict();
 
   base::Value::Dict settings(local_settings_.Clone());
 
@@ -529,14 +527,13 @@ SupervisedUserSettingsService::GetSettings() {
     settings.Set(it.first, it.second.Clone());
   }
 
-  return base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(base::Value(std::move(settings))));
+  return settings;
 }
 
 void SupervisedUserSettingsService::InformSubscribers() {
   if (!IsReady())
     return;
 
-  std::unique_ptr<base::DictionaryValue> settings = GetSettings();
-  settings_callback_list_.Notify(settings.get());
+  base::Value::Dict settings = GetSettingsWithDefault();
+  settings_callback_list_.Notify(std::move(settings));
 }

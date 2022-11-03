@@ -44,7 +44,7 @@ class FamilyLinkUserInternalsMessageHandler
   void HandleTryURL(const base::Value::List& args);
 
   void SendBasicInfo();
-  void SendFamilyLinkUserSettings(const base::DictionaryValue* settings);
+  void SendFamilyLinkUserSettings(const base::Value::Dict& settings);
 
   void OnTryURLResult(
       const std::string& callback_id,

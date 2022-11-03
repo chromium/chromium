@@ -261,10 +261,8 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
 }
 
 void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
-    const base::DictionaryValue* settings) {
-  FireWebUIListener(
-      "user-settings-received",
-      *(settings ? settings : std::make_unique<base::Value>().get()));
+    const base::Value::Dict& settings) {
+  FireWebUIListener("user-settings-received", settings);
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(

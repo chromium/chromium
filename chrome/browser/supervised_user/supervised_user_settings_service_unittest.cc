@@ -115,12 +115,12 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
               base::JSONReader::Read(supervised_user_setting.value()));
   }
 
-  void OnNewSettingsAvailable(const base::DictionaryValue* settings) {
-    if (!settings) {
+  void OnNewSettingsAvailable(const base::Value::Dict& settings) {
+    if (settings.empty()) {
       settings_.reset();
     } else {
       settings_ = base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(settings->Clone()));
+          base::Value::ToUniquePtrValue(base::Value(settings.Clone())));
     }
   }
 

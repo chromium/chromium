@@ -16,7 +16,6 @@
 #include "components/prefs/pref_store.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -42,7 +41,7 @@ class SupervisedUserPrefStore : public PrefStore {
  private:
   ~SupervisedUserPrefStore() override;
 
-  void OnNewSettingsAvailable(const base::DictionaryValue* settings);
+  void OnNewSettingsAvailable(const base::Value::Dict& settings);
 
   void OnSettingsServiceShutdown();
 

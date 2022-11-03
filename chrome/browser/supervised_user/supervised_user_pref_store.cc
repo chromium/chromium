@@ -117,10 +117,10 @@ SupervisedUserPrefStore::~SupervisedUserPrefStore() {
 }
 
 void SupervisedUserPrefStore::OnNewSettingsAvailable(
-    const base::DictionaryValue* settings) {
+    const base::Value::Dict& settings) {
   std::unique_ptr<PrefValueMap> old_prefs = std::move(prefs_);
   prefs_ = std::make_unique<PrefValueMap>();
-  if (settings) {
+  if (!settings.empty()) {
     // Set hardcoded prefs and defaults.
     prefs_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
                        SupervisedUserURLFilter::ALLOW);
@@ -133,7 +133,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 
     // Copy supervised user settings to prefs.
     for (const auto& entry : kSupervisedUserSettingsPrefMapping) {
-      const base::Value* value = settings->FindKey(entry.settings_name);
+      const base::Value* value = settings.Find(entry.settings_name);
       if (value)
         prefs_->SetValue(entry.pref_name, value->Clone());
     }
@@ -158,8 +158,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // of |kSupervisedUserSettingsPrefMapping|, but this can't be done for
       // |prefs::kForceYouTubeRestrict| because it is an int, not a bool.
       bool force_safe_search =
-          settings->FindBoolPath(supervised_users::kForceSafeSearch)
-              .value_or(true);
+          settings.FindBool(supervised_users::kForceSafeSearch).value_or(true);
       prefs_->SetInteger(
           prefs::kForceYouTubeRestrict,
           force_safe_search ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
@@ -173,7 +172,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // "Permissions for sites, apps and extensions" setting, like geolocation
       // being disallowed.
       bool permissions_disallowed =
-          settings->FindBoolPath(supervised_users::kGeolocationDisabled)
+          settings.FindBool(supervised_users::kGeolocationDisabled)
               .value_or(true);
       prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
                          !permissions_disallowed);
