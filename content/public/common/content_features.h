@@ -235,6 +235,7 @@ enum class SubframeShutdownDelayType {
 CONTENT_EXPORT extern const base::FeatureParam<SubframeShutdownDelayType>
     kSubframeShutdownDelayTypeParam;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSurfaceSyncFullscreenKillswitch);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSyntheticPointerActions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kThreadingOptimizationsOnIO);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchDragAndContextMenu);

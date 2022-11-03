@@ -10,6 +10,7 @@
 #include "content/browser/media/media_browsertest.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -150,10 +151,36 @@ IN_PROC_BROWSER_TEST_F(FullscreenDetectionTest, EncompassingDivNotFullscreen) {
 
   FullscreenEventsRecorder recorder(web_contents);
 
+#if BUILDFLAG(IS_ANDROID)
+  RenderWidgetHostImpl* rwh = static_cast<RenderWidgetHostImpl*>(
+      web_contents->GetRenderViewHost()->GetWidget());
+  gfx::Size compositor_viewport_pixel_rect =
+      rwh->GetVisualProperties().compositor_viewport_pixel_rect.size();
+#endif
+
   ASSERT_TRUE(content::ExecJs(web_contents, "makeFullscreen('small_div')"));
 
   recorder.Wait(1);
   EXPECT_EQ(recorder.event(0), FullscreenTestEvent::kEnterFullscreen);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Android fullscreen transitions causes layout changes, which triggers
+  // SurfaceSync. We should confirm the fullscreen frames have been produced
+  // before exiting.
+  RenderFrameSubmissionObserver rfm_observer(web_contents);
+  while (rwh->GetVisualProperties().compositor_viewport_pixel_rect.size() ==
+         compositor_viewport_pixel_rect) {
+    rfm_observer.WaitForMetadataChange();
+  }
+
+  viz::LocalSurfaceId target = static_cast<RenderWidgetHostViewBase*>(
+                                   web_contents->GetRenderWidgetHostView())
+                                   ->GetLocalSurfaceId();
+  while (!rfm_observer.LastRenderFrameMetadata()
+              .local_surface_id->IsSameOrNewerThan(target)) {
+    rfm_observer.WaitForMetadataChange();
+  }
+#endif
 
   ASSERT_TRUE(content::ExecJs(web_contents, "exitFullscreen()"));
   recorder.Wait(2);

@@ -141,7 +141,7 @@ void ResizeWebContentsView(Shell* shell,
 
 class WebContentsImplBrowserTest : public ContentBrowserTest {
  public:
-  WebContentsImplBrowserTest() = default;
+  WebContentsImplBrowserTest();
   void SetUp() override {
     RenderWidgetHostImpl::DisableResizeAckCheckForTesting();
     ContentBrowserTest::SetUp();
@@ -162,7 +162,17 @@ class WebContentsImplBrowserTest : public ContentBrowserTest {
         static_cast<WebContentsImpl*>(shell()->web_contents());
     return web_contents->current_fullscreen_frame_;
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+WebContentsImplBrowserTest::WebContentsImplBrowserTest() {
+  // The WebDisplayModeDelegate does not trigger any of the layout used to
+  // complete SurfaceSync for Fullscreen transitions.
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kSurfaceSyncFullscreenKillswitch);
+}
 
 // Keeps track of data from LoadNotificationDetails so we can later verify that
 // they are correct, after the LoadNotificationDetails object is deleted.
@@ -1990,13 +2000,11 @@ class WebContentsImplBrowserTestWithDifferentOriginSubframeDialogSuppression
     : public WebContentsImplBrowserTest {
  public:
   void SetUp() override {
+    scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
         features::kSuppressDifferentOriginSubframeJSDialogs);
     WebContentsImplBrowserTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -2543,13 +2551,11 @@ class WebContentsImplBrowserTestUserAgentOverrideSubstring
     : public WebContentsImplBrowserTest {
  public:
   void SetUp() override {
+    scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
         blink::features::kUserAgentOverrideExperiment);
     WebContentsImplBrowserTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify UserAgentOverride histograms
@@ -2749,13 +2755,11 @@ class WebContentsImplBrowserTestClientHintsEnabled
     : public WebContentsImplBrowserTest {
  public:
   void SetUp() override {
+    scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
         blink::features::kUserAgentClientHint);
     WebContentsImplBrowserTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies client hints are updated when the user-agent is changed in
@@ -2851,6 +2855,7 @@ class WebContentsImplBrowserTestReduceAcceptLanguageOn
     : public WebContentsImplBrowserTest {
  public:
   void SetUp() override {
+    scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         {network::features::kReduceAcceptLanguage}, {});
     WebContentsImplBrowserTest::SetUp();
@@ -2904,9 +2909,6 @@ class WebContentsImplBrowserTestReduceAcceptLanguageOn
     delegate->ClearReducedLanguage(origin);
     EXPECT_FALSE(delegate->GetReducedLanguage(origin).has_value());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies accept-language are updated when DidStartNavigation().

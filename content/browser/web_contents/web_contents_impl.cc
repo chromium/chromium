@@ -3456,6 +3456,11 @@ void WebContentsImpl::EnterFullscreenMode(
   DCHECK(requesting_frame->IsActive());
   DCHECK(ContainsOrIsFocusedWebContents());
 
+  // When WebView is the `delegate_` we can end up with VisualProperties changes
+  // synchronously. Notify the view ahead so it can handle the transition.
+  if (auto* view = GetRenderWidgetHostView())
+    static_cast<RenderWidgetHostViewBase*>(view)->EnterFullscreenMode(options);
+
   if (delegate_) {
     delegate_->EnterFullscreenModeForTab(requesting_frame, options);
 
@@ -3472,6 +3477,11 @@ void WebContentsImpl::EnterFullscreenMode(
 void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ExitFullscreenMode",
                         "will_cause_resize", will_cause_resize);
+  // When WebView is the `delegate_` we can end up with VisualProperties changes
+  // synchronously. Notify the view ahead so it can handle the transition.
+  if (auto* view = GetRenderWidgetHostView())
+    static_cast<RenderWidgetHostViewBase*>(view)->ExitFullscreenMode();
+
   if (delegate_) {
     delegate_->ExitFullscreenModeForTab(this);
 
@@ -8778,6 +8788,12 @@ void WebContentsImpl::SetHasPersistentVideo(bool has_persistent_video) {
   has_persistent_video_ = has_persistent_video;
   NotifyPreferencesChanged();
   media_web_contents_observer()->RequestPersistentVideo(has_persistent_video);
+
+  // This is Picture-in-Picture on Android S+.
+  if (auto* view = GetRenderWidgetHostView()) {
+    static_cast<RenderWidgetHostViewBase*>(view)->SetHasPersistentVideo(
+        has_persistent_video);
+  }
 }
 
 void WebContentsImpl::SetSpatialNavigationDisabled(bool disabled) {

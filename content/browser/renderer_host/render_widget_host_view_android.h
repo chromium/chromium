@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/browser/renderer_host/input/stylus_text_selector.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/renderer_host/screen_state.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
@@ -216,6 +217,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool OnMouseEvent(const ui::MotionEventAndroid& m) override;
   bool OnMouseWheelEvent(const ui::MotionEventAndroid& event) override;
   bool OnGestureEvent(const ui::GestureEventAndroid& event) override;
+  void OnSizeChanged() override;
   void OnPhysicalBackingSizeChanged(
       absl::optional<base::TimeDelta> deadline_override) override;
   void NotifyVirtualKeyboardOverlayRect(
@@ -296,7 +298,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   bool SynchronizeVisualProperties(
       const cc::DeadlinePolicy& deadline_policy,
-      const absl::optional<viz::LocalSurfaceId>& child_local_surface_id);
+      const absl::optional<viz::LocalSurfaceId>& child_local_surface_id,
+      bool reuse_current_local_surface_id = false,
+      bool ignore_ack = false);
 
   bool HasValidFrame() const;
 
@@ -408,12 +412,59 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       final;
   void CancelPresentationTimeRequestForHostAndDelegate() final;
+  void EnterFullscreenMode(
+      const blink::mojom::FullscreenOptions& options) override;
+  void ExitFullscreenMode() override;
+  void LockOrientation(
+      device::mojom::ScreenOrientationLockType orientation) override;
+  void UnlockOrientation() override;
+  void SetHasPersistentVideo(bool has_persistent_video) override;
 
  private:
   friend class RenderWidgetHostViewAndroidTest;
+  friend class RenderWidgetHostViewAndroidFullscreenRotationTest;
   friend class RenderWidgetHostViewAndroidRotationTest;
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            GestureManagerListensToChildFrames);
+
+  class ScreenStateChangeHandler {
+   public:
+    explicit ScreenStateChangeHandler(RenderWidgetHostViewAndroid* rwhva);
+    ~ScreenStateChangeHandler() = default;
+
+    bool CanSynchronizeVisualProperties() const;
+
+    // Visual Property updates.
+    void OnVisibleViewportSizeChanged(const gfx::Size& visible_viewport_size);
+    bool OnPhysicalBackingSizeChanged(const gfx::Size& physical_backing_size,
+                                      int64_t deadline_in_frames);
+    bool OnScreenInfoChanged(const display::ScreenInfo& screen_info);
+
+    // State transitions.
+    void EnterFullscreenMode();
+    void ExitFullscreenMode();
+    void LockOrientation(device::mojom::ScreenOrientationLockType orientation);
+    void UnlockOrientation();
+    void SetHasPersistentVideo(bool has_persistent_video);
+
+   private:
+    // Sets the `current_screen_state_` to be the current values. Clears
+    // `pending_screen_state_` to begin tracking subsequent updates.
+    void BeginScreenStateChange();
+
+    // Reviews the states of `pending_screen_state_` to handle rotations,
+    // fullscreen, and Picture-in-Picture mode.
+    bool HandleScreenStateChanges(const cc::DeadlinePolicy& deadline_policy);
+
+    // The ScreenState of the current world, the pending visual properties, or
+    // the properties from before we entered Picture-in-Picture mode.
+    ScreenState current_screen_state_;
+    ScreenState pending_screen_state_;
+    ScreenState pre_picture_in_picture_;
+
+   private:
+    RenderWidgetHostViewAndroid* rwhva_;
+  };
 
   bool ShouldReportAllRootScrolls();
 
@@ -488,6 +539,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void BeginRotationBatching();
   void EndRotationBatching();
   void BeginRotationEmbed();
+  void EndRotationAndSyncIfNecessary();
 
   bool is_showing_;
 
@@ -589,6 +641,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // another before the first has displayed. This can occur on pages that have
   // long layout and rendering time.
   std::deque<std::pair<base::TimeTicks, viz::LocalSurfaceId>> rotation_metrics_;
+  // In case we do not get signaled of all the layout changes, we will use a
+  // timeout. At which point we will begin SurfaceSync again. To prevent ever
+  // getting stuck in a state where the Renderer cannot produce frames.
+  base::OneShotTimer rotation_timeout_;
 
   // If true, then content was displayed before the completion of the initial
   // navigation. After any content has been displayed, we need to allocate a new
@@ -618,6 +674,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 
   bool is_surface_sync_throttling_ = false;
+
+  ScreenStateChangeHandler screen_state_change_handler_;
 
   base::WeakPtrFactory<RenderWidgetHostViewAndroid> weak_ptr_factory_{this};
 };

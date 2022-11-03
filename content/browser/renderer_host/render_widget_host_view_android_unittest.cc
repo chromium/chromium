@@ -16,6 +16,7 @@
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -45,6 +46,7 @@ class CustomScreenInfoRenderWidgetHostViewAndroid
 
   // RenderWidgetHostViewAndroid:
   display::ScreenInfos GetScreenInfos() const override;
+  display::ScreenInfo GetScreenInfo() const override;
 
  private:
   CustomScreenInfoRenderWidgetHostViewAndroid(
@@ -71,6 +73,11 @@ CustomScreenInfoRenderWidgetHostViewAndroid::GetScreenInfos() const {
   return display::ScreenInfos(screen_info_);
 }
 
+display::ScreenInfo CustomScreenInfoRenderWidgetHostViewAndroid::GetScreenInfo()
+    const {
+  return screen_info_;
+}
+
 }  // namespace
 
 class RenderWidgetHostViewAndroidTest : public testing::Test {
@@ -87,6 +94,9 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   RenderWidgetHostViewAndroid* render_widget_host_view_android() {
     return render_widget_host_view_android_;
   }
+
+  viz::LocalSurfaceId GetLocalSurfaceIdAndConfirmNewerThan(
+      viz::LocalSurfaceId other);
 
   MockRenderWidgetHostDelegate* delegate() { return delegate_.get(); }
 
@@ -110,6 +120,7 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   void TearDown() override;
 
   ui::ViewAndroid* parent_view() { return &parent_view_; }
+  ui::ViewAndroid* native_view() { return &native_view_; }
 
   std::unique_ptr<TestViewAndroidDelegate> test_view_android_delegate_;
 
@@ -137,6 +148,17 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
 RenderWidgetHostViewAndroidTest::RenderWidgetHostViewAndroidTest()
     : parent_view_(ui::ViewAndroid::LayoutType::NORMAL),
       native_view_(ui::ViewAndroid::LayoutType::NORMAL) {}
+
+viz::LocalSurfaceId
+RenderWidgetHostViewAndroidTest::GetLocalSurfaceIdAndConfirmNewerThan(
+    viz::LocalSurfaceId other) {
+  auto local_surface_id =
+      render_widget_host_view_android()->GetLocalSurfaceId();
+  EXPECT_NE(other, local_surface_id);
+  EXPECT_TRUE(local_surface_id.is_valid());
+  EXPECT_TRUE(local_surface_id.IsNewerThan(other));
+  return local_surface_id;
+}
 
 bool RenderWidgetHostViewAndroidTest::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
@@ -381,36 +403,169 @@ TEST_F(RenderWidgetHostViewAndroidTest, RenderFrameSubmittedBeforeNavigation) {
   // two entry points. We should have a new Surface afterwards.
   rwhva->OnDidNavigateMainFrameToNewPage();
   rwhva->DidNavigate();
-  const viz::LocalSurfaceId post_nav_local_surface_id =
-      rwhva->GetLocalSurfaceId();
-  EXPECT_TRUE(post_nav_local_surface_id.is_valid());
-  EXPECT_TRUE(post_nav_local_surface_id.IsNewerThan(initial_local_surface_id));
+  GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
 }
 
-// Tests Rotation improvements that are behind the
-// features::kSurfaceSyncThrottling flag.
+// Tests rotation and fullscreen cases that are supported by visual properties
+// analysis. Some of which fail with the fullscreen killswitch legacy path.
+//
+// Initializes to Portrait.
 class RenderWidgetHostViewAndroidRotationTest
     : public RenderWidgetHostViewAndroidTest {
  public:
-  RenderWidgetHostViewAndroidRotationTest();
-  ~RenderWidgetHostViewAndroidRotationTest() override {}
+  RenderWidgetHostViewAndroidRotationTest() = default;
+  ~RenderWidgetHostViewAndroidRotationTest() override = default;
 
+  // If `rotation` is false this will be treated as an initialization. Same as
+  // the first notifications after browser launch.
+  void SetPortraitScreenInfo(bool rotation);
+  void SetLandscapeScreenInfo(bool rotation);
+
+  // From default portrait oriention to fullscreen with no rotation. Returns
+  // resultant viz::LocalSurfaceId.
+  viz::LocalSurfaceId PortraitToFullscreenPortrait();
+
+  // From default portrait orientation to fullscreen with an orientation lock to
+  // landscape applied. Triggering a rotation. Returns resultant
+  // viz::LocalSurfaceId.
+  viz::LocalSurfaceId PortraitToFullscreenLanscape();
+
+  // RenderWidgetHostViewAndroid:
+  void EnterFullscreenMode();
+  void ExitFullscreenMode();
+  void LockOrientation(device::mojom::ScreenOrientationLockType orientation);
+  void UnlockOrientation();
+  void TogglePictureInPicture(bool enabled);
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
   void SetScreenInfo(display::ScreenInfo screen_info);
+
+  // ViewAndroid:
+  void OnPhysicalBackingSizeChanged(const gfx::Size& size);
+  void OnVisibleViewportSizeChanged(int width, int height);
+
+  const gfx::Size fullscreen_landscape_physical_backing = gfx::Size(800, 600);
+  const gfx::Size fullscreen_portrait_physical_backing = gfx::Size(600, 800);
+  const gfx::Size landscape_physical_backing = gfx::Size(800, 590);
+  const gfx::Size portrait_physical_backing = gfx::Size(600, 790);
 
  protected:
   RenderWidgetHostViewAndroid* CreateRenderWidgetHostViewAndroid(
       RenderWidgetHostImpl* widget_host,
       gfx::NativeView parent_native_view) override;
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  // testing::Test:
+  void SetUp() override;
 };
 
-RenderWidgetHostViewAndroidRotationTest::
-    RenderWidgetHostViewAndroidRotationTest() {
-  scoped_feature_list_.InitAndEnableFeature(features::kSurfaceSyncThrottling);
+void RenderWidgetHostViewAndroidRotationTest::SetPortraitScreenInfo(
+    bool rotation) {
+  display::ScreenInfo screen_info;
+  screen_info.display_id = display::kDefaultDisplayId;
+  screen_info.orientation_type =
+      display::mojom::ScreenOrientation::kPortraitPrimary;
+  screen_info.orientation_angle = 0;
+  screen_info.rect = gfx::Rect(0, 0, 300, 400);
+  SetScreenInfo(screen_info);
+  render_widget_host_view_android()->OnSynchronizedDisplayPropertiesChanged(
+      rotation);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::SetLandscapeScreenInfo(
+    bool rotation) {
+  display::ScreenInfo screen_info;
+  screen_info.display_id = display::kDefaultDisplayId;
+  screen_info.orientation_type =
+      display::mojom::ScreenOrientation::kLandscapePrimary;
+  screen_info.orientation_angle = 90;
+  screen_info.rect = gfx::Rect(0, 0, 400, 300);
+
+  SetScreenInfo(screen_info);
+  render_widget_host_view_android()->OnSynchronizedDisplayPropertiesChanged(
+      rotation);
+}
+
+viz::LocalSurfaceId
+RenderWidgetHostViewAndroidRotationTest::PortraitToFullscreenPortrait() {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+
+  // When we enter fullscreen mode we can't sync until we get a non-rotation
+  // change to sizes.
+  EnterFullscreenMode();
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // The non-rotation change to the `visible_viewport_size` occurs when system
+  // controls are hidden. We need to sync this to the Renderer. As we will not
+  // know if a rotation is to follow.
+  OnVisibleViewportSizeChanged(300, 400);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  OnPhysicalBackingSizeChanged(fullscreen_portrait_physical_backing);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  return GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+}
+
+viz::LocalSurfaceId
+RenderWidgetHostViewAndroidRotationTest::PortraitToFullscreenLanscape() {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+
+  // When we enter fullscreen mode we can't sync until we get a non-rotation
+  // change to sizes.
+  EnterFullscreenMode();
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  LockOrientation(device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // When we expect a rotation we will not advance the viz::LocalSurfaceId
+  // ourselves until rotation has completed. However we will not block it's
+  // advancement from other sources. As `visible_viewport_size` follows a
+  // non-synchronized path and blocking other sync paths can lead to incorrect
+  // surface size submissions.
+  OnVisibleViewportSizeChanged(300, 400);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // We do throttle once rotation starts
+  SetLandscapeScreenInfo(/*rotation=*/true);
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  OnVisibleViewportSizeChanged(400, 300);
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // We stop throttling once rotation ends
+  OnPhysicalBackingSizeChanged(fullscreen_landscape_physical_backing);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  return GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::EnterFullscreenMode() {
+  blink::mojom::FullscreenOptions options;
+  render_widget_host_view_android()->EnterFullscreenMode(options);
+  delegate()->set_is_fullscreen(true);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::ExitFullscreenMode() {
+  render_widget_host_view_android()->ExitFullscreenMode();
+  delegate()->set_is_fullscreen(false);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::LockOrientation(
+    device::mojom::ScreenOrientationLockType orientation) {
+  render_widget_host_view_android()->LockOrientation(orientation);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::UnlockOrientation() {
+  render_widget_host_view_android()->UnlockOrientation();
+}
+
+void RenderWidgetHostViewAndroidRotationTest::TogglePictureInPicture(
+    bool enabled) {
+  render_widget_host_view_android()->SetHasPersistentVideo(enabled);
 }
 
 void RenderWidgetHostViewAndroidRotationTest::
@@ -427,6 +582,17 @@ void RenderWidgetHostViewAndroidRotationTest::SetScreenInfo(
       ->SetScreenInfo(screen_info);
 }
 
+void RenderWidgetHostViewAndroidRotationTest::OnPhysicalBackingSizeChanged(
+    const gfx::Size& size) {
+  render_widget_host_view_android()->view_.OnPhysicalBackingSizeChanged(size);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::OnVisibleViewportSizeChanged(
+    int width,
+    int height) {
+  native_view()->OnSizeChanged(width, height);
+}
+
 RenderWidgetHostViewAndroid*
 RenderWidgetHostViewAndroidRotationTest::CreateRenderWidgetHostViewAndroid(
     RenderWidgetHostImpl* widget_host,
@@ -435,10 +601,344 @@ RenderWidgetHostViewAndroidRotationTest::CreateRenderWidgetHostViewAndroid(
                                                          parent_native_view);
 }
 
+void RenderWidgetHostViewAndroidRotationTest::SetUp() {
+  RenderWidgetHostViewAndroidTest::SetUp();
+  // Set initial state to Portrait
+  SetPortraitScreenInfo(/*rotation=*/false);
+  OnPhysicalBackingSizeChanged(portrait_physical_backing);
+  OnVisibleViewportSizeChanged(300, 395);
+}
+
+// Tests transition from Portrait orientation to fullscreen, with no rotation.
+// Along with exiting back to Portrait.
+TEST_F(RenderWidgetHostViewAndroidRotationTest, PortraitOnlyFullscreen) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId post_fullscreen_local_surface_id =
+      PortraitToFullscreenPortrait();
+
+  // When we exit fullscreen mode we don't throttle.
+  ExitFullscreenMode();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // The non-rotation change to the `visible_viewport_size` occurs when system
+  // controls are made visible again. We need to sync this to the Renderer. We
+  // do not know if a rotation is to follow.
+  OnVisibleViewportSizeChanged(300, 395);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  OnPhysicalBackingSizeChanged(portrait_physical_backing);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
+}
+
+// Tests the transition from Portrait to Fullscreen where a rotation lock to
+// Landscape is applied. Followed by a return to the original configuration.
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       PortraitToLandscapeRotationLockFullscreenRotation) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId post_fullscreen_local_surface_id =
+      PortraitToFullscreenLanscape();
+
+  // When we exit fullscreen mode we can't be sure if we are going to rotate or
+  // not. We don't throttle.
+  ExitFullscreenMode();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  UnlockOrientation();
+
+  // When unthrottle upon the receipt of a new `visible_viewport_size`. Even if
+  // it is a rotation there is no guarantee that we will receive paired physical
+  // backing or screen info. When exiting from Landscape Fullscreen to
+  // Landscape, this will be the last signal.
+  OnVisibleViewportSizeChanged(300, 395);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // When the other properties signal a rotation, throttle again.
+  OnPhysicalBackingSizeChanged(portrait_physical_backing);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  SetPortraitScreenInfo(/*rotation=*/true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
+}
+
+// Tests that if we receive an UnlockOrientation that we cancel any rotation
+// throttle. As we may not receive a paired result, and may end up reversing the
+// rotation.
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       UnlockOrientationCancelsRotationThrottle) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+
+  // When we enter fullscreen mode we can't sync until we get a non-rotation
+  // change to sizes.
+  EnterFullscreenMode();
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  LockOrientation(device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // When we expect a rotation we will not advance the viz::LocalSurfaceId
+  // ourselves until rotation has completed. However we will not block it's
+  // advancement from other sources. As `visible_viewport_size` follows a
+  // non-synchronized path and blocking other sync paths can lead to incorrect
+  // surface size submissions.
+  OnVisibleViewportSizeChanged(300, 400);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // We do throttle once rotation starts
+  SetLandscapeScreenInfo(/*rotation=*/true);
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  OnVisibleViewportSizeChanged(400, 300);
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // We we unlock the rotation should be canceled, and we should sync again.
+  UnlockOrientation();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+}
+
+// Previously we had an ordering expectation that ScreenInfo would update for a
+// rotation before Physical Backing. This is not a guarantee, and was locking us
+// in rotation throttle. Ensure we handle this ordering.
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       FullscreenRotationPhysicalBackingFirst) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+
+  // When we enter fullscreen mode we can't sync until we get a non-rotation
+  // change to sizes.
+  EnterFullscreenMode();
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  LockOrientation(device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // When we expect a rotation we will not advance the viz::LocalSurfaceId
+  // ourselves until rotation has completed. However we will not block it's
+  // advancement from other sources. As `visible_viewport_size` follows a
+  // non-synchronized path and blocking other sync paths can lead to incorrect
+  // surface size submissions.
+  OnVisibleViewportSizeChanged(300, 400);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // We should throttle even when receiving a rotated physical backing before
+  // any ScreenInfo.
+  OnPhysicalBackingSizeChanged(fullscreen_landscape_physical_backing);
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  OnVisibleViewportSizeChanged(400, 300);
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // Receiving the rotated ScreenInfo should complete the rotation and end
+  // throttling.
+  SetLandscapeScreenInfo(/*rotation=*/true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+}
+
+// Tests entering Picture-in-Picture from a fullscreen Portrait context, then
+// returning back to the same Portrait state.
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       PortraitPictureInPictureToPortrait) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId post_fullscreen_local_surface_id =
+      PortraitToFullscreenPortrait();
+
+  // Entering Picture-in-Picture should not throttle.
+  TogglePictureInPicture(/*enabled=*/true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // Each subsequent visual property change just synchronizes.
+  OnVisibleViewportSizeChanged(150, 200);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_visual_viewport_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
+  OnPhysicalBackingSizeChanged(gfx::Size(300, 400));
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_physical_backing_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(
+          post_visual_viewport_local_surface_id);
+
+  // Exiting Picture-in-Picutre should not throttle either.
+  TogglePictureInPicture(/*enabled=*/false);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // Each subsequent visual property change just synchronizes.
+  OnVisibleViewportSizeChanged(300, 400);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_exit_visual_viewport_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(
+          post_physical_backing_local_surface_id);
+  OnPhysicalBackingSizeChanged(fullscreen_portrait_physical_backing);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(
+      post_exit_visual_viewport_local_surface_id);
+}
+
+// Tests that Picture-in-Picture from a fullscreen Portrait context, then
+// returning to a Landscape state does not throttle the rotation.
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       PortraitPictureInPictureToLandscape) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId post_fullscreen_local_surface_id =
+      PortraitToFullscreenPortrait();
+
+  // Entering Picture-in-Picture should not throttle.
+  TogglePictureInPicture(/*enabled=*/true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // Each subsequent visual property change just synchronizes.
+  OnVisibleViewportSizeChanged(150, 200);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_visual_viewport_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
+  OnPhysicalBackingSizeChanged(gfx::Size(300, 400));
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_physical_backing_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(
+          post_visual_viewport_local_surface_id);
+
+  // We can be notified of new screen info before exiting. However being in
+  // Picture-in-Picture should not throttle.
+  SetLandscapeScreenInfo(/*rotation=*/true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  // Exiting Picture-in-Picutre should not throttle either.
+  TogglePictureInPicture(/*enabled=*/false);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // Even a rotation while exiting should not throttle.
+  OnVisibleViewportSizeChanged(400, 300);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_exit_visual_viewport_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(
+          post_physical_backing_local_surface_id);
+  OnPhysicalBackingSizeChanged(fullscreen_landscape_physical_backing);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_exit_physical_backing_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(
+          post_exit_visual_viewport_local_surface_id);
+  SetLandscapeScreenInfo(/*rotation=*/true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(
+      post_exit_physical_backing_local_surface_id);
+}
+
+// When transitioning from a Landscape Fullscreen to Picture-in-Picture we end
+// up in a mixed layout state. With Landscape `visual_viewport_size` and
+// physical backing, and a Portrait ScreenInfo. We should not start a rotation
+// throttle during this.
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       LandscapeFullscreenToMixedPictureInPicture) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId post_fullscreen_local_surface_id =
+      PortraitToFullscreenLanscape();
+
+  // Entering Picture-in-Picture should not throttle.
+  TogglePictureInPicture(/*enabled=*/true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // Each subsequent visual property change just synchronizes.
+  OnVisibleViewportSizeChanged(200, 150);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_visual_viewport_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
+  OnPhysicalBackingSizeChanged(gfx::Size(400, 300));
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_physical_backing_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(
+          post_visual_viewport_local_surface_id);
+
+  // Normally the rotation of ScreenInfo would trigger throttling. However in
+  // Picture-in-Picture mode we can end up with mixed orientations. So we do not
+  // throttle.
+  SetPortraitScreenInfo(/*rotation=*/true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(post_physical_backing_local_surface_id);
+}
+
+// Tests that when Picture-in-Picture mode is closed, that we do not throttle
+// becoming hidden, or returning to visibility.
+TEST_F(RenderWidgetHostViewAndroidRotationTest, PictureInPictureCloses) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId post_fullscreen_local_surface_id =
+      PortraitToFullscreenLanscape();
+
+  // ScreenInfo to rotate to Portrait for Picture-in-Picture can arrive first.
+  // This rotation is throttled and subsequent Picture-in-Picture mode toggles.
+  SetPortraitScreenInfo(/*rotation=*/true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  // Entering Picture-in-Picture should not throttle.
+  TogglePictureInPicture(/*enabled=*/true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // Each subsequent visual property change just synchronizes.
+  OnVisibleViewportSizeChanged(200, 150);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_visual_viewport_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
+  OnPhysicalBackingSizeChanged(gfx::Size(400, 300));
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_physical_backing_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(
+          post_visual_viewport_local_surface_id);
+
+  // Closing Picture-in-Picture will first hide the view, and exit fullscreen.
+  // Hiding should not lead to throttle
+  rwhva->Hide();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // Exiting Fullscreen should not throttle.
+  ExitFullscreenMode();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // Exiting Picture-in-Picutre should not throttle even if rotating back to
+  // Portrait.
+  TogglePictureInPicture(/*enabled=*/false);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  OnVisibleViewportSizeChanged(300, 400);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId hidden_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(
+          post_physical_backing_local_surface_id);
+
+  // No throttling when showing again, nor for completing the hidden rotation
+  rwhva->Show();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  OnPhysicalBackingSizeChanged(portrait_physical_backing);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(hidden_local_surface_id);
+}
+
+// Tests rotation and fullscreen cases that are supported by both the visual
+// properties analysis, and the fullscreen killswitch legacy path.
+//
+// Initializes to Portrait.
+class RenderWidgetHostViewAndroidRotationKillswitchTest
+    : public RenderWidgetHostViewAndroidRotationTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderWidgetHostViewAndroidRotationKillswitchTest();
+  ~RenderWidgetHostViewAndroidRotationKillswitchTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+RenderWidgetHostViewAndroidRotationKillswitchTest::
+    RenderWidgetHostViewAndroidRotationKillswitchTest() {
+  if (GetParam()) {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSurfaceSyncFullscreenKillswitch);
+  }
+}
+
 // Tests that when a rotation occurs, that we only advance the
 // viz::LocalSurfaceId once, and that no other visual changes occurring during
 // this time can separately trigger SurfaceSync. (https://crbug.com/1203804)
-TEST_F(RenderWidgetHostViewAndroidRotationTest,
+TEST_P(RenderWidgetHostViewAndroidRotationKillswitchTest,
        RotationOnlyAdvancesSurfaceSyncOnce) {
   // Android default host and views initialize as visible.
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
@@ -449,27 +949,22 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
 
   // When rotation has started we should not be performing Surface Sync. The
   // viz::LocalSurfaceId should not have advanced.
-  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  SetLandscapeScreenInfo(/*rotation=*/true);
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
   EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
 
   // When rotation has completed we should begin Surface Sync again. There
   // should also be a new viz::LocalSurfaceId.
-  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
+  OnPhysicalBackingSizeChanged(landscape_physical_backing);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
-  const viz::LocalSurfaceId post_rotation_local_surface_id =
-      rwhva->GetLocalSurfaceId();
-  EXPECT_NE(initial_local_surface_id, post_rotation_local_surface_id);
-  EXPECT_TRUE(post_rotation_local_surface_id.is_valid());
-  EXPECT_TRUE(
-      post_rotation_local_surface_id.IsNewerThan(initial_local_surface_id));
+  GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
 }
 
 // Tests that when a rotation occurs while the view is hidden, that we advance
 // the viz::LocalSurfaceId upon becoming visible again. Then once rotation has
 // completed we update again, and unblock all other visual changes.
 // (https://crbug.com/1223299)
-TEST_F(RenderWidgetHostViewAndroidRotationTest,
+TEST_P(RenderWidgetHostViewAndroidRotationKillswitchTest,
        HiddenRotationDisplaysImmediately) {
   // Android default host and views initialize as visible.
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
@@ -482,7 +977,7 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
 
   // When rotation has started we should not be performing Surface Sync. The
   // viz::LocalSurfaceId should not have advanced.
-  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  SetLandscapeScreenInfo(/*rotation=*/true);
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
   EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
 
@@ -491,23 +986,16 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
   // the final state. So we advance the viz::LocalSurfaceId to have the newest
   // possible content ready.
   rwhva->Show();
-  const viz::LocalSurfaceId shown_local_surface_id = rwhva->GetLocalSurfaceId();
-  EXPECT_NE(initial_local_surface_id, shown_local_surface_id);
-  EXPECT_TRUE(shown_local_surface_id.is_valid());
-  EXPECT_TRUE(shown_local_surface_id.IsNewerThan(initial_local_surface_id));
+  const viz::LocalSurfaceId shown_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
   // However we should still block further updates until rotation has completed.
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
 
   // When rotation has completed we should begin Surface Sync again. There
   // should also be a new viz::LocalSurfaceId.
-  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
+  OnPhysicalBackingSizeChanged(landscape_physical_backing);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
-  const viz::LocalSurfaceId post_rotation_local_surface_id =
-      rwhva->GetLocalSurfaceId();
-  EXPECT_NE(shown_local_surface_id, post_rotation_local_surface_id);
-  EXPECT_TRUE(post_rotation_local_surface_id.is_valid());
-  EXPECT_TRUE(
-      post_rotation_local_surface_id.IsNewerThan(shown_local_surface_id));
+  GetLocalSurfaceIdAndConfirmNewerThan(shown_local_surface_id);
 }
 
 // Test that when the view is hidden, and another enters Fullscreen, that we
@@ -515,7 +1003,7 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
 // again. Since the Fullscreen flow does not trigger
 // OnPhysicalBackingSizeChanged, we will continue to block further Surface Sync
 // until the post rotation frame has been generated. (https://crbug.com/1223299)
-TEST_F(RenderWidgetHostViewAndroidRotationTest,
+TEST_P(RenderWidgetHostViewAndroidRotationKillswitchTest,
        HiddenPartialRotationFromFullscreen) {
   // Android default host and views initialize as visible.
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
@@ -529,14 +1017,14 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
   // When another view enters Fullscreen, all hidden views are notified of the
   // start of rotation. We should not be performing Surface Sync. The
   // viz::LocalSurfaceId should not have advanced.
-  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  SetLandscapeScreenInfo(/*rotation= */ true);
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
   EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
 
   // When the other view exits Fullscreen, all hidden views are notified of a
   // rotation back to the original orientation. We should continue in the same
   // state.
-  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  SetPortraitScreenInfo(/*rotation=*/true);
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
   EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
 
@@ -545,10 +1033,8 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
   // viz::LocalSurfaceId upon becoming visible, to send all visual updates to
   // the Renderer.
   rwhva->Show();
-  const viz::LocalSurfaceId shown_local_surface_id = rwhva->GetLocalSurfaceId();
-  EXPECT_NE(initial_local_surface_id, shown_local_surface_id);
-  EXPECT_TRUE(shown_local_surface_id.is_valid());
-  EXPECT_TRUE(shown_local_surface_id.IsNewerThan(initial_local_surface_id));
+  const viz::LocalSurfaceId shown_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
   // However we should still block further updates until rotation has completed.
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
 
@@ -563,7 +1049,7 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
 // Tests that when a rotation occurs, that we accept updated viz::LocalSurfaceId
 // from the Renderer, and merge them with any of our own changes.
 // (https://crbug.com/1223299)
-TEST_F(RenderWidgetHostViewAndroidRotationTest,
+TEST_P(RenderWidgetHostViewAndroidRotationKillswitchTest,
        ChildLocalSurfaceIdsAcceptedDuringRotation) {
   // Android default host and views initialize as visible.
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
@@ -574,7 +1060,7 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
 
   // When rotation has started we should not be performing Surface Sync. The
   // viz::LocalSurfaceId should not have advanced.
-  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  SetLandscapeScreenInfo(/*rotation=*/true);
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
   EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
 
@@ -587,17 +1073,13 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
   cc::RenderFrameMetadata metadata;
   metadata.local_surface_id = child_advanced_local_surface_id;
   OnDidUpdateVisualPropertiesComplete(metadata);
-  const viz::LocalSurfaceId merged_local_surface_id =
-      rwhva->GetLocalSurfaceId();
-  EXPECT_NE(initial_local_surface_id, merged_local_surface_id);
-  EXPECT_TRUE(merged_local_surface_id.is_valid());
-  EXPECT_TRUE(merged_local_surface_id.IsNewerThan(initial_local_surface_id));
+  GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
   // Still wait for rotation to end before resuming Surface Sync from other
   // sources.
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
 }
 
-TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenRotation) {
+TEST_P(RenderWidgetHostViewAndroidRotationKillswitchTest, FullscreenRotation) {
   // Android default host and views initialize as visible.
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
   EXPECT_TRUE(rwhva->IsShowing());
@@ -606,24 +1088,21 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenRotation) {
   EXPECT_TRUE(initial_local_surface_id.is_valid());
 
   // When entering fullscreen the rotation should behave as normal.
-  delegate()->set_is_fullscreen(true);
+  EnterFullscreenMode();
 
   // When rotation has started we should not be performing Surface Sync. The
   // viz::LocalSurfaceId should not have advanced.
-  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  SetLandscapeScreenInfo(/*rotation= */ true);
+  // rwhva->OnSynchronizedDisplayPropertiesChanged(/*rotation= */ true);
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
   EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
 
   // When rotation has completed we should begin Surface Sync again. There
   // should also be a new viz::LocalSurfaceId.
-  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
+  OnPhysicalBackingSizeChanged(fullscreen_landscape_physical_backing);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
   const viz::LocalSurfaceId post_rotation_local_surface_id =
-      rwhva->GetLocalSurfaceId();
-  EXPECT_NE(initial_local_surface_id, post_rotation_local_surface_id);
-  EXPECT_TRUE(post_rotation_local_surface_id.is_valid());
-  EXPECT_TRUE(
-      post_rotation_local_surface_id.IsNewerThan(initial_local_surface_id));
+      GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
 
   {
     cc::RenderFrameMetadata metadata;
@@ -637,30 +1116,21 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenRotation) {
   // send two OnPhysicalBackingSizeChanged in a row to exit fullscreen. While
   // non-WebView can alternate some combination of 1-2
   // OnPhysicalBackingSizeChanged and OnSynchronizedDisplayPropertiesChanged.
-  delegate()->set_is_fullscreen(false);
-  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
+  ExitFullscreenMode();
+
+  OnPhysicalBackingSizeChanged(landscape_physical_backing);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
   const viz::LocalSurfaceId post_fullscreen_local_surface_id =
-      rwhva->GetLocalSurfaceId();
-  EXPECT_NE(post_rotation_local_surface_id, post_fullscreen_local_surface_id);
-  EXPECT_TRUE(post_fullscreen_local_surface_id.is_valid());
-  EXPECT_TRUE(post_fullscreen_local_surface_id.IsNewerThan(
-      post_rotation_local_surface_id));
+      GetLocalSurfaceIdAndConfirmNewerThan(post_rotation_local_surface_id);
 
   // When rotation begins again it should block Surface Sync again.
-  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  SetPortraitScreenInfo(/*rotation=*/true);
   EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
   EXPECT_EQ(post_fullscreen_local_surface_id, rwhva->GetLocalSurfaceId());
 
   // When rotation has completed we should begin Surface Sync again.
-  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
-  const viz::LocalSurfaceId post_fullscreen_rotation_local_surface_id =
-      rwhva->GetLocalSurfaceId();
-  EXPECT_NE(post_fullscreen_local_surface_id,
-            post_fullscreen_rotation_local_surface_id);
-  EXPECT_TRUE(post_fullscreen_rotation_local_surface_id.is_valid());
-  EXPECT_TRUE(post_fullscreen_rotation_local_surface_id.IsNewerThan(
-      post_fullscreen_local_surface_id));
+  OnPhysicalBackingSizeChanged(portrait_physical_backing);
+  GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
 
   {
@@ -671,20 +1141,46 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenRotation) {
   }
 }
 
+// Tests Rotation improvements that launched with
+// features::kSurfaceSyncThrottling flag, and now only exist behind the
+// kSurfaceSyncFullscreenKillswitch flag.
+INSTANTIATE_TEST_SUITE_P(FullscreenKillswitch,
+                         RenderWidgetHostViewAndroidRotationKillswitchTest,
+                         ::testing::Values(true));
+
+// Tests the Rotation and Fullscreen work that directly compares visual
+// properties to make throttling determination
+INSTANTIATE_TEST_SUITE_P(Default,
+                         RenderWidgetHostViewAndroidRotationKillswitchTest,
+                         ::testing::Values(false));
+
 // Tests that when a device's initial orientation is Landscape, that we do not
 // treat the initial UpdateScreenInfo as the start of a rotation.
 // https://crbug.com/1263723
-TEST_F(RenderWidgetHostViewAndroidRotationTest, LandscapeStartup) {
-  display::ScreenInfo screen_info;
-  screen_info.display_id = display::kDefaultDisplayId;
-  screen_info.orientation_type =
-      display::mojom::ScreenOrientation::kLandscapePrimary;
-  screen_info.orientation_angle = 90;
+class RenderWidgetHostViewAndroidLandscapeStartupTest
+    : public RenderWidgetHostViewAndroidRotationKillswitchTest {
+ public:
+  RenderWidgetHostViewAndroidLandscapeStartupTest() = default;
+  ~RenderWidgetHostViewAndroidLandscapeStartupTest() override = default;
 
+ protected:
+  // testing::Test:
+  void SetUp() override;
+};
+
+void RenderWidgetHostViewAndroidLandscapeStartupTest::SetUp() {
+  // The base rotation test sets up default of Landscape. Skip it.
+  RenderWidgetHostViewAndroidTest::SetUp();
+  SetLandscapeScreenInfo(/*rotation=*/false);
+  OnPhysicalBackingSizeChanged(landscape_physical_backing);
+}
+
+// Tests that when a device's initial orientation is Landscape, that we do not
+// treat the initial UpdateScreenInfo as the start of a rotation.
+// https://crbug.com/1263723
+TEST_P(RenderWidgetHostViewAndroidLandscapeStartupTest, LandscapeStartup) {
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
-
-  SetScreenInfo(screen_info);
   // This method is called when initializing the ScreenInfo, not just on
   // subsequent updates. Ensure that initializing to a Landscape orientation
   // does not trigger rotation.
@@ -692,5 +1188,18 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, LandscapeStartup) {
   // We should not be blocking Surface Sync.
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
 }
+
+// Tests Rotation improvements that launched with
+// features::kSurfaceSyncThrottling flag, and now only exist behind the
+// kSurfaceSyncFullscreenKillswitch flag.
+INSTANTIATE_TEST_SUITE_P(FullscreenKillswitch,
+                         RenderWidgetHostViewAndroidLandscapeStartupTest,
+                         ::testing::Values(true));
+
+// Tests the Rotation and Fullscreen work that directly compares visual
+// properties to make throttling determination
+INSTANTIATE_TEST_SUITE_P(Default,
+                         RenderWidgetHostViewAndroidLandscapeStartupTest,
+                         ::testing::Values(false));
 
 }  // namespace content

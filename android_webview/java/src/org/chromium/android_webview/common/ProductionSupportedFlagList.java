@@ -378,6 +378,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature("PreconnectOnRedirect"),
             Flag.baseFeature(BlinkFeatures.SEND_MOUSE_EVENTS_DISABLED_FORM_CONTROLS,
                     "This changes event propagation for disabled form controls."),
+            Flag.baseFeature(ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH,
+                    "Disable to turn off the new SurfaceSync Fullscreen path."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

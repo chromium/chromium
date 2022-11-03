@@ -2985,6 +2985,8 @@ source_set("browser") {
       "renderer_host/render_frame_host_android.h",
       "renderer_host/render_widget_host_view_android.cc",
       "renderer_host/render_widget_host_view_android.h",
+      "renderer_host/screen_state.cc",
+      "renderer_host/screen_state.h",
       "screen_orientation/screen_orientation_delegate_android.cc",
       "screen_orientation/screen_orientation_delegate_android.h",
       "sms/sms_provider_gms.cc",

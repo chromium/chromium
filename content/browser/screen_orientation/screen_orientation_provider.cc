@@ -76,6 +76,8 @@ void ScreenOrientationProvider::LockOrientation(
 
   lock_applied_ = true;
   delegate_->Lock(web_contents(), orientation);
+  if (auto* view = web_contents()->GetRenderWidgetHostView())
+    static_cast<RenderWidgetHostViewBase*>(view)->LockOrientation(orientation);
 
   // If the orientation we are locking to matches the current orientation, we
   // should succeed immediately.
@@ -97,6 +99,8 @@ void ScreenOrientationProvider::UnlockOrientation() {
     return;
 
   delegate_->Unlock(web_contents());
+  if (auto* view = web_contents()->GetRenderWidgetHostView())
+    static_cast<RenderWidgetHostViewBase*>(view)->UnlockOrientation();
 
   lock_applied_ = false;
 }
@@ -127,6 +131,41 @@ void ScreenOrientationProvider::SetDelegate(
 
 ScreenOrientationDelegate* ScreenOrientationProvider::GetDelegateForTesting() {
   return delegate_;
+}
+
+bool ScreenOrientationProvider::LockMatchesOrientation(
+    device::mojom::ScreenOrientationLockType lock,
+    display::mojom::ScreenOrientation orientation) {
+  switch (lock) {
+    case device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY:
+      return orientation == display::mojom::ScreenOrientation::kPortraitPrimary;
+    case device::mojom::ScreenOrientationLockType::PORTRAIT_SECONDARY:
+      return orientation ==
+             display::mojom::ScreenOrientation::kPortraitSecondary;
+    case device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY:
+      return orientation ==
+             display::mojom::ScreenOrientation::kLandscapePrimary;
+    case device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY:
+      return orientation ==
+             display::mojom::ScreenOrientation::kLandscapeSecondary;
+    case device::mojom::ScreenOrientationLockType::LANDSCAPE:
+      return orientation ==
+                 display::mojom::ScreenOrientation::kLandscapePrimary ||
+             orientation ==
+                 display::mojom::ScreenOrientation::kLandscapeSecondary;
+    case device::mojom::ScreenOrientationLockType::PORTRAIT:
+      return orientation ==
+                 display::mojom::ScreenOrientation::kPortraitPrimary ||
+             orientation ==
+                 display::mojom::ScreenOrientation::kPortraitSecondary;
+    case device::mojom::ScreenOrientationLockType::ANY:
+      return true;
+    case device::mojom::ScreenOrientationLockType::NATURAL:
+    case device::mojom::ScreenOrientationLockType::DEFAULT:
+      return false;
+  }
+
+  return false;
 }
 
 void ScreenOrientationProvider::DidToggleFullscreenModeForTab(
@@ -189,39 +228,11 @@ bool ScreenOrientationProvider::LockMatchesCurrentOrientation(
 
   display::ScreenInfo screen_info = rwh->GetScreenInfo();
 
-  switch (lock) {
-    case device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY:
-      return screen_info.orientation_type ==
-             display::mojom::ScreenOrientation::kPortraitPrimary;
-    case device::mojom::ScreenOrientationLockType::PORTRAIT_SECONDARY:
-      return screen_info.orientation_type ==
-             display::mojom::ScreenOrientation::kPortraitSecondary;
-    case device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY:
-      return screen_info.orientation_type ==
-             display::mojom::ScreenOrientation::kLandscapePrimary;
-    case device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY:
-      return screen_info.orientation_type ==
-             display::mojom::ScreenOrientation::kLandscapeSecondary;
-    case device::mojom::ScreenOrientationLockType::LANDSCAPE:
-      return screen_info.orientation_type ==
-                 display::mojom::ScreenOrientation::kLandscapePrimary ||
-             screen_info.orientation_type ==
-                 display::mojom::ScreenOrientation::kLandscapeSecondary;
-    case device::mojom::ScreenOrientationLockType::PORTRAIT:
-      return screen_info.orientation_type ==
-                 display::mojom::ScreenOrientation::kPortraitPrimary ||
-             screen_info.orientation_type ==
-                 display::mojom::ScreenOrientation::kPortraitSecondary;
-    case device::mojom::ScreenOrientationLockType::ANY:
-      return true;
-    case device::mojom::ScreenOrientationLockType::NATURAL:
-    case device::mojom::ScreenOrientationLockType::DEFAULT:
-      NOTREACHED();
-      return false;
+  if (lock == device::mojom::ScreenOrientationLockType::NATURAL ||
+      lock == device::mojom::ScreenOrientationLockType::DEFAULT) {
+    NOTREACHED();
   }
-
-  NOTREACHED();
-  return false;
+  return LockMatchesOrientation(lock, screen_info.orientation_type);
 }
 
 }  // namespace content
