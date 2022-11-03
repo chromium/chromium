@@ -82,9 +82,6 @@ BOOL SetCurrentTabsToBeColdStartTabs();
 // Simulates a backgrounding. Return YES on success.
 BOOL SimulateTabsBackgrounding();
 
-// Persists the current list of tabs to disk immediately.
-void SaveSessionImmediately();
-
 // Evicts the tabs associated with the non-current browser mode.
 void EvictOtherBrowserTabs();
 

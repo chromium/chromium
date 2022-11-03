@@ -263,10 +263,6 @@ NSString* SerializedValue(const base::Value* value) {
   return nil;
 }
 
-+ (void)saveSessionImmediately {
-  chrome_test_util::SaveSessionImmediately();
-}
-
 + (NSError*)setCurrentTabsToBeColdStartTabs {
   if (!chrome_test_util::SetCurrentTabsToBeColdStartTabs()) {
     return testing::NSErrorWithLocalizedDescription(

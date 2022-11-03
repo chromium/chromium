@@ -216,7 +216,6 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
   // Clear cache, save the session and trigger a crash/activate.
   [ChromeEarlGrey removeBrowsingCache];
-  [ChromeEarlGrey saveSessionImmediately];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
       relaunchPolicy:ForceRelaunchByKilling];
@@ -243,7 +242,6 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 }
 
 - (void)triggerRestore {
-  [ChromeEarlGrey saveSessionImmediately];
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{}
                                   disabled:{kStartSurface}

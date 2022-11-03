@@ -238,11 +238,6 @@ BOOL SimulateTabsBackgrounding() {
   return YES;
 }
 
-void SaveSessionImmediately() {
-  SessionRestorationBrowserAgent::FromBrowser(GetCurrentBrowser())
-      ->SaveSession(true);
-}
-
 void EvictOtherBrowserTabs() {
   id<BrowserInterfaceProvider> provider = GetMainController().interfaceProvider;
   Browser* otherBrowser = IsIncognitoMode()

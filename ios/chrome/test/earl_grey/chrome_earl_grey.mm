@@ -273,14 +273,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface simulateTabsBackgrounding]);
 }
 
-- (void)saveSessionImmediately {
-  [ChromeEarlGreyAppInterface saveSessionImmediately];
-
-  // Saving is always performed on a separate thread, so spin the run loop a
-  // bit to ensure save.
-  base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(1));
-}
-
 - (void)setCurrentTabsToBeColdStartTabs {
   EG_TEST_HELPER_ASSERT_NO_ERROR(
       [ChromeEarlGreyAppInterface setCurrentTabsToBeColdStartTabs]);

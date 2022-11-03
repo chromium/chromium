@@ -330,9 +330,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // succeeded.
 - (void)simulateTabsBackgrounding;
 
-// Persists the current list of tabs to disk immediately.
-- (void)saveSessionImmediately;
-
 // Returns the number of main (non-incognito) tabs currently evicted.
 - (NSUInteger)evictedMainTabCount [[nodiscard]];
 
