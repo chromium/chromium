@@ -733,22 +733,16 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = [
-                "android",
-            ],
+            apply_configs = ["android"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "android",
-            apply_configs = [
-                "download_vr_test_apks",
-                "mb",
-            ],
             build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
+            target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "x64_builder",
+            config = "x86_builder_mb",
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
@@ -756,6 +750,7 @@ ci.builder(
         category = "bfcache",
         short_name = "bfc",
     ),
+    execution_timeout = 4 * time.hour,
     sheriff_rotations = args.ignore_default(None),
 )
 

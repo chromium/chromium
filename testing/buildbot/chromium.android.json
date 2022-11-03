@@ -23267,7 +23267,7 @@
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
         "merge": {
           "args": [
@@ -23297,14 +23297,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android31",
-              "path": ".android_emulator/generic_android31"
+              "name": "generic_android24",
+              "path": ".android_emulator/generic_android24"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android31"
+                "caches": "generic_android24"
               }
             ]
           },
@@ -23326,10 +23326,10 @@
       {
         "args": [
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter;../../testing/buildbot/filters/android.emulator.bf_cache_chrome_public_test_apk.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter;../../testing/buildbot/filters/android.emulator.bf_cache_chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
           "--git-revision=${got_revision}"
         ],
         "merge": {
@@ -23365,14 +23365,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android31",
-              "path": ".android_emulator/generic_android31"
+              "name": "generic_android24",
+              "path": ".android_emulator/generic_android24"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android31"
+                "caches": "generic_android24"
               }
             ]
           },
@@ -23387,7 +23387,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "shards": 15
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -23395,10 +23395,9 @@
       {
         "args": [
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_unit_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
           "--git-revision=${got_revision}"
         ],
         "merge": {
@@ -23434,14 +23433,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android31",
-              "path": ".android_emulator/generic_android31"
+              "name": "generic_android24",
+              "path": ".android_emulator/generic_android24"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android31"
+                "caches": "generic_android24"
               }
             ]
           },
@@ -23465,8 +23464,8 @@
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter;../../testing/buildbot/filters/android.emulator.bf_cache_content_browsertests.filter"
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter;../../testing/buildbot/filters/android.emulator.bf_cache_content_browsertests.filter"
         ],
         "merge": {
           "args": [
@@ -23496,14 +23495,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android31",
-              "path": ".android_emulator/generic_android31"
+              "name": "generic_android24",
+              "path": ".android_emulator/generic_android24"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android31"
+                "caches": "generic_android24"
               }
             ]
           },
@@ -23518,7 +23517,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "shards": 15
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -23526,10 +23525,10 @@
       {
         "args": [
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter;../../testing/buildbot/filters/android.emulator.bf_cache_content_shell_test_apk.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter;../../testing/buildbot/filters/android.emulator.bf_cache_content_shell_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
         "merge": {
           "args": [
@@ -23559,14 +23558,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android31",
-              "path": ".android_emulator/generic_android31"
+              "name": "generic_android24",
+              "path": ".android_emulator/generic_android24"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android31"
+                "caches": "generic_android24"
               }
             ]
           },
@@ -23580,8 +23579,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_shell_test_apk",
         "test_id_prefix": "ninja://content/shell/android:content_shell_test_apk/"
@@ -23591,7 +23589,7 @@
           "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
         "merge": {
           "args": [
@@ -23621,14 +23619,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android31",
-              "path": ".android_emulator/generic_android31"
+              "name": "generic_android24",
+              "path": ".android_emulator/generic_android24"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android31"
+                "caches": "generic_android24"
               }
             ]
           },
@@ -23654,7 +23652,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/bfcache.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
         "merge": {
           "args": [
@@ -23684,14 +23682,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android31",
-              "path": ".android_emulator/generic_android31"
+              "name": "generic_android24",
+              "path": ".android_emulator/generic_android24"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android31"
+                "caches": "generic_android24"
               }
             ]
           },

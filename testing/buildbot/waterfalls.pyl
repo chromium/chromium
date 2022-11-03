@@ -747,16 +747,16 @@
       },
       'android-bfcache-rel': {
         'mixins': [
-          '12-x64-emulator',
-          'emulator-8-cores',
           'has_native_resultdb_integration',
+          'nougat-x86-emulator',
+          'emulator-8-cores',
           'linux-bionic',
           'x86-64',
         ],
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'bfcache_android_gtests',
-        }
+        },
       },
       'android-cronet-arm-dbg': {
         'additional_compile_targets': [

@@ -99,7 +99,7 @@
       'android-11-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient',
       'android-12-x64-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
       'android-arm64-proguard-rel': 'android_release_bot_minimal_symbols_arm64_webview_google_reclient',
-      'android-bfcache-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
+      'android-bfcache-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-binary-size-generator': 'android_binary_size_reclient',
       'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon_reclient',
       'android-cronet-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_reclient',
@@ -961,7 +961,7 @@
       'android-12l-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
       'android-arm64-all-targets-dbg': 'android_debug_trybot_compile_only_arm64_fastbuild',
       'android-asan': 'android_clang_asan_release_trybot',
-      'android-bfcache-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome',
+      'android-bfcache-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-binary-size': 'android_binary_size',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       # TODO(crbug/597596): Switch this back to debug_trybot when cronet's

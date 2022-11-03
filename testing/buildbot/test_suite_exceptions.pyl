@@ -170,8 +170,11 @@
     'modifications': {
       'android-bfcache-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter;../../testing/buildbot/filters/android.emulator.bf_cache_content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter;../../testing/buildbot/filters/android.emulator.bf_cache_content_browsertests.filter',
         ],
+        'swarming': {
+          'shards': 15,
+        },
       }
     }
   },

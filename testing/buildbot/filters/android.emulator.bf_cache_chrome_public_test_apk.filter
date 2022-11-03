@@ -15,3 +15,4 @@
 -org.chromium.chrome.browser.password_manager.PasswordSavingIntegrationTest.testUpdatingPassword
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherThumbnailTest.testThumbnailAspectRatio_point85
 -org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayoutTest.testRecycling_defaultAspectRatio
+-org.chromium.chrome.browser.app.ContextMenuDragTest.testTriggerContextMenuWithDrag
