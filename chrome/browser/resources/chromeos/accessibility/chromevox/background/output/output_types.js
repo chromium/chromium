@@ -131,13 +131,12 @@ export class OutputNodeSpan {
  * Possible events handled by ChromeVox internally.
  * @enum {string}
  */
-export const OutputEventType = {
-  ALERT: 'alert',
-  MENU_END: 'menuEnd',
-  MENU_LIST_VALUE_CHANGED: 'menuListValueChanged',
-  MENU_START: 'menuStart',
+export const OutputCustomEvent = {
   NAVIGATE: 'navigate',
 };
+
+/** @typedef {!chrome.automation.EventType|!OutputCustomEvent} */
+export let OutputEventType;
 
 /**
  * Rules for mapping properties to a msg id

@@ -18,7 +18,7 @@ import {PanelBridge} from '../../common/panel_bridge.js';
 import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../../common/panel_menu_data.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {Output} from '../output/output.js';
-import {OutputEventType} from '../output/output_types.js';
+import {OutputCustomEvent} from '../output/output_types.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 
@@ -90,7 +90,7 @@ export class PanelNodeMenuBackground {
         const output = new Output();
         const range = CursorRange.fromNode(node);
         output.withoutHints();
-        output.withSpeech(range, range, OutputEventType.NAVIGATE);
+        output.withSpeech(range, range, OutputCustomEvent.NAVIGATE);
         const title = output.toString();
 
         const callbackId = new BridgeCallbackId(

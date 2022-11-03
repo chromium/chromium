@@ -9,7 +9,7 @@ import {CursorRange} from '../../common/cursors/range.js';
 
 import {ChromeVoxState} from './chromevox_state.js';
 import {Output} from './output/output.js';
-import {OutputEventType} from './output/output_types.js';
+import {OutputCustomEvent} from './output/output_types.js';
 
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 
@@ -67,7 +67,7 @@ export class FindHandler {
     const range = CursorRange.fromNode(evt.target);
     ChromeVoxState.instance.setCurrentRange(range);
     new Output()
-        .withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
+        .withRichSpeechAndBraille(range, null, OutputCustomEvent.NAVIGATE)
         .go();
   }
 }

@@ -17,7 +17,7 @@ import {QueueMode} from '../../common/tts_interface.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 import {Output} from '../output/output.js';
-import {OutputEventType} from '../output/output_types.js';
+import {OutputCustomEvent} from '../output/output_types.js';
 
 import {ISearch} from './i_search.js';
 import {ISearchHandler} from './i_search_handler.js';
@@ -256,7 +256,7 @@ export class PanelBackground {
       o.format('$role', node);
     } else {
       o.withRichSpeechAndBraille(
-          CursorRange.fromNode(node), null, OutputEventType.NAVIGATE);
+          CursorRange.fromNode(node), null, OutputCustomEvent.NAVIGATE);
     }
     o.go();
 

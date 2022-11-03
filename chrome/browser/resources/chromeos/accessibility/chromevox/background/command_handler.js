@@ -42,7 +42,7 @@ import {EventSourceState} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';
 import {LogStore} from './logging/log_store.js';
 import {Output} from './output/output.js';
-import {OutputEventType} from './output/output_types.js';
+import {OutputCustomEvent} from './output/output_types.js';
 import {PhoneticData} from './phonetic_data.js';
 import {ChromeVoxPrefs} from './prefs.js';
 import {SmartStickyMode} from './smart_sticky_mode.js';
@@ -596,7 +596,7 @@ export class CommandHandler extends CommandHandlerInterface {
         const o = new Output();
         o.withContextFirst()
             .withRichSpeechAndBraille(
-                currentRange, null, OutputEventType.NAVIGATE)
+                currentRange, null, OutputCustomEvent.NAVIGATE)
             .go();
         return false;
       case Command.VIEW_GRAPHIC_AS_BRAILLE:
@@ -1534,7 +1534,7 @@ export class CommandHandler extends CommandHandlerInterface {
                     .withoutHints()
                     .withRichSpeechAndBraille(
                         ChromeVoxState.instance.currentRange, prevRange,
-                        OutputEventType.NAVIGATE)
+                        OutputCustomEvent.NAVIGATE)
                     .onSpeechEnd(continueReading);
 
       if (!o.hasSpeech) {
@@ -1552,7 +1552,7 @@ export class CommandHandler extends CommandHandlerInterface {
           new Output()
               .withoutHints()
               .withRichSpeechAndBraille(
-                  collapsedRange, collapsedRange, OutputEventType.NAVIGATE)
+                  collapsedRange, collapsedRange, OutputCustomEvent.NAVIGATE)
               .onSpeechEnd(continueReading);
 
       if (o.hasSpeech) {
@@ -1811,10 +1811,11 @@ export class CommandHandler extends CommandHandlerInterface {
             new Cursor(
                 root.selectionEndObject,
                 /** @type {number} */ (root.selectionEndOffset)));
-        const o = new Output()
-                      .format('@end_selection')
-                      .withSpeechAndBraille(sel, sel, OutputEventType.NAVIGATE)
-                      .go();
+        const o =
+            new Output()
+                .format('@end_selection')
+                .withSpeechAndBraille(sel, sel, OutputCustomEvent.NAVIGATE)
+                .go();
         DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
             false);
       }

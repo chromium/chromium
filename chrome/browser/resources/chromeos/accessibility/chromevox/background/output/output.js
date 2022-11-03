@@ -224,7 +224,7 @@ export class Output {
    * Specify ranges for speech.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withSpeech(range, prevRange, type) {
@@ -239,7 +239,7 @@ export class Output {
    * Specify ranges for aurally styled speech.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withRichSpeech(range, prevRange, type) {
@@ -254,7 +254,7 @@ export class Output {
    * Specify ranges for braille.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withBraille(range, prevRange, type) {
@@ -285,7 +285,7 @@ export class Output {
    * Specify ranges for location.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withLocation(range, prevRange, type) {
@@ -301,7 +301,7 @@ export class Output {
    * Specify the same ranges for speech and braille.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withSpeechAndBraille(range, prevRange, type) {
@@ -314,7 +314,7 @@ export class Output {
    * Specify the same ranges for aurally styled speech and braille.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withRichSpeechAndBraille(range, prevRange, type) {
@@ -629,7 +629,7 @@ export class Output {
    * type.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
    * @param {!OutputFormatLogger} formatLog
    * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
@@ -992,7 +992,7 @@ export class Output {
     }
     formatLog.writeToken(token);
     this.render_(
-        subrange, prev, outputTypes.OutputEventType.NAVIGATE, buff, formatLog,
+        subrange, prev, outputTypes.OutputCustomEvent.NAVIGATE, buff, formatLog,
         {suppressStartEndAncestry: true});
   }
 
@@ -1154,7 +1154,7 @@ export class Output {
     } else if (node[relationName]) {
       const related = node[relationName];
       this.node_(
-          related, related, outputTypes.OutputEventType.NAVIGATE, buff,
+          related, related, outputTypes.OutputCustomEvent.NAVIGATE, buff,
           formatLog);
     }
   }
@@ -1456,7 +1456,7 @@ export class Output {
   /**
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} rangeBuff
    * @param {!OutputFormatLogger} formatLog
    * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
@@ -1595,7 +1595,7 @@ export class Output {
   /**
    * @param {!AutomationNode} node
    * @param {!AutomationNode} prevNode
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @param {!OutputFormatLogger} formatLog
    * @param {{suppressStartEndAncestry: (boolean|undefined),
@@ -1674,7 +1674,7 @@ export class Output {
    * @param {{
    * node: !AutomationNode,
    * prevNode: !AutomationNode,
-   * type: (EventType|outputTypes.OutputEventType),
+   * type: !outputTypes.OutputEventType,
    * buff: !Array<Spannable>,
    * formatLog: !OutputFormatLogger,
    * ancestors: !Array<!AutomationNode>,
@@ -1755,7 +1755,7 @@ export class Output {
   /**
    * @param {!AutomationNode} node
    * @param {!AutomationNode} prevNode
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @param {!OutputFormatLogger} formatLog
    * @private
@@ -1815,7 +1815,7 @@ export class Output {
   /**
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @private
    */
@@ -1917,7 +1917,7 @@ export class Output {
    * |computeDelayedHints_|.
    * @param {!CursorRange} range
    * @param {!Array<AutomationNode>} uniqueAncestors
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
    * @param {!OutputFormatLogger} formatLog
    * @private
@@ -2029,7 +2029,7 @@ export class Output {
    * Internal helper to |hint_|. Returns a list of message hints.
    * @param {!AutomationNode} node
    * @param {!Array<AutomationNode>} uniqueAncestors
-   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!outputTypes.OutputEventType} type
    * @return {!Array<{text: (string|undefined),
    *           msgId: (string|undefined),
    *           subs: (Array<string>|undefined),

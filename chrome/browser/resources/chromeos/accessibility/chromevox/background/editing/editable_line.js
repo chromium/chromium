@@ -17,7 +17,7 @@ import {RecoveryStrategy, TreePathRecoveryStrategy} from '../../../common/cursor
 import {Spannable} from '../../common/spannable.js';
 import {LibLouis} from '../braille/liblouis.js';
 import {Output} from '../output/output.js';
-import {OutputEventType, OutputNodeSpan} from '../output/output_types.js';
+import {OutputCustomEvent, OutputNodeSpan} from '../output/output_types.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -668,7 +668,7 @@ export class EditableLine {
       o.withRichSpeech(
            CursorRange.fromNode(cur),
            prev ? CursorRange.fromNode(prev) : CursorRange.fromNode(cur),
-           OutputEventType.NAVIGATE)
+           OutputCustomEvent.NAVIGATE)
           .onSpeechEnd(() => {
             speakNodeAtIndex(++index, cur);
           });

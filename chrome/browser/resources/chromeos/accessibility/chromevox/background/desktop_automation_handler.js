@@ -25,7 +25,7 @@ import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {TextEditHandler} from './editing/editing.js';
 import {EventSourceState} from './event_source.js';
 import {Output} from './output/output.js';
-import {OutputEventType} from './output/output_types.js';
+import {OutputCustomEvent} from './output/output_types.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -200,7 +200,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       // results should generate output.
       const range = CursorRange.fromNode(focus);
       ChromeVoxState.instance.setCurrentRange(range);
-      output.withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
+      output.withRichSpeechAndBraille(range, null, OutputCustomEvent.NAVIGATE)
           .go();
     });
   }
@@ -613,7 +613,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     if (fromDesktop &&
         (!this.lastValueTarget_ || this.lastValueTarget_ !== target)) {
       const range = CursorRange.fromNode(target);
-      output.withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE);
+      output.withRichSpeechAndBraille(range, range, OutputCustomEvent.NAVIGATE);
       this.lastValueTarget_ = target;
     } else {
       output.format(
@@ -688,7 +688,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
             currentRange.start.node.className === 'OmniboxViewViews') {
           const range = CursorRange.fromNode(target);
           new Output()
-              .withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE)
+              .withRichSpeechAndBraille(
+                  range, range, OutputCustomEvent.NAVIGATE)
               .go();
         }
 
@@ -766,7 +767,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         // editable).
         const range = CursorRange.fromNode(focus);
         new Output()
-            .withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
+            .withRichSpeechAndBraille(range, null, OutputCustomEvent.NAVIGATE)
             .go();
         ChromeVoxState.instance.setCurrentRange(range);
       }

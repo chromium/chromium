@@ -24,7 +24,7 @@ import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 import {Color} from '../color.js';
 import {Output} from '../output/output.js';
-import {OutputEventType, OutputNodeSpan} from '../output/output_types.js';
+import {OutputCustomEvent, OutputNodeSpan} from '../output/output_types.js';
 
 import {EditableLine} from './editable_line.js';
 import {ChromeVoxEditableTextBase, TextChangeEvent} from './editable_text_base.js';
@@ -571,7 +571,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
         new Output()
             .withRichSpeech(
                 new Range(cur.start, cur.end), new Range(prev.start, prev.end),
-                OutputEventType.NAVIGATE)
+                OutputCustomEvent.NAVIGATE)
             .go();
       }
 
@@ -610,7 +610,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       new Output()
           .withRichSpeech(
               new Range(cur.start, cur.end), new Range(prev.start, prev.end),
-              OutputEventType.NAVIGATE)
+              OutputCustomEvent.NAVIGATE)
           .go();
     } else if (
         !prev.hasCollapsedSelection() && !cur.hasCollapsedSelection() &&
@@ -741,7 +741,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     if (context && context.role !== RoleType.TEXT_FIELD) {
       const output = new Output().suppress('name').withBraille(
           Range.fromNode(context), Range.fromNode(this.node_),
-          OutputEventType.NAVIGATE);
+          OutputCustomEvent.NAVIGATE);
       if (output.braille.length) {
         const end = cur.containerEndOffset + 1;
         const prefix = value.substring(0, end);
@@ -795,7 +795,8 @@ const AutomationRichEditableText = class extends AutomationEditableText {
 
     new Output()
         .withRichSpeech(
-            selectedRange, Range.fromNode(this.node_), OutputEventType.NAVIGATE)
+            selectedRange, Range.fromNode(this.node_),
+            OutputCustomEvent.NAVIGATE)
         .go();
   }
 

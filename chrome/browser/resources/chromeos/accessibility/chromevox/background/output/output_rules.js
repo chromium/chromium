@@ -5,7 +5,9 @@
 /**
  * @fileoverview Contains the rules for output based on type information.
  */
-import {OutputEventType} from './output_types.js';
+import {OutputCustomEvent, OutputEventType} from './output_types.js';
+
+const EventType = chrome.automation.EventType;
 
 /**
  * @typedef {{
@@ -17,7 +19,7 @@ import {OutputEventType} from './output_types.js';
 export let OutputRuleSpecifier;
 
 export class OutputRule {
-  /** @param {string} event */
+  /** @param {!OutputEventType} event */
   constructor(event) {
     /** @private {!OutputEventType} */
     this.event_ = this.getEvent_(event);
@@ -30,15 +32,15 @@ export class OutputRule {
   }
 
   /**
-   * @param {string} event
+   * @param {!OutputEventType} event
    * @return {!OutputEventType}
    * @private
    */
   getEvent_(event) {
-    if (Object.values(OutputEventType).includes(event)) {
-      return /** @type {!OutputEventType} */ (event);
+    if (OutputRule.RULES[event]) {
+      return event;
     }
-    return OutputEventType.NAVIGATE;
+    return OutputCustomEvent.NAVIGATE;
   }
 
   /** @return {!OutputRuleSpecifier} */
@@ -351,17 +353,18 @@ OutputRule.RULES = {
       speak: `@describe_window($name) $description $earcon(OBJECT_OPEN)`,
     },
   },
-  menuStart:
+  [EventType.MENU_START]:
       {'default': {speak: `@chrome_menu_opened($name)  $earcon(OBJECT_OPEN)`}},
-  menuEnd: {'default': {speak: `@chrome_menu_closed $earcon(OBJECT_CLOSE)`}},
-  menuListValueChanged: {
+  [EventType.MENU_END]:
+      {'default': {speak: `@chrome_menu_closed $earcon(OBJECT_CLOSE)`}},
+  [EventType.MENU_LIST_VALUE_CHANGED]: {
     'default': {
       speak: `$value $name
           $find({"state": {"selected": true, "invisible": false}},
           @describe_index($posInSet, $setSize)) `,
     },
   },
-  alert: {
+  [EventType.ALERT]: {
     default: {speak: `$earcon(ALERT_NONMODAL) $nameOrTextContent $description`},
   },
 };

@@ -17,7 +17,7 @@ import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 import {FocusBounds} from './focus_bounds.js';
 import {Output} from './output/output.js';
-import {OutputEventType} from './output/output_types.js';
+import {OutputCustomEvent} from './output/output_types.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -135,7 +135,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
       this.lastAttributeTarget_ = evt.target.activeDescendant || evt.target;
       this.lastAttributeOutput_ = new Output().withRichSpeechAndBraille(
           CursorRange.fromNode(this.lastAttributeTarget_), prev,
-          OutputEventType.NAVIGATE);
+          OutputCustomEvent.NAVIGATE);
       if (this.lastAttributeTarget_ === prevTarget && prevOutput &&
           prevOutput.equals(this.lastAttributeOutput_)) {
         return;
