@@ -1,9 +1,9 @@
-<style>
+<style include="cr-shared-style">
   :host {
-    --background-color-pressed: hsl(214deg 82% 51%);
-    --background-color-unpressed: hsl(218deg 92% 95%);
-    --background-color-tested: hsl(214deg 82% 85%);
-    --border-color: hsl(214deg 82% 51%);
+    --background-color-pressed: var(--cros-icon-color-selection);
+    --background-color-unpressed: var(--cros-highlight-color);
+    --background-color-tested: var(--cros-text-highlight-color);
+    --border-color: var(--cros-icon-color-prominent);
     --border-radius:
         var(--keyboard-key-top-radii, 3px)
         var(--keyboard-key-top-radii, 3px)
@@ -11,12 +11,13 @@
         3px;
     --icon-size: var(--keyboard-key-icon-size, 100%);
     --travel: var(--keyboard-key-travel, 3px);
-    --foreground-color-unpressed: hsl(214deg 82% 51%);
-    --foreground-color-pressed: hsl(213deg 23% 91%);
+    --foreground-color-unpressed: var(--cros-icon-color-prominent);
+    --foreground-color-pressed: var(--cros-button-icon-color-primary);
+
     position: relative;
   }
 
-  #foreground {
+  #key {
     background-color: var(--background-color-unpressed);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
@@ -28,6 +29,19 @@
     grid-auto-flow: column;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(2, 1fr);
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: all 150ms ease-in-out;
+  }
+
+  #key-background {
+    background-color: var(--cros-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    border-top-width: var(--keyboard-key-border-top-width, 1px);
+    bottom: var(--travel);
     left: 0;
     position: absolute;
     right: 0;
@@ -85,14 +99,15 @@
     text-align: center;
   }
 
-  /*
-   * TODO(crbug.com/1207678): Apply this styling when the key is pressed,
-   * instead of on hover.
-   */
-  :host([state='pressed']) #foreground {
+  :host([state='pressed']) #key {
     background-color: var(--background-color-pressed);
     bottom: 0;
     color: var(--foreground-color-pressed);
+    top: var(--travel);
+  }
+
+  :host([state='pressed']) #key-background {
+    bottom: 0;
     top: var(--travel);
   }
 
@@ -100,11 +115,11 @@
     --iron-icon-fill-color: var(--foreground-color-pressed);
   }
 
-  :host([state='tested']) #foreground {
+  :host([state='tested']) #key {
     background-color: var(--background-color-tested);
   }
 
-  #background {
+  #shadow {
     background-color: var(--border-color);
     border-radius: var(--border-radius);
     bottom: 0;
@@ -114,39 +129,38 @@
     top: var(--travel);
   }
 
-  :host(.disabled) #foreground {
-    background-color: var(--google-grey-200);
-    border-color: var(--google-grey-700);
-    color: var(--google-grey-600);
+  :host(.disabled) {
+    --travel: 0;
   }
 
-  :host(.disabled) #background {
-    background-color: hsl(0deg 0% 59%);
+  :host(.disabled) #key {
+    background-color: var(--cros-bg-color-dropped-elevation-2);
+    border-color: transparent;
+    bottom: 0;
+    color: var(--cros-icon-color-disabled);
+    top: var(--travel);
+  }
+
+  :host(.disabled) #key-background {
+    border-color: transparent;
+    bottom: 0;
+    top: var(--travel);
+  }
+
+  :host(.disabled) #shadow {
+    background-color: var(--cros-bg-color-dropped-elevation-2);
   }
 
   @media (prefers-color-scheme: dark) {
-    :root {
-      --background-color-pressed: hsl(217deg 87% 76%);
-      --background-color-unpressed: hsl(218deg 20% 32%);
-      --border-color: hsl(217deg 87% 76%);
-      --foreground-color-pressed: hsl(225deg 6% 13%);
-      --foreground-color-unpressed: hsl(217deg 87% 76%);
-    }
-
-    :host(.disabled) #foreground {
-      --foreground-color-unpressed: var(--cros-button-label-color-primary-disabled);
-      background-color: var(--cros-button-background-color-primary-disabled);
-      border-color: var(--cros-button-background-color-primary-disabled);
-      color: var(--foreground-color-unpressed);
-    }
-
-    :host(.disabled) #background {
-      background-color: hsl(192deg 4% 25%);
+    :host {
+      --background-color-tested: rgba(var(--google-blue-600-rgb),
+        var(--cros-second-tone-opacity));
     }
   }
 </style>
-<div id="background"></div>
-<div id="foreground" aria-label="[[ariaLabel_]]">
+<div id="shadow"></div>
+<div id="key-background"></div>
+<div id="key" aria-label="[[ariaLabel_]]">
   <!--
     Child elements are aria-hidden to make ChromeVox treat the whole key as
     one unit with an aria-label, rather than individual labels that don't
