@@ -401,8 +401,8 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
         guid, std::move(properties),
         set_properties_future.GetCallback<bool, const std::string&>());
     ASSERT_TRUE(set_properties_future.Wait());
-    ASSERT_TRUE(set_properties_future.Get<0>())
-        << "Error msg: " << set_properties_future.Get<1>();
+    ASSERT_TRUE(set_properties_future.Get<bool>())
+        << "Error msg: " << set_properties_future.Get<std::string>();
   }
 
   // Retrieves the "managed properties" of the network identified by `guid`

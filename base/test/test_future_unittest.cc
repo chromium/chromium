@@ -6,15 +6,10 @@
 
 #include <tuple>
 
-#include "base/dcheck_is_on.h"
-#include "base/logging.h"
-#include "base/run_loop.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +25,7 @@ constexpr int kOtherValue = 10;
 struct MoveOnlyValue {
  public:
   MoveOnlyValue() = default;
-  MoveOnlyValue(int data) : data(data) {}
+  explicit MoveOnlyValue(int data) : data(data) {}
   MoveOnlyValue(const MoveOnlyValue&) = delete;
   auto& operator=(const MoveOnlyValue&) = delete;
   MoveOnlyValue(MoveOnlyValue&&) = default;
@@ -214,7 +209,7 @@ TEST_F(TestFutureTest, ShouldReturnTupleValue) {
   EXPECT_EQ(expected_string_value, std::get<1>(actual));
 }
 
-TEST_F(TestFutureTest, ShouldAllowAccessingTupleValueThroughGetMethod) {
+TEST_F(TestFutureTest, ShouldAllowAccessingTupleValueUsingGetWithIndex) {
   const int expected_int_value = 5;
   const std::string expected_string_value = "value";
 
@@ -227,6 +222,21 @@ TEST_F(TestFutureTest, ShouldAllowAccessingTupleValueThroughGetMethod) {
 
   EXPECT_EQ(expected_int_value, future.Get<0>());
   EXPECT_EQ(expected_string_value, future.Get<1>());
+}
+
+TEST_F(TestFutureTest, ShouldAllowAccessingTupleValueUsingGetWithType) {
+  const int expected_int_value = 5;
+  const std::string expected_string_value = "value";
+
+  TestFuture<int, std::string> future;
+
+  RunLater(base::BindOnce(future.GetCallback(), expected_int_value,
+                          expected_string_value));
+
+  std::ignore = future.Get();
+
+  EXPECT_EQ(expected_int_value, future.Get<int>());
+  EXPECT_EQ(expected_string_value, future.Get<std::string>());
 }
 
 TEST_F(TestFutureTest, ShouldAllowReferenceArgumentsForMultiArgumentCallback) {

@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/test/bind.h"
 #include "base/test/test_future_internal.h"
 #include "base/thread_annotations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,6 +31,7 @@ namespace base::test {
 // If the callback takes multiple arguments, use TestFuture::Get<0>() to access
 // the value of the first argument, TestFuture::Get<1>() to access the value of
 // the second argument, and so on.
+// Alternatively you can use the argument type like TestFuture::Get<T>().
 //
 // If for any reason you can't use TestFuture::GetCallback(), you can use
 // TestFuture::SetValue() to directly set the value. This method must be called
@@ -59,8 +60,13 @@ namespace base::test {
 //
 //     object_under_test.DoSomethingAsync(future.GetCallback());
 //
+//     // Either select the argument by type...
+//     int first_argument = future.Get<int>();
+//     const std::string& second_argument = future.Get<std::string>();
+//
+//     // ... or by index.
 //     int first_argument = future.Get<0>();
-//     const std::string & second_argument = future.Get<1>();
+//     const std::string& second_argument = future.Get<1>();
 //   }
 //
 // Or an example using TestFuture::Wait():
@@ -117,7 +123,7 @@ class TestFuture {
     return values_.has_value();
   }
 
-  // Wait for the value to arrive, and return the I-th value.
+  // Waits for the value to arrive, and returns the I-th value.
   //
   // Will DCHECK if a timeout happens.
   //
@@ -128,8 +134,23 @@ class TestFuture {
   //   std::string second = future.Get<1>();
   //
   template <std::size_t I>
-  const typename std::tuple_element<I, TupleType>::type& Get() {
+  const auto& Get() {
     return std::get<I>(GetTuple());
+  }
+
+  // Waits for the value to arrive, and returns the value with the given type.
+  //
+  // Will DCHECK if a timeout happens.
+  //
+  // Example usage:
+  //
+  //   TestFuture<int, std::string> future;
+  //   int first = future.Get<int>();
+  //   std::string second = future.Get<std::string>();
+  //
+  template <typename Type>
+  const auto& Get() {
+    return std::get<Type>(GetTuple());
   }
 
   // Returns a callback that when invoked will store all the argument values,

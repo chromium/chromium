@@ -3173,7 +3173,7 @@ TEST_F(QuotaManagerImplTest, QuotaForEmptyHost) {
   base::test::TestFuture<QuotaStatusCode, int64_t> future;
   quota_manager_impl()->SetPersistentHostQuota(std::string(), 10,
                                                future.GetCallback());
-  EXPECT_EQ(future.Get<0>(), QuotaStatusCode::kErrorNotSupported);
+  EXPECT_EQ(future.Get<QuotaStatusCode>(), QuotaStatusCode::kErrorNotSupported);
 }
 
 TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
