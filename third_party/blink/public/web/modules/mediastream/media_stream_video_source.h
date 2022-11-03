@@ -153,7 +153,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   void SetDeviceRotationDetection(bool enabled);
 
   // Returns the task runner where video frames will be delivered on.
-  base::SingleThreadTaskRunner* io_task_runner() const;
+  base::SequencedTaskRunner* io_task_runner() const;
 
   // Implementations must return the capture format if available.
   // Implementations supporting devices of type MEDIA_DEVICE_VIDEO_CAPTURE

@@ -36,7 +36,7 @@ class MODULES_EXPORT MediaStreamRendererFactory {
   virtual scoped_refptr<WebMediaStreamVideoRenderer> GetVideoRenderer(
       const WebMediaStream& web_stream,
       const WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner);
 
   virtual scoped_refptr<WebMediaStreamAudioRenderer> GetAudioRenderer(

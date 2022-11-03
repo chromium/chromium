@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_VIDEO_RENDERER_SINK_H_
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/common/media/video_capture.h"
@@ -40,7 +41,7 @@ class MODULES_EXPORT MediaStreamVideoRendererSink
   MediaStreamVideoRendererSink(
       MediaStreamComponent* video_component,
       const WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner);
 
   MediaStreamVideoRendererSink(const MediaStreamVideoRendererSink&) = delete;
@@ -79,7 +80,7 @@ class MODULES_EXPORT MediaStreamVideoRendererSink
   class FrameDeliverer;
   std::unique_ptr<FrameDeliverer> frame_deliverer_;
 
-  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner_;
 
   THREAD_CHECKER(main_thread_checker_);

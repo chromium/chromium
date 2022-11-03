@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/token.h"
 #include "build/build_config.h"
@@ -355,7 +356,7 @@ void MediaStreamVideoSource::SetDeviceRotationDetection(bool enabled) {
   enable_device_rotation_detection_ = enabled;
 }
 
-base::SingleThreadTaskRunner* MediaStreamVideoSource::io_task_runner() const {
+base::SequencedTaskRunner* MediaStreamVideoSource::io_task_runner() const {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   return Platform::Current()->GetIOTaskRunner().get();
 }

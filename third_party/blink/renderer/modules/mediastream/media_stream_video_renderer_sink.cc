@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/video_frame.h"
@@ -42,21 +43,21 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
         state_(kStopped),
         frame_size_(kMinFrameSize, kMinFrameSize),
         emit_frame_drop_events_(true) {
-    DETACH_FROM_THREAD(io_thread_checker_);
+    DETACH_FROM_SEQUENCE(io_sequence_checker_);
   }
 
   FrameDeliverer(const FrameDeliverer&) = delete;
   FrameDeliverer& operator=(const FrameDeliverer&) = delete;
 
   ~FrameDeliverer() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
     DCHECK(state_ == kStarted || state_ == kPaused) << state_;
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame,
                     std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
                     base::TimeTicks /*current_time*/) {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
     DCHECK(frame);
     TRACE_EVENT_INSTANT1("webrtc",
                          "MediaStreamVideoRendererSink::"
@@ -83,7 +84,7 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
   }
 
   void RenderEndOfStream() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
     // This is necessary to make sure audio can play if the video tag src is a
     // MediaStream video track that has been rejected or ended. It also ensure
     // that the renderer doesn't hold a reference to a real video frame if no
@@ -102,19 +103,19 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
   }
 
   void Start() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
     DCHECK_EQ(state_, kStopped);
     SetState(kStarted);
   }
 
   void Resume() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
     if (state_ == kPaused)
       SetState(kStarted);
   }
 
   void Pause() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
     if (state_ == kStarted)
       SetState(kPaused);
   }
@@ -135,13 +136,13 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
   bool emit_frame_drop_events_;
 
   // Used for DCHECKs to ensure method calls are executed on the correct thread.
-  THREAD_CHECKER(io_thread_checker_);
+  SEQUENCE_CHECKER(io_sequence_checker_);
 };
 
 MediaStreamVideoRendererSink::MediaStreamVideoRendererSink(
     MediaStreamComponent* video_component,
     const RepaintCB& repaint_cb,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner)
     : repaint_cb_(repaint_cb),
       video_component_(video_component),

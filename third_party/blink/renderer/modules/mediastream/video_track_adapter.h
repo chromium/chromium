@@ -10,6 +10,8 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
@@ -42,7 +44,7 @@ class MODULES_EXPORT VideoTrackAdapter
   using OnMutedCallback = base::RepeatingCallback<void(bool mute_state)>;
 
   VideoTrackAdapter(
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
 
   VideoTrackAdapter(const VideoTrackAdapter&) = delete;
@@ -83,8 +85,8 @@ class MODULES_EXPORT VideoTrackAdapter
   // equal-to-or-greater-than the given crop version.
   void NewCropVersionOnIO(uint32_t crop_version);
 
-  base::SingleThreadTaskRunner* io_task_runner() const {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::SequencedTaskRunner* io_task_runner() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return io_task_runner_.get();
   }
 
@@ -162,9 +164,9 @@ class MODULES_EXPORT VideoTrackAdapter
   void CheckFramesReceivedOnIO();
 
   // |thread_checker_| is bound to the main render thread.
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   base::WeakPtr<MediaStreamVideoSource> media_stream_video_source_;
 
