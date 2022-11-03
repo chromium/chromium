@@ -12,6 +12,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "url/url_util.h"
 
 namespace ash {
 namespace input_method {
@@ -90,17 +92,34 @@ bool ImeRulesConfig::IsAutoCorrectDisabled(
     const TextFieldContextualInfo& info) {
   // Check the default domain denylist rules.
   for (const auto& domain : default_auto_correct_domain_denylist_) {
-    if (info.tab_url.DomainIs(domain)) {
+    if (IsSubDomain(info, domain)) {
       return true;
     }
   }
   // Check the rule domain denylist rules.
   for (const auto& domain : rule_auto_correct_domain_denylist_) {
-    if (info.tab_url.DomainIs(domain)) {
+    if (IsSubDomain(info, domain)) {
       return true;
     }
   }
   return false;
+}
+
+bool ImeRulesConfig::IsSubDomain(const TextFieldContextualInfo& info,
+                                 const std::string& domain) {
+  const size_t registryLength =
+      net::registry_controlled_domains::GetRegistryLength(
+          info.tab_url,
+          net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+  if (registryLength == 0) {
+    return false;
+  }
+  const base::StringPiece urlContent = info.tab_url.host_piece();
+  const base::StringPiece urlDomain =
+      urlContent.substr(0, urlContent.length() - registryLength - 1);
+
+  return url::DomainIs(urlDomain, domain);
 }
 
 // static

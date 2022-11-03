@@ -32,6 +32,11 @@ class ImeRulesConfig {
   // Runs the rule check against contextual info.
   bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info);
 
+  // Checks if domain is a sub-domain of info
+ private:
+  bool IsSubDomain(const TextFieldContextualInfo& info,
+                   const std::string& domain);
+
  private:
   ImeRulesConfig();
 
@@ -39,6 +44,8 @@ class ImeRulesConfig {
   friend struct base::DefaultSingletonTraits<ImeRulesConfig>;
 
   friend class ImeRulesConfigTest;
+  friend class ImeRulesConfigEnabledTest;
+  friend class ImeRulesConfigDisabledTest;
 
   // Initializes the config from IME rules trial parameters. If there is
   // no trial or parsing fails, the rules will be empty and as such always
@@ -49,20 +56,20 @@ class ImeRulesConfig {
   std::vector<std::string> rule_auto_correct_domain_denylist_;
   // The default denylist of domains that will turn off auto_correct feature.
   std::vector<std::string> default_auto_correct_domain_denylist_{
-      "amazon.com",
-      "b.corp.google.com",
-      "buganizer.corp.google.com",
-      "cider.corp.google.com",
-      "classroom.google.com",
-      "desmos.com",
-      "docs.google.com",
-      "facebook.com",
-      "instagram.com",
-      "outlook.live.com",
-      "outlook.office.com",
-      "quizlet.com",
-      "whatsapp.com",
-      "youtube.com",
+      "amazon",
+      "b.corp.google",
+      "buganizer.corp.google",
+      "cider.corp.google",
+      "classroom.google",
+      "desmos",
+      "docs.google",
+      "facebook",
+      "instagram",
+      "outlook.live",
+      "outlook.office",
+      "quizlet",
+      "whatsapp",
+      "youtube",
   };
 };
 
