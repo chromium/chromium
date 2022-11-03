@@ -1,5 +1,9 @@
 include_rules = [
   # Do NOT add components/cast or other Cast-specific code to this file.
+
+  # WebEngine varies based on ENABLE_CAST_RECEIVER.
+  "+build/chromecast_buildflags.h",
+
   "+components/embedder_support",
   "+components/fuchsia_component_support",
   "+components/media_control",

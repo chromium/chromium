@@ -18,6 +18,9 @@ include_rules = [
 
 specific_include_rules = {
   "web_instance_host\.cc": [
+    # Some functionality depends on ENABLE_CAST_RECEIVER.
+    "+build/chromecast_buildflags.h",
+
     "+third_party/widevine/cdm/buildflags.h",
   ],
   "web_instance_host_integration_test\.cc": [

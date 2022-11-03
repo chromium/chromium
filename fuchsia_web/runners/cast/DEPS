@@ -1,8 +1,4 @@
 include_rules = [
-  # CastRunner builds do not vary based on ENABLE_CAST_RECEIVER except in one
-  # way (see below).
-  "-build/chromecast_buildflags.h",
-
   "+components/cast",
   "+content/public/test",
   "+fuchsia_web/cast_streaming",
