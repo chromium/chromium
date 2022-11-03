@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
@@ -1293,15 +1294,25 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
   // TODO(http://crbug.com/1252983): Revert this to DCHECK.
   CHECK(loader_factory_);
 
-  // Set |unfreezable_task_runner| to the thread task-runner for keepalive
-  // fetches because we want it to keep running even after the frame is
-  // detached. It's pretty fragile to do that with the
-  // |unfreezable_task_runner_| that's saved in the ResourceFetcher, because
-  // that task runner is frame-associated.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      unfreezable_task_runner_;
+  if (request.GetKeepalive()) {
+    // Set the `task_runner` to the `AgentGroupScheduler`'s task-runner for
+    // keepalive fetches because we want it to keep running even after the
+    // frame is detached. It's pretty fragile to do that with the
+    // `unfreezable_task_runner_` that's saved in the ResourceFetcher, because
+    // that task runner is frame-associated.
+    if (auto* frame_or_worker_scheduler = GetFrameOrWorkerScheduler()) {
+      if (auto* frame_scheduler =
+              frame_or_worker_scheduler->ToFrameScheduler()) {
+        task_runner =
+            frame_scheduler->GetAgentGroupScheduler()->DefaultTaskRunner();
+      }
+    }
+  }
+
   return loader_factory_->CreateURLLoader(
-      ResourceRequest(request), options, freezable_task_runner_,
-      request.GetKeepalive() ? Thread::Current()->GetDeprecatedTaskRunner()
-                             : unfreezable_task_runner_,
+      ResourceRequest(request), options, freezable_task_runner_, task_runner,
       WebBackForwardCacheLoaderHelper(back_forward_cache_loader_helper_));
 }
 
