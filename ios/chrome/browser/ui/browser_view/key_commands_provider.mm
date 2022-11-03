@@ -430,7 +430,7 @@
 }
 
 - (void)keyCommand_clearBrowsingData {
-  // TODO(crbug.com/1378945): Implement this action.
+  [_dispatcher showClearBrowsingDataSettings];
 }
 
 #pragma mark - Private
