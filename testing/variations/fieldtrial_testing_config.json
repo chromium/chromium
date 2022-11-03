@@ -4068,21 +4068,6 @@
             ]
         }
     ],
-    "DisableCompositedProgressBar": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableCompositedProgressBar"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableFontManagerEarlyInitDesktop": [
         {
             "platforms": [

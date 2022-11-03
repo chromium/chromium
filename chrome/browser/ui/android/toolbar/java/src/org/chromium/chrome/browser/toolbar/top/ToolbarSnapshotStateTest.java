@@ -16,16 +16,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotState.ToolbarSnapshotDifference;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 
 /** Unit tests for {@link ToolbarSnapshotState}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.DISABLE_COMPOSITED_PROGRESS_BAR)
 public class ToolbarSnapshotStateTest {
     private static final @ColorInt int DEFAULT_TINT = Color.TRANSPARENT;
     private static final int DEFAULT_TAB_COUNT = 1;
