@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FileBrowser.OfficeFiles.FileHandler.{RootType}.{ConnectionStatus}"
-    enum="OfficeFileHandler" expires_after="M110">
+    enum="OfficeFileHandler" expires_after="M115">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -603,7 +603,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.TaskResult.{ProviderName}"
-    enum="OfficeTaskResult" expires_after="M112">
+    enum="OfficeTaskResult" expires_after="M115">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
