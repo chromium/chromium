@@ -1161,8 +1161,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         // on the fragment size.
         PhysicalSize size(pre_paint_info_ ? pre_paint_info_->box_fragment.Size()
                                           : PhysicalSize(box.Size()));
-        TransformationMatrix matrix;
-        compute_matrix(style, size, matrix);
         // If we are running transform animation on compositor, we should
         // disable 2d translation optimization to ensure that the compositor
         // gets the correct origin (which might be omitted by the optimization)
