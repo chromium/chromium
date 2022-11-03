@@ -168,7 +168,7 @@ inline bool FontSelectionValue::operator>=(
 
 static inline const FontSelectionValue& ItalicThreshold() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontSelectionValue, italicThreshold,
-                                  (20));
+                                  (14));
   return italicThreshold;
 }
 
@@ -189,7 +189,7 @@ static inline const FontSelectionValue& NormalSlopeValue() {
 }
 
 static inline const FontSelectionValue& ItalicSlopeValue() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontSelectionValue, italicValue, (20));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontSelectionValue, italicValue, (14));
   return italicValue;
 }
 
