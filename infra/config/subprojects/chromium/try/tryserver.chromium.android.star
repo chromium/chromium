@@ -284,6 +284,10 @@ try_.compilator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     check_for_flakiness = True,
     main_list_view = "try",
+    # TODO(kimstephanie): Remove 32 once
+    # chrome-internal-review.googlesource.com/c/infradata/config/+/5068505 is
+    # relanded
+    cores = "32|64" if settings.is_main else 32,
 )
 
 # b/236070074: Experimental builder to test reclient migration
