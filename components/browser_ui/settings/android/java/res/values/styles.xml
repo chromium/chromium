@@ -72,4 +72,13 @@ found in the LICENSE file.
         <item name="allowDividerBelow">true</item>
         <item name="iconSpaceReserved">false</item>
     </style>
+
+    <style name="ManagedDisclaimerView">
+        <item name="android:drawableStart">@drawable/enterprise_icon</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:text">@string/managed_by_your_organization</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium.Secondary</item>
+        <item name="drawableHeight">@dimen/managed_by_icon_size</item>
+        <item name="drawableWidth">@dimen/managed_by_icon_size</item>
+    </style>
 </resources>

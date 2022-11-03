@@ -65,19 +65,14 @@ found in the LICENSE file.
 
         <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
             android:id="@+id/managed_disclaimer_text"
-            android:layout_width="wrap_content"
+            style="@style/ManagedDisclaimerView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@android:id/title"
+            android:layout_alignStart="@android:id/summary"
             android:layout_below="@android:id/summary"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/enterprise_icon"
-            android:gravity="center_vertical"
             android:paddingTop="8dp"
-            android:text="@string/managed_by_your_organization"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:visibility="gone"
-            app:drawableHeight="@dimen/managed_by_icon_size"
-            app:drawableWidth="@dimen/managed_by_icon_size" />
+            android:visibility="gone" />
 
     </RelativeLayout>
 

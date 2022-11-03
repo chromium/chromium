@@ -67,7 +67,7 @@ found in the LICENSE file.
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
-        android:id="@+id/managed_view"
+        android:id="@+id/managed_view_legacy"
         android:text="@string/managed_by_your_organization"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -77,4 +77,15 @@ found in the LICENSE file.
         android:drawablePadding="10dp"
         app:chromeDrawableTint="@macro/default_icon_color"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/managed_disclaimer_text"
+        style="@style/ManagedDisclaimerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="20dp"
+        android:padding="16dp"
+        android:paddingStart="20dp"
+        android:visibility="gone" />
+
 </LinearLayout>

@@ -4,6 +4,14 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 
@@ -18,6 +26,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
+import android.view.View;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -25,6 +34,7 @@ import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -70,6 +80,7 @@ import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
+import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.FPSCookieSettings;
@@ -224,6 +235,21 @@ public class SiteSettingsTest {
                     TimePeriod.ALL_TIME);
         });
         helper.waitForCallback(0);
+    }
+
+    /**
+     * Returns a {@link Matcher} for a preference's managed disclaimer, depending on highlighting of
+     * managed prefs being enabled. Use {@code activeView} as true for the view that's is supposed
+     * to be shown when the preference is managed, or as false for the view that is always supposed
+     * to be hidden because of the highlighting experiment.
+     */
+    private static Matcher<View> getManagedViewMatcher(boolean activeView) {
+        return activeView
+                        == SettingsFeatureList.isEnabled(
+                                SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+                ? allOf(withId(R.id.managed_disclaimer_text),
+                        hasSibling(withId(R.id.radio_button_layout)))
+                : withId(R.id.managed_view_legacy);
     }
 
     /**
@@ -648,13 +674,30 @@ public class SiteSettingsTest {
 
     /**
      * Set the cookie content setting to allow through policy and ensure the correct radio buttons
-     * are enabled.
+     * are enabled. This test is executed with experiment {@link
+     * SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or disabled,
+     * and the only expected difference in both cases is the UI that shows the disclaimer that the
+     * preference is managed.
      */
     @Test
     @SmallTest
     @Feature({"Preferences"})
     @Policies.Add({ @Policies.Item(key = "DefaultCookiesSetting", string = "1") })
-    public void testDefaultCookiesSettingManagedAllow() throws Exception {
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testDefaultCookiesSettingManagedAllow_EnableHighlight() throws Exception {
+        testDefaultCookiesSettingManagedAllowImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({ @Policies.Item(key = "DefaultCookiesSetting", string = "1") })
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testDefaultCookiesSettingManagedAllow_DisableHighlight() throws Exception {
+        testDefaultCookiesSettingManagedAllowImpl();
+    }
+
+    private void testDefaultCookiesSettingManagedAllowImpl() throws Exception {
         checkDefaultCookiesSettingManaged(true);
         checkThirdPartyCookieBlockingManaged(false);
         // The ContentSetting is managed (and set to ALLOW) while ThirdPartyCookieBlocking is not
@@ -669,18 +712,39 @@ public class SiteSettingsTest {
                 CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledUnchecked);
         checkFourStateCookieToggleButtonState(
                 settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.Disabled);
+        onView(getManagedViewMatcher(/*activeView=*/true)).check(matches(isDisplayed()));
+        onView(getManagedViewMatcher(/*activeView=*/false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
 
     /**
      * Set the cookie content setting to allow through policy, disable incognito
-     * mode and ensure the correct radio buttons are enabled.
+     * mode and ensure the correct radio buttons are enabled. This test is executed with experiment
+     * {@link SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or
+     * disabled, and the only expected difference in both cases is the UI that shows the disclaimer
+     * that the preference is managed.
      */
     @Test
     @SmallTest
     @Feature({"Preferences"})
     @Policies.Add({ @Policies.Item(key = "DefaultCookiesSetting", string = "1") })
-    public void testDefaultCookiesSettingManagedAllowWithIncognitoDisabled() throws Exception {
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testDefaultCookiesSettingManagedAllowWithIncognitoDisabled_EnableHighlight()
+            throws Exception {
+        testDefaultCookiesSettingManagedAllowWithIncognitoDisabledImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({ @Policies.Item(key = "DefaultCookiesSetting", string = "1") })
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testDefaultCookiesSettingManagedAllowWithIncognitoDisabled_DisableHighlight()
+            throws Exception {
+        testDefaultCookiesSettingManagedAllowWithIncognitoDisabledImpl();
+    }
+
+    private void testDefaultCookiesSettingManagedAllowWithIncognitoDisabledImpl() throws Exception {
         IncognitoUtils.setEnabledForTesting(false);
         setFourStateCookieToggle(CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
         checkDefaultCookiesSettingManaged(true);
@@ -699,18 +763,37 @@ public class SiteSettingsTest {
                 CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledUnchecked);
         checkFourStateCookieToggleButtonState(
                 settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.Disabled);
+        onView(getManagedViewMatcher(/*activeView=*/true)).check(matches(isDisplayed()));
+        onView(getManagedViewMatcher(/*activeView=*/false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
 
     /**
      * Set the cookie content setting to block through a policy and ensure the correct radio buttons
-     * are enabled.
+     * are enabled. This test is executed with experiment {@link
+     * SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or disabled,
+     * and the only expected difference in both cases is the UI that shows the disclaimer that the
+     * preference is managed.
      */
     @Test
     @SmallTest
     @Feature({"Preferences"})
     @Policies.Add({ @Policies.Item(key = "DefaultCookiesSetting", string = "2") })
-    public void testDefaultCookiesSettingManagedBlock() {
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testDefaultCookiesSettingManagedBlock_EnableHighlight() {
+        testDefaultCookiesSettingManagedBlockImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({ @Policies.Item(key = "DefaultCookiesSetting", string = "2") })
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testDefaultCookiesSettingManagedBlock_DisableHighlight() {
+        testDefaultCookiesSettingManagedBlockImpl();
+    }
+
+    private void testDefaultCookiesSettingManagedBlockImpl() {
         checkDefaultCookiesSettingManaged(true);
         checkThirdPartyCookieBlockingManaged(false);
         // The ContentSetting is managed (and set to BLOCK) while ThirdPartyCookieBlocking is not
@@ -726,19 +809,37 @@ public class SiteSettingsTest {
                 CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
         checkFourStateCookieToggleButtonState(
                 settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledChecked);
+        onView(getManagedViewMatcher(/*activeView=*/true)).check(matches(isDisplayed()));
+        onView(getManagedViewMatcher(/*activeView=*/false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
 
     /**
      * Enable third-party cookie blocking through policy and ensure the correct radio buttons are
-     * enabled.
+     * enabled. This test is executed with experiment {@link
+     * SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or disabled,
+     * and the only expected difference in both cases is the UI that shows the disclaimer that the
+     * preference is managed.
      */
     @Test
     @SmallTest
     @Feature({"Preferences"})
     @Policies.Add({ @Policies.Item(key = "BlockThirdPartyCookies", string = "true") })
-    public void
-    testBlockThirdPartyCookiesManagedTrue() throws Exception {
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testBlockThirdPartyCookiesManagedTrue_EnableHighlight() throws Exception {
+        testBlockThirdPartyCookiesManagedTrueImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({ @Policies.Item(key = "BlockThirdPartyCookies", string = "true") })
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testBlockThirdPartyCookiesManagedTrue_DisableHighlight() throws Exception {
+        testBlockThirdPartyCookiesManagedTrueImpl();
+    }
+
+    private void testBlockThirdPartyCookiesManagedTrueImpl() throws Exception {
         checkDefaultCookiesSettingManaged(false);
         checkThirdPartyCookieBlockingManaged(true);
         // ThirdPartyCookieBlocking is managed (and set to true) while the ContentSetting is not
@@ -754,19 +855,37 @@ public class SiteSettingsTest {
                 CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledChecked);
         checkFourStateCookieToggleButtonState(
                 settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
+        onView(getManagedViewMatcher(/*activeView=*/true)).check(matches(isDisplayed()));
+        onView(getManagedViewMatcher(/*activeView=*/false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
 
     /**
      * Disable third-party cookie blocking through policy and ensure the correct radio buttons are
-     * enabled.
+     * enabled. This test is executed with experiment {@link
+     * SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or disabled,
+     * and the only expected difference in both cases is the UI that shows the disclaimer that the
+     * preference is managed.
      */
     @Test
     @SmallTest
     @Feature({"Preferences"})
     @Policies.Add({ @Policies.Item(key = "BlockThirdPartyCookies", string = "false") })
-    public void
-    testBlockThirdPartyCookiesManagedFalse() throws Exception {
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testBlockThirdPartyCookiesManagedFalse_EnableHighlight() throws Exception {
+        testBlockThirdPartyCookiesManagedFalseImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({ @Policies.Item(key = "BlockThirdPartyCookies", string = "false") })
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testBlockThirdPartyCookiesManagedFalse_DisableHighlight() throws Exception {
+        testBlockThirdPartyCookiesManagedFalseImpl();
+    }
+
+    private void testBlockThirdPartyCookiesManagedFalseImpl() throws Exception {
         checkDefaultCookiesSettingManaged(false);
         checkThirdPartyCookieBlockingManaged(true);
         // ThirdPartyCookieBlocking is managed (and set to false) while the ContentSetting is not
@@ -782,12 +901,17 @@ public class SiteSettingsTest {
                 CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
         checkFourStateCookieToggleButtonState(
                 settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
+        onView(getManagedViewMatcher(/*activeView=*/true)).check(matches(isDisplayed()));
+        onView(getManagedViewMatcher(/*activeView=*/false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
 
     /**
      * Set both the cookie content setting and third-party cookie blocking through policy and ensure
-     * the correct radio buttons are enabled.
+     * the correct radio buttons are enabled. This test is executed with experiment {@link
+     * SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or disabled,
+     * and the only expected difference in both cases is the UI that shows the disclaimer that the
+     * preference is managed.
      */
     @Test
     @SmallTest
@@ -796,8 +920,26 @@ public class SiteSettingsTest {
         @Policies.Item(key = "DefaultCookiesSetting", string = "1")
         , @Policies.Item(key = "BlockThirdPartyCookies", string = "false")
     })
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
     public void
-    testAllCookieSettingsManaged() throws Exception {
+    testAllCookieSettingsManaged_EnableHighlight() throws Exception {
+        testAllCookieSettingsManagedImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({
+        @Policies.Item(key = "DefaultCookiesSetting", string = "1")
+        , @Policies.Item(key = "BlockThirdPartyCookies", string = "false")
+    })
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void
+    testAllCookieSettingsManaged_DisableHighlight() throws Exception {
+        testAllCookieSettingsManagedImpl();
+    }
+
+    private void testAllCookieSettingsManagedImpl() throws Exception {
         checkDefaultCookiesSettingManaged(true);
         checkThirdPartyCookieBlockingManaged(true);
         // The ContentSetting and ThirdPartyCookieBlocking are managed. This means a user has a
@@ -813,16 +955,35 @@ public class SiteSettingsTest {
                 CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
         checkFourStateCookieToggleButtonState(
                 settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.Disabled);
+        onView(getManagedViewMatcher(/*activeView=*/true)).check(matches(isDisplayed()));
+        onView(getManagedViewMatcher(/*activeView=*/false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
 
     /**
-     * Ensure no radio buttons are enforced when cookie settings are unmanaged.
+     * Ensure no radio buttons are enforced when cookie settings are unmanaged. This test is
+     * executed with experiment {@link
+     * SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or disabled,
+     * and the only expected difference in both cases is the UI that shows the disclaimer that the
+     * preference is managed.
      */
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testNoCookieSettingsManaged() throws Exception {
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testNoCookieSettingsManaged_EnableHighlight() throws Exception {
+        testNoCookieSettingsManagedImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testNoCookieSettingsManaged_DisableHighlight() throws Exception {
+        testNoCookieSettingsManagedImpl();
+    }
+
+    private void testNoCookieSettingsManagedImpl() throws Exception {
         checkDefaultCookiesSettingManaged(false);
         checkThirdPartyCookieBlockingManaged(false);
         // The ContentSetting and ThirdPartyCookieBlocking are unmanaged. This means all buttons
@@ -837,16 +998,37 @@ public class SiteSettingsTest {
                 CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledUnchecked);
         checkFourStateCookieToggleButtonState(
                 settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
+        onView(getManagedViewMatcher(/*activeView=*/true)).check(matches(not(isDisplayed())));
+        onView(getManagedViewMatcher(/*activeView=*/false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
 
     /**
-     * Ensure no radio buttons are enforced when cookie settings are unmanaged.
+     * Ensure no radio buttons are enforced when cookie settings are unmanaged. This test is
+     * executed with experiment {@link
+     * SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or disabled,
+     * and the only expected difference in both cases is the UI that shows the disclaimer that the
+     * preference is managed.
      */
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testNoCookieSettingsManagedWithIncognitoDisabled() throws Exception {
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testNoCookieSettingsManagedWithIncognitoDisabled_EnableHighlight()
+            throws Exception {
+        testNoCookieSettingsManagedWithIncognitoDisabledImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testNoCookieSettingsManagedWithIncognitoDisabled_DisableHighlight()
+            throws Exception {
+        testNoCookieSettingsManagedWithIncognitoDisabledImpl();
+    }
+
+    private void testNoCookieSettingsManagedWithIncognitoDisabledImpl() throws Exception {
         IncognitoUtils.setEnabledForTesting(false);
         checkDefaultCookiesSettingManaged(false);
         checkThirdPartyCookieBlockingManaged(false);
@@ -862,6 +1044,8 @@ public class SiteSettingsTest {
                 CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledUnchecked);
         checkFourStateCookieToggleButtonState(
                 settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
+        onView(getManagedViewMatcher(/*activeView=*/true)).check(matches(not(isDisplayed())));
+        onView(getManagedViewMatcher(/*activeView=*/false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
 
