@@ -80,32 +80,31 @@ NSString* Delete(void) {
                            titleID:IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB];
 }
 
-+ (UIKeyCommand*)cr_openFindInPage {
++ (UIKeyCommand*)cr_find {
   return [self cr_commandWithInput:@"f"
                      modifierFlags:Command
-                            action:@selector(keyCommand_openFindInPage)
+                            action:@selector(keyCommand_find)
                            titleID:IDS_IOS_TOOLS_MENU_FIND_IN_PAGE];
 }
 
-+ (UIKeyCommand*)cr_findNextStringInPage {
++ (UIKeyCommand*)cr_findNext {
   return [self cr_commandWithInput:@"g"
                      modifierFlags:Command
-                            action:@selector(keyCommand_findNextStringInPage)
+                            action:@selector(keyCommand_findNext)
                            titleID:IDS_IOS_KEYBOARD_FIND_NEXT];
 }
 
-+ (UIKeyCommand*)cr_findPreviousStringInPage {
-  return
-      [self cr_commandWithInput:@"g"
-                  modifierFlags:ShiftCommand
-                         action:@selector(keyCommand_findPreviousStringInPage)
-                        titleID:IDS_IOS_KEYBOARD_FIND_PREVIOUS];
++ (UIKeyCommand*)cr_findPrevious {
+  return [self cr_commandWithInput:@"g"
+                     modifierFlags:ShiftCommand
+                            action:@selector(keyCommand_findPrevious)
+                           titleID:IDS_IOS_KEYBOARD_FIND_PREVIOUS];
 }
 
-+ (UIKeyCommand*)cr_focusOmnibox {
++ (UIKeyCommand*)cr_openLocation {
   return [self cr_commandWithInput:@"l"
                      modifierFlags:Command
-                            action:@selector(keyCommand_focusOmnibox)
+                            action:@selector(keyCommand_openLocation)
                            titleID:IDS_IOS_KEYBOARD_OPEN_LOCATION];
 }
 
@@ -233,7 +232,7 @@ NSString* Delete(void) {
                            titleID:IDS_IOS_ACCNAME_RELOAD];
 }
 
-+ (UIKeyCommand*)cr_goBack {
++ (UIKeyCommand*)cr_back {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of brackets.
   NSString* bracketBack;
@@ -248,11 +247,11 @@ NSString* Delete(void) {
   }
   return [self cr_commandWithInput:bracketBack
                      modifierFlags:Command
-                            action:@selector(keyCommand_goBack)
+                            action:@selector(keyCommand_back)
                            titleID:IDS_IOS_KEYBOARD_HISTORY_BACK];
 }
 
-+ (UIKeyCommand*)cr_goForward {
++ (UIKeyCommand*)cr_forward {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of brackets.
   NSString* bracketForward;
@@ -267,11 +266,11 @@ NSString* Delete(void) {
   }
   return [self cr_commandWithInput:bracketForward
                      modifierFlags:Command
-                            action:@selector(keyCommand_goForward)
+                            action:@selector(keyCommand_forward)
                            titleID:IDS_IOS_KEYBOARD_HISTORY_FORWARD];
 }
 
-+ (UIKeyCommand*)cr_goBack_2 {
++ (UIKeyCommand*)cr_back_2 {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is
   // true by default. It handles flipping the direction of arrows.
   NSString* arrowBack;
@@ -286,10 +285,10 @@ NSString* Delete(void) {
   }
   return [self keyCommandWithInput:arrowBack
                      modifierFlags:Command
-                            action:@selector(keyCommand_goBack)];
+                            action:@selector(keyCommand_back)];
 }
 
-+ (UIKeyCommand*)cr_goForward_2 {
++ (UIKeyCommand*)cr_forward_2 {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is
   // true by default. It handles flipping the direction of arrows.
   NSString* arrowForward;
@@ -304,7 +303,7 @@ NSString* Delete(void) {
   }
   return [self keyCommandWithInput:arrowForward
                      modifierFlags:Command
-                            action:@selector(keyCommand_goForward)];
+                            action:@selector(keyCommand_forward)];
 }
 
 + (UIKeyCommand*)cr_showHistory {
@@ -314,11 +313,11 @@ NSString* Delete(void) {
                            titleID:IDS_IOS_KEYBOARD_SHOW_HISTORY];
 }
 
-+ (UIKeyCommand*)cr_startVoiceSearch {
++ (UIKeyCommand*)cr_voiceSearch {
   return
       [self cr_commandWithInput:@"."
                   modifierFlags:ShiftCommand
-                         action:@selector(keyCommand_startVoiceSearch)
+                         action:@selector(keyCommand_voiceSearch)
                         titleID:IDS_IOS_VOICE_SEARCH_KEYBOARD_DISCOVERY_TITLE];
 }
 
@@ -349,66 +348,66 @@ NSString* Delete(void) {
                            titleID:IDS_IOS_KEYBOARD_SHOW_HELP];
 }
 
-+ (UIKeyCommand*)cr_showDownloadsFolder {
++ (UIKeyCommand*)cr_showDownloads {
   return [self cr_commandWithInput:@"l"
                      modifierFlags:AltCommand
-                            action:@selector(keyCommand_showDownloadsFolder)
+                            action:@selector(keyCommand_showDownloads)
                            titleID:IDS_IOS_KEYBOARD_SHOW_DOWNLOADS];
 }
 
-+ (UIKeyCommand*)cr_showDownloadsFolder_2 {
++ (UIKeyCommand*)cr_showDownloads_2 {
   return [self keyCommandWithInput:@"j"
                      modifierFlags:ShiftCommand
-                            action:@selector(keyCommand_showDownloadsFolder)];
+                            action:@selector(keyCommand_showDownloads)];
 }
 
-+ (UIKeyCommand*)cr_showTab0 {
++ (UIKeyCommand*)cr_showFirstTab {
   return [self cr_commandWithInput:@"1"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showTab0)
+                            action:@selector(keyCommand_showFirstTab)
                            titleID:IDS_IOS_KEYBOARD_FIRST_TAB];
 }
 
-+ (UIKeyCommand*)cr_showTab1 {
-  return [self keyCommandWithInput:@"2"
-                     modifierFlags:Command
-                            action:@selector(keyCommand_showTab1)];
-}
-
 + (UIKeyCommand*)cr_showTab2 {
-  return [self keyCommandWithInput:@"3"
+  return [self keyCommandWithInput:@"2"
                      modifierFlags:Command
                             action:@selector(keyCommand_showTab2)];
 }
 
 + (UIKeyCommand*)cr_showTab3 {
-  return [self keyCommandWithInput:@"4"
+  return [self keyCommandWithInput:@"3"
                      modifierFlags:Command
                             action:@selector(keyCommand_showTab3)];
 }
 
 + (UIKeyCommand*)cr_showTab4 {
-  return [self keyCommandWithInput:@"5"
+  return [self keyCommandWithInput:@"4"
                      modifierFlags:Command
                             action:@selector(keyCommand_showTab4)];
 }
 
 + (UIKeyCommand*)cr_showTab5 {
-  return [self keyCommandWithInput:@"6"
+  return [self keyCommandWithInput:@"5"
                      modifierFlags:Command
                             action:@selector(keyCommand_showTab5)];
 }
 
 + (UIKeyCommand*)cr_showTab6 {
-  return [self keyCommandWithInput:@"7"
+  return [self keyCommandWithInput:@"6"
                      modifierFlags:Command
                             action:@selector(keyCommand_showTab6)];
 }
 
 + (UIKeyCommand*)cr_showTab7 {
-  return [self keyCommandWithInput:@"8"
+  return [self keyCommandWithInput:@"7"
                      modifierFlags:Command
                             action:@selector(keyCommand_showTab7)];
+}
+
++ (UIKeyCommand*)cr_showTab8 {
+  return [self keyCommandWithInput:@"8"
+                     modifierFlags:Command
+                            action:@selector(keyCommand_showTab8)];
 }
 
 + (UIKeyCommand*)cr_showLastTab {

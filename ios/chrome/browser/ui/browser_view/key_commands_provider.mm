@@ -98,16 +98,17 @@
       UIKeyCommand.cr_showNextTab_3,
       UIKeyCommand.cr_showPreviousTab_3,
       UIKeyCommand.cr_close,
-      UIKeyCommand.cr_goBack_2,
-      UIKeyCommand.cr_goForward_2,
-      UIKeyCommand.cr_showDownloadsFolder_2,
-      UIKeyCommand.cr_showTab1,
+      UIKeyCommand.cr_back_2,
+      UIKeyCommand.cr_forward_2,
+      UIKeyCommand.cr_showDownloads_2,
+      UIKeyCommand.cr_showFirstTab,
       UIKeyCommand.cr_showTab2,
       UIKeyCommand.cr_showTab3,
       UIKeyCommand.cr_showTab4,
       UIKeyCommand.cr_showTab5,
       UIKeyCommand.cr_showTab6,
       UIKeyCommand.cr_showTab7,
+      UIKeyCommand.cr_showTab8,
       UIKeyCommand.cr_reportAnIssue_2,
     ];
   } else {
@@ -136,14 +137,14 @@
   if (hasTabs) {
     if (self.findInPageAvailable) {
       [keyCommands addObjectsFromArray:@[
-        UIKeyCommand.cr_openFindInPage,
-        UIKeyCommand.cr_findNextStringInPage,
-        UIKeyCommand.cr_findPreviousStringInPage,
+        UIKeyCommand.cr_find,
+        UIKeyCommand.cr_findNext,
+        UIKeyCommand.cr_findPrevious,
       ]];
     }
 
     [keyCommands addObjectsFromArray:@[
-      UIKeyCommand.cr_focusOmnibox,
+      UIKeyCommand.cr_openLocation,
       UIKeyCommand.cr_closeTab,
       UIKeyCommand.cr_showNextTab,
       UIKeyCommand.cr_showPreviousTab,
@@ -154,22 +155,22 @@
       UIKeyCommand.cr_showBookmarks,
       UIKeyCommand.cr_addToBookmarks,
       UIKeyCommand.cr_reload,
-      UIKeyCommand.cr_goBack,
-      UIKeyCommand.cr_goForward,
+      UIKeyCommand.cr_back,
+      UIKeyCommand.cr_forward,
     ]];
 
     // Since cmd+left and cmd+right are valid system shortcuts when editing
     // text, register those only if text is not being edited.
     if (!self.editingText) {
       [keyCommands addObjectsFromArray:@[
-        UIKeyCommand.cr_goBack_2,
-        UIKeyCommand.cr_goForward_2,
+        UIKeyCommand.cr_back_2,
+        UIKeyCommand.cr_forward_2,
       ]];
     }
 
     [keyCommands addObjectsFromArray:@[
       UIKeyCommand.cr_showHistory,
-      UIKeyCommand.cr_startVoiceSearch,
+      UIKeyCommand.cr_voiceSearch,
     ]];
   }
 
@@ -189,16 +190,16 @@
     [keyCommands addObjectsFromArray:@[
       UIKeyCommand.cr_stop,
       UIKeyCommand.cr_showHelp,
-      UIKeyCommand.cr_showDownloadsFolder,
-      UIKeyCommand.cr_showDownloadsFolder_2,
-      UIKeyCommand.cr_showTab0,
-      UIKeyCommand.cr_showTab1,
+      UIKeyCommand.cr_showDownloads,
+      UIKeyCommand.cr_showDownloads_2,
+      UIKeyCommand.cr_showFirstTab,
       UIKeyCommand.cr_showTab2,
       UIKeyCommand.cr_showTab3,
       UIKeyCommand.cr_showTab4,
       UIKeyCommand.cr_showTab5,
       UIKeyCommand.cr_showTab6,
       UIKeyCommand.cr_showTab7,
+      UIKeyCommand.cr_showTab8,
       UIKeyCommand.cr_showLastTab,
     ]];
   }
@@ -256,19 +257,19 @@
   RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, self.browser);
 }
 
-- (void)keyCommand_openFindInPage {
+- (void)keyCommand_find {
   [_dispatcher openFindInPage];
 }
 
-- (void)keyCommand_findNextStringInPage {
+- (void)keyCommand_findNext {
   [_dispatcher findNextStringInPage];
 }
 
-- (void)keyCommand_findPreviousStringInPage {
+- (void)keyCommand_findPrevious {
   [_dispatcher findPreviousStringInPage];
 }
 
-- (void)keyCommand_focusOmnibox {
+- (void)keyCommand_openLocation {
   [_omniboxHandler focusOmnibox];
 }
 
@@ -334,12 +335,12 @@
   self.navigationAgent->Reload();
 }
 
-- (void)keyCommand_goBack {
+- (void)keyCommand_back {
   if (self.navigationAgent->CanGoBack())
     self.navigationAgent->GoBack();
 }
 
-- (void)keyCommand_goForward {
+- (void)keyCommand_forward {
   if (self.navigationAgent->CanGoForward())
     self.navigationAgent->GoForward();
 }
@@ -348,7 +349,7 @@
   [_dispatcher showHistory];
 }
 
-- (void)keyCommand_startVoiceSearch {
+- (void)keyCommand_voiceSearch {
   [LayoutGuideCenterForBrowser(_browser) referenceView:nil
                                              underName:kVoiceSearchButtonGuide];
   [_dispatcher startVoiceSearch];
@@ -370,39 +371,39 @@
   [_browserCoordinatorCommandsHandler showHelpPage];
 }
 
-- (void)keyCommand_showDownloadsFolder {
+- (void)keyCommand_showDownloads {
   [_browserCoordinatorCommandsHandler showDownloadsFolder];
 }
 
-- (void)keyCommand_showTab0 {
+- (void)keyCommand_showFirstTab {
   [self showTabAtIndex:0];
 }
 
-- (void)keyCommand_showTab1 {
+- (void)keyCommand_showTab2 {
   [self showTabAtIndex:1];
 }
 
-- (void)keyCommand_showTab2 {
+- (void)keyCommand_showTab3 {
   [self showTabAtIndex:2];
 }
 
-- (void)keyCommand_showTab3 {
+- (void)keyCommand_showTab4 {
   [self showTabAtIndex:3];
 }
 
-- (void)keyCommand_showTab4 {
+- (void)keyCommand_showTab5 {
   [self showTabAtIndex:4];
 }
 
-- (void)keyCommand_showTab5 {
+- (void)keyCommand_showTab6 {
   [self showTabAtIndex:5];
 }
 
-- (void)keyCommand_showTab6 {
+- (void)keyCommand_showTab7 {
   [self showTabAtIndex:6];
 }
 
-- (void)keyCommand_showTab7 {
+- (void)keyCommand_showTab8 {
   [self showTabAtIndex:7];
 }
 

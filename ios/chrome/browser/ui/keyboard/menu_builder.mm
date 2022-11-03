@@ -24,17 +24,17 @@
     UIKeyCommand.cr_openNewIncognitoTab,
     UIKeyCommand.cr_openNewWindow,
     UIKeyCommand.cr_openNewIncognitoWindow,
-    UIKeyCommand.cr_focusOmnibox,
+    UIKeyCommand.cr_openLocation,
     UIKeyCommand.cr_closeTab,
-    UIKeyCommand.cr_startVoiceSearch,
+    UIKeyCommand.cr_voiceSearch,
   ]];
   [builder insertChildMenu:fileMenu atStartOfMenuForIdentifier:UIMenuFile];
 
   // Edit
   UIMenu* editMenu = [UIMenu menuWithChildren:@[
-    UIKeyCommand.cr_openFindInPage,
-    UIKeyCommand.cr_findNextStringInPage,
-    UIKeyCommand.cr_findPreviousStringInPage,
+    UIKeyCommand.cr_find,
+    UIKeyCommand.cr_findNext,
+    UIKeyCommand.cr_findPrevious,
   ]];
   // Remove the conflicting Find commands.
   [builder removeMenuForIdentifier:UIMenuFind];
@@ -51,8 +51,8 @@
   // History
   UIMenu* historyMenu = [UIMenu menuWithTitle:@"History"
                                      children:@[
-                                       UIKeyCommand.cr_goBack,
-                                       UIKeyCommand.cr_goForward,
+                                       UIKeyCommand.cr_back,
+                                       UIKeyCommand.cr_forward,
                                        UIKeyCommand.cr_reopenLastClosedTab,
                                        UIKeyCommand.cr_showHistory,
                                        UIKeyCommand.cr_clearBrowsingData,
@@ -74,9 +74,9 @@
   UIMenu* windowMenu = [UIMenu menuWithChildren:@[
     UIKeyCommand.cr_showNextTab,
     UIKeyCommand.cr_showPreviousTab,
-    UIKeyCommand.cr_showTab0,
+    UIKeyCommand.cr_showFirstTab,
     UIKeyCommand.cr_showLastTab,
-    UIKeyCommand.cr_showDownloadsFolder,
+    UIKeyCommand.cr_showDownloads,
     UIKeyCommand.cr_showSettings,
   ]];
   [builder insertChildMenu:windowMenu atStartOfMenuForIdentifier:UIMenuWindow];
