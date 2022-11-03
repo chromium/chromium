@@ -12,12 +12,15 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "content/public/browser/browser_context.h"
@@ -214,11 +217,24 @@ void WritableFileChecker::Check() {
       continue;
     }
 #endif
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-        base::BindOnce(&PrepareNativeLocalFileForWritableApp, path,
-                       is_directory),
-        base::BindOnce(&WritableFileChecker::OnPrepareFileDone, this, path));
+    base::TaskTraits traits = {base::TaskPriority::USER_BLOCKING,
+                               base::MayBlock()};
+    base::OnceCallback<bool()> task = base::BindOnce(
+        &PrepareNativeLocalFileForWritableApp, path, is_directory);
+    base::OnceCallback<void(bool)> reply = base::BindOnce(
+        &WritableFileChecker::OnPrepareFileDone, base::RetainedRef(this), path);
+
+    // If ChromeOS dlp is used (dlp policies are configured) we have to gain dlp
+    // file access rights for `path` by the dlp daemon to be able to access the
+    // file in PrepareNativeLocalFileForWritableApp.
+    if (file_access::ScopedFileAccessDelegate::HasInstance()) {
+      file_access::ScopedFileAccessDelegate::Get()
+          ->AccessScopedPostTaskAndReplyWithResult(
+              path, FROM_HERE, traits, std::move(task), std::move(reply));
+    } else {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, traits, std::move(task), std::move(reply));
+    }
   }
 }
 

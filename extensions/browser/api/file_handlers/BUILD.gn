@@ -25,6 +25,7 @@ source_set("file_handlers") {
   deps = [
     "//base:base",
     "//build:chromeos_buildflags",
+    "//components/file_access",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/browser/api",

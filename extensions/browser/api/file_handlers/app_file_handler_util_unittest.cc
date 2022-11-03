@@ -4,10 +4,18 @@
 
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/mock_callback.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/entry_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -264,6 +272,177 @@ TEST(FileHandlersAppFileHandlerUtilTest, CreateEntryInfos) {
                               base::FilePath(FILE_PATH_LITERAL("a/b/c"))}));
   }
 }
+
+class PrepareFilesForWritableAppTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(base_.CreateUniqueTempDir());
+    base::FilePath base_dir = base_.GetPath();
+    file1 = base_.GetPath().Append(FILE_PATH_LITERAL("a.txt"));
+    file2 = base_.GetPath().Append(FILE_PATH_LITERAL("b.txt"));
+    file3 = base_.GetPath()
+                .Append(FILE_PATH_LITERAL("a"))
+                .Append(FILE_PATH_LITERAL("b"))
+                .Append(FILE_PATH_LITERAL("c.txt"));
+    base::File(file1, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE)
+        .Flush();
+  }
+
+ protected:
+  // File exists.
+  base::FilePath file1;
+  // File does not exist, but the directory of the file.
+  base::FilePath file2;
+  // File does not exist neither does its directory.
+  base::FilePath file3;
+
+  content::BrowserTaskEnvironment browser_task_environment_;
+  content::TestBrowserContext context_;
+
+ private:
+  ExtensionsAPIClient api_client_;
+  base::ScopedTempDir base_;
+};
+
+TEST_F(PrepareFilesForWritableAppTest, SingleFileThatDoesExists) {
+  testing::StrictMock<base::MockOnceCallback<void()>> success_callback;
+  testing::StrictMock<base::MockOnceCallback<void(const base::FilePath& path)>>
+      fail_callback;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(success_callback, Run).WillOnce([&run_loop] { run_loop.Quit(); });
+
+  PrepareFilesForWritableApp({file1}, &context_, {}, success_callback.Get(),
+                             fail_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(PrepareFilesForWritableAppTest, SingleFileThatDoesNotExists) {
+  testing::StrictMock<base::MockOnceCallback<void()>> success_callback;
+  testing::StrictMock<base::MockOnceCallback<void(const base::FilePath& path)>>
+      fail_callback;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(success_callback, Run).WillOnce([&run_loop] { run_loop.Quit(); });
+
+  PrepareFilesForWritableApp({file2}, &context_, {}, success_callback.Get(),
+                             fail_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(PrepareFilesForWritableAppTest, SingleFileInDirectoryThatDoesNotExists) {
+  testing::StrictMock<base::MockOnceCallback<void()>> success_callback;
+  testing::StrictMock<base::MockOnceCallback<void(const base::FilePath& path)>>
+      fail_callback;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(fail_callback, Run).WillOnce([&run_loop] { run_loop.Quit(); });
+
+  PrepareFilesForWritableApp({file3}, &context_, {}, success_callback.Get(),
+                             fail_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(PrepareFilesForWritableAppTest,
+       OneFileInDirectoryThatDoesNotExistOneFileThatExists) {
+  testing::StrictMock<base::MockOnceCallback<void()>> success_callback;
+  testing::StrictMock<base::MockOnceCallback<void(const base::FilePath& path)>>
+      fail_callback;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(fail_callback, Run)
+      .WillOnce([this, &run_loop](const base::FilePath& path) {
+        EXPECT_EQ(file3, path);
+        run_loop.Quit();
+      });
+
+  PrepareFilesForWritableApp({file3, file1}, &context_, {},
+                             success_callback.Get(), fail_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(PrepareFilesForWritableAppTest,
+       OneFileThatExistsOneFileInDirectoryThatDoesNotExist) {
+  testing::StrictMock<base::MockOnceCallback<void()>> success_callback;
+  testing::StrictMock<base::MockOnceCallback<void(const base::FilePath& path)>>
+      fail_callback;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(fail_callback, Run)
+      .WillOnce([this, &run_loop](const base::FilePath& path) {
+        EXPECT_EQ(file3, path);
+        run_loop.Quit();
+      });
+
+  PrepareFilesForWritableApp({file3, file1}, &context_, {},
+                             success_callback.Get(), fail_callback.Get());
+  run_loop.Run();
+}
+
+class MockScopedFileAccessDelegate
+    : public file_access::ScopedFileAccessDelegate {
+ public:
+  MOCK_METHOD(
+      (void),
+      RequestFilesAccess,
+      (const std::vector<base::FilePath>& files,
+       const GURL& destination_url,
+       base::OnceCallback<void(file_access::ScopedFileAccess)> callback),
+      (override));
+  MOCK_METHOD(
+      (void),
+      RequestFilesAccessForSystem,
+      (const std::vector<base::FilePath>& files,
+       base::OnceCallback<void(file_access::ScopedFileAccess)> callback),
+      (override));
+};
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(PrepareFilesForWritableAppTest, SingleFileThatExistsDlpGrantsAccess) {
+  testing::StrictMock<base::MockOnceCallback<void()>> success_callback;
+  testing::StrictMock<base::MockOnceCallback<void(const base::FilePath& path)>>
+      fail_callback;
+  MockScopedFileAccessDelegate scoped_file_access_delegate;
+  base::RunLoop run_loop;
+  EXPECT_CALL(scoped_file_access_delegate, RequestFilesAccessForSystem)
+      .WillOnce([this](const std::vector<base::FilePath>& paths,
+                       base::OnceCallback<void(file_access::ScopedFileAccess)>
+                           callback) {
+        EXPECT_EQ(1ul, paths.size());
+        EXPECT_EQ(file1, paths[0]);
+        std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
+      });
+  EXPECT_CALL(success_callback, Run).WillOnce([&run_loop] { run_loop.Quit(); });
+
+  PrepareFilesForWritableApp({file1}, &context_, {}, success_callback.Get(),
+                             fail_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(PrepareFilesForWritableAppTest, SingleFileThatExistsDlpDeniesAccess) {
+  testing::StrictMock<base::MockOnceCallback<void()>> success_callback;
+  testing::StrictMock<base::MockOnceCallback<void(const base::FilePath& path)>>
+      fail_callback;
+  MockScopedFileAccessDelegate scoped_file_access_delegate;
+  base::RunLoop run_loop;
+  EXPECT_CALL(scoped_file_access_delegate, RequestFilesAccessForSystem)
+      .WillOnce([this](const std::vector<base::FilePath>& paths,
+                       base::OnceCallback<void(file_access::ScopedFileAccess)>
+                           callback) {
+        EXPECT_EQ(1ul, paths.size());
+        EXPECT_EQ(file1, paths[0]);
+        std::move(callback).Run(
+            file_access::ScopedFileAccess(false, base::ScopedFD()));
+      });
+  EXPECT_CALL(success_callback, Run).WillOnce([&run_loop] { run_loop.Quit(); });
+
+  PrepareFilesForWritableApp({file1}, &context_, {}, success_callback.Get(),
+                             fail_callback.Get());
+  run_loop.Run();
+}
+
+#endif
 
 }  // namespace app_file_handler_util
 }  // namespace extensions

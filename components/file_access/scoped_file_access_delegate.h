@@ -7,13 +7,14 @@
 
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/file_access/scoped_file_access.h"
 #include "url/gurl.h"
-
-class ScopedFileAccessDelegateTest;
 
 namespace file_access {
 
@@ -53,6 +54,33 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
       const std::vector<base::FilePath>& files,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback) = 0;
 
+  // Calls base::ThreadPool::PostTaskAndReplyWithResult but `task` is run with
+  // file access to `path`. The file access is hold until the call to `reply`
+  // returns.
+  template <typename T>
+  void AccessScopedPostTaskAndReplyWithResult(
+      const base::FilePath& path,
+      const base::Location& from_here,
+      const base::TaskTraits& traits,
+      base::OnceCallback<T()> task,
+      base::OnceCallback<void(T)> reply) {
+    file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
+        {path},
+        base::BindOnce(
+            [](const base::FilePath path, const base::Location& from_here,
+               const base::TaskTraits traits, base::OnceCallback<T()> task,
+               base::OnceCallback<void(T)> reply,
+               file_access::ScopedFileAccess file_access) {
+              base::ThreadPool::PostTaskAndReplyWithResult(
+                  from_here, traits, std::move(task),
+                  base::BindOnce([](base::OnceCallback<void(T)> reply,
+                                    file_access::ScopedFileAccess file_access,
+                                    T arg) { std::move(reply).Run(arg); },
+                                 std::move(reply), std::move(file_access)));
+            },
+            path, from_here, traits, std::move(task), std::move(reply)));
+  }
+
  protected:
   ScopedFileAccessDelegate();
 
@@ -61,9 +89,8 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
   // A single instance of ScopedFileAccessDelegate. Equals nullptr when there's
   // not any data transfer restrictions required.
   static ScopedFileAccessDelegate* scoped_file_access_delegate_;
-
-  friend class ::ScopedFileAccessDelegateTest;
 };
+
 }  // namespace file_access
 
 #endif  // COMPONENTS_FILE_ACCESS_SCOPED_FILE_ACCESS_DELEGATE_H_

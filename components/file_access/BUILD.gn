@@ -32,6 +32,8 @@ source_set("unit_tests") {
   deps = [
     ":file_access",
     "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
