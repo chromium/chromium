@@ -120,7 +120,6 @@ struct MediaStreamDevice {
 
 // See common/media/media_stream_controls.h.
 struct TrackControls {
-  bool requested;
   MediaStreamType stream_type;
   string device_id;
 };

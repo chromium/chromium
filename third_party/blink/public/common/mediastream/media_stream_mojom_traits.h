@@ -66,10 +66,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaStreamDeviceDataView,
 template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::TrackControlsDataView, blink::TrackControls> {
-  static bool requested(const blink::TrackControls& controls) {
-    return controls.requested;
-  }
-
   static const blink::mojom::MediaStreamType& stream_type(
       const blink::TrackControls& controls) {
     return controls.stream_type;

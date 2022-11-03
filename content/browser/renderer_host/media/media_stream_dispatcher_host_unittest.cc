@@ -591,55 +591,11 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithAudioOnly) {
 }
 
 TEST_F(MediaStreamDispatcherHostTest,
-       BadMessageIfAudioRequestedButTypeIsNoService) {
-  using blink::mojom::MediaStreamType;
-
-  blink::StreamControls controls;
-  controls.audio.requested = true;
-  controls.audio.stream_type = MediaStreamType::NO_SERVICE;
-  controls.video.requested = true;
-  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
-
-  SetupFakeUI(true);
-
-  EXPECT_CALL(
-      *this,
-      MockOnBadMessage(
-          kProcessId,
-          bad_message::MSDH_INCONSISTENT_AUDIO_TYPE_AND_REQUESTED_FIELDS))
-      .Times(1);
-  host_->OnGenerateStreams(kPageRequestId, controls);
-}
-
-TEST_F(MediaStreamDispatcherHostTest,
-       BadMessageIfVideoRequestedButTypeIsNoService) {
-  using blink::mojom::MediaStreamType;
-
-  blink::StreamControls controls;
-  controls.audio.requested = false;
-  controls.audio.stream_type = MediaStreamType::NO_SERVICE;
-  controls.video.requested = true;
-  controls.video.stream_type = MediaStreamType::NO_SERVICE;
-
-  SetupFakeUI(true);
-
-  EXPECT_CALL(
-      *this,
-      MockOnBadMessage(
-          kProcessId,
-          bad_message::MSDH_INCONSISTENT_VIDEO_TYPE_AND_REQUESTED_FIELDS))
-      .Times(1);
-  host_->OnGenerateStreams(kPageRequestId, controls);
-}
-
-TEST_F(MediaStreamDispatcherHostTest,
        BadMessageIfAudioNotRequestedAndSuppressLocalAudioPlayback) {
   using blink::mojom::MediaStreamType;
 
   blink::StreamControls controls;
-  controls.audio.requested = false;
   controls.audio.stream_type = MediaStreamType::NO_SERVICE;
-  controls.video.requested = true;
   controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
   controls.suppress_local_audio_playback = true;
 
@@ -660,9 +616,7 @@ TEST_F(MediaStreamDispatcherHostTest,
   using blink::mojom::MediaStreamType;
 
   blink::StreamControls controls;
-  controls.audio.requested = false;
   controls.audio.stream_type = MediaStreamType::NO_SERVICE;
-  controls.video.requested = true;
   controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
   controls.hotword_enabled = true;
 
@@ -681,9 +635,7 @@ TEST_F(MediaStreamDispatcherHostTest,
   using blink::mojom::MediaStreamType;
 
   blink::StreamControls controls;
-  controls.audio.requested = false;
   controls.audio.stream_type = MediaStreamType::NO_SERVICE;
-  controls.video.requested = true;
   controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
   controls.disable_local_echo = true;
 
@@ -894,12 +846,12 @@ TEST_F(MediaStreamDispatcherHostTest, WebContentsNotFocusedInBackgroundPage) {
   host_->OnGenerateStreams(kPageRequestId, controls, run_loop.QuitClosure());
 
   absl::optional<blink::MediaStreamDevice> expected_audio_device;
-  if (controls.audio.requested && !audio_device_descriptions_.empty()) {
+  if (controls.audio.requested() && !audio_device_descriptions_.empty()) {
     expected_audio_device = blink::MediaStreamDevice();
   }
 
   absl::optional<blink::MediaStreamDevice> expected_video_device;
-  if (controls.video.requested && !stub_video_device_ids_.empty()) {
+  if (controls.video.requested() && !stub_video_device_ids_.empty()) {
     expected_video_device = blink::MediaStreamDevice();
   }
 
@@ -930,12 +882,12 @@ TEST_F(MediaStreamDispatcherHostTest, WebContentsFocused) {
   run_loop.RunUntilIdle();
 
   absl::optional<blink::MediaStreamDevice> expected_audio_device;
-  if (controls.audio.requested && !audio_device_descriptions_.empty()) {
+  if (controls.audio.requested() && !audio_device_descriptions_.empty()) {
     expected_audio_device = blink::MediaStreamDevice();
   }
 
   absl::optional<blink::MediaStreamDevice> expected_video_device;
-  if (controls.video.requested && !stub_video_device_ids_.empty()) {
+  if (controls.video.requested() && !stub_video_device_ids_.empty()) {
     expected_video_device = blink::MediaStreamDevice();
   }
 
@@ -1409,13 +1361,9 @@ TEST_P(MediaStreamDispatcherHostStreamTypeCombinationTest,
 
   controls.audio.stream_type =
       static_cast<MediaStreamType>(std::get<0>(GetParam()));
-  controls.audio.requested =
-      (controls.audio.stream_type != MediaStreamType::NO_SERVICE);
 
   controls.video.stream_type =
       static_cast<MediaStreamType>(std::get<1>(GetParam()));
-  controls.video.requested =
-      (controls.video.stream_type != MediaStreamType::NO_SERVICE);
 
   SetupFakeUI(true);
   EXPECT_CALL(

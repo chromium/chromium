@@ -29,7 +29,7 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
 
   blink::mojom::StreamSelectionStrategy strategy =
       audio_stream_selection_info_ptr->strategy;
-  if (controls.audio.requested &&
+  if (controls.audio.requested() &&
       (strategy == blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID ||
        strategy == blink::mojom::StreamSelectionStrategy::FORCE_NEW_STREAM)) {
     stream_devices_.audio_device = MediaStreamDevice(
@@ -40,7 +40,7 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
         "associated_output_device_id" + session_id_.ToString();
   }
 
-  if (controls.video.requested) {
+  if (controls.video.requested()) {
     stream_devices_.video_device = MediaStreamDevice(
         controls.video.stream_type,
         controls.video.device_id + session_id_.ToString(), "usb video camera");

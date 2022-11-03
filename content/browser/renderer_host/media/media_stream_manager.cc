@@ -1690,11 +1690,9 @@ void MediaStreamManager::OpenDevice(int render_process_id,
                                         device_id, type));
   StreamControls controls;
   if (blink::IsAudioInputMediaType(type)) {
-    controls.audio.requested = true;
     controls.audio.stream_type = type;
     controls.audio.device_id = device_id;
   } else if (blink::IsVideoInputMediaType(type)) {
-    controls.video.requested = true;
     controls.video.stream_type = type;
     controls.video.device_id = device_id;
   } else {
@@ -2200,7 +2198,7 @@ bool MediaStreamManager::SetUpDisplayCaptureRequest(DeviceRequest* request) {
   // getDisplayMedia function does not permit the use of constraints for
   // selection of a source, see
   // https://w3c.github.io/mediacapture-screen-share/#constraints.
-  if (!request->controls.video.requested ||
+  if (!request->controls.video.requested() ||
       !request->controls.video.device_id.empty() ||
       !request->controls.audio.device_id.empty()) {
     LOG(ERROR) << "Invalid display media request.";
@@ -2209,8 +2207,8 @@ bool MediaStreamManager::SetUpDisplayCaptureRequest(DeviceRequest* request) {
 
   request->CreateUIRequest(std::string() /* requested_audio_device_id */,
                            std::string() /* requested_video_device_id */);
-  DVLOG(3) << "Audio requested " << request->controls.audio.requested
-           << " Video requested " << request->controls.video.requested;
+  DVLOG(3) << "Audio requested " << request->controls.audio.requested()
+           << " Video requested " << request->controls.video.requested();
   return true;
 }
 
@@ -2224,7 +2222,7 @@ bool MediaStreamManager::SetUpDeviceCaptureRequest(
   SendLogMessage(base::StringPrintf(
       "SetUpDeviceCaptureRequest([requester_id=%d])", request->requester_id));
   std::string audio_device_id;
-  if (request->controls.audio.requested &&
+  if (request->controls.audio.requested() &&
       !GetRequestedDeviceCaptureId(
           request, request->audio_type(),
           enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_INPUT)],
@@ -2233,7 +2231,7 @@ bool MediaStreamManager::SetUpDeviceCaptureRequest(
   }
 
   std::string video_device_id;
-  if (request->controls.video.requested &&
+  if (request->controls.video.requested() &&
       !GetRequestedDeviceCaptureId(
           request, request->video_type(),
           enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)],
@@ -2241,9 +2239,9 @@ bool MediaStreamManager::SetUpDeviceCaptureRequest(
     return false;
   }
   request->CreateUIRequest(audio_device_id, video_device_id);
-  DVLOG(3) << "Audio requested " << request->controls.audio.requested
+  DVLOG(3) << "Audio requested " << request->controls.audio.requested()
            << " device id = " << audio_device_id << "Video requested "
-           << request->controls.video.requested
+           << request->controls.video.requested()
            << " device id = " << video_device_id;
   return true;
 }

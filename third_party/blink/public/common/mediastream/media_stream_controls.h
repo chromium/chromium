@@ -23,13 +23,13 @@ BLINK_COMMON_EXPORT extern const char
 
 struct BLINK_COMMON_EXPORT TrackControls {
   TrackControls();
-  explicit TrackControls(bool request, mojom::MediaStreamType type);
+  explicit TrackControls(mojom::MediaStreamType type);
   TrackControls(const TrackControls& other);
   ~TrackControls();
 
-  // TODO(crbug/1379802): Either remove completely, or make this into
-  // a getter based on comparing `stream_type` to `NO_SERVICE`.
-  bool requested = false;
+  bool requested() const {
+    return stream_type != mojom::MediaStreamType::NO_SERVICE;
+  }
 
   // Represents the requested  stream type.
   mojom::MediaStreamType stream_type = mojom::MediaStreamType::NO_SERVICE;

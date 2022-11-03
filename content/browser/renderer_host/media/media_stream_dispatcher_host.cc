@@ -745,17 +745,7 @@ MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
     return bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION;
   }
 
-  if (controls.audio.requested !=
-      blink::IsAudioInputMediaType(controls.audio.stream_type)) {
-    return bad_message::MSDH_INCONSISTENT_AUDIO_TYPE_AND_REQUESTED_FIELDS;
-  }
-
-  if (controls.video.requested !=
-      blink::IsVideoInputMediaType(controls.video.stream_type)) {
-    return bad_message::MSDH_INCONSISTENT_VIDEO_TYPE_AND_REQUESTED_FIELDS;
-  }
-
-  if (!controls.audio.requested) {
+  if (!controls.audio.requested()) {
     if (controls.suppress_local_audio_playback) {
       return bad_message::
           MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED;

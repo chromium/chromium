@@ -168,23 +168,6 @@ std::string GetOnTrackStartedLogString(
   return str.Utf8();
 }
 
-void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
-                                  TrackControls* track_controls) {
-  track_controls->stream_type = user_media_request->AudioMediaStreamType();
-  if (user_media_request->MediaRequestType() ==
-      UserMediaRequestType::kDisplayMediaSet) {
-    track_controls->requested = false;
-  } else {
-    track_controls->requested = true;
-  }
-}
-
-void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
-                                  TrackControls* track_controls) {
-  track_controls->stream_type = user_media_request->VideoMediaStreamType();
-  track_controls->requested = true;
-}
-
 bool IsSameDevice(const MediaStreamDevice& device,
                   const MediaStreamDevice& other_device) {
   return device.id == other_device.id && device.type == other_device.type &&
@@ -595,7 +578,10 @@ void UserMediaProcessor::SetupAudioInput() {
       request->suppress_local_audio_playback();
 
   TrackControls& audio_controls = stream_controls->audio;
-  InitializeAudioTrackControls(request, &audio_controls);
+  audio_controls.stream_type =
+      (request->MediaRequestType() == UserMediaRequestType::kDisplayMediaSet)
+          ? MediaStreamType::NO_SERVICE
+          : request->AudioMediaStreamType();
 
   if (audio_controls.stream_type == MediaStreamType::DISPLAY_AUDIO_CAPTURE) {
     SelectAudioSettings(request, {blink::AudioDeviceCaptureCapability()});
@@ -669,7 +655,7 @@ void UserMediaProcessor::SelectAudioSettings(
   if (!IsCurrentRequestInfo(user_media_request))
     return;
 
-  DCHECK(current_request_info_->stream_controls()->audio.requested);
+  DCHECK(current_request_info_->stream_controls()->audio.requested());
   SendLogMessage(base::StringPrintf("SelectAudioSettings({request_id=%d})",
                                     current_request_info_->request_id()));
   auto settings = SelectSettingsAudioCapture(
@@ -763,7 +749,7 @@ void UserMediaProcessor::SetupVideoInput() {
       request->VideoConstraints().ToString().Utf8().c_str()));
 
   auto& video_controls = current_request_info_->stream_controls()->video;
-  InitializeVideoTrackControls(request, &video_controls);
+  video_controls.stream_type = request->VideoMediaStreamType();
 
   StreamControls* const stream_controls =
       current_request_info_->stream_controls();
@@ -831,7 +817,7 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
   if (!IsCurrentRequestInfo(user_media_request))
     return;
 
-  DCHECK(current_request_info_->stream_controls()->video.requested);
+  DCHECK(current_request_info_->stream_controls()->video.requested());
   DCHECK(blink::IsDeviceMediaType(
       current_request_info_->stream_controls()->video.stream_type));
   SendLogMessage(base::StringPrintf("SelectVideoDeviceSettings. request_id=%d.",
