@@ -566,6 +566,13 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
         block_size_for_fragmentation_ =
             std::max(block_size_for_fragmentation_, FragmentBlockSize());
       }
+
+      // If the node fits inside the current fragmentainer, any break inside it
+      // will establish a parallel flow, which means that breaking early inside
+      // it isn't going to help honor any break avoidance requests on content
+      // that comes after this node. So don't propagate it.
+      if (IsKnownToFitInFragmentainer())
+        early_break_ = nullptr;
     }
   }
 
