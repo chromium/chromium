@@ -179,6 +179,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 #endif  // BUILDFLAG(IS_WIN)
   void RenderPrintedDocument(
       int32_t document_cookie,
+      uint32_t page_count,
       mojom::MetafileDataType data_type,
       base::ReadOnlySharedMemoryRegion serialized_doc,
       mojom::PrintBackendService::RenderPrintedDocumentCallback callback)

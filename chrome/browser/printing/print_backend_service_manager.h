@@ -125,6 +125,7 @@ class PrintBackendServiceManager {
   void RenderPrintedDocument(
       const std::string& printer_name,
       int document_cookie,
+      uint32_t page_count,
       mojom::MetafileDataType data_type,
       base::ReadOnlySharedMemoryRegion serialized_data,
       mojom::PrintBackendService::RenderPrintedDocumentCallback callback);

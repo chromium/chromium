@@ -369,6 +369,7 @@ void PrintBackendServiceManager::RenderPrintedPage(
 void PrintBackendServiceManager::RenderPrintedDocument(
     const std::string& printer_name,
     int document_cookie,
+    uint32_t page_count,
     mojom::MetafileDataType data_type,
     base::ReadOnlySharedMemoryRegion serialized_data,
     mojom::PrintBackendService::RenderPrintedDocumentCallback callback) {
@@ -384,7 +385,7 @@ void PrintBackendServiceManager::RenderPrintedDocument(
 
   LogCallToRemote("RenderPrintedDocument", context);
   service->RenderPrintedDocument(
-      document_cookie, data_type, std::move(serialized_data),
+      document_cookie, page_count, data_type, std::move(serialized_data),
       base::BindOnce(&PrintBackendServiceManager::OnDidRenderPrintedDocument,
                      base::Unretained(this), context));
 }

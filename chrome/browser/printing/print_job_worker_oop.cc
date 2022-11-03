@@ -551,7 +551,8 @@ void PrintJobWorkerOop::SendRenderPrintedDocument(
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
   service_mgr.RenderPrintedDocument(
-      device_name_, document_cookie, data_type, std::move(serialized_data),
+      device_name_, document_cookie, document()->page_count(), data_type,
+      std::move(serialized_data),
       base::BindOnce(&PrintJobWorkerOop::OnDidRenderPrintedDocument,
                      ui_weak_factory_.GetWeakPtr()));
 }

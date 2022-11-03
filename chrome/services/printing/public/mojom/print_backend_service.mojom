@@ -180,6 +180,7 @@ interface PrintBackendService {
  // Render the print job document for `document_cookie`.
   RenderPrintedDocument(
       int32 document_cookie,
+      uint32 page_count,
       MetafileDataType data_type,
       mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_doc)
     => (ResultCode result_code);

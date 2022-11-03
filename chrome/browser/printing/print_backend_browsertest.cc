@@ -222,7 +222,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // forces a shorter lifetime than `this`.
     mojom::ResultCode result;
     GetPrintBackendService()->RenderPrintedDocument(
-        kTestDocumentCookie, metafile.GetDataType(),
+        kTestDocumentCookie, /*page_count=*/1u, metafile.GetDataType(),
         std::move(region_mapping.region),
         base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
                        base::Unretained(this), std::ref(result)));

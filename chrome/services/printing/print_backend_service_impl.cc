@@ -191,6 +191,7 @@ class DocumentContainer {
       float shrink_factor);
 #endif
   mojom::ResultCode DoRenderPrintedDocument(
+      uint32_t page_count,
       mojom::MetafileDataType data_type,
       base::ReadOnlySharedMemoryRegion serialized_document);
   mojom::ResultCode DoDocumentDone();
@@ -286,6 +287,7 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
 #endif  // BUILDFLAG(IS_WIN)
 
 mojom::ResultCode DocumentContainer::DoRenderPrintedDocument(
+    uint32_t page_count,
     mojom::MetafileDataType data_type,
     base::ReadOnlySharedMemoryRegion serialized_document) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -297,6 +299,7 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedDocument(
   if (!render_data)
     return mojom::ResultCode::kFailed;
 
+  document_->set_page_count(page_count);
   document_->SetDocument(std::move(render_data->metafile));
 
   return document_->RenderPrintedDocument(context_.get());
@@ -720,6 +723,7 @@ void PrintBackendServiceImpl::RenderPrintedPage(
 
 void PrintBackendServiceImpl::RenderPrintedDocument(
     int32_t document_cookie,
+    uint32_t page_count,
     mojom::MetafileDataType data_type,
     base::ReadOnlySharedMemoryRegion serialized_document,
     mojom::PrintBackendService::RenderPrintedDocumentCallback callback) {
@@ -731,7 +735,7 @@ void PrintBackendServiceImpl::RenderPrintedDocument(
   // lifetime expires.
   document_helper->document_container()
       .AsyncCall(&DocumentContainer::DoRenderPrintedDocument)
-      .WithArgs(data_type, std::move(serialized_document))
+      .WithArgs(page_count, data_type, std::move(serialized_document))
       .Then(base::BindOnce(&PrintBackendServiceImpl::OnDidRenderPrintedDocument,
                            base::Unretained(this), std::ref(*document_helper),
                            std::move(callback)));
