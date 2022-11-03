@@ -82453,6 +82453,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Failed to initialize schema"/>
 </enum>
 
+<enum name="PrivacySandboxPrivateAggregationBudgetStorageInitStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to open DB in memory"/>
+  <int value="2" label="Failed to open DB file"/>
+  <int value="3" label="Failed to create directory"/>
+</enum>
+
 <enum name="PrivacySandboxPrivateAggregationHostSendHistogramReportResult">
   <int value="0" label="Success"/>
   <int value="1" label="API disabled in settings"/>

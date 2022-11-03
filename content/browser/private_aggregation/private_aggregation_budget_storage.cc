@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
@@ -39,6 +40,12 @@ constexpr char kBudgetsTableName[] = "private_aggregation_api_budgets";
 // This will raze the database. This is not necessary for backwards-compatible
 // updates to the proto format.
 constexpr int kCurrentSchemaVersion = 1;
+
+void RecordInitializationStatus(
+    PrivateAggregationBudgetStorage::InitStatus status) {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.PrivateAggregation.BudgetStorage.InitStatus", status);
+}
 
 }  // namespace
 
@@ -109,6 +116,7 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
   // outcomes/errors.
   if (exclusively_run_in_memory) {
     if (!db->OpenInMemory()) {
+      RecordInitializationStatus(InitStatus::kFailedToOpenDbInMemory);
       return false;
     }
   } else {
@@ -116,10 +124,12 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
         base::DirectoryExists(path_to_db_dir) ||
         base::CreateDirectory(path_to_db_dir);
     if (!dir_exists_or_was_created) {
+      RecordInitializationStatus(InitStatus::kFailedToCreateDir);
       return false;
     }
     base::FilePath path_to_database = path_to_db_dir.Append(kDatabaseFilename);
     if (!db->Open(path_to_database)) {
+      RecordInitializationStatus(InitStatus::kFailedToOpenDbFile);
       return false;
     }
   }
@@ -129,6 +139,7 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
 
   budgets_data_.InitializeOnDBSequence();
 
+  RecordInitializationStatus(InitStatus::kSuccess);
   return true;
 }
 
@@ -172,6 +183,11 @@ void PrivateAggregationBudgetStorage::FinishInitializationOnMainSequence(
     bool was_successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(owned_this);
+
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.PrivateAggregation.BudgetStorage."
+      "ShutdownBeforeFinishingInitialization",
+      !db_);
 
   // If the initialization failed, `this` will be destroyed after its unique_ptr
   // passes out of scope here.

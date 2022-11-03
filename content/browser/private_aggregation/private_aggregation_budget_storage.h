@@ -45,6 +45,16 @@ class PrivateAggregationBudgets;
 // initialization; after that point, it has no specific lifetime requirements.
 class CONTENT_EXPORT PrivateAggregationBudgetStorage {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class InitStatus {
+    kSuccess = 0,
+    kFailedToOpenDbInMemory = 1,
+    kFailedToOpenDbFile = 2,
+    kFailedToCreateDir = 3,
+    kMaxValue = kFailedToCreateDir,
+  };
+
   // Constructs and asynchronously initializes a new
   // `PrivateAggregationBudgetStorage`, including posting a task to
   // `db_task_runner` to initialize the underlying database on its sequence.

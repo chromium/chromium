@@ -428,6 +428,30 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.InitStatus"
+    enum="PrivacySandboxPrivateAggregationBudgetStorageInitStatus"
+    expires_after="M117">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the initialization statuses of PrivateAggregationBudgetStorage,
+    indicating whether it was successful and, if not, why it failed. Recorded
+    when the initialization reply callback is run on the main sequence.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.PrivateAggregation.BudgetStorage.ShutdownBeforeFinishingInitialization"
+    enum="Boolean" expires_after="M117">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records whether PrivateAggregationBudgetStorage has already been shut down
+    when the initialization finishes (i.e. the reply callback is run on the main
+    sequence). Recorded when that callback is run.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.PrivateAggregation.Host.SendHistogramReportResult"
     enum="PrivacySandboxPrivateAggregationHostSendHistogramReportResult"
