@@ -443,6 +443,9 @@ _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.mobile'),
     _GetBenchmarkConfig('system_health.scroll_jank_mobile')
 ])
+_ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS = PerfSuite(
+    [_GetBenchmarkConfig('jetstream2'),
+     _GetBenchmarkConfig('speedometer2')])
 _ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('system_health.scroll_jank_mobile')])
 _ANDROID_PIXEL2_AAB_FYI_BENCHMARK_CONFIGS = PerfSuite(
@@ -664,6 +667,10 @@ ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
 ANDROID_PIXEL4A_POWER_PGO = PerfPlatform(
     'android-pixel4a_power-perf-pgo', 'Android QD4A.200102.001.A1',
     _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS, 12, 'android')
+ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf',
+                                  'Android M | MASTER',
+                                  _ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS, 2,
+                                  'android')
 ANDROID_NEW_PIXEL = PerfPlatform('android-new-pixel-perf',
                                  'Android T',
                                  PerfSuite([]),

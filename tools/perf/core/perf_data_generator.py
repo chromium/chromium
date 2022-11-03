@@ -894,6 +894,21 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-go-wembley-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_trichrome_bundle',
+        }],
+        'platform':
+        'android-trichrome-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'wembley',
+            'device_os': 'MASTER',
+            'device_os_flavor': 'google',
+        },
+    },
     'android-new-pixel-perf': {
         'tests': [{
             'isolate':
