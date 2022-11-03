@@ -6205,11 +6205,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "shelf-focus-order-v1",
-    "owners": [ "etuck", "//ash/shelf/OWNERS" ],
-    "expiry_milestone": 111
-  },
-  {
     "name": "shelf-gestures-with-vk",
     "owners": ["tbarzic", "//ash/shelf/OWNERS"],
     "expiry_milestone": 105

@@ -74,10 +74,7 @@ class DragHandleTest
 
 class DragHandleFocusTest : public AshTestBase {
  public:
-  DragHandleFocusTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kShelfFocusOrderV1,
-                                              true);
-  }
+  DragHandleFocusTest() = default;
   ~DragHandleFocusTest() override = default;
 
   const DragHandle* drag_handle() const {
@@ -98,9 +95,6 @@ class DragHandleFocusTest : public AshTestBase {
     GetEventGenerator()->MoveMouseTo(center);
     GetEventGenerator()->ClickLeftButton();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

@@ -5895,23 +5895,6 @@ const char kShelfAutoHideSeparationDescription[] =
     "Allows for the shelf's auto-hide preference to be specified separately "
     "for clamshell and tablet mode.";
 
-const char kShelfFocusOrderV1Name[] =
-    "Enable \"V1\" focus ordering of shelf items.";
-const char kShelfFocusOrderV1Description[] =
-    "Enables the \"V1\" focus ordering of shelf items. Once the drag handle "
-    "has accessibility focus the focus ordering is as follows: (1) If the "
-    "hotseat is extended: the hotseat gets focus before and after the drag "
-    "handle, but once the hotseat has focus that focus cannot naturally return "
-    "to the drag handle (i.e. the hotseat's previous focus becomes the shelf "
-    "navigation area and its next focus becomes the status area); (2) If the "
-    "hotseat is hidden: the shelf navigation area gets the previous focus, and "
-    "the status area gets the next focus. Note that, in all cases, the drag "
-    "handle is never included in the natural focus order, i.e. the navigation "
-    "area's next focus and the status area's previous focus is always the "
-    "hotseat (even if the hotseat is currently hidden). In other words, this "
-    "change simply allows the focus to more easily move to other parts of the "
-    "shelf when the drag handle is forcibly focused.";
-
 const char kShimlessRMAFlowName[] = "Enable shimless RMA flow";
 const char kShimlessRMAFlowDescription[] = "Enable shimless RMA flow";
 

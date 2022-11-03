@@ -1788,23 +1788,6 @@ BASE_FEATURE(kShelfAutoHideSeparation,
              "ShelfAutoHideSeparation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the "V1" focus ordering of shelf items. Once the drag handle has
-// accessibility focus the focus ordering is as follows:
-//   1. If the hotseat is extended: the hotseat gets focus before and after the
-//      drag handle, but once the hotseat has focus that focus cannot naturally
-//      return to the drag handle (i.e. the hotseat's previous focus becomes the
-//      shelf navigation area and its next focus becomes the status area).
-//   2. If the hotseat is hidden: the shelf navigation area gets the previous
-//      focus, and the status area gets the next focus.
-// Note that the drag handle is never included in the natural focus order, i.e.
-// the navigation area's next focus and the status area's previous focus is
-// always the hotseat (even if the hotseat is currently hidden). In other words,
-// this change simply allows the focus to more easily move to other parts of the
-// shelf when the drag handle is forcibly focused.
-BASE_FEATURE(kShelfFocusOrderV1,
-             "ShelfFocusOrderV1",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables shelf gestures (swipe to show hotseat, swipe to go home or overview)
 // in tablet mode when virtual keyboard is shown.
 BASE_FEATURE(kShelfGesturesWithVirtualKeyboard,
