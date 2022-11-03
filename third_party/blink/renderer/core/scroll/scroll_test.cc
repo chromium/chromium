@@ -32,10 +32,9 @@
 namespace blink {
 
 namespace {
-double ScrollAnimationDuration() {
-  return ::features::IsImpulseScrollAnimationEnabled() ? 1.5 : 0.5;
+const double kScrollAnimationDuration =
+    (::features::IsImpulseScrollAnimationEnabled() ? 1.5 : 0.5);
 }
-}  // namespace
 
 class FractionalScrollSimTest : public SimTest, public PaintTestConfigurations {
  public:
@@ -243,7 +242,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -287,7 +286,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -331,7 +330,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -381,7 +380,7 @@ TEST_P(ScrollAnimatorSimTest, TestDivUserScrollCallBack) {
 
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 

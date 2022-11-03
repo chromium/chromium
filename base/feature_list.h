@@ -378,17 +378,10 @@ class BASE_EXPORT FeatureList {
   // OWNERS.
   std::unique_ptr<Accessor> ConstructAccessor();
 
-  // Returns whether the given `feature` is enabled.
-  //
-  // If no `FeatureList` instance is registered, this returns the feature's
-  // default state. Registering a `FeatureList` later will fail.
-  //
-  // TODO(crbug.com/1358639): Make registering a `FeatureList` later fail on
-  // iOS, Android and ChromeOS. This currently only works on Windows, Mac and
-  // Linux.
-  //
-  // A feature with a given name must only have a single corresponding Feature
-  // instance, which is checked in builds with DCHECKs enabled.
+  // Returns whether the given |feature| is enabled. Must only be called after
+  // the singleton instance has been registered via SetInstance(). Additionally,
+  // a feature with a given name must only have a single corresponding Feature
+  // struct, which is checked in builds with DCHECKs enabled.
   static bool IsEnabled(const Feature& feature);
 
   // Some characters are not allowed to appear in feature names or the
