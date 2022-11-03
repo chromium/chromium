@@ -22,6 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ServiceWorkerCacheProcessType">
+  <variant name="Browser"
+      summary="Measurements taken in the browser process on the IO thread"/>
+  <variant name="Renderer"
+      summary="Measurements taken in the renderer process on the javascript
+               thread"/>
+</variants>
+
 <variants name="ServiceWorkerEventType">
   <variant name="ACTIVATE"/>
   <variant name="BACKGROUND_FETCH_ABORT"/>
@@ -1228,17 +1236,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ServiceWorkerCache.Cache" units="ms"
-    expires_after="2023-06-24">
-  <owner>wanderview@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The time to perform operations on the Cache object in the ServiceWorker
-    Cache API. This histogram was temporarily disabled from M96 through early
-    12/2021.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorkerCache.Cache.AllWritesResponseType"
     enum="FetchResponseType" expires_after="M77">
   <owner>jkarlin@chromium.org</owner>
@@ -1271,15 +1268,117 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorkerCache.CacheStorage" units="ms"
-    expires_after="2023-04-09">
+<histogram
+    name="ServiceWorkerCache.Cache.{ServiceWorkerCacheProcessType}.Match.{MatchType}"
+    units="ms" expires_after="2023-04-09">
   <owner>wanderview@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The time to perform operations on the CacheStorage object in the
-    ServiceWorker Cache API. This histogram was temporarily disabled from
-    10/2021 to early 12/2021.
+    The time to perform 'match' operations of type ${MatchType} on the Cache
+    object in the ServiceWorker Cache API. This histogram was temporarily
+    disabled from M96 through early 12/2021.
   </summary>
+  <token key="ServiceWorkerCacheProcessType"
+      variants="ServiceWorkerCacheProcessType"/>
+  <token key="MatchType">
+    <variant name="Hit"
+        summary="The time to perform a 'match' operation on a given Cache
+                 that successfully results in a Response."/>
+    <variant name="IgnoreSearch"
+        summary="The time to perform a 'match' operation on a given Cache
+                 with the 'ignoreSearch' option set. This includes
+                 measurements for hits, misses, and errors."/>
+    <variant name="Miss"
+        summary="The time to perform a 'match' operation on a given Cache
+                 that completes successfully, but does not find a matching
+                 entry."/>
+  </token>
+</histogram>
+
+<histogram
+    name="ServiceWorkerCache.Cache.{ServiceWorkerCacheProcessType}.{ProcessOps}"
+    units="ms" expires_after="2023-04-09">
+  <owner>wanderview@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The time to perform the ${ProcessOps} operation on the Cache object in the
+    ServiceWorker Cache API. This histogram was temporarily disabled from M96
+    through early 12/2021.
+  </summary>
+  <token key="ServiceWorkerCacheProcessType"
+      variants="ServiceWorkerCacheProcessType"/>
+  <token key="ProcessOps">
+    <variant name="DeleteOne"
+        summary="The time to delete a single Request/Response entry from a
+                 Cache. This measurement includes times for both existing or
+                 non-existant entries."/>
+    <variant name="Keys"
+        summary="The time to perform the 'keys' operation on a given Cache.
+                 This includes measurements for both invocations targeting
+                 all entries or only entries for a specific request
+                 parameter."/>
+    <variant name="Match"
+        summary="The time to perform a 'match' operation on a given Cache.
+                 This includes measurements for all invocations, including
+                 hits, misses, errors, etc."/>
+    <variant name="MatchAll"
+        summary="The time to perform a 'matchAll' operation on a given Cache.
+                 This includes measurements for all invocations, including
+                 hits, misses, and errors. In addition requests for all Cache
+                 entries and for specific request params are included
+                 together in this histogram."/>
+    <variant name="PutMany"
+        summary="The time to put a multiple Request/Response entries into a
+                 given Cache. This may or may not include deleting existing
+                 entries that match any of the Requests. This includes
+                 measurements for both successes and failures."/>
+    <variant name="PutOne"
+        summary="The time to put a single Request/Response entry into a given
+                 Cache. This may or may not include deleting an existing
+                 entry matching the Request. This includes measurements for
+                 both successes and failures."/>
+  </token>
+</histogram>
+
+<histogram
+    name="ServiceWorkerCache.CacheStorage.{ServiceWorkerCacheProcessType}.{ProcessOps}"
+    units="ms" expires_after="2023-04-09">
+  <owner>wanderview@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The time to perform the ${ProcessOps} operations on the CacheStorage object
+    in the ServiceWorker Cache API. This histogram was temporarily disabled from
+    M96 through early 12/2021.
+  </summary>
+  <token key="ServiceWorkerCacheProcessType"
+      variants="ServiceWorkerCacheProcessType"/>
+  <token key="ProcessOps">
+    <variant name="Delete"
+        summary="The time to 'delete' a Cache from the origin's CacheStorage.
+                 If the Cache is still in use then the actual deletion may be
+                 deferred until the last reference is dropped. Additional
+                 time due to deferral is not included in this measurement."/>
+    <variant name="Has"
+        summary="The time to perform the 'has' operation on the origin's
+                 CacheStorage."/>
+    <variant name="Keys"
+        summary="The time to perform the 'keys' operation on the origin's
+                 CacheStorage."/>
+    <variant name="MatchAllCaches"
+        summary="The time to perform a 'match' operation against all caches
+                 associated with the origin's CacheStorage. This histogram
+                 includes measurements for hits, misses, and errors."/>
+    <variant name="MatchOneCache"
+        summary="The time to perform a 'match' operation against a single
+                 cache associated with the origin's CacheStorage. This
+                 histogram includes measurements for hits, misses, and
+                 errors."/>
+    <variant name="Open"
+        summary="The time to 'open' a Cache in the origin's CacheStorage.
+                 Some opening operations may happen asynchronously after the
+                 'open' returns a Cache object. That deferred asynchronous
+                 work is not included in this measurement."/>
+  </token>
 </histogram>
 
 <histogram name="ServiceWorkerCache.CreateCacheStorageResult"
