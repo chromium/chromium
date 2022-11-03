@@ -521,13 +521,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)waitForWebStateContainingText:(const std::string&)UTF8Text
                               timeout:(base::TimeDelta)timeout;
 
-// Alias for -waitForWebStateContainingText:timeout: to allow changing the
-// type of `timeout` parameter from `NSTimeInterval` to `base::TimeDelta`
-// without breaking the internal repository as Objective-C does not support
-// overloads (this method will be removed in a followup CL).
-- (void)waitForWebStateContainingText:(const std::string&)UTF8Text
-                     timeoutInSeconds:(NSTimeInterval)timeout;
-
 // Waits for there to be no web state containing `UTF8Text`.
 // If the condition is not met within a timeout a GREYAssert is induced.
 - (void)waitForWebStateNotContainingText:(const std::string&)UTF8Text;
