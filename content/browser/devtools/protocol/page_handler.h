@@ -102,6 +102,8 @@ class PageHandler : public DevToolsDomainHandler,
   void NavigationReset(NavigationRequest* navigation_request);
   void DownloadWillBegin(FrameTreeNode* ftn, download::DownloadItem* item);
 
+  void OnFrameDetached(const base::UnguessableToken& frame_id);
+
   bool ShouldBypassCSP();
   void BackForwardCacheNotUsed(
       const NavigationRequest* nav_request,

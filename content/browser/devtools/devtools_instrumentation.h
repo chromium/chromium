@@ -186,6 +186,7 @@ void BackForwardCacheNotUsed(
     const BackForwardCacheCanStoreTreeResult* tree_result);
 
 void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node);
+void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node);
 
 void WillInitiatePrerender(FrameTree& frame_tree);
 void DidActivatePrerender(const NavigationRequest& nav_request);

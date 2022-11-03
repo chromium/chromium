@@ -637,6 +637,12 @@ void PageHandler::DownloadWillBegin(FrameTreeNode* ftn,
   pending_downloads_.insert(item);
 }
 
+void PageHandler::OnFrameDetached(const base::UnguessableToken& frame_id) {
+  if (!enabled_)
+    return;
+  frontend_->FrameDetached(frame_id.ToString(), "remove");
+}
+
 void PageHandler::OnDownloadDestroyed(download::DownloadItem* item) {
   pending_downloads_.erase(item);
 }

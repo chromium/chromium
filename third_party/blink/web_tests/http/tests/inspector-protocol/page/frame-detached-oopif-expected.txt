@@ -1,0 +1,98 @@
+Tests that frameDetached event is emitted when the OOPIF is gone.
+Creating a frame with the URL http://oopif.test:8000/inspector-protocol/resources/empty.html
+Attached frame {
+    method : Page.frameAttached
+    params : {
+        frameId : <string>
+        parentFrameId : <string>
+        stack : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 18
+                    functionName : 
+                    lineNumber : 3
+                    scriptId : 4
+                    url : 
+                }
+            ]
+        }
+    }
+    sessionId : <string>
+}
+Detached frame (swap){
+    method : Page.frameDetached
+    params : {
+        frameId : <string>
+        reason : swap
+    }
+    sessionId : <string>
+}
+Removing the frame
+Detached frame (remove) {
+    method : Page.frameDetached
+    params : {
+        frameId : <string>
+        reason : remove
+    }
+    sessionId : <string>
+}
+Destroyed target {
+    method : Target.targetDestroyed
+    params : {
+        targetId : <string>
+    }
+    sessionId : <string>
+}
+Events (in order)[
+    [0] : {
+        method : Page.frameAttached
+        params : {
+            frameId : <string>
+            parentFrameId : <string>
+            stack : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 18
+                        functionName : 
+                        lineNumber : 3
+                        scriptId : 4
+                        url : 
+                    }
+                ]
+            }
+        }
+        sessionId : <string>
+    }
+    [1] : {
+        method : Page.frameDetached
+        params : {
+            frameId : <string>
+            reason : swap
+        }
+        sessionId : <string>
+    }
+    [2] : {
+        method : Page.frameDetached
+        params : {
+            frameId : <string>
+            reason : remove
+        }
+        sessionId : <string>
+    }
+    [3] : {
+        method : Target.detachedFromTarget
+        params : {
+            sessionId : <string>
+            targetId : <string>
+        }
+        sessionId : <string>
+    }
+    [4] : {
+        method : Target.targetDestroyed
+        params : {
+            targetId : <string>
+        }
+        sessionId : <string>
+    }
+]
+

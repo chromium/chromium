@@ -342,6 +342,20 @@ void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node) {
   host->SetFrameTreeNode(&new_node);
 }
 
+void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node) {
+  // If the child frame is an OOPIF, we emit Page.frameDetached event which
+  // otherwise might be lost because the OOPIF target is being destroyed.
+  content::RenderFrameHostImpl* parent = frame_tree_node.parent();
+  if (!parent)
+    return;
+  if (RenderFrameDevToolsAgentHost::GetFor(&frame_tree_node) !=
+      RenderFrameDevToolsAgentHost::GetFor(parent)) {
+    DispatchToAgents(RenderFrameDevToolsAgentHost::GetFor(parent),
+                     &protocol::PageHandler::OnFrameDetached,
+                     frame_tree_node.devtools_frame_token());
+  }
+}
+
 void WillInitiatePrerender(FrameTree& frame_tree) {
   DCHECK_EQ(FrameTree::Type::kPrerender, frame_tree.type());
   auto* wc = WebContentsImpl::FromFrameTreeNode(frame_tree.root());

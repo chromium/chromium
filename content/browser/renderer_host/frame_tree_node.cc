@@ -269,6 +269,7 @@ FrameTreeNode::~FrameTreeNode() {
 
   DestroyInnerFrameTreeIfExists();
 
+  devtools_instrumentation::OnFrameTreeNodeDestroyed(*this);
   // Do not dispatch notification for the root frame as ~WebContentsImpl already
   // dispatches it for now.
   // TODO(https://crbug.com/1170277): This is only needed because the FrameTree
