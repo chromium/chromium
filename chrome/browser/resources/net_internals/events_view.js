@@ -7,7 +7,6 @@
  * help users migrate to using net-export and the catapult netlog_viewer.
  */
 
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {$} from 'chrome://resources/js/util.js';
 
 import {DivView} from './view.js';
@@ -15,6 +14,9 @@ import {DivView} from './view.js';
 // This is defined in index.html, but for all intents and purposes is part
 // of this view.
 const LOAD_LOG_FILE_DROP_TARGET_ID = 'events-view-drop-target';
+
+/** @type {?EventsView} */
+let instance = null;
 
 export class EventsView extends DivView {
   constructor() {
@@ -48,6 +50,10 @@ export class EventsView extends DivView {
 
     document.location.hash = 'events';
   }
+
+  static getInstance() {
+    return instance || (instance = new EventsView());
+  }
 }
 
 EventsView.TAB_ID = 'tab-handle-events';
@@ -56,5 +62,3 @@ EventsView.TAB_HASH = '#events';
 
 // ID for special HTML element in events_view.html
 EventsView.MAIN_BOX_ID = 'events-view-tab-content';
-
-addSingletonGetter(EventsView);

@@ -33,6 +33,5 @@ js_library("notifications_internals") {
 }
 
 js_library("notifications_internals_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr_deprecated" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }

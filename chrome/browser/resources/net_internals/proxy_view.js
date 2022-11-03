@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {$} from 'chrome://resources/js/util.js';
 
 import {BrowserBridge} from './browser_bridge.js';
 import {DivView} from './view.js';
+
+/** @type {?ProxyView} */
+let instance = null;
 
 /**
  * This view displays information on the proxy setup:
@@ -27,6 +29,10 @@ export class ProxyView extends DivView {
       BrowserBridge.getInstance().sendClearBadProxies();
     };
   }
+
+  static getInstance() {
+    return instance || (instance = new ProxyView());
+  }
 }
 
 ProxyView.TAB_ID = 'tab-handle-proxy';
@@ -37,5 +43,3 @@ ProxyView.TAB_HASH = '#proxy';
 ProxyView.MAIN_BOX_ID = 'proxy-view-tab-content';
 ProxyView.RELOAD_SETTINGS_BUTTON_ID = 'proxy-view-reload-settings';
 ProxyView.CLEAR_BAD_PROXIES_BUTTON_ID = 'proxy-view-clear-bad-proxies';
-
-addSingletonGetter(ProxyView);

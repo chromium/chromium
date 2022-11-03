@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 
 /**
  * @typedef {{
@@ -285,6 +284,12 @@ export class OfflineInternalsBrowserProxyImpl {
   downloadArchive(name) {
     chrome.send('downloadArchive', [name]);
   }
+
+  /** @return {!OfflineInternalsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new OfflineInternalsBrowserProxyImpl());
+  }
 }
 
-addSingletonGetter(OfflineInternalsBrowserProxyImpl);
+/** @type {?OfflineInternalsBrowserProxy} */
+let instance = null;
