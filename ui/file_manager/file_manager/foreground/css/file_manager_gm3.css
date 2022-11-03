@@ -520,7 +520,6 @@ html.focus-outline-visible .dialog-header.files-ng button:not(:active):focus {
   border: 2px solid var(--cros-focus-ring-color);
 }
 
-.dialog-header files-ripple,
 .dialog-header files-toggle-ripple {
   display: none;
 }

@@ -9,7 +9,6 @@
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../elements/files_format_dialog.js';
 import '../elements/files_password_dialog.js';
-import '../elements/files_ripple.js';
 import '../elements/files_spinner.js';
 import '../elements/files_toast.js';
 import '../elements/files_toggle_ripple.js';

@@ -38,7 +38,6 @@ js_type_check("closure_compile_jsmodules") {
     ":files_metadata_entry",
     ":files_password_dialog",
     ":files_quick_view",
-    ":files_ripple",
     ":files_safe_media",
     ":files_spinner",
     ":files_toast",
@@ -59,7 +58,6 @@ html_to_js("web_components") {
     "files_metadata_entry.js",
     "files_password_dialog.js",
     "files_quick_view.js",
-    "files_ripple.js",
     "files_safe_media.js",
     "files_spinner.js",
     "files_toast.js",
@@ -137,13 +135,6 @@ js_library("files_quick_view") {
   externs_list = [
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
-  ]
-}
-
-js_library("files_ripple") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 }
 

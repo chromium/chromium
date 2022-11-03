@@ -340,7 +340,6 @@ generated_js_files = [
   "file_manager/foreground/elements/files_metadata_entry.js",
   "file_manager/foreground/elements/files_password_dialog.js",
   "file_manager/foreground/elements/files_quick_view.js",
-  "file_manager/foreground/elements/files_ripple.js",
   "file_manager/foreground/elements/files_safe_media.js",
   "file_manager/foreground/elements/files_spinner.js",
   "file_manager/foreground/elements/files_toast.js",

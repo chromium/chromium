@@ -528,7 +528,6 @@ js_library("deferred_elements") {
   deps = [
     "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
-    "//ui/file_manager/file_manager/foreground/elements:files_ripple",
     "//ui/file_manager/file_manager/foreground/elements:files_spinner",
     "//ui/file_manager/file_manager/foreground/elements:files_toast",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
