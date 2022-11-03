@@ -189,16 +189,16 @@ TEST_F(ManifestUpdateDataFetchUtilsTest, TestImageComparison) {
   // Tests below assume there is no overlap in these values, but if
   // Install/Launcher icon sizes change, a new value for kUnimportantIconSize
   // must be selected that does not clash with it. Also check if launcher and
-  // install icon are same size, because tests might need to be updated if
-  // they are (browser tests especially).
+  // install icon are same size, because tests might need to be updated if they
+  // are (browser tests especially).
   static_assert(kInstallIconSize != kLauncherIconSize, "Overlap");
   static_assert(kInstallIconSize != kUnimportantIconSize1, "Overlap");
   static_assert(kInstallIconSize != kUnimportantIconSize2, "Overlap");
   static_assert(kLauncherIconSize != kUnimportantIconSize1, "Overlap");
   static_assert(kLauncherIconSize != kUnimportantIconSize2, "Overlap");
 
-  // Doing a FAST means stop on first error but SLOW means continue to end
-  // and give a more detailed error.
+  // Doing a FAST means stop on first error but SLOW means continue to end and
+  // give a more detailed error.
   enum PassType { SLOW = 0, FAST = 1 };
   // Which map type the icons should be associated with.
   enum MapType { ANY = 0, MASKED = 1, MONO = 2 };
@@ -300,8 +300,7 @@ TEST_F(ManifestUpdateDataFetchUtilsTest, TestImageComparison) {
       // Test: both Launcher and Install icon changes color.
       {FAST, ANY, BothBefore, ANY, BothAfter, ONE_OR_MORE_ICONS_CHANGED},
       {SLOW, ANY, BothBefore, ANY, BothAfter, BOTH_CHANGE},
-      // Test: all types (Launcher, Install and unimportant icon) change
-      // color.
+      // Test: all types (Launcher, Install and unimportant icon) change color.
       {FAST, ANY, AllBefore, ANY, AllAfter, ONE_OR_MORE_ICONS_CHANGED},
       {SLOW, ANY, AllBefore, ANY, AllAfter, ALL_CHANGE},
   };

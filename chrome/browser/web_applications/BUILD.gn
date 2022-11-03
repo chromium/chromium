@@ -95,8 +95,6 @@ source_set("web_applications") {
     "locks/web_app_lock_manager.h",
     "manifest_update_manager.cc",
     "manifest_update_manager.h",
-    "manifest_update_task.cc",
-    "manifest_update_task.h",
     "manifest_update_utils.cc",
     "manifest_update_utils.h",
     "os_integration/os_integration_manager.cc",
