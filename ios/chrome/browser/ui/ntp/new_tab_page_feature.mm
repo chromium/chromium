@@ -37,6 +37,11 @@ BASE_FEATURE(kFollowingFeedDefaultSortType,
              "FollowingFeedDefaultSortType",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// A parameter value for the number of impressions before autodismissing the
+// promo.
+const char kDiscoverFeedTopSyncPromoAutodismissImpressions[] =
+    "autodismissImpressions";
+
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
     "DiscoverFeedSRSReconstructedTemplatesEnabled";
 
@@ -86,6 +91,12 @@ bool IsDiscoverFeedTopSyncPromoCompact() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyleCompact,
       false);
+}
+
+int FeedSyncPromoAutodismissCount() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kEnableDiscoverFeedTopSyncPromo,
+      kDiscoverFeedTopSyncPromoAutodismissImpressions, 10);
 }
 
 bool IsFollowingFeedDefaultSortTypeEnabled() {
