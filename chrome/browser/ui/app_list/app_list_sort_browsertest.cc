@@ -1380,8 +1380,9 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
 };
 
 // Verify that installing an app under color sort works as expected.
+// TODO(crbug.com/1381204): Flaky.
 IN_PROC_BROWSER_TEST_F(AppListSortColorOrderBrowserTest,
-                       InstallAppUnderColorSort) {
+                       DISABLED_InstallAppUnderColorSort) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   WaitForAppListTransitionAnimation();
 
