@@ -48,6 +48,8 @@ declare namespace chrome {
     // element is added to the document.
     function onConnected(): void;
 
+    function onLinkClicked(nodeId: number): void;
+
     // Set the content. Used by tests only.
     // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:
     //   const axTree = {

@@ -87,8 +87,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       element.setAttribute('dir', direction);
     }
     const url = chrome.readAnything.getUrl(nodeId);
-    if (url) {
+    if (url && element.nodeName === 'A') {
       element.setAttribute('href', url);
+      element.onclick = function(e) {
+        if (e.target !== e.currentTarget) {
+          throw new Error(
+              'Target ' + e.target + ' does not match current target ' +
+              e.currentTarget);
+        }
+        chrome.readAnything.onLinkClicked(nodeId);
+      };
     }
     const language = chrome.readAnything.getLanguage(nodeId);
     if (language) {

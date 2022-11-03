@@ -122,6 +122,22 @@ void ReadAnythingController::OnUIDestroyed() {
   ui_ready_ = false;
 }
 
+void ReadAnythingController::OnLinkClicked(const GURL& url,
+                                           bool open_in_new_tab) {
+  WindowOpenDisposition disposition =
+      open_in_new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                      : WindowOpenDisposition::CURRENT_TAB;
+  content::OpenURLParams params(url, content::Referrer(), disposition,
+                                ui::PAGE_TRANSITION_LINK,
+                                /* is_renderer_initiated= */ true);
+  content::WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents)
+    return;
+  params.initiator_origin = url::Origin::Create(web_contents->GetURL());
+  browser_->OpenURL(params);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // TabStripModelObserver:
 ///////////////////////////////////////////////////////////////////////////////

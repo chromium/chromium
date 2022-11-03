@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -444,6 +445,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
       .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
+      .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
       .SetMethod("setContentForTesting",
                  &ReadAnythingAppController::SetContentForTesting)
       .SetMethod("setThemeForTesting",
@@ -562,6 +564,18 @@ void ReadAnythingAppController::OnConnected() {
       page_handler_.BindNewPipeAndPassReceiver());
   render_frame_->GetBrowserInterfaceBroker()->GetInterface(
       std::move(page_handler_factory_receiver));
+}
+
+void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {
+  static const char* const kLinkElementTarget = "target";
+  static const char* const kLinkElementBlank = "_blank";
+  std::string url = GetUrl(ax_node_id);
+  ui::AXNode* ax_node = GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+  std::u16string target_attribute =
+      ax_node->GetHtmlAttribute(kLinkElementTarget);
+  bool open_in_new_tab = base::EqualsASCII(target_attribute, kLinkElementBlank);
+  page_handler_->OnLinkClicked(GURL(url), open_in_new_tab);
 }
 
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,

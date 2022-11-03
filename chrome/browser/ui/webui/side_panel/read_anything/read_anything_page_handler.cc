@@ -71,3 +71,9 @@ void ReadAnythingPageHandler::OnReadAnythingThemeChanged(
     ReadAnythingThemePtr new_theme_ptr) {
   page_->OnThemeChanged(std::move(new_theme_ptr));
 }
+
+void ReadAnythingPageHandler::OnLinkClicked(const GURL& url,
+                                            bool open_in_new_tab) {
+  if (delegate_)
+    delegate_->OnLinkClicked(url, open_in_new_tab);
+}

@@ -410,6 +410,7 @@ suite('ReadAnythingAppTest', () => {
     // root htmlTag='#document' id=1
     // ++link htmlTag='a' id=2
     // ++++staticText name='This link does not have a url.' id=3
+    // ++image htmlTag='img' url='http://www.mycat.com' id=4
     const axTree = {
       rootId: 1,
       nodes: [
@@ -417,7 +418,7 @@ suite('ReadAnythingAppTest', () => {
           id: 1,
           role: 'rootWebArea',
           htmlTag: '#document',
-          childIds: [2],
+          childIds: [2, 4],
         },
         {
           id: 2,
@@ -430,10 +431,17 @@ suite('ReadAnythingAppTest', () => {
           role: 'staticText',
           name: 'This link does not have a url.',
         },
+        {
+          id: 4,
+          role: 'image',
+          htmlTag: 'img',
+          url: 'http://www.mycat.com',
+        },
       ],
     };
-    chrome.readAnything.setContentForTesting(axTree, [2]);
-    assertContainerInnerHTML('<a>This link does not have a url.</a>');
+    chrome.readAnything.setContentForTesting(axTree, [2, 4]);
+    const expected = '<div><a>This link does not have a url.</a><img></div>';
+    assertContainerInnerHTML(expected);
   });
 
   test('updateContent staticText', () => {

@@ -36,6 +36,7 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
    public:
     virtual void OnUIReady() = 0;
     virtual void OnUIDestroyed() = 0;
+    virtual void OnLinkClicked(const GURL& url, bool open_in_new_tab) = 0;
   };
 
   ReadAnythingPageHandler(
@@ -44,6 +45,9 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
   ReadAnythingPageHandler(const ReadAnythingPageHandler&) = delete;
   ReadAnythingPageHandler& operator=(const ReadAnythingPageHandler&) = delete;
   ~ReadAnythingPageHandler() override;
+
+  // read_anything::mojom::PageHandler:
+  void OnLinkClicked(const GURL& url, bool open_in_new_tab) override;
 
   // ReadAnythingModel::Observer:
   void OnAXTreeDistilled(

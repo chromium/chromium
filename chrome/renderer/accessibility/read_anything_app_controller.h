@@ -97,6 +97,7 @@ class ReadAnythingAppController
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
   void OnConnected();
+  void OnLinkClicked(ui::AXNodeID ax_node_id) const;
 
   // Helper functions for the rendering algorithm. Post-process the AXTree and
   // cache values before sending an `updateContent` notification to the Read

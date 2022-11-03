@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 
+#include <memory>
+
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
@@ -29,13 +31,13 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
         kReadAnythingDefaultFontScale);
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kAccessibilityReadAnythingColorInfo,
-        (int)read_anything::mojom::Colors::kDefaultValue);
+        static_cast<int>(read_anything::mojom::Colors::kDefaultValue));
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kAccessibilityReadAnythingLineSpacing,
-        (int)read_anything::mojom::Spacing::kDefault);
+        static_cast<int>(read_anything::mojom::Spacing::kDefault));
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kAccessibilityReadAnythingLetterSpacing,
-        (int)read_anything::mojom::Spacing::kDefault);
+        static_cast<int>(read_anything::mojom::Spacing::kDefault));
   }
 
   void MockOnFontChoiceChanged(int index) {
@@ -147,7 +149,7 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMin) {
 TEST_F(ReadAnythingControllerTest, OnColorsChangedUpdatesPref) {
   EXPECT_EQ(GetPrefsColors(), 0);
 
-  MockOnColorsChanged((int)read_anything::mojom::Colors::kYellow);
+  MockOnColorsChanged(static_cast<int>(read_anything::mojom::Colors::kYellow));
 
   EXPECT_EQ(GetPrefsColors(), 3);
 }
@@ -155,7 +157,8 @@ TEST_F(ReadAnythingControllerTest, OnColorsChangedUpdatesPref) {
 TEST_F(ReadAnythingControllerTest, OnLineSpacingChangedUpdatesPref) {
   EXPECT_EQ(GetPrefsLineSpacing(), 1);
 
-  MockOnLineSpacingChanged((int)read_anything::mojom::Spacing::kLoose);
+  MockOnLineSpacingChanged(
+      static_cast<int>(read_anything::mojom::Spacing::kLoose));
 
   EXPECT_EQ(GetPrefsLineSpacing(), 2);
 }
@@ -171,7 +174,8 @@ TEST_F(ReadAnythingControllerTest, OnLineSpacingChangedInvalidInput) {
 TEST_F(ReadAnythingControllerTest, OnLetterSpacingChangedUpdatesPref) {
   EXPECT_EQ(GetPrefsLetterSpacing(), 1);
 
-  MockOnLetterSpacingChanged((int)read_anything::mojom::Spacing::kLoose);
+  MockOnLetterSpacingChanged(
+      static_cast<int>(read_anything::mojom::Spacing::kLoose));
 
   EXPECT_EQ(GetPrefsLetterSpacing(), 2);
 }

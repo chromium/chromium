@@ -7,6 +7,7 @@ module read_anything.mojom;
 
 import "skia/public/mojom/skcolor.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
+import "url/mojom/url.mojom";
 
 // Used to represent the current user choices for the Read Anything visual
 // presentation/theme. This includes font name, size, spacing, and colors.
@@ -56,8 +57,11 @@ enum Spacing {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // TODO(crbug.com/1266555): Fill in with messages once Select to Read Anything
-  // is implemented.
+  // Informs the browser controller that a link was clicked in the WebUI. The
+  // browser controller responds by opening the url. Url is the URL of the link
+  // that was clicked. Open_in_new_tab is true if the link element has the
+  // attribute `link = "_blank"`.
+  OnLinkClicked(url.mojom.Url url, bool open_in_new_tab);
 };
 
 // WebUI-side handler for requests from the browser.
