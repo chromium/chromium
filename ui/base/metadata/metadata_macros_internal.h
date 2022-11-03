@@ -20,7 +20,9 @@
   static const char kViewClassName[];             \
   const char* GetClassName() const override;      \
   static ui::metadata::ClassMetaData* MetaData(); \
-  ui::metadata::ClassMetaData* GetClassMetaData() override;
+  /* Don't hide non-const base class version. */  \
+  using MetaDataProvider::GetClassMetaData;       \
+  const ui::metadata::ClassMetaData* GetClassMetaData() const override;
 
 // A version of METADATA_ACCESSORS_INTERNAL for View, the root of the metadata
 // hierarchy; here GetClassName() is not declared as an override.
@@ -40,7 +42,9 @@
   virtual const char* GetClassName() const;          \
   static ui::metadata::ClassMetaData* MetaData();    \
   class_name* ReinterpretToBaseClass(void* obj);     \
-  ui::metadata::ClassMetaData* GetClassMetaData() override;
+  /* Don't hide non-const base class version. */     \
+  using MetaDataProvider::GetClassMetaData;          \
+  const ui::metadata::ClassMetaData* GetClassMetaData() const override;
 
 // Metadata Class -------------------------------------------------------------
 #define METADATA_CLASS_INTERNAL(class_name, file, line)              \
@@ -82,33 +86,34 @@
   ui::metadata::ClassPropertyMetaData<TheClass, decltype(property_key),    \
                                       property_type, ##__VA_ARGS__>
 
-#define BEGIN_METADATA_INTERNAL(qualified_class_name, metadata_class_name,   \
-                                parent_class_name)                           \
-  ui::metadata::ClassMetaData*                                               \
-      qualified_class_name::metadata_class_name::meta_data_ = nullptr;       \
-                                                                             \
-  ui::metadata::ClassMetaData* qualified_class_name::MetaData() {            \
-    static_assert(                                                           \
-        std::is_base_of<parent_class_name, qualified_class_name>::value,     \
-        "class not child of parent");                                        \
-    if (!qualified_class_name::metadata_class_name::meta_data_) {            \
-      qualified_class_name::metadata_class_name::meta_data_ =                \
-          ui::metadata::MakeAndRegisterClassInfo<                            \
-              qualified_class_name::metadata_class_name>();                  \
-    }                                                                        \
-    return qualified_class_name::metadata_class_name::meta_data_;            \
-  }                                                                          \
-                                                                             \
-  ui::metadata::ClassMetaData* qualified_class_name::GetClassMetaData() {    \
-    return MetaData();                                                       \
-  }                                                                          \
-                                                                             \
-  const char* qualified_class_name::GetClassName() const {                   \
-    return kViewClassName;                                                   \
-  }                                                                          \
-  const char qualified_class_name::kViewClassName[] = #qualified_class_name; \
-                                                                             \
-  void qualified_class_name::metadata_class_name::BuildMetaData() {          \
+#define BEGIN_METADATA_INTERNAL(qualified_class_name, metadata_class_name,    \
+                                parent_class_name)                            \
+  ui::metadata::ClassMetaData*                                                \
+      qualified_class_name::metadata_class_name::meta_data_ = nullptr;        \
+                                                                              \
+  ui::metadata::ClassMetaData* qualified_class_name::MetaData() {             \
+    static_assert(                                                            \
+        std::is_base_of<parent_class_name, qualified_class_name>::value,      \
+        "class not child of parent");                                         \
+    if (!qualified_class_name::metadata_class_name::meta_data_) {             \
+      qualified_class_name::metadata_class_name::meta_data_ =                 \
+          ui::metadata::MakeAndRegisterClassInfo<                             \
+              qualified_class_name::metadata_class_name>();                   \
+    }                                                                         \
+    return qualified_class_name::metadata_class_name::meta_data_;             \
+  }                                                                           \
+                                                                              \
+  const ui::metadata::ClassMetaData* qualified_class_name::GetClassMetaData() \
+      const {                                                                 \
+    return MetaData();                                                        \
+  }                                                                           \
+                                                                              \
+  const char* qualified_class_name::GetClassName() const {                    \
+    return kViewClassName;                                                    \
+  }                                                                           \
+  const char qualified_class_name::kViewClassName[] = #qualified_class_name;  \
+                                                                              \
+  void qualified_class_name::metadata_class_name::BuildMetaData() {           \
     SetTypeName(std::string(#qualified_class_name));
 
 // See the comment above on the METADATA_ACCESSORS_INTERNAL_BASE macro for more

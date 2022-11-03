@@ -56,7 +56,8 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) MetaDataProvider {
  public:
   MetaDataProvider();
   virtual ~MetaDataProvider();
-  virtual class ClassMetaData* GetClassMetaData() = 0;
+  virtual const class ClassMetaData* GetClassMetaData() const = 0;
+  class ClassMetaData* GetClassMetaData();
 
  protected:
   [[nodiscard]] base::CallbackListSubscription AddPropertyChangedCallback(

@@ -37,6 +37,10 @@ MetaDataProvider::MetaDataProvider() = default;
 
 MetaDataProvider::~MetaDataProvider() = default;
 
+class ClassMetaData* MetaDataProvider::GetClassMetaData() {
+  return const_cast<ClassMetaData*>(std::as_const(*this).GetClassMetaData());
+}
+
 base::CallbackListSubscription MetaDataProvider::AddPropertyChangedCallback(
     PropertyKey property,
     PropertyChangedCallback callback) {
