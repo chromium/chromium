@@ -35,9 +35,6 @@
 namespace ash {
 namespace {
 
-// The preferred width of the shutdown confirmation bubble's content.
-constexpr int kBubblePreferredWidth = 175;
-
 // The insets of the shutdown confirmation bubble. The value of
 // Insets-leading-side is taken from the system.
 constexpr int kShutdownConfirmationBubbleInsetsBottom = 12;
@@ -239,11 +236,6 @@ void ShelfShutdownConfirmationBubble::OnClosed() {
           ShelfShutdownConfirmationBubble::BubbleAction::kDismissed);
       break;
   }
-}
-
-gfx::Size ShelfShutdownConfirmationBubble::CalculatePreferredSize() const {
-  return gfx::Size(kBubblePreferredWidth,
-                   GetHeightForWidth(kBubblePreferredWidth));
 }
 
 bool ShelfShutdownConfirmationBubble::ShouldCloseOnPressDown() {

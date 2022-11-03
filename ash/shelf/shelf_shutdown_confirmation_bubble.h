@@ -65,9 +65,6 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   bool ShouldCloseOnMouseExit() override;
 
  private:
-  // BubbleDialogDelegateView overrides:
-  gfx::Size CalculatePreferredSize() const override;
-
   // Callback functions of cancel and confirm buttons
   void OnCancelled();
   void OnConfirmed();
