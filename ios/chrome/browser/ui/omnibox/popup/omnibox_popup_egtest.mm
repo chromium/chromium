@@ -424,11 +424,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_typeText(@"hello")];
 
   // Matcher for a URL-what-you-typed suggestion.
-  id<GREYMatcher> textMatcher =
-      [ChromeEarlGrey isNewOmniboxPopupEnabled]
-          ? grey_descendant(grey_accessibilityLabel(@"hello"))
-          : grey_descendant(
-                chrome_test_util::StaticTextWithAccessibilityLabel(@"hello"));
+  id<GREYMatcher> textMatcher = grey_descendant(
+      chrome_test_util::StaticTextWithAccessibilityLabel(@"hello"));
   id<GREYMatcher> row =
       grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher, nil);
 

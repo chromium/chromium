@@ -554,21 +554,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)omniboxPopupRow {
-  if (!base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
-    return grey_kindOfClassName(@"OmniboxPopupRowCell");
-  } else {
-    if (@available(iOS 15.0, *)) {
-      return grey_allOf(
-          grey_kindOfClassName(@"SwiftUI.ListTableViewCell"),
-          grey_ancestor(grey_kindOfClassName(@"OmniboxPopupContainerView")),
-          nil);
-    } else {
-      return grey_allOf(
-          grey_kindOfClassName(@"SwiftUI.ListCoreCellHost"),
-          grey_ancestor(grey_kindOfClassName(@"OmniboxPopupContainerView")),
-          nil);
-    }
-  }
+  return grey_kindOfClassName(@"OmniboxPopupRowCell");
 }
 
 + (id<GREYMatcher>)omniboxPopupList {
