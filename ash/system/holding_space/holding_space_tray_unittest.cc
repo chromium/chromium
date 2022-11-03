@@ -52,6 +52,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_utils.h"
@@ -2069,9 +2070,12 @@ TEST_F(HoldingSpaceTrayTest, CloseTrayBubbleAfterDoubleClick) {
   EXPECT_FALSE(test_api()->IsShowing());
 }
 
-// TODO(crbug.com/1208501): Fix flakes and re-enable.
 // Verifies that the holding space tray animates in and out as expected.
-TEST_F(HoldingSpaceTrayTest, DISABLED_EnterAndExitAnimations) {
+TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
+  // Ensure animations are run.
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+
   // Prior to session start, the tray should not be showing.
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
