@@ -203,16 +203,18 @@ void CustomElement::Enqueue(Element& element, CustomElementReaction& reaction) {
   // To enqueue an element on the appropriate element queue
   // https://html.spec.whatwg.org/C/#enqueue-an-element-on-the-appropriate-element-queue
 
+  CustomElementReactionStack& stack =
+      CustomElementReactionStack::From(element.GetDocument().GetAgent());
   // If the custom element reactions stack is not empty, then
   // Add element to the current element queue.
   if (CEReactionsScope* current = CEReactionsScope::Current()) {
-    current->EnqueueToCurrentQueue(element, reaction);
+    current->EnqueueToCurrentQueue(stack, element, reaction);
     return;
   }
 
   // If the custom element reactions stack is empty, then
   // Add element to the backup element queue.
-  CustomElementReactionStack::Current().EnqueueToBackupQueue(element, reaction);
+  stack.EnqueueToBackupQueue(element, reaction);
 }
 
 void CustomElement::EnqueueConnectedCallback(Element& element) {

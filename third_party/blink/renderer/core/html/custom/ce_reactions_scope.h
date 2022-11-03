@@ -12,6 +12,7 @@
 namespace blink {
 
 class CustomElementReaction;
+class CustomElementReactionStack;
 class Element;
 
 // https://html.spec.whatwg.org/C/#cereactions
@@ -19,30 +20,23 @@ class CORE_EXPORT CEReactionsScope final {
   STACK_ALLOCATED();
 
  public:
-  static CEReactionsScope* Current() { return top_of_stack_; }
+  static CEReactionsScope* Current();
 
-  CEReactionsScope() : prev_(top_of_stack_), work_to_do_(false) {
-    top_of_stack_ = this;
-  }
+  CEReactionsScope();
 
   CEReactionsScope(const CEReactionsScope&) = delete;
   CEReactionsScope& operator=(const CEReactionsScope&) = delete;
 
-  ~CEReactionsScope() {
-    if (work_to_do_)
-      InvokeReactions();
-    top_of_stack_ = top_of_stack_->prev_;
-  }
+  ~CEReactionsScope();
 
-  void EnqueueToCurrentQueue(Element&, CustomElementReaction&);
+  void EnqueueToCurrentQueue(CustomElementReactionStack&,
+                             Element&,
+                             CustomElementReaction&);
 
  private:
   static CEReactionsScope* top_of_stack_;
-
-  void InvokeReactions();
-
+  CustomElementReactionStack* stack_ = nullptr;
   CEReactionsScope* prev_;
-  bool work_to_do_;
 };
 
 }  // namespace blink

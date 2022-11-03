@@ -20,7 +20,6 @@ namespace blink {
 
 class CustomElementDefinitionBuilder;
 class CustomElementDescriptor;
-class CustomElementReactionStack;
 class Element;
 class ElementDefinitionOptions;
 class ExceptionState;
@@ -94,8 +93,6 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   using WhenDefinedPromiseMap =
       HeapHashMap<AtomicString, Member<ScriptPromiseResolver>>;
   WhenDefinedPromiseMap when_defined_promise_map_;
-
-  Member<CustomElementReactionStack> reaction_stack_;
 
   FRIEND_TEST_ALL_PREFIXES(
       CustomElementTest,

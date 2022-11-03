@@ -39,8 +39,11 @@ TEST_F(CustomElementDefinitionTest, upgrade_clearsReactionQueueOnFailure) {
     HeapVector<Member<Command>> commands;
     commands.push_back(MakeGarbageCollected<Unreached>(
         "upgrade failure should clear the reaction queue"));
+    CustomElementReactionStack& stack =
+        CustomElementReactionStack::From(element.GetDocument().GetAgent());
     reactions.EnqueueToCurrentQueue(
-        element, *MakeGarbageCollected<TestReaction>(std::move(commands)));
+        stack, element,
+        *MakeGarbageCollected<TestReaction>(std::move(commands)));
     ConstructorFails definition(CustomElementDescriptor("a-a", "a-a"));
     definition.Upgrade(element);
   }
@@ -53,7 +56,8 @@ TEST_F(CustomElementDefinitionTest,
   Element& element = *CreateElement("a-a").InDocument(&GetDocument());
   EXPECT_EQ(CustomElementState::kUndefined, element.GetCustomElementState())
       << "sanity check: this element should be ready to upgrade";
-  ResetCustomElementReactionStackForTest reset_reaction_stack;
+  ResetCustomElementReactionStackForTest reset_reaction_stack(
+      GetDocument().GetAgent());
   HeapVector<Member<Command>> commands;
   commands.push_back(MakeGarbageCollected<Unreached>(
       "upgrade failure should clear the reaction queue"));

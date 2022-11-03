@@ -14,26 +14,25 @@
 
 namespace blink {
 
-namespace {
-
-Persistent<CustomElementReactionStack>& GetCustomElementReactionStack() {
-  DEFINE_STATIC_LOCAL(Persistent<CustomElementReactionStack>,
-                      custom_element_reaction_stack,
-                      (MakeGarbageCollected<CustomElementReactionStack>()));
-  return custom_element_reaction_stack;
-}
-
-}  // namespace
-
 // TODO(dominicc): Consider using linked heap structures, avoiding
 // finalizers, to make short-lived entries fast.
 
-CustomElementReactionStack::CustomElementReactionStack() = default;
+// static
+const char CustomElementReactionStack::kSupplementName[] =
+    "CustomElementReactionStackAgentData";
+
+CustomElementReactionStack::CustomElementReactionStack(Agent& agent)
+    : Supplement<Agent>(agent) {}
 
 void CustomElementReactionStack::Trace(Visitor* visitor) const {
+  Supplement<Agent>::Trace(visitor);
   visitor->Trace(map_);
   visitor->Trace(stack_);
   visitor->Trace(backup_queue_);
+}
+
+bool CustomElementReactionStack::IsEmpty() {
+  return stack_.empty();
 }
 
 void CustomElementReactionStack::Push() {
@@ -89,7 +88,6 @@ void CustomElementReactionStack::EnqueueToBackupQueue(
     CustomElementReaction& reaction) {
   // https://html.spec.whatwg.org/C/#backup-element-queue
 
-  DCHECK(!CEReactionsScope::Current());
   DCHECK(stack_.empty());
   DCHECK(IsMainThread());
 
@@ -115,17 +113,22 @@ void CustomElementReactionStack::InvokeBackupQueue() {
   backup_queue_->clear();
 }
 
-CustomElementReactionStack& CustomElementReactionStack::Current() {
-  return *GetCustomElementReactionStack();
+CustomElementReactionStack& CustomElementReactionStack::From(Agent& agent) {
+  CustomElementReactionStack* supplement =
+      Supplement<Agent>::From<CustomElementReactionStack>(agent);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<CustomElementReactionStack>(agent);
+    ProvideTo(agent, supplement);
+  }
+  return *supplement;
 }
 
-CustomElementReactionStack*
-CustomElementReactionStackTestSupport::SetCurrentForTest(
+CustomElementReactionStack* CustomElementReactionStack::Swap(
+    Agent& agent,
     CustomElementReactionStack* new_stack) {
-  Persistent<CustomElementReactionStack>& stack =
-      GetCustomElementReactionStack();
-  CustomElementReactionStack* old_stack = stack.Get();
-  stack = new_stack;
+  CustomElementReactionStack* old_stack =
+      &CustomElementReactionStack::From(agent);
+  CustomElementReactionStack::ProvideTo(agent, new_stack);
   return old_stack;
 }
 
