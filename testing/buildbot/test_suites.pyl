@@ -4573,10 +4573,11 @@
     },
 
     'rust_native_tests': {
-      'autocxx_tests': {
-        'swarming': {},
-        'test': 'autocxx_tests',
-      },
+      # TODO(https://crbug.com/1380857): reenable test coverage.
+      # 'autocxx_tests': {
+      #   'swarming': {},
+      #   'test': 'autocxx_tests',
+      # },
       'build_rust_tests': {
         'swarming': {},
         'test': 'build_rust_tests',
