@@ -285,14 +285,22 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         String storagePermission = Manifest.permission.READ_EXTERNAL_STORAGE;
         boolean shouldUsePhotoPicker = shouldUsePhotoPicker();
         if (shouldUsePhotoPicker) {
+            // The permission scenario for accessing media has evolved a bit over the years:
+            // Early on, READ_EXTERNAL_STORAGE was required to access media, but that permission was
+            // later deprecated. In its place (starting with Android T) READ_MEDIA_IMAGES and
+            // READ_MEDIA_VIDEO were required. To make matters more interesting, a native Android
+            // Media Picker was also introduced at the same time, but it functions without requiring
+            // Chrome to request any permission.
             if (BuildInfo.isAtLeastT()) {
-                if (!window.hasPermission(PermissionConstants.READ_MEDIA_IMAGES)
-                        && shouldShowImageTypes()) {
-                    missingPermissions.add(PermissionConstants.READ_MEDIA_IMAGES);
-                }
-                if (!window.hasPermission(PermissionConstants.READ_MEDIA_VIDEO)
-                        && shouldShowVideoTypes()) {
-                    missingPermissions.add(PermissionConstants.READ_MEDIA_VIDEO);
+                if (!preferAndroidMediaPicker()) {
+                    if (!window.hasPermission(PermissionConstants.READ_MEDIA_IMAGES)
+                            && shouldShowImageTypes()) {
+                        missingPermissions.add(PermissionConstants.READ_MEDIA_IMAGES);
+                    }
+                    if (!window.hasPermission(PermissionConstants.READ_MEDIA_VIDEO)
+                            && shouldShowVideoTypes()) {
+                        missingPermissions.add(PermissionConstants.READ_MEDIA_VIDEO);
+                    }
                 }
             } else {
                 if (!window.hasPermission(storagePermission)) {
