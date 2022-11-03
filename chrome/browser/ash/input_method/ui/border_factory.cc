@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/input_method/ui/border_factory.h"
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace ui {
 namespace ime {
@@ -20,7 +20,7 @@ std::unique_ptr<views::BubbleBorder> GetBorderForWindow(
       border = std::make_unique<views::BubbleBorder>(
           views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
       border->set_md_shadow_elevation(
-          ChromeLayoutProvider::Get()->GetShadowElevationMetric(
+          views::LayoutProvider::Get()->GetShadowElevationMetric(
               views::Emphasis::kMedium));
   }
   border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
