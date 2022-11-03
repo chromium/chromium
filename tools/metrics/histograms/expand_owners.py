@@ -257,7 +257,8 @@ def _ExtractComponentViaDirmd(path):
   dirmd = subprocess.Popen(
       dirmd_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   if dirmd.wait() != 0:
-    raise Error('dirmd failed: ' + dirmd.stderr.read())
+    raise Error('dirmd failed: "' + ' '.join(dirmd_command) + '": ' +
+                dirmd.stderr.read().decode('utf-8'))
   json_out = json.load(dirmd.stdout)
   # On Windows, dirmd output still uses Unix path separators.
   if sys.platform == 'win32':
