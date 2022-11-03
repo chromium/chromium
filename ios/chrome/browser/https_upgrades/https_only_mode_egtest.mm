@@ -406,6 +406,96 @@ const char kInterstitialText[] =
   // elements. Not currently supported by MetricsAppInterface.
 }
 
+// Regression test for crbug.com/1379261. Checks that cancelling a prerendered
+// navigation doesn't cause a crash. Steps are:
+// 1. Disable HTTPS-Only Mode and visit an http:// URL. This puts the
+//    URL in browser history.
+// 2. Close tabs and reopen. Enable HTTPS-Only Mode.
+// 3. Type the first letter of the http:// URL in step 1. This will prerender
+//    the http URL.
+// 4. Check that the prerender was cancelled properly.
+- (void)test_Prerender_CancelShouldNotCrash {
+  // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
+  // letters problem is fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(
+        @"Disabled for iPad due to alternate letters educational screen.");
+  }
+
+  // TODO(crbug.com/1315304): Reenable.
+  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
+  }
+
+  // Step 1: Disable HTTPS-Only Mode and visit an http:// URL. This puts the
+  // URL in browser history.
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
+                                      useFakeHTTPS:false];
+  [ChromeEarlGrey clearBrowsingHistory];
+
+  GURL testURL = self.testServer->GetURL("/");
+  NSString* testURLString = base::SysUTF8ToNSString(testURL.GetContent());
+  [ChromeEarlGrey loadURL:testURL];
+  GREYAssertEqual(1, _HTTPResponseCounter,
+                  @"The server should have responded once");
+  [ChromeEarlGrey goBack];
+
+  // Step 2: Close tabs and reopen. Enable HTTPS-Only Mode.
+  [[self class] closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kHttpsOnlyModeEnabled];
+
+  // Step 3: Type the first letter of the http:// URL in step 1. This will
+  // prerender the http URL.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_typeText([testURLString substringToIndex:1])];
+
+  bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    // The first response was for the http:// URL. The remaining responses are
+    // prerendered. When the whole test suite runs, we may get more than one
+    // prerendered navigation here.
+    return self->_HTTPResponseCounter > 1;
+  });
+  GREYAssertTrue(prerendered, @"Prerender did not happen");
+
+  // Step 4: Check that the prerender was cancelled properly.
+  // Check the histograms. All prerender attempts must be cancelled. Relying on
+  // the histogram here isn't great, but there doesn't seem to be a good
+  // way of testing that prerenders have been cancelled.
+  GREYAssertNil(
+      [MetricsAppInterface expectCount:0
+                             forBucket:/*PRERENDER_FINAL_STATUS_USED=*/0
+                          forHistogram:@"Prerender.FinalStatus"],
+      @"Prerender was used");
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
+             @"Timer is still running");
+  GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
+             @"Omnibox upgrade timer is unexpectedly running");
+
+  // Check that the HTTPS-Only Mode tab helper recorded the prerender
+  // cancellation.
+  // First server response loaded normally, the rest should be prerenders.
+  int prerenderCount = self->_HTTPResponseCounter - 1;
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:prerenderCount
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"Failed to record event histogram");
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:prerenderCount
+                       forBucket:static_cast<int>(
+                                     security_interstitials::https_only_mode::
+                                         Event::kPrerenderCancelled)
+                    forHistogram:@(security_interstitials::https_only_mode::
+                                       kEventHistogram)],
+                @"Failed to record prerender cancellation");
+}
+
 // Navigate to an HTTP URL and allowlist the URL. Then clear browsing data.
 // This should clear the HTTP allowlist.
 - (void)test_RemoveBrowsingData_ShouldClearAllowlist {
