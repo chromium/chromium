@@ -890,6 +890,14 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 - (void)closeMediaPresentations {
+  if (@available(iOS 16, *)) {
+    if (self.webView.fullscreenState == WKFullscreenStateInFullscreen) {
+      [self.webView closeAllMediaPresentationsWithCompletionHandler:^{
+      }];
+      return;
+    }
+  }
+
   if (@available(iOS 15, *)) {
     [self.webView requestMediaPlaybackStateWithCompletionHandler:^(
                       WKMediaPlaybackState mediaPlaybackState) {
