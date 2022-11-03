@@ -154,11 +154,6 @@ public class MainActivity
         }
 
         @Override
-        public void onActivityResized(int size, Bundle extras) {
-            Log.w(TAG, "onActivityResized: size = " + size);
-        }
-
-        @Override
         public void extraCallback(@NonNull String callbackName, @Nullable Bundle args) {
             if (args == null) return;
 
