@@ -48,6 +48,9 @@ class AboutThisSideSidePanelCoordinator
   // Called when SidePanel is opened.
   std::unique_ptr<views::View> CreateAboutThisSiteWebView();
 
+  // Called to get the URL for the "open in new tab" button.
+  GURL GetOpenInNewTabUrl();
+
   // content::WebContentsObserver:
   // Override DidFinishNavigation to ensure that the AboutThisSide side panel
   // is closed when the user navigates to a different site and that cached
@@ -58,7 +61,11 @@ class AboutThisSideSidePanelCoordinator
   // Stores the |url_params| for the AbouThisSide SidePanel and the
   // |context_url| that they are associated with.
   struct URLInfo {
+    // URL of the page this side panel is related to.
     GURL context_url;
+    // URL of the side panel button for opening its content in a new tab.
+    GURL new_tab_url;
+    // Parameters for opening the side panel.
     content::OpenURLParams url_params;
   };
 

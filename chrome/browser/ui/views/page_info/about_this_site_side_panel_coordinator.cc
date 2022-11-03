@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_coordinator.h"
 
-#include "base/callback.h"
-#include "base/metrics/histogram_functions.h"
-#include "chrome/browser/page_info/about_this_site_service_factory.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -68,7 +66,7 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
     return;
 
   auto* registry = SidePanelRegistry::Get(web_contents());
-  last_url_info_ = {web_contents()->GetLastCommittedURL(),
+  last_url_info_ = {web_contents()->GetLastCommittedURL(), more_about_url,
                     CreateOpenUrlParams(more_about_url)};
   registered_but_not_shown_ = true;
 
@@ -84,6 +82,9 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
                                        icon_size),
         base::BindRepeating(
             &AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl,
             base::Unretained(this)));
     registry->Register(std::move(entry));
   }
@@ -167,6 +168,13 @@ AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
 BrowserView* AboutThisSideSidePanelCoordinator::GetBrowserView() const {
   auto* browser = chrome::FindBrowserWithWebContents(web_contents());
   return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
+}
+
+GURL AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl() {
+  DCHECK(last_url_info_.has_value());
+  DCHECK(!base::Contains(last_url_info_.value().new_tab_url.query_piece(),
+                         page_info::AboutThisSiteRenderModeParameterName));
+  return last_url_info_.value().new_tab_url;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AboutThisSideSidePanelCoordinator);
