@@ -41,10 +41,15 @@
 
 namespace logging {
 
-// Helper macro which avoids evaluating the arguents to a stream if the
-// condition is false.
-#define LAZY_CHECK_STREAM(stream, condition) \
-  !(condition) ? (void)0 : ::logging::VoidifyStream() & (stream)
+// Class used to explicitly ignore an ostream, and optionally a boolean value.
+class VoidifyStream {
+ public:
+  VoidifyStream() = default;
+  explicit VoidifyStream(bool ignored) {}
+
+  // This operator has lower precedence than << but higher than ?:
+  void operator&(std::ostream&) {}
+};
 
 // Macro which uses but does not evaluate expr and any stream parameters.
 #define EAT_CHECK_STREAM_PARAMS(expr) \
@@ -94,20 +99,22 @@ class BASE_EXPORT CheckError {
   LogMessage* const log_message_;
 };
 
-// Class used to explicitly ignore an ostream, and optionally a boolean value.
-class VoidifyStream {
- public:
-  VoidifyStream() = default;
-  explicit VoidifyStream(bool ignored) {}
-
-  // These operators have lower precedence than << but higher than ?:
-  void operator&(std::ostream&) {}
-  void operator&(CheckError&&) {}
-};
-
-#define CHECK_FUNCTION_IMPL(check_function, condition)              \
-  LAZY_CHECK_STREAM(check_function(__FILE__, __LINE__, #condition), \
-                    !ANALYZER_ASSUME_TRUE(condition))
+// The 'switch' is used to prevent the 'else' from being ambiguous when the
+// macro is used in an 'if' clause such as:
+// if (a == 1)
+//   CHECK(Foo());
+//
+// TODO(crbug.com/1380930): Remove the const bool when the blink-gc plugin has
+// been updated to accept `if (LIKELY(!field_))` as well as `if (!field_)`.
+#define CHECK_FUNCTION_IMPL(check_failure_invocation, condition)   \
+  switch (0)                                                       \
+  case 0:                                                          \
+  default:                                                         \
+    if (const bool checky_bool_lol = static_cast<bool>(condition); \
+        LIKELY(ANALYZER_ASSUME_TRUE(checky_bool_lol)))             \
+      ;                                                            \
+    else                                                           \
+      check_failure_invocation
 
 #if defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 #error "Debug builds are not expected to be optimized as official builds."
@@ -130,28 +137,36 @@ class VoidifyStream {
 
 #define CHECK_WILL_STREAM() false
 
-#define PCHECK(condition)                                              \
-  LAZY_CHECK_STREAM(::logging::CheckError::PCheck(__FILE__, __LINE__), \
-                    UNLIKELY(!(condition)))
+// Strip the conditional string from official builds.
+#define PCHECK(condition)                                                \
+  CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(__FILE__, __LINE__), \
+                      condition)
 
 #else
 
 #define CHECK_WILL_STREAM() true
 
 #define CHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::Check, condition)
+  CHECK_FUNCTION_IMPL(   \
+      ::logging::CheckError::Check(__FILE__, __LINE__, #condition), condition)
 
-#define PCHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck, condition)
+#define PCHECK(condition)                                            \
+  CHECK_FUNCTION_IMPL(                                               \
+      ::logging::CheckError::PCheck(__FILE__, __LINE__, #condition), \
+      condition)
 
 #endif
 
 #if DCHECK_IS_ON()
 
-#define DCHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::DCheck, condition)
-#define DPCHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::DPCheck, condition)
+#define DCHECK(condition)                                            \
+  CHECK_FUNCTION_IMPL(                                               \
+      ::logging::CheckError::DCheck(__FILE__, __LINE__, #condition), \
+      condition)
+#define DPCHECK(condition)                                            \
+  CHECK_FUNCTION_IMPL(                                                \
+      ::logging::CheckError::DPCheck(__FILE__, __LINE__, #condition), \
+      condition)
 
 #else
 

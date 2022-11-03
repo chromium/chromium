@@ -36,7 +36,8 @@ template <typename CheckObserverPredicate,
 void inline PerformObserverCheck(const std::tuple<ObserverTypes...>& observers,
                                  std::index_sequence<Indices...>,
                                  CheckObserverPredicate check_observer) {
-  ((DCHECK(check_observer(std::get<Indices>(observers)))), ...);
+  ([](bool b) { DCHECK(b); }(check_observer(std::get<Indices>(observers))),
+   ...);
 }
 
 template <typename... ObserverTypes, size_t... Indices>

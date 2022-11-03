@@ -221,7 +221,7 @@ void DecodeInfoCallback(png_struct* png_ptr, png_info* info_ptr) {
   if (state->bitmap) {
     if (!state->bitmap->tryAllocN32Pixels(state->width, state->height)) {
       png_error(png_ptr, "Could not allocate bitmap.");
-      NOTREACHED() << "png_error should not return.";
+      NOTREACHED();
       return;
     }
   } else if (state->output) {

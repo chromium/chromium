@@ -14,8 +14,9 @@ namespace logging {
 
 // Under these conditions NOTREACHED() will effectively either log or DCHECK.
 #if BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED) || DCHECK_IS_ON()
-#define NOTREACHED() \
-  LAZY_CHECK_STREAM(::logging::CheckError::NotReached(__FILE__, __LINE__), true)
+#define NOTREACHED()                                                         \
+  CHECK_FUNCTION_IMPL(::logging::CheckError::NotReached(__FILE__, __LINE__), \
+                      false)
 #else
 #define NOTREACHED() EAT_CHECK_STREAM_PARAMS()
 #endif  // BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED) || DCHECK_IS_ON()

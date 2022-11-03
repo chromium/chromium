@@ -151,7 +151,9 @@ TEST_F(CheckTest, CheckStreamsAreLazy) {
 
   auto Called = [&]() {
     ++called_count;
-    return 42;
+    // This returns a non-constant because returning 42 here directly triggers a
+    // dead-code warning when streaming to *CHECK(Called()) << NotCalled();
+    return called_count >= 0;
   };
   auto NotCalled = [&]() {
     ++not_called_count;

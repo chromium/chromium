@@ -30,9 +30,9 @@ class WebThreadDelegate;
 
 // Use DCHECK_CURRENTLY_ON(WebThread::ID) to assert that a function can only be
 // called on the named WebThread.
-#define DCHECK_CURRENTLY_ON(thread_identifier)              \
-  (DCHECK(::web::WebThread::CurrentlyOn(thread_identifier)) \
-   << ::web::WebThread::GetDCheckCurrentlyOnErrorMessage(thread_identifier))
+#define DCHECK_CURRENTLY_ON(thread_identifier)             \
+  DCHECK(::web::WebThread::CurrentlyOn(thread_identifier)) \
+      << ::web::WebThread::GetDCheckCurrentlyOnErrorMessage(thread_identifier)
 
 // The main entry point to post tasks to the UI thread. Tasks posted with the
 // same `traits` will run in posting order (i.e. according to the

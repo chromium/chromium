@@ -73,7 +73,7 @@ auto CopyArraysToBuffer(uint32_t count,
 
   // Pointers to the copy sources
   std::array<const int8_t*, arr_count> byte_pointers{
-      {(DCHECK(arrays),
+      {([](bool b) { DCHECK(b); }(arrays),
         reinterpret_cast<const int8_t*>(arrays + offset_count))...}};
 
   for (uint32_t i = 0; i < arr_count; ++i) {

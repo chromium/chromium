@@ -23,11 +23,6 @@ using CanonicalRelativePath =
     ::base::StrongAlias<class CanonicalRelativePathTag,
                         base::FilePath::StringType>;
 
-// Returns true if |path| ends with (.| )+.
-// |out_path| will contain "." and/or " " suffix removed from |path|.
-bool TrimDotSpaceSuffix(const base::FilePath::StringType& path,
-                        base::FilePath::StringType* out_path);
-
 // Returns true if this system/OS's file access is case sensitive.
 constexpr bool IsFileAccessCaseSensitive() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

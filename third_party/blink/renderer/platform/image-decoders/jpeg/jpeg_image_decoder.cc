@@ -157,7 +157,6 @@ blink::BitmapImageMetrics::JpegColorSpace ExtractUMAJpegColorSpace(
         case cc::YUVSubsampling::kUnknown:
           return blink::BitmapImageMetrics::JpegColorSpace::kYCbCrOther;
       }
-      NOTREACHED();
     default:
       return blink::BitmapImageMetrics::JpegColorSpace::kUnknown;
   }

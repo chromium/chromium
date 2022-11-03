@@ -57,9 +57,10 @@ InputSyncWriter::InputSyncWriter(
       socket_(std::move(socket)),
       shared_memory_region_(std::move(shared_memory.region)),
       shared_memory_mapping_(std::move(shared_memory.mapping)),
-      shared_memory_segment_size_(
-          (CHECK(shared_memory_segment_count > 0),
-           shared_memory_mapping_.size() / shared_memory_segment_count)),
+      shared_memory_segment_size_([&]() {
+        CHECK(shared_memory_segment_count > 0);
+        return shared_memory_mapping_.size() / shared_memory_segment_count;
+      }()),
       creation_time_(base::TimeTicks::Now()),
       audio_bus_memory_size_(media::AudioBus::CalculateMemorySize(params)),
       glitch_counter_(std::move(glitch_counter)) {
