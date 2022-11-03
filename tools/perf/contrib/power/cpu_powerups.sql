@@ -13,10 +13,10 @@
 --  - Chromium:
 --      "toplevel", "toplevel.flow".
 
--- Tables of note:
+-- Noteworthy tables:
 --
---   first_top_level_slice_after_cpu_power_up :: Top-level slices that ran
---      after a CPU power-up.
+--   cpu_power_first_top_level_slice_after_powerup :: The top-level slices
+--      that ran after a CPU power-up.
 
 -- The CPU power transitions in the trace.
 --
@@ -70,8 +70,8 @@ CREATE VIEW cpu_power_slice AS
     ORDER BY ts ASC;
 
 -- We do not want scheduler slices with utid = 0 (the 'swapper' kernel thread).
-DROP VIEW IF EXISTS valid_sched_slice;
-CREATE VIEW valid_sched_slice AS
+DROP VIEW IF EXISTS cpu_power_valid_sched_slice;
+CREATE VIEW cpu_power_valid_sched_slice AS
   SELECT *
   FROM sched_slice
   WHERE utid != 0;
@@ -90,11 +90,11 @@ CREATE VIEW valid_sched_slice AS
 --
 -- Here threads T1 and T2 executed in CPU power slice [A,B].  The
 -- time between F and G represents time between threads in the kernel.
-DROP TABLE IF EXISTS sched_and_power_slice;
-CREATE VIRTUAL TABLE sched_and_power_slice
+DROP TABLE IF EXISTS cpu_power_and_sched_slice;
+CREATE VIRTUAL TABLE cpu_power_and_sched_slice
 USING
   SPAN_JOIN(cpu_power_slice PARTITIONED cpu,
-            valid_sched_slice PARTITIONED cpu);
+            cpu_power_valid_sched_slice PARTITIONED cpu);
 
 -- The Linux scheduler slices that executed immediately after a
 -- CPU power up.
@@ -106,8 +106,8 @@ USING
 --   sched_id   : Id for the sched_slice table.
 --   utid       : Unique id for the thread that ran within the slice.
 --   previous_power_state : The CPU's power state before this slice.
-DROP VIEW IF EXISTS first_sched_slice_after_cpu_power_up;
-CREATE VIEW first_sched_slice_after_cpu_power_up AS
+DROP VIEW IF EXISTS cpu_power_first_sched_slice_after_powerup;
+CREATE VIEW cpu_power_first_sched_slice_after_powerup AS
   SELECT
     ts,
     dur,
@@ -116,7 +116,7 @@ CREATE VIEW first_sched_slice_after_cpu_power_up AS
     utid,
     previous_power_state,
     powerup_id
-  FROM sched_and_power_slice
+  FROM cpu_power_and_sched_slice
   WHERE power_state = 0     -- Power-ups only.
   GROUP BY cpu, powerup_id
   HAVING ts = MIN(ts)       -- There will only be one MIN sched slice
@@ -133,13 +133,13 @@ CREATE VIEW first_sched_slice_after_cpu_power_up AS
 --   slice_id : The slice_id for the top-level slice.
 --   ts       : Starting timestamp for the slice.
 --   dur      : The duration for the slice.
-DROP VIEW IF EXISTS thread_slices;
-CREATE VIEW thread_slices AS
+DROP VIEW IF EXISTS cpu_power_thread_and_toplevel_slice;
+CREATE VIEW cpu_power_thread_and_toplevel_slice AS
   SELECT t.utid, s.id AS slice_id, s.ts AS ts, s.dur AS dur
   FROM slice AS s
   JOIN thread_track AS t
     ON s.track_id = t.id
-  WHERE s.depth = 0
+  WHERE s.depth = 0   -- Top-level slices only.
   ORDER BY ts ASC;
 
 -- A table holding the slices that executed within the scheduler
@@ -155,17 +155,17 @@ CREATE VIEW thread_slices AS
 --   end_state : The ending state for the sched_slice
 --   priority : The kernel thread priority
 --   slice_id : Id of the top-level slice for this (sched) slice.
-DROP TABLE IF EXISTS slices_after_cpu_power_up;
-CREATE VIRTUAL TABLE slices_after_cpu_power_up
+DROP TABLE IF EXISTS cpu_power_post_powerup_slice;
+CREATE VIRTUAL TABLE cpu_power_post_powerup_slice
 USING
-  SPAN_JOIN(first_sched_slice_after_cpu_power_up PARTITIONED utid,
-            thread_slices PARTITIONED utid);
+  SPAN_JOIN(cpu_power_first_sched_slice_after_powerup PARTITIONED utid,
+            cpu_power_thread_and_toplevel_slice PARTITIONED utid);
 
 -- The first top-level slice that ran after a CPU power-up.
-DROP VIEW IF EXISTS first_top_level_slice_after_cpu_power_up;
-CREATE VIEW first_top_level_slice_after_cpu_power_up AS
+DROP VIEW IF EXISTS cpu_power_first_top_level_slice_after_powerup;
+CREATE VIEW cpu_power_first_top_level_slice_after_powerup AS
   SELECT slice_id, previous_power_state
-  FROM slices_after_cpu_power_up
+  FROM cpu_power_post_powerup_slice
   GROUP BY cpu, powerup_id
   HAVING ts = MIN(ts)
   ORDER BY ts ASC;
