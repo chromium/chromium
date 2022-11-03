@@ -97,8 +97,6 @@ extern const char kExperimentsDeprecated[];
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
-void MigrateObsoleteProfilePrefsFeb_2021(PrefService* prefs);
-void MigrateObsoleteProfilePrefsJune_2021(PrefService* prefs);
 void MigrateObsoleteProfilePrefsOct_2022(PrefService* prefs);
 
 }  // namespace feed

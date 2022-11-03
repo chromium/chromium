@@ -138,7 +138,6 @@ public class FeedSurfaceMediatorTest {
         // We want to make the feed service bridge ignore the ablation flag.
         when(mFeedServiceBridgeJniMock.isEnabled())
                 .thenAnswer(invocation -> mPrefService.getBoolean(Pref.ENABLE_SNIPPETS));
-        when(mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_UI)).thenReturn(true);
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);

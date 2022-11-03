@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_NETWORKING_POLICY_CERT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_POLICY_NETWORKING_POLICY_CERT_SERVICE_FACTORY_H_
 
-#include <memory>
-#include <string>
-
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -43,24 +40,6 @@ class PolicyCertServiceFactory : public ProfileKeyedServiceFactory {
 
   PolicyCertServiceFactory(const PolicyCertServiceFactory&) = delete;
   PolicyCertServiceFactory& operator=(const PolicyCertServiceFactory&) = delete;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Migrates the `prefs::kUsedPolicyCertificates` preference from local state
-  // into per-profile pref storage. Returns true if the local pref was present
-  // and was successfully migrated.
-  // TODO(b/202492163): The migration started in October 2021. According to
-  // chrome/browser/prefs/README.md it should go for at least a year. Also note
-  // that Lacros-Chrome can never have this preference in local state.
-  static bool MigrateLocalStatePrefIntoProfilePref(
-      const std::string& user_email,
-      Profile* profile);
-  // Used to clear |user_email| as having used certificates pushed by
-  // policy before. Returns true if the flag was present and was successfully
-  // cleared.
-  // TODO(b/202492163) This can be deleted after the local state -> profile pref
-  // migration is finished.
-  static bool ClearUsedPolicyCertificates(const std::string& user_email);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   friend struct base::DefaultSingletonTraits<PolicyCertServiceFactory>;

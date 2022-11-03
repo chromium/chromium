@@ -68,7 +68,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -931,9 +930,6 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeData(
   supervised_user_manager_->RemoveNonCryptohomeData(account_id.GetUserEmail());
 
   multi_profile_user_controller_->RemoveCachedValues(account_id.GetUserEmail());
-
-  policy::PolicyCertServiceFactory::ClearUsedPolicyCertificates(
-      account_id.GetUserEmail());
 
   EasyUnlockService::ResetLocalStateForUser(account_id);
 

@@ -54,76 +54,12 @@ bool IsNotificationShownForCurrentMilestone(Profile* profile) {
 
 namespace ash {
 
-namespace help_app {
-namespace prefs {
-
-// Deprecated 06/2021.
-// Obsolete pref that used to store the last milestone on which release notes
-// notification was shown.
-const char kObsoleteReleaseNotesLastShownMilestone[] =
-    "last_release_notes_shown_milestone";
-
-// Deprecated 06/2021.
-// Obsolete pref that used to store the last milestone on which the Discover Tab
-// notification was shown.
-const char kObsoleteDiscoverTabNotificationLastShownMilestone[] =
-    "discover_tab_notification_last_shown_milestone";
-
-}  // namespace prefs
-}  // namespace help_app
-
 void HelpAppNotificationController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kHelpAppNotificationLastShownMilestone,
                                 -10);
   registry->RegisterIntegerPref(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
-}
-
-void HelpAppNotificationController::RegisterObsoletePrefsForMigration(
-    PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      help_app::prefs::kObsoleteReleaseNotesLastShownMilestone, -10);
-  registry->RegisterIntegerPref(
-      help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone, -10);
-}
-
-void HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
-    PrefService* pref_service) {
-  // If kHelpAppNotificationLastShownMilestone already has a value, migration
-  // already happened, or we wrote to the new pref directly.
-  if (pref_service->GetUserPrefValue(
-          prefs::kHelpAppNotificationLastShownMilestone) != nullptr) {
-    return;
-  }
-
-  // Choose the latest milestone when either a Release Notes or Discover tab
-  // notification was shown.
-  using help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone;
-  using help_app::prefs::kObsoleteReleaseNotesLastShownMilestone;
-
-  // If no user value is defined, these values default to -10.
-  int release_notes_last_shown_milestone =
-      pref_service->GetInteger(kObsoleteReleaseNotesLastShownMilestone);
-  int discover_tab_notification_last_shown_milestone = pref_service->GetInteger(
-      kObsoleteDiscoverTabNotificationLastShownMilestone);
-  int latest_milestone =
-      std::max(release_notes_last_shown_milestone,
-               discover_tab_notification_last_shown_milestone);
-
-  // Only set the new pref's value if any of the previous values were defined.
-  if (latest_milestone > 0) {
-    pref_service->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
-                             latest_milestone);
-  }
-}
-
-void HelpAppNotificationController::ClearObsoleteNotificationPrefs(
-    PrefService* pref_service) {
-  pref_service->ClearPref(
-      help_app::prefs::kObsoleteReleaseNotesLastShownMilestone);
-  pref_service->ClearPref(
-      help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone);
 }
 
 HelpAppNotificationController::HelpAppNotificationController(Profile* profile)

@@ -58,15 +58,6 @@ const char kExperimentsDeprecated[] = "feedv2.experiments";
 // Deprecated prefs:
 namespace {
 
-// Deprecated May/June 2021
-const char kEnableWebFeedUI[] = "webfeed_ui.enable";
-const char kIsWebFeedSubscriber[] = "webfeed.is_subscriber";
-
-void RegisterObsoletePrefsJune_2021(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kEnableWebFeedUI, false);
-  registry->RegisterBooleanPref(kIsWebFeedSubscriber, false);
-}
-
 void RegisterObsoletePrefsOct_2022(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kExperimentsDeprecated);
 }
@@ -110,13 +101,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
 #endif  // BUILDFLAG(IS_IOS)
 
-  RegisterObsoletePrefsJune_2021(registry);
   RegisterObsoletePrefsOct_2022(registry);
-}
-
-void MigrateObsoleteProfilePrefsJune_2021(PrefService* prefs) {
-  prefs->ClearPref(kEnableWebFeedUI);
-  prefs->ClearPref(kIsWebFeedSubscriber);
 }
 
 void MigrateObsoleteProfilePrefsOct_2022(PrefService* prefs) {

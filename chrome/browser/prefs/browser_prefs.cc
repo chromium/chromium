@@ -493,23 +493,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 10/2021.
-const char kAppCacheForceEnabled[] = "app_cache_force_enabled";
-
-// Deprecated 10/2021
-const char kTabStripStackedLayout[] = "tab-strip-stacked-layout";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 10/2021
-const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
-
-// Deprecated 10/2021
-const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
-
-// Deprecated 10/2021
-const char kSplitSettingsSyncTrialGroup[] = "split_settings_sync.trial_group";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Deprecated 11/2021.
 const char kWasPreviouslySetUpPrefName[] = "android_sms.was_previously_set_up";
 
@@ -787,15 +770,7 @@ const char kMigratedLoginItemPref[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kTabStripStackedLayout, false);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kTimesHIDDialogShown, 0);
-  registry->RegisterStringPref(kSplitSettingsSyncTrialGroup, std::string());
-  // Deprecated 10/2021.
-  registry->RegisterListPref(prefs::kUsedPolicyCertificates);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
+  // Deprecated 12/2021.
   registry->RegisterIntegerPref(kStabilityRendererHangCount, 0);
   registry->RegisterIntegerPref(kStabilityIncompleteSessionEndCount, 0);
   registry->RegisterBooleanPref(kStabilitySessionEndCompleted, true);
@@ -861,9 +836,6 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kCanShowFolderSelectionNudge,
                                 /*default_value=*/true);
-  ash::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
-      registry);
-  registry->RegisterBooleanPref(kHasCameraAppMigratedToSWA, false);
 
   registry->RegisterIntegerPref(kImprovedShortcutsNotificationShownCount, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -890,7 +862,6 @@ void RegisterProfilePrefsForMigration(
       prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
 #endif
 
-  registry->RegisterBooleanPref(kAppCacheForceEnabled, false);
   registry->RegisterBooleanPref(kWasPreviouslySetUpPrefName, false);
 
   registry->RegisterDictionaryPref(kAvailabilityProberOriginCheck);
@@ -1690,15 +1661,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 10/2021.
-  local_state->ClearPref(kTabStripStackedLayout);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 10/2021
-  local_state->ClearPref(kTimesHIDDialogShown);
-  local_state->ClearPref(kSplitSettingsSyncTrialGroup);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Added 12/2021.
   local_state->ClearPref(kStabilityRendererHangCount);
   local_state->ClearPref(kStabilityIncompleteSessionEndCount);
@@ -1801,30 +1763,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 06/2021.
-  ash::HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
-      profile_prefs);
-  ash::HelpAppNotificationController::ClearObsoleteNotificationPrefs(
-      profile_prefs);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_ANDROID)
-  // Added 06/2021
-  feed::MigrateObsoleteProfilePrefsJune_2021(profile_prefs);
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Added 10/2021.
+  // TODO(crbug.com/1303963): Remove once number of clients migrating is
+  // negligible.
   translate::TranslatePrefs::MigrateObsoleteProfilePrefs(profile_prefs);
   translate::TranslatePrefs::ClearObsoleteProfilePrefs(profile_prefs);
-
-  // Added 10/2021.
-  profile_prefs->ClearPref(kAppCacheForceEnabled);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 10/2021
-  profile_prefs->ClearPref(kHasCameraAppMigratedToSWA);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 11/2021.
   syncer::ClearObsoleteKeystoreBootstrapTokenPref(profile_prefs);
