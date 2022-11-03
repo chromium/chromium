@@ -57,7 +57,7 @@ if (is_win) {
 
   static_library("lib") {
     sources = [
-      "${branding_path_component}_behaviors.cc",
+      "${branding_path_product}_behaviors.cc",
       "archive_patch_helper.cc",
       "archive_patch_helper.h",
       "brand_behaviors.h",

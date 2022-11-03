@@ -28,11 +28,11 @@ template("ios_chrome_repack_locales") {
   repack_locales(target_name) {
     forward_variables_from(invoker, "*")
     source_patterns = [
-      "${root_gen_dir}/components/strings/components_${branding_path_component}_strings_",
+      "${root_gen_dir}/components/strings/components_${branding_path_product}_strings_",
       "${root_gen_dir}/components/strings/components_locale_settings_",
       "${root_gen_dir}/components/strings/components_strings_",
       "${root_gen_dir}/components/omnibox/resources/omnibox_pedal_synonyms_",
-      "${root_gen_dir}/ios/chrome/ios_${branding_path_component}_strings_",
+      "${root_gen_dir}/ios/chrome/ios_${branding_path_product}_strings_",
       "${root_gen_dir}/ios/chrome/ios_strings_",
       "${root_gen_dir}/third_party/libaddressinput/address_input_strings_",
       "${root_gen_dir}/ui/strings/app_locale_settings_",
@@ -42,7 +42,7 @@ template("ios_chrome_repack_locales") {
 
     foreach(_source_pattern, ios_locales_pack_extra_source_patterns) {
       _source_pattern =
-          string_replace(_source_pattern, "%branding%", branding_path_component)
+          string_replace(_source_pattern, "%branding%", branding_path_product)
       _source_pattern =
           string_replace(_source_pattern, "%root_gen_dir%", root_gen_dir)
 
@@ -51,10 +51,10 @@ template("ios_chrome_repack_locales") {
 
     deps = [
       "//components/omnibox/resources:omnibox_pedal_synonyms_grit",
-      "//components/strings:components_${branding_path_component}_strings",
+      "//components/strings:components_${branding_path_product}_strings",
       "//components/strings:components_locale_settings",
       "//components/strings:components_strings",
-      "//ios/chrome/app/strings:ios_${branding_path_component}_strings",
+      "//ios/chrome/app/strings:ios_${branding_path_product}_strings",
       "//ios/chrome/app/strings:ios_strings",
       "//third_party/libaddressinput:strings",
       "//ui/strings:app_locale_settings",
@@ -63,7 +63,7 @@ template("ios_chrome_repack_locales") {
     ]
 
     foreach(_target, ios_locales_pack_extra_deps) {
-      _target = string_replace(_target, "%branding%", branding_path_component)
+      _target = string_replace(_target, "%branding%", branding_path_product)
       deps += [ _target ]
     }
 

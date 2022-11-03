@@ -93,11 +93,11 @@ repack_locales("packed_resources") {
 
   source_patterns = [
     "$root_gen_dir/ios/search_widget_extension/ios_search_widget_extension_strings_",
-    "$root_gen_dir/ios/search_widget_extension/ios_search_widget_extension_${branding_path_component}_strings_",
+    "$root_gen_dir/ios/search_widget_extension/ios_search_widget_extension_${branding_path_product}_strings_",
   ]
 
   deps = [
-    "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_${branding_path_component}_strings",
+    "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_${branding_path_product}_strings",
     "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_strings",
   ]
 }
