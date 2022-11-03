@@ -1059,6 +1059,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1381245")
     public void testCreateAndEnterTransientContact() throws Exception {
         GetUserDataResponseProto userData =
                 GetUserDataResponseProto.newBuilder()
