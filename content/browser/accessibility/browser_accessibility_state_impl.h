@@ -68,6 +68,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void RemoveAccessibilityModeFlags(ui::AXMode mode) override;
   void ResetAccessibilityMode() override;
   void OnScreenReaderDetected() override;
+  void OnScreenReaderStopped() override;
   bool IsAccessibleBrowser() override;
   void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
   void AddOtherThreadHistogramCallback(base::OnceClosure callback) override;
@@ -127,6 +128,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Resets accessibility_mode_ to the default value.
   void ResetAccessibilityModeValue();
 
+  // Called by `OnScreenReaderStopped` as a delayed task. If accessibility
+  // support has not been re-enabled by the time the delay has expired, we reset
+  // `accessibility_mode_` to the default value and notify all web contents.
+  void MaybeResetAccessibilityMode();
+
   void OnOtherThreadDone();
 
   void UpdateAccessibilityActivityTask();
@@ -177,8 +183,16 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // The time accessibility was auto-disabled, for statistics.
   base::TimeTicks accessibility_disabled_time_;
 
+  // The time of the most-recent, explicit request to disable accessibility
+  // support. This is set in `OnScreenReaderStopped`. We keep track of this
+  // in order to prevent destroying and/or (re)creating large accessibility
+  // trees in response to an assistive technology being toggled.
+  base::TimeTicks disable_accessibility_request_time_;
+
   base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
       focus_changed_callbacks_;
+
+  base::WeakPtrFactory<BrowserAccessibilityStateImpl> weak_factory_{this};
 };
 
 }  // namespace content

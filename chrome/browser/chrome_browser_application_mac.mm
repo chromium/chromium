@@ -355,7 +355,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     if ([value intValue] == 1)
       accessibility_state->OnScreenReaderDetected();
     else
-      accessibility_state->DisableAccessibility();
+      accessibility_state->OnScreenReaderStopped();
   }
   return [super accessibilitySetValue:value forAttribute:attribute];
 }
