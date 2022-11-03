@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 
+#include "base/check_op.h"
+
 namespace ash {
 
 namespace {

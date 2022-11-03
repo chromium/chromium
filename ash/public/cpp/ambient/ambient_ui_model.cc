@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 
+#include "base/check_op.h"
+
 namespace ash {
 
 namespace {

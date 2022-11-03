@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/kiosk_app_menu.h"
 
+#include "base/check_op.h"
+
 namespace ash {
 
 namespace {

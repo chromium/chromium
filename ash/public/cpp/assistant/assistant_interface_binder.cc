@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
 
+#include "base/check_op.h"
+
 namespace ash {
 
 AssistantInterfaceBinder* g_binder = nullptr;

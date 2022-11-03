@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 
+#include "base/check_op.h"
+
 namespace ash {
 
 namespace {
