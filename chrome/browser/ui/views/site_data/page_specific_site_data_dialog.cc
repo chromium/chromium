@@ -21,6 +21,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/favicon_cache.h"
@@ -189,8 +190,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     std::map<std::string, PageSpecificSiteDataDialogSite> sites_map;
     for (const auto& node :
          allowed_cookies_tree_model_->GetRoot()->children()) {
-      sites_map.emplace(node->GetDetailedInfo().origin.host(),
-                        CreateSiteFromHostNode(node.get()));
+      sites_map.emplace(
+          node->GetDetailedInfo().origin.host(),
+          CreateSiteFromHostNode(node.get(), /*from_allowed_tree=*/true));
     }
     for (const auto& node :
          blocked_cookies_tree_model_->GetRoot()->children()) {
@@ -200,8 +202,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
       // regular blocked cookies or by cookies being set after creating an
       // exception and not reloading the page.
       if (entry == sites_map.end()) {
-        sites_map.emplace(node->GetDetailedInfo().origin.host(),
-                          CreateSiteFromHostNode(node.get()));
+        sites_map.emplace(
+            node->GetDetailedInfo().origin.host(),
+            CreateSiteFromHostNode(node.get(), /*from_allowed_tree=*/false));
       }
     }
 
@@ -282,15 +285,27 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   bool CanCreateContentException(GURL url) const { return !url.SchemeIsFile(); }
 
-  PageSpecificSiteDataDialogSite CreateSiteFromHostNode(CookieTreeNode* node) {
+  PageSpecificSiteDataDialogSite CreateSiteFromHostNode(
+      CookieTreeNode* node,
+      bool from_allowed_tree) {
     GURL current_url = web_contents_->GetVisibleURL();
 
     PageSpecificSiteDataDialogSite site;
     site.origin = node->GetDetailedInfo().origin;
-    content_settings::SettingSource source;
-    site.setting = cookie_settings_->GetCookieSetting(
-        site.origin.GetURL(), current_url, &source,
-        content_settings::CookieSettings::QueryReason::kCookies);
+    if (from_allowed_tree) {
+      // If the entry is in the allowed tree, it should have either allowed or
+      // clear-on-exit state. If the dialog is reopened after making changes but
+      // before reloading the page, it will show the state of accesses on the
+      // page load.
+      site.setting =
+          cookie_settings_->IsCookieSessionOnly(
+              site.origin.GetURL(),
+              content_settings::CookieSettings::QueryReason::kSetting)
+              ? CONTENT_SETTING_SESSION_ONLY
+              : CONTENT_SETTING_ALLOW;
+    } else {
+      site.setting = CONTENT_SETTING_BLOCK;
+    }
     // TODO(crbug.com/1344787): Handle sources other than SETTING_SOURCE_USER.
 
     // TODO(crbug.com/1344787): Add a test to verify partitioned logic.
@@ -299,14 +314,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
             GetEtldPlusOne(url::Origin::Create(current_url)) &&
         IsOnlyPartitionedStorageAccessAllowed(site.origin) &&
         AreAllCookiesPartitioned(node);
-    if (site.is_fully_partitioned) {
-      // Check the explicit content setting from HostContentSettingsMap
-      // instead of CookieSettings because partitioned cookies aren't
-      // third-party cookies and are not influenced by third-party cookie
-      // blocking.
-      site.setting = host_content_settings_map_->GetContentSetting(
-          site.origin.GetURL(), current_url, ContentSettingsType::COOKIES);
-    }
 
     return site;
   }
