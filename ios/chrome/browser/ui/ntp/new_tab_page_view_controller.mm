@@ -205,10 +205,6 @@
   // changed in another tab. This ensures that the sticky elements are correct
   // whenever an NTP reappears.
   [self handleStickyElementsForScrollPosition:[self scrollPosition] force:YES];
-  
-  if (![self isInitialOffsetFromSavedState]) {
-    [self setContentOffsetToTop];
-  }
 
   self.viewDidAppear = YES;
 }
