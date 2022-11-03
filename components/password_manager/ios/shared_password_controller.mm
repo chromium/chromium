@@ -425,8 +425,8 @@ BOOL canProcessCrossOriginIframes() {
   web::WebFrame* frame =
       web::GetWebFrameWithId(_webState, SysNSStringToUTF8(formQuery.frameID));
 
-  if (IsCrossOriginIframe(_webState, frame) &&
-      !canProcessCrossOriginIframes()) {
+  if (frame == nullptr || (IsCrossOriginIframe(_webState, frame) &&
+                           !canProcessCrossOriginIframes())) {
     completion({}, self);
     return;
   }
