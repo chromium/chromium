@@ -173,6 +173,8 @@ used when committed.
 *   [API Keys](api_keys.md) - When you need access to Google APIs for a custom
     build, fork, integration of stock Chromium, or are building ChromiumOS (for
     login).
+*   [User Education](../components/user_education/README.md) - Create
+    in-product help (IPH) and tutorials to call out Chromium features
 
 ### Testing
 *   [Running and Debugging Web Tests](testing/web_tests.md)
