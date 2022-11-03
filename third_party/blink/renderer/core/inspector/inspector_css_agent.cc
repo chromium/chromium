@@ -2082,6 +2082,10 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   if (!rule->Name().empty())
     container_query_object->setName(rule->Name());
 
+  // TODO(https://crbug.com/1378237): We need to also pass the physical and
+  // logical axes from ContainerQuery::Selector(). Otherwise we may select the
+  // wrong container in InspectorDOMAgent::getContainerForNode().
+
   return container_query_object;
 }
 

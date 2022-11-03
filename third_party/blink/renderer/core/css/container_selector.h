@@ -32,8 +32,12 @@ class CORE_EXPORT ContainerSelector {
   explicit ContainerSelector(AtomicString name) : name_(std::move(name)) {}
   explicit ContainerSelector(PhysicalAxes physical_axes)
       : physical_axes_(physical_axes) {}
-  ContainerSelector(AtomicString name, LogicalAxes physical_axes)
-      : name_(std::move(name)), logical_axes_(physical_axes) {}
+  ContainerSelector(AtomicString name,
+                    PhysicalAxes physical_axes,
+                    LogicalAxes logical_axes)
+      : name_(std::move(name)),
+        physical_axes_(physical_axes),
+        logical_axes_(logical_axes) {}
   ContainerSelector(AtomicString name, const MediaQueryExpNode&);
 
   bool IsHashTableDeletedValue() const {
@@ -61,6 +65,9 @@ class CORE_EXPORT ContainerSelector {
   }
 
   bool SelectsStyleContainers() const { return has_style_query_; }
+
+  PhysicalAxes GetPhysicalAxes() const { return physical_axes_; }
+  LogicalAxes GetLogicalAxes() const { return logical_axes_; }
 
  private:
   AtomicString name_;

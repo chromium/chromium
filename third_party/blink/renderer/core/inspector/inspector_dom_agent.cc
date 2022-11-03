@@ -1627,12 +1627,22 @@ Response InspectorDOMAgent::getContainerForNode(
   if (!response.IsSuccess())
     return response;
 
+  // TODO(https://crbug.com/1378237): We currently find the closest container
+  // which at least queries the inline axis. Instead we should pass the required
+  // axes, both physical and logical, from
+  // InspectorCSSAgent::BuildContainerQueryObject().
+  //
+  // It also might be that we want to look up style() query containers. In which
+  // case both physical and logical axes are 'None'.
+  const PhysicalAxes physical = kPhysicalAxisNone;
+  const LogicalAxes logical = kLogicalAxisInline;
+
   element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
   Element* container = style_resolver.FindContainerForElement(
       element,
       ContainerSelector(AtomicString(container_name.fromMaybe(g_null_atom)),
-                        kLogicalAxisInline));
+                        physical, logical));
   if (container)
     *container_node_id = PushNodePathToFrontend(container);
   return Response::Success();
