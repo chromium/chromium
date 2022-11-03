@@ -6,14 +6,12 @@
  * @fileoverview ChromeVox keyboard handler.
  */
 import {KeyCode} from '../../common/key_code.js';
-import {AbstractKeyboardHandler} from '../common/abstract_keyboard_handler.js';
-import {Command} from '../common/command_store.js';
 import {EventSourceType} from '../common/event_source_type.js';
+import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {QueueMode} from '../common/tts_interface.js';
 
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState} from './chromevox_state.js';
-import {CommandHandlerInterface} from './command_handler_interface.js';
 import {EventSourceState} from './event_source.js';
 import {MathHandler} from './math_handler.js';
 import {Output} from './output/output.js';
@@ -37,20 +35,17 @@ const KeyboardPassThroughState_ = {
   PENDING_SHORTCUT_KEYUPS: 'pending_shortcut_keyups',
 };
 
-export class BackgroundKeyboardHandler extends AbstractKeyboardHandler {
+export class BackgroundKeyboardHandler {
   /** @private */
   constructor() {
-    super();
-    /** @private {function(!Command): (boolean|undefined)} */
-    this.commandHandlerForTesting_;
+    /** @private {!KeyboardPassThroughState_} */
+    this.passThroughState_ = KeyboardPassThroughState_.NO_PASS_THROUGH;
 
     /** @type {Set} @private */
     this.eatenKeyDowns_ = new Set();
 
     /** @private {Set} */
     this.passedThroughKeyDowns_ = new Set();
-    /** @private {!KeyboardPassThroughState_} */
-    this.passThroughState_ = KeyboardPassThroughState_.NO_PASS_THROUGH;
 
     document.addEventListener(
         'keydown', (event) => this.onKeyDown(event), false);
@@ -65,14 +60,6 @@ export class BackgroundKeyboardHandler extends AbstractKeyboardHandler {
       throw 'Error: trying to create two instances of singleton BackgroundKeyboardHandler.';
     }
     BackgroundKeyboardHandler.instance = new BackgroundKeyboardHandler();
-  }
-
-  /** @override */
-  handleCommand(command) {
-    if (this.commandHandlerForTesting_) {
-      return this.commandHandlerForTesting_(command);
-    }
-    return CommandHandlerInterface.instance.onCommand(command);
   }
 
   /**
@@ -133,7 +120,7 @@ export class BackgroundKeyboardHandler extends AbstractKeyboardHandler {
       return false;
     }
 
-    return this.basicKeyDownActionsListener(evt);
+    return ChromeVoxKbHandler.basicKeyDownActionsListener(evt);
   }
 
   /**

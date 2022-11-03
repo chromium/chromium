@@ -22,6 +22,7 @@ import {Command, CommandStore} from '../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureGranularity} from '../common/gesture_command_data.js';
+import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {LogType} from '../common/log_types.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
@@ -1838,6 +1839,8 @@ export class CommandHandler extends CommandHandlerInterface {
    * Performs global initialization.
    */
   init() {
+    ChromeVoxKbHandler.commandHandler = command => this.onCommand(command);
+
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-language-detection', enabled => {
           if (enabled) {
