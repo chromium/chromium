@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TIME_CALENDAR_EVENT_LIST_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "base/scoped_observation.h"
@@ -39,6 +40,9 @@ class ASH_EXPORT CalendarEventListView
                        const base::Time start_time,
                        const google_apis::calendar::EventList* events) override;
 
+  // views::View
+  void Layout() override;
+
   // Updates the event list entries.
   void UpdateListItems();
 
@@ -53,6 +57,9 @@ class ASH_EXPORT CalendarEventListView
   // Owned by `CalendarEventListView`.
   views::View* const close_button_container_;
   views::ScrollView* const scroll_view_;
+
+  // Adds fade in/out gradients to `scroll_view_`.
+  std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 
   // The content of the `scroll_view_`, which carries a list of
   // `CalendarEventListItemView`. Owned by `CalendarEventListView`.

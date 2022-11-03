@@ -58,6 +58,8 @@ constexpr auto kEventListViewCornerRadius =
     gfx::RoundedCornersF(0, 0, kBubbleCornerRadius, kBubbleCornerRadius);
 constexpr auto kEventListViewCornerRadiusJelly = gfx::RoundedCornersF(12);
 
+constexpr int kScrollViewGradientSize = 16;
+
 }  // namespace
 
 // A view that's displayed when the user selects a day cell from the calendar
@@ -151,6 +153,13 @@ CalendarEventListView::CalendarEventListView(
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
+  if (features::IsCalendarJellyEnabled()) {
+    // Set up fade in/fade out gradients at top/bottom of scroll view.
+    scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+    gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
+        scroll_view_, kScrollViewGradientSize);
+  }
+
   content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       features::IsCalendarJellyEnabled() ? 2 : 0));
@@ -175,6 +184,13 @@ void CalendarEventListView::OnThemeChanged() {
                    : AshColorProvider::Get()->GetBaseLayerColor(
                          AshColorProvider::BaseLayerType::kOpaque);
   SetBackground(views::CreateSolidBackground(color));
+}
+
+void CalendarEventListView::Layout() {
+  views::View::Layout();
+
+  if (gradient_helper_)
+    gradient_helper_->UpdateGradientMask();
 }
 
 void CalendarEventListView::OnSelectedDateUpdated() {
