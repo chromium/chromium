@@ -111,6 +111,7 @@ GL_EXPORT BASE_DECLARE_FEATURE(kVulkanFromANGLE);
 GL_EXPORT BASE_DECLARE_FEATURE(kDXGIWaitableSwapChain);
 GL_EXPORT extern const base::FeatureParam<int>
     kDXGIWaitableSwapChainMaxQueuedFrames;
+GL_EXPORT BASE_DECLARE_FEATURE(kDXGISwapChainPresentInterval0);
 
 GL_EXPORT bool IsDefaultANGLEVulkan();
 

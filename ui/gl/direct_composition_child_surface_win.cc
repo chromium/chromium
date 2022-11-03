@@ -24,6 +24,7 @@
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
@@ -131,8 +132,12 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
     } else if (!will_discard) {
       const bool use_swap_chain_tearing =
           DirectCompositionSwapChainTearingEnabled();
-      UINT interval =
-          first_swap_ || !vsync_enabled_ || use_swap_chain_tearing ? 0 : 1;
+      const bool force_present_interval_0 = base::FeatureList::IsEnabled(
+          features::kDXGISwapChainPresentInterval0);
+      UINT interval = first_swap_ || !vsync_enabled_ ||
+                              use_swap_chain_tearing || force_present_interval_0
+                          ? 0
+                          : 1;
       UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
       TRACE_EVENT2("gpu", "DirectCompositionChildSurfaceWin::PresentSwapChain",

@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_support.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_image_d3d.h"
 #include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_image_memory.h"
@@ -1295,6 +1296,9 @@ bool SwapChainPresenter::PresentToSwapChain(
   UINT interval = 1;
   if (DirectCompositionSwapChainTearingEnabled()) {
     flags |= DXGI_PRESENT_ALLOW_TEARING;
+    interval = 0;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kDXGISwapChainPresentInterval0)) {
     interval = 0;
   }
   // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only indicates

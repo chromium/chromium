@@ -320,6 +320,14 @@ BASE_FEATURE(kDXGIWaitableSwapChain,
 const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{
     &kDXGIWaitableSwapChain, "DXGIWaitableSwapChainMaxQueuedFrames", 2};
 
+// Force a present interval of 0. This asks Windows to cancel the remaining time
+// on the previously presented frame instead of synchronizing with vblank(s).
+// Frames may be discarded if they are presented more frequently than one per
+// vblank.
+BASE_FEATURE(kDXGISwapChainPresentInterval0,
+             "DXGISwapChainPresentInterval0",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool SupportsEGLDualGPURendering() {
 #if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
   return base::FeatureList::IsEnabled(kEGLDualGPURendering);
