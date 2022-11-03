@@ -56,6 +56,7 @@ class PersonalizationAppAmbientProviderImpl
                         bool selected) override;
   void SetPageViewed() override;
   void FetchSettingsAndAlbums() override;
+  void StartScreenSaverPreview() override;
 
   // Notify WebUI the latest values.
   void OnAmbientModeEnabledChanged();

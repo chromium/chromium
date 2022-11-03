@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/ambient_controller.h"
 #include "ash/constants/ambient_animation_theme.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -16,6 +17,7 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "ash/shell.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "base/barrier_closure.h"
@@ -567,6 +569,10 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
   has_pending_fetch_request_ = false;
   is_updating_backend_ = false;
   has_pending_updates_for_backend_ = false;
+}
+
+void PersonalizationAppAmbientProviderImpl::StartScreenSaverPreview() {
+  Shell::Get()->ambient_controller()->ShowUi();
 }
 
 }  // namespace ash::personalization_app

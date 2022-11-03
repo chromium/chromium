@@ -367,6 +367,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      features::IsAvatarsCloudMigrationEnabled());
 
   source->AddBoolean("isJellyEnabled", features::IsJellyEnabled());
+
+  source->AddBoolean("isScreenSaverPreviewEnabled",
+                     features::IsScreenSaverPreviewEnabled());
 }
 
 void PersonalizationAppUI::HandleWebUIRequest(

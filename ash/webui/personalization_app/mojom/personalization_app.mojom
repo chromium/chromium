@@ -532,7 +532,7 @@ interface AmbientObserver {
 };
 
 // Provides APIs to expose Ambient mode settings.
-// Used by the Personalization Hub.
+// Used by the personalization hub WebUI to call into the browser process.
 interface AmbientProvider {
   // Boolean pref for whether ambient mode is enabled.
   IsAmbientModeEnabled() => (bool enabled);
@@ -560,6 +560,9 @@ interface AmbientProvider {
 
   // Request updated Ambient mode settings and albums.
   FetchSettingsAndAlbums();
+
+  // Starts the screen saver preview.
+  StartScreenSaverPreview();
 };
 
 // The supported preset colors for keyboard backlight.

@@ -19,6 +19,13 @@
     grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
   }
 
+  .preview-button {
+    bottom: 0;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+
   #messageContainer {
     align-items: center;
     display: flex;
@@ -206,6 +213,11 @@
                 alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
                 is-google-photos>
           </template>
+          <div hidden$="[[!isScreenSaverPreviewEnabled_()]]">
+            <cr-button class="preview-button" on-click="startScreenSaverPreview_">
+              Preview
+            </cr-button>
+          </div>
         </div>
         <h3 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage"
             aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">

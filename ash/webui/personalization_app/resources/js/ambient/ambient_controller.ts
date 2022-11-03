@@ -62,3 +62,9 @@ export function setAlbumSelected(
 
   provider.setAlbumSelected(album.id, album.topicSource, album.checked);
 }
+
+// Start screen saver preview.
+export function startScreenSaverPreview(provider: AmbientProviderInterface):
+    void {
+  provider.startScreenSaverPreview();
+}

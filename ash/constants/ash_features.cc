@@ -1729,6 +1729,11 @@ BASE_FEATURE(kReverseScrollGestures,
 
 BASE_FEATURE(kRgbKeyboard, "RgbKeyboard", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the "Preview" button for screensaver.
+BASE_FEATURE(kScreenSaverPreview,
+             "ScreenSaverPreview",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the system tray to show more information in larger screen.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
              "SeamlessRefreshRateSwitching",
@@ -2587,6 +2592,10 @@ bool IsHostnameSettingEnabled() {
 
 bool IsHotspotEnabled() {
   return base::FeatureList::IsEnabled(kHotspot);
+}
+
+bool IsScreenSaverPreviewEnabled() {
+  return base::FeatureList::IsEnabled(kScreenSaverPreview);
 }
 
 bool IsSnoopingProtectionEnabled() {

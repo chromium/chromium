@@ -14,6 +14,7 @@ import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {setErrorAction} from '../personalization_actions.js';
@@ -23,7 +24,7 @@ import {Paths, PersonalizationRouter} from '../personalization_router_element.js
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
 
-import {setAmbientModeEnabled} from './ambient_controller.js';
+import {setAmbientModeEnabled, startScreenSaverPreview} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
 import {getTemplate} from './ambient_preview_element.html.js';
@@ -115,6 +116,14 @@ export class AmbientPreview extends WithPersonalizationStore {
         state => state.ambient.googlePhotosAlbumsPreviews);
     this.watch('topicSource_', state => state.ambient.topicSource);
     this.updateFromStore();
+  }
+
+  private isScreenSaverPreviewEnabled_() {
+    return loadTimeData.getBoolean('isScreenSaverPreviewEnabled');
+  }
+
+  private startScreenSaverPreview_() {
+    startScreenSaverPreview(getAmbientProvider());
   }
 
   private computeLoading_(): boolean {

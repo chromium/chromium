@@ -64,6 +64,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'setTopicSource',
       'setTemperatureUnit',
       'setAlbumSelected',
+      'startScreenSaverPreview',
       'fetchSettingsAndAlbums',
     ]);
   }
@@ -117,6 +118,10 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   setPageViewed() {
     this.methodCalled('setPageViewed');
+  }
+
+  startScreenSaverPreview() {
+    this.methodCalled('startScreenSaverPreview');
   }
 
   fetchSettingsAndAlbums() {
