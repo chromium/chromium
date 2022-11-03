@@ -121,7 +121,6 @@
 #include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
-#include "ash/system/federated/federated_service_controller.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
@@ -989,9 +988,6 @@ Shell::~Shell() {
 
   multi_capture_service_client_.reset();
 
-  // Observes `SessionController` and must be destroyed before it.
-  federated_service_controller_.reset();
-
   UsbguardClient::Shutdown();
 
   // Must be shut down after detachable_base_handler_.
@@ -1488,11 +1484,6 @@ void Shell::Init(
 
   if (chromeos::wm::features::IsFloatWindowEnabled())
     float_controller_ = std::make_unique<FloatController>();
-
-  if (features::IsFederatedServiceEnabled()) {
-    federated_service_controller_ =
-        std::make_unique<federated::FederatedServiceController>();
-  }
 
   // Injects the factory which fulfills the implementation of the text context
   // menu exclusive to CrOS.
