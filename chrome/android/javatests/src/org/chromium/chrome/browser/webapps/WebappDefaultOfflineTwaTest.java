@@ -126,27 +126,26 @@ public class WebappDefaultOfflineTwaTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
-    private void launchTwa(String twaPackageName, String url) throws TimeoutException {
+    private void launchTwa(String twaPackageName, String url, boolean withAssetLinkVerification)
+            throws TimeoutException {
         Intent intent = TrustedWebActivityTestUtil.createTrustedWebActivityIntent(url);
         intent.putExtra(
                 CustomTabIntentDataProvider.EXTRA_INITIAL_BACKGROUND_COLOR, TWA_BACKGROUND_COLOR);
-        TrustedWebActivityTestUtil.spoofVerification(twaPackageName, url);
+        if (withAssetLinkVerification) {
+            TrustedWebActivityTestUtil.spoofVerification(twaPackageName, url);
+        }
         TrustedWebActivityTestUtil.createSession(intent, twaPackageName);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
     }
 
-    @Test
-    @SmallTest
-    @Feature({"Webapps"})
-    @EnableFeatures({ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE})
-    public void testDefaultOfflineTwa() throws Exception {
+    public void testDefaultOfflineTwa(boolean withAssetLinkVerification) throws Exception {
         mCustomTabActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mTestServer = mCustomTabActivityTestRule.getTestServer();
 
         final String testAppUrl = mTestServer.getURL(TEST_PATH);
         OfflineTestUtil.interceptWithOfflineError(testAppUrl);
 
-        launchTwa(TWA_PACKAGE_NAME, testAppUrl);
+        launchTwa(TWA_PACKAGE_NAME, testAppUrl, withAssetLinkVerification);
 
         // Ensure that web_app_default_offline.html is showing the correct values.
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -171,5 +170,24 @@ public class WebappDefaultOfflineTwaTest {
         String expectedString =
                 BitmapHelper.encodeBitmapAsString(expectedDrawable.getBitmap()).trim();
         assertTrue(imageAsString.equals(expectedString));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    @EnableFeatures({ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE})
+    public void testDefaultOfflineTwaWithoutVerification() throws Exception {
+        // Test default offline behavior without asset link verification, which causes the app to
+        // run in CCT (and is what happens when TWAs load for the first time without network
+        // connectivity, because no cached results are available).
+        testDefaultOfflineTwa(false); // Run without asset link verification.
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    @EnableFeatures({ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE})
+    public void testDefaultOfflineTwaWithVerification() throws Exception {
+        testDefaultOfflineTwa(true); // Run with asset link verification.
     }
 }
