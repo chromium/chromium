@@ -17,10 +17,10 @@ constexpr char cc_dongle_model_name[] = "Eureka Dongle";
 }  // namespace
 
 TEST(DeviceCapabilityCheckerTest, CheckDeviceCapability) {
-  EXPECT_TRUE(IsChromecast(cc_model_name));
-  EXPECT_TRUE(IsChromecast(cc_ultra_model_name));
-  EXPECT_TRUE(IsChromecast(cc_dongle_model_name));
-  EXPECT_FALSE(IsChromecast("Nest"));
+  EXPECT_TRUE(IsKnownToSupportRemoting(cc_model_name));
+  EXPECT_TRUE(IsKnownToSupportRemoting(cc_ultra_model_name));
+  EXPECT_TRUE(IsKnownToSupportRemoting(cc_dongle_model_name));
+  EXPECT_FALSE(IsKnownToSupportRemoting("Nest"));
 }
 
 TEST(DeviceCapabilityCheckerTest, CheckVideoCapability) {

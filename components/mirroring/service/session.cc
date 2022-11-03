@@ -276,12 +276,13 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
   return sink_metadata;
 }
 
+// TODO(crbug.com/1198616): Remove this.
 bool ShouldQueryForRemotingCapabilities(
     const std::string& receiver_model_name) {
-  // This is a workaround to only query capabilities to Chromecast devices.
-  // TODO(crbug.com/1198616): filtering hack should be removed. See b/135725157
-  // for more information.
-  return media::remoting::IsChromecast(receiver_model_name);
+  if (base::FeatureList::IsEnabled(features::kCastDisableModelNameCheck))
+    return true;
+
+  return media::remoting::IsKnownToSupportRemoting(receiver_model_name);
 }
 
 }  // namespace

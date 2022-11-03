@@ -20,6 +20,11 @@ COMPONENT_EXPORT(MIRRORING_SERVICE) BASE_DECLARE_FEATURE(kCastStreamingVp9);
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastDisableLetterboxing);
 
+// TODO(crbug.com/1198616): Remove model name checks for querying receiver
+// capabilities.
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+BASE_DECLARE_FEATURE(kCastDisableModelNameCheck);
+
 bool IsCastStreamingAV1Enabled();
 
 }  // namespace features

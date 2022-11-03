@@ -10,10 +10,13 @@
 
 namespace media::remoting {
 
-bool IsChromecast(const std::string& model_name) {
-  // This is a workaround for Nest Hub devices, which do not support remoting.
-  // TODO(crbug.com/1198616): filtering hack should be removed. See b/135725157
-  // for more information.
+bool IsKnownToSupportRemoting(const std::string& model_name) {
+  // This is a workaround to allowlist certain devices known to support
+  // remoting, so that we can only show media sinks that are known to work for
+  // remote playback.
+  //
+  // TODO(crbug.com/1380864): Use a better mechanism to feature detect remoting
+  // support before mirroring begins.
   return base::StartsWith(model_name, "Chromecast",
                           base::CompareCase::SENSITIVE) ||
          base::StartsWith(model_name, "Eureka Dongle",
@@ -22,7 +25,7 @@ bool IsChromecast(const std::string& model_name) {
 
 bool IsVideoCodecCompatible(const std::string& model_name,
                             VideoCodec video_codec) {
-  if (!IsChromecast(model_name)) {
+  if (!IsKnownToSupportRemoting(model_name)) {
     return false;
   }
 
@@ -38,7 +41,7 @@ bool IsVideoCodecCompatible(const std::string& model_name,
 
 bool IsAudioCodecCompatible(const std::string& model_name,
                             AudioCodec audio_codec) {
-  if (!IsChromecast(model_name)) {
+  if (!IsKnownToSupportRemoting(model_name)) {
     return false;
   }
   return (audio_codec == AudioCodec::kAAC) ||

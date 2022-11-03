@@ -12,15 +12,18 @@ enum class AudioCodec;
 enum class VideoCodec;
 
 namespace remoting {
-// Return true if the device is a Chromecast device according to its
-// `model_name`.
-bool IsChromecast(const std::string& model_name);
+// Return true if the Cast receiver device is known to support media remoting
+// according to its `model_name`.  Note that this does not include all Cast
+// receivers that support remoting.
+bool IsKnownToSupportRemoting(const std::string& model_name);
 
-// Return true if the device is compatible to render `video_codec`.
+// Return true if the Cast receiver with `model_name` is compatible to render
+// `video_codec`.
 bool IsVideoCodecCompatible(const std::string& model_name,
                             media::VideoCodec video_codec);
 
-// Return true if the device is compatible to render `audio_codec`.
+// Return true if the Cast receiver with `model_name` is compatible to render
+// `audio_codec`.
 bool IsAudioCodecCompatible(const std::string& model_name,
                             media::AudioCodec audio_codec);
 
