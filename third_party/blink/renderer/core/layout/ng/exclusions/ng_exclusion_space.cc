@@ -429,15 +429,30 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
         // 10 |xxx|        |xxx|
         //    +---+        +---+
         // 20
-        //                  +---+
-        // 30               |NEW|
-        //                  +---+
+        //                 +---+
+        // 30              |NEW|
+        //                 +---+
         //
         // In the above example the "NEW" exclusion *doesn't* overlap with the
         // above drawn shelf, and a new opportunity hasn't been created.
-        bool is_overlapping =
-            exclusion.rect.LineStartOffset() <= shelf.line_right &&
-            exclusion.rect.LineEndOffset() >= shelf.line_left;
+        //
+        // NOTE: below we have subtly different conditions for left/right
+        // exclusions. E.g. if a right exclusion is aligned with the right edge
+        // of the shelf (see above) then we *shouldn't* create a new area.
+        //
+        // However we may have a left exclusion whose left edge is aligned with
+        // the right edge of the shelf. In this case we *do* create a new area.
+        bool is_overlapping;
+        if (exclusion.type == EFloat::kLeft) {
+          is_overlapping =
+              exclusion.rect.LineStartOffset() <= shelf.line_right &&
+              exclusion.rect.LineEndOffset() > shelf.line_left;
+        } else {
+          DCHECK_EQ(exclusion.type, EFloat::kRight);
+          is_overlapping =
+              exclusion.rect.LineStartOffset() < shelf.line_right &&
+              exclusion.rect.LineEndOffset() >= shelf.line_left;
+        }
 
         // Insert a closed-off layout opportunity if needed.
         if (has_solid_edges && is_overlapping) {

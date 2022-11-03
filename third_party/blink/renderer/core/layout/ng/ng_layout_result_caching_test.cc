@@ -115,30 +115,21 @@ TEST_F(NGLayoutResultCachingTest, HitDifferentBFCOffset) {
           /* offset */ {LayoutUnit(), LayoutUnit()},
           /* available_inline_size */ LayoutUnit(100));
 
-  EXPECT_EQ(opportunities.size(), 4u);
+  EXPECT_EQ(opportunities.size(), 3u);
 
-  // This first opportunity is superfluous, but harmless. It isn't needed for
-  // correct positioning, but having it in the opportunity list shouldn't
-  // trigger any bad behaviour (if something doesn't fit, in this case it'll
-  // proceed to the next layout opportunity).
   EXPECT_EQ(opportunities[0].rect.start_offset,
             NGBfcOffset(LayoutUnit(50), LayoutUnit()));
   EXPECT_EQ(opportunities[0].rect.end_offset,
-            NGBfcOffset(LayoutUnit(100), LayoutUnit(45)));
-
-  EXPECT_EQ(opportunities[1].rect.start_offset,
-            NGBfcOffset(LayoutUnit(50), LayoutUnit()));
-  EXPECT_EQ(opportunities[1].rect.end_offset,
             NGBfcOffset(LayoutUnit(100), LayoutUnit::Max()));
 
-  EXPECT_EQ(opportunities[2].rect.start_offset,
+  EXPECT_EQ(opportunities[1].rect.start_offset,
             NGBfcOffset(LayoutUnit(), LayoutUnit(20)));
-  EXPECT_EQ(opportunities[2].rect.end_offset,
+  EXPECT_EQ(opportunities[1].rect.end_offset,
             NGBfcOffset(LayoutUnit(100), LayoutUnit(45)));
 
-  EXPECT_EQ(opportunities[3].rect.start_offset,
+  EXPECT_EQ(opportunities[2].rect.start_offset,
             NGBfcOffset(LayoutUnit(), LayoutUnit(65)));
-  EXPECT_EQ(opportunities[3].rect.end_offset,
+  EXPECT_EQ(opportunities[2].rect.end_offset,
             NGBfcOffset(LayoutUnit(100), LayoutUnit::Max()));
 }
 
