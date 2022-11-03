@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.HapticFeedbackConstants;
@@ -67,7 +66,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_IMPROVEMENTS,
         ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.M, qualifiers = "sw600dp")
+@Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class StripLayoutHelperTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
