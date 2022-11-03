@@ -1116,7 +1116,8 @@ class EventGenerator {
                   std::max(host->compositor()->refresh_rate(), 60.0f)),
         closure_(std::move(closure)),
         weak_ptr_factory_(this) {
-    LOG_IF(ERROR, host->compositor()->refresh_rate() < 60.0f)
+    // VM may report slightly lower than 60hz refresh rate.
+    LOG_IF(ERROR, host->compositor()->refresh_rate() < 59.98f)
         << "Refresh rate (" << host->compositor()->refresh_rate()
         << ") is too low.";
   }
