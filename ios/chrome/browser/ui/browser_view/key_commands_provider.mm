@@ -10,8 +10,11 @@
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
@@ -30,6 +33,7 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -418,7 +422,21 @@
 }
 
 - (void)keyCommand_addToReadingList {
-  // TODO(crbug.com/1378944): Implement this action.
+  web::WebState* currentWebState =
+      _browser->GetWebStateList()->GetActiveWebState();
+  if (!currentWebState) {
+    return;
+  }
+  GURL URL = currentWebState->GetLastCommittedURL();
+  if (!URL.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  NSString* title = tab_util::GetTabTitle(currentWebState);
+  ReadingListAddCommand* command =
+      [[ReadingListAddCommand alloc] initWithURL:URL title:title];
+  // TODO(crbug.com/1272540): Migrate to the new API once available.
+  [_dispatcher addToReadingList:command];
 }
 
 - (void)keyCommand_showReadingList {

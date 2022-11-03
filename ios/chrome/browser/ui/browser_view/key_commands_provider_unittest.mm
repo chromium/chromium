@@ -9,10 +9,12 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -162,6 +164,38 @@ TEST_F(KeyCommandsProviderTest, NextPreviousTab) {
   EXPECT_EQ(web_state_list_->active_index(), 1);
   [provider_ keyCommand_showPreviousTab];
   EXPECT_EQ(web_state_list_->active_index(), 0);
+}
+
+// Verifies that nothing is added to Reading List when there is no tab.
+TEST_F(KeyCommandsProviderTest, AddToReadingList_DoesntAddWhenNoTab) {
+  provider_.dispatcher = OCMStrictProtocolMock(@protocol(ApplicationCommands));
+
+  [provider_ keyCommand_addToReadingList];
+}
+
+// Verifies that nothing is added to Reading List when on the NTP.
+TEST_F(KeyCommandsProviderTest, AddToReadingList_DoesntAddWhenNTP) {
+  provider_.dispatcher = OCMStrictProtocolMock(@protocol(ApplicationCommands));
+  InsertNewWebState(0);
+
+  [provider_ keyCommand_addToReadingList];
+}
+
+// Verifies that the correct URL is added to Reading List.
+TEST_F(KeyCommandsProviderTest, AddToReadingList_AddURL) {
+  id handler = OCMStrictProtocolMock(@protocol(BrowserCommands));
+  provider_.dispatcher = handler;
+  GURL url = GURL("https://e.test");
+  id addCommand = [OCMArg checkWithBlock:^BOOL(ReadingListAddCommand* command) {
+    return command.URLs.count == 1 && command.URLs.firstObject.URL == url;
+  }];
+  OCMExpect([provider_.dispatcher addToReadingList:addCommand]);
+  web::FakeWebState* web_state = InsertNewWebState(0);
+  web_state->SetCurrentURL(url);
+
+  [provider_ keyCommand_addToReadingList];
+
+  [handler verify];
 }
 
 #pragma mark - KeyCommandsProvider Tests with Keyboard Shortcuts Menu disabled
