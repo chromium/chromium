@@ -714,7 +714,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.FlatBufferMappedRegionValid"
     enum="BooleanSuccess" expires_after="2022-12-11">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the shared memory region created to hold the flatbuffer was
@@ -725,7 +725,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.FlatBufferScorer.CreationStatus"
     enum="SBClientPhishingScorerCreationStatus" expires_after="2023-04-25">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the status when we create a FlatBuffer scorer object for the
@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.ProtobufScorer.CreationStatus"
     enum="SBClientPhishingScorerCreationStatus" expires_after="2023-02-12">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the status when we create a Protobuf scorer object for the
@@ -874,7 +874,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.RequestWithToken" enum="BooleanSent"
     expires_after="2023-02-12">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records if the phishing request was sent with a GAIA-tied OAuth2 token. This

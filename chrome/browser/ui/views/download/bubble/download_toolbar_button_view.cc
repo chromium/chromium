@@ -259,7 +259,7 @@ void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
   security_view_ = nullptr;
 }
 
-// TODO(bhatiarohit): Remove the margin around the bubble.
+// TODO(crbug.com/1350148): Remove the margin around the bubble.
 // Hover button should be visible from end to end of the bubble.
 void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
     std::unique_ptr<View> bubble_contents_view) {

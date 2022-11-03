@@ -408,7 +408,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   secondary_label_->SetMultiLine(true);
   secondary_label_->SetAllowCharacterBreak(true);
 
-  // TODO(bhatiarohit): Remove the progress bar holder view here.
+  // TODO(crbug.com/1379447): Remove the progress bar holder view here.
   // Currently the animation does not show up on deep scanning without
   // the holder.
   progress_bar_holder_ =

@@ -125,7 +125,6 @@ class DownloadBubbleRowView : public views::View,
   void OnDiscardButtonPressed();
   void OnMainButtonPressed();
 
-  // TODO(bhatiarohit): Add platform-independent icons.
   // The icon for the file. We get platform-specific icons from IconLoader.
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::ImageView> subpage_icon_ = nullptr;

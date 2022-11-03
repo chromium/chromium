@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Bubble.PartialToFullViewLatency" units="ms"
     expires_after="2023-04-23">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the time (in ms) the user takes to open a full view (opened
@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonType}ButtonActionTime"
     units="ms" expires_after="2023-03-07">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the time (in ms) between the Download bubble warning subpage being
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Bubble.SubpageAction"
     enum="DownloadBubbleSubpageAction" expires_after="2023-04-16">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Record the user actions taken on the Download bubble warning subpage. The
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
     units="ms" expires_after="2023-03-07">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the time (in ms) for which the full view (opened manually) or the
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Bubble.{DownloadBubbleViewType}ViewSize"
     units="items" expires_after="2023-03-07">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the size of the full view (opened manually) or the partial view
@@ -775,7 +775,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Open.ContentType" enum="DownloadContentType"
     expires_after="2023-03-26">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Content types of the downloads being opened. This histogram is logged
@@ -1470,7 +1470,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Start.ContentType" enum="DownloadContentType"
     expires_after="M110">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>bhatiarohit@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <summary>
     Content types of the downloads. This histogram is logged when a download is
     started. Logged on Desktop platforms. Warning: This histogram had expired

@@ -63,7 +63,7 @@ DownloadBubbleRowListView::DownloadBubbleRowListView(bool is_partial_view,
     info_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     info_label->SetMultiLine(true);
 
-    // TODO(bhatiarohit): As noted in https://crbug.com/1340937#c3, the layout
+    // As noted in https://crbug.com/1340937#c3, the layout
     // seems to have an issue with multi-line labels. As a workaround, give the
     // label the fixed size width. The side margin is added twice, once in the
     // bubble, and then for each row.

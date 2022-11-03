@@ -17,7 +17,6 @@ items:
   value: false
 owners:
 - file://components/safe_browsing/OWNERS
-- bhatiarohit@chromium.org
 - xinghuilu@chromium.org
 schema:
   type: boolean

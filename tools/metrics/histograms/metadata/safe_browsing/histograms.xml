@@ -203,7 +203,6 @@ chromium-metrics-reviews@google.com.
     name="SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullUrlLookup{AllowlistCheckStatus}"
     units="ms" expires_after="2023-01-12">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the latency between when the browser URL loader was deferred by Safe
@@ -221,7 +220,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="SafeBrowsing.BrowserThrottle.TotalDelay2{UserCategory}"
     units="ms" expires_after="2023-01-12">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the latency between when the browser URL loader was deferred by Safe
@@ -349,7 +347,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.{UserState}.{EventType}"
     units="events" expires_after="2023-03-08">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the total number of security sensitive {EventType} in the last 28 days.
@@ -470,7 +468,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventInterval.{EventType}"
     units="ms" expires_after="2023-03-08">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time between the last security sensitive event and when the user
@@ -484,7 +482,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType"
     enum="SBMetricsCollectorEventType" expires_after="2023-03-08">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the last security sensitive event type before a user disables
@@ -496,7 +494,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days.{EventType}"
     units="events" expires_after="2023-03-08">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the total number of {EventType} in the last 28 days. Logged each
@@ -925,7 +923,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged"
     enum="BooleanManagedPref" expires_after="2023-01-01">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Whether the Safe Browsing mode is managed by the user's admin. Recorded for
@@ -1042,7 +1040,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="SafeBrowsing.RendererThrottle.TotalDelay2" units="ms"
     expires_after="2023-04-30">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the latency between when the renderer URL loader was deferred by Safe
@@ -1120,7 +1117,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="SafeBrowsing.RT.ConsumerVersionReason"
     enum="SafeBrowsingRTConsumerVersionReason" expires_after="2023-04-30">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the reason why a consumer version is preferred over the enterprise
@@ -1267,7 +1263,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="SafeBrowsing.RT.LocalMatch.Result.{IsMainframe}{UserCategory}"
     enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-01-12">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the result of checking the {IsMainframe} URL against the local Safe
@@ -1496,7 +1491,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SafeBrowsing.TailoredSecurityConsented{Status}{PromptType}Outcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2023-05-22">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the outcome of displaying the {PromptType} when a signed-in, syncing
@@ -1569,7 +1564,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SafeBrowsing.TailoredSecurityUnconsentedPromotionNotificationOutcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2023-04-23">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the outcome of displaying a notification on desktop when a signed-in,
@@ -1972,7 +1967,7 @@ and applied correctly. -->
 
 <histogram name="SafeBrowsing.V4Store.NewFileNameExists.{NewFileNames}"
     enum="Boolean" expires_after="2023-03-09">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Safe Browsing store files are being renamed from offensive to inclusive
@@ -1985,7 +1980,7 @@ and applied correctly. -->
 
 <histogram name="SafeBrowsing.V4Store.OldFileNameExists.{OldFileNames}"
     enum="Boolean" expires_after="2023-03-09">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Safe Browsing store files are being renamed from offensive to inclusive
@@ -1998,7 +1993,7 @@ and applied correctly. -->
 
 <histogram name="SafeBrowsing.V4Store.OldFileNameInUse.{OldFileNames}"
     enum="Boolean" expires_after="2023-03-09">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Safe Browsing store files are being renamed from offensive to inclusive
@@ -2011,7 +2006,7 @@ and applied correctly. -->
 
 <histogram name="SafeBrowsing.V4Store.RenameStatus.{NewFileNames}"
     enum="PlatformFileError" expires_after="2023-03-09">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Safe Browsing store files are being renamed from offensive to inclusive

@@ -3602,7 +3602,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.RequestWithToken.{TriggerType}"
     enum="BooleanSent" expires_after="2023-04-06">
-  <owner>bhatiarohit@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records if the password protection request, triggered by a(n) {TriggerType},

@@ -4941,7 +4941,7 @@
   },
   {
     "name": "ntp-safe-browsing-module",
-    "owners": [ "bhatiarohit", "tiborg" ],
+    "owners": [ "tiborg" ],
     "expiry_milestone": 105
   },
   {
