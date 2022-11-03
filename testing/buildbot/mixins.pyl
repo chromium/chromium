@@ -228,7 +228,7 @@
   'android_t': {
     'swarming': {
       'dimensions': {
-        'device_os': 'T',
+        'device_os': 'TP1A.220624.021',
       },
     },
   },
