@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -61,12 +62,22 @@ class KeyCommandsProviderTest : public PlatformTest {
         web_state_list_->GetWebStateAt(insertedIndex));
   }
 
+  void ExpectUMA(NSString* selector, const std::string& user_action) {
+    ASSERT_EQ(user_action_tester_.GetActionCount(user_action), 0);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    [provider_ performSelector:NSSelectorFromString(selector)];
+#pragma clang diagnostic pop
+    EXPECT_EQ(user_action_tester_.GetActionCount(user_action), 1);
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   WebStateList* web_state_list_;
   SceneState* scene_state_;
   base::test::ScopedFeatureList feature_list_;
+  base::UserActionTester user_action_tester_;
   KeyCommandsProvider* provider_;
 };
 
@@ -143,7 +154,56 @@ TEST_F(KeyCommandsProviderTest, ImplementsActions) {
   [provider_ keyCommand_clearBrowsingData];
 }
 
-// Verifies the next/previous tab actions work OK.
+// Checks that metrics are correctly reported.
+TEST_F(KeyCommandsProviderTest, Metrics) {
+  ExpectUMA(@"keyCommand_openNewTab", "MobileKeyCommandOpenNewTab");
+  ExpectUMA(@"keyCommand_openNewRegularTab",
+            "MobileKeyCommandOpenNewRegularTab");
+  ExpectUMA(@"keyCommand_openNewIncognitoTab",
+            "MobileKeyCommandOpenNewIncognitoTab");
+  ExpectUMA(@"keyCommand_openNewWindow", "MobileKeyCommandOpenNewWindow");
+  ExpectUMA(@"keyCommand_openNewIncognitoWindow",
+            "MobileKeyCommandOpenNewIncognitoWindow");
+  ExpectUMA(@"keyCommand_reopenLastClosedTab",
+            "MobileKeyCommandReopenLastClosedTab");
+  ExpectUMA(@"keyCommand_find", "MobileKeyCommandFind");
+  ExpectUMA(@"keyCommand_findNext", "MobileKeyCommandFindNext");
+  ExpectUMA(@"keyCommand_findPrevious", "MobileKeyCommandFindPrevious");
+  ExpectUMA(@"keyCommand_openLocation", "MobileKeyCommandOpenLocation");
+  ExpectUMA(@"keyCommand_closeTab", "MobileKeyCommandCloseTab");
+  ExpectUMA(@"keyCommand_showNextTab", "MobileKeyCommandShowNextTab");
+  ExpectUMA(@"keyCommand_showPreviousTab", "MobileKeyCommandShowPreviousTab");
+  ExpectUMA(@"keyCommand_showBookmarks", "MobileKeyCommandShowBookmarks");
+  ExpectUMA(@"keyCommand_addToBookmarks", "MobileKeyCommandAddToBookmarks");
+  ExpectUMA(@"keyCommand_reload", "MobileKeyCommandReload");
+  ExpectUMA(@"keyCommand_back", "MobileKeyCommandBack");
+  ExpectUMA(@"keyCommand_forward", "MobileKeyCommandForward");
+  ExpectUMA(@"keyCommand_showHistory", "MobileKeyCommandShowHistory");
+  ExpectUMA(@"keyCommand_voiceSearch", "MobileKeyCommandVoiceSearch");
+  ExpectUMA(@"keyCommand_close", "MobileKeyCommandClose");
+  ExpectUMA(@"keyCommand_showSettings", "MobileKeyCommandShowSettings");
+  ExpectUMA(@"keyCommand_stop", "MobileKeyCommandStop");
+  ExpectUMA(@"keyCommand_showHelp", "MobileKeyCommandShowHelp");
+  ExpectUMA(@"keyCommand_showDownloads", "MobileKeyCommandShowDownloads");
+  ExpectUMA(@"keyCommand_showFirstTab", "MobileKeyCommandShowFirstTab");
+  ExpectUMA(@"keyCommand_showTab2", "MobileKeyCommandShowTab2");
+  ExpectUMA(@"keyCommand_showTab3", "MobileKeyCommandShowTab3");
+  ExpectUMA(@"keyCommand_showTab4", "MobileKeyCommandShowTab4");
+  ExpectUMA(@"keyCommand_showTab5", "MobileKeyCommandShowTab5");
+  ExpectUMA(@"keyCommand_showTab6", "MobileKeyCommandShowTab6");
+  ExpectUMA(@"keyCommand_showTab7", "MobileKeyCommandShowTab7");
+  ExpectUMA(@"keyCommand_showTab8", "MobileKeyCommandShowTab8");
+  ExpectUMA(@"keyCommand_showLastTab", "MobileKeyCommandShowLastTab");
+  ExpectUMA(@"keyCommand_reportAnIssue", "MobileKeyCommandReportAnIssue");
+  ;
+  ExpectUMA(@"keyCommand_addToReadingList", "MobileKeyCommandAddToReadingList");
+  ExpectUMA(@"keyCommand_showReadingList", "MobileKeyCommandShowReadingList");
+  ExpectUMA(@"keyCommand_goToTabGrid", "MobileKeyCommandGoToTabGrid");
+  ExpectUMA(@"keyCommand_clearBrowsingData",
+            "MobileKeyCommandClearBrowsingData");
+}
+
+// Checks the next/previous tab actions work OK.
 TEST_F(KeyCommandsProviderTest, NextPreviousTab) {
   InsertNewWebState(0);
   InsertNewWebState(1);

@@ -18391,6 +18391,318 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileKeyCommandAddToBookmarks">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to add the current page to Bookmarks.
+  </description>
+</action>
+
+<action name="MobileKeyCommandAddToReadingList">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to add the current page to Reading
+    List.
+  </description>
+</action>
+
+<action name="MobileKeyCommandBack">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>The user has performed the key command to go back.</description>
+</action>
+
+<action name="MobileKeyCommandClearBrowsingData">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to clear browsing data.
+  </description>
+</action>
+
+<action name="MobileKeyCommandClose">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to close a modal.
+  </description>
+</action>
+
+<action name="MobileKeyCommandCloseTab">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to close the current tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandFind">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to find a string in the page.
+  </description>
+</action>
+
+<action name="MobileKeyCommandFindNext">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to find the next string match.
+  </description>
+</action>
+
+<action name="MobileKeyCommandFindPrevious">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to find the previous string match.
+  </description>
+</action>
+
+<action name="MobileKeyCommandForward">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to go forward.
+  </description>
+</action>
+
+<action name="MobileKeyCommandGoToTabGrid">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to go to the tab grid.
+  </description>
+</action>
+
+<action name="MobileKeyCommandOpenLocation">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to open a location (aka focus the
+    omnibox).
+  </description>
+</action>
+
+<action name="MobileKeyCommandOpenNewIncognitoTab">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to open a new incognito tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandOpenNewIncognitoWindow">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to open a new incognito window.
+  </description>
+</action>
+
+<action name="MobileKeyCommandOpenNewRegularTab">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to open a new regular tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandOpenNewTab">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to open a new tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandOpenNewWindow">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to open a new window.
+  </description>
+</action>
+
+<action name="MobileKeyCommandReload">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to reload the page.
+  </description>
+</action>
+
+<action name="MobileKeyCommandReopenLastClosedTab">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to reopen the last closed tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandReportAnIssue">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to report an issue.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowBookmarks">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show Bookmarks.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowDownloads">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show Downloads.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowFirstTab">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the first tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowHelp">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show Help.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowHistory">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show History.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowLastTab">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the last tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowNextTab">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the next tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowPreviousTab">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the previous tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowReadingList">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show Reading List.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowSettings">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show Settings.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowTab2">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the second tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowTab3">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the third tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowTab4">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the fourth tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowTab5">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the fifth tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowTab6">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the sixth tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowTab7">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the seventh tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandShowTab8">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to show the eighth tab.
+  </description>
+</action>
+
+<action name="MobileKeyCommandStop">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to stop loading the page.
+  </description>
+</action>
+
+<action name="MobileKeyCommandVoiceSearch">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to start a voice search.
+  </description>
+</action>
+
 <action name="MobileLocationBarTapped">
   <owner>stkhapugin@chromium.org</owner>
   <owner>rkgibson@google.com</owner>

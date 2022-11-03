@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -38,6 +40,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::RecordAction;
+using base::UserMetricsAction;
 
 @interface KeyCommandsProvider ()
 
@@ -214,6 +219,7 @@
 #pragma mark - Key Command Actions
 
 - (void)keyCommand_openNewTab {
+  RecordAction(UserMetricsAction("MobileKeyCommandOpenNewTab"));
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     [self openNewIncognitoTab];
   } else {
@@ -222,20 +228,24 @@
 }
 
 - (void)keyCommand_openNewRegularTab {
+  RecordAction(UserMetricsAction("MobileKeyCommandOpenNewRegularTab"));
   [self openNewRegularTab];
 }
 
 - (void)keyCommand_openNewIncognitoTab {
+  RecordAction(UserMetricsAction("MobileKeyCommandOpenNewIncognitoTab"));
   [self openNewIncognitoTab];
 }
 
 - (void)keyCommand_openNewWindow {
+  RecordAction(UserMetricsAction("MobileKeyCommandOpenNewWindow"));
   [_dispatcher openNewWindowWithActivity:ActivityToLoadURL(
                                              WindowActivityKeyCommandOrigin,
                                              GURL(kChromeUINewTabURL))];
 }
 
 - (void)keyCommand_openNewIncognitoWindow {
+  RecordAction(UserMetricsAction("MobileKeyCommandOpenNewIncognitoWindow"));
   [_dispatcher
       openNewWindowWithActivity:ActivityToLoadURL(
                                     WindowActivityKeyCommandOrigin,
@@ -244,6 +254,7 @@
 }
 
 - (void)keyCommand_reopenLastClosedTab {
+  RecordAction(UserMetricsAction("MobileKeyCommandReopenLastClosedTab"));
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   sessions::TabRestoreService* const tabRestoreService =
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
@@ -262,26 +273,32 @@
 }
 
 - (void)keyCommand_find {
+  RecordAction(UserMetricsAction("MobileKeyCommandFind"));
   [_dispatcher openFindInPage];
 }
 
 - (void)keyCommand_findNext {
+  RecordAction(UserMetricsAction("MobileKeyCommandFindNext"));
   [_dispatcher findNextStringInPage];
 }
 
 - (void)keyCommand_findPrevious {
+  RecordAction(UserMetricsAction("MobileKeyCommandFindPrevious"));
   [_dispatcher findPreviousStringInPage];
 }
 
 - (void)keyCommand_openLocation {
+  RecordAction(UserMetricsAction("MobileKeyCommandOpenLocation"));
   [_omniboxHandler focusOmnibox];
 }
 
 - (void)keyCommand_closeTab {
+  RecordAction(UserMetricsAction("MobileKeyCommandCloseTab"));
   [_browserCoordinatorCommandsHandler closeCurrentTab];
 }
 
 - (void)keyCommand_showNextTab {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowNextTab"));
   WebStateList* webStateList = self.browser->GetWebStateList();
   if (!webStateList)
     return;
@@ -301,6 +318,7 @@
 }
 
 - (void)keyCommand_showPreviousTab {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowPreviousTab"));
   WebStateList* webStateList = self.browser->GetWebStateList();
   if (!webStateList)
     return;
@@ -319,10 +337,12 @@
 }
 
 - (void)keyCommand_showBookmarks {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowBookmarks"));
   [_browserCoordinatorCommandsHandler showBookmarksManager];
 }
 
 - (void)keyCommand_addToBookmarks {
+  RecordAction(UserMetricsAction("MobileKeyCommandAddToBookmarks"));
   web::WebState* currentWebState =
       _browser->GetWebStateList()->GetActiveWebState();
   if (!currentWebState) {
@@ -336,92 +356,113 @@
 }
 
 - (void)keyCommand_reload {
+  RecordAction(UserMetricsAction("MobileKeyCommandReload"));
   self.navigationAgent->Reload();
 }
 
 - (void)keyCommand_back {
+  RecordAction(UserMetricsAction("MobileKeyCommandBack"));
   if (self.navigationAgent->CanGoBack())
     self.navigationAgent->GoBack();
 }
 
 - (void)keyCommand_forward {
+  RecordAction(UserMetricsAction("MobileKeyCommandForward"));
   if (self.navigationAgent->CanGoForward())
     self.navigationAgent->GoForward();
 }
 
 - (void)keyCommand_showHistory {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowHistory"));
   [_dispatcher showHistory];
 }
 
 - (void)keyCommand_voiceSearch {
+  RecordAction(UserMetricsAction("MobileKeyCommandVoiceSearch"));
   [LayoutGuideCenterForBrowser(_browser) referenceView:nil
                                              underName:kVoiceSearchButtonGuide];
   [_dispatcher startVoiceSearch];
 }
 
 - (void)keyCommand_close {
+  RecordAction(UserMetricsAction("MobileKeyCommandClose"));
   [_dispatcher dismissModalDialogs];
 }
 
 - (void)keyCommand_showSettings {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowSettings"));
   [_dispatcher showSettingsFromViewController:_viewController];
 }
 
 - (void)keyCommand_stop {
+  RecordAction(UserMetricsAction("MobileKeyCommandStop"));
   self.navigationAgent->StopLoading();
 }
 
 - (void)keyCommand_showHelp {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowHelp"));
   [_browserCoordinatorCommandsHandler showHelpPage];
 }
 
 - (void)keyCommand_showDownloads {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowDownloads"));
   [_browserCoordinatorCommandsHandler showDownloadsFolder];
 }
 
 - (void)keyCommand_showFirstTab {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowFirstTab"));
   [self showTabAtIndex:0];
 }
 
 - (void)keyCommand_showTab2 {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowTab2"));
   [self showTabAtIndex:1];
 }
 
 - (void)keyCommand_showTab3 {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowTab3"));
   [self showTabAtIndex:2];
 }
 
 - (void)keyCommand_showTab4 {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowTab4"));
   [self showTabAtIndex:3];
 }
 
 - (void)keyCommand_showTab5 {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowTab5"));
   [self showTabAtIndex:4];
 }
 
 - (void)keyCommand_showTab6 {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowTab6"));
   [self showTabAtIndex:5];
 }
 
 - (void)keyCommand_showTab7 {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowTab7"));
   [self showTabAtIndex:6];
 }
 
 - (void)keyCommand_showTab8 {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowTab8"));
   [self showTabAtIndex:7];
 }
 
 - (void)keyCommand_showLastTab {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowLastTab"));
   [self showTabAtIndex:self.tabsCount - 1];
 }
 
 - (void)keyCommand_reportAnIssue {
+  RecordAction(UserMetricsAction("MobileKeyCommandReportAnIssue"));
   [_dispatcher
       showReportAnIssueFromViewController:_viewController
                                    sender:UserFeedbackSender::KeyCommand];
 }
 
 - (void)keyCommand_addToReadingList {
+  RecordAction(UserMetricsAction("MobileKeyCommandAddToReadingList"));
   web::WebState* currentWebState =
       _browser->GetWebStateList()->GetActiveWebState();
   if (!currentWebState) {
@@ -440,15 +481,18 @@
 }
 
 - (void)keyCommand_showReadingList {
+  RecordAction(UserMetricsAction("MobileKeyCommandShowReadingList"));
   [_browserCoordinatorCommandsHandler showReadingList];
 }
 
 - (void)keyCommand_goToTabGrid {
+  RecordAction(UserMetricsAction("MobileKeyCommandGoToTabGrid"));
   [_dispatcher prepareTabSwitcher];
   [_dispatcher displayTabSwitcherInGridLayout];
 }
 
 - (void)keyCommand_clearBrowsingData {
+  RecordAction(UserMetricsAction("MobileKeyCommandClearBrowsingData"));
   [_dispatcher showClearBrowsingDataSettings];
 }
 
