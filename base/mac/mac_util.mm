@@ -547,15 +547,16 @@ void OpenSystemSettingsPane(SystemSettingsPane pane) {
     return;
   }
 
+  base::scoped_nsobject<NSAppleEventDescriptor> subpane_descriptor;
   NSArray* pane_file_urls = @[ [NSURL fileURLWithPath:pane_file] ];
 
   LSLaunchURLSpec launchSpec = {0};
   launchSpec.itemURLs = NSToCFCast(pane_file_urls);
   if (subpane_data) {
-    base::scoped_nsobject<NSAppleEventDescriptor> descriptor(
-        [[NSAppleEventDescriptor alloc] initWithDescriptorType:'ptru'
-                                                          data:subpane_data]);
-    launchSpec.passThruParams = descriptor.get().aeDesc;
+    subpane_descriptor.reset([[NSAppleEventDescriptor alloc]
+        initWithDescriptorType:'ptru'
+                          data:subpane_data]);
+    launchSpec.passThruParams = subpane_descriptor.get().aeDesc;
   }
   launchSpec.launchFlags = kLSLaunchAsync | kLSLaunchDontAddToRecents;
 
