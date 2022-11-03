@@ -4,6 +4,8 @@
 
 #include "ui/color/win/accent_color_observer.h"
 
+#include <utility>
+
 #include "base/no_destructor.h"
 #include "base/win/windows_version.h"
 #include "skia/ext/skia_utils_win.h"

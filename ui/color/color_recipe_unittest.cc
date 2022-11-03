@@ -4,6 +4,8 @@
 
 #include "ui/color/color_recipe.h"
 
+#include <algorithm>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_test_ids.h"

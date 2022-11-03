@@ -4,6 +4,8 @@
 
 #include "ui/color/color_provider_source.h"
 
+#include <memory>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_provider_manager.h"

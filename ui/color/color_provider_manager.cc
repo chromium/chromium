@@ -5,6 +5,7 @@
 #include "ui/color/color_provider_manager.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/check.h"

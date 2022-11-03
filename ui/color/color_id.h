@@ -121,9 +121,9 @@
   E_CPONLY(kColorSysSurface4) \
   E_CPONLY(kColorSysSurface5) \
   /* Core color concepts */ \
-  /* The kColorAccent color id is used in color_provider_css_colors_test.ts. \
-  If changing the variable name, the variable name in the test needs to be \
-  changed as well. */ \
+  /* kColorAccent is used in color_provider_css_colors_test.ts. */ \
+  /* If changing the variable name, the variable name in the test needs to */ \
+  /* be changed as well. */ \
   E_CPONLY(kColorAccent) \
   E_CPONLY(kColorAlertHighSeverity) \
   E_CPONLY(kColorAlertLowSeverity) \
@@ -185,8 +185,8 @@
   E_CPONLY(kColorIcon) \
   E_CPONLY(kColorIconDisabled) \
   E_CPONLY(kColorIconSecondary) \
-  /* This is declared here so //components can access it, but we expect \
-   * this to be set in the embedder. */ \
+  /* This is declared here so src/components/ can access it, but we expect */ \
+  /* this to be set in the embedder. */ \
   E_CPONLY(kColorInfoBarIcon) \
   E_CPONLY(kColorLabelForeground) \
   E_CPONLY(kColorLabelForegroundDisabled) \
@@ -446,7 +446,7 @@ enum ColorIds : ColorId {
 
 // Note that this second include is not redundant. The second inclusion of the
 // .inc file serves to undefine the macros the first inclusion defined.
-#include "ui/color/color_id_macros.inc"
+#include "ui/color/color_id_macros.inc"  // NOLINT(build/include)
 
 }  // namespace ui
 

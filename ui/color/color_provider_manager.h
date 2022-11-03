@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <tuple>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_list.h"

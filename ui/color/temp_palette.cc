@@ -4,6 +4,8 @@
 
 #include "ui/color/temp_palette.h"
 
+#include <algorithm>
+
 namespace ui {
 
 namespace {

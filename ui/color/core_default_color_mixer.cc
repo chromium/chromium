@@ -4,6 +4,8 @@
 
 #include "ui/color/core_default_color_mixer.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
