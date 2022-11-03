@@ -295,7 +295,6 @@ crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation rend
 # HDR rendering with PQ color space appears to be broken on Windows RS2.
 # TODO(sunnyps): Revert this temporary suppression after ensuring pixel tests
 # always run on Windows RS3 or above.
-crbug.com/1066979 [ win ] Pixel_Canvas2DRedBoxHdr10 [ Failure ]
 
 # Flakes on gpu-fyi-try-chromeos-kevin and fuchsia-x64, produces notably different image.
 crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Failure ]
