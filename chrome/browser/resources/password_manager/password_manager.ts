@@ -5,7 +5,7 @@
 import './password_manager_app.js';
 
 export {PasswordManagerAppElement} from './password_manager_app.js';
-export {BlockedSite, BlockedSitesListChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerImpl, PasswordManagerProxy, SavedPasswordListChangedListener} from './password_manager_proxy.js';
+export {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 export {PasswordsSectionElement} from './passwords_section.js';
 export {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 export {PrefsBrowserProxy, PrefsBrowserProxyImpl, PrefsChangedListener} from './prefs/prefs_browser_proxy.js';

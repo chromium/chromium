@@ -9,8 +9,8 @@
 
 export type BlockedSite = chrome.passwordsPrivate.ExceptionEntry;
 
-export type SavedPasswordListChangedListener =
-    (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void;
+export type CredentialsChangedListener =
+    (credentials: chrome.passwordsPrivate.PasswordUiEntry[]) => void;
 export type PasswordCheckStatusChangedListener =
     (status: chrome.passwordsPrivate.PasswordCheckStatus) => void;
 export type BlockedSitesListChangedListener = (entries: BlockedSite[]) => void;
@@ -47,14 +47,14 @@ export interface PasswordManagerProxy {
   /**
    * Add an observer to the list of saved passwords.
    */
-  addSavedPasswordListChangedListener(
-      listener: SavedPasswordListChangedListener): void;
+  addSavedPasswordListChangedListener(listener: CredentialsChangedListener):
+      void;
 
   /**
    * Remove an observer from the list of saved passwords.
    */
-  removeSavedPasswordListChangedListener(
-      listener: SavedPasswordListChangedListener): void;
+  removeSavedPasswordListChangedListener(listener: CredentialsChangedListener):
+      void;
 
   /**
    * Add an observer to the list of blocked sites.
@@ -81,6 +81,16 @@ export interface PasswordManagerProxy {
       listener: PasswordCheckStatusChangedListener): void;
 
   /**
+   * Add an observer to the insecure passwords change.
+   */
+  addInsecureCredentialsListener(listener: CredentialsChangedListener): void;
+
+  /**
+   * Remove an observer to the insecure passwords change.
+   */
+  removeInsecureCredentialsListener(listener: CredentialsChangedListener): void;
+
+  /**
    * Request the list of saved passwords.
    */
   getSavedPasswordList(): Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
@@ -95,6 +105,11 @@ export interface PasswordManagerProxy {
    */
   getPasswordCheckStatus():
       Promise<chrome.passwordsPrivate.PasswordCheckStatus>;
+
+  /**
+   * Requests the latest information about insecure credentials.
+   */
+  getInsecureCredentials(): Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
 
   /**
    * Requests the start of the bulk password check.
@@ -116,13 +131,11 @@ export interface PasswordManagerProxy {
  * Implementation that accesses the private API.
  */
 export class PasswordManagerImpl implements PasswordManagerProxy {
-  addSavedPasswordListChangedListener(listener:
-                                          SavedPasswordListChangedListener) {
+  addSavedPasswordListChangedListener(listener: CredentialsChangedListener) {
     chrome.passwordsPrivate.onSavedPasswordsListChanged.addListener(listener);
   }
 
-  removeSavedPasswordListChangedListener(listener:
-                                             SavedPasswordListChangedListener) {
+  removeSavedPasswordListChangedListener(listener: CredentialsChangedListener) {
     chrome.passwordsPrivate.onSavedPasswordsListChanged.removeListener(
         listener);
   }
@@ -149,6 +162,15 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
         listener);
   }
 
+  addInsecureCredentialsListener(listener: CredentialsChangedListener) {
+    chrome.passwordsPrivate.onInsecureCredentialsChanged.addListener(listener);
+  }
+
+  removeInsecureCredentialsListener(listener: CredentialsChangedListener) {
+    chrome.passwordsPrivate.onInsecureCredentialsChanged.removeListener(
+        listener);
+  }
+
   getSavedPasswordList() {
     return chrome.passwordsPrivate.getSavedPasswordList().catch(() => []);
   }
@@ -159,6 +181,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   getPasswordCheckStatus() {
     return chrome.passwordsPrivate.getPasswordCheckStatus();
+  }
+
+  getInsecureCredentials() {
+    return chrome.passwordsPrivate.getInsecureCredentials();
   }
 
   startBulkPasswordCheck() {

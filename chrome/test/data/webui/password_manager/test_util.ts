@@ -108,3 +108,47 @@ export function makePasswordManagerPrefs():
     },
   ];
 }
+
+export interface InsecureCredentialsParams {
+  url?: string;
+  username?: string;
+  types?: chrome.passwordsPrivate.CompromiseType[];
+  id?: number;
+  elapsedMinSinceCompromise?: number;
+  isMuted?: boolean;
+}
+
+/**
+ * Creates a new insecure credential.
+ */
+export function makeInsecureCredential(params: InsecureCredentialsParams):
+    chrome.passwordsPrivate.PasswordUiEntry {
+  // Generate fake data if param is undefined.
+  params = params || {};
+  const url = params.url !== undefined ? params.url : 'www.foo.com';
+  const username = params.username !== undefined ? params.username : 'user';
+  const id = params.id !== undefined ? params.id : 42;
+  const elapsedMinSinceCompromise = params.elapsedMinSinceCompromise || 0;
+  const types = params.types || [];
+  const compromisedInfo = {
+    compromiseTime: Date.now() - (elapsedMinSinceCompromise * 60000),
+    elapsedTimeSinceCompromise: `${elapsedMinSinceCompromise} minutes ago`,
+    compromiseTypes: types,
+    isMuted: params.isMuted ?? false,
+  };
+  return {
+    id: id || 0,
+    storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+    changePasswordUrl: `http://${url}/`,
+    hasStartableScript: false,
+    urls: {
+      signonRealm: `http://${url}/`,
+      shown: url,
+      link: `http://${url}/`,
+    },
+    username: username,
+    note: '',
+    isAndroidCredential: false,
+    compromisedInfo: types.length ? compromisedInfo : undefined,
+  };
+}

@@ -5,22 +5,58 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {PasswordCheckInteraction, PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
+import {PluralStringProxy, PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {makePasswordCheckStatus} from './test_util.js';
+import {makeInsecureCredential, makePasswordCheckStatus} from './test_util.js';
 
 const PasswordCheckState = chrome.passwordsPrivate.PasswordCheckState;
 
+class CheckupTestPluralStringProxy extends TestBrowserProxy implements
+    PluralStringProxy {
+  constructor() {
+    super([
+      'checkedPasswords',
+      'compromisedPasswords',
+      'reusedPasswords',
+      'weakPasswords',
+    ]);
+  }
+
+  getPluralString(messageName: string, itemCount: number) {
+    this.methodCalled(messageName, itemCount);
+    return Promise.resolve('some text');
+  }
+
+  getPluralStringTupleWithComma(
+      _messageName1: string, _itemCount1: number, _messageName2: string,
+      _itemCount2: number) {
+    return Promise.resolve('some text');
+  }
+
+  getPluralStringTupleWithPeriods(
+      _messageName1: string, _itemCount1: number, _messageName2: string,
+      _itemCount2: number) {
+    return Promise.resolve('some text');
+  }
+}
+
 suite('SettingsSectionTest', function() {
+  const CompromiseType = chrome.passwordsPrivate.CompromiseType;
+
   let passwordManager: TestPasswordManagerProxy;
+  let pluralString: CheckupTestPluralStringProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
+    pluralString = new CheckupTestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralString);
     return flushTasks();
   });
 
@@ -102,5 +138,56 @@ suite('SettingsSectionTest', function() {
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     assertEquals(PasswordCheckInteraction.START_CHECK_MANUALLY, interaction);
+  });
+
+  test('Number of issues reflected in sections', async function() {
+    passwordManager.data.checkStatus =
+        makePasswordCheckStatus(PasswordCheckState.IDLE);
+
+    // 3 compromised, 0 reused, 4 weak credentials
+    passwordManager.data.insecureCredentials = [
+      makeInsecureCredential({
+        types: [
+          CompromiseType.PHISHED,
+          CompromiseType.LEAKED,
+          CompromiseType.WEAK,
+        ],
+      }),
+      makeInsecureCredential({
+        types: [
+          CompromiseType.PHISHED,
+          CompromiseType.WEAK,
+        ],
+      }),
+      makeInsecureCredential({
+        types: [
+          CompromiseType.LEAKED,
+          CompromiseType.WEAK,
+        ],
+      }),
+      makeInsecureCredential({types: [CompromiseType.WEAK]}),
+    ];
+
+    const section = document.createElement('checkup-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getInsecureCredentials');
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+
+    // Expect a proper number of insecure credentials as a parameter to
+    // PluralStringProxy.
+    assertEquals(3, await pluralString.whenCalled('compromisedPasswords'));
+    assertEquals(0, await pluralString.whenCalled('reusedPasswords'));
+    assertEquals(4, await pluralString.whenCalled('weakPasswords'));
+    await flushTasks();
+
+    // Expect a proper attribute for front icon color
+    assertTrue(section.$.compromisedRow.hasAttribute('compromised'));
+    assertFalse(section.$.reusedRow.hasAttribute('has-issues'));
+    assertTrue(section.$.weakRow.hasAttribute('has-issues'));
+
+    // Expect a proper rear icon state
+    assertFalse(section.$.compromisedRow.hasAttribute('hide-icon'));
+    assertTrue(section.$.reusedRow.hasAttribute('hide-icon'));
+    assertFalse(section.$.weakRow.hasAttribute('hide-icon'));
   });
 });

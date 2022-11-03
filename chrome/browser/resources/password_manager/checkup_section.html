@@ -65,6 +65,10 @@
   cr-link-row[compromised] {
     --cr-link-row-start-icon-color: var(--google-red-600);
   }
+
+  cr-link-row[hide-icon]::part(icon) {
+    display: none;
+  }
 </style>
 <h2 class="page-title">$i18n{checkupTitle}</h2>
 <div id="checkupContent" class="card">
@@ -99,17 +103,24 @@
     </div>
   </div>
   <div id="checkupResult" hidden="[[isCheckRunning_]]">
-    <cr-link-row id="compromisedRow" start-icon="cr:error"
-        label="[[compromisedPasswordsText_]]" class="hr"
-        sub-label="$i18n{compromisedPasswordsTitle}" compromised>
+    <cr-link-row id="compromisedRow" class="hr"
+        start-icon="[[getIcon_(compromisedPasswords_)]]"
+        label="[[compromisedPasswordsText_]]"
+        sub-label="[[getCompromisedSectionSublabel_(compromisedPasswords_)]]"
+        compromised$="[[hasIssues_(compromisedPasswords_)]]"
+        hide-icon$="[[!hasIssues_(compromisedPasswords_)]]">
     </cr-link-row>
-    <cr-link-row id="weakRow" start-icon="cr:check-circle"
+    <cr-link-row id="reusedRow" start-icon="[[getIcon_(reusedPasswords_)]]"
         label="[[reusedPasswordsText_]]" class="hr"
-        sub-label="$i18n{reusedPasswordsEmpty}">
+        sub-label="[[getReusedSectionSublabel_(reusedPasswords_)]]"
+        has-issues$="[[hasIssues_(reusedPasswords_)]]"
+        hide-icon$="[[!hasIssues_(reusedPasswords_)]]">
     </cr-link-row>
-    <cr-link-row id="reusedRow" start-icon="cr:error"
+    <cr-link-row id="weakRow" start-icon="[[getIcon_(weakPasswords_)]]"
         label="[[weakPasswordsText_]]" class="hr"
-        sub-label="$i18n{weakPasswordsTitle}" has-issues>
+        sub-label="[[getWeakSectionSublabel_(weakPasswords_)]]"
+        has-issues$="[[hasIssues_(weakPasswords_)]]"
+        hide-icon$="[[!hasIssues_(weakPasswords_)]]">
     </cr-link-row>
   </div>
 </div>
