@@ -283,7 +283,7 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_or_shortcut(MinimalUi) | check_site_handles_file(MinimalUi, Txt) | check_site_handles_file(MinimalUi, Png) |
+| WMLC | install_or_shortcut(FileHandler) | check_site_handles_file(FileHandler, Foo) | check_site_handles_file(FileHandler, Bar) |
 | # Single open & multiple open behavior |
 | WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
 | WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, OneTextFile) |

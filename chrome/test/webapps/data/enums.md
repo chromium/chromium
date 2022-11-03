@@ -29,7 +29,7 @@ The tables in this file are parsed as action templates for critical user journey
 | IsShown | Shown | NotShown |  |  |  |  |  |
 | IsOn | On | Off |  |  |  |  |  |
 | Display | Standalone | MinimalUi | Wco | Browser |  |  |  |
-| FileExtension | Txt | Png |  |  |  |  |  |
+| FileExtension | Foo | Bar |  |  |  |  |  |
 | Location | StartUrl | FileHandleUrlForTxt | FileHandleUrlForPng |  |  |  |  |
 | Number | One | Two |  |  |  |  |  |
 | FilesOptions | OneTextFile | MultipleTextFiles | OnePngFile | MultiplePngFiles | AllTestAndPngFiles |  |  |

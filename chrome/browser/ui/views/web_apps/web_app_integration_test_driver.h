@@ -96,7 +96,7 @@ enum class AllowDenyOptions { kAllow, kDeny };
 
 enum class AskAgainOptions { kAskAgain, kRemember };
 
-enum class FileExtension { kTxt, kPng };
+enum class FileExtension { kFoo, kBar };
 
 enum class FilesOptions {
   kOneTextFile,
@@ -311,8 +311,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckPlatformShortcutNotExists(Site site);
   void CheckRunOnOsLoginEnabled(Site site);
   void CheckRunOnOsLoginDisabled(Site site);
-  void CheckSiteHandlesFile(Site site, std::string file_extension);
-  void CheckSiteNotHandlesFile(Site site, std::string file_extension);
+  void CheckSiteHandlesFile(Site site, FileExtension file_extension);
+  void CheckSiteNotHandlesFile(Site site, FileExtension file_extension);
   void CheckUserCannotSetRunOnOsLogin(Site site);
   void CheckUserDisplayModeInternal(UserDisplayMode user_display_mode);
   void CheckWindowClosed();
@@ -379,7 +379,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
                                 const std::string& name,
                                 const AppId& id);
 
-  bool IsFileHandledBySite(Site site, std::string file_extension);
+  bool IsFileHandledBySite(Site site, FileExtension file_extension);
   void SetFileHandlingEnabled(Site site, bool enabled);
   void LaunchFile(Site site, FilesOptions files_options);
 

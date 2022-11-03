@@ -356,6 +356,16 @@ SiteConfig GetSiteConfiguration(Site site) {
   return g_site_configs.find(site)->second;
 }
 
+std::string GetFileExtension(FileExtension file_extension) {
+  switch (file_extension) {
+    case FileExtension::kFoo:
+      return "foo";
+    case FileExtension::kBar:
+      return "bar";
+  }
+  return std::string();
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 SiteConfig GetSiteConfigurationFromAppName(const std::string& app_name) {
@@ -2451,7 +2461,7 @@ void WebAppIntegrationTestDriver::CheckRunOnOsLoginDisabled(Site site) {
 
 void WebAppIntegrationTestDriver::CheckSiteHandlesFile(
     Site site,
-    std::string file_extension) {
+    FileExtension file_extension) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (!BeforeStateCheckAction(__FUNCTION__))
     return;
@@ -2462,7 +2472,7 @@ void WebAppIntegrationTestDriver::CheckSiteHandlesFile(
 
 void WebAppIntegrationTestDriver::CheckSiteNotHandlesFile(
     Site site,
-    std::string file_extension) {
+    FileExtension file_extension) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (!BeforeStateCheckAction(__FUNCTION__))
     return;
@@ -3129,9 +3139,10 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
 
 bool WebAppIntegrationTestDriver::IsFileHandledBySite(
     Site site,
-    std::string file_extension) {
+    FileExtension file_extension) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   bool is_file_handled = false;
+  std::string file_extension_str = GetFileExtension(file_extension);
 #if BUILDFLAG(IS_WIN)
   AppId app_id = GetAppIdBySiteMode(site);
   const std::wstring prog_id =
@@ -3144,7 +3155,7 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
   for (const auto& file_handler_prog_id : file_handler_prog_ids) {
     const std::vector<std::wstring> supported_file_extensions =
         GetFileExtensionsForProgId(file_handler_prog_id);
-    std::wstring extension = converter.from_bytes("." + file_extension);
+    std::wstring extension = converter.from_bytes("." + file_extension_str);
     if (base::Contains(supported_file_extensions, extension)) {
       const std::wstring reg_key = std::wstring(ShellUtil::kRegClasses) +
                                    base::FilePath::kSeparators[0] + extension +
@@ -3160,7 +3171,7 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
   std::string app_name = GetSiteConfiguration(site).app_name;
   const base::FilePath test_file_path =
       override_registration_->shortcut_override->chrome_apps_folder.GetPath()
-          .AppendASCII("test." + file_extension);
+          .AppendASCII("test." + file_extension_str);
   const base::File test_file(
       test_file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   const GURL test_file_url = net::FilePathToFileURL(test_file_path);
@@ -3179,7 +3190,7 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
                        profile()->GetPath().BaseName().value())) {
       if (base::StartsWith(command.xdg_command, "xdg-mime install")) {
         is_file_handled = base::Contains(command.file_contents,
-                                         "\"*." + file_extension + "\"");
+                                         "\"*." + file_extension_str + "\"");
       } else {
         DCHECK(base::StartsWith(command.xdg_command, "xdg-mime uninstall"))
             << command.xdg_command;

@@ -17,17 +17,18 @@
   "display": "minimal-ui",
   "file_handlers": [
     {
-      "action": "/webapps_integration/file_handler/text_handler.html",
+      "action": "/webapps_integration/file_handler/foo_handler.html",
       "name": "Plain Text",
       "accept": {
         "text/plain": [".txt", ".md", ".csv", ".text"],
-        "application/octet-stream": [".qux", ".quux"]
+        "application/octet-stream": [".foo"]
       }
     },
     {
-      "action": "/webapps_integration/file_handler/image_handler.html",
+      "action": "/webapps_integration/file_handler/bar_handler.html",
       "accept": {
-        "image/png": [".png"]
+        "image/png": [".png"],
+        "application/octet-stream": [".bar"]
       },
       "launch_type": "multiple-clients"
     }

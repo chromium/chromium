@@ -17,17 +17,16 @@
   "display": "minimal-ui",
   "file_handlers": [
     {
-      "action": "/web_apps/minimal_ui/text_handler.html",
+      "action": "/web_apps/minimal_ui/foo_handler.html",
       "name": "Plain Text",
       "accept": {
-        "text/plain": [".txt", ".md", ".csv", ".text"],
-        "application/octet-stream": [".qux", ".quux"]
+        "application/octet-stream": [".foo"]
       }
     },
     {
-      "action": "/web_apps/minimal_ui/image_handler.html",
+      "action": "/web_apps/minimal_ui/bar_handler.html",
       "accept": {
-        "image/png": [".png"]
+        "application/octet-stream": [".bar"]
       },
       "launch_type": "multiple-clients"
     }

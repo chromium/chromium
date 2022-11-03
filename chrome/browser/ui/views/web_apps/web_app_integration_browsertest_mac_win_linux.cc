@@ -62,15 +62,15 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckCreateShortcuts) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteHandlesFile) {
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+  helper_.InstallMenuOption(InstallableSite::kFileHandler);
+  helper_.CheckSiteHandlesFile(Site::kFileHandler, FileExtension::kFoo);
+  helper_.CheckSiteHandlesFile(Site::kFileHandler, FileExtension::kBar);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteNotHandlesFile) {
   helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckSiteNotHandlesFile(Site::kStandalone, "qux");
-  helper_.CheckSiteNotHandlesFile(Site::kStandalone, "quux");
+  helper_.CheckSiteNotHandlesFile(Site::kStandalone, FileExtension::kFoo);
+  helper_.CheckSiteNotHandlesFile(Site::kStandalone, FileExtension::kBar);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectDialog) {
@@ -115,39 +115,39 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog_Deny) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, DisableEnableFileHandling) {
   helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
 
   helper_.DisableFileHandling(Site::kMinimalUi);
-  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, "qux");
-  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, "quux");
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, FileExtension::kBar);
 
   helper_.EnableFileHandling(Site::kMinimalUi);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, MultiProfileFileHandling) {
   // Install file handling PWA in two profiles.
   helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
 
   helper_.SwitchActiveProfile(ProfileName::kProfile2);
   helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
 
   // Disabling file handling in one profile should not disable it in the other.
   helper_.DisableFileHandling(Site::kMinimalUi);
   helper_.SwitchActiveProfile(ProfileName::kDefault);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
 
   // Disabling in both should disable file handling.
   helper_.DisableFileHandling(Site::kMinimalUi);
-  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, "qux");
-  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, "quux");
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, FileExtension::kBar);
 }
 
 // Generated tests:
