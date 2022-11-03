@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -33,6 +34,10 @@ void FakeWebAppUiManager::SetNumWindowsForApp(const AppId& app_id,
 bool FakeWebAppUiManager::DidUninstallAndReplace(const AppId& from_app,
                                                  const AppId& to_app) {
   return uninstall_and_replace_map_[from_app] == to_app;
+}
+
+void FakeWebAppUiManager::ResolveAppIdentityDialogForTesting(bool enabled) {
+  resolve_app_identity_dialog_for_testing_ = enabled;
 }
 
 WebAppUiManagerImpl* FakeWebAppUiManager::AsImpl() {
@@ -89,6 +94,25 @@ void FakeWebAppUiManager::ReparentAppTabToWindow(content::WebContents* contents,
                                                  const AppId& app_id,
                                                  bool shortcut_created) {
   ++num_reparent_tab_calls_;
+}
+
+void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
+    const std::string& app_id,
+    bool title_change,
+    bool icon_change,
+    const std::u16string& old_title,
+    const std::u16string& new_title,
+    const SkBitmap& old_icon,
+    const SkBitmap& new_icon,
+    content::WebContents* web_contents,
+    AppIdentityDialogCallback callback) {
+  if (!resolve_app_identity_dialog_for_testing_.has_value())
+    return;
+
+  if (resolve_app_identity_dialog_for_testing_.value())
+    std::move(callback).Run(web_app::AppIdentityUpdate::kAllowed);
+  else
+    std::move(callback).Run(web_app::AppIdentityUpdate::kSkipped);
 }
 
 }  // namespace web_app

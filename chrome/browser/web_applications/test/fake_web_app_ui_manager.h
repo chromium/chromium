@@ -8,6 +8,7 @@
 #include <map>
 
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -26,6 +27,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
   void SetNumWindowsForApp(const AppId& app_id, size_t num_windows_for_app);
   bool DidUninstallAndReplace(const AppId& from_app, const AppId& to_app);
   int num_reparent_tab_calls() const { return num_reparent_tab_calls_; }
+  void ResolveAppIdentityDialogForTesting(bool enabled);
 
   // WebAppUiManager:
   WebAppUiManagerImpl* AsImpl() override;
@@ -57,12 +59,13 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const SkBitmap& old_icon,
       const SkBitmap& new_icon,
       content::WebContents* web_contents,
-      AppIdentityDialogCallback callback) override {}
+      AppIdentityDialogCallback callback) override;
 
  private:
   std::map<AppId, size_t> app_id_to_num_windows_map_;
   std::map<AppId, AppId> uninstall_and_replace_map_;
   int num_reparent_tab_calls_ = 0;
+  absl::optional<bool> resolve_app_identity_dialog_for_testing_ = absl::nullopt;
 };
 
 }  // namespace web_app

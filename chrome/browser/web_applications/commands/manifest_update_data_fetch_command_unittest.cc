@@ -2,12 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
+#include <memory>
+#include <string>
+#include <utility>
 
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
+#include "chrome/browser/web_applications/manifest_update_utils.h"
+#include "chrome/browser/web_applications/test/fake_data_retriever.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
@@ -15,49 +33,83 @@ namespace web_app {
 static const int kUnimportantIconSize1 = 4;
 static const int kUnimportantIconSize2 = 8;
 
-namespace {
-
-// Note: Keep in sync with GetDefaultManifestFileHandlers() below.
-apps::FileHandlers GetDefaultAppsFileHandlers() {
-  apps::FileHandler handler;
-  handler.action = GURL("http://foo.com/?plaintext");
-  handler.display_name = u"Text";
-  apps::FileHandler::AcceptEntry text_entry;
-  text_entry.mime_type = "text/plain";
-  text_entry.file_extensions = {".txt", ".md"};
-  handler.accept = {text_entry};
-  return {handler};
-}
-
-// Note: Keep in sync with GetDefaultAppsFileHandlers() above.
-std::vector<blink::mojom::ManifestFileHandlerPtr>
-GetDefaultManifestFileHandlers() {
-  std::vector<blink::mojom::ManifestFileHandlerPtr> handlers;
-  auto handler = blink::mojom::ManifestFileHandler::New();
-  handler->action = GURL("http://foo.com/?plaintext");
-  handler->name = u"Text";
-  std::vector<std::u16string> extensions = {u".txt", u".md"};
-  handler->accept.emplace(u"text/plain", extensions);
-  handlers.push_back(std::move(handler));
-  return handlers;
-}
-
-}  // anonymous namespace
-
-class ManifestUpdateDataFetchCommandTest : public testing::Test {
+class ManifestUpdateDataFetchUtilsTest : public testing::Test {
  public:
-  ManifestUpdateDataFetchCommandTest() = default;
-  ManifestUpdateDataFetchCommandTest(
-      const ManifestUpdateDataFetchCommandTest&) = delete;
-  ManifestUpdateDataFetchCommandTest& operator=(
-      const ManifestUpdateDataFetchCommandTest&) = delete;
-  ~ManifestUpdateDataFetchCommandTest() override = default;
+  ManifestUpdateDataFetchUtilsTest() = default;
+  ManifestUpdateDataFetchUtilsTest(const ManifestUpdateDataFetchUtilsTest&) =
+      delete;
+  ManifestUpdateDataFetchUtilsTest& operator=(
+      const ManifestUpdateDataFetchUtilsTest&) = delete;
+  ~ManifestUpdateDataFetchUtilsTest() override = default;
+
+  // Note: Keep in sync with GetDefaultManifestFileHandlers() below.
+  apps::FileHandlers GetDefaultAppsFileHandlers() {
+    apps::FileHandler handler;
+    handler.action = GURL("http://foo.com/?plaintext");
+    handler.display_name = u"Text";
+    apps::FileHandler::AcceptEntry text_entry;
+    text_entry.mime_type = "text/plain";
+    text_entry.file_extensions = {".txt", ".md"};
+    handler.accept = {text_entry};
+    return {handler};
+  }
+
+  // Note: Keep in sync with GetDefaultAppsFileHandlers() above.
+  std::vector<blink::mojom::ManifestFileHandlerPtr>
+  GetDefaultManifestFileHandlers() {
+    std::vector<blink::mojom::ManifestFileHandlerPtr> handlers;
+    auto handler = blink::mojom::ManifestFileHandler::New();
+    handler->action = GURL("http://foo.com/?plaintext");
+    handler->name = u"Text";
+    std::vector<std::u16string> extensions = {u".txt", u".md"};
+    handler->accept.emplace(u"text/plain", extensions);
+    handlers.push_back(std::move(handler));
+    return handlers;
+  }
+
+  std::vector<apps::IconInfo> GenerateIconInfosFrom(
+      const IconBitmaps& downloaded) {
+    std::vector<apps::IconInfo> result;
+    for (const auto& entry : downloaded.any) {
+      apps::IconInfo icon_info(GURL(), entry.first);
+      icon_info.purpose = apps::IconInfo::Purpose::kAny;
+      result.push_back(icon_info);
+    }
+    for (const auto& entry : downloaded.maskable) {
+      apps::IconInfo icon_info(GURL(), entry.first);
+      icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
+      result.push_back(icon_info);
+    }
+    for (const auto& entry : downloaded.monochrome) {
+      apps::IconInfo icon_info(GURL(), entry.first);
+      icon_info.purpose = apps::IconInfo::Purpose::kMonochrome;
+      result.push_back(icon_info);
+    }
+    return result;
+  }
+
+  std::string DiffResultsToString(uint32_t diff) {
+    std::string result = "";
+    if (diff & NO_CHANGE_DETECTED)
+      result += "NO_CHANGE_DETECTED, ";
+    if (diff & MISMATCHED_IMAGE_SIZES)
+      result += "MISMATCHED_IMAGE_SIZES, ";
+    if (diff & ONE_OR_MORE_ICONS_CHANGED)
+      result += "ONE_OR_MORE_ICONS_CHANGED, ";
+    if (diff & LAUNCHER_ICON_CHANGED)
+      result += "LAUNCHER_ICON_CHANGED, ";
+    if (diff & INSTALL_ICON_CHANGED)
+      result += "INSTALL_ICON_CHANGED, ";
+    if (diff & UNIMPORTANT_ICON_CHANGED)
+      result += "UNIMPORTANT_ICON_CHANGED, ";
+    return result;
+  }
 };
 
 // Below tests primarily test file handler comparison after conversion from
 // manifest format. Basic tests like added/removed/unchanged handlers are
 // also in functional tests at ManifestUpdateManagerBrowserTestWithFileHandling.
-TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlersUnchanged) {
+TEST_F(ManifestUpdateDataFetchUtilsTest, TestFileHandlersUnchanged) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
   apps::FileHandlers new_handlers = CreateFileHandlersFromManifest(
       GetDefaultManifestFileHandlers(), GURL("http://foo.com"));
@@ -65,7 +117,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlersUnchanged) {
   EXPECT_EQ(old_handlers, new_handlers);
 }
 
-TEST_F(ManifestUpdateDataFetchCommandTest, TestSecondFileHandlerAdded) {
+TEST_F(ManifestUpdateDataFetchUtilsTest, TestSecondFileHandlerAdded) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_handlers =
       GetDefaultManifestFileHandlers();
@@ -81,7 +133,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, TestSecondFileHandlerAdded) {
   EXPECT_NE(old_handlers, new_handlers);
 }
 
-TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerChangedName) {
+TEST_F(ManifestUpdateDataFetchUtilsTest, TestFileHandlerChangedName) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_handlers =
       GetDefaultManifestFileHandlers();
@@ -92,7 +144,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerChangedName) {
   EXPECT_NE(old_handlers, new_handlers);
 }
 
-TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerChangedAction) {
+TEST_F(ManifestUpdateDataFetchUtilsTest, TestFileHandlerChangedAction) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_handlers =
       GetDefaultManifestFileHandlers();
@@ -103,7 +155,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerChangedAction) {
   EXPECT_NE(old_handlers, new_handlers);
 }
 
-TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerExtraAccept) {
+TEST_F(ManifestUpdateDataFetchUtilsTest, TestFileHandlerExtraAccept) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_handlers =
       GetDefaultManifestFileHandlers();
@@ -115,7 +167,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerExtraAccept) {
   EXPECT_NE(old_handlers, new_handlers);
 }
 
-TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerChangedMimeType) {
+TEST_F(ManifestUpdateDataFetchUtilsTest, TestFileHandlerChangedMimeType) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
   old_handlers[0].accept[0].mime_type = "text/csv";
   apps::FileHandlers new_handlers = CreateFileHandlersFromManifest(
@@ -124,7 +176,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerChangedMimeType) {
   EXPECT_NE(old_handlers, new_handlers);
 }
 
-TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerChangedExtension) {
+TEST_F(ManifestUpdateDataFetchUtilsTest, TestFileHandlerChangedExtension) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
   old_handlers[0].accept[0].file_extensions.emplace(".csv");
   apps::FileHandlers new_handlers = CreateFileHandlersFromManifest(
@@ -133,45 +185,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, TestFileHandlerChangedExtension) {
   EXPECT_NE(old_handlers, new_handlers);
 }
 
-std::vector<apps::IconInfo> GenerateIconInfosFrom(
-    const IconBitmaps& downloaded) {
-  std::vector<apps::IconInfo> result;
-  for (const auto& entry : downloaded.any) {
-    apps::IconInfo icon_info(GURL(), entry.first);
-    icon_info.purpose = apps::IconInfo::Purpose::kAny;
-    result.push_back(icon_info);
-  }
-  for (const auto& entry : downloaded.maskable) {
-    apps::IconInfo icon_info(GURL(), entry.first);
-    icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
-    result.push_back(icon_info);
-  }
-  for (const auto& entry : downloaded.monochrome) {
-    apps::IconInfo icon_info(GURL(), entry.first);
-    icon_info.purpose = apps::IconInfo::Purpose::kMonochrome;
-    result.push_back(icon_info);
-  }
-  return result;
-}
-
-std::string DiffResultsToString(uint32_t diff) {
-  std::string result = "";
-  if (diff & NO_CHANGE_DETECTED)
-    result += "NO_CHANGE_DETECTED, ";
-  if (diff & MISMATCHED_IMAGE_SIZES)
-    result += "MISMATCHED_IMAGE_SIZES, ";
-  if (diff & ONE_OR_MORE_ICONS_CHANGED)
-    result += "ONE_OR_MORE_ICONS_CHANGED, ";
-  if (diff & LAUNCHER_ICON_CHANGED)
-    result += "LAUNCHER_ICON_CHANGED, ";
-  if (diff & INSTALL_ICON_CHANGED)
-    result += "INSTALL_ICON_CHANGED, ";
-  if (diff & UNIMPORTANT_ICON_CHANGED)
-    result += "UNIMPORTANT_ICON_CHANGED, ";
-  return result;
-}
-
-TEST_F(ManifestUpdateDataFetchCommandTest, TestImageComparison) {
+TEST_F(ManifestUpdateDataFetchUtilsTest, TestImageComparison) {
   // Tests below assume there is no overlap in these values, but if
   // Install/Launcher icon sizes change, a new value for kUnimportantIconSize
   // must be selected that does not clash with it. Also check if launcher and
@@ -353,6 +367,316 @@ TEST_F(ManifestUpdateDataFetchCommandTest, TestImageComparison) {
       EXPECT_TRUE(diff.after.drawsNothing());
     }
   }
+}
+
+class ManifestUpdateDataFetchCommandTest : public WebAppTest {
+ public:
+  ManifestUpdateDataFetchCommandTest() = default;
+  ManifestUpdateDataFetchCommandTest(
+      const ManifestUpdateDataFetchCommandTest&) = delete;
+  ManifestUpdateDataFetchCommandTest& operator=(
+      const ManifestUpdateDataFetchCommandTest&) = delete;
+  ~ManifestUpdateDataFetchCommandTest() override = default;
+
+  struct ManifestUpdateDataFetchResult {
+    absl::optional<ManifestUpdateResult> update_result;
+    absl::optional<WebAppInstallInfo> install_info;
+    bool app_identity_update_allowed;
+  };
+
+  void SetUp() override {
+    WebAppTest::SetUp();
+
+    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
+    auto ui_manager = std::make_unique<FakeWebAppUiManager>();
+    ui_manager->ResolveAppIdentityDialogForTesting(true);
+    ui_manager_ = ui_manager.get();
+    provider->SetWebAppUiManager(std::move(ui_manager));
+
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+
+ protected:
+  ManifestUpdateDataFetchResult RunCommandAndGetResult(
+      const GURL& url,
+      const AppId& app_id,
+      std::unique_ptr<FakeDataRetriever> data_retriever) {
+    base::RunLoop loop;
+    ManifestUpdateDataFetchResult output_result;
+    provider().command_manager().ScheduleCommand(
+        std::make_unique<ManifestUpdateDataFetchCommand>(
+            url, app_id, web_contents()->GetWeakPtr(),
+            base::BindLambdaForTesting(
+                [&](absl::optional<ManifestUpdateResult> result,
+                    absl::optional<WebAppInstallInfo> install_info,
+                    bool app_identity_allowed) {
+                  output_result.update_result = result;
+                  output_result.install_info = std::move(install_info);
+                  output_result.app_identity_update_allowed =
+                      app_identity_allowed;
+                  loop.Quit();
+                }),
+            &provider().registrar(), &provider().icon_manager(),
+            &provider().ui_manager(), &provider().os_integration_manager(),
+            std::move(data_retriever)));
+    loop.Run();
+    return output_result;
+  }
+
+  AppId InstallAppFromInfo(std::unique_ptr<WebAppInstallInfo> info) {
+    return test::InstallWebApp(profile(), std::move(info));
+  }
+
+  std::unique_ptr<FakeDataRetriever> GetFakeDataRetriever(
+      bool is_installable,
+      const WebAppInstallInfo& info) {
+    auto data_retriever = std::make_unique<FakeDataRetriever>();
+    data_retriever->SetManifest(GetManifestFromInfo(info), is_installable);
+    return data_retriever;
+  }
+
+  blink::mojom::ManifestPtr GetManifestFromInfo(const WebAppInstallInfo& info) {
+    auto manifest = blink::mojom::Manifest::New();
+    manifest->start_url = info.start_url;
+    manifest->scope = info.scope;
+    manifest->display = info.display_mode;
+    manifest->name = info.title;
+    return manifest;
+  }
+
+  WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
+  FakeWebAppUiManager& fake_ui_manager() { return *ui_manager_; }
+  GURL app_url() { return app_url_; }
+
+ private:
+  const GURL app_url_{"http://www.foo.bar/web_apps/basic.html"};
+  raw_ptr<FakeWebAppUiManager> ui_manager_;
+};
+
+TEST_F(ManifestUpdateDataFetchCommandTest, VerifySuccessfulNameUpdate) {
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = app_url();
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  // Verify name changes are properly propagated.
+  WebAppInstallInfo new_info;
+  new_info.start_url = app_url();
+  new_info.scope = app_url().GetWithoutFilename();
+  new_info.display_mode = DisplayMode::kStandalone;
+  new_info.title = u"New Name";
+
+  ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
+      app_url(), app_id,
+      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+
+  EXPECT_FALSE(result.update_result.has_value());
+  EXPECT_EQ(result.install_info.value().title, u"New Name");
+  EXPECT_TRUE(result.app_identity_update_allowed);
+}
+
+TEST_F(ManifestUpdateDataFetchCommandTest, VerifySuccessfulScopeUpdate) {
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = app_url();
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  // Verify scope changes are properly propagated.
+  WebAppInstallInfo new_info;
+  new_info.start_url = app_url();
+  new_info.scope = GURL("https://foo.bar.com/new_scope");
+  new_info.display_mode = DisplayMode::kStandalone;
+  new_info.title = u"Foo App";
+
+  ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
+      app_url(), app_id,
+      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+
+  EXPECT_FALSE(result.update_result.has_value());
+  EXPECT_EQ(result.install_info.value().scope,
+            GURL("https://foo.bar.com/new_scope"));
+  EXPECT_FALSE(result.app_identity_update_allowed);
+}
+
+TEST_F(ManifestUpdateDataFetchCommandTest, VerifySuccessfulDisplayModeUpdate) {
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = app_url();
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  // Verify display mode changes are properly propagated.
+  WebAppInstallInfo new_info;
+  new_info.start_url = app_url();
+  new_info.scope = app_url().GetWithoutFilename();
+  new_info.display_mode = DisplayMode::kMinimalUi;
+  new_info.title = u"Foo App";
+
+  ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
+      app_url(), app_id,
+      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+
+  EXPECT_FALSE(result.update_result.has_value());
+  EXPECT_EQ(result.install_info.value().display_mode, DisplayMode::kMinimalUi);
+  EXPECT_FALSE(result.app_identity_update_allowed);
+}
+
+TEST_F(ManifestUpdateDataFetchCommandTest, MultiDataUpdate) {
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = app_url();
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  // Verify display mode changes are properly propagated.
+  WebAppInstallInfo new_info;
+  new_info.start_url = app_url();
+  new_info.scope = GURL("https://foo.bar.com/new_scope/");
+  new_info.display_mode = DisplayMode::kMinimalUi;
+  new_info.title = u"Foo App 2";
+
+  ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
+      app_url(), app_id,
+      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+
+  EXPECT_FALSE(result.update_result.has_value());
+  EXPECT_EQ(result.install_info.value().display_mode, DisplayMode::kMinimalUi);
+  EXPECT_EQ(result.install_info.value().scope,
+            GURL("https://foo.bar.com/new_scope/"));
+  EXPECT_EQ(result.install_info.value().title, u"Foo App 2");
+  EXPECT_TRUE(result.app_identity_update_allowed);
+}
+
+TEST_F(ManifestUpdateDataFetchCommandTest, NoAppUpdateNeeded) {
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = app_url();
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  // No fields are changed, so no updates should be needed.
+  WebAppInstallInfo new_info;
+  new_info.start_url = app_url();
+  new_info.scope = app_url().GetWithoutFilename();
+  new_info.display_mode = DisplayMode::kStandalone;
+  new_info.title = u"Foo App";
+
+  ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
+      app_url(), app_id,
+      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+
+  EXPECT_TRUE(result.update_result.has_value());
+  EXPECT_EQ(result.update_result.value(), ManifestUpdateResult::kAppUpToDate);
+}
+
+TEST_F(ManifestUpdateDataFetchCommandTest, AppNotEligible) {
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = app_url();
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  // start_url changing should not move ahead with a manifest update.
+  WebAppInstallInfo new_info;
+  new_info.start_url = app_url();
+  new_info.scope = app_url().GetWithoutFilename();
+  new_info.display_mode = DisplayMode::kMinimalUi;
+  new_info.title = u"Foo App";
+
+  ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
+      app_url(), app_id,
+      GetFakeDataRetriever(/*is_installable=*/false, new_info));
+
+  EXPECT_TRUE(result.update_result.has_value());
+  EXPECT_EQ(result.update_result.value(),
+            ManifestUpdateResult::kAppNotEligible);
+}
+
+TEST_F(ManifestUpdateDataFetchCommandTest, AppIdMismatch) {
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = app_url();
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  // start_url changing should not move ahead with a manifest update as the
+  // generated app_id is different.
+  WebAppInstallInfo new_info;
+  new_info.start_url = GURL("https://foo.bar.com/new_app/");
+  new_info.scope = app_url().GetWithoutFilename();
+  new_info.display_mode = DisplayMode::kMinimalUi;
+  new_info.title = u"Foo App";
+
+  ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
+      app_url(), app_id,
+      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+
+  EXPECT_TRUE(result.update_result.has_value());
+  EXPECT_EQ(result.update_result.value(), ManifestUpdateResult::kAppIdMismatch);
+}
+
+TEST_F(ManifestUpdateDataFetchCommandTest, IconReadFromDiskFailed) {
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = app_url();
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  WebAppInstallInfo new_info;
+  new_info.start_url = app_url();
+  new_info.scope = app_url().GetWithoutFilename();
+  new_info.display_mode = DisplayMode::kMinimalUi;
+  new_info.title = u"Foo App 2";
+
+  base::RunLoop run_loop;
+  provider().icon_manager().DeleteData(
+      app_id, base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
+      app_url(), app_id,
+      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+
+  EXPECT_TRUE(result.update_result.has_value());
+  EXPECT_EQ(result.update_result.value(),
+            ManifestUpdateResult::kIconReadFromDiskFailed);
+}
+
+TEST_F(ManifestUpdateDataFetchCommandTest, DoNotAcceptAppUpdateDialog) {
+  // Ensure we do not accept the app identity dialog for testing.
+  fake_ui_manager().ResolveAppIdentityDialogForTesting(false);
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = app_url();
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  WebAppInstallInfo new_info;
+  new_info.start_url = app_url();
+  new_info.scope = app_url().GetWithoutFilename();
+  new_info.display_mode = DisplayMode::kStandalone;
+  new_info.title = u"Foo App 2";
+
+  ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
+      app_url(), app_id,
+      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+
+  EXPECT_TRUE(result.update_result.has_value());
+  EXPECT_EQ(result.update_result.value(), ManifestUpdateResult::kAppUpToDate);
 }
 
 }  // namespace web_app

@@ -549,6 +549,7 @@ source_set("web_applications_unit_tests") {
     "commands/install_from_sync_command_unittest.cc",
     "commands/install_isolated_web_app_command_unittest.cc",
     "commands/manifest_update_data_fetch_command_unittest.cc",
+    "commands/manifest_update_finalize_command_unittest.cc",
     "commands/run_on_os_login_command_unittest.cc",
     "commands/sub_app_install_command_unittest.cc",
     "commands/update_file_handler_command_unittest.cc",
