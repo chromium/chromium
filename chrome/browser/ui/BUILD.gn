@@ -5609,8 +5609,6 @@ static_library("ui") {
       "extensions/extension_message_bubble_factory.cc",
       "extensions/extension_message_bubble_factory.h",
       "extensions/extension_popup_types.h",
-      "extensions/extension_removal_watcher.cc",
-      "extensions/extension_removal_watcher.h",
       "extensions/extension_settings_overridden_dialog.cc",
       "extensions/extension_settings_overridden_dialog.h",
       "extensions/extension_site_access_combobox_model.cc",
