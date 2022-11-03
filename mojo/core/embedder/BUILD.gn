@@ -18,11 +18,7 @@ component("embedder") {
 
   defines = [ "IS_MOJO_CORE_EMBEDDER_IMPL" ]
 
-  public_deps = [
-    "//base",
-    "//mojo/public/cpp/platform",
-    "//third_party/ipcz/src:ipcz_chromium",
-  ]
+  public_deps = [ "//base" ]
 
   deps = [
     ":features",

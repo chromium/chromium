@@ -686,11 +686,8 @@ if (is_mac) {
 
     deps = [
       ":constants",
-      "//components/version_info",
-      "//mojo/core/embedder",
+      "//base",
     ]
-
-    public_deps = [ "//base" ]
   }
 }
 

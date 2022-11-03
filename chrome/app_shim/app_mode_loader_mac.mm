@@ -91,8 +91,6 @@ int LoadFrameworkAndStart(int argc, char** argv) {
 
     // ** 3: Read the Chrome executable, Chrome framework, and Chrome framework
     // dylib paths.
-    app_mode::MojoIpczConfig mojo_ipcz_config =
-        app_mode::MojoIpczConfig::kUseCommandLineFeatures;
     base::FilePath executable_path;
     base::FilePath framework_path;
     base::FilePath framework_dylib_path;
@@ -100,46 +98,36 @@ int LoadFrameworkAndStart(int argc, char** argv) {
             app_mode::kLaunchedByChromeFrameworkBundlePath) &&
         command_line.HasSwitch(app_mode::kLaunchedByChromeFrameworkDylibPath)) {
       // If Chrome launched this app shim, then it will specify the framework
-      // path and version, as well as flags to enable or disable MojoIpcz as
-      // needed. Do not populate `executable_path` (it is used to launch Chrome
-      // if Chrome is not running, which is inapplicable here).
+      // path and version. Do not populate `executable_path` (it is used to
+      // launch Chrome if Chrome is not running, which is inapplicable here).
       framework_path = command_line.GetSwitchValuePath(
           app_mode::kLaunchedByChromeFrameworkBundlePath);
       framework_dylib_path = command_line.GetSwitchValuePath(
           app_mode::kLaunchedByChromeFrameworkDylibPath);
     } else {
       // Otherwise, read the version from the symbolic link in the user data
-      // dir. If the version file does not exist, the version string will be
-      // empty and app_mode::GetChromeBundleInfo will default to the latest
-      // version, with MojoIpcz disabled.
-      app_mode::ChromeConnectionConfig config;
-      base::FilePath encoded_config;
+      // dir. If the version file does not exist, |cr_version_str| will be empty
+      // and app_mode::GetChromeBundleInfo will default to the latest version.
+      base::FilePath cr_version_str;
       base::ReadSymbolicLink(
           user_data_dir.Append(app_mode::kRunningChromeVersionSymlinkName),
-          &encoded_config);
-      if (!encoded_config.empty()) {
-        config =
-            app_mode::ChromeConnectionConfig::DecodeFromPath(encoded_config);
-        mojo_ipcz_config = config.is_mojo_ipcz_enabled
-                               ? app_mode::MojoIpczConfig::kEnabled
-                               : app_mode::MojoIpczConfig::kDisabled;
-      }
+          &cr_version_str);
       // If the version file does exist, it may have been left by a crashed
       // Chrome process. Ensure the process is still running.
-      if (!config.framework_version.empty()) {
+      if (!cr_version_str.empty()) {
         NSArray* existing_chrome = [NSRunningApplication
             runningApplicationsWithBundleIdentifier:cr_bundle_id];
         if ([existing_chrome count] == 0) {
           NSLog(@"Disregarding framework version from symlink");
-          config.framework_version.clear();
+          cr_version_str.clear();
         } else {
           NSLog(@"Framework version from symlink %s",
-                config.framework_version.c_str());
+                cr_version_str.value().c_str());
         }
       }
       if (!app_mode::GetChromeBundleInfo(
-              cr_bundle_path, config.framework_version.c_str(),
-              &executable_path, &framework_path, &framework_dylib_path)) {
+              cr_bundle_path, cr_version_str.value().c_str(), &executable_path,
+              &framework_path, &framework_dylib_path)) {
         NSLog(@"Couldn't ready Chrome bundle info");
         return kErrorReturnValue;
       }
@@ -208,7 +196,6 @@ int LoadFrameworkAndStart(int argc, char** argv) {
       info.app_mode_url = app_mode_url.c_str();
       info.user_data_dir = plist_user_data_dir_utf8.c_str();
       info.profile_dir = profile_dir_utf8.c_str();
-      info.mojo_ipcz_config = mojo_ipcz_config;
       return ChromeAppModeStart(&info);
     }
 

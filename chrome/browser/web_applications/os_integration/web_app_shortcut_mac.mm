@@ -14,12 +14,10 @@
 #include <string>
 #include <utility>
 
-#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -60,8 +58,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
-#include "mojo/core/embedder/embedder.h"
-#include "mojo/core/embedder/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
@@ -435,17 +431,6 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
 
     if (launched_after_rebuild)
       command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
-
-    // The shim must use the same Mojo implementation as this browser. Since
-    // feature parameters and field trials are otherwise not passed to shim
-    // processes, we use feature override switches to ensure Mojo parity.
-    if (mojo::core::IsMojoIpczEnabled()) {
-      command_line.AppendSwitchASCII(switches::kEnableFeatures,
-                                     mojo::core::kMojoIpcz.name);
-    } else {
-      command_line.AppendSwitchASCII(switches::kDisableFeatures,
-                                     mojo::core::kMojoIpcz.name);
-    }
 
     // Launch without activating (NSWorkspaceLaunchWithoutActivation).
     base::scoped_nsobject<NSRunningApplication> app(
