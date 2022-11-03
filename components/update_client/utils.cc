@@ -59,11 +59,14 @@ bool DeleteFileAndEmptyParentDirectory(const base::FilePath& filepath) {
   if (!base::DeleteFile(filepath))
     return false;
 
-  const base::FilePath dirname(filepath.DirName());
-  if (!base::IsDirectoryEmpty(dirname))
+  return DeleteEmptyDirectory(filepath.DirName());
+}
+
+bool DeleteEmptyDirectory(const base::FilePath& dir_path) {
+  if (!base::IsDirectoryEmpty(dir_path))
     return true;
 
-  return base::DeleteFile(dirname);
+  return base::DeleteFile(dir_path);
 }
 
 std::string GetCrxComponentID(const CrxComponent& component) {

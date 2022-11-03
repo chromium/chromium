@@ -27,7 +27,7 @@ class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
 
   // Contains the result of the Adding a new CRX.
   struct Options {
-    Options() = default;
+    explicit Options(const base::FilePath& crx_cache_root_path);
 
     // Path in the CRX cache to the newly added CRX.
     base::FilePath crx_cache_root_path;

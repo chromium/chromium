@@ -12,7 +12,9 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "components/update_client/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -149,6 +151,12 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // Returns a callable to get the state of the platform updater, if the
   // embedder includes an updater. Returns a null callback otherwise.
   virtual UpdaterStateProvider GetUpdaterStateProvider() const = 0;
+
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+  // Returns the FilePath specified for this specific UpdateClient, pointing
+  // to where the retained CRX's will be stored.
+  virtual absl::optional<base::FilePath> GetCrxCachePath() const = 0;
+#endif
 
  protected:
   friend class base::RefCountedThreadSafe<Configurator>;

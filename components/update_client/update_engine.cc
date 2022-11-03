@@ -18,8 +18,10 @@
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/buildflags.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_parser.h"
@@ -30,6 +32,36 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
+
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+// TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+// we should remove this #if.
+UpdateContext::UpdateContext(
+    scoped_refptr<Configurator> config,
+    absl::optional<scoped_refptr<CrxCache>> crx_cache,
+    bool is_foreground,
+    bool is_install,
+    const std::vector<std::string>& ids,
+    UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+    const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
+    UpdateEngine::Callback callback,
+    PersistedData* persisted_data)
+    : config(config),
+      crx_cache_(crx_cache),
+      is_foreground(is_foreground),
+      is_install(is_install),
+      ids(ids),
+      crx_state_change_callback(crx_state_change_callback),
+      notify_observers_callback(notify_observers_callback),
+      callback(std::move(callback)),
+      session_id(base::StrCat({"{", base::GenerateGUID(), "}"})),
+      persisted_data(persisted_data) {
+  for (const auto& id : ids) {
+    components.insert(
+        std::make_pair(id, std::make_unique<Component>(*this, id)));
+  }
+}
+#else
 
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
@@ -54,6 +86,7 @@ UpdateContext::UpdateContext(
         std::make_pair(id, std::make_unique<Component>(*this, id)));
   }
 }
+#endif
 
 UpdateContext::~UpdateContext() = default;
 
@@ -63,12 +96,26 @@ UpdateEngine::UpdateEngine(
     scoped_refptr<PingManager> ping_manager,
     const NotifyObserversCallback& notify_observers_callback)
     : config_(config),
+
       update_checker_factory_(update_checker_factory),
       ping_manager_(ping_manager),
       metadata_(
           std::make_unique<PersistedData>(config->GetPrefService(),
                                           config->GetActivityDataService())),
-      notify_observers_callback_(notify_observers_callback) {}
+      notify_observers_callback_(notify_observers_callback) {
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+  // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  // we should remove this #if.
+  absl::optional<base::FilePath> crx_cache_path = config->GetCrxCachePath();
+  if (!crx_cache_path.has_value()) {
+    crx_cache_ = absl::nullopt;
+  } else {
+    CrxCache::Options options(crx_cache_path.value());
+    crx_cache_ = absl::optional<scoped_refptr<CrxCache>>(
+        base::MakeRefCounted<CrxCache>(options));
+  }
+#endif
+}
 
 UpdateEngine::~UpdateEngine() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -107,7 +154,13 @@ base::RepeatingClosure UpdateEngine::Update(
   }
 
   const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, is_foreground, is_install, ids, crx_state_change_callback,
+      config_,
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+      // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+      // we should remove this #if.
+      crx_cache_,
+#endif
+      is_foreground, is_install, ids, crx_state_change_callback,
       notify_observers_callback_, std::move(callback), metadata_.get());
   DCHECK(!update_context->session_id.empty());
 
@@ -388,7 +441,13 @@ void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
   const std::string& id = crx_component.app_id;
 
   const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, false, false, std::vector<std::string>{id},
+      config_,
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+      // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+      // we should remove this #if.
+      crx_cache_,
+#endif
+      false, false, std::vector<std::string>{id},
       UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), std::move(callback),
       metadata_.get());

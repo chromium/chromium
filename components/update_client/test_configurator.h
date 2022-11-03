@@ -13,8 +13,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "components/update_client/buildflags.h"
 #include "components/update_client/configurator.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -103,6 +105,9 @@ class TestConfigurator : public Configurator {
       const override;
   absl::optional<bool> IsMachineExternallyManaged() const override;
   UpdaterStateProvider GetUpdaterStateProvider() const override;
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+  absl::optional<base::FilePath> GetCrxCachePath() const override;
+#endif
 
   void SetOnDemandTime(int seconds);
   void SetInitialDelay(double seconds);
@@ -142,8 +147,8 @@ class TestConfigurator : public Configurator {
   scoped_refptr<NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<CrxDownloaderFactory> crx_downloader_factory_;
   UpdaterStateProvider updater_state_provider_;
-
   absl::optional<bool> is_machine_externally_managed_;
+  base::ScopedTempDir crx_cache_root_temp_dir_;
 };
 
 }  // namespace update_client

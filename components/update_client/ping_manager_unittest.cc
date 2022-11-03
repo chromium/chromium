@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -114,8 +115,23 @@ void PingManagerTest::PingSentCallback(int error, const std::string& response) {
 }
 
 scoped_refptr<UpdateContext> PingManagerTest::MakeMockUpdateContext() const {
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+  // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  // we should remove this #if.
+  base::ScopedTempDir temp_dir;
+  if (!temp_dir.CreateUniqueTempDir()) {
+    return nullptr;
+  }
+  CrxCache::Options options(temp_dir.GetPath());
+#endif
   return base::MakeRefCounted<UpdateContext>(
-      config_, false, false, std::vector<std::string>(),
+      config_,
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+      // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+      // we should remove this #if.
+      base::MakeRefCounted<CrxCache>(options),
+#endif
+      false, false, std::vector<std::string>(),
       UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
       nullptr);

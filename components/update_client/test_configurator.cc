@@ -5,16 +5,21 @@
 #include "components/update_client/test_configurator.h"
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/patch/in_process_file_patcher.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/buildflags.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
@@ -54,7 +59,9 @@ TestConfigurator::TestConfigurator(PrefService* pref_service)
               test_shared_loader_factory_,
               base::BindRepeating([](const GURL& url) { return false; }))),
       updater_state_provider_(base::BindRepeating(
-          [](bool /*is_machine*/) { return UpdaterStateAttributes(); })) {}
+          [](bool /*is_machine*/) { return UpdaterStateAttributes(); })) {
+  std::ignore = crx_cache_root_temp_dir_.CreateUniqueTempDir();
+}
 
 TestConfigurator::~TestConfigurator() = default;
 
@@ -172,6 +179,16 @@ absl::optional<bool> TestConfigurator::IsMachineExternallyManaged() const {
 UpdaterStateProvider TestConfigurator::GetUpdaterStateProvider() const {
   return updater_state_provider_;
 }
+
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+absl::optional<base::FilePath> TestConfigurator::GetCrxCachePath() const {
+  if (!crx_cache_root_temp_dir_.IsValid()) {
+    return absl::nullopt;
+  }
+  return absl::optional<base::FilePath>(
+      crx_cache_root_temp_dir_.GetPath().AppendASCII("crx_cache"));
+}
+#endif
 
 void TestConfigurator::SetOnDemandTime(int seconds) {
   ondemand_time_ = seconds;

@@ -42,8 +42,15 @@ bool IsHttpServerError(int status_code);
 
 // Deletes the file and its directory, if the directory is empty. If the
 // parent directory is not empty, the function ignores deleting the directory.
-// Returns true if the file and the empty directory are deleted.
+// Returns true if the file and the empty directory are deleted,
+// or if the file was deleted and the directory was not empty.
 bool DeleteFileAndEmptyParentDirectory(const base::FilePath& filepath);
+
+// Deletes the given directory, if the directory is empty. If the
+// directory is not empty, the function ignores deleting the directory.
+// Returns true if the directory is not empty or if the directory was empty
+// and successfully deleted.
+bool DeleteEmptyDirectory(const base::FilePath& filepath);
 
 // Returns the component id of the |component|. The component id is either the
 // app_id, if the member is set, or a string value derived from the public

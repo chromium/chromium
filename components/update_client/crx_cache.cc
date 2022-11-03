@@ -19,6 +19,9 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#endif
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -30,6 +33,9 @@ CrxCache::CrxCache(const CrxCache::Options& options)
     : crx_cache_root_path_(options.crx_cache_root_path) {}
 
 CrxCache::~CrxCache() = default;
+
+CrxCache::Options::Options(const base::FilePath& crx_cache_root_path)
+    : crx_cache_root_path(crx_cache_root_path) {}
 
 base::FilePath CrxCache::BuildCrxFilePath(const std::string& id,
                                           const std::string& fp) {
@@ -73,6 +79,10 @@ CrxCache::Result CrxCache::ProcessPut(const base::FilePath& crx_path,
                                       const std::string& id,
                                       const std::string& fp) {
   CrxCache::Result result;
+  if (id.empty() || fp.empty()) {
+    result.error = UnpackerError::kInvalidParams;
+    return result;
+  }
   base::FilePath dest_path = BuildCrxFilePath(id, fp);
   RemoveAll(id);
   result.error = MoveFileToCache(crx_path, dest_path);
@@ -84,13 +94,15 @@ CrxCache::Result CrxCache::ProcessPut(const base::FilePath& crx_path,
 
 void CrxCache::RemoveAll(const std::string& id) {
   if (base::PathExists(crx_cache_root_path_)) {
-    base::FileEnumerator file_enum(crx_cache_root_path_, false,
-                                   base::FileEnumerator::FILES,
-                                   FILE_PATH_LITERAL(base::StrCat({id, "*"})));
-    for (base::FilePath file_path = file_enum.Next(); !file_path.empty();
-         file_path = file_enum.Next()) {
-      base::DeleteFile(file_path);
-    }
+    base::FileEnumerator file_enum(
+        crx_cache_root_path_, false, base::FileEnumerator::FILES, [&id]() {
+          std::string result = base::StrCat({id, "*"});
+#if BUILDFLAG(IS_WIN)
+          return base::ASCIIToWide(result);
+#else
+            return result;
+#endif
+        }());
   }
 }
 

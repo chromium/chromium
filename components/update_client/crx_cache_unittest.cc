@@ -78,8 +78,7 @@ TEST_F(CrxCacheTest, CheckGetSucceeds) {
                                                base::File::FLAG_WRITE |
                                                base::File::FLAG_READ);
   }
-  CrxCache::Options options;
-  options.crx_cache_root_path = expected_crx_path.DirName();
+  CrxCache::Options options(expected_crx_path.DirName());
   scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
   base::RunLoop loop;
   cache->Get(id, fp,
@@ -109,8 +108,7 @@ TEST_F(CrxCacheTest, CheckGetWithMissingFileFails) {
                                                base::File::FLAG_WRITE |
                                                base::File::FLAG_READ);
   }
-  CrxCache::Options options;
-  options.crx_cache_root_path = expected_crx_path.DirName();
+  CrxCache::Options options(expected_crx_path.DirName());
   scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
   base::RunLoop loop;
   cache->Get(
@@ -132,8 +130,7 @@ TEST_F(CrxCacheTest, CheckPutWithExistingEmptyCrxCachePathSucceeds) {
       BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
   EXPECT_TRUE(base::CreateDirectory(expected_crx_path.DirName()));
   base::RunLoop loop;
-  CrxCache::Options options;
-  options.crx_cache_root_path = expected_crx_path.DirName();
+  CrxCache::Options options(expected_crx_path.DirName());
   scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
   cache->Put(
       DuplicateTestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"), id, fp,
@@ -155,8 +152,7 @@ TEST_F(CrxCacheTest, CheckPutWithNonExistentCrxCacheDirSucceeds) {
   base::FilePath expected_crx_path =
       BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
   base::RunLoop loop;
-  CrxCache::Options options;
-  options.crx_cache_root_path = expected_crx_path.DirName();
+  CrxCache::Options options(expected_crx_path.DirName());
   scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
   cache->Put(
       DuplicateTestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"), id, fp,
@@ -182,8 +178,7 @@ TEST_F(CrxCacheTest, CheckPutPreexistingCrxReplacementSucceeds) {
   {
     base::RunLoop loop;
     // Put jebg successfully.
-    CrxCache::Options options;
-    options.crx_cache_root_path = expected_crx_path.DirName();
+    CrxCache::Options options(expected_crx_path.DirName());
     scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
     cache->Put(
         jebg_duplicate_path, id, fp,
@@ -208,8 +203,7 @@ TEST_F(CrxCacheTest, CheckPutPreexistingCrxReplacementSucceeds) {
   {
     base::RunLoop loop;
     // Put replaces existing jebg to avoid error path.
-    CrxCache::Options options;
-    options.crx_cache_root_path = expected_crx_path.DirName();
+    CrxCache::Options options(expected_crx_path.DirName());
     scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
     cache->Put(
         jebg_duplicate_path, id, fp,

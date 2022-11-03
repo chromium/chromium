@@ -19,7 +19,7 @@
 #include "components/update_client/patcher.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
-#include "third_party/puffin/puffin/src/include/puffin/puffpatch.h"
+#include "third_party/puffin/src/include/puffin/puffpatch.h"
 
 namespace update_client {
 

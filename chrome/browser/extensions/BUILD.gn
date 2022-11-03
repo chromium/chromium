@@ -890,6 +890,7 @@ static_library("extensions") {
     "//components/undo",
     "//components/unified_consent",
     "//components/update_client",
+    "//components/update_client:buildflags",
     "//components/update_client:common_impl",
     "//components/url_formatter",
     "//components/url_matcher",

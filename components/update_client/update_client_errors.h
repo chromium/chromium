@@ -71,6 +71,7 @@ enum class UnpackerError {
   kPuffinMissingPreviousCrx = 18,
   kFailedToAddToCache = 19,
   kFailedToCreateCacheDir = 20,
+  kCrxCacheNotProvided = 21,
 };
 
 // These errors are returned with the |kInstall| error category and

@@ -14,6 +14,11 @@
 #include "components/update_client/buildflags.h"
 #include "courgette/courgette.h"
 #include "courgette/third_party/bsdiff/bsdiff.h"
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+// TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+// we should remove this #if.
+#include "third_party/puffin/puffin/src/include/puffin/puffpatch.h"
+#endif
 
 namespace update_client {
 

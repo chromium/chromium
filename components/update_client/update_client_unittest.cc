@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -24,7 +25,14 @@
 #include "build/build_config.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/update_client/buildflags.h"
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+// TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+// we should remove this #if.
+#include "components/update_client/puffin_component_unpacker.h"
+#else
 #include "components/update_client/component_unpacker.h"
+#endif
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/network.h"
@@ -276,6 +284,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.9");
@@ -396,6 +405,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx1;
+      crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
       crx1.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx1.version = base::Version("0.9");
@@ -403,6 +413,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
       crx1.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
       CrxComponent crx2;
+      crx2.app_id = "abagagagagagagagagagagagagagagag";
       crx2.name = "test_abag";
       crx2.pk_hash.assign(abag_hash, abag_hash + std::size(abag_hash));
       crx2.version = base::Version("2.2");
@@ -447,7 +458,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'/>
+                                      a284a7cd8059c3409ce0498'
+                         fp='somefingerprint'/>
               </packages>
             </manifest>
           </updatecheck>
@@ -468,6 +480,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
+        package.fingerprint = "somefingerprint";
         package.hash_sha256 =
             "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
 
@@ -649,6 +662,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx1;
+      crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
       crx1.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx1.version = base::Version("0.9");
@@ -700,7 +714,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'/>
+                                      a284a7cd8059c3409ce0498'
+                         fp='somefingerprint'/>
               </packages>
             </manifest>
           </updatecheck>
@@ -718,6 +733,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
+        package.fingerprint = "somefingerprint";
         package.hash_sha256 =
             "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
 
@@ -883,6 +899,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.9");
@@ -926,7 +943,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'/>
+                                      a284a7cd8059c3409ce0498'
+                         fp="somefingerprint"/>
               </packages>
             </manifest>
           </updatecheck>
@@ -944,6 +962,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
+        package.fingerprint = "somefingerprint";
         package.hash_sha256 =
             "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
 
@@ -1192,6 +1211,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx1;
+      crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
       crx1.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx1.version = base::Version("0.9");
@@ -1199,6 +1219,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
       crx1.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
       CrxComponent crx2;
+      crx2.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
       crx2.name = "test_ihfo";
       crx2.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
       crx2.version = base::Version("0.8");
@@ -1243,7 +1264,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'/>
+                                      a284a7cd8059c3409ce0498'
+                         fp='somefingerprint'/>
               </packages>
             </manifest>
           </updatecheck>
@@ -1257,7 +1279,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
               <packages>
                 <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                          hash_sha256='8f5aa190311237cae00675af87ff457f278cd1a05
-                                      895470ac5d46647d4a3c2ea'/>
+                                      895470ac5d46647d4a3c2ea'
+                         fp='someotherfingerprint'/>
               </packages>
             </manifest>
           </updatecheck>
@@ -1276,6 +1299,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
+        package.fingerprint = "somefingerprint";
         package.hash_sha256 =
             "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
 
@@ -1296,6 +1320,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
+        package.fingerprint = "someotherfingerprint";
         package.hash_sha256 =
             "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
 
@@ -1493,6 +1518,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
       ++num_calls;
 
       CrxComponent crx;
+      crx.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
       crx.name = "test_ihfo";
       crx.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
       crx.installer = installer;
@@ -1550,7 +1576,8 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
                 <packages>
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                            hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
-                                        3f309f156ea6d27229c0b3f9'/>
+                                        3f309f156ea6d27229c0b3f9'
+                                        fp='21'/>
                 </packages>
               </manifest>
             </updatecheck>
@@ -1565,6 +1592,9 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
         package.hash_sha256 =
             "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
+        package.fingerprint = "21";
+        auto& component = context->components[id];
+        component->set_previous_fp("20");
 
         ProtocolParser::Result result;
         result.extension_id = id;
@@ -1606,12 +1636,27 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_2.crx";
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+        // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+        // we should remove this #if.
+        package.namediff = "ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff";
+#else
         package.namediff = "ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx";
+#endif
         package.hash_sha256 =
             "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6";
         package.hashdiff_sha256 =
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+            // TODO(crbug.com/1349060) once Puffin patches are fully
+            // implemented, we should remove this #if.
+            "80811cc3ad9926d4274933ad3cb8e3c0481b8b5ecda756d47f5faf0e4f93d7b9";
+#else
             "0fd48a5dd87006a709756cfc47198cbc4c4928f33ac4277d79573c15164a33eb";
+#endif
         package.fingerprint = "22";
+
+        auto& component = context->components[id];
+        component->set_previous_fp("21");
 
         ProtocolParser::Result result;
         result.extension_id = id;
@@ -1657,7 +1702,13 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         result.error = 0;
         result.response = path;
       } else if (url.path() ==
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+                 // TODO(crbug.com/1349060) once Puffin patches are fully
+                 // implemented, we should remove this #if.
+                 "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff") {
+#else
                  "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx") {
+#endif
         download_metrics.url = url;
         download_metrics.downloader = DownloadMetrics::kNone;
         download_metrics.error = 0;
@@ -1666,7 +1717,13 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         download_metrics.download_time_ms = 1000;
 
         EXPECT_TRUE(MakeTestFile(
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+            // TODO(crbug.com/1349060) once Puffin patches are fully
+            // implemented, we should remove this #if.
+            TestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"), &path));
+#else
             TestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx"), &path));
+#endif
 
         result.error = 0;
         result.response = path;
@@ -1905,6 +1962,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       EXPECT_CALL(*installer, Uninstall()).Times(0);
 
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.9");
@@ -1949,7 +2007,8 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'/>
+                                      a284a7cd8059c3409ce0498'
+                         fp='random'/>
               </packages>
             </manifest>
           </updatecheck>
@@ -1966,6 +2025,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
       package.hash_sha256 =
           "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
+      package.fingerprint = "random";
 
       ProtocolParser::Result result;
       result.extension_id = id;
@@ -2105,6 +2165,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
       ++num_calls;
 
       CrxComponent crx;
+      crx.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
       crx.name = "test_ihfo";
       crx.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
       crx.installer = installer;
@@ -2163,7 +2224,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
                   <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                            hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
                                         3f309f156ea6d27229c0b3f9'
-                           fp='1'/>
+                           fp='21'/>
                 </packages>
               </manifest>
             </updatecheck>
@@ -2178,7 +2239,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
         package.hash_sha256 =
             "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
-        package.fingerprint = "1";
+        package.fingerprint = "21";
 
         ProtocolParser::Result result;
         result.extension_id = id;
@@ -2220,11 +2281,23 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_2.crx";
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+        // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+        // we should remove this #if.
+        package.namediff = "ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff";
+#else
         package.namediff = "ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx";
+#endif
         package.hash_sha256 =
             "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6";
         package.hashdiff_sha256 =
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+            // TODO(crbug.com/1349060) once Puffin patches are fully
+            // implemented, we should remove this #if.
+            "80811cc3ad9926d4274933ad3cb8e3c0481b8b5ecda756d47f5faf0e4f93d7b9";
+#else
             "0fd48a5dd87006a709756cfc47198cbc4c4928f33ac4277d79573c15164a33eb";
+#endif
         package.fingerprint = "22";
 
         ProtocolParser::Result result;
@@ -2271,7 +2344,13 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         result.error = 0;
         result.response = path;
       } else if (url.path() ==
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+                 // TODO(crbug.com/1349060) once Puffin patches are fully
+                 // implemented, we should remove this #if.
+                 "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff") {
+#else
                  "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx") {
+#endif
         // A download error is injected on this execution path.
         download_metrics.url = url;
         download_metrics.downloader = DownloadMetrics::kNone;
@@ -2451,6 +2530,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.9");
@@ -2597,6 +2677,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.0");
@@ -2937,6 +3018,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.0");
@@ -3199,6 +3281,7 @@ TEST_F(UpdateClientTest, SendUninstallPing) {
 
   CrxComponent crx;
   crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
+  crx.name = "test_jebg";
   crx.version = base::Version("1.2.3.4");
   update_client->SendUninstallPing(
       crx, 10,
@@ -3213,6 +3296,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.9");
@@ -3401,6 +3485,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx1;
+      crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
       crx1.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx1.version = base::Version("0.9");
@@ -3409,6 +3494,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       crx1.updates_enabled = false;
 
       CrxComponent crx2;
+      crx2.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
       crx2.name = "test_ihfo";
       crx2.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
       crx2.version = base::Version("0.8");
@@ -3453,7 +3539,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
               <packages>
                 <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
                          hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'/>
+                                      a284a7cd8059c3409ce0498'
+                         fp='somefingerprint'/>
               </packages>
             </manifest>
           </updatecheck>
@@ -3467,7 +3554,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
               <packages>
                 <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
                          hash_sha256='8f5aa190311237cae00675af87ff457f278cd1a05
-                                      895470ac5d46647d4a3c2ea'/>
+                                      895470ac5d46647d4a3c2ea'
+                         fp='someotherfingerprint'/>
               </packages>
             </manifest>
           </updatecheck>
@@ -3486,6 +3574,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
+        package.fingerprint = "somefingerprint";
         package.hash_sha256 =
             "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
 
@@ -3506,6 +3595,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
 
         ProtocolParser::Result::Manifest::Package package;
         package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
+        package.fingerprint = "someotherfingerprint";
         package.hash_sha256 =
             "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
 
@@ -3790,6 +3880,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
       std::vector<absl::optional<CrxComponent>> component;
       {
         CrxComponent crx;
+        crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
         crx.name = "test_jebg";
         crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
         crx.version = base::Version("0.9");
@@ -3799,6 +3890,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
       }
       {
         CrxComponent crx;
+        crx.app_id = "abagagagagagagagagagagagagagagag";
         crx.name = "test_abag";
         crx.pk_hash.assign(abag_hash, abag_hash + std::size(abag_hash));
         crx.version = base::Version("0.1");
@@ -3808,6 +3900,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
       }
       {
         CrxComponent crx;
+        crx.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
         crx.name = "test_ihfo";
         crx.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
         crx.version = base::Version("0.2");
@@ -3817,6 +3910,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
       }
       {
         CrxComponent crx;
+        crx.app_id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
         crx.name = "test_gjpm";
         crx.pk_hash.assign(gjpm_hash, gjpm_hash + std::size(gjpm_hash));
         crx.version = base::Version("0.3");
@@ -4012,7 +4106,8 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
             <manifest version='1.0' prodversionmin='11.0.1.0'>
               <packages>
                 <package name='runaction_test_win.crx3'
-                         hash_sha256='89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea'/>
+                         hash_sha256='89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea'
+                         fp='somefingerprint'/>
               </packages>
             </manifest>
             <actions>"
@@ -4033,6 +4128,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
       package.name = "runaction_test_win.crx3";
       package.hash_sha256 =
           "89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea";
+      package.fingerprint = "somefingerprint";
 
       ProtocolParser::Result result;
       result.extension_id = id;
@@ -4152,7 +4248,8 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
             });
 
         CrxComponent crx;
-        crx.name = "test_niea";
+        crx.app_id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
+        crx.name = "test_gjpm";
         crx.pk_hash.assign(gjpm_hash, gjpm_hash + std::size(gjpm_hash));
         crx.version = base::Version("0.0");
         crx.installer = base::MakeRefCounted<VersionedTestInstaller>();
@@ -4255,6 +4352,23 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
     base::OnceClosure quit_closure = runloop.QuitClosure();
 
     auto config = base::MakeRefCounted<TestConfigurator>();
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+    // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+    // we should remove this #if.
+    PuffinComponentUnpacker::Unpack(
+        std::vector<uint8_t>(std::begin(gjpm_hash), std::end(gjpm_hash)),
+        TestFilePath("runaction_test_win.crx3"),
+        config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
+        base::BindOnce(
+            [](base::FilePath* unpack_path, base::OnceClosure quit_closure,
+               const PuffinComponentUnpacker::Result& result) {
+              EXPECT_EQ(UnpackerError::kNone, result.error);
+              EXPECT_EQ(0, result.extended_error);
+              *unpack_path = result.unpack_path;
+              std::move(quit_closure).Run();
+            },
+            &unpack_path, runloop.QuitClosure()));
+#else
     auto component_unpacker = base::MakeRefCounted<ComponentUnpacker>(
         std::vector<uint8_t>(std::begin(gjpm_hash), std::end(gjpm_hash)),
         TestFilePath("runaction_test_win.crx3"), nullptr,
@@ -4270,6 +4384,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
           std::move(quit_closure).Run();
         },
         &unpack_path, runloop.QuitClosure()));
+#endif
 
     runloop.Run();
   }
@@ -4308,7 +4423,8 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
                 });
 
             CrxComponent crx;
-            crx.name = "test_niea";
+            crx.app_id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
+            crx.name = "test_gjpm";
             crx.pk_hash.assign(gjpm_hash, gjpm_hash + std::size(gjpm_hash));
             crx.version = base::Version("1.0");
             crx.installer =
@@ -4336,6 +4452,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.9");
@@ -4513,6 +4630,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.0");
@@ -4656,6 +4774,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
     static std::vector<absl::optional<CrxComponent>> Callback(
         const std::vector<std::string>& ids) {
       CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.0");
