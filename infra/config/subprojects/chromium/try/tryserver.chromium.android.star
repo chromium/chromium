@@ -21,6 +21,8 @@ try_.defaults.set(
     compilator_goma_jobs = goma.jobs.J300,
     os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 
     # TODO(crbug.com/1362440): remove this.
