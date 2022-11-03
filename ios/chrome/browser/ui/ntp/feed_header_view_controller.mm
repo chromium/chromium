@@ -407,6 +407,10 @@ NSInteger kFeedSymbolPointSize = 17;
   sortButton.alpha =
       [self.feedControlDelegate selectedFeed] == FeedTypeFollowing ? 1 : 0;
 
+  if (@available(iOS 15.0, *)) {
+    sortButton.configuration = [UIButtonConfiguration plainButtonConfiguration];
+  }
+
   return sortButton;
 }
 
