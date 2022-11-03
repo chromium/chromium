@@ -21,9 +21,9 @@
 namespace printing {
 
 void InitializePrintingForWebContents(content::WebContents* web_contents) {
-  // Native Headless mode uses a minimalistic Print Manager implementation that
+  // Headless mode uses a minimalistic Print Manager implementation that
   // shortcuts most of the callbacks providing only print to PDF functionality.
-  if (headless::IsChromeNativeHeadless()) {
+  if (headless::IsHeadlessMode()) {
     headless::HeadlessPrintManager::CreateForWebContents(web_contents);
   } else {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
