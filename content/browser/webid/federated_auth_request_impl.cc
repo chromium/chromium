@@ -403,7 +403,6 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
 void FederatedAuthRequestImpl::RequestToken(
     std::vector<IdentityProviderPtr> idp_ptrs,
     bool prefer_auto_sign_in,
-    bool show_iframe_requester,
     RequestTokenCallback callback) {
   if (idp_ptrs.empty()) {
     std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");

@@ -824,9 +824,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       std::vector<blink::mojom::IdentityProviderPtr> identity_provider_ptrs,
       bool prefer_auto_sign_in,
       bool wait_for_callback) {
-    request_remote_->RequestToken(
-        std::move(identity_provider_ptrs), prefer_auto_sign_in,
-        /*show_iframe_requester=*/false, auth_helper_.callback());
+    request_remote_->RequestToken(std::move(identity_provider_ptrs),
+                                  prefer_auto_sign_in, auth_helper_.callback());
 
     if (wait_for_callback)
       request_remote_.set_disconnect_handler(auth_helper_.quit_closure());
