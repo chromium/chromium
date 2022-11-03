@@ -394,6 +394,24 @@ void SetServerStarts(UpdaterScope scope, int value) {
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
 }
 
+void FillLog(UpdaterScope scope) {
+  absl::optional<base::FilePath> log = GetLogFilePath(scope);
+  ASSERT_TRUE(log);
+  std::string data = "This test string is used to fill up log space.\n";
+  for (int i = 0; i < 1024 * 1024 * 6; i += data.length()) {
+    ASSERT_TRUE(base::AppendToFile(*log, data));
+  }
+}
+
+void ExpectLogRotated(UpdaterScope scope) {
+  absl::optional<base::FilePath> log = GetLogFilePath(scope);
+  ASSERT_TRUE(log);
+  EXPECT_TRUE(base::PathExists(log->AddExtension(FILE_PATH_LITERAL(".old"))));
+  int64_t size = 0;
+  ASSERT_TRUE(base::GetFileSize(*log, &size));
+  EXPECT_TRUE(size < 1024 * 1024);
+}
+
 void ExpectRegistered(UpdaterScope scope, const std::string& app_id) {
   ASSERT_TRUE(base::Contains(base::MakeRefCounted<PersistedData>(
                                  CreateGlobalPrefs(scope)->GetPrefService())

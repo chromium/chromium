@@ -57,6 +57,8 @@ class IntegrationTestCommands
   virtual void SetExistenceCheckerPath(const std::string& app_id,
                                        const base::FilePath& path) const = 0;
   virtual void SetServerStarts(int value) const = 0;
+  virtual void FillLog() const = 0;
+  virtual void ExpectLogRotated() const = 0;
   virtual void ExpectRegistered(const std::string& app_id) const = 0;
   virtual void ExpectNotRegistered(const std::string& app_id) const = 0;
   virtual void ExpectAppVersion(const std::string& app_id,

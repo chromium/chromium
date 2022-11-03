@@ -222,6 +222,10 @@ class IntegrationTest : public ::testing::Test {
 
   void SetServerStarts(int value) { test_commands_->SetServerStarts(value); }
 
+  void FillLog() { test_commands_->FillLog(); }
+
+  void ExpectLogRotated() { test_commands_->ExpectLogRotated(); }
+
   void ExpectRegistered(const std::string& app_id) {
     test_commands_->ExpectRegistered(app_id);
   }
@@ -709,6 +713,15 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   UninstallApp("test1");
   RunWake(0);
   EXPECT_TRUE(WaitForUpdaterExit());
+}
+
+TEST_F(IntegrationTest, RotateLog) {
+  Install();
+  FillLog();
+  RunWake(0);
+  EXPECT_TRUE(WaitForUpdaterExit());
+  ExpectLogRotated();
+  Uninstall();
 }
 
 // Windows does not currently have a concept of app ownership, so this

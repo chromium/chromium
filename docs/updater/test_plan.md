@@ -110,6 +110,9 @@ data index and transmit it to the server as part of the install request.
 IntegrationTest.ReportsActive tests that the updater transmits active telemetry
 for apps.
 
+IntegrationTest.RotateLog tests that the updater rotates its log file after the
+log file grows to a sufficient size.
+
 IntegrationTest.ForceInstallApp tests that the updater will install an app,
 when provided group policies that force installation of that app. *Windows Only*
 

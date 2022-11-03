@@ -171,6 +171,12 @@ void SetExistenceCheckerPath(UpdaterScope scope,
 
 void SetServerStarts(UpdaterScope scope, int value);
 
+// Writes lots of data into the log file.
+void FillLog(UpdaterScope scope);
+
+// Confirms that an old log file exists and that the current log file is small.
+void ExpectLogRotated(UpdaterScope scope);
+
 void ExpectRegistered(UpdaterScope scope, const std::string& app_id);
 
 void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id);

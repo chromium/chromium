@@ -51,6 +51,8 @@
 namespace updater {
 namespace {
 
+constexpr int64_t kLogRotateAtSize = 1024 * 1024 * 5;  // 5 MiB.
+
 const char kHexString[] = "0123456789ABCDEF";
 inline char IntToHex(int i) {
   DCHECK_GE(i, 0) << i << " not a hex value";
@@ -263,17 +265,28 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
 }
 
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_ROAMING_APP_DATA.
+absl::optional<base::FilePath> GetLogFilePath(UpdaterScope scope) {
+  const absl::optional<base::FilePath> log_dir = GetBaseDataDirectory(scope);
+  if (log_dir) {
+    return log_dir->Append(FILE_PATH_LITERAL("updater.log"));
+  }
+  return absl::nullopt;
+}
+
 void InitLogging(UpdaterScope updater_scope) {
-  logging::LoggingSettings settings;
-  const absl::optional<base::FilePath> log_dir =
-      GetBaseDataDirectory(updater_scope);
-  if (!log_dir) {
+  absl::optional<base::FilePath> log_file = GetLogFilePath(updater_scope);
+  if (!log_file) {
     LOG(ERROR) << "Error getting base dir.";
     return;
   }
-  const base::FilePath log_file =
-      log_dir->Append(FILE_PATH_LITERAL("updater.log"));
-  settings.log_file_path = log_file.value().c_str();
+  // Rotate log if needed.
+  int64_t size = 0;
+  if (base::GetFileSize(*log_file, &size) && size >= kLogRotateAtSize) {
+    base::ReplaceFile(
+        *log_file, log_file->AddExtension(FILE_PATH_LITERAL(".old")), nullptr);
+  }
+  logging::LoggingSettings settings;
+  settings.log_file_path = log_file->value().c_str();
   settings.logging_dest = logging::LOG_TO_ALL;
   logging::InitLogging(settings);
   logging::SetLogItems(/*enable_process_id=*/true,

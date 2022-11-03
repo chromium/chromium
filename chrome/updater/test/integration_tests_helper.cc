@@ -232,6 +232,8 @@ void AppTestHelper::FirstTaskRun() {
     {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
     {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
     {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
+    {"fill_log", WithSystemScope(Wrap(&FillLog))},
+    {"expect_log_rotated", WithSystemScope(Wrap(&ExpectLogRotated))},
     {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
     {"expect_registered",
      WithSwitch("app_id", WithSystemScope(Wrap(&ExpectRegistered)))},

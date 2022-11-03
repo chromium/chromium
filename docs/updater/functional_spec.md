@@ -765,6 +765,10 @@ fail to install.
 ### Logging
 All updater logs are written to `{UPDATER_DATA_DIR}\updater.log`.
 
+After the log reaches 5 MiB in size, the updater will attempt to move it to
+`{UPDATER_DATA_DIR}\updater.log.old` when starting, replacing any existing file
+there. The log rotation may be delayed if another updater process is running.
+
 On macOS for system-scope updaters, `{UPDATER_DATA_DIR}` is
 `/Library/Application Support/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}`.
 

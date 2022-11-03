@@ -142,6 +142,8 @@ std::string GetInstallDataIndexFromAppArgs(const std::string& app_id);
 // Returns true if the user running the updater also owns the `path`.
 bool PathOwnedByUser(const base::FilePath& path);
 
+absl::optional<base::FilePath> GetLogFilePath(UpdaterScope scope);
+
 // Initializes logging for an executable.
 void InitLogging(UpdaterScope updater_scope);
 

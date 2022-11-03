@@ -145,6 +145,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("value", base::NumberToString(value))});
   }
 
+  void FillLog() const override { RunCommand("fill_log"); }
+
+  void ExpectLogRotated() const override { RunCommand("expect_log_rotated"); }
+
   void ExpectRegistered(const std::string& app_id) const override {
     RunCommand("expect_registered", {Param("app_id", app_id)});
   }
