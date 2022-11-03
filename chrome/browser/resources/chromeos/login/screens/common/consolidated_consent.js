@@ -11,7 +11,7 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
-import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.m.js';
 import '../../components/common_styles/common_styles.m.js';

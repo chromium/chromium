@@ -21,7 +21,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
-import {OobeBackButton} from '../../components/buttons/oobe_back_button.m.js';
+import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
 import {OobeIconButton} from '../../components/buttons/oobe_icon_button.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.m.js';
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.m.js';

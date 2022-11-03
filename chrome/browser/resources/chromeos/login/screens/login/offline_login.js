@@ -15,7 +15,7 @@ import '../../components/gaia_input_form.js';
 import '../../components/gaia_button.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_content_dialog.m.js';
-import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

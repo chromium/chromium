@@ -12,6 +12,8 @@ import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 import '../../components/dialogs/oobe_modal_dialog.m.js';
+import '../../components/buttons/oobe_back_button.js';
+import '../../components/buttons/oobe_text_button.m.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
@@ -20,8 +22,6 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
-import '../../components/buttons/oobe_back_button.m.js';
-import '../../components/buttons/oobe_text_button.m.js';
 import {WebViewHelper} from '../../components/web_view_helper.m.js';
 import {Oobe} from '../../cr_ui.m.js';
 

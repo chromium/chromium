@@ -88,7 +88,7 @@ js_library("gaia_dialog") {
     ":oobe_types.m",
     "./behaviors:oobe_dialog_host_behavior.m",
     "./behaviors:oobe_i18n_behavior.m",
-    "./buttons:oobe_back_button.m",
+    "./buttons:oobe_back_button",
     "./buttons:oobe_text_button.m",
     "./dialogs:oobe_content_dialog.m",
     "//chrome/browser/resources/gaia_auth_host:authenticator",

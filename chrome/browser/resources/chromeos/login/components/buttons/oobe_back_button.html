@@ -4,88 +4,40 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-icons cr-shared-style oobe-common-styles">
+  cr-button {
+    --border-color: var(--oobe-bg-color);
+    --cr-button-height: var(--oobe-button-height);
+    border-radius: var(--oobe-button-radius);
+    margin: 0 4px;
+    padding-inline-end: var(--oobe-back-button-padding-inline-end);
+    padding-inline-start: var(--oobe-back-button-padding-inline-start);
+  }
+  :host-context([dir=ltr]) iron-icon {
+    padding-inline-start: var(--oobe-button-icon-margin);
+    transform: rotate(180deg);
+  }
+  :host-context([dir=rtl]) iron-icon {
+    padding-inline-end: var(--oobe-button-icon-margin);
+  }
+  :host ::slotted(*),
+  .fallback {
+    font-family: var(--oobe-button-font-family);
+    font-size: var(--oobe-button-font-size);
+  }
+  :host([disabled]) {
+    pointer-events: none;
+  }
+</style>
+<cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
+    aria-label$="[[labelForAria_]]">
+  <div class="flex horizontal layout center-justified center">
+    <iron-icon icon="oobe-20:button-arrow-forward"></iron-icon>
+    <slot name="text">
+      <template is="dom-if" if="[[textKey]]">
+        <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+      </template>
+    </slot>
+  </div>
+</cr-button>
 
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons.css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-
-<link rel="import" href="../common_styles/common_styles.html">
-<link rel="import" href="../oobe_vars/oobe_custom_vars_css.html">
-<link rel="import" href="../behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../oobe_icons.html">
-<link rel="import" href="./oobe_base_button.html">
-
-<!--
-  Material design square "<- Back" button.
-  Text is blue, background is white.
-
-  Example:
-    <oobe-back-button on-click="handleOnClick_"></oobe-back-button>
-
-    The content of button can be overridden from the default ("Back")
-    by specifying a text-key property or by setting the text directly
-    via the "text" slot:
-
-    <oobe-back-button on-click="handleOnClick_" text-key="continueButton">
-    </oobe-back-button>
-
-    or
-
-    <oobe-back-button on-click="handleOnClick_"
-        label-for-aria="[[i18nDynamic(locale, 'continueButton')]]">
-      <div slot="text">[[i18nDynamic(locale, 'continueButton')]]</div>
-    </oobe-back-button>
-
-  Attributes:
-    'disabled' - button is disabled when the attribute is set.
-    (See crbug.com/900640)
-    'text-key' - ID of localized string to be used as button text.
-    'label-for-aria' - accessibility label, override usual behavior
-                       (string specified by text-key is used as aria-label).
-                       Elements that use slot="text" must provide label-for-aria
-                       value.
--->
-<dom-module id="oobe-back-button">
-  <template>
-    <style include="cr-icons cr-shared-style oobe-common-styles">
-      cr-button {
-        --border-color: var(--oobe-bg-color);
-        --cr-button-height: var(--oobe-button-height);
-        border-radius: var(--oobe-button-radius);
-        margin: 0 4px;
-        padding-inline-end: var(--oobe-back-button-padding-inline-end);
-        padding-inline-start: var(--oobe-back-button-padding-inline-start);
-      }
-      :host-context([dir=ltr]) iron-icon {
-        padding-inline-start: var(--oobe-button-icon-margin);
-        transform: rotate(180deg);
-      }
-      :host-context([dir=rtl]) iron-icon {
-        padding-inline-end: var(--oobe-button-icon-margin);
-      }
-      :host ::slotted(*),
-      .fallback {
-        font-family: var(--oobe-button-font-family);
-        font-size: var(--oobe-button-font-size);
-      }
-      :host([disabled]) {
-        pointer-events: none;
-      }
-    </style>
-    <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
-        aria-label$="[[labelForAria_]]">
-      <div class="flex horizontal layout center-justified center">
-        <iron-icon icon="oobe-20:button-arrow-forward"></iron-icon>
-        <slot name="text">
-          <template is="dom-if" if="[[textKey]]">
-            <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
-          </template>
-        </slot>
-      </div>
-    </cr-button>
-  </template>
-  <script src="oobe_back_button.js"></script>
-</dom-module>

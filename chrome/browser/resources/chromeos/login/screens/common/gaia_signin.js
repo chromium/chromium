@@ -13,7 +13,7 @@ import '../../components/notification_card.js';
 import '../../components/security_token_pin.js';
 import '../../components/gaia_dialog.js';
 import '../../components/oobe_icons.m.js';
-import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
