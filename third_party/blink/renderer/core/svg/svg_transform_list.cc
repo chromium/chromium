@@ -65,9 +65,25 @@ static_assert(std::size(kRequiredValuesForType) ==
                   std::size(kOptionalValuesForType),
               "the arrays should have the same number of elements");
 
-const unsigned kMaxTransformArguments = 6;
+constexpr size_t kMaxTransformArguments = 6;
 
-using TransformArguments = Vector<float, kMaxTransformArguments>;
+class TransformArguments {
+ public:
+  size_t size() const { return size_; }
+  bool empty() const { return size_ == 0; }
+  void push_back(float value) {
+    DCHECK_LT(size_, kMaxTransformArguments);
+    data_[size_++] = value;
+  }
+  const float& operator[](size_t index) const {
+    DCHECK_LT(index, size_);
+    return data_[index];
+  }
+
+ private:
+  std::array<float, kMaxTransformArguments> data_;
+  size_t size_ = 0;
+};
 
 using SVGTransformData = std::tuple<float, gfx::PointF, AffineTransform>;
 
