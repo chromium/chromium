@@ -136,7 +136,11 @@ class FakePressureObserver : public blink::mojom::PressureObserver {
 
 class PressureServiceImplTest : public RenderViewHostImplTestHarness {
  public:
-  PressureServiceImplTest() = default;
+  PressureServiceImplTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kComputePressure);
+  }
+
   ~PressureServiceImplTest() override = default;
 
   PressureServiceImplTest(const PressureServiceImplTest&) = delete;

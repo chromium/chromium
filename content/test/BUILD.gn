@@ -1262,7 +1262,6 @@ test("content_browsertests") {
     "../browser/cache_storage/cache_storage_browsertest.cc",
     "../browser/child_process_launcher_browsertest.cc",
     "../browser/child_process_security_policy_browsertest.cc",
-    "../browser/compute_pressure/compute_pressure_origin_trial_browsertest.cc",
     "../browser/content_index/content_index_browsertest.cc",
     "../browser/content_security_policy_browsertest.cc",
     "../browser/cross_origin_opener_policy_browsertest.cc",
