@@ -1124,25 +1124,6 @@ TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
       apps_util::CreateAppServiceIntentFromCrosapi(crosapi_intent, nullptr);
   EXPECT_EQ(*original_intent, *converted_intent);
 }
-
-// TODO(crbug.com/1253250): Will be removed soon.
-TEST_F(IntentUtilsTest, CrosapiIntentConversionMojom) {
-  apps::mojom::IntentPtr original_intent =
-      apps_util::CreateIntentFromUrl(GURL("www.google.com"));
-  original_intent->data = "geo:0,0?q=1600%20amphitheatre%20parkway";
-  auto crosapi_intent =
-      apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
-  auto converted_intent =
-      apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent, nullptr);
-  EXPECT_EQ(original_intent, converted_intent);
-
-  original_intent = apps_util::CreateShareIntentFromText("text", "title");
-  crosapi_intent =
-      apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
-  converted_intent =
-      apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent, nullptr);
-  EXPECT_EQ(original_intent, converted_intent);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1214,30 +1195,6 @@ TEST_F(IntentUtilsFileTest, ConvertFileSystemScheme) {
   EXPECT_EQ(crosapi_intent->files.value()[0]->mime_type, mime_type);
 }
 
-// TODO(crbug.com/1253250): Will be removed soon.
-TEST_F(IntentUtilsFileTest, ConvertFileSystemSchemeMojom) {
-  auto app_service_intent = apps::mojom::Intent::New();
-  app_service_intent->action = "action";
-  app_service_intent->mime_type = "*/*";
-  const std::string path = "Documents/foo.txt";
-  const std::string mime_type = "text/plain";
-  auto url = ToGURL(base::FilePath(storage::kTestDir), path);
-  EXPECT_TRUE(url.SchemeIsFileSystem());
-  app_service_intent->files = std::vector<apps::mojom::IntentFilePtr>{};
-  auto file = apps::mojom::IntentFile::New();
-  file->url = url;
-  file->mime_type = mime_type;
-  app_service_intent->files->push_back(std::move(file));
-  auto crosapi_intent = apps_util::ConvertAppServiceToCrosapiIntent(
-      app_service_intent, GetProfile());
-  EXPECT_EQ(app_service_intent->action, crosapi_intent->action);
-  EXPECT_EQ(app_service_intent->mime_type, crosapi_intent->mime_type);
-  ASSERT_TRUE(crosapi_intent->files.has_value());
-  ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
-  EXPECT_EQ(crosapi_intent->files.value()[0]->file_path, base::FilePath(path));
-  EXPECT_EQ(crosapi_intent->files.value()[0]->mime_type, mime_type);
-}
-
 TEST_F(IntentUtilsFileTest, ConvertFileScheme) {
   auto app_service_intent = std::make_unique<apps::Intent>("action");
   app_service_intent->mime_type = "*/*";
@@ -1259,30 +1216,6 @@ TEST_F(IntentUtilsFileTest, ConvertFileScheme) {
   EXPECT_EQ(crosapi_intent->files.value()[0]->mime_type, mime_type);
 }
 
-// TODO(crbug.com/1253250): Will be removed soon.
-TEST_F(IntentUtilsFileTest, ConvertFileSchemeMojom) {
-  auto app_service_intent = apps::mojom::Intent::New();
-  app_service_intent->action = "action";
-  app_service_intent->mime_type = "*/*";
-  base::FilePath path("/path/to/document.txt");
-  const std::string mime_type = "text/plain";
-  auto url = net::FilePathToFileURL(path);
-  EXPECT_TRUE(url.SchemeIsFile());
-  app_service_intent->files = std::vector<apps::mojom::IntentFilePtr>{};
-  auto file = apps::mojom::IntentFile::New();
-  file->url = url;
-  file->mime_type = mime_type;
-  app_service_intent->files->push_back(std::move(file));
-  auto crosapi_intent = apps_util::ConvertAppServiceToCrosapiIntent(
-      app_service_intent, GetProfile());
-  EXPECT_EQ(app_service_intent->action, crosapi_intent->action);
-  EXPECT_EQ(app_service_intent->mime_type, crosapi_intent->mime_type);
-  ASSERT_TRUE(crosapi_intent->files.has_value());
-  ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
-  EXPECT_EQ(crosapi_intent->files.value()[0]->file_path, path);
-  EXPECT_EQ(crosapi_intent->files.value()[0]->mime_type, mime_type);
-}
-
 TEST_F(IntentUtilsFileTest, CrosapiIntentToAppService) {
   const std::string path = "Documents/foo.txt";
   std::vector<base::FilePath> file_paths;
@@ -1290,33 +1223,14 @@ TEST_F(IntentUtilsFileTest, CrosapiIntentToAppService) {
   auto crosapi_intent =
       apps_util::CreateCrosapiIntentForViewFiles(std::move(file_paths));
 
-  auto app_service_intent =
-      apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent, GetProfile());
+  auto app_service_intent = apps_util::CreateAppServiceIntentFromCrosapi(
+      crosapi_intent, GetProfile());
   EXPECT_EQ(app_service_intent->action, crosapi_intent->action);
   EXPECT_EQ(app_service_intent->mime_type, crosapi_intent->mime_type);
   ASSERT_TRUE(crosapi_intent->files.has_value());
   ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
   EXPECT_EQ(
-      app_service_intent->files.value()[0]->url,
-      ToGURL(base::FilePath(storage::kExternalDir).Append(mount_name_), path));
-}
-
-// TODO(crbug.com/1253250): Will be removed soon.
-TEST_F(IntentUtilsFileTest, CrosapiIntentToAppServiceMojom) {
-  const std::string path = "Documents/foo.txt";
-  auto file_path = base::FilePath(fs_root_).Append(path);
-  auto file_paths = apps::mojom::FilePaths::New();
-  file_paths->file_paths.push_back(file_path);
-  auto crosapi_intent = apps_util::CreateCrosapiIntentForViewFiles(file_paths);
-
-  auto app_service_intent =
-      apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent, GetProfile());
-  EXPECT_EQ(app_service_intent->action, crosapi_intent->action);
-  EXPECT_EQ(app_service_intent->mime_type, crosapi_intent->mime_type);
-  ASSERT_TRUE(crosapi_intent->files.has_value());
-  ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
-  EXPECT_EQ(
-      app_service_intent->files.value()[0]->url,
+      app_service_intent->files[0]->url,
       ToGURL(base::FilePath(storage::kExternalDir).Append(mount_name_), path));
 }
 #endif

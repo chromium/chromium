@@ -169,11 +169,6 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
 crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     const apps::IntentPtr& app_service_intent,
     Profile* profile);
-// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-// interface.
-crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
-    const apps::mojom::IntentPtr& app_service_intent,
-    Profile* profile);
 
 // Convert Crosapi Intent to App Service Intent. Note that the converted App
 // Service Intent will not contain the files field in lacros-chrome.
@@ -188,19 +183,9 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
 apps::IntentPtr CreateAppServiceIntentFromCrosapi(
     const crosapi::mojom::IntentPtr& crosapi_intent,
     Profile* profile);
-// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-// interface.
-apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
-    const crosapi::mojom::IntentPtr& crosapi_intent,
-    Profile* profile);
 
 crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
     std::vector<base::FilePath> file_paths);
-
-// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-// interface.
-crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
-    const apps::mojom::FilePathsPtr& file_paths);
 #endif
 }  // namespace apps_util
 

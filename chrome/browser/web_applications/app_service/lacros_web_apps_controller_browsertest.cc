@@ -852,8 +852,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetLink) {
         /*event_flags=*/0, apps::LaunchSource::kFromSharesheet,
         display::kInvalidDisplayId);
     launch_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
-        apps_util::CreateShareIntentFromText(shared_link, shared_title),
-        profile());
+        apps_util::MakeShareIntent(shared_link, shared_title), profile());
 
     static_cast<crosapi::mojom::AppController&>(lacros_web_apps_controller)
         .Launch(std::move(launch_params), base::DoNothing());

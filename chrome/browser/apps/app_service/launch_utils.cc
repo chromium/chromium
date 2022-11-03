@@ -418,7 +418,9 @@ crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
         apps_util::ConvertAppServiceToCrosapiIntent(params.intent, profile);
   } else if (!params.override_url.is_empty()) {
     crosapi_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
-        apps_util::CreateIntentFromUrl(params.override_url), profile);
+        std::make_unique<Intent>(apps_util::kIntentActionView,
+                                 params.override_url),
+        profile);
   } else if (!params.launch_files.empty()) {
     std::vector<base::FilePath> files = params.launch_files;
     crosapi_params->intent =
