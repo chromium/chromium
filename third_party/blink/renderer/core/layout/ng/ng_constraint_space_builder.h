@@ -140,6 +140,12 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   // taken up by the repeated header, so that offset 0 is exactly where the
   // non-repeated content starts / resumes after the repeated header.
   void ReserveSpaceInFragmentainer(LayoutUnit space) {
+    if (!space_.HasBlockFragmentation()) {
+      // It is possible to end up with a monolithic table section, even if
+      // things like containment and overflow don't apply. -webkit-line-clamp
+      // is at least one example.
+      return;
+    }
 #if DCHECK_IS_ON()
     DCHECK(is_fragmentainer_block_size_set_);
 #endif
