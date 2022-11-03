@@ -71,7 +71,7 @@ class CrossOriginEmbedderPolicyReporter;
 // A host for a single dedicated worker. It deletes itself upon Mojo
 // disconnection from the worker in the renderer or when the RenderProcessHost
 // of the worker is destroyed. This lives on the UI thread.
-// TODO(crbug.com/1177652): Align this class's lifetime with the associated
+// TODO(crbug.com/1273717): Align this class's lifetime with the associated
 // frame.
 class DedicatedWorkerHost final
     : public blink::mojom::DedicatedWorkerHost,

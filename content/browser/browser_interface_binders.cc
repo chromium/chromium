@@ -68,8 +68,7 @@
 #include "content/common/input/input_injector.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_version_base_info.h"
@@ -343,34 +342,35 @@ void BindFileUtilitiesHost(
                      std::move(receiver)));
 }
 
-// Binds the `RenderFrameHost` pointer and the notification service creator type
-// to the notification service creator.
+// The following two functions bind the RenderFrameHost ID, the origin and the
+// notification service creator type to the notification service creation
+// function. The RenderFrameHost ID is used instead of the pointer because the
+// WorkerHost may outlive the RenderFrameHost and thus causing UAF issue when
+// the callback runs.
 template <typename WorkerHost>
 base::RepeatingCallback<
     void(const url::Origin&,
          mojo::PendingReceiver<blink::mojom::NotificationService>)>
 BindNotificationService(
-    RenderFrameHost* rfh,
+    GlobalRenderFrameHostId rfh_id,
     RenderProcessHost::NotificationServiceCreatorType creator_type,
     WorkerHost* host) {
   DCHECK_NE(creator_type,
             RenderProcessHost::NotificationServiceCreatorType::kServiceWorker);
   return base::BindRepeating(
-      [](WorkerHost* host, RenderFrameHost* rfh,
+      [](WorkerHost* host, GlobalRenderFrameHostId rfh_id,
          RenderProcessHost::NotificationServiceCreatorType creator_type,
          const url::Origin& origin,
          mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
         auto* process_host =
             static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
         CHECK(process_host);
-        process_host->CreateNotificationService(rfh, creator_type, origin,
+        process_host->CreateNotificationService(rfh_id, creator_type, origin,
                                                 std::move(receiver));
       },
-      base::Unretained(host), rfh, creator_type);
+      base::Unretained(host), rfh_id, creator_type);
 }
 
-// Binds the `RenderFrameHost` pointer and the `kServiceWorker` creator type
-// to the notification service creator.
 base::RepeatingCallback<
     void(const ServiceWorkerVersionBaseInfo&,
          mojo::PendingReceiver<blink::mojom::NotificationService>)>
@@ -384,7 +384,7 @@ BindNotificationService(ServiceWorkerHost* host) {
         auto* process_host = static_cast<RenderProcessHostImpl*>(
             RenderProcessHost::FromID(host->worker_process_id()));
         process_host->CreateNotificationService(
-            /*rfh=*/nullptr,
+            GlobalRenderFrameHostId(),
             RenderProcessHost::NotificationServiceCreatorType::kServiceWorker,
             origin, std::move(receiver));
       },
@@ -1214,10 +1214,9 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
 
-  RenderFrameHost* rfh =
-      RenderFrameHost::FromID(host->GetAncestorRenderFrameHostId());
   map->Add<blink::mojom::NotificationService>(BindNotificationService(
-      rfh, RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
+      host->GetAncestorRenderFrameHostId(),
+      RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
       host));
 }
 
@@ -1312,7 +1311,7 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePermissionService, host));
 
   map->Add<blink::mojom::NotificationService>(BindNotificationService(
-      /*rfh=*/nullptr,
+      GlobalRenderFrameHostId(),
       RenderProcessHost::NotificationServiceCreatorType::kSharedWorker, host));
 }
 

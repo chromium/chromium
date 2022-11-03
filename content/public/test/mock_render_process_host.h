@@ -23,6 +23,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_factory.h"
@@ -256,7 +257,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver)
       override {}
   void CreateNotificationService(
-      RenderFrameHost* rfh,
+      GlobalRenderFrameHostId rfh_id,
       RenderProcessHost::NotificationServiceCreatorType creator_type,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver)

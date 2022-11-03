@@ -615,12 +615,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void CreatePaymentManagerForOrigin(
       const url::Origin& origin,
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) = 0;
-  // `rfh` is the document associated with the `receiver` if the notification
-  // service is created by a document, or the ancestor document of the worker if
-  // the notification service is created by a dedicated worker, or `nullptr`
-  // otherwise.
+  // `rfh_id` is the id for RenderFrameHost for the `receiver` if
+  // the notification service is created by a document, or the id for the
+  // ancestor RenderFrameHost of the worker if the notification service is
+  // created by a dedicated worker, or empty value otherwise.
   virtual void CreateNotificationService(
-      RenderFrameHost* rfh,
+      GlobalRenderFrameHostId rfh_id,
       NotificationServiceCreatorType creator_type,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver) = 0;

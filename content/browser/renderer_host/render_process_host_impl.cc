@@ -2060,12 +2060,14 @@ void RenderProcessHostImpl::CreatePaymentManagerForOrigin(
 }
 
 void RenderProcessHostImpl::CreateNotificationService(
-    RenderFrameHost* rfh,
+    GlobalRenderFrameHostId rfh_id,
     const RenderProcessHost::NotificationServiceCreatorType creator_type,
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto weak_document_ptr = rfh ? rfh->GetWeakDocumentPtr() : WeakDocumentPtr();
+  RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id);
+  WeakDocumentPtr weak_document_ptr =
+      rfh ? rfh->GetWeakDocumentPtr() : WeakDocumentPtr();
   switch (creator_type) {
     case RenderProcessHost::NotificationServiceCreatorType::kServiceWorker:
     case RenderProcessHost::NotificationServiceCreatorType::kSharedWorker:
