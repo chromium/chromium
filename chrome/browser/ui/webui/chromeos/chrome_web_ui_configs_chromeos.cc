@@ -32,6 +32,8 @@
 #include "chrome/browser/ui/webui/ash/set_time_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_trace_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_ui.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
@@ -79,6 +81,8 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::InternetDetailDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NetworkUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<ash::office_fallback::OfficeFallbackUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::settings::OSSettingsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ParentAccessUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
@@ -87,7 +91,9 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::SlowTraceControllerConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SlowUIConfig>());
   map.AddWebUIConfig(
-      std::make_unique<ash::office_fallback::OfficeFallbackUIConfig>());
+      std::make_unique<ash::smb_dialog::SmbCredentialsDialogUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<ash::smb_dialog::SmbShareDialogUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
