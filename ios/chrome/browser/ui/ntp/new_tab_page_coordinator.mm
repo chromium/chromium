@@ -880,17 +880,21 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
     return;
   }
 
+  // Save the scroll position before changing sort type.
+  CGFloat scrollPosition = [self.ntpViewController scrollPosition];
+
   [self.feedMetricsRecorder recordFollowingFeedSortTypeSelected:sortType];
-  [self.ntpViewController setContentOffsetToTop];
   self.prefService->SetInteger(prefs::kNTPFollowingFeedSortType, sortType);
   self.prefService->SetBoolean(prefs::kDefaultFollowingFeedSortTypeChanged,
                                true);
   self.discoverFeedService->SetFollowingFeedSortType(sortType);
   self.feedHeaderViewController.followingFeedSortType = sortType;
 
-  // Changing the sort type affects the scroll position, so update the feed
-  // layout.
-  [self updateFeedLayout];
+  [self updateNTPForFeed];
+
+  // Scroll position resets when changing the feed, so we set it back to what it
+  // was.
+  [self.ntpViewController setContentOffsetToTopOfFeed:scrollPosition];
 }
 
 - (BOOL)shouldFeedBeVisible {
