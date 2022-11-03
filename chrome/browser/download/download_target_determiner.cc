@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -882,12 +881,12 @@ DownloadTargetDeterminer::Result
 
   // IsAdobeReaderUpToDate() needs to be run with COM as it makes COM calls via
   // AssocQueryString() in IsAdobeReaderDefaultPDFViewer().
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()}).get(),
-      FROM_HERE, base::BindOnce(&::IsAdobeReaderUpToDate),
-      base::BindOnce(
-          &DownloadTargetDeterminer::DetermineIfAdobeReaderUpToDateDone,
-          weak_ptr_factory_.GetWeakPtr()));
+  base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&::IsAdobeReaderUpToDate),
+          base::BindOnce(
+              &DownloadTargetDeterminer::DetermineIfAdobeReaderUpToDateDone,
+              weak_ptr_factory_.GetWeakPtr()));
   return QUIT_DOLOOP;
 #else
   return CONTINUE;

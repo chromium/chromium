@@ -15,7 +15,6 @@
 #include <windows.h>
 #include <shellapi.h>
 
-#include "base/task/task_runner_util.h"
 #include "base/win/win_util.h"
 #include "ui/display/win/dpi.h"
 #include "ui/gfx/icon_util.h"
@@ -53,13 +52,12 @@ ElevationIconSetter::ElevationIconSetter(views::LabelButton* button,
                                          base::OnceClosure callback)
     : button_(button) {
 #if BUILDFLAG(IS_WIN)
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
-          .get(),
-      FROM_HERE, base::BindOnce(&GetElevationIcon),
-      base::BindOnce(&ElevationIconSetter::SetButtonIcon,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&GetElevationIcon),
+          base::BindOnce(&ElevationIconSetter::SetButtonIcon,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
 #endif
 }
 

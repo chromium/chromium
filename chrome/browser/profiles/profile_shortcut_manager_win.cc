@@ -23,7 +23,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/shortcut.h"
@@ -905,10 +904,10 @@ void ProfileShortcutManagerWin::RemoveProfileShortcuts(
 void ProfileShortcutManagerWin::HasProfileShortcuts(
     const base::FilePath& profile_path,
     base::OnceCallback<void(bool)> callback) {
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()}).get(),
-      FROM_HERE, base::BindOnce(&HasAnyProfileShortcuts, profile_path),
-      std::move(callback));
+  base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&HasAnyProfileShortcuts, profile_path),
+          std::move(callback));
 }
 
 void ProfileShortcutManagerWin::GetShortcutProperties(

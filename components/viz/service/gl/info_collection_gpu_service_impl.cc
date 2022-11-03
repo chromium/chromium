@@ -5,7 +5,6 @@
 #include "components/viz/service/gl/info_collection_gpu_service_impl.h"
 
 #include <utility>
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "gpu/config/dx_diag_node.h"
 #include "gpu/config/gpu_info_collector.h"
@@ -106,24 +105,24 @@ void InfoCollectionGpuServiceImpl::RequestDxDiagNodeInfoOnMain(
 
   // We can continue on shutdown here because we're not writing any critical
   // state in this task.
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner(
-          {base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
-          .get(),
-      FROM_HERE, base::BindOnce([]() {
-        gpu::DxDiagNode dx_diag_node;
-        gpu::GetDxDiagnostics(&dx_diag_node);
-        return dx_diag_node;
-      }),
-      base::BindOnce(
-          [](RequestDxDiagNodeInfoCallback callback,
-             scoped_refptr<base::SingleThreadTaskRunner> io_runner,
-             const gpu::DxDiagNode& dx_diag_node) {
-            io_runner->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), dx_diag_node));
-          },
-          std::move(callback), io_runner_));
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce([]() {
+            gpu::DxDiagNode dx_diag_node;
+            gpu::GetDxDiagnostics(&dx_diag_node);
+            return dx_diag_node;
+          }),
+          base::BindOnce(
+              [](RequestDxDiagNodeInfoCallback callback,
+                 scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+                 const gpu::DxDiagNode& dx_diag_node) {
+                io_runner->PostTask(
+                    FROM_HERE,
+                    base::BindOnce(std::move(callback), dx_diag_node));
+              },
+              std::move(callback), io_runner_));
 }
 
 }  // namespace viz

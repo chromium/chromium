@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -401,21 +400,23 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
 #if BUILDFLAG(IS_WIN)
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner({}).get(), FROM_HERE,
+  base::ThreadPool::CreateCOMSTATaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&enterprise_signals::DeviceInfoFetcher::Fetch,
                      enterprise_signals::DeviceInfoFetcher::CreateInstance()),
       base::BindOnce(&EnterpriseReportingPrivateGetDeviceInfoFunction::
                          OnDeviceInfoRetrieved,
                      this));
 #else
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateTaskRunner({base::MayBlock()}).get(), FROM_HERE,
-      base::BindOnce(&enterprise_signals::DeviceInfoFetcher::Fetch,
-                     enterprise_signals::DeviceInfoFetcher::CreateInstance()),
-      base::BindOnce(&EnterpriseReportingPrivateGetDeviceInfoFunction::
-                         OnDeviceInfoRetrieved,
-                     this));
+  base::ThreadPool::CreateTaskRunner({base::MayBlock()})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(
+              &enterprise_signals::DeviceInfoFetcher::Fetch,
+              enterprise_signals::DeviceInfoFetcher::CreateInstance()),
+          base::BindOnce(&EnterpriseReportingPrivateGetDeviceInfoFunction::
+                             OnDeviceInfoRetrieved,
+                         this));
 #endif  // BUILDFLAG(IS_WIN)
 
   return RespondLater();

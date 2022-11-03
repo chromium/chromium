@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -137,13 +136,13 @@ void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
 
   cancellation_flag_ = new SharedCancellationFlag;
 #if BUILDFLAG(IS_WIN)
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
-          .get(),
-      FROM_HERE, base::BindOnce(&GetChromeLaunchShortcuts, cancellation_flag_),
-      base::BindOnce(&ResettableSettingsSnapshot::SetShortcutsAndReport,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&GetChromeLaunchShortcuts, cancellation_flag_),
+          base::BindOnce(&ResettableSettingsSnapshot::SetShortcutsAndReport,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 #else   // BUILDFLAG(IS_WIN)
   // Shortcuts are only supported on Windows.
   std::vector<ShortcutCommand> no_shortcuts;

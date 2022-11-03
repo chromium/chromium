@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -120,14 +119,14 @@ base::Value::Dict UpdaterStatusAndValueProvider::GetNames() {
 
 void UpdaterStatusAndValueProvider::Refresh() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner(
-          {base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
-          .get(),
-      FROM_HERE, base::BindOnce(&GetGoogleUpdatePoliciesAndState),
-      base::BindOnce(&UpdaterStatusAndValueProvider::OnUpdaterPoliciesRefreshed,
-                     weak_factory_.GetWeakPtr()));
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&GetGoogleUpdatePoliciesAndState),
+          base::BindOnce(
+              &UpdaterStatusAndValueProvider::OnUpdaterPoliciesRefreshed,
+              weak_factory_.GetWeakPtr()));
 }
 
 void UpdaterStatusAndValueProvider::OnDomainReceived(std::string domain) {

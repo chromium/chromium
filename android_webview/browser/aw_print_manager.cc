@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/printing/browser/print_manager_utils.h"
@@ -149,14 +148,13 @@ void AwPrintManager::DidPrintDocument(
   }
 
   DCHECK(pdf_writing_done_callback());
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
-          .get(),
-      FROM_HERE, base::BindOnce(&SaveDataToFd, fd_, number_pages(), data),
-      base::BindOnce(&AwPrintManager::OnDidPrintDocumentWritingDone,
-                     pdf_writing_done_callback(), std::move(callback)));
+  base::ThreadPool::CreateTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&SaveDataToFd, fd_, number_pages(), data),
+          base::BindOnce(&AwPrintManager::OnDidPrintDocumentWritingDone,
+                         pdf_writing_done_callback(), std::move(callback)));
 }
 
 // static
