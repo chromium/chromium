@@ -28,6 +28,18 @@ bool IsContentAnalysisPref(const char* pref) {
 bool CanUseNonCloudPolicySource(const char* pref,
                                 const policy::PolicyMap::Entry* policy) {
   DCHECK(policy);
+
+  // The condition below is a quick fix to avoid accessing feature state before
+  // FeatureList initialization, because that results in a crash.
+  //
+  // TODO(crbug.com/1381113): Instead of this quick fix, move code that depends
+  // on feature state after FeatureList initialization.
+  if (!base::FeatureList::GetInstance() &&
+      kLocalContentAnalysisEnabled.default_state ==
+          base::FEATURE_DISABLED_BY_DEFAULT) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(kLocalContentAnalysisEnabled))
     return false;
 
