@@ -23,7 +23,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
-#include "chrome/updater/win/wrl_module_initializer.h"
 
 namespace updater {
 
@@ -48,7 +47,6 @@ class ProxyImplBase {
  protected:
   explicit ProxyImplBase(UpdaterScope scope) : scope_(scope) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
-    WRLModuleInitializer::Get();
   }
 
   ~ProxyImplBase() { VLOG(2) << __func__; }

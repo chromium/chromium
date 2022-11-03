@@ -291,7 +291,6 @@ if (is_win || is_mac || is_linux) {
         "win/ui/yes_no_dialog.h",
         "win/update_service_internal_proxy.cc",
         "win/update_service_internal_proxy.h",
-        "win/wrl_module_initializer.h",
       ]
       deps += [
         "//build:branding_buildflags",

@@ -22,7 +22,6 @@
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/proxy_impl_base.h"
 #include "chrome/updater/win/win_constants.h"
-#include "chrome/updater/win/wrl_module_initializer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace updater {
