@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -595,10 +594,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                             > 1;
         }
 
-        boolean isPriceTrackingVisible = isOverviewModeMenu
-                && PriceTrackingUtilities.shouldShowPriceTrackingMenu()
-                && !DeviceClassManager.enableAccessibilityLayout(mContext) && !isIncognito;
-        boolean isPriceTrackingEnabled = isPriceTrackingVisible;
         boolean hasItemBetweenDividers = false;
 
         for (int i = 0; i < menu.size(); ++i) {
@@ -649,10 +644,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (item.getItemId() == R.id.menu_select_tabs) {
                 item.setVisible(isMenuSelectTabsVisible);
                 item.setEnabled(isMenuSelectTabsEnabled);
-            }
-            if (item.getItemId() == R.id.track_prices_row_menu_id) {
-                item.setVisible(isPriceTrackingVisible);
-                item.setEnabled(isPriceTrackingEnabled);
             }
             if (item.getItemId() == R.id.close_all_tabs_menu_id) {
                 boolean hasTabs = mTabModelSelector.getTotalTabCount() > 0;

@@ -248,8 +248,6 @@ public class OverviewAppMenuTest {
 
         assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_incognito_tabs_menu_id));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
 
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
@@ -274,8 +272,6 @@ public class OverviewAppMenuTest {
 
         assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_tabs_menu_id));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
 
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());

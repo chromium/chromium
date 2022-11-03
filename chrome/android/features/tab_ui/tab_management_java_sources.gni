@@ -24,7 +24,6 @@ tab_management_test_java_sources = [
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/CloseAllTabsDialogTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoCardRenderTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/PriceAlertsMessageCardTest.java",
-  "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/PriceTrackingDialogTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/RecyclerViewMatcherUtils.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridAccessibilityHelperTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogTest.java",

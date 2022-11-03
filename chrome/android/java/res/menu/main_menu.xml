@@ -184,9 +184,6 @@ found in the LICENSE file.
         <item android:id="@+id/menu_select_tabs"
             android:title="@string/menu_select_tabs"
             android:icon="@drawable/ic_select_tabs" />
-        <item android:id="@+id/track_prices_row_menu_id"
-            android:title="@string/menu_track_prices"
-            android:icon="@drawable/ic_trending_down_black" />
         <item android:id="@id/preferences_id"
             android:title="@string/menu_settings"
             android:icon="@drawable/settings_cog" />

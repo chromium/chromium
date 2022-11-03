@@ -474,20 +474,11 @@
       </message>
 
       <!-- Price Tracking Settings Dialog strings -->
-      <message name="IDS_PRICE_TRACKING_SETTINGS" desc="When users click the menu item 'Track prices' in tab switcher, a dialog will pop up and this text is the title of the dialog.">
-        Price tracking settings
-      </message>
       <message name="IDS_TRACK_PRICES_ON_TABS" desc="This text shows in the price tracking settings dialog. It tells users the switch on the side can be used to turn on/off the 'Track prices on tabs' feature.">
         Track prices on tabs
       </message>
       <message name="IDS_TRACK_PRICES_ON_TABS_DESCRIPTION" desc="This text shows below 'Track prices on tabs'. It describes what will happen when turning on this feature.">
         See price drops on your tabs
-      </message>
-      <message name="IDS_PRICE_DROP_ALERTS" desc="This text shows in the price tracking settings dialog. It tells users the switch on the side can be used to turn on/off the 'Price drop alerts' feature.">
-        Price drop alerts
-      </message>
-      <message name="IDS_PRICE_DROP_ALERTS_DESCRIPTION" desc="This text shows below 'Price drop alerts'. It describes what will happen when turning on this feature.">
-        Get notified when prices drop
       </message>
 
       <!-- Price Drop Notification strings -->

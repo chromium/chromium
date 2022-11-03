@@ -38,14 +38,6 @@ public class PriceTrackingUtilities {
     public static final SharedPreferencesManager SHARED_PREFERENCES_MANAGER =
             SharedPreferencesManager.getInstance();
 
-    // TODO(crbug.com/1307949): Clean up this api.
-    @Deprecated
-    public static void flipTrackPricesOnTabs() {
-        final boolean enableTrackPricesOnTabs = SHARED_PREFERENCES_MANAGER.readBoolean(
-                TRACK_PRICES_ON_TABS, PriceTrackingFeatures.isPriceTrackingEnabled());
-        SHARED_PREFERENCES_MANAGER.writeBoolean(TRACK_PRICES_ON_TABS, !enableTrackPricesOnTabs);
-    }
-
     /**
      * Update SharedPreferences when users turn on/off the feature tracking prices on tabs.
      */
@@ -144,14 +136,6 @@ public class PriceTrackingUtilities {
     public static boolean isTabModelPriceTrackingEligible(TabModel tabModel) {
         // Incognito Tabs are not eligible for price tracking.
         return !tabModel.getProfile().isOffTheRecord();
-    }
-
-    // TODO(crbug.com/1307949): Clean up price tracking menu.
-    /**
-     * @return whether we should show the PriceTrackingSettings menu item in grid tab switcher.
-     */
-    public static boolean shouldShowPriceTrackingMenu() {
-        return false;
     }
 
     private static boolean isImplicitSubscriptionsEnabled() {

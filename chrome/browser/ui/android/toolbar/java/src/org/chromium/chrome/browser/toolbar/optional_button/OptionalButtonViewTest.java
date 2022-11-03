@@ -141,7 +141,7 @@ public class OptionalButtonViewTest {
         Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic);
         OnClickListener clickListener = mock(OnClickListener.class);
         OnLongClickListener longClickListener = mock(OnLongClickListener.class);
-        int contentDescriptionId = R.string.menu_track_prices;
+        int contentDescriptionId = R.string.enable_price_tracking_menu_item;
 
         // Whether a button is static or dynamic is determined by the button variant.
         ButtonSpec buttonSpec = new ButtonSpec(iconDrawable, clickListener, longClickListener,
