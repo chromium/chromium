@@ -7,6 +7,8 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 
 // static
 AppShortcutManager* AppShortcutManagerFactory::GetForProfile(Profile* profile) {
@@ -20,7 +22,10 @@ AppShortcutManagerFactory* AppShortcutManagerFactory::GetInstance() {
 }
 
 AppShortcutManagerFactory::AppShortcutManagerFactory()
-    : ProfileKeyedServiceFactory("AppShortcutManager") {}
+    : ProfileKeyedServiceFactory("AppShortcutManager") {
+  web_app::WebAppShortcutManager::SetUpdateShortcutsForAllAppsCallback(
+      base::BindRepeating(&web_app::UpdateShortcutsForAllApps));
+}
 
 AppShortcutManagerFactory::~AppShortcutManagerFactory() {}
 

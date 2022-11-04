@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/one_shot_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 
 using content::BrowserThread;
@@ -121,6 +123,17 @@ bool ShouldUpgradeShortcutFor(Profile* profile,
 
 void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Wait for extensions to be ready before continuing.
+  auto* extension_system = extensions::ExtensionSystem::Get(profile);
+  if (!extension_system)
+    return;
+  if (!extension_system->is_ready()) {
+    extension_system->ready().Post(
+        FROM_HERE, base::BindOnce(&UpdateShortcutsForAllApps, profile,
+                                  std::move(callback)));
+    return;
+  }
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);

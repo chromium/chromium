@@ -38,6 +38,8 @@ using ShortcutLocationCallback =
 // platform_apps/shortcut_manager.(h|cc) to WebAppShortcutManager.
 class WebAppShortcutManager {
  public:
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
   WebAppShortcutManager(Profile* profile,
                         WebAppIconManager* icon_manager,
                         WebAppFileHandlerManager* file_handler_manager,
@@ -50,7 +52,6 @@ class WebAppShortcutManager {
                      WebAppRegistrar* registrar);
 
   void Start();
-  void Shutdown();
 
   // Tells the WebAppShortcutManager that no shortcuts should actually be
   // written to the disk.
@@ -113,6 +114,18 @@ class WebAppShortcutManager {
   virtual void GetShortcutInfoForApp(const AppId& app_id,
                                      GetShortcutInfoCallback callback);
 
+  // Sets a callback to be called when this class determines that all shortcuts
+  // for a particular profile need to be rebuild, for example because the app
+  // shortcut version has changed since the last time these were created.
+  // This is used by the legacy extensions based app code in
+  // chrome/browser/web_applications/extensions to ensure those app shortcuts
+  // also get updated. Calling out to that code directly would violate
+  // dependency layering.
+  using UpdateShortcutsForAllAppsCallback =
+      base::RepeatingCallback<void(Profile*, base::OnceClosure)>;
+  static void SetUpdateShortcutsForAllAppsCallback(
+      UpdateShortcutsForAllAppsCallback callback);
+
   using ShortcutCallback = base::OnceCallback<void(const ShortcutInfo*)>;
   static void SetShortcutUpdateCallbackForTesting(ShortcutCallback callback);
 
@@ -145,6 +158,12 @@ class WebAppShortcutManager {
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 
   std::unique_ptr<ShortcutInfo> BuildShortcutInfoForWebApp(const WebApp* app);
+
+  // Schedules a call to UpdateShortcutsForAllAppsNow() if kAppShortcutsVersion
+  // in prefs is less than kCurrentAppShortcutsVersion.
+  void UpdateShortcutsForAllAppsIfNeeded();
+  void UpdateShortcutsForAllAppsNow();
+  void SetCurrentAppShortcutsVersion();
 
   bool suppress_shortcuts_for_testing_ = false;
 

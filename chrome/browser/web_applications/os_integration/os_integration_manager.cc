@@ -144,6 +144,7 @@ void OsIntegrationManager::Start() {
   DCHECK(file_handler_manager_);
 
   registrar_observation_.Observe(registrar_.get());
+  shortcut_manager_->Start();
   file_handler_manager_->Start();
   if (protocol_handler_manager_)
     protocol_handler_manager_->Start();
