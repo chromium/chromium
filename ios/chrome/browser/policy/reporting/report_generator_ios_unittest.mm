@@ -17,12 +17,13 @@
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector_mock.h"
 #import "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -45,8 +46,7 @@ class ReportGeneratorIOSTest : public PlatformTest {
     builder.SetPath(kProfilePath);
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     InitMockPolicyService();
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
@@ -58,6 +58,11 @@ class ReportGeneratorIOSTest : public PlatformTest {
         std::make_unique<IOSChromeScopedTestingChromeBrowserStateManager>(
             std::make_unique<TestChromeBrowserStateManager>(
                 std::move(browser_state)));
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        GetApplicationContext()
+            ->GetChromeBrowserStateManager()
+            ->GetLastUsedBrowserState(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
   }
 
   ReportGeneratorIOSTest(const ReportGeneratorIOSTest&) = delete;
@@ -81,7 +86,6 @@ class ReportGeneratorIOSTest : public PlatformTest {
                     policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_MERGED,
                     base::Value(true), nullptr);
   }
-
 
   std::vector<std::unique_ptr<ReportRequest>> GenerateRequests() {
     histogram_tester_ = std::make_unique<base::HistogramTester>();

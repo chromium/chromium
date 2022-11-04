@@ -11,11 +11,13 @@
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -27,20 +29,20 @@ class PriceAlertUtilTest : public PlatformTest {
  public:
   void SetUp() override {
     browser_state_ = BuildChromeBrowserState();
-    auth_service_ = static_cast<AuthenticationServiceFake*>(
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
+    auth_service_ = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    fake_identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                                    gaiaID:@"foo1ID"
-                                                      name:@"Fake Foo 1"];
+    fake_identity_ = [FakeSystemIdentity fakeIdentity1];
   }
 
   std::unique_ptr<TestChromeBrowserState> BuildChromeBrowserState() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     return builder.Build();
   }
 
@@ -55,7 +57,12 @@ class PriceAlertUtilTest : public PlatformTest {
                                            enabled);
   }
 
-  void SignIn() { auth_service_->SignIn(fake_identity_); }
+  void SignIn() {
+    ios::FakeChromeIdentityService* identity_service_ =
+        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+    identity_service_->AddIdentity(fake_identity_);
+    auth_service_->SignIn(fake_identity_);
+  }
 
   void SignOut() {
     auth_service_->SignOut(signin_metrics::SIGNOUT_TEST,
@@ -66,7 +73,7 @@ class PriceAlertUtilTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  AuthenticationServiceFake* auth_service_ = nullptr;
+  AuthenticationService* auth_service_ = nullptr;
   FakeSystemIdentity* fake_identity_ = nullptr;
 };
 
