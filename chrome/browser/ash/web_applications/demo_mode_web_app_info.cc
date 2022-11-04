@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_demo_mode_app_resources.h"
 #include "base/strings/strcat.h"
@@ -12,6 +11,7 @@
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/constants/chromeos_features.h"
 
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
   std::unique_ptr<WebAppInstallInfo> info =

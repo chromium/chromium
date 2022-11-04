@@ -524,7 +524,7 @@ void DemoSetupController::LoadDemoComponents() {
   base::OnceClosure load_callback =
       base::BindOnce(&DemoSetupController::OnDemoComponentsLoaded,
                      weak_ptr_factory_.GetWeakPtr());
-  if (features::IsDemoModeSWAEnabled()) {
+  if (chromeos::features::IsDemoModeSWAEnabled()) {
     base::RepeatingClosure barrier_closure =
         base::BarrierClosure(2, std::move(load_callback));
     demo_components_->LoadResourcesComponent(barrier_closure);
@@ -554,7 +554,7 @@ void DemoSetupController::OnDemoComponentsLoaded() {
     return;
   }
 
-  if (features::IsDemoModeSWAEnabled()) {
+  if (chromeos::features::IsDemoModeSWAEnabled()) {
     auto app_component_error = demo_components_->app_component_error().value_or(
         component_updater::CrOSComponentManager::Error::NOT_FOUND);
     if (app_component_error !=

@@ -569,8 +569,6 @@ BASE_FEATURE(kDarkLightModeKMeansColor,
              "DarkLightModeKMeansColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDemoModeSWA, "DemoModeSWA", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables Assistant stylus features, including the
 // Assistant option in the stylus palette tool and the Assistant screen
 // selection flow triggered by the stylus long press action.
@@ -2394,10 +2392,6 @@ bool IsDarkLightModeEnabled() {
 bool IsDarkLightModeKMeansColorEnabled() {
   return IsDarkLightModeEnabled() &&
          base::FeatureList::IsEnabled(kDarkLightModeKMeansColor);
-}
-
-bool IsDemoModeSWAEnabled() {
-  return base::FeatureList::IsEnabled(kDemoModeSWA);
 }
 
 bool IsDeprecateAssistantStylusFeaturesEnabled() {

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/shell.h"
@@ -48,6 +47,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -435,7 +435,7 @@ bool DemoSession::ShouldShowAndroidOrChromeAppInShelf(
 void DemoSession::SetExtensionsExternalLoader(
     scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader) {
   extensions_external_loader_ = extensions_external_loader;
-  if (!ash::features::IsDemoModeSWAEnabled() ||
+  if (!chromeos::features::IsDemoModeSWAEnabled() ||
       extension_misc::IsDemoModeChromeApp(GetScreensaverAppId())) {
     // Do app installation when one of the following condition holds:
     // 1. Demo Mode SWA is NOT enabled, OR
@@ -603,7 +603,7 @@ void DemoSession::OnSessionStateChanged() {
                 weak_ptr_factory_.GetWeakPtr()));
       }
 
-      if (!ash::features::IsDemoModeSWAEnabled() ||
+      if (!chromeos::features::IsDemoModeSWAEnabled() ||
           extension_misc::IsDemoModeChromeApp(GetHighlightsAppId())) {
         // Do app installation when one of the following condition holds:
         // 1. Demo Mode SWA is NOT enabled, OR
@@ -613,7 +613,7 @@ void DemoSession::OnSessionStateChanged() {
       }
 
       // Download/update the Demo app component during session startup
-      if (features::IsDemoModeSWAEnabled()) {
+      if (chromeos::features::IsDemoModeSWAEnabled()) {
         components_->LoadAppComponent(
             base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
                            weak_ptr_factory_.GetWeakPtr()));

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_untrusted_page_handler.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_demo_mode_app_resources.h"
@@ -15,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -40,7 +40,7 @@ DemoModeAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
 
 bool DemoModeAppUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::features::IsDemoModeSWAEnabled();
+  return chromeos::features::IsDemoModeSWAEnabled();
 }
 
 scoped_refptr<base::RefCountedMemory> ReadFile(

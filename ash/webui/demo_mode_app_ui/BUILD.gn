@@ -20,9 +20,9 @@ static_library("demo_mode_app_ui") {
   ]
 
   deps = [
-    "//ash/constants",
     "//ash/webui/demo_mode_app_ui/mojom",
     "//ash/webui/resources:demo_mode_app_resources",
+    "//chromeos/constants",
     "//content/public/browser",
     "//ui/views",
     "//ui/webui",
