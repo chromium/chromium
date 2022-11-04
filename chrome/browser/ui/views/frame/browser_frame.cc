@@ -85,7 +85,7 @@ void BrowserFrame::InitBrowserFrame() {
   views::Widget::InitParams params = native_browser_frame_->GetWidgetParams();
   params.name = "BrowserFrame";
   params.delegate = browser_view_;
-  params.headless_mode = headless::IsChromeNativeHeadless();
+  params.headless_mode = headless::IsHeadlessMode();
 
   Browser* browser = browser_view_->browser();
   if (browser->is_type_picture_in_picture()) {
