@@ -45,7 +45,6 @@ UILabel* CarouselItemLabel() {
   label.numberOfLines = kLabelNumLines;
   label.textAlignment = NSTextAlignmentCenter;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-  // TODO(crbug.com/1365374): Check color with UX.
   return label;
 }
 
@@ -145,7 +144,6 @@ const CGFloat kOmniboxPopupCarouselControlWidth =
   // Rounds corners in a Squircle.
   self.layer.cornerCurve = kCACornerCurveContinuous;
   self.layer.cornerRadius = kPreviewCornerRadius;
-  // TODO(crbug.com/1365374): Add context Menu.
   [self
       addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
   self.translatesAutoresizingMaskIntoConstraints = NO;

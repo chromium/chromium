@@ -561,7 +561,6 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/1365374): Handle Carousel's highlight.
   return YES;
 }
 
@@ -576,7 +575,6 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
   // early. See b/5813291.
   if (row >= self.currentResult[indexPath.section].suggestions.count)
     return;
-  // TODO(crbug.com/1365374): Handle Carousel's selection.
   [self.delegate
       autocompleteResultConsumer:self
              didSelectSuggestion:self.currentResult[indexPath.section]
