@@ -135,9 +135,9 @@ class WPTResultsProcessorTest(LoggingTestCase):
             self.host,
             port=port,
             web_tests_dir=port.web_tests_dir(),
-            artifacts_dir=self.fs.join('out', 'Default',
+            artifacts_dir=self.fs.join('/mock-checkout', 'out', 'Default',
                                        'layout-test-results'),
-            results_dir=self.fs.join('out', 'Default'),
+            results_dir=self.fs.join('/mock-checkout', 'out', 'Default'),
             sink=MockResultSink(port.typ_host()))
 
     def _create_json_output(self, json_dict):
@@ -914,13 +914,14 @@ class WPTResultsProcessorTest(LoggingTestCase):
         ], test_node['artifacts']['expected_text'])
 
     def test_process_wpt_report(self):
-        report_src = self.fs.join('out', 'Default', 'wpt_report.json')
+        report_src = self.fs.join('/mock-checkout', 'out', 'Default',
+                                  'wpt_report.json')
         self.fs.write_text_file(report_src,
                                 (json.dumps(self.wpt_report) + '\n') * 2)
         self.processor.process_wpt_report(report_src)
         artifacts = self.processor.sink.invocation_level_artifacts
-        report_dest = self.fs.join('out', 'Default', 'layout-test-results',
-                                   'wpt_report.json')
+        report_dest = self.fs.join('/mock-checkout', 'out', 'Default',
+                                   'layout-test-results', 'wpt_report.json')
         self.assertEqual(artifacts['wpt_report.json'], {
             'filePath': report_dest,
         })
@@ -929,13 +930,14 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(report['results'], self.wpt_report['results'] * 2)
 
     def test_process_wpt_report_compact(self):
-        report_src = self.fs.join('out', 'Default', 'wpt_report.json')
+        report_src = self.fs.join('/mock-checkout', 'out', 'Default',
+                                  'wpt_report.json')
         self.wpt_report['run_info']['used_upstream'] = False
         self.fs.write_text_file(report_src, json.dumps(self.wpt_report))
         self.processor.process_wpt_report(report_src)
         artifacts = self.processor.sink.invocation_level_artifacts
-        report_dest = self.fs.join('out', 'Default', 'layout-test-results',
-                                   'wpt_report.json')
+        report_dest = self.fs.join('/mock-checkout', 'out', 'Default',
+                                   'layout-test-results', 'wpt_report.json')
         self.assertEqual(artifacts['wpt_report.json'], {
             'filePath': report_dest,
         })
