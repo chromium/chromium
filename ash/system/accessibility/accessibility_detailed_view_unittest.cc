@@ -434,6 +434,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
 
   AccessibilityControllerImpl* controller() { return controller_; }
   AccessibilityDetailedView* detailed_menu() { return detailed_menu_; }
+  views::View* scroll_content() { return detailed_menu_->scroll_content(); }
 
   // Accessors for list item views.
   views::View* spoken_feedback_view() const {
@@ -584,6 +585,21 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, ListItemsAreInRoundedContainer) {
   EXPECT_TRUE(has_rounded_container_parent(highlight_keyboard_focus_view()));
   EXPECT_TRUE(has_rounded_container_parent(sticky_keys_view()));
   EXPECT_TRUE(has_rounded_container_parent(switch_access_view()));
+  CloseDetailMenu();
+}
+
+TEST_F(AccessibilityDetailedViewQsRevampTest, ContainerCount) {
+  CreateDetailedMenu();
+  // All features are disabled, so there should only be one container in the
+  // scroll list, for the main item list.
+  EXPECT_EQ(1u, scroll_content()->children().size());
+  CloseDetailMenu();
+
+  EnableSpokenFeedback(true);
+  CreateDetailedMenu();
+  // With one feature enabled, there should be two containers in the scroll
+  // list, one for the top items and another one for the main item list.
+  EXPECT_EQ(2u, scroll_content()->children().size());
   CloseDetailMenu();
 }
 

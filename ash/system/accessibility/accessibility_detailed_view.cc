@@ -43,6 +43,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -288,15 +289,23 @@ const char* AccessibilityDetailedView::GetClassName() const {
 void AccessibilityDetailedView::AppendAccessibilityList() {
   CreateScrollableList();
 
-  views::View* container = scroll_content();
   if (features::IsQsRevampEnabled()) {
-    container =
+    auto top_container = std::make_unique<RoundedContainer>();
+    AddEnabledFeatures(top_container.get());
+
+    // If enabled features were added, add the top container and some padding.
+    if (!top_container->children().empty()) {
+      auto* view = scroll_content()->AddChildView(std::move(top_container));
+      constexpr auto kTopContainerMargins = gfx::Insets::TLBR(0, 0, 8, 0);
+      view->SetProperty(views::kMarginsKey, kTopContainerMargins);
+    }
+
+    views::View* main_container =
         scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
-
-    AddEnabledFeatures(container);
+    AddAllFeatures(main_container);
+  } else {
+    AddAllFeatures(scroll_content());
   }
-
-  AddAllFeatures(container);
 }
 
 void AccessibilityDetailedView::AddEnabledFeatures(views::View* container) {
@@ -371,11 +380,6 @@ void AccessibilityDetailedView::AddEnabledFeatures(views::View* container) {
       controller->sticky_keys().enabled()) {
     sticky_keys_top_view_ = AddStickyKeysView(container);
   }
-
-  // Add a divider line if any features were added above.
-  if (!container->children().empty()) {
-    container->AddChildView(TrayPopupUtils::CreateListSubHeaderSeparator());
-  }
 }
 
 void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
@@ -425,14 +429,17 @@ void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
     live_caption_view_ = AddLiveCaptionView(container);
   }
 
-  if (controller->IsAdditionalSettingsSeparatorVisibleInTray()) {
-    container->AddChildView(TrayPopupUtils::CreateListSubHeaderSeparator());
-  }
+  // QsRevamp does not use a separator or sub-header.
+  if (!features::IsQsRevampEnabled()) {
+    if (controller->IsAdditionalSettingsSeparatorVisibleInTray()) {
+      container->AddChildView(TrayPopupUtils::CreateListSubHeaderSeparator());
+    }
 
-  if (controller->IsAdditionalSettingsViewVisibleInTray()) {
-    AddScrollListSubHeader(
-        container, gfx::kNoneIcon,
-        IDS_ASH_STATUS_TRAY_ACCESSIBILITY_ADDITIONAL_SETTINGS);
+    if (controller->IsAdditionalSettingsViewVisibleInTray()) {
+      AddScrollListSubHeader(
+          container, gfx::kNoneIcon,
+          IDS_ASH_STATUS_TRAY_ACCESSIBILITY_ADDITIONAL_SETTINGS);
+    }
   }
 
   if (controller->IsLargeCursorSettingVisibleInTray()) {
