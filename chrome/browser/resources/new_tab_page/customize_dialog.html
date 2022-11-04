@@ -236,21 +236,23 @@
         <iron-selector id="menuSelector" selected-attribute="selected"
             attr-for-selected="page-name" selected="{{selectedPage}}"
             on-keydown="onMenuItemKeyDown_" fallback-selection="backgrounds">
-          <div class="menu-item" page-name="backgrounds" tabindex="0">
+          <div class="menu-item" page-name="backgrounds" role="menuitem"
+              tabindex="0">
             <div id="backgroundsIcon" class="menu-item-icon"></div>
             $i18n{backgroundsMenuItem}
           </div>
-          <div class="menu-item" page-name="shortcuts" tabindex="0"
-              hidden$="[[!shortcutsEnabled_]]">
+          <div class="menu-item" page-name="shortcuts" role="menuitem"
+              tabindex="0" hidden$="[[!shortcutsEnabled_]]">
             <div id="shortcutsIcon" class="menu-item-icon"></div>
             $i18n{shortcutsMenuItem}
           </div>
-          <div class="menu-item" page-name="modules" tabindex="0"
-              hidden$="[[!modulesEnabled_]]">
+          <div class="menu-item" page-name="modules" role="menuitem"
+              tabindex="0" hidden$="[[!modulesEnabled_]]">
             <div id="modulesIcon" class="menu-item-icon"></div>
             $i18n{modulesMenuItem}
           </div>
-          <div class="menu-item" page-name="themes" tabindex="0">
+          <div class="menu-item" page-name="themes" role="menuitem"
+              tabindex="0">
             <div id="themesIcon" class="menu-item-icon"></div>
             $i18n{themesMenuItem}
           </div>
