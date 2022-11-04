@@ -173,7 +173,7 @@ to the release branch you are merging to (available on
 column).
 
 Once the cherry-pick CL is prepared, you can bypass code review (but not
-OWNERS approval) within 7 days of the original change by adding the Rubber
+OWNERS approval) within 14 days of the original change by adding the Rubber
 Stamper bot (rubber-stamper@appspot.gserviceaccount.com) as a reviewer. If the
 CL meets the
 [Rubber Stamper criteria](https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/appengine/rubber-stamper/README.md),
