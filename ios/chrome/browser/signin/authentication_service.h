@@ -27,6 +27,7 @@ class SyncService;
 class AuthenticationServiceDelegate;
 class AuthenticationServiceFake;
 class AuthenticationServiceObserver;
+class FakeAuthenticationService;
 class PrefService;
 class SyncSetupService;
 @protocol SystemIdentity;
@@ -162,6 +163,7 @@ class AuthenticationService : public KeyedService,
   void OnApplicationWillEnterForeground();
 
  private:
+  friend class FakeAuthenticationService;
   friend class AuthenticationServiceFake;
   friend class AuthenticationServiceTest;
 
