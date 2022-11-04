@@ -111,7 +111,6 @@ oobe_migrated_imports = [
   "ash/webui/common/resources/network/network_select.html",
   "ash/webui/common/resources/network/onc_mojo.html",
   "chrome/browser/resources/chromeos/assistant_optin_flow.html",
-  "chrome/browser/resources/chromeos/login/components/behaviors/oobe_focus_behavior.html",
   "chrome/browser/resources/chromeos/login/components/behaviors/oobe_i18n_behavior.html",
   "chrome/browser/resources/chromeos/login/components/buttons/oobe_back_button.html",
   "chrome/browser/resources/chromeos/login/components/buttons/oobe_base_button.html",
