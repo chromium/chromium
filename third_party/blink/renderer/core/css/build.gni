@@ -491,7 +491,6 @@ blink_core_sources_css = [
   "parser/css_parser_idioms.h",
   "parser/css_parser_impl.cc",
   "parser/css_parser_impl.h",
-  "parser/css_parser_local_context.cc",
   "parser/css_parser_local_context.h",
   "parser/css_parser_mode.h",
   "parser/css_parser_observer.h",
