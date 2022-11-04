@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -62,14 +63,28 @@ absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(
 
 }  // namespace
 
-base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
-    base::Value::Dict registration,
-    base::Time source_time,
-    url::Origin reporting_origin,
-    url::Origin source_origin,
-    AttributionSourceType source_type,
-    bool is_within_fenced_frame) {
-  url::Origin destination;
+SourceRegistration::SourceRegistration() = default;
+
+SourceRegistration::~SourceRegistration() = default;
+
+SourceRegistration::SourceRegistration(const SourceRegistration&) = default;
+
+SourceRegistration& SourceRegistration::operator=(const SourceRegistration&) =
+    default;
+
+SourceRegistration::SourceRegistration(SourceRegistration&&) = default;
+
+SourceRegistration& SourceRegistration::operator=(SourceRegistration&&) =
+    default;
+
+// static
+base::expected<SourceRegistration, SourceRegistrationError>
+SourceRegistration::Parse(base::Value::Dict registration,
+                          url::Origin reporting_origin) {
+  DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
+
+  SourceRegistration result;
+
   {
     const base::Value* v = registration.Find("destination");
     if (!v)
@@ -79,33 +94,34 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
     if (!s)
       return base::unexpected(SourceRegistrationError::kDestinationWrongType);
 
-    destination = url::Origin::Create(GURL(*s));
-    if (!network::IsOriginPotentiallyTrustworthy(destination)) {
+    result.destination = url::Origin::Create(GURL(*s));
+    if (!network::IsOriginPotentiallyTrustworthy(result.destination)) {
       return base::unexpected(
           SourceRegistrationError::kDestinationUntrustworthy);
     }
   }
 
-  uint64_t source_event_id =
+  result.source_event_id =
       ParseUint64(registration, "source_event_id").value_or(0);
 
-  int64_t priority = ParseInt64(registration, "priority").value_or(0);
+  result.priority = ParseInt64(registration, "priority").value_or(0);
 
-  absl::optional<base::TimeDelta> expiry =
-      ParseTimeDeltaInSeconds(registration, "expiry");
+  result.expiry = ParseTimeDeltaInSeconds(registration, "expiry");
 
-  absl::optional<base::TimeDelta> event_report_window =
+  result.event_report_window =
       ParseTimeDeltaInSeconds(registration, "event_report_window");
 
-  absl::optional<base::TimeDelta> aggregatable_report_window =
+  result.aggregatable_report_window =
       ParseTimeDeltaInSeconds(registration, "aggregatable_report_window");
 
-  absl::optional<uint64_t> debug_key = ParseUint64(registration, "debug_key");
+  result.debug_key = ParseUint64(registration, "debug_key");
 
   base::expected<AttributionFilterData, SourceRegistrationError> filter_data =
       AttributionFilterData::FromJSON(registration.Find("filter_data"));
   if (!filter_data.has_value())
     return base::unexpected(filter_data.error());
+
+  result.filter_data = std::move(*filter_data);
 
   base::expected<AttributionAggregationKeys, SourceRegistrationError>
       aggregation_keys = AttributionAggregationKeys::FromJSON(
@@ -113,25 +129,47 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
   if (!aggregation_keys.has_value())
     return base::unexpected(aggregation_keys.error());
 
-  bool debug_reporting =
+  result.aggregation_keys = std::move(*aggregation_keys);
+
+  result.debug_reporting =
       registration.FindBool("debug_reporting").value_or(false);
+
+  result.reporting_origin = std::move(reporting_origin);
+  return result;
+}
+
+base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
+    base::Value::Dict registration,
+    base::Time source_time,
+    url::Origin reporting_origin,
+    url::Origin source_origin,
+    AttributionSourceType source_type,
+    bool is_within_fenced_frame) {
+  base::expected<SourceRegistration,
+                 attribution_reporting::mojom::SourceRegistrationError>
+      reg = SourceRegistration::Parse(std::move(registration),
+                                      std::move(reporting_origin));
+  if (!reg.has_value())
+    return base::unexpected(reg.error());
 
   return StorableSource(
       CommonSourceInfo(
-          source_event_id, std::move(source_origin), std::move(destination),
-          std::move(reporting_origin), source_time,
-          CommonSourceInfo::GetExpiryTime(expiry, source_time, source_type),
-          event_report_window
+          reg->source_event_id, std::move(source_origin),
+          std::move(reg->destination), std::move(reg->reporting_origin),
+          source_time,
+          CommonSourceInfo::GetExpiryTime(reg->expiry, source_time,
+                                          source_type),
+          reg->event_report_window
               ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
-                    event_report_window, source_time, source_type))
+                    reg->event_report_window, source_time, source_type))
               : absl::nullopt,
-          aggregatable_report_window
+          reg->aggregatable_report_window
               ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
-                    aggregatable_report_window, source_time, source_type))
+                    reg->aggregatable_report_window, source_time, source_type))
               : absl::nullopt,
-          source_type, priority, std::move(*filter_data), debug_key,
-          std::move(*aggregation_keys)),
-      is_within_fenced_frame, debug_reporting);
+          source_type, reg->priority, std::move(reg->filter_data),
+          reg->debug_key, std::move(reg->aggregation_keys)),
+      is_within_fenced_frame, reg->debug_reporting);
 }
 
 }  // namespace content
