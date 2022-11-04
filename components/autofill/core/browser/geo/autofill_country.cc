@@ -99,13 +99,8 @@ LogBuffer& operator<<(LogBuffer& buffer, const AutofillCountry& country) {
 
 base::span<const AutofillCountry::AddressFormatExtension>
 AutofillCountry::address_format_extensions() const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableExtendedAddressFormats)) {
-    return {};
-  }
-
-  // TODO(crbug.com/1300548): Extend more countries. FR and GB are used to test
-  // the feature, because libaddressinput already provides string literals.
+  // TODO(crbug.com/1300548): Extend more countries. FR and GB already have
+  // overwrites, because libaddressinput already provides string literals.
   static constexpr std::array<AddressFormatExtension, 1> fr_extensions{
       {{.type = AddressField::ADMIN_AREA,
         .label_id = IDS_LIBADDRESSINPUT_PROVINCE,

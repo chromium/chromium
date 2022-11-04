@@ -250,13 +250,6 @@ BASE_FEATURE(kAutofillEnableDependentLocalityParsing,
              "AutofillEnableDependentLocalityParsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the augmentation layer for setting-inaccessible fields, which allows
-// extending Autofill's address format by additional fields.
-// TODO(crbug.com/1300548) Remove when launched.
-BASE_FEATURE(kAutofillEnableExtendedAddressFormats,
-             "AutofillEnableExtendedAddressFormats",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to save the first number in a form with multiple phone
 // numbers instead of aborting the import.
 // TODO(crbug.com/1167484) Remove once launched.

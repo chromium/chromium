@@ -171,10 +171,6 @@ TEST(AutofillCountryTest, AliasMappingsForCountryData) {
 // not part of libaddressinputs expected types, but that they are placed
 // after a field that is present in libaddressinput.
 TEST(AutofillCountryTest, VerifyAddressFormatExtensions) {
-  base::test::ScopedFeatureList address_extension_feature;
-  address_extension_feature.InitAndEnableFeature(
-      features::kAutofillEnableExtendedAddressFormats);
-
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
   for (const std::string& country_code : country_data_map->country_codes()) {
     AutofillCountry country(country_code);

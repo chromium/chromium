@@ -55,10 +55,6 @@ TEST_F(AddressFormattingTest, GetAddressComponentsSkipsEmptyLines) {
 // Tests that address field extensions are applied to `GetAddressComponents()`,
 // by checking that Great Britain's address format is extended by a state field.
 TEST_F(AddressFormattingTest, GetAddressComponentsWithExtensions) {
-  base::test::ScopedFeatureList address_extension_feature;
-  address_extension_feature.InitAndEnableFeature(
-      features::kAutofillEnableExtendedAddressFormats);
-
   std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> lines;
   std::string components_language_code;
   autofill::GetAddressComponents("GB", GetLocale(), /*include_literals=*/false,
@@ -175,10 +171,6 @@ TEST_F(
 // `GetEnvelopeStyleAddress()`, by checking that Great Britain's address format
 // is extended by a state field.
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithExtensions) {
-  base::test::ScopedFeatureList address_extension_feature;
-  address_extension_feature.InitAndEnableFeature(
-      features::kAutofillEnableExtendedAddressFormats);
-
   AutofillProfile profile(base::GenerateGUID(), /*origin=*/"");
   test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
                        "johndoe@hades.com", /*company=*/"", "666 Erebus St.",

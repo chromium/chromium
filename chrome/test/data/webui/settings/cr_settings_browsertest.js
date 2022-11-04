@@ -262,13 +262,6 @@ var CrSettingsAutofillSectionCompanyEnabledTest =
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/autofill_section_test.js';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: ['autofill::features::kAutofillEnableExtendedAddressFormats'],
-    };
-  }
 };
 
 TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
@@ -276,7 +269,6 @@ TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
   const loadTimeDataOverride = {};
   loadTimeDataOverride['EnableCompanyName'] = true;
   loadTimeDataOverride['showHonorific'] = true;
-  loadTimeDataOverride['EnableExtendedAddressFormat'] = true;
   loadTimeData.overrideValues(loadTimeDataOverride);
   mocha.run();
 });
