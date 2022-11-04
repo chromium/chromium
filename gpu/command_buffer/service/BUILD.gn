@@ -551,6 +551,16 @@ target(link_target_type, "gles2_sources") {
       "shared_image/d3d_image_representation.h",
       "shared_image/d3d_shared_fence.cc",
       "shared_image/d3d_shared_fence.h",
+      "shared_image/dcomp_image_backing_factory.cc",
+      "shared_image/dcomp_image_backing_factory.h",
+      "shared_image/dcomp_surface_image_backing.cc",
+      "shared_image/dcomp_surface_image_backing.h",
+      "shared_image/dcomp_surface_image_representation.cc",
+      "shared_image/dcomp_surface_image_representation.h",
+      "shared_image/dxgi_swap_chain_image_backing.cc",
+      "shared_image/dxgi_swap_chain_image_backing.h",
+      "shared_image/dxgi_swap_chain_image_representation.cc",
+      "shared_image/dxgi_swap_chain_image_representation.h",
     ]
     libs = [ "dxguid.lib" ]
   }

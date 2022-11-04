@@ -74,6 +74,8 @@ enum class SharedImageBackingType {
   kCompound = 13,
   kDCOMPSurfaceProxy = 14,
   kIOSurface = 15,
+  kDCompSurface = 16,
+  kDXGISwapChain = 17,
 };
 
 // Represents the actual storage (GL texture, VkImage, GMB) for a SharedImage.

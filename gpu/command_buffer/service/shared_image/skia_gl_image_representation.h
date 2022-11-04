@@ -48,7 +48,7 @@ class GPU_GLES2_EXPORT SkiaGLImageRepresentation
 
   bool SupportsMultipleConcurrentReadAccess() override;
 
- private:
+ protected:
   SkiaGLImageRepresentation(
       std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
       sk_sp<SkPromiseImageTexture> promise_texture,
@@ -57,6 +57,7 @@ class GPU_GLES2_EXPORT SkiaGLImageRepresentation
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker);
 
+ private:
   void CheckContext();
 
   std::unique_ptr<GLTextureImageRepresentationBase> gl_representation_;

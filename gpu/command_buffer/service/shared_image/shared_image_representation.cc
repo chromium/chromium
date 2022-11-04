@@ -16,6 +16,12 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/gl_fence.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <dcomp.h>
+#include <dxgi.h>
+#include <unknwn.h>
+#endif
+
 namespace gpu {
 
 SharedImageRepresentation::SharedImageRepresentation(
@@ -325,6 +331,21 @@ scoped_refptr<gfx::NativePixmap> OverlayImageRepresentation::GetNativePixmap() {
 scoped_refptr<gl::DCOMPSurfaceProxy>
 OverlayImageRepresentation::GetDCOMPSurfaceProxy() {
   return nullptr;
+}
+
+OverlayImageRepresentation::DCompLayerContent::DCompLayerContent(
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain)
+    : content_(std::move(swap_chain)) {}
+OverlayImageRepresentation::DCompLayerContent::DCompLayerContent(
+    Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface,
+    uint64_t surface_serial)
+    : content_(std::move(dcomp_surface)), surface_serial_(surface_serial) {}
+OverlayImageRepresentation::DCompLayerContent::~DCompLayerContent() = default;
+
+OverlayImageRepresentation::DCompLayerContent
+OverlayImageRepresentation::GetDCompLayerContent() const {
+  NOTREACHED();
+  return DCompLayerContent(nullptr);
 }
 #elif BUILDFLAG(IS_MAC)
 gfx::ScopedIOSurface OverlayImageRepresentation::GetIOSurface() const {

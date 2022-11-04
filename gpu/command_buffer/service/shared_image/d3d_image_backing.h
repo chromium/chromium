@@ -139,6 +139,16 @@ class GPU_GLES2_EXPORT D3DImageBacking
     return d3d11_texture_;
   }
 
+  static scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      GLenum texture_target = GL_TEXTURE_2D,
+      unsigned array_slice = 0u,
+      unsigned plane_index = 0u,
+      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr);
+
  protected:
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,

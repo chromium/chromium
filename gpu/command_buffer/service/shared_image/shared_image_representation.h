@@ -26,7 +26,12 @@
 #include "ui/gfx/gpu_fence.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <wrl/client.h>
 #include "ui/gl/dcomp_surface_proxy.h"
+
+class IDCompositionSurface;
+class IDXGISwapChain1;
+class IUnknown;
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -483,6 +488,30 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
                              MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
 
+#if BUILDFLAG(IS_WIN)
+  // Holds DComp content needed to update the DComp layer tree
+  class GPU_GLES2_EXPORT DCompLayerContent {
+   public:
+    explicit DCompLayerContent(
+        Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain);
+    DCompLayerContent(
+        Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface,
+        uint64_t surface_serial);
+    ~DCompLayerContent();
+
+    IUnknown* content() const { return content_.Get(); }
+    uint64_t surface_serial() const { return surface_serial_; }
+
+   private:
+    // Either an IDCompositionSurface or an IDXGISwapChain1
+    Microsoft::WRL::ComPtr<IUnknown> content_;
+    // This is a number that increments once for every EndDraw on a surface, and
+    // is used to determine when the contents have changed so Commit() needs to
+    // be called on the device.
+    uint64_t surface_serial_ = 0;
+  };
+#endif
+
   class GPU_GLES2_EXPORT ScopedReadAccess
       : public ScopedAccessBase<OverlayImageRepresentation> {
    public:
@@ -511,6 +540,9 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
 
     scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy() {
       return representation()->GetDCOMPSurfaceProxy();
+    }
+    DCompLayerContent GetDCompLayerContent() const {
+      return representation()->GetDCompLayerContent();
     }
 #elif BUILDFLAG(IS_MAC)
     gfx::ScopedIOSurface GetIOSurface() const {
@@ -562,6 +594,7 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
 #elif BUILDFLAG(IS_WIN)
   virtual scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy();
   virtual gl::GLImage* GetGLImage() = 0;
+  virtual DCompLayerContent GetDCompLayerContent() const;
 #elif BUILDFLAG(IS_MAC)
   virtual gfx::ScopedIOSurface GetIOSurface() const;
   // Return true if the macOS WindowServer is currently using the underlying

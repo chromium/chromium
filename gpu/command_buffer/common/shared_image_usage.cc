@@ -41,6 +41,7 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
        "RasterDelegatedCompositing"},
       {SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU, "HighPerformanceGpu"},
       {SHARED_IMAGE_USAGE_CPU_UPLOAD, "CpuUpload"},
+      {SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE, "ScanoutDCompSurface"},
   };
 
   std::string label;

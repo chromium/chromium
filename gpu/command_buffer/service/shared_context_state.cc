@@ -299,9 +299,9 @@ bool SharedContextState::InitializeGrContext(
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
     constexpr bool use_version_es2 = false;
-    sk_sp<GrGLInterface> interface(gl::init::CreateGrGLInterface(
+    sk_sp<GrGLInterface> gr_gl_interface(gl::init::CreateGrGLInterface(
         *context_->GetVersionInfo(), use_version_es2, progress_reporter));
-    if (!interface) {
+    if (!gr_gl_interface) {
       LOG(ERROR) << "OOP raster support disabled: GrGLInterface creation "
                     "failed.";
       return false;
@@ -310,7 +310,7 @@ bool SharedContextState::InitializeGrContext(
     if (activity_flags && cache) {
       // |activity_flags| is safe to capture here since it must outlive the
       // this context state.
-      interface->fFunctions.fProgramBinary =
+      gr_gl_interface->fFunctions.fProgramBinary =
           [activity_flags](GrGLuint program, GrGLenum binaryFormat,
                            void* binary, GrGLsizei length) {
             GpuProcessActivityFlags::ScopedSetFlag scoped_set_flag(
@@ -336,7 +336,7 @@ bool SharedContextState::InitializeGrContext(
       DCHECK(owned_gr_context_);
     } else {
       owned_gr_context_ =
-          GrDirectContext::MakeGL(std::move(interface), options);
+          GrDirectContext::MakeGL(std::move(gr_gl_interface), options);
     }
 
     gr_context_ = owned_gr_context_.get();

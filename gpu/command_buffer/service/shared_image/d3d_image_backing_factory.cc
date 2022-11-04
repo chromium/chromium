@@ -499,6 +499,10 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
     return false;
   }
 
+  if (usage & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE) {
+    return false;
+  }
+
   if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
     return false;
   }

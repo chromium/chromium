@@ -61,15 +61,20 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING = 1 << 16,
   // Image will be created on the high performance GPU if supported.
   SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 17,
+  // Windows only: image will be backed by a DComp surface. A swap chain is
+  // preferred when an image is opaque and expected to update frequently and
+  // independently of other overlays. This flag is incompatible with
+  // DISPLAY_READ.
+  SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE = 1 << 18,
 
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 18,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 19,
 };
 
 // Returns true if usage is a valid client usage.

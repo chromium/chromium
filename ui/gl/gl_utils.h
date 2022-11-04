@@ -52,12 +52,13 @@ GL_EXPORT unsigned int DirectCompositionRootSurfaceBufferCount();
 
 // Labels swapchain with the name_prefix and ts buffers buffers with the string
 // name_prefix + _Buffer_ + <buffer_number>.
-void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
-                              const char* name_prefix);
+GL_EXPORT void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
+                                        const char* name_prefix);
 
 // Same as LabelSwapChainAndBuffers, but only does the buffers. Used for resize
 // operations.
-void LabelSwapChainBuffers(IDXGISwapChain* swap_chain, const char* name_prefix);
+GL_EXPORT void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
+                                     const char* name_prefix);
 #endif
 
 // The following functions expose functionalities from GLDisplayManagerEGL

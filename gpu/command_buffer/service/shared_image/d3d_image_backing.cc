@@ -109,15 +109,29 @@ gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
   }
 }
 
-scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
+void CopyPlane(const uint8_t* source_memory,
+               size_t source_stride,
+               uint8_t* dest_memory,
+               size_t dest_stride,
+               viz::SharedImageFormat format,
+               const gfx::Size& size) {
+  int row_bytes = size.width() * viz::BitsPerPixel(format) / 8;
+  libyuv::CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
+                    row_bytes, size.height());
+}
+
+}  // namespace
+
+// static
+scoped_refptr<gles2::TexturePassthrough> D3DImageBacking::CreateGLTexture(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    GLenum texture_target = GL_TEXTURE_2D,
-    unsigned array_slice = 0u,
-    unsigned plane_index = 0u,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr) {
+    GLenum texture_target,
+    unsigned array_slice,
+    unsigned plane_index,
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain) {
   gl::GLApi* const api = gl::g_current_gl_context;
   gl::ScopedRestoreTexture scoped_restore(api, texture_target);
 
@@ -164,19 +178,6 @@ scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
 
   return texture;
 }
-
-void CopyPlane(const uint8_t* source_memory,
-               size_t source_stride,
-               uint8_t* dest_memory,
-               size_t dest_stride,
-               viz::SharedImageFormat format,
-               const gfx::Size& size) {
-  int row_bytes = size.width() * viz::BitsPerPixel(format) / 8;
-  libyuv::CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
-                    row_bytes, size.height());
-}
-
-}  // namespace
 
 #if BUILDFLAG(USE_DAWN)
 D3DImageBacking::DawnExternalImageState::DawnExternalImageState() = default;
