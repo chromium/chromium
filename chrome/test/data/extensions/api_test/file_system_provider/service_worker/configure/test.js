@@ -29,9 +29,9 @@ async function main() {
       chrome.test.assertFalse(providers[0].multipleMounts);
       chrome.test.assertEq('device', providers[0].source);
 
-      await new Promise(
-          resolve => chrome.fileManagerPrivate.configureVolume(
-              fileSystem.volumeInfo.volumeId, resolve));
+      await promisifyWithLastError(
+          chrome.fileManagerPrivate.configureVolume,
+          fileSystem.volumeInfo.volumeId);
 
       chrome.test.succeed();
     },

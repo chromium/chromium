@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {catchError, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, mountTestFileSystem, promisifyWithLastError, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -86,10 +86,9 @@ async function main() {
     async function getEntryPropertiesWithThumbnailSuccess() {
       const fileEntry = await fileSystem.getFileEntry(
           `/${TESTING_WITH_VALID_THUMBNAIL_FILE.name}`, {create: false});
-      const fileProperties = await new Promise(
-          resolve => chrome.fileManagerPrivate.getEntryProperties(
-              [fileEntry], ['thumbnailUrl', 'size', 'modificationTime'],
-              resolve));
+      const fileProperties = await promisifyWithLastError(
+          chrome.fileManagerPrivate.getEntryProperties, [fileEntry],
+          ['thumbnailUrl', 'size', 'modificationTime']);
       chrome.test.assertEq(1, fileProperties.length);
       chrome.test.assertEq(
           TestFileSystemProvider.VALID_THUMBNAIL,
@@ -106,9 +105,9 @@ async function main() {
     async function getEntryPropertiesWithInvalidThumbnail() {
       const fileEntry = await fileSystem.getFileEntry(
           `/${TESTING_WITH_INVALID_THUMBNAIL_FILE.name}`, {create: false});
-      const fileProperties = await new Promise(
-          resolve => chrome.fileManagerPrivate.getEntryProperties(
-              [fileEntry], ['thumbnailUrl'], resolve));
+      const fileProperties = await promisifyWithLastError(
+          chrome.fileManagerPrivate.getEntryProperties, [fileEntry],
+          ['thumbnailUrl']);
       chrome.test.assertEq(1, fileProperties.length);
       // The results for an entry is an empty dictionary in
       // case of an error.
@@ -120,9 +119,8 @@ async function main() {
     async function getEntryPropertiesWithoutThumbnail() {
       const fileEntry = await fileSystem.getFileEntry(
           `/${TESTING_WITH_VALID_THUMBNAIL_FILE.name}`, {create: false});
-      const fileProperties = await new Promise(
-          resolve => chrome.fileManagerPrivate.getEntryProperties(
-              [fileEntry], ['size'], resolve));
+      const fileProperties = await promisifyWithLastError(
+          chrome.fileManagerPrivate.getEntryProperties, [fileEntry], ['size']);
       chrome.test.assertEq(1, fileProperties.length);
       chrome.test.assertFalse('thumbnailUrl' in fileProperties[0]);
       chrome.test.assertEq(4096, fileProperties[0].size);

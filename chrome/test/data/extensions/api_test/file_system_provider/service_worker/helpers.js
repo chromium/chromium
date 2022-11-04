@@ -110,8 +110,8 @@ export async function catchError(promise) {
  *    not found.
  */
 export async function getVolumeInfo(fileSystemId) {
-  const volumeList = await new Promise(
-      resolve => chrome.fileManagerPrivate.getVolumeMetadataList(resolve));
+  const volumeList = await promisifyWithLastError(
+      chrome.fileManagerPrivate.getVolumeMetadataList);
   for (const volume of volumeList) {
     if (volume.fileSystemId === fileSystemId) {
       return volume;

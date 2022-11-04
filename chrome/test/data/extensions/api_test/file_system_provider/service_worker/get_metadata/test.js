@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {catchError, getMetadata, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, getMetadata, mountTestFileSystem, promisifyWithLastError, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -139,9 +139,8 @@ async function main() {
       const fileEntry = await fileSystem.getFileEntry(
           `/${TestFileSystemProvider.FILE_ONLY_TYPE_AND_SIZE}`,
           {create: false});
-      const fileProperties = await new Promise(
-          resolve => chrome.fileManagerPrivate.getEntryProperties(
-              [fileEntry], ['size'], resolve));
+      const fileProperties = await promisifyWithLastError(
+          chrome.fileManagerPrivate.getEntryProperties, [fileEntry], ['size']);
 
       chrome.test.assertEq(1, fileProperties.length);
       chrome.test.assertEq(1024 * 4, fileProperties[0].size);
