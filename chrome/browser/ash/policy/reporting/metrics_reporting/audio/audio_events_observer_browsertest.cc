@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
@@ -27,6 +28,8 @@ using ::testing::Eq;
 namespace reporting {
 namespace {
 
+constexpr char kDMToken[] = "token";
+
 Record GetNextRecord(chromeos::MissiveClientTestObserver* observer) {
   const std::tuple<Priority, Record>& enqueued_record =
       observer->GetNextEnqueuedRecord();
@@ -41,6 +44,8 @@ class AudioEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   AudioEventsBrowserTest() {
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+    ::policy::SetDMTokenForTesting(
+        ::policy::DMToken::CreateValidTokenForTesting(kDMToken));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -101,6 +106,8 @@ IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
   // Testing event found successfully.
   EXPECT_THAT(record_data.event_data().type(),
               Eq(::reporting::MetricEventType::AUDIO_SEVERE_UNDERRUN));
+  ASSERT_TRUE(record.has_dm_token());
+  EXPECT_THAT(record.dm_token(), ::testing::StrEq(kDMToken));
 }
 
 }  // namespace

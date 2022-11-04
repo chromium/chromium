@@ -244,6 +244,8 @@ class MetricReportingManagerTest
     user_telemetry_queue_ptr_ = user_telemetry_queue.get();
     auto peripheral_queue = std::make_unique<test::FakeMetricReportQueue>();
     peripheral_queue_ptr_ = peripheral_queue.get();
+    auto user_event_queue = std::make_unique<test::FakeMetricReportQueue>();
+    user_event_queue_ptr_ = user_event_queue.get();
 
     mock_delegate_ = std::make_unique<::testing::NiceMock<MockDelegate>>();
 
@@ -267,10 +269,14 @@ class MetricReportingManagerTest
                                 Priority::MANUAL_BATCH))
         .WillByDefault(Return(ByMove(std::move(user_telemetry_queue))));
     ON_CALL(*mock_delegate_,
-            CreateMetricReportQueue(EventType::kDevice,
+            CreateMetricReportQueue(EventType::kUser,
                                     Destination::PERIPHERAL_EVENTS,
                                     Priority::SECURITY))
         .WillByDefault(Return(ByMove(std::move(peripheral_queue))));
+    ON_CALL(*mock_delegate_,
+            CreateMetricReportQueue(EventType::kUser, Destination::EVENT_METRIC,
+                                    Priority::SLOW_BATCH))
+        .WillByDefault(Return(ByMove(std::move(user_event_queue))));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -281,6 +287,7 @@ class MetricReportingManagerTest
   test::FakeMetricReportQueue* event_queue_ptr_;
   test::FakeMetricReportQueue* peripheral_queue_ptr_;
   test::FakeMetricReportQueue* user_telemetry_queue_ptr_;
+  test::FakeMetricReportQueue* user_event_queue_ptr_;
 
   std::unique_ptr<::testing::NiceMock<MockDelegate>> mock_delegate_;
 };
@@ -430,6 +437,15 @@ TEST_P(MetricReportingManagerEventTest, Default) {
       CreateEventObserverManager(
           _, event_queue_ptr_, _, test_case.setting_data.enable_setting_path,
           test_case.setting_data.setting_enabled_default_value, _))
+      .WillByDefault([&]() {
+        return std::make_unique<FakeMetricEventObserverManager>(
+            fake_reporting_settings.get(), &observer_manager_count);
+      });
+  ON_CALL(*mock_delegate_ptr,
+          CreateEventObserverManager(
+              _, user_event_queue_ptr_, _,
+              test_case.setting_data.enable_setting_path,
+              test_case.setting_data.setting_enabled_default_value, _))
       .WillByDefault([&]() {
         return std::make_unique<FakeMetricEventObserverManager>(
             fake_reporting_settings.get(), &observer_manager_count);

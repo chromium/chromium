@@ -104,6 +104,11 @@ void MetricReportingManager::OnLogin(Profile* profile) {
   // operations.
   user_telemetry_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kUser, Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH);
+  user_event_report_queue_ = delegate_->CreateMetricReportQueue(
+      EventType::kUser, Destination::EVENT_METRIC, Priority::SLOW_BATCH);
+  user_peripheral_events_and_telemetry_report_queue_ =
+      delegate_->CreateMetricReportQueue(
+          EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY);
 
   InitOnAffiliatedLogin();
   delayed_init_on_login_timer_.Start(
@@ -149,10 +154,6 @@ MetricReportingManager::MetricReportingManager(
       metrics::GetDefaultReportUploadFrequency());
   event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kDevice, Destination::EVENT_METRIC, Priority::SLOW_BATCH);
-  peripheral_events_and_telemetry_report_queue_ =
-      delegate_->CreateMetricReportQueue(EventType::kDevice,
-                                         Destination::PERIPHERAL_EVENTS,
-                                         Priority::SECURITY);
   delayed_init_timer_.Start(FROM_HERE, delegate_->GetInitDelay(), this,
                             &MetricReportingManager::DelayedInit);
 
@@ -177,7 +178,8 @@ void MetricReportingManager::Shutdown() {
   telemetry_report_queue_.reset();
   user_telemetry_report_queue_.reset();
   event_report_queue_.reset();
-  peripheral_events_and_telemetry_report_queue_.reset();
+  user_event_report_queue_.reset();
+  user_peripheral_events_and_telemetry_report_queue_.reset();
 }
 
 void MetricReportingManager::InitDeviceTelemetrySamplers() {
@@ -241,12 +243,12 @@ void MetricReportingManager::InitOnAffiliatedLogin() {
   InitTelemetrySamplersOnAffiliatedLogin();
 
   InitEventObserverManager(
-      std::make_unique<AudioEventsObserver>(),
+      std::make_unique<AudioEventsObserver>(), user_event_report_queue_.get(),
       /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
       metrics::kReportDeviceAudioStatusDefaultValue);
   // Network health events observer.
   InitEventObserverManager(
-      std::make_unique<NetworkEventsObserver>(),
+      std::make_unique<NetworkEventsObserver>(), event_report_queue_.get(),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
       metrics::kReportDeviceNetworkStatusDefaultValue);
   InitPeripheralsCollectors();
@@ -380,14 +382,15 @@ void MetricReportingManager::InitPeriodicEventCollector(
 
 void MetricReportingManager::InitEventObserverManager(
     std::unique_ptr<MetricEventObserver> event_observer,
+    MetricReportQueue* metric_report_queue,
     const std::string& enable_setting_path,
     bool setting_enabled_default_value) {
-  if (!event_report_queue_) {
+  if (!metric_report_queue) {
     return;
   }
   event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
-      std::move(event_observer), event_report_queue_.get(),
-      &reporting_settings_, enable_setting_path, setting_enabled_default_value,
+      std::move(event_observer), metric_report_queue, &reporting_settings_,
+      enable_setting_path, setting_enabled_default_value,
       /*sampler_pool=*/this));
 }
 
@@ -472,7 +475,8 @@ void MetricReportingManager::InitNetworkConfiguredSampler(
 }
 
 void MetricReportingManager::InitAudioCollectors() {
-  InitPeriodicCollector(kSamplerAudioTelemetry, telemetry_report_queue_.get(),
+  InitPeriodicCollector(kSamplerAudioTelemetry,
+                        user_telemetry_report_queue_.get(),
                         ::ash::kReportDeviceAudioStatusCheckingRateMs,
                         metrics::GetDefaultCollectionRate(
                             metrics::kDefaultAudioTelemetryCollectionRate));
@@ -480,20 +484,20 @@ void MetricReportingManager::InitAudioCollectors() {
 
 void MetricReportingManager::InitPeripheralsCollectors() {
   // Peripheral events
-  if (!peripheral_events_and_telemetry_report_queue_) {
+  if (!user_peripheral_events_and_telemetry_report_queue_) {
     return;
   }
   event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
       std::make_unique<UsbEventsObserver>(),
-      peripheral_events_and_telemetry_report_queue_.get(), &reporting_settings_,
-      ::ash::kReportDevicePeripherals,
+      user_peripheral_events_and_telemetry_report_queue_.get(),
+      &reporting_settings_, ::ash::kReportDevicePeripherals,
       metrics::kReportDevicePeripheralsDefaultValue,
       /*sampler_pool=*/this));
 
   // Peripheral telemetry
   InitOneShotTelemetryCollector(
       kSamplerPeripheralTelemetry,
-      peripheral_events_and_telemetry_report_queue_.get());
+      user_peripheral_events_and_telemetry_report_queue_.get());
 }
 
 void MetricReportingManager::InitDisplayCollectors() {

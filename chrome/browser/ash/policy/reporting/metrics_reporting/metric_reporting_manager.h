@@ -125,6 +125,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitEventObserverManager(
       std::unique_ptr<MetricEventObserver> event_observer,
+      MetricReportQueue* report_queue,
       const std::string& enable_setting_path,
       bool setting_enabled_default_value);
 
@@ -181,8 +182,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   std::unique_ptr<MetricReportQueue> telemetry_report_queue_;
   std::unique_ptr<MetricReportQueue> user_telemetry_report_queue_;
   std::unique_ptr<MetricReportQueue> event_report_queue_;
+  std::unique_ptr<MetricReportQueue> user_event_report_queue_;
   std::unique_ptr<MetricReportQueue>
-      peripheral_events_and_telemetry_report_queue_;
+      user_peripheral_events_and_telemetry_report_queue_;
 
   base::ScopedObservation<policy::ManagedSessionService,
                           policy::ManagedSessionService::Observer>

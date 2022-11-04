@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -39,12 +40,15 @@ namespace cros_healthd = ::ash::cros_healthd;
 // expose a EmitUsbRemovedEventForTesting function.
 constexpr char kTestUserEmail[] = "test@example.com";
 constexpr char kTestAffiliationId[] = "test_affiliation_id";
+constexpr char kDMToken[] = "token";
 
 class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   UsbEventsBrowserTest() {
     // Add unaffiliated user for testing purposes.
     login_manager_mixin_.AppendRegularUsers(1);
+    ::policy::SetDMTokenForTesting(
+        ::policy::DMToken::CreateValidTokenForTesting(kDMToken));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -156,6 +160,8 @@ IN_PROC_BROWSER_TEST_F(
               ::testing::Eq(::reporting::MetricEventType::USB_ADDED));
   EXPECT_THAT(record.destination(),
               ::testing::Eq(reporting::Destination::PERIPHERAL_EVENTS));
+  ASSERT_TRUE(record.has_dm_token());
+  EXPECT_THAT(record.dm_token(), ::testing::StrEq(kDMToken));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -189,6 +195,8 @@ IN_PROC_BROWSER_TEST_F(
       ::testing::Eq(::reporting::MetricEventType::EVENT_TYPE_UNSPECIFIED));
   EXPECT_THAT(record.destination(),
               ::testing::Eq(::reporting::Destination::PERIPHERAL_EVENTS));
+  ASSERT_TRUE(record.has_dm_token());
+  EXPECT_THAT(record.dm_token(), ::testing::StrEq(kDMToken));
 }
 
 IN_PROC_BROWSER_TEST_F(
