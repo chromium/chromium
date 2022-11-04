@@ -50,6 +50,20 @@ constexpr base::TimeDelta kTuckWindowBounceStartDuration =
 constexpr base::TimeDelta kTuckWindowBounceEndDuration =
     base::Milliseconds(533);
 
+constexpr base::TimeDelta kUntuckWindowAnimationDuration =
+    base::Milliseconds(400);
+
+// Returns the tuck handle bounds aligned with `window_bounds`.
+const gfx::Rect GetTuckHandleBounds(bool left, const gfx::Rect& window_bounds) {
+  const gfx::Point tuck_handle_origin =
+      left ? window_bounds.right_center() -
+                 gfx::Vector2d(0, kTuckHandleHeight / 2)
+           : window_bounds.left_center() -
+                 gfx::Vector2d(kTuckHandleWidth, kTuckHandleHeight / 2);
+  return gfx::Rect(tuck_handle_origin,
+                   gfx::Size(kTuckHandleWidth, kTuckHandleHeight));
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -143,7 +157,7 @@ class ScopedWindowTucker::TuckHandle : public views::Button {
 // -----------------------------------------------------------------------------
 
 ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
-    : window_(window) {
+    : window_(window), left_(left) {
   DCHECK(window_);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
@@ -189,7 +203,7 @@ ScopedWindowTucker::~ScopedWindowTucker() {
   wm::ActivateWindow(window_);
 }
 
-void ScopedWindowTucker::AnimateTuck(bool left) {
+void ScopedWindowTucker::AnimateTuck() {
   const gfx::Rect initial_bounds(window_->bounds());
 
   // Sets the destination tucked bounds after the animation.
@@ -202,15 +216,7 @@ void ScopedWindowTucker::AnimateTuck(bool left) {
 
   // Align the tuck handle with the window.
   aura::Window* tuck_handle = tuck_handle_widget_->GetNativeWindow();
-  const gfx::Point tuck_handle_origin =
-      left ? final_bounds.right_center() -
-                 gfx::Vector2d(0, kTuckHandleHeight / 2)
-           : final_bounds.left_center() -
-                 gfx::Vector2d(kTuckHandleWidth, kTuckHandleHeight / 2);
-  const gfx::Rect tuck_handle_bounds(
-      tuck_handle_origin, gfx::Size(kTuckHandleWidth, kTuckHandleHeight));
-  tuck_handle->SetBounds(tuck_handle_bounds);
-  tuck_handle->layer()->SetOpacity(1.f);
+  tuck_handle->SetBounds(GetTuckHandleBounds(left_, final_bounds));
 
   // Set the window back to its initial floated bounds.
   const gfx::Transform initial_transform = gfx::TransformBetweenRects(
@@ -218,7 +224,7 @@ void ScopedWindowTucker::AnimateTuck(bool left) {
 
   // Set the transform during the bounce.
   const gfx::Transform offset_transform = gfx::Transform::MakeTranslation(
-      left ? -kTuckOffscreenPaddingDp : kTuckOffscreenPaddingDp, 0);
+      left_ ? -kTuckOffscreenPaddingDp : kTuckOffscreenPaddingDp, 0);
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -237,6 +243,33 @@ void ScopedWindowTucker::AnimateTuck(bool left) {
       .SetTransform(window_, gfx::Transform(), gfx::Tween::ACCEL_20_DECEL_100)
       .SetTransform(tuck_handle, gfx::Transform(),
                     gfx::Tween::ACCEL_20_DECEL_100);
+}
+
+void ScopedWindowTucker::AnimateUntuck(base::OnceClosure callback) {
+  const gfx::RectF initial_bounds(window_->bounds());
+
+  TabletModeWindowState::UpdateWindowPosition(
+      WindowState::Get(window_), WindowState::BoundsChangeAnimationType::kNone);
+
+  const gfx::Rect final_bounds(window_->bounds());
+  const gfx::Transform transform =
+      gfx::TransformBetweenRects(gfx::RectF(final_bounds), initial_bounds);
+  aura::Window* tuck_handle = tuck_handle_widget_->GetNativeWindow();
+  tuck_handle->SetBounds(GetTuckHandleBounds(left_, final_bounds));
+
+  views::AnimationBuilder()
+      .OnEnded(std::move(callback))
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetTransform(window_, transform)
+      .SetTransform(tuck_handle, transform)
+      .Then()
+      .SetDuration(kUntuckWindowAnimationDuration)
+      .SetTransform(window_, gfx::Transform(), gfx::Tween::ACCEL_5_70_DECEL_90)
+      .SetTransform(tuck_handle, gfx::Transform(),
+                    gfx::Tween::ACCEL_5_70_DECEL_90);
 }
 
 void ScopedWindowTucker::OnWindowActivated(ActivationReason reason,

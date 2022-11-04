@@ -24,7 +24,10 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver {
 
   views::Widget* tuck_handle_widget() { return tuck_handle_widget_.get(); }
 
-  void AnimateTuck(bool left);
+  void AnimateTuck();
+
+  // Runs `callback` when the animation is completed.
+  void AnimateUntuck(base::OnceClosure callback);
 
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -41,6 +44,9 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver {
   // The window that is being tucked. Will be tucked and untucked by the tuck
   // handle.
   aura::Window* window_;
+
+  // True iff the window is tucked to the left screen edge, false otherwise.
+  bool left_ = false;
 
   views::UniqueWidgetPtr tuck_handle_widget_ =
       std::make_unique<views::Widget>();

@@ -24,20 +24,14 @@
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "base/check_op.h"
-#include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/transform_util.h"
-#include "ui/views/animation/animation_builder.h"
 
 namespace ash {
 namespace {
-
-constexpr base::TimeDelta kUntuckWindowAnimationDuration =
-    base::Milliseconds(400);
 
 // Disables the window's position auto management and returns its original
 // value.
@@ -109,7 +103,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   const Desk* desk() const { return desk_; }
   void set_desk(const Desk* desk) { desk_ = desk; }
 
-  bool is_tucked_for_tablet() const { return !!scoped_window_tucker_; }
+  bool is_tucked_for_tablet() const { return is_tucked_for_tablet_; }
 
   MagnetismCorner magnetism_corner() const { return magnetism_corner_; }
   void set_magnetism_corner(MagnetismCorner magnetism_corner) {
@@ -117,37 +111,25 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   }
 
   void MaybeTuckWindow(bool left) {
-    // `scoped_window_tucker_` must be initialized before `AnimateTuck()` to get
-    // the tucked window bounds from `GetPreferredFloatWindowTabletBounds()`.
     scoped_window_tucker_ =
         std::make_unique<ScopedWindowTucker>(floated_window_, left);
-    scoped_window_tucker_->AnimateTuck(left);
+    // The order here matters: `is_tucked_for_tablet_` must be set to true
+    // before `AnimateUntuck()` gets the tucked window bounds.
+    is_tucked_for_tablet_ = true;
+    scoped_window_tucker_->AnimateTuck();
   }
 
+  void OnUntuckAnimationEnded() { scoped_window_tucker_.reset(); }
+
   void MaybeUntuckWindow() {
-    // Save the initial tucked window bounds.
-    const gfx::RectF initial_bounds(floated_window_->bounds());
-
-    // `scoped_window_tucker_` must be destroyed before
-    // `GetPreferredFloatWindowTabletBounds()` is called.
-    scoped_window_tucker_.reset();
-
-    // Animate to the final untucked window bounds.
-    UpdateWindowBoundsForTablet(floated_window_,
-                                WindowState::BoundsChangeAnimationType::kNone);
-    const gfx::Transform transform = gfx::TransformBetweenRects(
-        gfx::RectF(floated_window_->bounds()), initial_bounds);
-
-    views::AnimationBuilder()
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .Once()
-        .SetDuration(base::TimeDelta())
-        .SetTransform(floated_window_, transform)
-        .Then()
-        .SetDuration(kUntuckWindowAnimationDuration)
-        .SetTransform(floated_window_, gfx::Transform(),
-                      gfx::Tween::ACCEL_5_70_DECEL_90);
+    // The order here matters: `is_tucked_for_tablet_` must be set to false
+    // before `AnimateUntuck()` gets the untucked window bounds.
+    is_tucked_for_tablet_ = false;
+    if (scoped_window_tucker_) {
+      scoped_window_tucker_->AnimateUntuck(
+          base::BindOnce(&FloatedWindowInfo::OnUntuckAnimationEnded,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   views::Widget* GetTuckHandleWidget() {
@@ -172,9 +154,13 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   // Use this value to reset the auto-managed state when unfloating a window.
   const bool was_position_auto_managed_;
 
-  // Scoped object that handles the special tucked window state, which is not a
-  // normal window state. Null when  `floated_window_`  is currently not tucked.
+  // Scoped object that handles the special tucked window state, which is not
+  // a normal window state. Null when `floated_window_` is currently not tucked.
   std::unique_ptr<ScopedWindowTucker> scoped_window_tucker_;
+
+  // Used to get the tucked window bounds (as opposed to normal floated). False
+  // during `scoped_window_tucker_` construction.
+  bool is_tucked_for_tablet_ = false;
 
   // The desk where floated window belongs to.
   // When a window is getting floated, it moves from desk container to float
@@ -189,6 +175,8 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       floated_window_observation_{this};
+
+  base::WeakPtrFactory<FloatedWindowInfo> weak_ptr_factory_{this};
 };
 
 // -----------------------------------------------------------------------------
