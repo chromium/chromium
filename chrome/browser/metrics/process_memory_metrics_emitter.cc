@@ -812,10 +812,8 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
     }
   }
 
-#if !BUILDFLAG(IS_MAC)
   // Resident set is not populated on Mac.
   builder->SetResident(pmd.os_dump().resident_set_kb / kKiB);
-#endif
 
   builder->SetPrivateMemoryFootprint(pmd.os_dump().private_footprint_kb / kKiB);
   builder->SetSharedMemoryFootprint(pmd.os_dump().shared_footprint_kb / kKiB);
@@ -829,14 +827,10 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
     return;
 
   const char* process_name = HistogramProcessTypeToString(process_type);
-#if BUILDFLAG(IS_MAC)
-  // Resident set is not populated on Mac.
-  DCHECK_EQ(pmd.os_dump().resident_set_kb, 0U);
-#else
+
   MEMORY_METRICS_HISTOGRAM_MB(
       std::string(kMemoryHistogramPrefix) + process_name + ".ResidentSet",
       pmd.os_dump().resident_set_kb / kKiB);
-#endif
   MEMORY_METRICS_HISTOGRAM_MB(GetPrivateFootprintHistogramName(process_type),
                               pmd.os_dump().private_footprint_kb / kKiB);
   MEMORY_METRICS_HISTOGRAM_MB(std::string(kMemoryHistogramPrefix) +
@@ -1326,14 +1320,9 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
       }
     }
 
-#if BUILDFLAG(IS_MAC)
-    // Resident set is not populated on Mac.
-    DCHECK_EQ(resident_set_total_kb, 0U);
-#else
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.ResidentSet",
                                   resident_set_total_kb / kKiB);
 
-#endif
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateMemoryFootprint",
                                   private_footprint_total_kb / kKiB);
     // The pseudo metric of Memory.Total.PrivateMemoryFootprint. Only used to
