@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -31,6 +32,10 @@ namespace {
 
 const char kV4DatabaseSizeMetric[] = "SafeBrowsing.V4Database.Size";
 const char kV4DatabaseSizeLinearMetric[] = "SafeBrowsing.V4Database.SizeLinear";
+const char kV4DatabaseUpdateLatency[] = "SafeBrowsing.V4Database.UpdateLatency";
+constexpr base::TimeDelta kUmaMinTime = base::Milliseconds(1);
+constexpr base::TimeDelta kUmaMaxTime = base::Hours(5);
+constexpr int kUmaNumBuckets = 50;
 
 // The factory that controls the creation of the V4Database object.
 base::LazyInstance<std::unique_ptr<V4DatabaseFactory>>::Leaky g_db_factory =
@@ -207,6 +212,8 @@ void V4Database::ApplyUpdate(
   if (!pending_store_updates_) {
     current_task_runner->PostTask(FROM_HERE, db_updated_callback_);
     db_updated_callback_.Reset();
+    RecordDatabaseUpdateLatency();
+    last_update_ = base::Time::Now();
   }
 }
 
@@ -223,6 +230,8 @@ void V4Database::UpdatedStoreReady(ListIdentifier identifier,
   pending_store_updates_--;
   if (!pending_store_updates_) {
     db_updated_callback_.Run();
+    RecordDatabaseUpdateLatency();
+    last_update_ = base::Time::Now();
     db_updated_callback_.Reset();
   }
 }
@@ -340,6 +349,13 @@ void V4Database::RecordFileSizeHistograms() {
       static_cast<int64_t>(db_size_kilobytes / 1024);
   UMA_HISTOGRAM_EXACT_LINEAR(kV4DatabaseSizeLinearMetric, db_size_megabytes,
                              50);
+}
+
+void V4Database::RecordDatabaseUpdateLatency() {
+  if (!last_update_.is_null())
+    UmaHistogramCustomTimes(kV4DatabaseUpdateLatency,
+                            base::Time::Now() - last_update_, kUmaMinTime,
+                            kUmaMaxTime, kUmaNumBuckets);
 }
 
 void V4Database::CollectDatabaseInfo(

@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_store.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
@@ -237,6 +238,9 @@ class V4Database {
 
   bool IsStoreAvailable(const ListIdentifier& identifier) const;
 
+  // Log the difference in time between database updates in a UMA histogram.
+  void RecordDatabaseUpdateLatency();
+
   // Used to verify that certain methods are called on the client-designated IO
   // sequence (see InitializeOnIOSequence()).
   SEQUENCE_CHECKER(io_sequence_checker_);
@@ -250,6 +254,9 @@ class V4Database {
   // that needed updating and is ready for the next update. It should only be
   // accessed on the IO thread.
   int pending_store_updates_;
+
+  // Variable used to keep track of latency of database updates.
+  base::Time last_update_;
 
   // Only meant to be dereferenced and invalidated on the IO thread and hence
   // named. For details, see the comment at the top of weak_ptr.h

@@ -1660,6 +1660,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SafeBrowsing.V4Database.UpdateLatency" units="ms"
+    expires_after="2023-12-01">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The latency of updating the SafeBrowsing database. This measures the time
+    difference between calls to update the SafeBrowsing V4 database. This gets
+    logged after every call for an update to the database, except for the first
+    one.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V4DatabaseOpen.Time" units="ms"
     expires_after="M77">
   <owner>vakh@chromium.org</owner>
