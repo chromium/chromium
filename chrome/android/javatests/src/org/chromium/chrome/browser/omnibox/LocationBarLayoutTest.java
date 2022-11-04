@@ -136,7 +136,7 @@ public class LocationBarLayoutTest {
     }
 
     private View getStatusIconView() {
-        return mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
+        return mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon_frame);
     }
 
     private void setUrlBarTextAndFocus(String text) {

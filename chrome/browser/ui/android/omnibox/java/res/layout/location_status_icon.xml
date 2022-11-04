@@ -9,6 +9,7 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
+      android:id="@+id/location_bar_status_icon_frame"
       android:layout_width="wrap_content"
       android:layout_height="match_parent">
 
@@ -26,7 +27,7 @@ found in the LICENSE file.
             style="@style/OmniboxIcon"
             android:layout_gravity="center"
             android:src="@android:color/transparent"
-            android:visibility="gone"
+            android:visibility="visible"
             android:scaleType="center"
             android:focusable="false" />
 

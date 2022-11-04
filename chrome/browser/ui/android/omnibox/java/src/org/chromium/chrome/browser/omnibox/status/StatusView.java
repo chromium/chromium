@@ -58,6 +58,7 @@ public class StatusView extends LinearLayout {
 
     private ImageView mIconView;
     private View mIconBackground;
+    private View mIconViewFrame;
     private TextView mVerboseStatusTextView;
     private View mSeparatorView;
     private View mStatusExtraSpace;
@@ -92,6 +93,7 @@ public class StatusView extends LinearLayout {
 
         mIconView = findViewById(R.id.location_bar_status_icon);
         mIconBackground = findViewById(R.id.location_bar_status_icon_bg);
+        mIconViewFrame = findViewById(R.id.location_bar_status_icon_frame);
         mVerboseStatusTextView = findViewById(R.id.location_bar_verbose_status);
         mSeparatorView = findViewById(R.id.location_bar_verbose_status_separator);
         mStatusExtraSpace = findViewById(R.id.location_bar_verbose_status_extra_space);
@@ -103,7 +105,7 @@ public class StatusView extends LinearLayout {
      * Return whether search engine status icon is visible.
      */
     public boolean isSearchEngineStatusIconVisible() {
-        return mIconView.getVisibility() == VISIBLE;
+        return mIconViewFrame.getVisibility() == VISIBLE;
     }
 
     /**
@@ -149,14 +151,14 @@ public class StatusView extends LinearLayout {
         //
         // Note: this will be compacted once we start using LayoutTransition with StatusView.
 
-        boolean isIconHidden = mIconView.getVisibility() == View.GONE;
+        boolean isIconHidden = mIconViewFrame.getVisibility() == View.GONE;
         if (!wantIconHidden && (isIconHidden || mAnimatingStatusIconHide)) {
             // Action 1: animate showing, if icon was either hidden or hiding.
             if (mAnimatingStatusIconHide) mIconView.animate().cancel();
             mAnimatingStatusIconHide = false;
             mAnimatingStatusIconShow = true;
             keepControlsShownForAnimation();
-            mIconView.setVisibility(View.VISIBLE);
+            mIconViewFrame.setVisibility(View.VISIBLE);
             mIconView.animate()
                     .alpha(1.0f)
                     .setDuration(getIconAnimationDuration())
@@ -182,12 +184,7 @@ public class StatusView extends LinearLayout {
                     .setDuration(mAnimationsEnabled ? getIconAnimationDuration() : 0)
                     .alpha(0.0f)
                     .withEndAction(() -> {
-                        // We need to set the icon and the icon's background to be GONE saparately,
-                        // not their parent FrameView, because if we set their parent FrameView to
-                        // be GONE, later on even we set the icon to be VISIBLE, the icon won't show
-                        // up since its parent is GONE.
-                        mIconView.setVisibility(View.GONE);
-                        mIconBackground.setVisibility(View.GONE);
+                        mIconViewFrame.setVisibility(View.GONE);
                         mIconView.setAlpha(1f);
                         mAnimatingStatusIconHide = false;
                         allowBrowserControlsHide();
@@ -334,11 +331,11 @@ public class StatusView extends LinearLayout {
 
     /** Specify the status icon visibility. */
     void setStatusIconShown(boolean showIcon) {
-        if (mIconView == null) return;
+        if (mIconViewFrame == null) return;
         // Check if layout was requested before changing our child view.
         boolean wasLayoutPreviouslyRequested = isLayoutRequested();
 
-        mIconView.setVisibility(showIcon ? VISIBLE : GONE);
+        mIconViewFrame.setVisibility(showIcon ? VISIBLE : GONE);
         updateTouchDelegate();
         if (mIsAnimatingStatusIconChange && !showIcon) {
             // If the icon view is hidden before it gets a chance to draw, our animation status will
@@ -535,7 +532,7 @@ public class StatusView extends LinearLayout {
 
     /** @return True if the status icon is currently visible. */
     private boolean isIconVisible() {
-        return mStatusIconDrawable != null && mIconView.getVisibility() != GONE
+        return mStatusIconDrawable != null && mIconViewFrame.getVisibility() != GONE
                 && mIconView.getAlpha() != 0;
     }
 

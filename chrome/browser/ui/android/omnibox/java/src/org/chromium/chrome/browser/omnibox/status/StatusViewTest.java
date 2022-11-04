@@ -162,7 +162,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
                     new StatusIconResource(R.drawable.ic_search, 0));
         });
-        onView(withId(R.id.location_bar_status_icon)).check((view, e) -> {
+        onView(withId(R.id.location_bar_status_icon_frame)).check((view, e) -> {
             assertEquals(View.VISIBLE, view.getVisibility());
         });
 
@@ -177,10 +177,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
 
         runOnUiThreadBlocking(
                 () -> { mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null); });
-        onView(withId(R.id.location_bar_status_icon)).check((view, e) -> {
-            assertEquals(View.GONE, view.getVisibility());
-        });
-        onView(withId(R.id.location_bar_status_icon_bg)).check((view, e) -> {
+        onView(withId(R.id.location_bar_status_icon_frame)).check((view, e) -> {
             assertEquals(View.GONE, view.getVisibility());
         });
     }
@@ -261,7 +258,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
         runOnUiThreadBlocking(
                 () -> mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconResource));
 
-        onView(withId(R.id.location_bar_status_icon)).check((view, e) -> {
+        onView(withId(R.id.location_bar_status_icon_frame)).check((view, e) -> {
             assertEquals(View.VISIBLE, view.getVisibility());
             assertEquals(1.0, view.getAlpha(), 0.0);
         });
