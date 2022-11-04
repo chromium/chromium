@@ -455,10 +455,20 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     }
   }
 
-  // Simplified layout doesn't support fragmented nodes.
-  if (is_fragmented &&
-      cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout)
-    return nullptr;
+  if (is_fragmented) {
+    if (cached_layout_result->ExclusionSpace().HasFragmentainerBreak()) {
+      // The final exclusion space is a processed version of the old one when
+      // hitting the cache. One thing we don't support is copying the
+      // fragmentation bits over correctly. That's something we could fix, if
+      // the new resulting exclusion space otherwise is identical to the old
+      // one. But for now, keep it simple, and just give up.
+      return nullptr;
+    }
+
+    // Simplified layout doesn't support fragmented nodes.
+    if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout)
+      return nullptr;
+  }
 
   // We've performed all of the cache checks at this point. If we need
   // "simplified" layout then abort now.
