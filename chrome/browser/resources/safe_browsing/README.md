@@ -132,7 +132,7 @@ See `download_file_types.proto` for all fields.
        1. If there's an entry matching the built platform,
          that will be preferred. Otherwise,
 
-       2. If there's a "PLATFORM_ANY" (i.e. `platform` is not set),
+       2. If there's a "PLATFORM_TYPE_ANY" (i.e. `platform` is not set),
        that will be used. Otherwise,
 
        3. The `default_file_type`'s settings will be filled in.

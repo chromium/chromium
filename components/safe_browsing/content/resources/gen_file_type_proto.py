@@ -2,7 +2,6 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """
  Convert the ASCII download_file_types.asciipb proto into a binary resource.
 
@@ -19,10 +18,12 @@ import sys
 # Import the binary proto generator. Walks up to the root of the source tree
 # which is five directories above, and the finds the protobufs directory from
 # there.
-proto_generator_path = os.path.normpath(os.path.join(os.path.abspath(__file__),
-    *[os.path.pardir] * 5 + ['components/resources/protobufs']))
+proto_generator_path = os.path.normpath(
+    os.path.join(os.path.abspath(__file__),
+                 *[os.path.pardir] * 5 + ['components/resources/protobufs']))
 sys.path.insert(0, proto_generator_path)
 from binary_proto_generator import BinaryProtoGenerator
+
 
 # Map of platforms for which we can generate binary protos.
 # This must be run after the custom imports.
@@ -30,13 +31,15 @@ from binary_proto_generator import BinaryProtoGenerator
 #   value: proto-platform_type (int)
 def PlatformTypes():
     return {
-        "android": download_file_types_pb2.DownloadFileType.PLATFORM_ANDROID,
+        "android":
+        download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_ANDROID,
         "chromeos":
-        download_file_types_pb2.DownloadFileType.PLATFORM_CHROME_OS,
-        "fuchsia": download_file_types_pb2.DownloadFileType.PLATFORM_FUCHSIA,
-        "linux": download_file_types_pb2.DownloadFileType.PLATFORM_LINUX,
-        "mac": download_file_types_pb2.DownloadFileType.PLATFORM_MAC,
-        "win": download_file_types_pb2.DownloadFileType.PLATFORM_WINDOWS,
+        download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_CHROME_OS,
+        "fuchsia":
+        download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_FUCHSIA,
+        "linux": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_LINUX,
+        "mac": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_MAC,
+        "win": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_WINDOWS,
     }
 
 
@@ -44,7 +47,7 @@ def PrunePlatformSettings(file_type, default_settings, platform_type):
     # Modify this file_type's platform_settings by keeping the only the
     # best one for this platform_type. In order of preference:
     #   * Exact match to platform_type
-    #   * PLATFORM_ANY entry
+    #   * PLATFORM_TYPE_ANY entry
     #   * or copy from the default file type.
 
     last_platform = -1
@@ -59,7 +62,7 @@ def PrunePlatformSettings(file_type, default_settings, platform_type):
         # Pick the most specific match.
         if ((s.platform == platform_type) or
             (s.platform == \
-              download_file_types_pb2.DownloadFileType.PLATFORM_ANY and \
+              download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_ANY and \
              setting_match is None)):
             setting_match = s
 
@@ -132,7 +135,6 @@ def MakeSubDirs(outfile):
 
 
 class DownloadFileTypeProtoGenerator(BinaryProtoGenerator):
-
     def ImportProtoModule(self):
         import download_file_types_pb2
         globals()['download_file_types_pb2'] = download_file_types_pb2

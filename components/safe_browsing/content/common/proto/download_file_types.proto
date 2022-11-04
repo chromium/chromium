@@ -36,18 +36,18 @@ message DownloadFileType {
   }
 
   enum PlatformType {
-    PLATFORM_ANY = 0;
-    PLATFORM_ANDROID = 1;
-    PLATFORM_CHROME_OS = 2;
-    PLATFORM_LINUX = 3;
-    PLATFORM_MAC = 4;
-    PLATFORM_WINDOWS = 5;
-    PLATFORM_FUCHSIA = 6;
+    PLATFORM_TYPE_ANY = 0;
+    PLATFORM_TYPE_ANDROID = 1;
+    PLATFORM_TYPE_CHROME_OS = 2;
+    PLATFORM_TYPE_LINUX = 3;
+    PLATFORM_TYPE_MAC = 4;
+    PLATFORM_TYPE_WINDOWS = 5;
+    PLATFORM_TYPE_FUCHSIA = 6;
   }
 
   // Next id: 5
   message PlatformSettings {
-    optional PlatformType platform = 1 [default = PLATFORM_ANY];
+    optional PlatformType platform = 1 [default = PLATFORM_TYPE_ANY];
     optional DangerLevel danger_level = 2;     // required
     optional AutoOpenHint auto_open_hint = 3;  // required
     optional uint64 max_file_size_to_analyze = 4
