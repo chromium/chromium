@@ -8,7 +8,7 @@ application windows as well as following specific sequences of user interactions
 with the UI. It is designed to support things like User Education Tutorials and
 interactive UI testing, and to work with multiple UI presentation frameworks.
 
-See the [Supported Frameworks](#Supported%20Frameworks) section for a list of
+See the [Supported Frameworks](#Supported-Frameworks) section for a list of
 currently-supported  frameworks.
 
 [TOC]
@@ -18,7 +18,7 @@ currently-supported  frameworks.
 Named elements are the fundamental building blocks of these systems. Each
 supported framework must define how a UI element can be assigned an
 [ElementIdentifier](/ui/base/interaction/element_identifier.h) which its
-[framework implementation](#Framework%20implementation) must be able to read.
+[framework implementation](#Supporting-additional-UI-frameworks) must be able to read.
 A UI element with a non-null `ElementIdentifier` assigned to it is known as a
 *named element*.
 
@@ -33,7 +33,7 @@ dialogs, bubbles, etc. - are represented by a single `ElementContext`. Like
 identifiers, contexts are opaque handles that are unique to each primary window.
 To get the context associated with a UI element or window, you will need to call
 a method specific to your framework; see
-[the relevant section](#2.%20Define%20how%20`ElementContext`%20works%20in%20your%20framework)
+[the relevant section](#2_Define-how-works-in-your-framework)
 below.
 
 `ElementIdentifier` and `ElementContext` both support the methods one might
@@ -177,14 +177,25 @@ the steps of using a new feature, or for simulating user input during
 interaction testing.
 
 Each sequence consists of a series of steps of the following types:
-* **Shown** - a UI element becomes visible to the user
-* **Activated** - the user clics on or otherwise interacts with the UI element
-* **Hidden** - a UI element stops being visible to the user
+* **Shown** - a UI element is or becomes visible to the user
+* **Activated** - the element is visible and user clicks on or otherwise interacts with the UI element
+* **Hidden** - a UI element is not visible or stops being visible to the user
 
-These are equivalent to the corresponding events provided by `ElementTracker`.
-All of the steps must be followed in order, or the sequence is _aborted_.
-Callbacks may be registered at the start and end of each step, and for when the
-sequence completes or aborts.
+These are respective to the corresponding events provided by
+`ElementTracker`, but it is an important distinction that these signify
+both events *and* the current element state.
+
+Once a step runs, interaction sequence will watch for the event/state of
+the next step to occur. For example, the next kShown/kHidden step starts if:
+
+1. the element is visible/not visible at start of step
+2. the element becomes visible/not visible during or after step transition
+
+If SetTransitionOnlyOnEvent() is set to true, (1) does not apply.
+
+All of the steps must be followed in order, or the sequence is
+_aborted_. Callbacks may be registered at the start and end of each
+step, and for when the sequence completes or aborts.
 
 Events not in the sequence (other UI elements appearing, focus changes, mouse
 hover, scroll) are ignored unless they result in a required UI element being
@@ -259,7 +270,7 @@ Each step callback (start or end) has three parameters:
 
 The **element** can be used to retrieve the UI element in your framework by
 downcasting via `AsA()` - see
-[UI Elements and element events](#UI%20Elements%20and%20element%20events) above.
+[UI Elements and element events](#UI-Elements-and-element-events) above.
 
 Typically, when using a sequence to run a tutorial, this will be the code that
 shows or hides a tutorial dialog or prompt. When using the sequence for
@@ -324,7 +335,7 @@ See [`ElementTrackerViews`](/ui/views/interaction/element_tracker_views.h) for
 an example implementation.
 
 When you are done, please add the folder containing the implementation code to
-the [Supported Frameworks](#Supported%20Frameworks) section below.
+the [Supported Frameworks](#Supported-Frameworks) section below.
 
 ### 1. Derive a class from `TrackedElement`
 
@@ -408,7 +419,7 @@ action, and therefore should be the action that results in
 How you proxy events from UI elements to calls to
 `ElementTrackerFrameworkDelegate` is entirely up to you. In Views we go through
 a mediator object -
-[`ElementTrackerViews`](ui/views/interaction/element_tracker_views.h) - which
+[`ElementTrackerViews`](/ui/views/interaction/element_tracker_views.h) - which
 first maps the `Button`, `MenuItem`, etc. to an `TrackedElementViews`
 before passing that object to the appropriate delegate method.
 
