@@ -3851,6 +3851,8 @@ wpt_internal/task-tracking/* [ Failure Skip ]
 virtual/task-tracking/* [ Pass ]
 crbug.com/1326491 [ Mac ] virtual/task-tracking/wpt_internal/task-tracking/soft-navigation-heuristics/detached-iframe-container.html [ Timeout ]
 
+crbug.com/1380987 external/wpt/html/user-activation/detached-iframe.html [ Failure ]
+
 crbug.com/626703 external/wpt/fetch/security/redirect-to-url-with-credentials.https.html [ Timeout ]
 crbug.com/981970 external/wpt/fetch/http-cache/split-cache.html [ Skip ]
 crbug.com/626703 external/wpt/fetch/http-cache/basic-auth-cache-test.html [ Timeout ]
