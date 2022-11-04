@@ -26,8 +26,8 @@ namespace content {
 
 namespace {
 
-const int kHardwareSampleRate = 44100;
-const int kHardwareBufferSize = 128;
+constexpr int kHardwareSampleRate = 44100;
+constexpr int kHardwareBufferSize = 128;
 const blink::LocalFrameToken kFrameToken;
 
 blink::LocalFrameToken MockFrameTokenFromCurrentContext() {
@@ -69,12 +69,21 @@ class RendererWebAudioDeviceImplTest
     : public blink::WebAudioDevice::RenderCallback,
       public blink::AudioDeviceFactory,
       public testing::Test {
+ public:
+  void Render(const blink::WebVector<float*>& destination_data,
+              uint32_t number_of_frames,
+              double delay,
+              double delay_timestamp,
+              size_t prior_frames_skipped) override {
+    called_render_ = true;
+  }
+
  protected:
   RendererWebAudioDeviceImplTest() {}
 
   void SetupDevice(blink::WebAudioLatencyHint latencyHint) {
-    blink::WebAudioSinkDescriptor
-        sink_descriptor(blink::WebString::FromASCII(std::string()));
+    blink::WebAudioSinkDescriptor sink_descriptor(
+        blink::WebString::FromUTF8(std::string()));
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
         sink_descriptor, media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
         base::UnguessableToken());
@@ -83,10 +92,20 @@ class RendererWebAudioDeviceImplTest
   }
 
   void SetupDevice(media::ChannelLayout layout, int channels) {
-    blink::WebAudioSinkDescriptor
-        sink_descriptor(blink::WebString::FromASCII(std::string()));
+    blink::WebAudioSinkDescriptor sink_descriptor(
+        blink::WebString::FromUTF8(std::string()));
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
         sink_descriptor, layout, channels,
+        blink::WebAudioLatencyHint(
+            blink::WebAudioLatencyHint::kCategoryInteractive),
+        this, base::UnguessableToken());
+    webaudio_device_->SetSilentSinkTaskRunnerForTesting(
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+  }
+
+  void SetupDevice(blink::WebAudioSinkDescriptor sink_descriptor) {
+    webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
+        sink_descriptor, media::CHANNEL_LAYOUT_MONO, 1,
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
         this, base::UnguessableToken());
@@ -115,6 +134,7 @@ class RendererWebAudioDeviceImplTest
 
   std::unique_ptr<RendererWebAudioDeviceImpl> webaudio_device_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  bool called_render_ = false;
 };
 
 TEST_F(RendererWebAudioDeviceImplTest, ChannelLayout) {
@@ -212,6 +232,41 @@ TEST_F(RendererWebAudioDeviceImplTest, TestLatencyHintValues) {
 
   EXPECT_GE(playbackBufferSize, balancedBufferSize);
   EXPECT_GE(balancedBufferSize, interactiveBufferSize);
+}
+
+TEST_F(RendererWebAudioDeviceImplTest, TestSilent) {
+  std::unique_ptr<media::AudioBus> audio_bus =
+      media::AudioBus::Create(1, kHardwareBufferSize);
+
+  // The WebAudioSinkDescriptor constructor with no arguments will construct a
+  // silent sink.
+  blink::WebAudioSinkDescriptor sink_descriptor;
+  SetupDevice(sink_descriptor);
+
+  // Test public interface.
+  EXPECT_EQ(called_render_, false);
+  webaudio_device_->Start();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(called_render_, true);
+  webaudio_device_->SampleRate();
+  webaudio_device_->FramesPerBuffer();
+  webaudio_device_->SetDetectSilence(true);
+  webaudio_device_->SetDetectSilence(false);
+  webaudio_device_->Pause();
+  webaudio_device_->Resume();
+  webaudio_device_->Stop();
+
+  // Test repeated calls.
+  webaudio_device_->Start();
+  webaudio_device_->Start();
+  webaudio_device_->Pause();
+  webaudio_device_->Pause();
+  webaudio_device_->Resume();
+  webaudio_device_->Resume();
+  webaudio_device_->Stop();
+  webaudio_device_->Stop();
+
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace content

@@ -17,6 +17,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "media/audio/null_audio_sink.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 #include "media/base/silent_sink_suspender.h"
@@ -141,9 +142,19 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
   DCHECK(client_callback_);
   SendLogMessage(base::StringPrintf("%s", __func__));
 
+  std::string device_id;
+  switch (sink_descriptor_.Type()) {
+    case blink::WebAudioSinkDescriptor::kAudible:
+      device_id = sink_descriptor_.SinkId().Utf8();
+      break;
+    case blink::WebAudioSinkDescriptor::kSilent:
+      // Use the default audio device's parameters for a silent sink.
+      device_id = std::string();
+      break;
+  }
+
   media::AudioParameters hardware_params(
-      std::move(device_params_cb)
-          .Run(frame_token_, session_id_, sink_descriptor_.SinkId().Ascii()));
+      std::move(device_params_cb).Run(frame_token_, session_id_, device_id));
 
   // On systems without audio hardware the returned parameters may be invalid.
   // In which case just choose whatever we want for the fake device.
@@ -188,18 +199,27 @@ void RendererWebAudioDeviceImpl::Start() {
   if (sink_)
     return;  // Already started.
 
-  sink_ = AudioDeviceFactory::GetInstance()->NewAudioRendererSink(
-      GetLatencyHintSourceType(latency_hint_.Category()), frame_token_,
-      media::AudioSinkParameters(session_id_,
-                                 sink_descriptor_.SinkId().Ascii()));
+  switch (sink_descriptor_.Type()) {
+    case blink::WebAudioSinkDescriptor::kAudible:
+      sink_ = AudioDeviceFactory::GetInstance()->NewAudioRendererSink(
+          GetLatencyHintSourceType(latency_hint_.Category()), frame_token_,
+          media::AudioSinkParameters(session_id_,
+                                     sink_descriptor_.SinkId().Utf8()));
 
-  // Use a task runner instead of the render thread for fake Render() calls
-  // since it has special connotations for Blink and garbage collection. Timeout
-  // value chosen to be highly unlikely in the normal case.
-  silent_sink_suspender_ = std::make_unique<media::SilentSinkSuspender>(
-      this, base::Seconds(30), sink_params_, sink_, GetSilentSinkTaskRunner());
-  sink_->Initialize(sink_params_, silent_sink_suspender_.get());
-
+      // Use a task runner instead of the render thread for fake Render() calls
+      // since it has special connotations for Blink and garbage collection.
+      // Timeout value chosen to be highly unlikely in the normal case.
+      silent_sink_suspender_ = std::make_unique<media::SilentSinkSuspender>(
+          this, base::Seconds(30), sink_params_, sink_,
+          GetSilentSinkTaskRunner());
+      sink_->Initialize(sink_params_, silent_sink_suspender_.get());
+      break;
+    case blink::WebAudioSinkDescriptor::kSilent:
+      sink_ =
+          base::MakeRefCounted<media::NullAudioSink>(GetSilentSinkTaskRunner());
+      sink_->Initialize(sink_params_, this);
+      break;
+  }
   sink_->Start();
   sink_->Play();
 }
