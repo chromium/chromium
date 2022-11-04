@@ -4371,7 +4371,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByBlobUrl) {
   ASSERT_EQ("success", content::EvalJs(tab, kScript));
 
   // Verify that the script from the blob has successfully run.
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   // Verify that the decision to accept the broken cert has not been revoked
   // (this is a regression test for https://crbug.com/1049625).
