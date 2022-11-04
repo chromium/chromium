@@ -522,7 +522,6 @@ if (is_win || is_mac || is_linux) {
       ":branding_header",
       ":version_header",
       "//base",
-      "//chrome/updater/app/server/linux/mojom",
       "//components/update_client",
       "//url",
     ]
@@ -560,6 +559,8 @@ if (is_win || is_mac || is_linux) {
         "linux/linux_util.cc",
         "linux/linux_util.h",
       ]
+
+      deps += [ "//chrome/updater/app/server/linux/mojom" ]
     }
 
     if (is_mac) {
