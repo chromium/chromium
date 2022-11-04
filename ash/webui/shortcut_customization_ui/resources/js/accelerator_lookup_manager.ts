@@ -4,7 +4,6 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {fakeActionNames} from './fake_data.js';
 import {Accelerator, AcceleratorConfig, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
 import {areAcceleratorsEqual} from './shortcut_utils.js';
 
@@ -129,18 +128,17 @@ export class AcceleratorLookupManager {
       }
 
       const subcatMap = this.acceleratorLayoutLookup_.get(entry.category);
-      if (!subcatMap!.has(entry.sub_category)) {
-        subcatMap!.set(entry.sub_category, []);
+      if (!subcatMap!.has(entry.subCategory)) {
+        subcatMap!.set(entry.subCategory, []);
       }
 
-      this.getAcceleratorLayout(entry.category, entry.sub_category)
+      this.getAcceleratorLayout(entry.category, entry.subCategory)
           .push(Object.assign({}, entry));
 
       // Add the entry to the AcceleratorNameLookup.
       const uuid = `${entry.source}-${entry.action}`;
       // TODO(jimmyxgong): Use real name lookup instead of using fake_data.js.
-      this.acceleratorNameLookup_.set(
-          uuid, fakeActionNames.get(entry.description) as string);
+      this.acceleratorNameLookup_.set(uuid, entry.description);
     }
   }
 

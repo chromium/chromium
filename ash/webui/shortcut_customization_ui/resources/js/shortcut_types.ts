@@ -84,32 +84,30 @@ export type AcceleratorConfig = {
 };
 
 /** Enumeration of layout styles.*/
-export enum LayoutStyle {
-  DEFAULT
-}
+export type LayoutStyle = AcceleratorInfoTypes.AcceleratorLayoutStyle;
+export const LayoutStyle = AcceleratorInfoTypes.AcceleratorLayoutStyle;
 
 /**
  * Type alias for LayoutInfo. This describes one row (corresponding to an
- * AcceleratorRow) within the layout hierarchy. The category, sub-category,
- * and description are resource ID's that resolve to localized strings.
+ * AcceleratorRow) within the layout hierarchy. The `category`, `subCategory`,
+ * and `description` properties are resource ID's that resolve to localized
+ * strings.
  *
- * The category provides grouping for the left navigation panel, and the
- * sub-category provides grouping for a section within a page.
+ * The `category` property provides grouping for the left navigation panel, and
+ * the `subCategory` provides grouping for a section within a page.
  *
- * The source and action provide a lookup key into AcceleratorConfig
- * to determine the list of accelerators.
+ * The `source` and `action` properties provide a lookup key into
+ * AcceleratorConfig to determine the list of accelerators.
  *
- * The layout_style is an enum that allows for customization for special
- * cases. In most cases this will be kDefault.
+ * The `style` property is an enum that allows for customization for special
+ * cases. In most cases this will be `kDefault`.
+ *
+ * The utility type Omit and the intersection type operator (&) to replace the
+ * types of `description` and `style` with more accurate types.
  */
-export interface LayoutInfo {
-  category: number;
-  sub_category: number;
-  description: number;
-  layout_style: LayoutStyle;
-  source: AcceleratorSource;
-  action: number;
-}
+export type LayoutInfo =
+    Omit<AcceleratorInfoTypes.AcceleratorLayoutInfo, 'description'|'style'>&
+    {description: string, style: LayoutStyle};
 
 /** Type alias for an array of LayoutItem. */
 export type LayoutInfoList = LayoutInfo[];

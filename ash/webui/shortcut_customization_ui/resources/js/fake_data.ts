@@ -4,19 +4,6 @@
 
 import {AcceleratorConfig, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfoList, LayoutStyle, Modifier} from './shortcut_types.js';
 
-export const fakeActionNames: Map<number, string> = new Map([
-  [0, 'Snap Window Left'],
-  [1, 'Snap Window Right'],
-  [2, 'New Desk'],
-  [3, 'Remove Desk'],
-  [1001, 'New Tab'],
-]);
-
-export const fakeCategories: Map<number, string> = new Map([
-  [0, 'Chrome OS'],
-  [1, 'Browser'],
-]);
-
 export const fakeSubCategories: Map<number, string> = new Map([
   [0, 'Window Management'],
   [1, 'Virtual Desks'],
@@ -92,42 +79,42 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
 
 export const fakeLayoutInfo: LayoutInfoList = [
   {
-    category: 0,      // Chrome OS.
-    sub_category: 0,  // Window Management.
-    description: 0,   // Snap Window Left.
-    layout_style: LayoutStyle.DEFAULT,
+    category: 0,     // Chrome OS.
+    subCategory: 0,  // Window Management.
+    description: 'Snap Window Left',
+    style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 0,
   },
   {
-    category: 0,      // Chrome OS.
-    sub_category: 0,  // Window Management.
-    description: 1,   // Snap Window Right.
-    layout_style: LayoutStyle.DEFAULT,
+    category: 0,     // Chrome OS.
+    subCategory: 0,  // Window Management.
+    description: 'Snap Window Right',
+    style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 1,
   },
   {
-    category: 0,      // Chrome OS.
-    sub_category: 1,  // Virtual Desks.
-    description: 2,   // Create Desk.
-    layout_style: LayoutStyle.DEFAULT,
+    category: 0,     // Chrome OS.
+    subCategory: 1,  // Virtual Desks.
+    description: 'Create Desk',
+    style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 2,
   },
   {
-    category: 0,      // Chrome OS.
-    sub_category: 1,  // Virtual Desks.
-    description: 3,   // Remove Desk.
-    layout_style: LayoutStyle.DEFAULT,
+    category: 0,     // Chrome OS.
+    subCategory: 1,  // Virtual Desks.
+    description: 'Remove Desk',
+    style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 3,
   },
   {
-    category: 1,        // Browser.
-    sub_category: 2,    // Tabs.
-    description: 1001,  // New tab.
-    layout_style: LayoutStyle.DEFAULT,
+    category: 1,     // Browser.
+    subCategory: 2,  // Tabs.
+    description: 'New Tab',
+    style: LayoutStyle.kDefault,
     source: AcceleratorSource.kBrowser,
     action: 1001,
   },
