@@ -94,12 +94,6 @@ HEADER = headers.header(
                     url = "https://luci-analysis.appspot.com",
                     alt = "New flake portal",
                 ),
-                headers.link(
-                    text = "legacy-flakiness",
-                    branch_selector = branches.ALL_BRANCHES,
-                    url = "https://test-results.appspot.com/dashboards/flakiness_dashboard.html",
-                    alt = "Legacy flakiness dashboard",
-                ),
             ],
         ),
         headers.link_group(
