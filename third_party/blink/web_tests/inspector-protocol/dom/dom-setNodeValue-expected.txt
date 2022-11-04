@@ -1,0 +1,8 @@
+Tests how DOM domain works with setNodeValue.
+
+Before setNodeValue for foo:
+<div id="x">foobarbaz</div>
+
+After setNodeValue for foo:
+<div id="x">notanymorebarbaz</div>
+

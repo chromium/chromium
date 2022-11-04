@@ -275,42 +275,6 @@ class DOMEditor::SetOuterHTMLAction final : public InspectorHistory::Action {
   Member<DOMEditor> dom_editor_;
 };
 
-class DOMEditor::ReplaceWholeTextAction final
-    : public InspectorHistory::Action {
- public:
-  ReplaceWholeTextAction(Text* text_node, const String& text)
-      : InspectorHistory::Action("ReplaceWholeText"),
-        text_node_(text_node),
-        text_(text) {}
-  ReplaceWholeTextAction(const ReplaceWholeTextAction&) = delete;
-  ReplaceWholeTextAction& operator=(const ReplaceWholeTextAction&) = delete;
-
-  bool Perform(ExceptionState& exception_state) override {
-    old_text_ = text_node_->wholeText();
-    return Redo(exception_state);
-  }
-
-  bool Undo(ExceptionState&) override {
-    text_node_->ReplaceWholeText(old_text_);
-    return true;
-  }
-
-  bool Redo(ExceptionState&) override {
-    text_node_->ReplaceWholeText(text_);
-    return true;
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(text_node_);
-    InspectorHistory::Action::Trace(visitor);
-  }
-
- private:
-  Member<Text> text_node_;
-  String text_;
-  String old_text_;
-};
-
 class DOMEditor::ReplaceChildNodeAction final
     : public InspectorHistory::Action {
  public:
@@ -433,14 +397,6 @@ bool DOMEditor::SetOuterHTML(Node* node,
   return result;
 }
 
-bool DOMEditor::ReplaceWholeText(Text* text_node,
-                                 const String& text,
-                                 ExceptionState& exception_state) {
-  return history_->Perform(
-      MakeGarbageCollected<ReplaceWholeTextAction>(text_node, text),
-      exception_state);
-}
-
 bool DOMEditor::ReplaceChild(ContainerNode* parent_node,
                              Node* new_node,
                              Node* old_node,
@@ -506,9 +462,9 @@ Response DOMEditor::SetOuterHTML(Node* node,
   return ToResponse(exception_state);
 }
 
-Response DOMEditor::ReplaceWholeText(Text* text_node, const String& text) {
+Response DOMEditor::SetNodeValue(Node* parent_node, const String& value) {
   DummyExceptionStateForTesting exception_state;
-  ReplaceWholeText(text_node, text, exception_state);
+  SetNodeValue(parent_node, value, exception_state);
   return ToResponse(exception_state);
 }
 
