@@ -27,6 +27,13 @@
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
     defined(PA_THREAD_CACHE_SUPPORTED)
 
+// Certain tests that were dormant (accidentally `#defined` out) for a
+// while came back flaky on `android-nougat-x86-rel`. We disable them
+// for Android x86.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+#define TESTS_DISABLED_ON_ANDROID_X86
+#endif
+
 namespace partition_alloc {
 
 using BucketDistribution = ThreadSafePartitionRoot::BucketDistribution;
@@ -308,8 +315,9 @@ TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
             tcache->bucket_count_for_testing(bucket_index));
 }
 
-#if defined(PA_ENABLE_THREAD_CACHE_STATISTICS)  // Required to record hits and
-                                                // misses.
+// Required to record hits and misses.
+#if defined(PA_THREAD_CACHE_ENABLE_STATISTICS) && \
+    !defined(TESTS_DISABLED_ON_ANDROID_X86)
 TEST_P(PartitionAllocThreadCacheTest, LargeAllocationsAreNotCached) {
   auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
@@ -325,7 +333,8 @@ TEST_P(PartitionAllocThreadCacheTest, LargeAllocationsAreNotCached) {
   EXPECT_EQ(1u, cache_fill_counter.Delta());
   EXPECT_EQ(1u, cache_fill_misses_counter.Delta());
 }
-#endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
+#endif  // defined(PA_THREAD_CACHE_ENABLE_STATISTICS) &&
+        // !defined(TESTS_DISABLED_ON_ANDROID_X86)
 
 TEST_P(PartitionAllocThreadCacheTest, DirectMappedAllocationsAreNotCached) {
   FillThreadCacheAndReturnIndex(1024 * 1024);
@@ -545,7 +554,8 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
   EXPECT_EQ(parent_thread_tcache->next_, nullptr);
 }
 
-#if defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
+#if defined(PA_THREAD_CACHE_ENABLE_STATISTICS) && \
+    !defined(TESTS_DISABLED_ON_ANDROID_X86)
 TEST_P(PartitionAllocThreadCacheTest, RecordStats) {
   auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter alloc_counter{tcache->stats_.alloc_count};
@@ -601,11 +611,11 @@ class ThreadDelegateForMultipleThreadCachesAccounting
  public:
   ThreadDelegateForMultipleThreadCachesAccounting(
       ThreadSafePartitionRoot* root,
-      int alloc_ount,
+      int alloc_count,
       BucketDistribution bucket_distribution)
       : root_(root),
-        alloc_count_(alloc_count),
-        bucket_distribution_(bucket_distribution) {}
+        bucket_distribution_(bucket_distribution),
+        alloc_count_(alloc_count) {}
 
   void ThreadMain() override {
     EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
@@ -620,9 +630,11 @@ class ThreadDelegateForMultipleThreadCachesAccounting
         stats.bucket_total_memory);
     EXPECT_EQ(2 * sizeof(ThreadCache), stats.metadata_overhead);
 
-    uint64_t this_thread_alloc_count =
-        root_->thread_cache_for_testing()->stats_.alloc_count;
-    EXPECT_EQ(alloc_count_ + this_thread_alloc_count, stats.alloc_count);
+    ThreadCacheStats this_thread_cache_stats{};
+    root_->thread_cache_for_testing()->AccumulateStats(
+        &this_thread_cache_stats);
+    EXPECT_EQ(alloc_count_ + this_thread_cache_stats.alloc_count,
+              stats.alloc_count);
   }
 
  private:
@@ -647,7 +659,8 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
   internal::base::PlatformThreadForTesting::Join(thread_handle);
 }
 
-#endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
+#endif  // defined(PA_THREAD_CACHE_ENABLE_STATISTICS) &&
+        // !defined(TESTS_DISABLED_ON_ANDROID_X86)
 
 // TODO(https://crbug.com/1287799): Flaky on IOS.
 #if BUILDFLAG(IS_IOS)

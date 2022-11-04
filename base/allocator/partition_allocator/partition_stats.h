@@ -15,7 +15,7 @@
 
 namespace partition_alloc {
 
-// Most of these are not populated if PA_ENABLE_THREAD_CACHE_STATISTICS is not
+// Most of these are not populated if PA_THREAD_CACHE_ENABLE_STATISTICS is not
 // defined.
 struct ThreadCacheStats {
   uint64_t alloc_count;   // Total allocation requests.
