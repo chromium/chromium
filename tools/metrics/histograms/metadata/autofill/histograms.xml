@@ -1217,6 +1217,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType"
+    enum="AutofilledFieldUserEditingStatusByFieldType" expires_after="M112">
+  <owner>koerber@google.com</owner>
+  <owner>battre@google.com</owner>
+  <summary>
+    On submission time, this metric tracks for every field that was autofilled
+    if the filling was accepted or subsequently corrected. This metrics resolves
+    the field type.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ErrorDialogShown" enum="AutofillErrorDialogType"
     expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
@@ -2241,17 +2252,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".UseOfServerCard"
         summary="Trigger from submitted form with server card"/>
   </token>
-</histogram>
-
-<histogram name="Autofill.LogEditedAutofilledFieldAtSubmission2.ByFieldType"
-    enum="AutofilledFieldUserEditingStatusByFieldType" expires_after="M112">
-  <owner>koerber@google.com</owner>
-  <owner>battre@google.com</owner>
-  <summary>
-    On submission time, this metric tracks for every field that was autofilled
-    if the filling was accepted or subsequently corrected. This metrics resolves
-    the field type.
-  </summary>
 </histogram>
 
 <histogram name="Autofill.ManageCardsPrompt{AutofillManageCardsPrompt}"
