@@ -23,7 +23,11 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
                                                    Anchor anchor) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (anchor == kLocationBar &&
-      browser_view->GetLocationBarView()->ShouldHideContentSettingImage()) {
+      browser_view->GetLocationBarView()->chip_controller() &&
+      browser_view->GetLocationBarView()
+          ->chip_controller()
+          ->chip()
+          ->GetVisible()) {
     return {browser_view->GetLocationBarView()->chip_controller()->chip(),
             browser_view->GetLocationBarView()->chip_controller()->chip(),
             views::BubbleBorder::TOP_LEFT};
