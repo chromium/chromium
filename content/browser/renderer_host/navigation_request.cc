@@ -129,7 +129,6 @@
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
-#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
@@ -7793,25 +7792,11 @@ void NavigationRequest::RecordAddressSpaceFeature() {
     return;
   }
 
-  // We intentionally do *not* use `CalculateIPAddressSpace()` here, as it
-  // depends on `network::CalculateClientAddressSpace()` and takes into account
-  // the CSP `treat-as-public-address` directive. If a `public` document
-  // initiates a navigation request to a `local` resource, we should block that
-  // request before any bytes are sent over the network as that request
-  // inherently carries a risk of CSRF. It does not matter whether the resource
-  // eventually responds with a CSP `treat-as-public-address` directive.
-  //
-  // In other words, here (as opposed to in `ComputePoliciesToCommit()`), we
-  // wish to mirror the calculation performed by the network process when
-  // applying Private Network Access checks.
-  network::mojom::IPAddressSpace response_address_space =
-      network::CalculateResourceAddressSpace(common_params_->url,
-                                             response_head_->remote_endpoint);
-
   absl::optional<blink::mojom::WebFeature> optional_feature =
-      blink::AddressSpaceFeature(
-          blink::FetchType::kNavigation, initiator_policies->ip_address_space,
-          initiator_policies->is_web_secure_context, response_address_space);
+      blink::AddressSpaceFeature(blink::FetchType::kNavigation,
+                                 initiator_policies->ip_address_space,
+                                 initiator_policies->is_web_secure_context,
+                                 response_head_->response_address_space);
   if (!optional_feature.has_value()) {
     return;
   }
