@@ -47,7 +47,7 @@ data:
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec/migcom
   - file: Contents/Developer/usr/bin/atos
   - file: Contents/Developer/usr/bin/notarytool
-  - file: Contents/Resources/en.lproj/License.rtf
+  - file: Contents/Resources/English.lproj/License.rtf
   - file: Contents/Resources/LicenseInfo.plist
   - dir: Contents/SharedFrameworks/CoreSymbolicationDT.framework
   - dir: Contents/SharedFrameworks/DebugSymbolsDT.framework
