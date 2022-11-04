@@ -452,7 +452,7 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
 // by Safe Browsing, the embedder is also treated as dangerous in terms of how
 // we display the Safe Browsing interstitial.
 // Flaky on ChromeOS & under Ozone (crbug.com/1220319)
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || defined(USE_OZONE)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
 #define MAYBE_EmbedderOfDangerousPortalConsideredDangerous \
   DISABLED_EmbedderOfDangerousPortalConsideredDangerous
 #else

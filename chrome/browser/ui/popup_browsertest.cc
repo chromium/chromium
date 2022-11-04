@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, DISABLED_OpenClampedToCurrentDisplay) {
 
 // Ensure popups cannot be moved beyond the available display space by script.
 // TODO(crbug.com/1228795): Flaking on Linux Ozone
-#if BUILDFLAG(IS_LINUX) && defined(USE_OZONE)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
 #define MAYBE_MoveClampedToCurrentDisplay DISABLED_MoveClampedToCurrentDisplay
 #else
 #define MAYBE_MoveClampedToCurrentDisplay MoveClampedToCurrentDisplay

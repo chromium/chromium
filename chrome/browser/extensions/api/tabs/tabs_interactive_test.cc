@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
 }
 
 // Crashes on Lacros and Linux-ozone-rel. http://crbug.com/1196709
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_OZONE)
 #define MAYBE_TabGetLastFocusedWindow DISABLED_TabGetLastFocusedWindow
 #else
 #define MAYBE_TabGetLastFocusedWindow TabGetLastFocusedWindow

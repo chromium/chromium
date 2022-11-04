@@ -23,10 +23,11 @@
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    BUILDFLAG(IS_OZONE)
 #include "ui/views/test/test_desktop_screen_ozone.h"
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
-        // defined(USE_OZONE)
+        // BUILDFLAG(IS_OZONE)
 #endif
 
 namespace {
@@ -99,7 +100,8 @@ ViewEventTestBase::ViewEventTestBase() {
   // insufficient for these tests, then either bolster/replace it or fix the
   // tests.
   DCHECK(!display::Screen::HasScreen());
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    BUILDFLAG(IS_OZONE)
   if (!display::Screen::HasScreen())
     screen_ = views::test::TestDesktopScreenOzone::Create();
 #endif

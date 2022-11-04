@@ -42,7 +42,7 @@ std::string NameFromTestCase() {
 void InstallUIControlsAura() {
 #if BUILDFLAG(IS_WIN)
   ui_controls::InstallUIControlsAura(aura::test::CreateUIControlsAura(nullptr));
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
   ui_controls::InstallUIControlsAura(
       views::test::CreateUIControlsDesktopAuraOzone());
 #else

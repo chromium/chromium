@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/result_catcher.h"
@@ -19,7 +20,7 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, Normal) {
 
 // Test incognito browser in extension default spanning mode.
 // Disabled due to flakes on Ozone testers; see https://crbug.com/1188651.
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #define MAYBE_Incognito DISABLED_Incognito
 #else
 #define MAYBE_Incognito Incognito

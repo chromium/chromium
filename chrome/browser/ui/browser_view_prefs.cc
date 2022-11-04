@@ -9,7 +9,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -19,13 +19,13 @@ namespace {
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 bool GetCustomFramePrefDefault() {
-#if defined(USE_OZONE)
-    return ui::OzonePlatform::GetInstance()
-        ->GetPlatformProperties()
-        .custom_frame_pref_default;
+#if BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .custom_frame_pref_default;
 #else
   return false;
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 }
 #endif
 

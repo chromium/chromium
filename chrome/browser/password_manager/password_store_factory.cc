@@ -66,7 +66,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
 
   scoped_refptr<PasswordStore> ps;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || \
-    defined(USE_OZONE)
+    BUILDFLAG(IS_OZONE)
   // Since SyncService has dependency on PasswordStore keyed service, there
   // are no guarantees that during the construction of the password store
   // about the sync service existence. And hence we cannot directly query the

@@ -4041,7 +4041,7 @@ INSTANTIATE_TEST_SUITE_P(
     StartupBrowserCreatorPickerTest,
     ::testing::Values(
 // Flaky: https://crbug.com/1126886
-#if !defined(USE_OZONE) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_WIN)
         // Picker should be shown in normal multi-profile startup situation.
         ProfilePickerSetup{/*expected_to_show=*/true},
 #endif

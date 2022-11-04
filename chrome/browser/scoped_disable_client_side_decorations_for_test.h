@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_SCOPED_DISABLE_CLIENT_SIDE_DECORATIONS_FOR_TEST_H_
 #define CHROME_BROWSER_SCOPED_DISABLE_CLIENT_SIDE_DECORATIONS_FOR_TEST_H_
 
-#if defined(USE_OZONE)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/platform_utils.h"
 #endif
 
@@ -25,7 +27,7 @@ class ScopedDisableClientSideDecorationsForTest {
       const ScopedDisableClientSideDecorationsForTest&) = delete;
   ~ScopedDisableClientSideDecorationsForTest();
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
  private:
   std::unique_ptr<PlatformUtils::ScopedDisableClientSideDecorationsForTest>
       disabled_csd_;

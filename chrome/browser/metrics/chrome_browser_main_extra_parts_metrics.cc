@@ -70,10 +70,10 @@
 #include "base/version.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -333,7 +333,7 @@ void RecordTouchEventState() {
                                 UMA_TOUCH_EVENT_FEATURE_DETECTION_STATE_COUNT);
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 
 // Asynchronously records the touch event state when the ui::DeviceDataManager
 // completes a device scan.
@@ -366,7 +366,7 @@ void AsynchronousTouchEventStateRecorder::OnDeviceListsComplete() {
   RecordTouchEventState();
 }
 
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
 void RecordPinnedToTaskbarProcessError(bool error) {
@@ -594,7 +594,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
                              base::BindOnce(&RecordLinuxDistro));
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // The touch event state for Ozone based event sub-systems are based on device
   // scans that happen asynchronously. So we may need to attach an observer to
   // wait until these scans complete.
@@ -606,7 +606,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   }
 #else
   RecordTouchEventState();
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_MAC)
   RecordMacMetrics();

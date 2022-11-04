@@ -19,11 +19,11 @@
 #if defined(USE_AURA)
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls_aura.h"
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/views/test/ui_controls_factory_desktop_aura_ozone.h"
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 #endif  // defined(USE_AURA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -52,7 +52,7 @@ class InteractiveUITestSuite : public ChromeTestSuite {
     com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
     ui_controls::InstallUIControlsAura(
         aura::test::CreateUIControlsAura(nullptr));
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
     // Notifies the platform that test config is needed. For Wayland, for
     // example, makes it possible to use emulated input.
     ui::test::EnableTestConfigForPlatformWindows();

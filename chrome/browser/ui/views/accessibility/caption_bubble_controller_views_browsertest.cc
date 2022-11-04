@@ -1122,7 +1122,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 }
 
 // TODO(https://crbug.com/1207312): Flaky test.
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #define MAYBE_ClearsTextAfterInactivity DISABLED_ClearsTextAfterInactivity
 #else
 #define MAYBE_ClearsTextAfterInactivity ClearsTextAfterInactivity

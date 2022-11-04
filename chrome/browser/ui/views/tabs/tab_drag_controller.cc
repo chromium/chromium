@@ -92,7 +92,7 @@
 #include "ui/wm/core/window_modality_controller.h"  // nogncheck
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -117,7 +117,7 @@ constexpr int kMaximizedWindowInset = 10;  // DIPs.
 // underlying platform supports it, unless indicated by the Ozone platform
 // properties.
 bool PlatformProvidesAbsoluteWindowPositions() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   return ui::OzonePlatform::GetInstance()
       ->GetPlatformProperties()
       .supports_global_screen_coordinates;

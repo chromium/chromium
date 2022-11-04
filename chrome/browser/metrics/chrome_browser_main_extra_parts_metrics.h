@@ -69,9 +69,9 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   std::unique_ptr<ui::InputDeviceEventObserver> input_device_event_observer_;
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 #if !BUILDFLAG(IS_ANDROID)
   // The process monitor instance. Allows collecting metrics about every child

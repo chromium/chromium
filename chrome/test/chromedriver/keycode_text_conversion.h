@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/buildflags.h"
 #endif
 
@@ -40,7 +40,7 @@ bool ConvertCharToKeyCode(char16_t key,
 bool SwitchToUSKeyboardLayout();
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 // Uses X11 implementation if there is an X display.
 // TODO(crbug.com/987939): Support XKB.
@@ -53,6 +53,6 @@ bool ConvertCharToKeyCodeOzone(char16_t key,
                                int* necessary_modifiers,
                                std::string* error_msg);
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 #endif  // CHROME_TEST_CHROMEDRIVER_KEYCODE_TEXT_CONVERSION_H_
