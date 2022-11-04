@@ -1914,7 +1914,7 @@ class WebContentsConsoleObserver : public WebContentsObserver {
 
   // Waits for a message to come in that matches the set filter, if any. If no
   // filter is set, waits for the first message that comes in.
-  bool Wait();
+  [[nodiscard]] bool Wait();
 
   // Sets a custom filter to be used while waiting for a message, allowing
   // more custom filtering (e.g. based on source).
