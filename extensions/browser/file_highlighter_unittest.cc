@@ -101,10 +101,42 @@ TEST(ManifestHighlighterUnitTest, ManifestHighlighterUnitTest) {
 
   // Malformed manifest with wrongly ordered brackets. Check that there is no
   // crash.
-  static constexpr char kMalformedManifest[] = "}{";
-  ManifestHighlighter malformed_feature(kMalformedManifest, std::string(),
-                                        std::string());
-  EXPECT_EQ(std::string(), malformed_feature.GetFeature());
+  static constexpr char kMalformedBracketsManifest[] = "}{";
+  ManifestHighlighter malformed_brackets_feature(kMalformedBracketsManifest,
+                                                 std::string(), std::string());
+  EXPECT_EQ(std::string(), malformed_brackets_feature.GetFeature());
+
+  // Malformed manifest with unfinished quotes. Check that there is no crash.
+  static constexpr char kMalformedQuotesManifest[] = "{\"}";
+  ManifestHighlighter malformed_quotes_feature(kMalformedQuotesManifest,
+                                               std::string(), std::string());
+  EXPECT_EQ(std::string(), malformed_quotes_feature.GetFeature());
+
+  // Malformed manifest with unterminated comment. Check that there is no crash.
+  static constexpr char kUnendedCommentManifest[] = "{}/*{";
+  ManifestHighlighter unended_comment_feature(kUnendedCommentManifest,
+                                              std::string(), std::string());
+  EXPECT_EQ(std::string(), unended_comment_feature.GetFeature());
+
+  // Malformed manifest - a JSON string and an unterminated comment. Check that
+  // there is no crash.
+  static constexpr char kStringWithUnendedCommentManifest[] = "\"{{\"/*}";
+  ManifestHighlighter string_with_unended_comment_feature(
+      kStringWithUnendedCommentManifest, std::string(), std::string());
+  EXPECT_EQ(std::string(), string_with_unended_comment_feature.GetFeature());
+
+  // An empty manifest with a comment in it. Check that there is no crash.
+  static constexpr char kManifestWithComment[] = "{//\n}";
+  ManifestHighlighter slash_in_manifest_with_comment(
+      kManifestWithComment, std::string(), std::string());
+  EXPECT_EQ(std::string(), slash_in_manifest_with_comment.GetFeature());
+
+  // An empty manifest with a comment in it that contains a quote. Check that
+  // there is no crash.
+  static constexpr char kManifestWithCommentedQuote[] = "{//\"\n}";
+  ManifestHighlighter slash_in_manifest_with_commented_quote(
+      kManifestWithCommentedQuote, std::string(), std::string());
+  EXPECT_EQ(std::string(), slash_in_manifest_with_commented_quote.GetFeature());
 }
 
 TEST(SouceHighlighterUnitTest, SourceHighlighterUnitTest) {
