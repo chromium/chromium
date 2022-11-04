@@ -1532,6 +1532,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.CustomNameCount" units="desks"
+    expires_after="2023-11-01">
+  <owner>benbecker@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a user with more than one desk changes the name of a desk to
+    specify how many of the user's desks have custom names.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.CustomNamePercentage" units="%"
+    expires_after="2023-11-01">
+  <owner>benbecker@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a user with more than one desk changes the name of a desk to
+    specify the percentage of the user's desks that have custom names.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.DeskLifetime_{DeskIndex}" units="hr"
     expires_after="2023-01-13">
   <owner>afakhry@chromium.org</owner>

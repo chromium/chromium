@@ -6390,6 +6390,72 @@ TEST_P(DesksTest, CloseButtonShowsAfterLongPressInTabletMode) {
   EXPECT_TRUE(mini_view->close_desk_button()->GetVisible());
 }
 
+// Tests that metrics are being recorded when a desk is renamed, when new desks
+// are added, and when a desk is being removed.
+TEST_P(DesksTest, TestCustomDeskNameMetricsRecording) {
+  // Actions that should cause the histogram to update.
+  enum class UpdateSource {
+    kDeskRenamed,
+    kDeskAdded,
+    kDeskRemoved,
+  };
+
+  struct {
+    const std::string scope_trace;
+    const UpdateSource update_source;
+    const int expected_number_of_custom_desks;
+    const int expected_percentage_of_custom_desks;
+  } kTestCases[] = {
+      {"Rename a desk", UpdateSource::kDeskRenamed, 1, 50},
+      {"Add a desk", UpdateSource::kDeskAdded, 1, 33},
+      {"Remove a desk", UpdateSource::kDeskRemoved, 1, 50},
+  };
+
+  base::HistogramTester histogram_tester;
+
+  // Create a new desk. At this point we should have had one update for the new
+  // desk addition because adding a new desk requires confirming the new desk's
+  // name.
+  NewDesk();
+  int number_of_updates = 1;
+  histogram_tester.ExpectTotalCount(kNumberOfCustomNamesHistogramName,
+                                    number_of_updates);
+  histogram_tester.ExpectTotalCount(kPercentageOfCustomNamesHistogramName,
+                                    number_of_updates);
+  const auto& desks = DesksController::Get()->desks();
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+
+    switch (test_case.update_source) {
+      case UpdateSource::kDeskRenamed:
+        desks[0]->SetName(u"Hello", true);
+        break;
+      case UpdateSource::kDeskAdded:
+        NewDesk();
+        break;
+      case UpdateSource::kDeskRemoved:
+        RemoveDesk(desks.back().get());
+        break;
+    }
+
+    ++number_of_updates;
+    histogram_tester.ExpectTotalCount(kNumberOfCustomNamesHistogramName,
+                                      number_of_updates);
+    histogram_tester.ExpectTotalCount(kPercentageOfCustomNamesHistogramName,
+                                      number_of_updates);
+
+    // There should be at least one recording of the expected custom desk count
+    // and percentage.
+    EXPECT_NE(0, histogram_tester.GetBucketCount(
+                     kNumberOfCustomNamesHistogramName,
+                     test_case.expected_number_of_custom_desks));
+    EXPECT_NE(0, histogram_tester.GetBucketCount(
+                     kPercentageOfCustomNamesHistogramName,
+                     test_case.expected_percentage_of_custom_desks));
+  }
+}
+
 class DesksBentoBarTest : public DesksTest {
  public:
   DesksBentoBarTest() {

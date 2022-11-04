@@ -57,6 +57,11 @@ enum class DesksSwitchSource {
 constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
 constexpr char kDeskSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
 
+constexpr char kNumberOfCustomNamesHistogramName[] =
+    "Ash.Desks.CustomNameCount";
+constexpr char kPercentageOfCustomNamesHistogramName[] =
+    "Ash.Desks.CustomNamePercentage";
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_HISTOGRAM_ENUMS_H_

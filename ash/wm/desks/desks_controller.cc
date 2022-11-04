@@ -932,6 +932,7 @@ void DesksController::NotifyAllDesksForContentChanged() {
 
 void DesksController::NotifyDeskNameChanged(const Desk* desk,
                                             const std::u16string& new_name) {
+  MaybeReportCustomDeskNames();
   for (auto& observer : observers_)
     observer.OnDeskNameChanged(desk, new_name);
 }
@@ -1683,6 +1684,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskHistogramName, source);
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskTypeHistogramName, close_type);
+  MaybeReportCustomDeskNames();
 
   // We should only announce desks are being merged if we are combining desks.
   if (close_type == DeskCloseType::kCombineDesks) {
@@ -2014,6 +2016,20 @@ void DesksController::ReportClosedWindowsCountPerSourceHistogram(
   }
   if (desk_removal_source_histogram)
     base::UmaHistogramCounts100(desk_removal_source_histogram, windows_closed);
+}
+
+void DesksController::MaybeReportCustomDeskNames() const {
+  // We only want metrics for users with two or more desks.
+  if (desks_.size() < 2)
+    return;
+
+  int custom_names_count =
+      base::ranges::count(desks_, true, &Desk::is_name_set_by_user);
+
+  base::UmaHistogramCounts100(kNumberOfCustomNamesHistogramName,
+                              custom_names_count);
+  base::UmaHistogramPercentage(kPercentageOfCustomNamesHistogramName,
+                               custom_names_count * 100 / desks_.size());
 }
 
 }  // namespace ash

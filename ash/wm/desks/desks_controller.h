@@ -460,6 +460,8 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
       DesksCreationRemovalSource source,
       int windows_closed) const;
 
+  void MaybeReportCustomDeskNames() const;
+
   std::vector<std::unique_ptr<Desk>> desks_;
 
   Desk* active_desk_ = nullptr;
