@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/sync/engine/model_type_processor.h"
@@ -44,6 +45,9 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
                         UpdateResponseDataList updates,
                         absl::optional<sync_pb::GarbageCollectionDirective>
                             gc_directive) override;
+  void StorePendingInvalidations(
+      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      override;
 
   // ModelTypeControllerDelegate implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request,

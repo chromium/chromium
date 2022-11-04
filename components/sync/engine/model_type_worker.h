@@ -301,6 +301,13 @@ class ModelTypeWorker : public UpdateHandler,
   // the definition of an unknown key, and returns their info.
   std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
 
+  // Sends copy of |pending_invalidations_| vector to |model_type_processor_|
+  // to store them in storage along |model_type_state_|.
+  void SendPendingInvalidationsToProcessor();
+
+  // Copies |pending_invalidations_| vector to |model_type_state_|.
+  void UpdateModelTypeStateInvalidations();
+
   // The (up to kMaxPayloads) most recent invalidations received since the last
   // successful sync cycle.
   std::vector<PendingInvalidation> pending_invalidations_;

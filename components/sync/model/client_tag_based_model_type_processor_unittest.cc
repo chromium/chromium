@@ -473,6 +473,15 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
         bridge()->change_processor());
   }
 
+  sync_pb::ModelTypeState::Invalidation BuildInvalidation(
+      int64_t version,
+      const std::string& payload) {
+    sync_pb::ModelTypeState::Invalidation inv;
+    inv.set_version(version);
+    inv.set_hint(payload);
+    return inv;
+  }
+
  protected:
   void CheckPostConditions() { EXPECT_FALSE(expect_error_); }
 
@@ -581,6 +590,25 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   OnSyncStarting("NewAccountId");
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
   EXPECT_EQ("NewAccountId", type_processor()->TrackedAccountId());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldExposeNewlyAddedInvalidations) {
+  // Populate the bridge's metadata with some non-empty values for us to later
+  // check that it hasn't been cleared.
+  sync_pb::ModelTypeState::Invalidation inv_1 = BuildInvalidation(1, "hint_1");
+  sync_pb::ModelTypeState::Invalidation inv_2 = BuildInvalidation(2, "hint_2");
+  InitializeToReadyState();
+  type_processor()->StorePendingInvalidations({inv_1, inv_2});
+
+  ModelTypeState model_type_state(db()->model_type_state());
+  EXPECT_EQ(2, model_type_state.invalidations_size());
+
+  EXPECT_EQ(inv_1.hint(), model_type_state.invalidations(0).hint());
+  EXPECT_EQ(inv_1.version(), model_type_state.invalidations(0).version());
+
+  EXPECT_EQ(inv_2.hint(), model_type_state.invalidations(1).hint());
+  EXPECT_EQ(inv_2.version(), model_type_state.invalidations(1).version());
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,

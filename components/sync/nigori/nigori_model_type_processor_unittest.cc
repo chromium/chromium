@@ -158,6 +158,15 @@ class NigoriModelTypeProcessorTest : public testing::Test {
     return count.non_tombstone_entities > 0;
   }
 
+  sync_pb::ModelTypeState::Invalidation BuildInvalidation(
+      int64_t version,
+      const std::string& payload) {
+    sync_pb::ModelTypeState::Invalidation inv;
+    inv.set_version(version);
+    inv.set_hint(payload);
+    return inv;
+  }
+
  private:
   testing::NiceMock<MockNigoriSyncBridge> mock_nigori_sync_bridge_;
   std::unique_ptr<testing::NiceMock<MockCommitQueue>> mock_commit_queue_;
@@ -606,6 +615,29 @@ TEST_F(NigoriModelTypeProcessorTest,
 
   EXPECT_CALL(error_handler_callback, Run);
   processor()->OnSyncStarting(request, base::DoNothing());
+}
+
+TEST_F(NigoriModelTypeProcessorTest,
+       ShouldUpdateModelTypeStateUponHandlingInvalidations) {
+  SimulateModelReadyToSync(/*initial_sync_done=*/true);
+  // Build invalidations.
+  sync_pb::ModelTypeState::Invalidation inv_1 = BuildInvalidation(1, "hint_1");
+  sync_pb::ModelTypeState::Invalidation inv_2 = BuildInvalidation(2, "hint_2");
+
+  processor()->StorePendingInvalidations({inv_1, inv_2});
+
+  // The model type state and the metadata should have been stored in the
+  // processor.
+  NigoriMetadataBatch processor_metadata_batch = processor()->GetMetadata();
+  sync_pb::ModelTypeState model_type_state =
+      processor_metadata_batch.model_type_state;
+  EXPECT_EQ(2, model_type_state.invalidations_size());
+
+  EXPECT_EQ(inv_1.hint(), model_type_state.invalidations(0).hint());
+  EXPECT_EQ(inv_1.version(), model_type_state.invalidations(0).version());
+
+  EXPECT_EQ(inv_2.hint(), model_type_state.invalidations(1).hint());
+  EXPECT_EQ(inv_2.version(), model_type_state.invalidations(1).version());
 }
 
 }  // namespace

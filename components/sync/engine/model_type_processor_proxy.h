@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_PROXY_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -34,6 +35,9 @@ class ModelTypeProcessorProxy : public ModelTypeProcessor {
                         UpdateResponseDataList updates,
                         absl::optional<sync_pb::GarbageCollectionDirective>
                             gc_directive) override;
+  void StorePendingInvalidations(
+      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      override;
 
  private:
   base::WeakPtr<ModelTypeProcessor> processor_;

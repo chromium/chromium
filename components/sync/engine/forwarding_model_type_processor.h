@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_ENGINE_FORWARDING_MODEL_TYPE_PROCESSOR_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/sync/engine/model_type_processor.h"
@@ -40,6 +41,9 @@ class ForwardingModelTypeProcessor : public ModelTypeProcessor {
                         UpdateResponseDataList updates,
                         absl::optional<sync_pb::GarbageCollectionDirective>
                             gc_directive) override;
+  void StorePendingInvalidations(
+      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      override;
 
  private:
   const raw_ptr<ModelTypeProcessor> processor_;

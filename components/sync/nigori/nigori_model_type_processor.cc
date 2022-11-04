@@ -4,6 +4,8 @@
 
 #include "components/sync/nigori/nigori_model_type_processor.h"
 
+#include <vector>
+
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -13,6 +15,7 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/forwarding_model_type_processor.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
+#include "components/sync/engine/model_type_worker.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
@@ -190,6 +193,15 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
 
   // There may be new reasons to commit by the time this function is done.
   NudgeForCommitIfNeeded();
+}
+
+void NigoriModelTypeProcessor::StorePendingInvalidations(
+    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  model_type_state_.mutable_invalidations()->Assign(
+      invalidations_to_store.begin(), invalidations_to_store.end());
+  // ApplySyncChanges does actually query and persist the |model_type_state_|.
+  bridge_->ApplySyncChanges(/*data=*/absl::nullopt);
 }
 
 void NigoriModelTypeProcessor::OnSyncStarting(

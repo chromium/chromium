@@ -254,6 +254,10 @@ int MockModelTypeProcessor::GetLocalChangesCallCount() const {
   return get_local_changes_call_count_;
 }
 
+int MockModelTypeProcessor::GetStoreInvalidationsCallCount() const {
+  return store_invalidations_call_count_;
+}
+
 void MockModelTypeProcessor::OnCommitCompletedImpl(
     const sync_pb::ModelTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
@@ -296,6 +300,11 @@ void MockModelTypeProcessor::OnUpdateReceivedImpl(
   received_update_responses_.push_back(std::move(response_list));
   received_gc_directives_.push_back(
       gc_directive.value_or(sync_pb::GarbageCollectionDirective()));
+}
+
+void MockModelTypeProcessor::StorePendingInvalidations(
+    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+  store_invalidations_call_count_++;
 }
 
 // Fetches the sequence number as of the most recent update request.

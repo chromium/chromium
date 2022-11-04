@@ -325,6 +325,15 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
     return &error_handler_;
   }
 
+  sync_pb::ModelTypeState::Invalidation BuildInvalidation(
+      int64_t version,
+      const std::string& payload) {
+    sync_pb::ModelTypeState::Invalidation inv;
+    inv.set_version(version);
+    inv.set_hint(payload);
+    return inv;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   NiceMock<base::MockCallback<base::RepeatingClosure>> schedule_save_closure_;
@@ -634,6 +643,37 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // carries the new encryption key name.
   EXPECT_THAT(tracker->model_type_state().encryption_key_name(),
               Eq(kEncryptionKeyName));
+}
+
+// Verifies that the model type state stored in the tracker gets
+// updated upon handling remote updates by replacing new pending invalidations.
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldUpdateModelTypeStateUponHandlingInvalidations) {
+  // Initialize the process to make sure the tracker has been created.
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  const SyncedBookmarkTracker* tracker = processor()->GetTrackerForTest();
+
+  // Build invalidations.
+  sync_pb::ModelTypeState::Invalidation inv_1 =
+      BuildInvalidation(1, "bm_hint_1");
+  sync_pb::ModelTypeState::Invalidation inv_2 =
+      BuildInvalidation(2, "bm_hint_2");
+  EXPECT_CALL(*schedule_save_closure(), Run());
+
+  processor()->StorePendingInvalidations({inv_1, inv_2});
+
+  // The model type state inside the tracker should have been updated, and
+  // carries the new invalidations.
+  EXPECT_EQ(2, tracker->model_type_state().invalidations_size());
+
+  EXPECT_EQ(inv_1.hint(), tracker->model_type_state().invalidations(0).hint());
+  EXPECT_EQ(inv_1.version(),
+            tracker->model_type_state().invalidations(0).version());
+
+  EXPECT_EQ(inv_2.hint(), tracker->model_type_state().invalidations(1).hint());
+  EXPECT_EQ(inv_2.version(),
+            tracker->model_type_state().invalidations(1).version());
 }
 
 // This tests that when the encryption key changes, but the received entities

@@ -54,4 +54,9 @@ void ForwardingModelTypeProcessor::OnUpdateReceived(
                                std::move(gc_directive));
 }
 
+void ForwardingModelTypeProcessor::StorePendingInvalidations(
+    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+  processor_->StorePendingInvalidations(std::move(invalidations_to_store));
+}
+
 }  // namespace syncer

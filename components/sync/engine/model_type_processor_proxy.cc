@@ -78,4 +78,11 @@ void ModelTypeProcessorProxy::OnUpdateReceived(
                      type_state, std::move(updates), std::move(gc_directive)));
 }
 
+void ModelTypeProcessorProxy::StorePendingInvalidations(
+    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&ModelTypeProcessor::StorePendingInvalidations,
+                                processor_, std::move(invalidations_to_store)));
+}
+
 }  // namespace syncer

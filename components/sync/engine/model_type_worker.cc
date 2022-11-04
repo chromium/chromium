@@ -573,17 +573,7 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status) {
     }
   }
   if (base::FeatureList::IsEnabled(kSyncPersistInvalidations)) {
-    // Store invalidations to |model_type_state_|.
-    model_type_state_.clear_invalidations();
-    for (const auto& inv : pending_invalidations_) {
-      SyncInvalidation* invalidation = inv.pending_invalidation.get();
-      sync_pb::ModelTypeState_Invalidation* invalidation_to_store =
-          model_type_state_.add_invalidations();
-      invalidation_to_store->set_hint(invalidation->GetPayload());
-      if (!invalidation->IsUnknownVersion()) {
-        invalidation_to_store->set_version(invalidation->GetVersion());
-      }
-    }
+    UpdateModelTypeStateInvalidations();
   }
 
   has_dropped_invalidation_ = false;
@@ -1120,6 +1110,9 @@ void ModelTypeWorker::RecordRemoteInvalidation(
     pending_invalidations_.erase(pending_invalidations_.begin());
   }
   nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
+  if (base::FeatureList::IsEnabled(kSyncPersistInvalidations)) {
+    SendPendingInvalidationsToProcessor();
+  }
 }
 
 void ModelTypeWorker::CollectPendingInvalidations(
@@ -1144,6 +1137,29 @@ void ModelTypeWorker::CollectPendingInvalidations(
 
 bool ModelTypeWorker::HasPendingInvalidations() const {
   return !pending_invalidations_.empty() || has_dropped_invalidation_;
+}
+
+void ModelTypeWorker::SendPendingInvalidationsToProcessor() {
+  DCHECK(base::FeatureList::IsEnabled(kSyncPersistInvalidations));
+  UpdateModelTypeStateInvalidations();
+  model_type_processor_->StorePendingInvalidations(
+      std::vector<sync_pb::ModelTypeState::Invalidation>(
+          model_type_state_.invalidations().begin(),
+          model_type_state_.invalidations().end()));
+}
+
+void ModelTypeWorker::UpdateModelTypeStateInvalidations() {
+  DCHECK(base::FeatureList::IsEnabled(kSyncPersistInvalidations));
+  model_type_state_.clear_invalidations();
+  for (const auto& inv : pending_invalidations_) {
+    SyncInvalidation* invalidation = inv.pending_invalidation.get();
+    sync_pb::ModelTypeState_Invalidation* invalidation_to_store =
+        model_type_state_.add_invalidations();
+    invalidation_to_store->set_hint(invalidation->GetPayload());
+    if (!invalidation->IsUnknownVersion()) {
+      invalidation_to_store->set_version(invalidation->GetVersion());
+    }
+  }
 }
 
 GetLocalChangesRequest::GetLocalChangesRequest(

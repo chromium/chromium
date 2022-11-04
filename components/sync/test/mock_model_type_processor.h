@@ -58,6 +58,9 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
                         UpdateResponseDataList response_list,
                         absl::optional<sync_pb::GarbageCollectionDirective>
                             gc_directive) override;
+  void StorePendingInvalidations(
+      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      override;
 
   // By default, this object behaves as if all messages are processed
   // immediately.  Sometimes it is useful to defer work until later, as might
@@ -128,6 +131,7 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
                            const std::string& server_id);
 
   int GetLocalChangesCallCount() const;
+  int GetStoreInvalidationsCallCount() const;
 
  private:
   // Process a received commit response.
@@ -193,6 +197,8 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
   CommitRequestDataList commit_request_;
 
   int get_local_changes_call_count_ = 0;
+
+  int store_invalidations_call_count_ = 0;
 };
 
 }  // namespace syncer

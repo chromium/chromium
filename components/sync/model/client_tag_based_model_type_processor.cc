@@ -800,6 +800,22 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   NudgeForCommitIfNeeded();
 }
 
+void ClientTagBasedModelTypeProcessor::StorePendingInvalidations(
+    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!model_error_);
+  DCHECK(IsConnected());
+  std::unique_ptr<MetadataChangeList> metadata_changes =
+      bridge_->CreateMetadataChangeList();
+  sync_pb::ModelTypeState model_type_state =
+      entity_tracker_->model_type_state();
+  model_type_state.mutable_invalidations()->Assign(
+      invalidations_to_store.begin(), invalidations_to_store.end());
+  metadata_changes->UpdateModelTypeState(model_type_state);
+  entity_tracker_->set_model_type_state(model_type_state);
+  bridge_->ApplySyncChanges(std::move(metadata_changes), EntityChangeList());
+}
+
 bool ClientTagBasedModelTypeProcessor::ValidateUpdate(
     const sync_pb::ModelTypeState& model_type_state,
     const UpdateResponseDataList& updates,

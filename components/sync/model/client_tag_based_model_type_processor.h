@@ -107,6 +107,9 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
                         UpdateResponseDataList updates,
                         absl::optional<sync_pb::GarbageCollectionDirective>
                             gc_directive) override;
+  void StorePendingInvalidations(
+      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      override;
 
   // ModelTypeControllerDelegate implementation.
   // |start_callback| will never be called synchronously.

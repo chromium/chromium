@@ -2648,6 +2648,19 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes, ShouldEmitNotesBackupCorrupted) {
       syncer::PasswordNotesStateForUMA::kSetOnlyInBackupButCorrupted, 1);
 }
 
+// Verifies StorePendingInvalidations() calls for every incoming invalidation.
+TEST_F(ModelTypeWorkerTest, StoreInvalidationsCallCount) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(kSyncPersistInvalidations);
+
+  NormalInitialize();
+  for (size_t i = 0; i < ModelTypeWorker::kMaxPendingInvalidations + 2u; ++i) {
+    worker()->RecordRemoteInvalidation(BuildInvalidation(i + 1, "hint"));
+    EXPECT_EQ(static_cast<int>(i + 1),
+              processor()->GetStoreInvalidationsCallCount());
+  }
+}
+
 // Verifies the management of invalidation hints and GU trigger fields.
 TEST_F(ModelTypeWorkerTest, HintCoalescing) {
   // Easy case: record one hint.
