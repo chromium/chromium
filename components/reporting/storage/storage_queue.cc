@@ -87,6 +87,48 @@ struct RecordHeader {
   uint32_t record_size;  // Size of the blob, not including RecordHeader
   uint32_t record_hash;  // Hash of the blob, not including RecordHeader
   // Data starts right after the header.
+
+  // Sum of the sizes of individual members.
+  static constexpr size_t kSize =
+      sizeof(record_sequencing_id) + sizeof(record_size) + sizeof(record_hash);
+
+  // Serialize to string. This does not guarantee same results across
+  // devices, but on the same device the result should always be consistent
+  // even if compiler behavior changes.
+  [[nodiscard]] std::string SerializeToString() const {
+    std::string serialized;
+    serialized.reserve(sizeof(record_sequencing_id) + sizeof(record_size) +
+                       sizeof(record_hash));
+    serialized.append(reinterpret_cast<const char*>(&record_sequencing_id),
+                      sizeof(record_sequencing_id));
+    serialized.append(reinterpret_cast<const char*>(&record_size),
+                      sizeof(record_size));
+    serialized.append(reinterpret_cast<const char*>(&record_hash),
+                      sizeof(record_hash));
+    return serialized;
+  }
+
+  // Construct from a serialized string. This does not guarantee same results
+  // across devices, but on the same device the result should always be
+  // consistent even compiler behavior changes.
+  [[nodiscard]] static StatusOr<RecordHeader> FromString(base::StringPiece s) {
+    if (s.size() < kSize) {
+      return Status(error::INTERNAL, "header is corrupt");
+    }
+
+    RecordHeader header;
+    const char* p = s.data();
+    header.record_sequencing_id = *reinterpret_cast<const int64_t*>(p);
+    if (header.record_sequencing_id < 0) {
+      return Status(error::INTERNAL, "header is corrupt");
+    }
+    p += sizeof(header.record_sequencing_id);
+    header.record_size = *reinterpret_cast<const int32_t*>(p);
+    p += sizeof(header.record_size);
+    header.record_hash = *reinterpret_cast<const int32_t*>(p);
+
+    return header;
+  }
 };
 }  // namespace
 
@@ -404,12 +446,12 @@ Status StorageQueue::ScanLastFile() {
   }
   const size_t max_buffer_size =
       RoundUpToFrameSize(options_.max_record_size()) +
-      RoundUpToFrameSize(sizeof(RecordHeader));
+      RoundUpToFrameSize(RecordHeader::kSize);
   uint32_t pos = 0;
   for (;;) {
     // Read the header
     auto read_result =
-        last_file->Read(pos, sizeof(RecordHeader), max_buffer_size,
+        last_file->Read(pos, RecordHeader::kSize, max_buffer_size,
                         /*expect_readonly=*/false);
     if (read_result.status().error_code() == error::OUT_OF_RANGE) {
       // End of file detected.
@@ -422,14 +464,15 @@ Status StorageQueue::ScanLastFile() {
       break;
     }
     pos += read_result.ValueOrDie().size();
-    if (read_result.ValueOrDie().size() < sizeof(RecordHeader)) {
+    // Copy out the header, since the buffer might be overwritten later on.
+    const auto header_status =
+        RecordHeader::FromString(read_result.ValueOrDie());
+    if (!header_status.ok()) {
       // Error detected.
       LOG(ERROR) << "Incomplete record header in file " << last_file->name();
       break;
     }
-    // Copy the header, since the buffer might be overwritten later on.
-    const RecordHeader header =
-        *reinterpret_cast<const RecordHeader*>(read_result.ValueOrDie().data());
+    const auto header = std::move(header_status.ValueOrDie());
     // Read the data (rounded to frame size).
     const size_t data_size = RoundUpToFrameSize(header.record_size);
     read_result = last_file->Read(pos, data_size, max_buffer_size,
@@ -491,7 +534,7 @@ StatusOr<scoped_refptr<StorageQueue::SingleFile>> StorageQueue::AssignLastFile(
   }
   scoped_refptr<SingleFile> last_file = files_.rbegin()->second;
   if (last_file->size() > 0 &&  // Cannot have a file with no records.
-      last_file->size() + size + sizeof(RecordHeader) + FRAME_SIZE >
+      last_file->size() + size + RecordHeader::kSize + FRAME_SIZE >
           options_.max_single_file_size()) {
     // The last file will become too large, asynchronously close it and add
     // new.
@@ -543,7 +586,8 @@ Status StorageQueue::WriteHeaderAndBlock(
   // Prepare header.
   RecordHeader header;
   // Pad to the whole frame, if necessary.
-  const size_t total_size = RoundUpToFrameSize(sizeof(header) + data.size());
+  const size_t total_size =
+      RoundUpToFrameSize(RecordHeader::kSize + data.size());
   // Assign sequencing id.
   header.record_sequencing_id = next_sequencing_id_++;
   header.record_hash = base::PersistentHash(data.data(), data.size());
@@ -567,8 +611,7 @@ Status StorageQueue::WriteHeaderAndBlock(
   }
   active_write_reservation_size_ -= total_size;
 
-  auto write_status = file->Append(base::StringPiece(
-      reinterpret_cast<const char*>(&header), sizeof(header)));
+  auto write_status = file->Append(header.SerializeToString());
   if (!write_status.ok()) {
     return Status(error::RESOURCE_EXHAUSTED,
                   base::StrCat({"Cannot write file=", file->name(),
@@ -583,9 +626,9 @@ Status StorageQueue::WriteHeaderAndBlock(
                         " status=", write_status.status().ToString()}));
     }
   }
-  if (total_size > sizeof(header) + data.size()) {
+  if (total_size > RecordHeader::kSize + data.size()) {
     // Fill in with random bytes.
-    const size_t pad_size = total_size - (sizeof(header) + data.size());
+    const size_t pad_size = total_size - (RecordHeader::kSize + data.size());
     char junk_bytes[FRAME_SIZE];
     crypto::RandBytes(junk_bytes, pad_size);
     write_status = file->Append(base::StringPiece(&junk_bytes[0], pad_size));
@@ -1196,9 +1239,9 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     RETURN_IF_ERROR(current_file_->second->Open(/*read_only=*/true));
     const size_t max_buffer_size =
         RoundUpToFrameSize(storage_queue_->options_.max_record_size()) +
-        RoundUpToFrameSize(sizeof(RecordHeader));
+        RoundUpToFrameSize(RecordHeader::kSize);
     auto read_result = current_file_->second->Read(
-        current_pos_, sizeof(RecordHeader), max_buffer_size);
+        current_pos_, RecordHeader::kSize, max_buffer_size);
     RETURN_IF_ERROR(read_result.status());
     auto header_data = read_result.ValueOrDie();
     if (header_data.empty()) {
@@ -1206,16 +1249,16 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       return Status(error::OUT_OF_RANGE, "Reached end of data");
     }
     current_pos_ += header_data.size();
-    if (header_data.size() != sizeof(RecordHeader)) {
-      // File corrupt, header incomplete.
+    // Copy the header out (its memory can be overwritten when reading rest of
+    // the data).
+    const auto header_status = RecordHeader::FromString(header_data);
+    if (!header_status.ok()) {
+      // Error detected.
       return Status(
           error::INTERNAL,
           base::StrCat({"File corrupt: ", current_file_->second->name()}));
     }
-    // Copy the header out (its memory can be overwritten when reading rest of
-    // the data).
-    const RecordHeader header =
-        *reinterpret_cast<const RecordHeader*>(header_data.data());
+    const auto header = std::move(header_status.ValueOrDie());
     if (header.record_sequencing_id != sequencing_id) {
       return Status(
           error::INTERNAL,
