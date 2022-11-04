@@ -73,6 +73,11 @@ BASE_DECLARE_FEATURE(kEnableWebPageAnnotations);
 // long presses at a certain location.
 BASE_DECLARE_FEATURE(kLongPressSurroundingText);
 
+// When enabled, CRWWebViewScrollViewProxy's `scrollEnabled` state is not
+// restored if the new instance already has the same `scrollEnabled` state as
+// the old one.
+BASE_DECLARE_FEATURE(kScrollViewProxyScrollEnabledWorkaround);
+
 // When true, user control for camera and/or microphone access should be
 // enabled.
 bool IsMediaPermissionsControlEnabled();
