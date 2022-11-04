@@ -78,6 +78,8 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   unsigned edge_aa_mask = 0;
   // The minification and magnification filters for the CALayer.
   unsigned filter = 0;
+  // The HDR mode for this quad.
+  gfx::HDRMode hdr_mode = gfx::HDRMode::kDefault;
   // The HDR metadata for this quad.
   absl::optional<gfx::HDRMetadata> hdr_metadata;
   // The protected video status of the AVSampleBufferDisplayLayer.

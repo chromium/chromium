@@ -736,6 +736,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     unsigned edge_aa_mask,
     float opacity,
     unsigned filter,
+    gfx::HDRMode hdr_mode,
     absl::optional<gfx::HDRMetadata> hdr_metadata,
     gfx::ProtectedVideoType protected_video_type)
     : parent_layer_(parent_layer),
@@ -748,6 +749,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       ca_edge_aa_mask_(0),
       opacity_(opacity),
       ca_filter_(filter == GL_LINEAR ? kCAFilterLinear : kCAFilterNearest),
+      hdr_mode_(hdr_mode),
       hdr_metadata_(hdr_metadata),
       protected_video_type_(protected_video_type) {
   DCHECK(filter == GL_LINEAR || filter == GL_NEAREST);
@@ -792,7 +794,8 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   }
 
   // Determine which type of CALayer subclass we should use.
-  if (metal::ShouldUseHDRCopier(io_surface, io_surface_color_space)) {
+  if (metal::ShouldUseHDRCopier(io_surface, hdr_mode_,
+                                io_surface_color_space)) {
     type_ = CALayerType::kHDRCopier;
   } else if (io_surface) {
     // Only allow 4:2:0 frames which fill the layer's contents or protected
@@ -918,7 +921,8 @@ void CARendererLayerTree::TransformLayer::AddContentLayer(
       this, params.io_surface, base::ScopedCFTypeRef<CVPixelBufferRef>(),
       params.contents_rect, params.rect, params.background_color,
       params.io_surface_color_space, params.edge_aa_mask, params.opacity,
-      params.filter, params.hdr_metadata, params.protected_video_type);
+      params.filter, params.hdr_mode, params.hdr_metadata,
+      params.protected_video_type);
 }
 
 void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,

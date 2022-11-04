@@ -103,6 +103,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   // ColorSpace of the buffer for scanout.
   gfx::ColorSpace color_space;
+  // HDR mode for the buffer.
+  gfx::HDRMode hdr_mode = gfx::HDRMode::kDefault;
   // Optional HDR Metadata for the buffer.
   absl::optional<gfx::HDRMetadata> hdr_metadata;
   // Size of the resource, in pixels.

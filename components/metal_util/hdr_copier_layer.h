@@ -7,6 +7,7 @@
 
 #include "components/metal_util/metal_util_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/hdr_metadata.h"
 
 #include <IOSurface/IOSurface.h>
 
@@ -21,6 +22,7 @@ namespace metal {
 
 // Return true if we should use the HDRCopier for the specified content.
 bool METAL_UTIL_EXPORT ShouldUseHDRCopier(IOSurfaceRef buffer,
+                                          gfx::HDRMode hdr_mode,
                                           const gfx::ColorSpace& color_space);
 
 // Create a layer which may have its contents set an HDR IOSurface via

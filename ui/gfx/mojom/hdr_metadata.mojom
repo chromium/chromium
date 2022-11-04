@@ -6,6 +6,11 @@ module gfx.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+enum HDRMode {
+  kDefault,
+  kExtended,
+};
+
 // This defines a mojo transport format for gfx::HDRMetadata.
 // See ui/gl/hdr_metadata.h for description.
 struct ColorVolumeMetadata {

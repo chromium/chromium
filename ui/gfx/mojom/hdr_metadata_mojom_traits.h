@@ -11,6 +11,33 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<gfx::mojom::HDRMode, gfx::HDRMode> {
+  static gfx::mojom::HDRMode ToMojom(gfx::HDRMode input) {
+    switch (input) {
+      case gfx::HDRMode::kDefault:
+        return gfx::mojom::HDRMode::kDefault;
+      case gfx::HDRMode::kExtended:
+        return gfx::mojom::HDRMode::kExtended;
+    }
+    NOTREACHED();
+    return gfx::mojom::HDRMode::kDefault;
+  }
+
+  static bool FromMojom(gfx::mojom::HDRMode input, gfx::HDRMode* out) {
+    switch (input) {
+      case gfx::mojom::HDRMode::kDefault:
+        *out = gfx::HDRMode::kDefault;
+        return true;
+      case gfx::mojom::HDRMode::kExtended:
+        *out = gfx::HDRMode::kExtended;
+        return true;
+    }
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
 struct StructTraits<gfx::mojom::ColorVolumeMetadataDataView,
                     gfx::ColorVolumeMetadata> {
   static const gfx::PointF& primary_r(const gfx::ColorVolumeMetadata& input) {

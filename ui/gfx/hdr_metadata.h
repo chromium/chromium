@@ -15,6 +15,16 @@ struct SkColorSpacePrimaries;
 
 namespace gfx {
 
+// High dynamic range mode.
+enum class HDRMode {
+  // HLG and PQ content is HDR and tone mapped. All other content is clipped to
+  // SDR luminance.
+  kDefault,
+  // Values that extend beyond SDR luminance are shown as HDR. No tone mapping
+  // is performed.
+  kExtended,
+};
+
 // SMPTE ST 2086 color volume metadata.
 struct COLOR_SPACE_EXPORT ColorVolumeMetadata {
   using Chromaticity = PointF;

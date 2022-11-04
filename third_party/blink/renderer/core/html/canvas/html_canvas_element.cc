@@ -442,6 +442,17 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
 void HTMLCanvasElement::configureHighDynamicRange(
     const CanvasHighDynamicRangeOptions* options,
     ExceptionState& exception_state) {
+  gfx::HDRMode hdr_mode = gfx::HDRMode::kDefault;
+  if (options->hasMode()) {
+    switch (options->mode().AsEnum()) {
+      case V8CanvasHighDynamicRangeMode::Enum::kDefault:
+        hdr_mode = gfx::HDRMode::kDefault;
+        break;
+      case V8CanvasHighDynamicRangeMode::Enum::kExtended:
+        hdr_mode = gfx::HDRMode::kExtended;
+        break;
+    }
+  }
   absl::optional<gfx::HDRMetadata> hdr_metadata;
   if (options->hasSmpteSt2086Metadata()) {
     hdr_metadata = gfx::HDRMetadata();
@@ -465,13 +476,13 @@ void HTMLCanvasElement::configureHighDynamicRange(
     NOTIMPLEMENTED();
   }
 
-  CanvasResourceHost::SetHDRMetadata(hdr_metadata);
+  CanvasResourceHost::SetHDRConfiguration(hdr_mode, hdr_metadata);
   if (context_ && (IsWebGL() || IsWebGPU())) {
     // TODO(https://crbug.com/1274220): Implement HDR support for WebGL and
     // WebGPU.
     NOTIMPLEMENTED();
   } else if (canvas2d_bridge_) {
-    canvas2d_bridge_->SetHDRMetadata(hdr_metadata);
+    canvas2d_bridge_->SetHDRConfiguration(hdr_mode, hdr_metadata);
   }
 }
 

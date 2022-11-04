@@ -229,6 +229,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                  unsigned edge_aa_mask,
                  float opacity,
                  unsigned filter,
+                 gfx::HDRMode hdr_mode,
                  absl::optional<gfx::HDRMetadata> hdr_metadata,
                  gfx::ProtectedVideoType protected_video_type);
 
@@ -273,6 +274,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // protected content (see https://crbug.com/1026703).
     bool video_type_can_downgrade_ = true;
 
+    gfx::HDRMode hdr_mode_ = gfx::HDRMode::kDefault;
     absl::optional<gfx::HDRMetadata> hdr_metadata_;
 
     gfx::ProtectedVideoType protected_video_type_ =

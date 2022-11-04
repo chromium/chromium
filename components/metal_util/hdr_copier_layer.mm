@@ -22,7 +22,7 @@
 namespace {
 
 // Source of the shader to perform tonemapping. Note that the functions
-// ToLinearSRGB, ToLinearPQ, and ToLinearHLG are copy-pasted from the GLSL
+// ToLinearSRGBIsh, ToLinearPQ, and ToLinearHLG are copy-pasted from the GLSL
 // shader source in gfx::ColorTransform.
 // TODO(https://crbug.com/1101041): Add non-identity tonemapping to the shader.
 const char* tonemapping_shader_source =
@@ -45,13 +45,20 @@ const char* tonemapping_shader_source =
     "    float2 texcoord;\n"
     "} RasterizerData;\n"
     "\n"
-    "float ToLinearSRGB(float v) {\n"
+    "float ToLinearSRGBIsh(float v, constant float* gabcdef) {\n"
+    "  float g = gabcdef[0];\n"
+    "  float a = gabcdef[1];\n"
+    "  float b = gabcdef[2];\n"
+    "  float c = gabcdef[3];\n"
+    "  float d = gabcdef[4];\n"
+    "  float e = gabcdef[5];\n"
+    "  float f = gabcdef[6];\n"
     "  float abs_v = abs(v);\n"
     "  float sgn_v = sign(v);\n"
-    "  if (abs_v < 0.0404482362771082f)\n"
-    "    return v/12.92f;\n"
+    "  if (abs_v < d)\n"
+    "    return sgn_v*(c*abs_v + f);\n"
     "  else\n"
-    "    return sgn_v*pow((abs_v+0.055f)/1.055f, 2.4f);\n"
+    "    return sgn_v*(pow(a*abs_v+b, g) + e);\n"
     "}\n"
     "\n"
     "float ToLinearPQ(float v) {\n"
@@ -96,15 +103,16 @@ const char* tonemapping_shader_source =
     "fragment float4 fragmentShader(RasterizerData in [[stage_in]],\n"
     "                               texture2d<float> t [[texture(0)]],\n"
     "                               constant float3x3& m [[buffer(0)]],\n"
-    "                               constant uint32_t& f [[buffer(1)]]) {\n"
+    "                               constant uint32_t& f [[buffer(1)]],\n"
+    "                               constant float* gabcdef [[buffer(2)]]) {\n"
     "    constexpr sampler s(metal::mag_filter::nearest,\n"
     "                        metal::min_filter::nearest);\n"
     "    float4 color = t.sample(s, in.texcoord);\n"
     "    switch (f) {\n"
     "      case 1:\n"
-    "         color.x = ToLinearSRGB(color.x);\n"
-    "         color.y = ToLinearSRGB(color.y);\n"
-    "         color.z = ToLinearSRGB(color.z);\n"
+    "         color.x = ToLinearSRGBIsh(color.x, gabcdef);\n"
+    "         color.y = ToLinearSRGBIsh(color.y, gabcdef);\n"
+    "         color.z = ToLinearSRGBIsh(color.z, gabcdef);\n"
     "         break;\n"
     "      case 2:\n"
     "         color.x = ToLinearPQ(color.x);\n"
@@ -127,9 +135,11 @@ const char* tonemapping_shader_source =
 // defined in the above source. Return 0 if the transfer function is
 // unsupported.
 uint32_t GetTransferFunctionIndex(const gfx::ColorSpace& color_space) {
+  skcms_TransferFunction fn;
+  if (color_space.GetTransferFunction(&fn))
+    return 1;
+
   switch (color_space.GetTransferID()) {
-    case gfx::ColorSpace::TransferID::SRGB_HDR:
-      return 1;
     case gfx::ColorSpace::TransferID::PQ:
       return 2;
     case gfx::ColorSpace::TransferID::HLG:
@@ -137,20 +147,6 @@ uint32_t GetTransferFunctionIndex(const gfx::ColorSpace& color_space) {
     default:
       return 0;
   }
-}
-
-bool MapsUnitIntervalToUnitInterval(const gfx::ColorSpace& color_space) {
-  switch (color_space.GetTransferID()) {
-    case gfx::ColorSpace::TransferID::SRGB_HDR:
-      return true;
-    case gfx::ColorSpace::TransferID::PQ:
-    case gfx::ColorSpace::TransferID::HLG:
-      return false;
-    default:
-      break;
-  }
-  NOTREACHED();
-  return false;
 }
 
 // Convert from an IOSurface's pixel format to a MTLPixelFormat. Crash on any
@@ -381,6 +377,9 @@ API_AVAILABLE(macos(10.15))
     uint32_t transfer_function_index = GetTransferFunctionIndex(color_space);
     DCHECK(transfer_function_index);
 
+    skcms_TransferFunction fn;
+    color_space.GetTransferFunction(&fn);
+
     // Matrix is the primary transform matrix from |color_space| to sRGB.
     simd::float3x3 matrix;
     {
@@ -397,11 +396,12 @@ API_AVAILABLE(macos(10.15))
           simd::make_float3(m.vals[0][2], m.vals[1][2], m.vals[2][2]));
     }
 
+    [encoder setVertexBytes:positions length:sizeof(positions) atIndex:0];
+    [encoder setFragmentBytes:&matrix length:sizeof(matrix) atIndex:0];
     [encoder setFragmentBytes:&transfer_function_index
                        length:sizeof(transfer_function_index)
                       atIndex:1];
-    [encoder setVertexBytes:positions length:sizeof(positions) atIndex:0];
-    [encoder setFragmentBytes:&matrix length:sizeof(matrix) atIndex:0];
+    [encoder setFragmentBytes:&fn length:sizeof(fn) atIndex:2];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangle
                 vertexStart:0
                 vertexCount:6];
@@ -446,6 +446,7 @@ void UpdateHDRCopierLayer(
 }
 
 bool ShouldUseHDRCopier(IOSurfaceRef buffer,
+                        gfx::HDRMode hdr_mode,
                         const gfx::ColorSpace& color_space) {
   if (@available(macos 10.15, *)) {
     // Only some transfer functions are supported.
@@ -457,11 +458,18 @@ bool ShouldUseHDRCopier(IOSurfaceRef buffer,
     if (IOSurfaceGetMTLPixelFormat(buffer, &is_unorm) == MTLPixelFormatInvalid)
       return false;
 
-    // Unorm formats will only be in the [0, 1] range, so only copy them if
-    // their transfer function will actually go outside of [0, 1].
-    if (is_unorm && MapsUnitIntervalToUnitInterval(color_space))
-      return false;
+    if (color_space.IsToneMappedByDefault())
+      return true;
 
+    if (hdr_mode == gfx::HDRMode::kDefault) {
+      if (color_space.GetTransferID() ==
+          gfx::ColorSpace::TransferID::SRGB_HDR) {
+        // Rasterized tiles and the primary plane specify a color space of
+        // SRGB_HDR with gfx::HDRMode::kDefault.
+        return !is_unorm;
+      }
+      return false;
+    }
     return true;
   }
   return false;

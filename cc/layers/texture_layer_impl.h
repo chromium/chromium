@@ -58,7 +58,8 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   void SetNearestNeighbor(bool nearest_neighbor);
   void SetUVTopLeft(const gfx::PointF& top_left);
   void SetUVBottomRight(const gfx::PointF& bottom_right);
-  void SetHDRMetadata(absl::optional<gfx::HDRMetadata> hdr_metadata);
+  void SetHDRConfiguration(gfx::HDRMode mode,
+                           absl::optional<gfx::HDRMetadata> hdr_metadata);
 
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback);
@@ -90,6 +91,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   bool nearest_neighbor_ = false;
   gfx::PointF uv_top_left_ = gfx::PointF();
   gfx::PointF uv_bottom_right_ = gfx::PointF(1.f, 1.f);
+  gfx::HDRMode hdr_mode_ = gfx::HDRMode::kDefault;
   absl::optional<gfx::HDRMetadata> hdr_metadata_;
 
   // True while the |transferable_resource_| is owned by this layer, and

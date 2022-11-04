@@ -45,6 +45,7 @@ struct GL_EXPORT CARendererLayerParams {
                         unsigned edge_aa_mask,
                         float opacity,
                         unsigned filter,
+                        gfx::HDRMode hdr_mode,
                         absl::optional<gfx::HDRMetadata> hdr_metadata,
                         gfx::ProtectedVideoType protected_video_type);
   CARendererLayerParams(const CARendererLayerParams& other);
@@ -63,6 +64,7 @@ struct GL_EXPORT CARendererLayerParams {
   unsigned edge_aa_mask;
   float opacity;
   unsigned filter;
+  const gfx::HDRMode hdr_mode;
   absl::optional<gfx::HDRMetadata> hdr_metadata;
   gfx::ProtectedVideoType protected_video_type;
 

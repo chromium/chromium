@@ -441,7 +441,8 @@ void OutputPresenterGL::ScheduleOverlayPlane(
       gfx::ToEnclosingRect(overlay_plane_candidate.bounds_rect),
       overlay_plane_candidate.background_color.toSkColor(),
       overlay_plane_candidate.edge_aa_mask, overlay_plane_candidate.opacity,
-      overlay_plane_candidate.filter, overlay_plane_candidate.hdr_metadata,
+      overlay_plane_candidate.filter, overlay_plane_candidate.hdr_mode,
+      overlay_plane_candidate.hdr_metadata,
       overlay_plane_candidate.protected_video_type));
 #endif
 }

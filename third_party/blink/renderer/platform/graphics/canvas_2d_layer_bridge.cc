@@ -317,7 +317,8 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
     layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     layer_->SetNearestNeighbor(resource_host_->FilterQuality() ==
                                cc::PaintFlags::FilterQuality::kNone);
-    layer_->SetHDRMetadata(resource_host_->GetHDRMetadata());
+    layer_->SetHDRConfiguration(resource_host_->GetHDRMode(),
+                                resource_host_->GetHDRMetadata());
   }
   // After the page becomes visible and successfully restored the canvas
   // resource provider, set |lose_context_in_background_| to false.
@@ -370,10 +371,11 @@ void Canvas2DLayerBridge::SetFilterQuality(
                                cc::PaintFlags::FilterQuality::kNone);
 }
 
-void Canvas2DLayerBridge::SetHDRMetadata(
+void Canvas2DLayerBridge::SetHDRConfiguration(
+    gfx::HDRMode hdr_mode,
     absl::optional<gfx::HDRMetadata> hdr_metadata) {
   if (layer_)
-    layer_->SetHDRMetadata(hdr_metadata);
+    layer_->SetHDRConfiguration(hdr_mode, hdr_metadata);
 }
 
 void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {

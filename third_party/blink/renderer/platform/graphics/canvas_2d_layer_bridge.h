@@ -82,7 +82,8 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   void SetIsInHiddenPage(bool);
   void SetIsBeingDisplayed(bool);
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
-  void SetHDRMetadata(absl::optional<gfx::HDRMetadata> hdr_metadata);
+  void SetHDRConfiguration(gfx::HDRMode hdr_mode,
+                           absl::optional<gfx::HDRMetadata> hdr_metadata);
   void DidDraw();
   void DoPaintInvalidation(const gfx::Rect& dirty_rect);
   cc::Layer* Layer();

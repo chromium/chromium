@@ -151,6 +151,7 @@ gfx::CALayerResult FromTextureQuad(DisplayResourceProvider* resource_provider,
   }
   ca_layer_overlay->opacity *= quad->vertex_opacity[0];
   ca_layer_overlay->filter = quad->nearest_neighbor ? GL_NEAREST : GL_LINEAR;
+  ca_layer_overlay->hdr_mode = quad->hdr_mode;
   ca_layer_overlay->hdr_metadata = quad->hdr_metadata;
   if (quad->is_video_frame)
     ca_layer_overlay->protected_video_type = quad->protected_video_type;
