@@ -218,6 +218,13 @@ class NSSInitSingleton {
 
     SECStatus status = SECFailure;
     base::FilePath database_dir = GetInitialConfigDirectory();
+    // In MSAN, all loaded libraries needs to be instrumented. But the user
+    // config may reference an uninstrumented module, so load NSS without cert
+    // DBs instead. Tests should ideally be run under
+    // testing/run_with_dummy_home.py to eliminate dependencies on user
+    // configuration, but the bots are not currently configured to do so. This
+    // workaround may be removed if/when the bots use run_with_dummy_home.py.
+#if !defined(MEMORY_SANITIZER)
     if (!database_dir.empty()) {
       // Initialize with a persistent database (likely, ~/.pki/nssdb).
       // Use "sql:" which can be shared by multiple processes safely.
@@ -234,6 +241,7 @@ class NSSInitSingleton {
                    << nss_config_dir << "): " << GetNSSErrorMessage();
       }
     }
+#endif  // !defined(MEMORY_SANITIZER)
     if (status != SECSuccess) {
       VLOG(1) << "Initializing NSS without a persistent database.";
       status = NSS_NoDB_Init(nullptr);
