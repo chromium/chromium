@@ -7140,11 +7140,10 @@
             ],
             "experiments": [
                 {
-                    "name": "NoSetDefault-ForYou3",
+                    "name": "NoBackground-ForYou2",
                     "params": {
-                        "new-user-modules": "nux-google-apps,nux-ntp-background,signin-view",
-                        "onboarding-group": "NoSetDefaultSynthetic-ForYou3",
-                        "returning-user-modules": "nux-invalid-module"
+                        "new-user-modules": "nux-google-apps,nux-set-as-default,signin-view",
+                        "onboarding-group": "NoBackgroundSynthetic-ForYou2"
                     },
                     "enable_features": [
                         "NuxOnboarding"
