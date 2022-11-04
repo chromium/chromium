@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -214,6 +215,10 @@ base::TaskTraits TaskQueuePriority2Traits(
     default:
 #if defined(OS_ANDROID)
       return {base::WithBaseSyncPrimitives()};
+#elif defined(OS_WIN)
+      // On Windows, software encoders need to map HW frames which requires
+      // blocking calls:
+      return {base::MayBlock()};
 #else
       return {};
 #endif
