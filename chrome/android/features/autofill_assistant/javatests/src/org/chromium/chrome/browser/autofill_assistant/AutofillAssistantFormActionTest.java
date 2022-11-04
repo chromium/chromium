@@ -56,7 +56,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
@@ -108,7 +107,6 @@ public class AutofillAssistantFormActionTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testFormAction() {
         ArrayList<ActionProto> list = new ArrayList<>();
         // FromProto.Builder, extracted to avoid excessive line widths.
@@ -281,7 +279,6 @@ public class AutofillAssistantFormActionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testFormActionWithLegalDisclaimer() {
         ArrayList<ActionProto> list = new ArrayList<>();
         FormProto.Builder formProto =
@@ -334,7 +331,6 @@ public class AutofillAssistantFormActionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testFormActionClickLink() {
         ArrayList<ActionProto> list = new ArrayList<>();
         // FromProto.Builder, extracted to avoid excessive line widths.
@@ -400,7 +396,6 @@ public class AutofillAssistantFormActionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testInfoPopup() {
         ArrayList<ActionProto> list = new ArrayList<>();
         // FromProto.Builder, extracted to avoid excessive line widths.
@@ -475,7 +470,6 @@ public class AutofillAssistantFormActionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testInfoPopupNoButtons() {
         ArrayList<ActionProto> list = new ArrayList<>();
         // FromProto.Builder, extracted to avoid excessive line widths.
@@ -521,7 +515,6 @@ public class AutofillAssistantFormActionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testMultipleForms() {
         ArrayList<ActionProto> list = new ArrayList<>();
         // FromProto.Builder, extracted to avoid excessive line widths.
@@ -622,7 +615,6 @@ public class AutofillAssistantFormActionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testCounterExpandEnabledWithoutAccessibility() {
         startTestCounterExpansion(false);
 
@@ -633,7 +625,6 @@ public class AutofillAssistantFormActionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     // When both START_SURFACE_ANDROID and TAB_GROUPS_CONTINUATION_ANDROID are enabled, changing
     // accessibility status won't recreate ChromeTabbedActivity.
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,

@@ -145,7 +145,6 @@ public class TracingSettingsTest {
     @MediumTest
     @Feature({"Preferences"})
     @DisabledTest(message = "crbug.com/1111655")
-    @DisableIf.Build(sdk_is_less_than = 21, message = "crbug.com/899894")
     public void testRecordTrace() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mSettingsActivityTestRule.startSettingsActivity();

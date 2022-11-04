@@ -325,7 +325,6 @@ public class AutofillAssistantGenericUiTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testStaticUserInterface() {
         DrawableProto roundedRect =
                 DrawableProto.newBuilder()
@@ -414,7 +413,6 @@ public class AutofillAssistantGenericUiTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     @DisabledTest(message = "crbug.com/1087042")
     public void testOnViewClickedWriteToModel() {
         ViewProto clickableView1 = ViewProto.newBuilder()
@@ -565,7 +563,6 @@ public class AutofillAssistantGenericUiTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testCallbackChain() {
         ViewProto clickableView =
                 ViewProto.newBuilder()
@@ -723,7 +720,6 @@ public class AutofillAssistantGenericUiTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testShowInfoPopupOnClick() {
         ViewProto clickableView = ViewProto.newBuilder()
                                           .setTextView(TextViewProto.newBuilder().setText(
@@ -798,7 +794,6 @@ public class AutofillAssistantGenericUiTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testListPopup() {
         List<InteractionProto> interactions = new ArrayList<>();
         interactions.add(
@@ -919,7 +914,6 @@ public class AutofillAssistantGenericUiTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
     public void testMandatoryFields() {
         ViewProto clickableView1 = ViewProto.newBuilder()
                                            .setTextView(TextViewProto.newBuilder().setText(

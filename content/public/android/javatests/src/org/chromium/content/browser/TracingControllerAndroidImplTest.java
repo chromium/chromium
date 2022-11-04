@@ -18,7 +18,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
@@ -42,7 +41,6 @@ public class TracingControllerAndroidImplTest {
     @Test
     @MediumTest
     @Feature({"GPU"})
-    @DisableIf.Build(sdk_is_less_than = 21, message = "crbug.com/899894")
     public void testTraceFileCreation() {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl("about:blank");
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
@@ -128,7 +126,6 @@ public class TracingControllerAndroidImplTest {
     @Test
     @MediumTest
     @Feature({"GPU"})
-    @DisableIf.Build(sdk_is_less_than = 21, message = "crbug.com/899894")
     public void testStopCallbackAndCompression() throws Exception {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl("about:blank");
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
@@ -166,7 +163,6 @@ public class TracingControllerAndroidImplTest {
     @Test
     @MediumTest
     @Feature({"GPU"})
-    @DisableIf.Build(sdk_is_less_than = 21, message = "crbug.com/899894")
     public void testProtobufTracing() throws Exception {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl("about:blank");
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
