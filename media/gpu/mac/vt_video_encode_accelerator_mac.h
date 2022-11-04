@@ -91,9 +91,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
       std::unique_ptr<EncodeOutput> encode_output,
       std::unique_ptr<VTVideoEncodeAccelerator::BitstreamBufferRef> buffer_ref);
 
-  // Get the max supported resolution of a certain codec.
-  gfx::Size GetMaxSupportedResolution(VideoCodec codec);
-
   // Get the supported H.264 profiles.
   SupportedProfiles GetSupportedH264Profiles();
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

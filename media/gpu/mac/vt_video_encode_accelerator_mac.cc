@@ -39,16 +39,17 @@ namespace media {
 namespace {
 
 constexpr size_t kBitsPerByte = 8;
-constexpr size_t kDefaultResolutionWidth = 640;
-constexpr size_t kDefaultResolutionHeight = 480;
+constexpr size_t kDefaultFrameRateNumerator = 30;
+constexpr size_t kDefaultFrameRateDenominator = 1;
 constexpr size_t kMaxFrameRateNumerator = 120;
 constexpr size_t kMaxFrameRateDenominator = 1;
 constexpr size_t kNumInputBuffers = 3;
-
-constexpr auto kModernResolutions = {
-    gfx::Size(8192, 8192), gfx::Size(8192, 4320), gfx::Size(4096, 4096),
-    gfx::Size(4096, 2304), gfx::Size(4096, 2160), gfx::Size(2560, 1440),
-    gfx::Size(1920, 1080)};
+constexpr gfx::Size kDefaultSupportedResolution = gfx::Size(640, 480);
+// TODO(crbug.com/1380682): We should add a function like a
+// `GetVideoEncodeAcceleratorProfileIsSupported`, to test the
+// real support status with a give resolution, framerate etc,
+// instead of query a "supportedProfile" list.
+constexpr gfx::Size kMaxSupportedResolution = gfx::Size(4096, 2304);
 
 constexpr VideoCodecProfile kSupportedProfiles[] = {
     H264PROFILE_BASELINE,
@@ -207,23 +208,11 @@ VTVideoEncodeAccelerator::~VTVideoEncodeAccelerator() {
   DCHECK(!encoder_task_weak_factory_.HasWeakPtrs());
 }
 
-gfx::Size VTVideoEncodeAccelerator::GetMaxSupportedResolution(
-    VideoCodec codec) {
-  for (const auto& resolution : kModernResolutions) {
-    bool supported = CreateCompressionSession(codec, resolution);
-    DestroyCompressionSession();
-    if (supported)
-      return resolution;
-  }
-  return gfx::Size(kDefaultResolutionWidth, kDefaultResolutionHeight);
-}
-
 VideoEncodeAccelerator::SupportedProfiles
 VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
   SupportedProfiles profiles;
-  bool supported = CreateCompressionSession(
-      VideoCodec::kH264,
-      gfx::Size(kDefaultResolutionWidth, kDefaultResolutionHeight));
+  bool supported =
+      CreateCompressionSession(VideoCodec::kH264, kDefaultSupportedResolution);
   DestroyCompressionSession();
   if (!supported) {
     DVLOG(1) << "Hardware H.264 encode acceleration is not available on this "
@@ -231,7 +220,7 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
     return profiles;
   }
   SupportedProfile profile;
-  profile.max_resolution = GetMaxSupportedResolution(VideoCodec::kH264);
+  profile.max_resolution = kMaxSupportedResolution;
   profile.max_framerate_numerator = kMaxFrameRateNumerator;
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
   profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
@@ -255,9 +244,8 @@ VTVideoEncodeAccelerator::GetSupportedHEVCProfiles() {
   if (!base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport))
     return profiles;
   if (__builtin_available(macOS 11.0, *)) {
-    bool supported = CreateCompressionSession(
-        VideoCodec::kHEVC,
-        gfx::Size(kDefaultResolutionWidth, kDefaultResolutionHeight));
+    bool supported = CreateCompressionSession(VideoCodec::kHEVC,
+                                              kDefaultSupportedResolution);
     DestroyCompressionSession();
     if (!supported) {
       DVLOG(1) << "Hardware HEVC encode acceleration is not available on this "
@@ -265,7 +253,7 @@ VTVideoEncodeAccelerator::GetSupportedHEVCProfiles() {
       return profiles;
     }
     SupportedProfile profile;
-    profile.max_resolution = GetMaxSupportedResolution(VideoCodec::kHEVC);
+    profile.max_resolution = kMaxSupportedResolution;
     profile.max_framerate_numerator = kMaxFrameRateNumerator;
     profile.max_framerate_denominator = kMaxFrameRateDenominator;
     profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
@@ -314,10 +302,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
         << VideoPixelFormatToString(config.input_format);
     return false;
   }
-  static const base::NoDestructor<VideoEncodeAccelerator::SupportedProfiles>
-      kActualSupportedProfiles(GetSupportedProfiles());
-  if (!base::Contains(*kActualSupportedProfiles, config.output_profile,
-                      &VideoEncodeAccelerator::SupportedProfile::profile)) {
+  if (!base::Contains(kSupportedProfiles, config.output_profile)) {
     MEDIA_LOG(ERROR, media_log.get()) << "Output profile not supported= "
                                       << GetProfileName(config.output_profile);
     return false;
@@ -330,7 +315,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   if (config.initial_framerate.has_value())
     frame_rate_ = config.initial_framerate.value();
   else
-    frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
+    frame_rate_ = kDefaultFrameRateNumerator / kDefaultFrameRateDenominator;
   bitrate_ = config.bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   require_low_delay_ = config.require_low_delay;
