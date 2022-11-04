@@ -16,6 +16,7 @@
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -154,7 +155,8 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   bool IsLoggingEnabled() const;
 
-  KeyboardInputLog* keyboard_input_log_ptr_ = nullptr;  // Not Owned.
+  base::raw_ptr<KeyboardInputLog> keyboard_input_log_ptr_ =
+      nullptr;  // Not Owned.
 
   // Whether a tablet mode switch is present (which we use as a hint for the
   // top-right key glyph).

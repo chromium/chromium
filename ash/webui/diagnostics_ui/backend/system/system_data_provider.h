@@ -9,6 +9,7 @@
 
 #include "ash/webui/diagnostics_ui/backend/system/cpu_usage_data.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -115,7 +116,7 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   bool IsLoggingEnabled() const;
 
-  TelemetryLog* telemetry_log_ptr_ = nullptr;  // Not owned.
+  base::raw_ptr<TelemetryLog> telemetry_log_ptr_ = nullptr;  // Not owned.
 
   CpuUsageData previous_cpu_usage_data_;
 
