@@ -256,7 +256,7 @@ Status EvaluateScript(DevToolsClient* client,
                       EvaluateScriptReturnType return_type,
                       const base::TimeDelta& timeout,
                       const bool await_promise,
-                      std::unique_ptr<base::DictionaryValue>* result);
+                      base::Value::Dict& result);
 Status EvaluateScriptAndGetObject(DevToolsClient* client,
                                   const std::string& context_id,
                                   const std::string& expression,

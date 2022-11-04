@@ -1547,7 +1547,7 @@ Status EvaluateScript(DevToolsClient* client,
                       EvaluateScriptReturnType return_type,
                       const base::TimeDelta& timeout,
                       const bool await_promise,
-                      std::unique_ptr<base::DictionaryValue>* result) {
+                      base::Value::Dict& result) {
   base::Value::Dict params;
   params.Set("expression", expression);
   if (!context_id.empty()) {
@@ -1563,21 +1563,21 @@ Status EvaluateScript(DevToolsClient* client,
   if (status.IsError())
     return status;
 
-  if (cmd_result.is_dict() && cmd_result.FindKey("exceptionDetails")) {
+  base::Value::Dict* cmd_dict = cmd_result.GetIfDict();
+  if (cmd_dict && cmd_dict->contains("exceptionDetails")) {
     std::string description = "unknown";
     if (const std::string* maybe_description =
-            cmd_result.FindStringPath("result.description")) {
+            cmd_dict->FindStringByDottedPath("result.description")) {
       description = *maybe_description;
     }
     return Status(kUnknownError,
                   "Runtime.evaluate threw exception: " + description);
   }
 
-  base::Value* unscoped_result = cmd_result.FindDictKey("result");
+  base::Value::Dict* unscoped_result = cmd_dict->FindDict("result");
   if (!unscoped_result)
     return Status(kUnknownError, "evaluate missing dictionary 'result'");
-  auto result_value = base::Value::ToUniquePtrValue(unscoped_result->Clone());
-  *result = base::DictionaryValue::From(std::move(result_value));
+  result = std::move(*unscoped_result);
   return Status(kOk);
 }
 
@@ -1588,12 +1588,12 @@ Status EvaluateScriptAndGetObject(DevToolsClient* client,
                                   const bool await_promise,
                                   bool* got_object,
                                   std::string* object_id) {
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value::Dict result;
   Status status = EvaluateScript(client, context_id, expression, ReturnByObject,
-                                 timeout, await_promise, &result);
+                                 timeout, await_promise, result);
   if (status.IsError())
     return status;
-  const base::Value* object_id_val = result->FindKey("objectId");
+  const base::Value* object_id_val = result.Find("objectId");
   if (!object_id_val) {
     *got_object = false;
     return Status(kOk);
@@ -1611,23 +1611,23 @@ Status EvaluateScriptAndGetValue(DevToolsClient* client,
                                  const base::TimeDelta& timeout,
                                  const bool await_promise,
                                  std::unique_ptr<base::Value>* result) {
-  std::unique_ptr<base::DictionaryValue> temp_result;
+  base::Value::Dict temp_result;
   Status status = EvaluateScript(client, context_id, expression, ReturnByValue,
-                                 timeout, await_promise, &temp_result);
+                                 timeout, await_promise, temp_result);
   if (status.IsError())
     return status;
 
-  std::string type;
-  if (!temp_result->GetString("type", &type))
+  std::string* type = temp_result.FindString("type");
+  if (!type)
     return Status(kUnknownError, "Runtime.evaluate missing string 'type'");
 
-  if (type == "undefined") {
+  if (*type == "undefined") {
     *result = std::make_unique<base::Value>();
   } else {
-    base::Value* value = temp_result->FindKey("value");
-    if (value == nullptr)
+    absl::optional<base::Value> value = temp_result.Extract("value");
+    if (!value)
       return Status(kUnknownError, "Runtime.evaluate missing 'value'");
-    *result = base::Value::ToUniquePtrValue(value->Clone());
+    *result = base::Value::ToUniquePtrValue(std::move(*value));
   }
   return Status(kOk);
 }
