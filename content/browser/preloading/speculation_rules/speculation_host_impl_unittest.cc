@@ -66,8 +66,8 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
     return GURL("https://example.com" + path);
   }
 
-  GURL GetCrossOriginUrl(const std::string& path) {
-    return GURL("https://other.example.com" + path);
+  GURL GetCrossSiteUrl(const std::string& path) {
+    return GURL("https://example2.com" + path);
   }
 
   PrerenderHostRegistry* GetPrerenderHostRegistry() const {
@@ -109,7 +109,7 @@ TEST_F(SpeculationHostImplTest, StartPrerender) {
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
-// Tests that SpeculationHostImpl will skip a cross-origin candidate even if it
+// Tests that SpeculationHostImpl will skip a cross-site candidate even if it
 // is the first prerender candidate in the candidate list.
 TEST_F(SpeculationHostImplTest, ProcessFirstSameOriginPrerenderCandidate) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
@@ -118,23 +118,22 @@ TEST_F(SpeculationHostImplTest, ProcessFirstSameOriginPrerenderCandidate) {
   SpeculationHostImpl::Bind(render_frame_host,
                             remote.BindNewPipeAndPassReceiver());
 
-  const GURL kFirstPrerenderingUrlCrossOrigin =
-      GetCrossOriginUrl("/title.html");
+  const GURL kFirstPrerenderingUrlCrossSite = GetCrossSiteUrl("/title.html");
   const GURL kSecondPrerenderingUrlSameOrigin =
       GetSameOriginUrl("/title1.html");
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(
-      CreatePrerenderCandidate(kFirstPrerenderingUrlCrossOrigin));
+      CreatePrerenderCandidate(kFirstPrerenderingUrlCrossSite));
   candidates.push_back(
       CreatePrerenderCandidate(kSecondPrerenderingUrlSameOrigin));
 
   remote->UpdateSpeculationCandidates(std::move(candidates));
   remote.FlushForTesting();
 
-  // The first prerender candidate is a cross-origin one, so SpeculationHostImpl
+  // The first prerender candidate is a cross-site one, so SpeculationHostImpl
   // should not prerender it.
   EXPECT_FALSE(
-      registry->FindHostByUrlForTesting(kFirstPrerenderingUrlCrossOrigin));
+      registry->FindHostByUrlForTesting(kFirstPrerenderingUrlCrossSite));
   // The second element in this list is the first same-origin prerender
   // candidate, so SpeculationHostImpl should prerender this candidate.
   EXPECT_TRUE(

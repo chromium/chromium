@@ -6639,14 +6639,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossSitePrerender) {
 
   url::Origin initiator_origin = url::Origin::Create(kInitialUrl);
   url::Origin prerender_origin = url::Origin::Create(kPrerenderingUrl);
-  std::string kConsolePattern = base::StringPrintf(
-      "The SpeculationRules API does not support cross-origin "
-      "prerender yet. (initiator origin: %s, prerender origin: %s). "
-      "https://crbug.com/1176054 tracks cross-origin support.",
-      initiator_origin.Serialize().c_str(),
-      prerender_origin.Serialize().c_str());
-  WebContentsConsoleObserver console_observer(web_contents_impl());
-  console_observer.SetPattern(kConsolePattern);
 
   // Add a cross-origin prerender rule.
   AddPrerenderAsync(kPrerenderingUrl);
@@ -6655,10 +6647,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossSitePrerender) {
   // request, and it should be ignored.
   registry_observer.WaitForTrigger(kPrerenderingUrl);
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-
-  // A warning message should be sent to console for debugging purpose.
-  ASSERT_TRUE(console_observer.Wait());
-  EXPECT_EQ(1u, console_observer.messages().size());
 
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kCrossSiteNavigation);
@@ -6685,61 +6673,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossSitePrerender) {
         << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
                                                   attempt_expected_entry);
   }
-}
-
-// Tests that same-site cross-origin navigation by speculation rules is not
-// allowed with the feature disabled.
-IN_PROC_BROWSER_TEST_F(
-    PrerenderBrowserTest,
-    SameSiteCrossOriginNavigationSpeculationRulesWithoutFeatureEnabled) {
-  ASSERT_FALSE(blink::features::
-                   IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
-  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
-  const GURL kPrerenderingUrl =
-      GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
-
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Add a same-site cross-origin prerender rule.
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
-  AddPrerenderAsync(kPrerenderingUrl);
-  // Wait for PrerenderHostRegistry to receive the cross-origin prerender
-  // request, and it should be ignored.
-  registry_observer.WaitForTrigger(kPrerenderingUrl);
-  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kSameSiteCrossOriginNavigation);
-}
-
-// Tests that same-site cross-origin redirection by speculation rules is not
-// allowed with the feature disabled.
-IN_PROC_BROWSER_TEST_F(
-    PrerenderBrowserTest,
-    SameSiteCrossOriginRedirectionSpeculationRulesWithoutFeatureEnabled) {
-  ASSERT_FALSE(blink::features::
-                   IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
-  // Navigate to an initial page.
-  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Start prerendering a URL that causes cross-origin redirection. The
-  // cross-origin redirection should fail prerendering.
-  const GURL kRedirectedUrl =
-      GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
-  const GURL kPrerenderingUrl = GetUrlForSameSiteCrossOriginTest(
-      "/server-redirect?" + kRedirectedUrl.spec());
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
-  test::PrerenderHostObserver host_observer(*web_contents_impl(),
-                                            kPrerenderingUrl);
-  AddPrerenderAsync(kPrerenderingUrl);
-  host_observer.WaitForDestroyed();
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  EXPECT_EQ(GetRequestCount(kRedirectedUrl), 0);
-  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-  EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kSameSiteCrossOriginRedirect);
 }
 
 // Tests that same-site cross-origin navigation by speculation rules is not
