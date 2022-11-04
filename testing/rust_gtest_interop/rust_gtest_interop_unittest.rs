@@ -94,26 +94,6 @@ fn test() -> std::result::Result<(), Box<dyn std::error::Error>> {
 //     unsafe { COUNTER += 1 };
 // }
 
-#[gtest(Test, WithTestSubclassAsTestSuite)]
-#[gtest_suite(rust_gtest_interop_test_support::TestSubclass)]
-fn test(mut suite: Pin<&mut rust_gtest_interop_test_support::TestSubclass>) {
-    expect_eq!(0, suite.as_ref().num_calls());
-    expect_true!(suite.as_mut().get_true());
-    expect_eq!(1, suite.as_ref().num_calls());
-    expect_false!(suite.as_mut().get_false());
-    expect_eq!(2, suite.as_ref().num_calls());
-}
-
-#[gtest(Test, WithCustomTemplateTestSuite)]
-#[gtest_suite(rust_gtest_interop_test_support::TestSubclassWithCustomTemplate)]
-fn test(mut suite: Pin<&mut rust_gtest_interop_test_support::TestSubclassWithCustomTemplate>) {
-    expect_eq!(0, suite.as_ref().num_calls());
-    expect_eq!(3, suite.as_mut().get_three());
-    expect_eq!(1, suite.as_ref().num_calls());
-    expect_eq!(4, suite.as_mut().get_four());
-    expect_eq!(2, suite.as_ref().num_calls());
-}
-
 #[gtest(Test, Paths)]
 fn test() {
     expect_eq!(rust_gtest_interop::__private::make_canonical_file_path("foo/bar.rs"), "foo/bar.rs");

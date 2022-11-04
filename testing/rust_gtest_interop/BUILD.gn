@@ -2,23 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/mixed_static_library.gni")
 import("//build/rust/rust_macro.gni")
+import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 
 if (enable_rust) {
-  mixed_static_library("rust_gtest_interop") {
+  group("rust_gtest_interop") {
     testonly = true
+    public_deps = [
+      ":rust_gtest_interop_cpp",
+      ":rust_gtest_interop_rust",
+    ]
+  }
+
+  static_library("rust_gtest_interop_cpp") {
+    testonly = true
+    visibility = [ ":rust_gtest_interop" ]
     sources = [
       "rust_gtest_interop.cc",
       "rust_gtest_interop.h",
     ]
-    rs_crate_root = "rust_gtest_interop.rs"
-    rs_sources = [
+    deps = [ "//testing/gtest" ]
+  }
+
+  rust_static_library("rust_gtest_interop_rust") {
+    testonly = true
+    visibility = [ ":rust_gtest_interop" ]
+    crate_name = "rust_gtest_interop"
+    crate_root = "rust_gtest_interop.rs"
+    sources = [
       "expect_macros.rs",
       "rust_gtest_interop.rs",
     ]
-    rs_deps = [
+    deps = [
       # Macros re-exported from the rust_gtest_interop crate. Can only be
       # accessed through the crate, so not public_deps.
       ":gtest_attribute",
@@ -26,7 +42,6 @@ if (enable_rust) {
       # This is re-exported for the gtest_attribute macros.
       "//third_party/rust/small_ctor/v0_1:test_support",
     ]
-    deps = [ "//testing/gtest" ]
   }
 
   rust_macro("gtest_attribute") {
@@ -44,18 +59,12 @@ if (enable_rust) {
     visibility = [ ":*" ]
   }
 
-  mixed_static_library("test_support") {
-    rs_crate_name = "rust_gtest_interop_test_support"
-
+  static_library("test_support_cpp") {
     testonly = true
     sources = [
       "test/test_subclass.cc",
       "test/test_subclass.h",
     ]
-    rs_crate_root = "test/test_subclass.rs"
-    rs_sources = [ "test/test_subclass.rs" ]
-    rs_cxx_bindings = [ "test/test_subclass.rs" ]
-    rs_deps = [ ":rust_gtest_interop" ]
     public_deps = [
       ":rust_gtest_interop",
       "//testing/gtest",
@@ -65,13 +74,12 @@ if (enable_rust) {
   test("rust_gtest_interop_unittests") {
     sources = [ "rust_gtest_interop_unittest_main.cc" ]
     deps = [
-      ":test_support",
+      ":test_support_cpp",
       "//base",
       "//base/test:test_support",
       "//testing/gtest",
     ]
 
-    rs_deps = [ ":test_support" ]
     rs_sources = [ "rust_gtest_interop_unittest.rs" ]
   }
 }
