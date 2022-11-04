@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -19,10 +20,6 @@
 
 class GoogleServiceAuthError;
 class OAuth2MintTokenFlowTest;
-
-namespace base {
-class Value;
-}
 
 extern const char kOAuth2MintTokenApiCallResultHistogram[];
 
@@ -184,7 +181,7 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
   void ReportFailure(const GoogleServiceAuthError& error);
 
   static bool ParseRemoteConsentResponse(
-      const base::Value* dict,
+      const base::Value::Dict& dict,
       RemoteConsentResolutionData* resolution_data);
 
   // Currently, grantedScopes is a new parameter for an unlaunched feature, so
@@ -194,7 +191,7 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
   // and the function returns true, granted_scopes will include the scopes
   // returned by the server. Once the feature is fully launched, this function
   // will be updated to fail if the grantedScopes parameter is missing.
-  static bool ParseMintTokenResponse(const base::Value* dict,
+  static bool ParseMintTokenResponse(const base::Value::Dict& dict,
                                      std::string* access_token,
                                      std::set<std::string>* granted_scopes,
                                      int* time_to_live);

@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -210,14 +211,6 @@ class OAuth2MintTokenFlowTest : public testing::Test {
     flow_->ProcessApiCallFailure(net_error, head, std::move(body));
   }
 
-  // Helper to parse the given string to base::Value.
-  static std::unique_ptr<base::Value> ParseJson(const std::string& str) {
-    absl::optional<base::Value> value = base::JSONReader::Read(str);
-    EXPECT_TRUE(value.has_value());
-    EXPECT_TRUE(value->is_dict());
-    return std::make_unique<base::Value>(std::move(*value));
-  }
-
   std::unique_ptr<MockMintTokenFlow> flow_;
   StrictMock<MockDelegate> delegate_;
   base::HistogramTester histogram_tester_;
@@ -344,41 +337,42 @@ TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBody) {
 
 TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponse) {
   {  // Access token missing.
-    std::unique_ptr<base::Value> json = ParseJson(kTokenResponseNoAccessToken);
+    base::Value::Dict json =
+        base::test::ParseJsonDict(kTokenResponseNoAccessToken);
     std::string access_token;
     std::set<std::string> granted_scopes;
     int time_to_live;
     EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json.get(), &access_token, &granted_scopes, &time_to_live));
+        json, &access_token, &granted_scopes, &time_to_live));
     EXPECT_TRUE(access_token.empty());
   }
   {  // Granted scopes parameter is there but is empty.
-    std::unique_ptr<base::Value> json =
-        ParseJson(kTokenResponseEmptyGrantedScopes);
+    base::Value::Dict json =
+        base::test::ParseJsonDict(kTokenResponseEmptyGrantedScopes);
     std::string access_token;
     std::set<std::string> granted_scopes;
     int time_to_live;
     EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json.get(), &access_token, &granted_scopes, &time_to_live));
+        json, &access_token, &granted_scopes, &time_to_live));
     EXPECT_TRUE(granted_scopes.empty());
   }
   {  // Granted scopes parameter is missing.
-    std::unique_ptr<base::Value> json =
-        ParseJson(kTokenResponseNoGrantedScopes);
+    base::Value::Dict json =
+        base::test::ParseJsonDict(kTokenResponseNoGrantedScopes);
     std::string access_token;
     std::set<std::string> granted_scopes;
     int time_to_live;
     EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json.get(), &access_token, &granted_scopes, &time_to_live));
+        json, &access_token, &granted_scopes, &time_to_live));
     EXPECT_TRUE(granted_scopes.empty());
   }
   {  // All good.
-    std::unique_ptr<base::Value> json = ParseJson(kValidTokenResponse);
+    base::Value::Dict json = base::test::ParseJsonDict(kValidTokenResponse);
     std::string access_token;
     std::set<std::string> granted_scopes;
     int time_to_live;
     EXPECT_TRUE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json.get(), &access_token, &granted_scopes, &time_to_live));
+        json, &access_token, &granted_scopes, &time_to_live));
     EXPECT_EQ("at1", access_token);
     EXPECT_EQ(3600, time_to_live);
     EXPECT_EQ(std::set<std::string>({"http://scope1", "http://scope2"}),
@@ -387,21 +381,23 @@ TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponse) {
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
   RemoteConsentResolutionData resolution_data;
-  ASSERT_TRUE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  ASSERT_TRUE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   RemoteConsentResolutionData expected_resolution_data =
       CreateRemoteConsentResolutionData();
   EXPECT_EQ(resolution_data, expected_resolution_data);
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_EmptyCookies) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-  json->FindListPath("resolutionData.browserCookies")->ClearList();
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
+  json.FindListByDottedPath("resolutionData.browserCookies")->clear();
   RemoteConsentResolutionData resolution_data;
-  EXPECT_TRUE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  EXPECT_TRUE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   RemoteConsentResolutionData expected_resolution_data =
       CreateRemoteConsentResolutionData();
   expected_resolution_data.cookies.clear();
@@ -409,11 +405,12 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_EmptyCookies) {
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_NoCookies) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-  EXPECT_TRUE(json->RemovePath("resolutionData.browserCookies"));
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
+  EXPECT_TRUE(json.RemoveByDottedPath("resolutionData.browserCookies"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_TRUE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  EXPECT_TRUE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   RemoteConsentResolutionData expected_resolution_data =
       CreateRemoteConsentResolutionData();
   expected_resolution_data.cookies.clear();
@@ -421,52 +418,58 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_NoCookies) {
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_NoResolutionData) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-  EXPECT_TRUE(json->RemoveKey("resolutionData"));
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
+  EXPECT_TRUE(json.Remove("resolutionData"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  EXPECT_FALSE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_NoUrl) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-  EXPECT_TRUE(json->RemovePath("resolutionData.resolutionUrl"));
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
+  EXPECT_TRUE(json.RemoveByDottedPath("resolutionData.resolutionUrl"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  EXPECT_FALSE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_BadUrl) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-  EXPECT_TRUE(json->SetStringPath("resolutionData.resolutionUrl", "not-a-url"));
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
+  EXPECT_TRUE(
+      json.SetByDottedPath("resolutionData.resolutionUrl", "not-a-url"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  EXPECT_FALSE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_NoApproach) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-  EXPECT_TRUE(json->RemovePath("resolutionData.resolutionApproach"));
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
+  EXPECT_TRUE(json.RemoveByDottedPath("resolutionData.resolutionApproach"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  EXPECT_FALSE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_BadApproach) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
   EXPECT_TRUE(
-      json->SetStringPath("resolutionData.resolutionApproach", "badApproach"));
+      json.SetByDottedPath("resolutionData.resolutionApproach", "badApproach"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  EXPECT_FALSE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
@@ -475,14 +478,15 @@ TEST_F(OAuth2MintTokenFlowTest,
        ParseRemoteConsentResponse_BadCookie_MissingRequiredField) {
   static const char* kRequiredFields[] = {"name", "value", "domain"};
   for (const auto* required_field : kRequiredFields) {
-    std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-    base::Value::ListView cookies =
-        json->FindListPath("resolutionData.browserCookies")
-            ->GetListDeprecated();
-    EXPECT_TRUE(cookies[0].RemoveKey(required_field));
+    base::Value::Dict json =
+        base::test::ParseJsonDict(kValidRemoteConsentResponse);
+    base::Value::List* cookies =
+        json.FindListByDottedPath("resolutionData.browserCookies");
+    ASSERT_TRUE(cookies);
+    EXPECT_TRUE((*cookies)[0].GetDict().Remove(required_field));
     RemoteConsentResolutionData resolution_data;
     EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-        json.get(), &resolution_data));
+        json, &resolution_data));
     EXPECT_TRUE(resolution_data.url.is_empty());
     EXPECT_TRUE(resolution_data.cookies.empty());
   }
@@ -493,14 +497,15 @@ TEST_F(OAuth2MintTokenFlowTest,
   static const char* kOptionalFields[] = {"path", "maxAgeSeconds", "isSecure",
                                           "isHttpOnly", "sameSite"};
   for (const auto* optional_field : kOptionalFields) {
-    std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-    base::Value::ListView cookies =
-        json->FindListPath("resolutionData.browserCookies")
-            ->GetListDeprecated();
-    EXPECT_TRUE(cookies[0].RemoveKey(optional_field));
+    base::Value::Dict json =
+        base::test::ParseJsonDict(kValidRemoteConsentResponse);
+    base::Value::List* cookies =
+        json.FindListByDottedPath("resolutionData.browserCookies");
+    ASSERT_TRUE(cookies);
+    EXPECT_TRUE((*cookies)[0].GetDict().Remove(optional_field));
     RemoteConsentResolutionData resolution_data;
     EXPECT_TRUE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-        json.get(), &resolution_data));
+        json, &resolution_data));
     RemoteConsentResolutionData expected_resolution_data =
         CreateRemoteConsentResolutionData();
     EXPECT_EQ(resolution_data, expected_resolution_data);
@@ -509,23 +514,26 @@ TEST_F(OAuth2MintTokenFlowTest,
 
 TEST_F(OAuth2MintTokenFlowTest,
        ParseRemoteConsentResponse_BadCookie_BadMaxAge) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-  base::Value::ListView cookies =
-      json->FindListPath("resolutionData.browserCookies")->GetListDeprecated();
-  cookies[0].SetStringKey("maxAgeSeconds", "not-a-number");
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
+  base::Value::List* cookies =
+      json.FindListByDottedPath("resolutionData.browserCookies");
+  ASSERT_TRUE(cookies);
+  (*cookies)[0].GetDict().Set("maxAgeSeconds", "not-a-number");
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  EXPECT_FALSE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_BadCookieList) {
-  std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
-  json->FindListPath("resolutionData.browserCookies")->Append(42);
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidRemoteConsentResponse);
+  json.FindListByDottedPath("resolutionData.browserCookies")->Append(42);
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-      json.get(), &resolution_data));
+  EXPECT_FALSE(
+      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }

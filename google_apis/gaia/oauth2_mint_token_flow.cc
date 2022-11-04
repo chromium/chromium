@@ -249,7 +249,8 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
     return;
   }
 
-  std::string* issue_advice_value = value->FindStringKey(kIssueAdviceKey);
+  base::Value::Dict& dict = value->GetDict();
+  std::string* issue_advice_value = dict.FindString(kIssueAdviceKey);
   if (!issue_advice_value) {
     RecordApiCallResult(
         OAuth2MintTokenApiCallResult::kIssueAdviceKeyNotFoundFailure);
@@ -260,7 +261,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
 
   if (*issue_advice_value == kIssueAdviceValueRemoteConsent) {
     RemoteConsentResolutionData resolution_data;
-    if (ParseRemoteConsentResponse(&(*value), &resolution_data)) {
+    if (ParseRemoteConsentResponse(dict, &resolution_data)) {
       RecordApiCallResult(OAuth2MintTokenApiCallResult::kRemoteConsentSuccess);
       ReportRemoteConsentSuccess(resolution_data);
     } else {
@@ -276,7 +277,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   std::string access_token;
   std::set<std::string> granted_scopes;
   int time_to_live;
-  if (ParseMintTokenResponse(&(*value), &access_token, &granted_scopes,
+  if (ParseMintTokenResponse(dict, &access_token, &granted_scopes,
                              &time_to_live)) {
     RecordApiCallResult(OAuth2MintTokenApiCallResult::kMintTokenSuccess);
     ReportSuccess(access_token, granted_scopes, time_to_live);
@@ -300,28 +301,25 @@ void OAuth2MintTokenFlow::ProcessApiCallFailure(
 
 // static
 bool OAuth2MintTokenFlow::ParseMintTokenResponse(
-    const base::Value* dict,
+    const base::Value::Dict& dict,
     std::string* access_token,
     std::set<std::string>* granted_scopes,
     int* time_to_live) {
-  CHECK(dict);
-  CHECK(dict->is_dict());
   CHECK(access_token);
   CHECK(granted_scopes);
   CHECK(time_to_live);
 
-  const std::string* ttl_string = dict->FindStringKey(kExpiresInKey);
+  const std::string* ttl_string = dict.FindString(kExpiresInKey);
   if (!ttl_string || !base::StringToInt(*ttl_string, time_to_live))
     return false;
 
-  const std::string* access_token_ptr = dict->FindStringKey(kAccessTokenKey);
+  const std::string* access_token_ptr = dict.FindString(kAccessTokenKey);
   if (!access_token_ptr)
     return false;
 
   *access_token = *access_token_ptr;
 
-  const std::string* granted_scopes_string =
-      dict->FindStringKey(kGrantedScopesKey);
+  const std::string* granted_scopes_string = dict.FindString(kGrantedScopesKey);
 
   if (!granted_scopes_string)
     return false;
@@ -340,80 +338,80 @@ bool OAuth2MintTokenFlow::ParseMintTokenResponse(
 
 // static
 bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-    const base::Value* dict,
+    const base::Value::Dict& dict,
     RemoteConsentResolutionData* resolution_data) {
-  CHECK(dict);
   CHECK(resolution_data);
 
-  const base::Value* resolution_dict = dict->FindDictKey("resolutionData");
+  const base::Value::Dict* resolution_dict = dict.FindDict("resolutionData");
   if (!resolution_dict)
     return false;
 
   const std::string* resolution_approach =
-      resolution_dict->FindStringKey("resolutionApproach");
+      resolution_dict->FindString("resolutionApproach");
   if (!resolution_approach || *resolution_approach != "resolveInBrowser")
     return false;
 
   const std::string* resolution_url_string =
-      resolution_dict->FindStringKey("resolutionUrl");
+      resolution_dict->FindString("resolutionUrl");
   if (!resolution_url_string)
     return false;
   GURL resolution_url(*resolution_url_string);
   if (!resolution_url.is_valid())
     return false;
 
-  const base::Value* browser_cookies =
-      resolution_dict->FindListKey("browserCookies");
-  base::span<const base::Value> cookie_list;
-  if (browser_cookies)
-    cookie_list = browser_cookies->GetListDeprecated();
+  const base::Value::List* browser_cookies =
+      resolution_dict->FindList("browserCookies");
 
   base::Time time_now = base::Time::Now();
   bool success = true;
   std::vector<net::CanonicalCookie> cookies;
-  for (const auto& cookie_dict : cookie_list) {
-    if (!cookie_dict.is_dict()) {
-      success = false;
-      break;
+  if (browser_cookies) {
+    for (const auto& cookie_value : *browser_cookies) {
+      const base::Value::Dict* cookie_dict = cookie_value.GetIfDict();
+      if (!cookie_dict) {
+        success = false;
+        break;
+      }
+
+      // Required parameters:
+      const std::string* name = cookie_dict->FindString("name");
+      const std::string* value = cookie_dict->FindString("value");
+      const std::string* domain = cookie_dict->FindString("domain");
+
+      if (!name || !value || !domain) {
+        success = false;
+        break;
+      }
+
+      // Optional parameters:
+      const std::string* path = cookie_dict->FindString("path");
+      const std::string* max_age_seconds =
+          cookie_dict->FindString("maxAgeSeconds");
+      absl::optional<bool> is_secure = cookie_dict->FindBool("isSecure");
+      absl::optional<bool> is_http_only = cookie_dict->FindBool("isHttpOnly");
+      const std::string* same_site = cookie_dict->FindString("sameSite");
+
+      int64_t max_age = -1;
+      if (max_age_seconds && !base::StringToInt64(*max_age_seconds, &max_age)) {
+        success = false;
+        break;
+      }
+
+      base::Time expiration_time = base::Time();
+      if (max_age > 0)
+        expiration_time = time_now + base::Seconds(max_age);
+
+      std::unique_ptr<net::CanonicalCookie> cookie =
+          net::CanonicalCookie::CreateSanitizedCookie(
+              resolution_url, *name, *value, *domain, path ? *path : "/",
+              time_now, expiration_time, time_now,
+              is_secure ? *is_secure : false,
+              is_http_only ? *is_http_only : false,
+              net::StringToCookieSameSite(same_site ? *same_site : ""),
+              net::COOKIE_PRIORITY_DEFAULT, /* same_party */ false,
+              /* partition_key */ absl::nullopt);
+      cookies.push_back(*cookie);
     }
-
-    // Required parameters:
-    const std::string* name = cookie_dict.FindStringKey("name");
-    const std::string* value = cookie_dict.FindStringKey("value");
-    const std::string* domain = cookie_dict.FindStringKey("domain");
-
-    if (!name || !value || !domain) {
-      success = false;
-      break;
-    }
-
-    // Optional parameters:
-    const std::string* path = cookie_dict.FindStringKey("path");
-    const std::string* max_age_seconds =
-        cookie_dict.FindStringKey("maxAgeSeconds");
-    absl::optional<bool> is_secure = cookie_dict.FindBoolKey("isSecure");
-    absl::optional<bool> is_http_only = cookie_dict.FindBoolKey("isHttpOnly");
-    const std::string* same_site = cookie_dict.FindStringKey("sameSite");
-
-    int64_t max_age = -1;
-    if (max_age_seconds && !base::StringToInt64(*max_age_seconds, &max_age)) {
-      success = false;
-      break;
-    }
-
-    base::Time expiration_time = base::Time();
-    if (max_age > 0)
-      expiration_time = time_now + base::Seconds(max_age);
-
-    std::unique_ptr<net::CanonicalCookie> cookie =
-        net::CanonicalCookie::CreateSanitizedCookie(
-            resolution_url, *name, *value, *domain, path ? *path : "/",
-            time_now, expiration_time, time_now, is_secure ? *is_secure : false,
-            is_http_only ? *is_http_only : false,
-            net::StringToCookieSameSite(same_site ? *same_site : ""),
-            net::COOKIE_PRIORITY_DEFAULT, /* same_party */ false,
-            /* partition_key */ absl::nullopt);
-    cookies.push_back(*cookie);
   }
 
   if (success) {
