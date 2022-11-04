@@ -47,11 +47,15 @@ class WebTestTtsPlatform : public content::TtsPlatform {
   content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
 
  private:
+  static const int kInvalidUtteranceId = -1;
+
   WebTestTtsPlatform();
   virtual ~WebTestTtsPlatform();
   void SimulateEndEvent(int utterance_id,
                         int len,
                         OnSpeakFinishedCallback on_speak_finished);
+
+  int utterance_id_ = kInvalidUtteranceId;
 
   friend struct base::DefaultSingletonTraits<WebTestTtsPlatform>;
 };

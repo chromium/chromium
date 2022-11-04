@@ -41,6 +41,23 @@ if (!isPrerendering) {
         speechSynthesis.cancel();
         break;
       }
+      case 'pause': {
+        const utter = new SpeechSynthesisUtterance('1');
+        utter.onpause = () => { resolve(); }
+        speechSynthesis.speak(utter);
+        speechSynthesis.pause();
+        // To reset the current status for the next test, it calls cancel().
+        speechSynthesis.cancel();
+        break;
+      }
+      case 'resume': {
+        const utter = new SpeechSynthesisUtterance('1');
+        utter.onresume = () => { resolve(); }
+        speechSynthesis.speak(utter);
+        speechSynthesis.pause();
+        speechSynthesis.resume();
+        break;
+      }
     }
   });
   prerenderEventCollector.start(promise, `speechSynthesis.${method}`);
