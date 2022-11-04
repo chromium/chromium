@@ -105,6 +105,9 @@ v8::Local<v8::Object> WindowProxy::ReleaseGlobalProxy() {
 }
 
 void WindowProxy::SetGlobalProxy(v8::Local<v8::Object> global_proxy) {
+  // https://linear.app/replay/issue/RUN-749
+  recordreplay::Assert("WindowProxy::SetGlobalProxy");
+
   DCHECK_EQ(lifecycle_, Lifecycle::kContextIsUninitialized);
 
   CHECK(global_proxy_.IsEmpty());
@@ -151,6 +154,10 @@ void WindowProxy::SetGlobalProxy(v8::Local<v8::Object> global_proxy) {
 // If there are JS code holds a closure to the old inner window,
 // it won't be able to reach the outer window via its global object.
 void WindowProxy::InitializeIfNeeded() {
+  // https://linear.app/replay/issue/RUN-749
+  recordreplay::Assert("WindowProxy::InitializeIfNeeded Start %d",
+                       (int)lifecycle_);
+
   if (lifecycle_ == Lifecycle::kContextIsUninitialized ||
       lifecycle_ == Lifecycle::kGlobalObjectIsDetached) {
     Initialize();

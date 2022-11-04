@@ -88,6 +88,9 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   // If the former, |global_proxy_| should become weak, and if the latter, the
   // necessary operations are already done so can return here.
   if (lifecycle_ == Lifecycle::kV8MemoryIsForciblyPurged) {
+    // https://linear.app/replay/issue/RUN-749
+    recordreplay::Assert("LocalWindowProxy::DisposeContext #1 %d", (int)next_status);
+
     DCHECK(next_status == Lifecycle::kGlobalObjectIsDetached ||
            next_status == Lifecycle::kFrameIsDetachedAndV8MemoryIsPurged);
     lifecycle_ = next_status;
@@ -129,6 +132,9 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   V8GCForContextDispose::Instance().NotifyContextDisposed(
       GetFrame()->IsMainFrame(), frame_reuse_status);
 
+  // https://linear.app/replay/issue/RUN-749
+  recordreplay::Assert("LocalWindowProxy::DisposeContext Done %d", (int)next_status);
+
   DCHECK_EQ(lifecycle_, Lifecycle::kContextIsInitialized);
   lifecycle_ = next_status;
 }
@@ -139,6 +145,9 @@ static bool gRecordReplayStateInitialized;
 extern "C" void V8RecordReplaySetDefaultContext(v8::Isolate* isolate, v8::Local<v8::Context> cx);
 
 void LocalWindowProxy::Initialize() {
+  // https://linear.app/replay/issue/RUN-749
+  recordreplay::Assert("LocalWindowProxy::Initialize Start");
+
   TRACE_EVENT1("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
                GetFrame()->IsMainFrame());
   CHECK(!GetFrame()->IsProvisional());
@@ -260,6 +269,9 @@ void LocalWindowProxy::CreateContext() {
   DCHECK(GetFrame()->DomWindow());
   script_state_ = MakeGarbageCollected<ScriptState>(context, world_,
                                                     GetFrame()->DomWindow());
+
+  // https://linear.app/replay/issue/RUN-749
+  recordreplay::Assert("LocalWindowProxy::CreateContext Done");
 
   DCHECK(lifecycle_ == Lifecycle::kContextIsUninitialized ||
          lifecycle_ == Lifecycle::kGlobalObjectIsDetached);
