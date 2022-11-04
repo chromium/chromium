@@ -4174,6 +4174,9 @@ crbug.com/1157857 virtual/percent-based-scrolling/max-percent-delta-cross-origin
 
 crbug.com/716320 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success-and-failure.https.html [ Failure Timeout ]
 
+# Fails when run under --disable-site-isolation-trials.
+crbug.com/1317079 [ Linux ] external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html [ Failure Pass ]
+
 # Test timing out when SharedArrayBuffer is disabled by default.
 # See https://crbug.com/1194557
 crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Skip Timeout ]
@@ -5116,9 +5119,7 @@ crbug.com/1265587 external/wpt/html/user-activation/activation-trigger-pointerev
 crbug.com/1270351 external/wpt/html/user-activation/activation-trigger-pointerevent.html?touch [ Failure ]
 crbug.com/1159661 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-failure.https.html [ Timeout ]
-crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-serviceworker-failure.https.html [ Timeout ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-sharedworker-failure.https.html [ Timeout ]
-crbug.com/1317079 [ Linux ] external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html [ Failure ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success.https.html [ Timeout ]
 crbug.com/1223883 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/location-set-and-document-open.html [ Timeout ]
 crbug.com/1223883 external/wpt/html/webappapis/animation-frames/cancel-handle-manual.html [ Skip ]
