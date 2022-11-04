@@ -10,7 +10,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -22,6 +21,8 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_prefs_helper.h"
+#include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 
@@ -138,22 +139,25 @@ SettingsOverridesAPI::GetFactoryInstance() {
 void SettingsOverridesAPI::SetPref(const std::string& extension_id,
                                    const std::string& pref_key,
                                    base::Value value) const {
-  PreferenceAPI* prefs = PreferenceAPI::Get(profile_);
-  if (!prefs)
-    return;  // Expected in unit tests.
-  prefs->SetExtensionControlledPref(
+  ExtensionPrefsHelper* prefs_helper = ExtensionPrefsHelper::Get(profile_);
+  // This is not instantiated in unit tests. Historically, the PreferenceAPI
+  // instance provided this functionality, and it was not instantiated during
+  // unit tests and some tests relied on that.
+  if (!prefs_helper)
+    return;
+
+  prefs_helper->SetExtensionControlledPref(
       extension_id, pref_key, kExtensionPrefsScopeRegular, std::move(value));
 }
 
 void SettingsOverridesAPI::UnsetPref(const std::string& extension_id,
                                      const std::string& pref_key) const {
-  PreferenceAPI* prefs = PreferenceAPI::Get(profile_);
-  if (!prefs)
-    return;  // Expected in unit tests.
-  prefs->RemoveExtensionControlledPref(
-      extension_id,
-      pref_key,
-      kExtensionPrefsScopeRegular);
+  ExtensionPrefsHelper* prefs_helper = ExtensionPrefsHelper::Get(profile_);
+  // Not instantiated in unit tests.
+  if (!prefs_helper)
+    return;
+  prefs_helper->RemoveExtensionControlledPref(extension_id, pref_key,
+                                              kExtensionPrefsScopeRegular);
 }
 
 void SettingsOverridesAPI::OnExtensionLoaded(
@@ -258,7 +262,7 @@ template <>
 void BrowserContextKeyedAPIFactory<
     SettingsOverridesAPI>::DeclareFactoryDependencies() {
   DependsOn(ExtensionPrefsFactory::GetInstance());
-  DependsOn(PreferenceAPI::GetFactoryInstance());
+  DependsOn(ExtensionPrefsHelperFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 

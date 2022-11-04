@@ -9,12 +9,12 @@
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -66,16 +66,13 @@ const char* GetLevelOfControl(
   if (!pref->IsExtensionModifiable())
     return kNotControllable;
 
-  if (PreferenceAPI::Get(profile)->DoesExtensionControlPref(
-          extension_id,
-          browser_pref,
-          from_incognito_ptr)) {
+  if (ExtensionPrefsHelper::Get(profile)->DoesExtensionControlPref(
+          extension_id, browser_pref, from_incognito_ptr)) {
     return kControlledByThisExtension;
   }
 
-  if (PreferenceAPI::Get(profile)->CanExtensionControlPref(extension_id,
-                                                           browser_pref,
-                                                           incognito)) {
+  if (ExtensionPrefsHelper::Get(profile)->CanExtensionControlPref(
+          extension_id, browser_pref, incognito)) {
     return kControllableByThisExtension;
   }
 
@@ -131,7 +128,7 @@ void DispatchEventToExtensionsImpl(Profile* profile,
         } else {  // Handle case b).
           bool controlled_from_incognito = false;
           bool controlled_by_extension =
-              PreferenceAPI::Get(profile)->DoesExtensionControlPref(
+              ExtensionPrefsHelper::Get(profile)->DoesExtensionControlPref(
                   extension->id(), browser_pref, &controlled_from_incognito);
           if (controlled_by_extension && controlled_from_incognito)
             restrict_to_profile = profile;
