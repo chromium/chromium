@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="XR.ARCore.DepthBufferSizeInPixels" units="pixels"
-    expires_after="2022-12-10">
+    expires_after="2023-12-10">
   <owner>bialpio@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
