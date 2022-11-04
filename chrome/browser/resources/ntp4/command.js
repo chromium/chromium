@@ -24,8 +24,8 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {define as crUiDefine} from './ui.js';
 import {KeyboardShortcutList} from 'chrome://resources/js/keyboard_shortcut_list.js';
-import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr_deprecated.js';
 
+import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from './cr_deprecated.js';
 import {MenuItem} from './menu_item.js';
 // clang-format on
 

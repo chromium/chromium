@@ -40,6 +40,7 @@ ts_library("build_ts") {
     "card_slider.js",
     "command.js",
     "context_menu_handler.js",
+    "cr_deprecated.js",
     "dot_list.js",
     "menu.js",
     "menu_button.js",

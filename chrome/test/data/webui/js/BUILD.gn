@@ -27,6 +27,10 @@ ts_library("build_ts") {
     "cr/event_target_test.ts",
   ]
 
+  if (is_chromeos_ash) {
+    in_files += [ "cr_deprecated_test.ts" ]
+  }
+
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   deps = [

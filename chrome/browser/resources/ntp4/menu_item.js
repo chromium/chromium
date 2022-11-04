@@ -12,9 +12,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {Command} from './command.js';
-
+import {getPropertyDescriptor, PropertyKind} from './cr_deprecated.js';
 import {define as crUiDefine, decorate, swallowDoubleClick} from './ui.js';
-import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr_deprecated.js';
 // clang-format on
 
 

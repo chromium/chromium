@@ -11,13 +11,13 @@
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {dispatchPropertyChange} from 'chrome://resources/js/cr_deprecated.js';
-import {decorate} from './ui.js';
 
+import {dispatchPropertyChange} from './cr_deprecated.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 import {HideType} from './menu_button.js';
 import {positionPopupAtPoint} from './position_util.js';
+import {decorate} from './ui.js';
 // clang-format on
 
 

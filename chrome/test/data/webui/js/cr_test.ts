@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener, webUIListenerCallback, webUIResponse} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /** Name of the chrome.send() message to be used in tests. */
 const CHROME_SEND_NAME: string = 'echoMessage';
@@ -84,36 +83,6 @@ suite('CrModuleSendWithPromiseTest', function() {
             function(error) {
               assertEquals(expectedResponse, error);
             });
-  });
-});
-
-suite('CrModuleAddSingletonGetterTest', function() {
-  test('addSingletonGetter', function() {
-    class Foo {}
-    addSingletonGetter(Foo);
-
-    type FooWithGetInstance =
-        typeof Foo&{getInstance: () => Foo, instance_?: Foo | null};
-
-    assertEquals(
-        'function', typeof (Foo as FooWithGetInstance).getInstance,
-        'Should add get instance function');
-
-    const x = (Foo as FooWithGetInstance).getInstance();
-    assertEquals('object', typeof x, 'Should successfully create an object');
-    assertNotEquals(null, x, 'Created object should not be null');
-
-    const y = (Foo as FooWithGetInstance).getInstance();
-    assertEquals(x, y, 'Should return the same object');
-
-    delete (Foo as FooWithGetInstance).instance_;
-
-    const z = (Foo as FooWithGetInstance).getInstance();
-    assertEquals('object', typeof z, 'Should work after clearing for testing');
-    assertNotEquals(null, z, 'Created object should not be null');
-
-    assertNotEquals(
-        x, z, 'Should return a different object after clearing for testing');
   });
 });
 

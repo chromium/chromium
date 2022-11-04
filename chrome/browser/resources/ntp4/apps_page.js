@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
-import {decorate, toCssPx} from './ui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$, appendParam} from 'chrome://resources/js/util.js';
 
 import {AppInfo} from './app_info.js';
 import {contextMenuHandler} from './context_menu_handler.js';
+import {addSingletonGetter} from './cr_deprecated.js';
+import {decorate, toCssPx} from './ui.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 import {getAppsPageIndex, getCardSlider} from './new_tab.js';

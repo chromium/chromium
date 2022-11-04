@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
-import {decorate} from './ui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$, isRTL} from 'chrome://resources/js/util.js';
@@ -12,11 +10,13 @@ import {$, isRTL} from 'chrome://resources/js/util.js';
 import {AppInfo} from './app_info.js';
 import {App, AppsPage} from './apps_page.js';
 import {CardSlider} from './card_slider.js';
+import {dispatchSimpleEvent} from './cr_deprecated.js';
 import {DotList} from './dot_list.js';
 import {NavDot} from './nav_dot.js';
 import {initializePageSwitcher, PageSwitcher} from './page_switcher.js';
 import {getCurrentlyDraggingTile, TilePage} from './tile_page.js';
 import {Trash} from './trash.js';
+import {decorate} from './ui.js';
 
 /**
  * @fileoverview PageListView implementation.

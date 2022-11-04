@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
-import {toCssPx} from './ui.js';
 import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$, isRTL} from 'chrome://resources/js/util.js';
 
 import {App} from './apps_page.js';
+import {dispatchSimpleEvent} from './cr_deprecated.js';
 import {enterRearrangeMode, getCardSlider, leaveRearrangeMode} from './new_tab.js';
+import {toCssPx} from './ui.js';
 import {findAncestorByClass} from './util.js';
 
 // We can't pass the currently dragging tile via dataTransfer because of
