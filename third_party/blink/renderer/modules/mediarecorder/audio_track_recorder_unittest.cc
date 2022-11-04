@@ -122,7 +122,7 @@ class TestInterfaceFactory : public media::mojom::InterfaceFactory {
         nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     DCHECK(SUCCEEDED(hr));
     auto platform_audio_encoder = std::make_unique<media::MFAudioEncoder>(
-        base::SequencedTaskRunnerHandle::Get());
+        blink::scheduler::GetSequencedTaskRunnerForTesting());
 #else
 #error "Unknown platform encoder."
 #endif
@@ -682,7 +682,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
 
   void InitializeAacDecoder(int channels, int sample_rate) {
     aac_decoder_ = std::make_unique<media::FFmpegAudioDecoder>(
-        base::SequencedTaskRunnerHandle::Get(), &media_log_);
+        scheduler::GetSequencedTaskRunnerForTesting(), &media_log_);
     media::ChannelLayout channel_layout = media::CHANNEL_LAYOUT_NONE;
     switch (channels) {
       case 1:

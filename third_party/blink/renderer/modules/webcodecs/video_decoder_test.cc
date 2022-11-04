@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/base/mock_filters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -64,7 +64,7 @@ class FakeVideoDecoder : public VideoDecoder {
 
     EXPECT_CALL(*mock_decoder_, Decode_(_, _))
         .WillOnce([](Unused, media::VideoDecoder::DecodeCB& decode_cb) {
-          base::SequencedTaskRunnerHandle::Get()->PostTask(
+          scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
               FROM_HERE,
               base::BindOnce(std::move(decode_cb), media::OkStatus()));
         });
@@ -73,9 +73,9 @@ class FakeVideoDecoder : public VideoDecoder {
         .WillOnce([quit_closure](Unused, Unused, Unused,
                                  media::VideoDecoder::InitCB& init_cb, Unused,
                                  Unused) {
-          base::SequencedTaskRunnerHandle::Get()->PostTask(
+          scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
               FROM_HERE, base::BindOnce(std::move(init_cb), media::OkStatus()));
-          base::SequencedTaskRunnerHandle::Get()->PostTask(
+          scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
               FROM_HERE, std::move(quit_closure));
         });
   }

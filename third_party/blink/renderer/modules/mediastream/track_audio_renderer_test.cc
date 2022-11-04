@@ -198,8 +198,8 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
     }
     {
       base::RunLoop loop;
-      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                       loop.QuitClosure());
+      scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+          FROM_HERE, loop.QuitClosure());
       loop.Run();
     }
   }

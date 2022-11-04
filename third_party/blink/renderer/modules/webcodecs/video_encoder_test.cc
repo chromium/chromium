@@ -8,6 +8,7 @@
 #include "media/base/mock_filters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -54,10 +55,10 @@ class FakeVideoEncoder : public VideoEncoder {
     EXPECT_CALL(*next_mock_encoder_, Initialize(_, _, _, _))
         .WillOnce([quit_closure](Unused, Unused, Unused,
                                  media::VideoEncoder::EncoderStatusCB done_cb) {
-          base::SequencedTaskRunnerHandle::Get()->PostTask(
+          scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
               FROM_HERE, base::BindOnce(std::move(done_cb),
                                         media::EncoderStatus::Codes::kOk));
-          base::SequencedTaskRunnerHandle::Get()->PostTask(
+          scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
               FROM_HERE, std::move(quit_closure));
         });
   }

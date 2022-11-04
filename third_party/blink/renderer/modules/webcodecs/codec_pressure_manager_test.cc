@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_gauge.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
@@ -95,8 +95,8 @@ class CodecPressureManagerTest
  protected:
   void SyncPressureFlags() {
     base::RunLoop run_loop;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     run_loop.QuitClosure());
+    scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
