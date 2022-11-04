@@ -143,12 +143,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingAllowlistDomains) {
 
   // Add 2 allowlisted domains to this policy.
   PolicyMap policies;
-  base::ListValue allowlist_domains;
+  base::Value::List allowlist_domains;
   allowlist_domains.Append("mydomain.com");
   allowlist_domains.Append("mydomain.net");
   policies.Set(key::kSafeBrowsingAllowlistDomains, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               allowlist_domains.Clone(), nullptr);
+               base::Value(allowlist_domains.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());
@@ -159,11 +159,11 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingAllowlistDomains) {
   EXPECT_EQ("mydomain.net", canonicalized_domains[1]);
 
   // Invalid domains will be skipped.
-  allowlist_domains.ClearList();
-  allowlist_domains.Append(std::string("%EF%BF%BDzyx.com"));
+  allowlist_domains.clear();
+  allowlist_domains.Append("%EF%BF%BDzyx.com");
   policies.Set(key::kSafeBrowsingAllowlistDomains, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               allowlist_domains.Clone(), nullptr);
+               base::Value(allowlist_domains.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());
@@ -188,12 +188,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
 
   // Add 2 login URLs to this enterprise policy .
   PolicyMap policies;
-  base::ListValue login_url_values;
+  base::Value::List login_url_values;
   login_url_values.Append("https://login.mydomain.com");
   login_url_values.Append("https://mydomian.com/login.html");
   policies.Set(key::kPasswordProtectionLoginURLs, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, login_url_values.Clone(),
-               nullptr);
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(login_url_values.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kPasswordProtectionLoginURLs)->IsManaged());
@@ -203,12 +203,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
   EXPECT_EQ(GURL("https://mydomian.com/login.html"), login_urls[1]);
 
   // Verify non-http/https schemes, or invalid URLs will be skipped.
-  login_url_values.ClearList();
-  login_url_values.Append(std::string("invalid"));
-  login_url_values.Append(std::string("ftp://login.mydomain.com"));
+  login_url_values.clear();
+  login_url_values.Append("invalid");
+  login_url_values.Append("ftp://login.mydomain.com");
   policies.Set(key::kPasswordProtectionLoginURLs, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, login_url_values.Clone(),
-               nullptr);
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(login_url_values.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kPasswordProtectionLoginURLs)->IsManaged());

@@ -136,7 +136,7 @@ JsonStringHandlerForTesting() {
 }  // namespace
 
 TEST(ListPolicyHandlerTest, CheckPolicySettings) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   base::Value dict(base::Value::Type::DICTIONARY);
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
@@ -158,7 +158,7 @@ TEST(ListPolicyHandlerTest, CheckPolicySettings) {
   // Empty list is OK.
   policy_map.Set(kTestPolicy, policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                 list.Clone(), nullptr);
+                 base::Value(list.Clone()), nullptr);
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_TRUE(errors.empty());
   errors.Clear();
@@ -167,25 +167,25 @@ TEST(ListPolicyHandlerTest, CheckPolicySettings) {
   list.Append(175);  // hex af, 255's sake.
   policy_map.Set(kTestPolicy, policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                 list.Clone(), nullptr);
+                 base::Value(list.Clone()), nullptr);
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_FALSE(errors.empty());
-  list.ClearList();
+  list.clear();
   errors.Clear();
 
   // List with a string is OK.
   list.Append("any_string");
   policy_map.Set(kTestPolicy, policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                 list.Clone(), nullptr);
+                 base::Value(list.Clone()), nullptr);
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_TRUE(errors.empty());
   errors.Clear();
 }
 
 TEST(StringListPolicyHandlerTest, ApplyPolicySettings) {
-  base::Value list(base::Value::Type::LIST);
-  base::Value expected(base::Value::Type::LIST);
+  base::Value::List list;
+  base::Value::List expected;
   PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value;
@@ -193,7 +193,7 @@ TEST(StringListPolicyHandlerTest, ApplyPolicySettings) {
 
   // Empty list applies as empty list.
   policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(list.Clone()), nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(expected, *value);
@@ -202,49 +202,49 @@ TEST(StringListPolicyHandlerTest, ApplyPolicySettings) {
   list.Append("any_string");
   expected.Append("any_string");
   policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(list.Clone()), nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(expected, *value);
-  list.ClearList();
-  expected.ClearList();
+  list.clear();
+  expected.clear();
 
   // List with a string and an integer filters out the integer.
   list.Append("any_string");
   list.Append(42);
   expected.Append("any_string");
   policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(list.Clone()), nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(expected, *value);
-  list.ClearList();
-  expected.ClearList();
+  list.clear();
+  expected.clear();
 }
 
 TEST(StringToIntEnumListPolicyHandlerTest, CheckPolicySettings) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   PolicyMap policy_map;
   PolicyErrorMap errors;
   StringMappingListPolicyHandler handler(
       kTestPolicy, kTestPref, base::BindRepeating(GetIntegerTypeMap));
 
   policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(list.Clone()), nullptr);
   errors.Clear();
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_TRUE(errors.empty());
 
   list.Append("one");
   policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(list.Clone()), nullptr);
   errors.Clear();
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_TRUE(errors.empty());
 
   list.Append("invalid");
   policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(list.Clone()), nullptr);
   errors.Clear();
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_FALSE(errors.empty());
@@ -259,8 +259,8 @@ TEST(StringToIntEnumListPolicyHandlerTest, CheckPolicySettings) {
 }
 
 TEST(StringMappingListPolicyHandlerTest, ApplyPolicySettings) {
-  base::Value list(base::Value::Type::LIST);
-  base::Value expected(base::Value::Type::LIST);
+  base::Value::List list;
+  base::Value::List expected;
   PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value;
@@ -268,7 +268,7 @@ TEST(StringMappingListPolicyHandlerTest, ApplyPolicySettings) {
       kTestPolicy, kTestPref, base::BindRepeating(GetIntegerTypeMap));
 
   policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(list.Clone()), nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(expected, *value);
@@ -276,14 +276,14 @@ TEST(StringMappingListPolicyHandlerTest, ApplyPolicySettings) {
   list.Append("two");
   expected.Append(2);
   policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(list.Clone()), nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(expected, *value);
 
   list.Append("invalid");
   policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(list.Clone()), nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(expected, *value);
