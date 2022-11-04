@@ -80,6 +80,9 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // AuctionWorkletManager::Delegate implementation:
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override;
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
+  void PreconnectSocket(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
   RenderFrameHostImpl* GetFrame() override;
   scoped_refptr<SiteInstance> GetFrameSiteInstance() override;
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override;

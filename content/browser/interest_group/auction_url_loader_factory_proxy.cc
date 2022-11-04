@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -32,10 +33,23 @@
 
 namespace content {
 
+namespace {
+
+// Helper to create the IsolationInfo used for all bidder requests. A helper
+// method is used to avoid having to construct two copies of `bidder_origin`.
+net::IsolationInfo CreateBidderIsolationInfo(const url::Origin& bidder_origin) {
+  return net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                    bidder_origin, bidder_origin,
+                                    net::SiteForCookies());
+}
+
+}  // namespace
+
 AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
     GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
     GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
+    PreconnectSocketCallback preconnect_socket_callback,
     const url::Origin& top_frame_origin,
     const url::Origin& frame_origin,
     bool is_for_seller,
@@ -51,10 +65,18 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       frame_origin_(frame_origin),
       is_for_seller_(is_for_seller),
       client_security_state_(std::move(client_security_state)),
+      isolation_info_(is_for_seller ? net::IsolationInfo::CreateTransient()
+                                    : CreateBidderIsolationInfo(
+                                          url::Origin::Create(script_url))),
       script_url_(script_url),
       wasm_url_(wasm_url),
       trusted_signals_base_url_(trusted_signals_base_url) {
   DCHECK(client_security_state_);
+  if (trusted_signals_base_url_) {
+    std::move(preconnect_socket_callback)
+        .Run(*trusted_signals_base_url_,
+             isolation_info_.network_anonymization_key());
+  }
 }
 
 AuctionURLLoaderFactoryProxy::~AuctionURLLoaderFactoryProxy() = default;
@@ -132,14 +154,8 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
       // Other URLs combine a base URL from the frame's Javascript and data from
       // bidding interest groups, so use a (single) transient IsolationInfo for
       // them, to prevent exposing data across sites.
-      if (isolation_info_for_seller_signals_.IsEmpty()) {
-        isolation_info_for_seller_signals_ =
-            net::IsolationInfo::CreateTransient();
-      }
-
       new_request.trusted_params = network::ResourceRequest::TrustedParams();
-      new_request.trusted_params->isolation_info =
-          isolation_info_for_seller_signals_;
+      new_request.trusted_params->isolation_info = isolation_info_;
       new_request.trusted_params->client_security_state =
           client_security_state_.Clone();
     }
@@ -152,10 +168,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // NIK leaks information). These leaks need to be fixed.
     new_request.mode = network::mojom::RequestMode::kNoCors;
     new_request.trusted_params = network::ResourceRequest::TrustedParams();
-    url::Origin origin = url::Origin::Create(url_request.url);
-    new_request.trusted_params->isolation_info =
-        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                   origin, origin, net::SiteForCookies());
+    new_request.trusted_params->isolation_info = isolation_info_;
     new_request.trusted_params->client_security_state =
         client_security_state_.Clone();
   }

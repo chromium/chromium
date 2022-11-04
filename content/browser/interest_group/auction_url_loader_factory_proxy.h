@@ -21,6 +21,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace net {
+class NetworkAnonymizationKey;
+}
+
 namespace content {
 
 // Proxy URLLoaderFactoryFactory, to limit the requests that an auction worklet
@@ -31,6 +35,11 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   using GetUrlLoaderFactoryCallback =
       base::RepeatingCallback<network::mojom::URLLoaderFactory*()>;
 
+  // Callback to preconnect a single socket with the given info.
+  using PreconnectSocketCallback = base::OnceCallback<void(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key)>;
+
   // Passed in callbacks must be safe to call at any time during the lifetime of
   // the AuctionURLLoaderFactoryProxy.
   //
@@ -40,6 +49,12 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   //
   // `get_trusted_url_loader_factory` returns a trusted URLLoaderFactory. Used
   // for bidder worklet script and trusted selling signals fetches.
+  //
+  // `preconnect_socket_callback` is used to issue a preconnect if there's a
+  // non-empty trusted signals URL. No preconnect is made for the JS and web
+  // assembly, since they should be cacheable, and currently erring on the side
+  // of not making unnecessary connections. Invoked immediately, if it's going
+  // to be invoked at all.
   //
   // `frame_origin` is the origin of the frame running the auction. Used as the
   // initiator.
@@ -62,6 +77,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
       GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
       GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
+      PreconnectSocketCallback preconnect_socket_callback,
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
       bool is_for_seller,
@@ -111,9 +127,10 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   const bool is_for_seller_;
   const network::mojom::ClientSecurityStatePtr client_security_state_;
 
-  // Transient IsolationInfo used for all seller requests to trusted bidding
-  // signals URLs. Populated on first fetch it applies to.
-  net::IsolationInfo isolation_info_for_seller_signals_;
+  // IsolationInfo used for requests using the trusted URLLoaderFactory. A
+  // Transient IsolationInfo for sellers, the bidder's IsolationInfo for
+  // bidders.
+  const net::IsolationInfo isolation_info_;
 
   const GURL script_url_;
   const absl::optional<GURL> wasm_url_;

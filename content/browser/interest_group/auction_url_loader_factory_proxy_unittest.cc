@@ -18,6 +18,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -60,13 +62,24 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
     client_security_state_->is_web_secure_context = true;
   }
 
-  ~AuctionUrlLoaderFactoryProxyTest() override = default;
+  ~AuctionUrlLoaderFactoryProxyTest() override {
+    // This should be both set and cleared during CreateUrlLoaderFactoryProxy().
+    // Check that the callback passed to AuctionURLLoaderFactoryProxy's wasn't
+    // invoked asynchronously unexpectedly.
+    EXPECT_FALSE(preconnect_url_);
+  }
 
   void CreateUrlLoaderFactoryProxy() {
     // The AuctionURLLoaderFactoryProxy should only be created if there is no
     // old one, or the old one's pipe was closed.
     DCHECK(!remote_url_loader_factory_ ||
            !remote_url_loader_factory_.is_connected());
+
+    // `preconnect_url_` should only be set by callback (sometimes) invoked by
+    // AuctionURLLoaderFactoryProxy's constructor, and cleared at the end of
+    // CreateUrlLoaderFactoryProxy(). Check that it's nullopt here to catch it
+    // being set unexpectedly.
+    EXPECT_TRUE(!preconnect_url_);
 
     remote_url_loader_factory_.reset();
     url_loader_factory_proxy_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
@@ -77,9 +90,37 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
         base::BindRepeating(
             [](network::mojom::URLLoaderFactory* factory) { return factory; },
             &trusted_url_loader_factory_),
+        base::BindOnce(&AuctionUrlLoaderFactoryProxyTest::PreconnectSocket,
+                       base::Unretained(this)),
         top_frame_origin_, frame_origin_, is_for_seller_,
         client_security_state_.Clone(), GURL(kScriptUrl), wasm_url_,
         trusted_signals_base_url_);
+
+    EXPECT_EQ(preconnect_url_, trusted_signals_base_url_);
+    if (trusted_signals_base_url_) {
+      if (is_for_seller_) {
+        EXPECT_TRUE(preconnect_network_anonymization_key_->IsTransient());
+      } else {
+        net::SchemefulSite buyer_site{GURL(kScriptUrl)};
+        EXPECT_EQ(preconnect_network_anonymization_key_,
+                  net::NetworkAnonymizationKey(buyer_site, buyer_site));
+      }
+    } else {
+      // This check is not strictly needed, since `preconnect_url_` being equal
+      // to `trusted_signals_base_url_`, as checked above, implies this must
+      // also be nullopt if `trusted_signals_base_url_` is nullopt.
+      EXPECT_FALSE(preconnect_network_anonymization_key_);
+    }
+    preconnect_url_ = absl::nullopt;
+  }
+
+  void PreconnectSocket(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key) {
+    EXPECT_TRUE(!preconnect_url_);
+
+    preconnect_url_ = url;
+    preconnect_network_anonymization_key_ = network_anonymization_key;
   }
 
   // Attempts to make a request for `request`.
@@ -222,6 +263,12 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
         EXPECT_TRUE(observed_request.trusted_params->isolation_info
                         .network_isolation_key()
                         .IsTransient());
+        // There should have been a preconnect in this case, with a
+        // NetworkAnonymizationKey that's consistent with the request's
+        // IsolationInfo.
+        EXPECT_EQ(preconnect_network_anonymization_key_,
+                  observed_request.trusted_params->isolation_info
+                      .network_anonymization_key());
         EXPECT_EQ(*client_security_state_,
                   *observed_request.trusted_params->client_security_state);
       }
@@ -275,6 +322,10 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
   url::Origin top_frame_origin_ =
       url::Origin::Create(GURL("https://top.test/"));
   url::Origin frame_origin_ = url::Origin::Create(GURL("https://foo.test/"));
+
+  absl::optional<GURL> preconnect_url_;
+  absl::optional<net::NetworkAnonymizationKey>
+      preconnect_network_anonymization_key_;
 
   network::TestURLLoaderFactory frame_url_loader_factory_;
   network::TestURLLoaderFactory trusted_url_loader_factory_;

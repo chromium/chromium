@@ -599,6 +599,9 @@ class AuctionWorkletManagerTest : public testing::Test,
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override {
     return &url_loader_factory_;
   }
+  void PreconnectSocket(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {}
   RenderFrameHostImpl* GetFrame() override { return nullptr; }
   scoped_refptr<SiteInstance> GetFrameSiteInstance() override {
     return scoped_refptr<SiteInstance>();

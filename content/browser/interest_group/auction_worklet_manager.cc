@@ -168,6 +168,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
                           base::Unretained(delegate)),
       base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
                           base::Unretained(delegate)),
+      base::BindOnce(&Delegate::PreconnectSocket, base::Unretained(delegate)),
       worklet_manager_->top_window_origin(), worklet_manager_->frame_origin(),
       /*is_for_seller_=*/worklet_info_.type == WorkletType::kSeller,
       delegate->GetClientSecurityState(), worklet_info_.script_url,

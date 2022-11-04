@@ -392,6 +392,16 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
   return trusted_url_loader_factory_.get();
 }
 
+void AdAuctionServiceImpl::PreconnectSocket(
+    const GURL& url,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  render_frame_host()
+      .GetStoragePartition()
+      ->GetNetworkContext()
+      ->PreconnectSockets(/*num_streams=*/1, url, /*allow_credentials=*/false,
+                          network_anonymization_key);
+}
+
 scoped_refptr<network::WrapperSharedURLLoaderFactory>
 AdAuctionServiceImpl::GetRefCountedTrustedURLLoaderFactory() {
   GetTrustedURLLoaderFactory();

@@ -26,6 +26,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace net {
+class NetworkAnonymizationKey;
+}
+
 namespace content {
 
 class RenderFrameHostImpl;
@@ -81,6 +85,11 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // Trusted URLLoaderFactory used to load bidder worklets, and seller scoring
     // signals.
     virtual network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() = 0;
+
+    // Preconnects a single uncredentialed socket with the provided parameters.
+    virtual void PreconnectSocket(
+        const GURL& url,
+        const net::NetworkAnonymizationKey& network_anonymization_key) = 0;
 
     // Get containing frame. (Passed to debugging hooks).
     virtual RenderFrameHostImpl* GetFrame() = 0;
