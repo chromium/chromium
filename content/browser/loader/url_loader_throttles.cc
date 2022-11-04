@@ -11,6 +11,7 @@
 #include "content/browser/client_hints/critical_client_hints_throttle.h"
 #include "content/browser/origin_trials/critical_origin_trials_throttle.h"
 #include "content/browser/reduce_accept_language/reduce_accept_language_throttle.h"
+#include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/web_identity.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -86,6 +88,11 @@ CreateContentBrowserURLLoaderThrottles(
           *origin_trials_delegate));
     }
   }
+
+  auto throttle = MaybeCreateIdentityUrlLoaderThrottle(
+      base::BindRepeating(SetIdpSigninStatus, browser_context));
+  if (throttle)
+    throttles.push_back(std::move(throttle));
 
   return throttles;
 }

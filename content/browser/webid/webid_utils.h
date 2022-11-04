@@ -9,7 +9,9 @@
 #include "url/origin.h"
 
 namespace content {
+class BrowserContext;
 class RenderFrameHost;
+enum class IdpSigninStatus;
 
 // Determines whether |host| is same-origin with all of its ancestors in the
 // frame tree. Returns false if not.
@@ -18,6 +20,10 @@ class RenderFrameHost;
 // DocumentService::origin() should be used to obtain the frame's origin.
 bool IsSameOriginWithAncestors(RenderFrameHost* host,
                                const url::Origin& origin);
+
+void SetIdpSigninStatus(content::BrowserContext* context,
+                        const url::Origin& origin,
+                        IdpSigninStatus status);
 
 }  // namespace content
 #endif  // CONTENT_BROWSER_WEBID_WEBID_UTILS_H_

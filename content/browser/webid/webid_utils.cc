@@ -4,7 +4,10 @@
 
 #include "content/browser/webid/webid_utils.h"
 
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/web_identity.h"
 
 namespace content {
 
@@ -18,6 +21,13 @@ bool IsSameOriginWithAncestors(RenderFrameHost* host,
     parent = parent->GetParent();
   }
   return true;
+}
+
+void SetIdpSigninStatus(content::BrowserContext* context,
+                        const url::Origin& origin,
+                        IdpSigninStatus status) {
+  auto* delegate = context->GetFederatedIdentitySharingPermissionContext();
+  delegate->SetIdpSigninStatus(origin, status == IdpSigninStatus::kSignedIn);
 }
 
 }  // namespace content

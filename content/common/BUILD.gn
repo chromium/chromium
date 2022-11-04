@@ -172,6 +172,8 @@ source_set("common") {
     "user_agent.cc",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
+    "webid/identity_url_loader_throttle.cc",
+    "webid/identity_url_loader_throttle.h",
   ]
 
   configs += [

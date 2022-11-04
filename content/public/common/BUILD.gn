@@ -214,6 +214,7 @@ source_set("common_sources") {
     "url_utils.cc",
     "url_utils.h",
     "user_agent.h",
+    "web_identity.h",
     "webplugininfo.cc",
     "webplugininfo.h",
     "webplugininfo_param_traits.h",
