@@ -11,14 +11,17 @@ AuthenticationError::AuthenticationError(
     : origin_(Origin::kCryptohome), cryptohome_code_(cryptohome_code) {}
 
 AuthenticationError::AuthenticationError(
-    AuthFailure::FailureReason auth_failure)
-    : origin_(Origin::kChrome), failure_reason_(auth_failure) {}
+    AuthFailure::FailureReason auth_failure_reason)
+    : AuthenticationError(AuthFailure(auth_failure_reason)) {}
+
+AuthenticationError::AuthenticationError(AuthFailure auth_failure)
+    : origin_(Origin::kChrome), auth_failure_(std::move(auth_failure)) {}
 
 AuthenticationError::~AuthenticationError() = default;
 
 void AuthenticationError::ResolveToFailure(
-    AuthFailure::FailureReason auth_failure) {
-  failure_reason_ = auth_failure;
+    AuthFailure::FailureReason auth_failure_reason) {
+  auth_failure_ = AuthFailure{auth_failure_reason};
 }
 
 }  // namespace ash

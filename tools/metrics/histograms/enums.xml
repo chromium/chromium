@@ -64647,6 +64647,7 @@ from previous Chrome versions.
   <int value="14" label="Authentication disabled for user"/>
   <int value="15" label="TPM firmware update is required"/>
   <int value="16" label="Cryptohome is corrupted"/>
+  <int value="17" label="Failed interchange with cryptohome recovery service"/>
 </enum>
 
 <enum name="LoginFeatureFlagMappingStatus">

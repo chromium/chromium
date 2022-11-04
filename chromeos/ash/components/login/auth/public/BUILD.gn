@@ -41,6 +41,7 @@ component("authpublic") {
     "key.h",
     "operation_chain_runner.cc",
     "operation_chain_runner.h",
+    "recovery_types.h",
     "saml_password_attributes.cc",
     "saml_password_attributes.h",
     "session_auth_factors.cc",

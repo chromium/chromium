@@ -3,22 +3,28 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "base/check_op.h"
 
 namespace ash {
 
-AuthFailure::AuthFailure(FailureReason reason)
-    : reason_(reason), error_(GoogleServiceAuthError::NONE) {
-  DCHECK(reason != NETWORK_AUTH_FAILED);
+AuthFailure::AuthFailure(FailureReason reason) : reason_(reason) {
+  DCHECK_NE(reason, NETWORK_AUTH_FAILED);
+  DCHECK_NE(reason, CRYPTOHOME_RECOVERY_SERVICE_ERROR);
 }
 
 // private
-AuthFailure::AuthFailure(FailureReason reason, GoogleServiceAuthError error)
-    : reason_(reason), error_(error) {}
+AuthFailure::AuthFailure(GoogleServiceAuthError error)
+    : reason_(NETWORK_AUTH_FAILED), google_service_auth_error_(error) {}
+
+AuthFailure::AuthFailure(CryptohomeRecoveryServerStatusCode status_code)
+    : reason_(CRYPTOHOME_RECOVERY_SERVICE_ERROR),
+      cryptohome_recovery_server_error_(status_code) {
+  DCHECK_NE(status_code, CryptohomeRecoveryServerStatusCode::kSuccess);
+}
 
 // static
-AuthFailure AuthFailure::FromNetworkAuthFailure(
-    const GoogleServiceAuthError& error) {
-  return AuthFailure(NETWORK_AUTH_FAILED, error);
+AuthFailure AuthFailure::FromNetworkAuthFailure(GoogleServiceAuthError error) {
+  return AuthFailure(std::move(error));
 }
 
 const std::string AuthFailure::GetErrorString() const {
@@ -36,8 +42,9 @@ const std::string AuthFailure::GetErrorString() const {
     case UNLOCK_FAILED:
       return "Unlock failed.";
     case NETWORK_AUTH_FAILED:
-      if (error_.state() == GoogleServiceAuthError::CONNECTION_FAILED) {
-        return net::ErrorToString(error_.network_error());
+      if (google_service_auth_error_.state() ==
+          GoogleServiceAuthError::CONNECTION_FAILED) {
+        return net::ErrorToString(google_service_auth_error_.network_error());
       }
       return "Google authentication failed.";
     case OWNER_REQUIRED:
@@ -58,6 +65,8 @@ const std::string AuthFailure::GetErrorString() const {
       return "Cryptohome is corrupted.";
     case USERNAME_HASH_FAILED:
       return "Failed to get hashed username";
+    case CRYPTOHOME_RECOVERY_SERVICE_ERROR:
+      return "Failed interaction with cryptohome recovery server";
     case NONE:
     case NUM_FAILURE_REASONS:
       NOTREACHED();

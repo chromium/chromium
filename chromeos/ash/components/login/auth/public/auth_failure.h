@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/login/auth/public/recovery_types.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
@@ -44,34 +46,49 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) AuthFailure {
     AUTH_DISABLED = 14,               // Authentication disabled for user.
     TPM_UPDATE_REQUIRED = 15,         // TPM firmware update is required.
     UNRECOVERABLE_CRYPTOHOME = 16,    // cryptohome is corrupted.
-    NUM_FAILURE_REASONS,              // This has to be the last item.
+    // Failed interaction with cryptohome recovery service.
+    CRYPTOHOME_RECOVERY_SERVICE_ERROR = 17,
+    NUM_FAILURE_REASONS,  // This has to be the last item.
   };
 
   explicit AuthFailure(FailureReason reason);
+  explicit AuthFailure(CryptohomeRecoveryServerStatusCode);
 
-  static AuthFailure FromNetworkAuthFailure(
-      const GoogleServiceAuthError& error);
+  static AuthFailure FromNetworkAuthFailure(GoogleServiceAuthError error);
 
   inline bool operator==(const AuthFailure& b) const {
     if (reason_ != b.reason_) {
       return false;
     }
     if (reason_ == NETWORK_AUTH_FAILED) {
-      return error_ == b.error_;
+      return google_service_auth_error_ == b.google_service_auth_error_;
     }
     return true;
   }
 
   const std::string GetErrorString() const;
 
-  const GoogleServiceAuthError& error() const { return error_; }
   const FailureReason& reason() const { return reason_; }
 
+  const GoogleServiceAuthError& error() const {
+    return google_service_auth_error_;
+  }
+
+  CryptohomeRecoveryServerStatusCode cryptohome_recovery_server_error() const {
+    DCHECK_EQ(reason_, CRYPTOHOME_RECOVERY_SERVICE_ERROR);
+    return cryptohome_recovery_server_error_;
+  }
+
  private:
-  AuthFailure(FailureReason reason, GoogleServiceAuthError error);
+  explicit AuthFailure(GoogleServiceAuthError error);
 
   FailureReason reason_;
-  GoogleServiceAuthError error_;
+  // The detailed error if `reason_ == NETWORK_AUTH_FAILED`.
+  GoogleServiceAuthError google_service_auth_error_ =
+      GoogleServiceAuthError::AuthErrorNone();
+  // The detailed error if `reason_ == CRYPTOHOME_RECOVERY_SERVICE_ERROR`.
+  CryptohomeRecoveryServerStatusCode cryptohome_recovery_server_error_ =
+      CryptohomeRecoveryServerStatusCode::kSuccess;
 };
 
 // Enum used for UMA. Do NOT reorder or remove entry. Don't forget to

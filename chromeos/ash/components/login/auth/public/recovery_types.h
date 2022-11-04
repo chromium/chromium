@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_RECOVERY_COMMON_TYPES_H_
-#define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_RECOVERY_COMMON_TYPES_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_RECOVERY_TYPES_H_
+#define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_RECOVERY_TYPES_H_
 
 #include <stdint.h>
 

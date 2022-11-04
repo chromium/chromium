@@ -24,17 +24,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
   };
   explicit AuthenticationError(
       user_data_auth::CryptohomeErrorCode cryptohome_code);
-  explicit AuthenticationError(AuthFailure::FailureReason auth_failure);
+  explicit AuthenticationError(AuthFailure::FailureReason auth_failure_reason);
+  explicit AuthenticationError(AuthFailure auth_failure);
 
   ~AuthenticationError();
 
   Origin get_origin() const { return origin_; }
 
   AuthFailure::FailureReason get_resolved_failure() const {
-    return failure_reason_;
+    return auth_failure_.reason();
   }
 
-  void ResolveToFailure(AuthFailure::FailureReason auth_failure);
+  void ResolveToFailure(AuthFailure::FailureReason auth_failure_reason);
 
   user_data_auth::CryptohomeErrorCode get_cryptohome_code() const {
     return cryptohome_code_;
@@ -46,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
   user_data_auth::CryptohomeErrorCode cryptohome_code_;
 
   // Mapping of the `error_code` to auth flow failure reason.
-  AuthFailure::FailureReason failure_reason_ = AuthFailure::NONE;
+  AuthFailure auth_failure_{AuthFailure::NONE};
 };
 
 }  // namespace ash
