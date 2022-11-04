@@ -10,11 +10,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
+#include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/event_emitter.h"
 #include "extensions/renderer/feature_cache.h"
-#include "extensions/renderer/native_renderer_messaging_service.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
 

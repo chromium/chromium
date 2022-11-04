@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/native_renderer_messaging_service.h"
+#include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 
 #include <map>
 #include <memory>
@@ -23,14 +23,14 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
+#include "extensions/renderer/api/messaging/message_target.h"
+#include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api_activity_logger.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/extension_interaction_provider.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/ipc_message_sender.h"
-#include "extensions/renderer/message_target.h"
-#include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/send_message_tester.h"
+#include "extensions/renderer/api/messaging/send_message_tester.h"
 
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/serialization_format.h"
+#include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
-#include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "ipc/ipc_message.h"

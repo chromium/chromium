@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/one_time_message_handler.h"
+#include "extensions/renderer/api/messaging/one_time_message_handler.h"
 
 #include <map>
 
@@ -16,6 +16,8 @@
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/renderer/api/messaging/message_target.h"
+#include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
@@ -24,8 +26,6 @@
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/gc_callback.h"
 #include "extensions/renderer/ipc_message_sender.h"
-#include "extensions/renderer/message_target.h"
-#include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/arguments.h"

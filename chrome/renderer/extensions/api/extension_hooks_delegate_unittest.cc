@@ -11,16 +11,16 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/value_builder.h"
+#include "extensions/renderer/api/messaging/message_target.h"
+#include "extensions/renderer/api/messaging/messaging_util.h"
+#include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
+#include "extensions/renderer/api/messaging/send_message_tester.h"
 #include "extensions/renderer/api/runtime_hooks_delegate.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
-#include "extensions/renderer/message_target.h"
-#include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
-#include "extensions/renderer/native_renderer_messaging_service.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
-#include "extensions/renderer/send_message_tester.h"
 
 namespace extensions {
 

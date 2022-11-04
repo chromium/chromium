@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/gin_port.h"
+#include "extensions/renderer/api/messaging/gin_port.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

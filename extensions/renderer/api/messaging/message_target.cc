@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/message_target.h"
+#include "extensions/renderer/api/messaging/message_target.h"
 
 namespace extensions {
 

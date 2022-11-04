@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_GIN_PORT_H_
-#define EXTENSIONS_RENDERER_GIN_PORT_H_
+#ifndef EXTENSIONS_RENDERER_API_MESSAGING_GIN_PORT_H_
+#define EXTENSIONS_RENDERER_API_MESSAGING_GIN_PORT_H_
 
 #include <memory>
 #include <string>
@@ -162,4 +162,4 @@ class GinPort final : public gin::Wrappable<GinPort> {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_GIN_PORT_H_
+#endif  // EXTENSIONS_RENDERER_API_MESSAGING_GIN_PORT_H_

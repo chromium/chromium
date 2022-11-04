@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_SEND_MESSAGE_TESTER_H_
-#define EXTENSIONS_RENDERER_SEND_MESSAGE_TESTER_H_
+#ifndef EXTENSIONS_RENDERER_API_MESSAGING_SEND_MESSAGE_TESTER_H_
+#define EXTENSIONS_RENDERER_API_MESSAGING_SEND_MESSAGE_TESTER_H_
 
 #include <string>
 
@@ -81,4 +81,4 @@ class SendMessageTester {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_SEND_MESSAGE_TESTER_H_
+#endif  // EXTENSIONS_RENDERER_API_MESSAGING_SEND_MESSAGE_TESTER_H_

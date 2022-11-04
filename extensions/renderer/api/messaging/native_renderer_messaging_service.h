@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_NATIVE_RENDERER_MESSAGING_SERVICE_H_
-#define EXTENSIONS_RENDERER_NATIVE_RENDERER_MESSAGING_SERVICE_H_
+#ifndef EXTENSIONS_RENDERER_API_MESSAGING_NATIVE_RENDERER_MESSAGING_SERVICE_H_
+#define EXTENSIONS_RENDERER_API_MESSAGING_NATIVE_RENDERER_MESSAGING_SERVICE_H_
 
 #include <string>
 
 #include "extensions/common/extension_id.h"
+#include "extensions/renderer/api/messaging/gin_port.h"
+#include "extensions/renderer/api/messaging/one_time_message_handler.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
-#include "extensions/renderer/gin_port.h"
-#include "extensions/renderer/one_time_message_handler.h"
 #include "gin/handle.h"
 #include "v8/include/v8-forward.h"
 
@@ -213,4 +213,4 @@ class NativeRendererMessagingService : public GinPort::Delegate {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_NATIVE_RENDERER_MESSAGING_SERVICE_H_
+#endif  // EXTENSIONS_RENDERER_API_MESSAGING_NATIVE_RENDERER_MESSAGING_SERVICE_H_

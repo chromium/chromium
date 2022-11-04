@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/gin_port.h"
+#include "extensions/renderer/api/messaging/gin_port.h"
 
 #include <cstring>
 #include <vector>
@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_event_handler.h"
 #include "extensions/renderer/bindings/event_emitter.h"
-#include "extensions/renderer/messaging_util.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/object_template_builder.h"
