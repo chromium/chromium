@@ -9,7 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 LocalStateErrorScreenHandler::LocalStateErrorScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -30,4 +30,4 @@ void LocalStateErrorScreenHandler::DeclareLocalizedValues(
                IDS_LOCAL_STATE_ERROR_POWERWASH_BUTTON);
 }
 
-}  // namespace chromeos
+}  // namespace ash

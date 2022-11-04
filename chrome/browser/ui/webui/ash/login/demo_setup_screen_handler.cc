@@ -13,7 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 DemoSetupScreenView::~DemoSetupScreenView() = default;
 
@@ -70,4 +70,4 @@ void DemoSetupScreenHandler::GetAdditionalParameters(
   parameters->Set("demoSetupSteps", DemoSetupController::GetDemoSetupSteps());
 }
 
-}  // namespace chromeos
+}  // namespace ash

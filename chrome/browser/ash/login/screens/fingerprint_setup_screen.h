@@ -10,13 +10,13 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 
 namespace ash {
+
+class FingerprintSetupScreenView;
 
 // Controls fingerprint setup. The screen can be shown during OOBE. It allows
 // user to enroll fingerprint on the device.

@@ -20,7 +20,7 @@
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -190,4 +190,4 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
   VerifyLanguageCode(list, 2, kMostRelevantLanguagesDivider);
 }
 
-}  // namespace chromeos
+}  // namespace ash

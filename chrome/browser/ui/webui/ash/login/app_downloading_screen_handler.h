@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 class AppDownloadingScreenView
     : public base::SupportsWeakPtr<AppDownloadingScreenView> {
@@ -44,13 +44,6 @@ class AppDownloadingScreenHandler : public BaseScreenHandler,
   void Show() final;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::AppDownloadingScreenHandler;
-using ::chromeos::AppDownloadingScreenView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_APP_DOWNLOADING_SCREEN_HANDLER_H_

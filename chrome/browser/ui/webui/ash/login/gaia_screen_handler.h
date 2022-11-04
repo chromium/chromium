@@ -15,9 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/saml/public_saml_url_fetcher.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
@@ -39,7 +36,9 @@ namespace network {
 class NSSTempCertsCacheChromeOS;
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
+
+class PublicSamlUrlFetcher;
 class SigninScreenHandler;
 
 class GaiaView : public base::SupportsWeakPtr<GaiaView> {
@@ -100,7 +99,7 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
 // A class that handles WebUI hooks in Gaia screen.
 class GaiaScreenHandler : public BaseScreenHandler,
                           public GaiaView,
-                          public SecurityTokenPinDialogHost {
+                          public chromeos::SecurityTokenPinDialogHost {
  public:
   using TView = GaiaView;
 
@@ -143,9 +142,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(
       const std::string& caller_extension_name,
-      security_token_pin::CodeType code_type,
+      chromeos::security_token_pin::CodeType code_type,
       bool enable_user_input,
-      security_token_pin::ErrorLabel error_label,
+      chromeos::security_token_pin::ErrorLabel error_label,
       int attempts_left,
       const absl::optional<AccountId>& authenticating_user_account_id,
       SecurityTokenPinEnteredCallback pin_entered_callback,
@@ -374,7 +373,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   // Used to fetch and store the Gaia reauth request token for Cryptohome
   // recovery flow.
-  std::unique_ptr<ash::GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
+  std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
   std::string gaia_reauth_request_token_;
 
   // State of the security token PIN dialogs:
@@ -416,12 +415,11 @@ class GaiaScreenHandler : public BaseScreenHandler,
   base::WeakPtrFactory<GaiaScreenHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::GaiaScreenHandler;
-using ::chromeos::GaiaView;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::GaiaView;
 }
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_GAIA_SCREEN_HANDLER_H_

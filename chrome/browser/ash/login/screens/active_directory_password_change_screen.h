@@ -12,8 +12,6 @@
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/active_directory_password_change_screen_handler.h"
 
 namespace authpolicy {
 class ActiveDirectoryAccountInfo;
@@ -21,6 +19,7 @@ class ActiveDirectoryAccountInfo;
 
 namespace ash {
 
+class ActiveDirectoryPasswordChangeView;
 class Key;
 
 // Controller for the active directory password change screen.

@@ -9,11 +9,11 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "url/gurl.h"
 
 namespace ash {
+
+class EulaView;
 
 // Representation independent class that controls OOBE screen showing EULA
 // to users.

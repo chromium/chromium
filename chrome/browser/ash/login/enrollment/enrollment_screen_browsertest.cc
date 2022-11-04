@@ -30,6 +30,7 @@
 #include "chromeos/test/chromeos_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -27,13 +27,13 @@ namespace ui {
 class EventSink;
 }
 
-namespace chromeos {
+namespace ash {
 
 class CoreOobeView {
  public:
   virtual ~CoreOobeView() = default;
 
-  virtual void ShowScreenWithData(const ash::OobeScreenId& screen,
+  virtual void ShowScreenWithData(const OobeScreenId& screen,
                                   absl::optional<base::Value::Dict> data) = 0;
   virtual void ReloadContent(base::Value::Dict dictionary) = 0;
   virtual void UpdateClientAreaSize(const gfx::Size& size) = 0;
@@ -47,7 +47,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
                         public VersionInfoUpdater::Delegate,
                         public CoreOobeView,
                         public ui::EventSource,
-                        public ash::TabletModeObserver,
+                        public TabletModeObserver,
                         public OobeConfiguration::Observer,
                         public ChromeKeyboardControllerClient::Observer {
  public:
@@ -84,7 +84,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
  private:
   // CoreOobeView implementation:
-  void ShowScreenWithData(const ash::OobeScreenId& screen,
+  void ShowScreenWithData(const OobeScreenId& screen,
                           absl::optional<base::Value::Dict> data) override;
   void ReloadContent(base::Value::Dict dictionary) override;
   // Updates client area size based on the primary screen size.
@@ -94,7 +94,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void ForwardCancel() override;
   void LaunchHelpApp(int help_topic_id) override;
 
-  // ash::TabletModeObserver:
+  // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
@@ -129,13 +129,11 @@ class CoreOobeHandler : public BaseWebUIHandler,
   bool is_oobe_display_ = false;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::CoreOobeHandler;
-using ::chromeos::CoreOobeView;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CoreOobeView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_CORE_OOBE_HANDLER_H_

@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between GuestTosScreen and its
 // WebUI representation.
@@ -43,13 +43,6 @@ class GuestTosScreenHandler : public GuestTosScreenView,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::GuestTosScreenHandler;
-using ::chromeos::GuestTosScreenView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_GUEST_TOS_SCREEN_HANDLER_H_

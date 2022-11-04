@@ -55,12 +55,12 @@
 #undef ENABLED_VLOG_LEVEL
 #define ENABLED_VLOG_LEVEL 1
 
-namespace chromeos {
+namespace ash {
 
 CoreOobeHandler::CoreOobeHandler(const std::string& display_type) {
   is_oobe_display_ = display_type == OobeUI::kOobeDisplay;
 
-  ash::TabletMode::Get()->AddObserver(this);
+  TabletMode::Get()->AddObserver(this);
 
   OobeConfiguration::Get()->AddAndFireObserver(this);
 
@@ -92,8 +92,8 @@ CoreOobeHandler::~CoreOobeHandler() {
   OobeConfiguration::Get()->RemoveObserver(this);
 
   // Ash may be released before us.
-  if (ash::TabletMode::Get())
-    ash::TabletMode::Get()->RemoveObserver(this);
+  if (TabletMode::Get())
+    TabletMode::Get()->RemoveObserver(this);
 
   if (ChromeKeyboardControllerClient::Get())
     ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
@@ -124,7 +124,7 @@ void CoreOobeHandler::DeclareLocalizedValues(
 }
 
 void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
-  dict->Set("isInTabletMode", ash::TabletMode::Get()->InTabletMode());
+  dict->Set("isInTabletMode", TabletMode::Get()->InTabletMode());
   dict->Set("isDemoModeEnabled", DemoSetupController::IsDemoModeAllowed());
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     dict->Set("flowType", "meet");
@@ -143,7 +143,7 @@ void CoreOobeHandler::RegisterMessages() {
 }
 
 void CoreOobeHandler::ShowScreenWithData(
-    const ash::OobeScreenId& screen,
+    const OobeScreenId& screen,
     absl::optional<base::Value::Dict> data) {
   base::Value::Dict screen_params;
   screen_params.Set("id", screen.name);
@@ -166,7 +166,7 @@ void CoreOobeHandler::HandleUpdateCurrentScreen(
     const std::string& screen_name) {
   const OobeScreenId screen(screen_name);
   GetOobeUI()->CurrentScreenChanged(screen);
-  ash::EventRewriterController::Get()->SetArrowToTabRewritingEnabled(
+  EventRewriterController::Get()->SetArrowToTabRewritingEnabled(
       screen == EulaView::kScreenId);
 }
 
@@ -198,7 +198,7 @@ void CoreOobeHandler::OnDeviceInfoUpdated(const std::string& bluetooth_name) {
 }
 
 ui::EventSink* CoreOobeHandler::GetEventSink() {
-  return ash::Shell::GetPrimaryRootWindow()->GetHost()->GetEventSink();
+  return Shell::GetPrimaryRootWindow()->GetHost()->GetEventSink();
 }
 
 void CoreOobeHandler::UpdateLabel(const std::string& id,
@@ -215,7 +215,7 @@ void CoreOobeHandler::OnTabletModeEnded() {
 }
 
 void CoreOobeHandler::UpdateClientAreaSize(const gfx::Size& size) {
-  CallJS("cr.ui.Oobe.setShelfHeight", ash::ShelfConfig::Get()->shelf_size());
+  CallJS("cr.ui.Oobe.setShelfHeight", ShelfConfig::Get()->shelf_size());
 
   const gfx::Size display_size =
       display::Screen::GetScreen()->GetPrimaryDisplay().size();
@@ -223,7 +223,7 @@ void CoreOobeHandler::UpdateClientAreaSize(const gfx::Size& size) {
   CallJS("cr.ui.Oobe.setOrientation", is_horizontal);
 
   const gfx::Size dialog_size = CalculateOobeDialogSize(
-      size, ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
+      size, ShelfConfig::Get()->shelf_size(), is_horizontal);
   CallJS("cr.ui.Oobe.setDialogSize", dialog_size.width(), dialog_size.height());
 }
 
@@ -263,9 +263,9 @@ void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
 
 void CoreOobeHandler::HandleUpdateOobeUIState(int state) {
   if (LoginDisplayHost::default_host()) {
-    auto dialog_state = static_cast<ash::OobeDialogState>(state);
+    auto dialog_state = static_cast<OobeDialogState>(state);
     LoginDisplayHost::default_host()->UpdateOobeDialogState(dialog_state);
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

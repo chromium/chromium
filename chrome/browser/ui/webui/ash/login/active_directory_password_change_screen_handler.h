@@ -11,10 +11,8 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
-class ActiveDirectoryPasswordChangeScreen;
-}
 
-namespace chromeos {
+class ActiveDirectoryPasswordChangeScreen;
 
 // Interface for dependency injection between
 // ActiveDirectoryPasswordChangeScreen and its WebUI representation.
@@ -58,13 +56,6 @@ class ActiveDirectoryPasswordChangeScreenHandler
   void ShowSignInError(const std::string& error_text) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ActiveDirectoryPasswordChangeScreenHandler;
-using ::chromeos::ActiveDirectoryPasswordChangeView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ACTIVE_DIRECTORY_PASSWORD_CHANGE_SCREEN_HANDLER_H_

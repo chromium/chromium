@@ -49,7 +49,7 @@ using ArcPlayTermsOfServiceConsent =
 
 using sync_pb::UserConsentTypes;
 
-namespace chromeos {
+namespace ash {
 
 ArcTermsOfServiceScreenHandler::ArcTermsOfServiceScreenHandler()
     : BaseScreenHandler(kScreenId),
@@ -81,10 +81,8 @@ void ArcTermsOfServiceScreenHandler::RegisterMessages() {
 
 void ArcTermsOfServiceScreenHandler::MaybeLoadPlayStoreToS(bool is_preload) {
   if (is_preload) {
-    const chromeos::NetworkState* default_network =
-        chromeos::NetworkHandler::Get()
-            ->network_state_handler()
-            ->DefaultNetwork();
+    const NetworkState* default_network =
+        NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
     if (!default_network)
       return;
 
@@ -325,7 +323,7 @@ void ArcTermsOfServiceScreenHandler::StartNetworkAndTimeZoneObserving() {
     return;
 
   network_state_handler_observer_.Observe(
-      chromeos::NetworkHandler::Get()->network_state_handler());
+      NetworkHandler::Get()->network_state_handler());
   system::TimezoneSettings::GetInstance()->AddObserver(this);
   network_time_zone_observing_ = true;
 }
@@ -479,4 +477,4 @@ void ArcTermsOfServiceScreenHandler::HandleAccept(
     observer.OnAccept(review_arc_settings);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -29,8 +29,8 @@ namespace {
 
 // Returns network name by service path.
 std::string GetNetworkName(const std::string& service_path) {
-  const chromeos::NetworkState* network =
-      chromeos::NetworkHandler::Get()->network_state_handler()->GetNetworkState(
+  const ash::NetworkState* network =
+      ash::NetworkHandler::Get()->network_state_handler()->GetNetworkState(
           service_path);
   if (!network)
     return std::string();
@@ -61,7 +61,7 @@ base::Value::Dict ConvertAppToDict(ash::KioskAppManagerBase::App app) {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
@@ -195,7 +195,7 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI() {
 
 void AppLaunchSplashScreenHandler::ShowErrorMessage(
     KioskAppLaunchError::Error error) {
-  ash::LoginScreen::Get()->ShowKioskAppError(
+  LoginScreen::Get()->ShowKioskAppError(
       KioskAppLaunchError::GetErrorMessage(error));
 }
 
@@ -268,4 +268,4 @@ void AppLaunchSplashScreenHandler::DoToggleNetworkConfig(bool visible) {
   CallExternalAPI("toggleNetworkConfig", visible);
 }
 
-}  // namespace chromeos
+}  // namespace ash

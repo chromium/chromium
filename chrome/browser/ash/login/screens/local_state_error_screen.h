@@ -7,10 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 
 namespace ash {
+
+class LocalStateErrorScreenView;
 
 class LocalStateErrorScreen : public BaseScreen {
  public:

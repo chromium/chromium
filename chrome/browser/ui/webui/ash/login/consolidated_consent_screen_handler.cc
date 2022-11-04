@@ -14,7 +14,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 ConsolidatedConsentScreenHandler::ConsolidatedConsentScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -138,4 +138,4 @@ void ConsolidatedConsentScreenHandler::SetLocationMode(bool enabled,
 void ConsolidatedConsentScreenHandler::SetUsageOptinHidden(bool hidden) {
   CallExternalAPI("setUsageOptinHidden", hidden);
 }
-}  // namespace chromeos
+}  // namespace ash

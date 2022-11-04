@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"

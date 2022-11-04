@@ -11,7 +11,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // Interface between enable debugging screen and its representation.
 // Note, do not forget to call OnViewDestroyed in the dtor.
@@ -61,13 +61,6 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
   static void RegisterPrefs(PrefRegistrySimple* registry);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::EnableDebuggingScreenHandler;
-using ::chromeos::EnableDebuggingScreenView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ENABLE_DEBUGGING_SCREEN_HANDLER_H_

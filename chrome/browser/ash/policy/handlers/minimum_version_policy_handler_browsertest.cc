@@ -836,7 +836,7 @@ class MinimumVersionKioskAutoLoginTest : public MinimumVersionExistingUserTest {
 IN_PROC_BROWSER_TEST_F(MinimumVersionKioskAutoLoginTest, AllowAutoLaunch) {
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
-  ash::OobeScreenWaiter(chromeos::AppLaunchSplashScreenView::kScreenId).Wait();
+  ash::OobeScreenWaiter(ash::AppLaunchSplashScreenView::kScreenId).Wait();
   // Policy handler returns early when device is setup in auto launch kiosk
   // mode.
   PrefService* prefs = g_browser_process->local_state();

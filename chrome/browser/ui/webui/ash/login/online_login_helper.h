@@ -146,6 +146,7 @@ namespace login {
 using ::chromeos::login::BuildUserContextForGaiaSignIn;
 using ::chromeos::login::ExtractSamlPasswordAttributesEnabled;
 using ::chromeos::login::GaiaContext;
+using ::chromeos::login::GetStartSigninSession;
 using ::chromeos::login::GetUsertypeFromServicesString;
 using ::chromeos::login::SetCookieForPartition;
 }  // namespace login

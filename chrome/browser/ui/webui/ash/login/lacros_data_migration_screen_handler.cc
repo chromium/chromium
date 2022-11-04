@@ -10,7 +10,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/base/text/bytes_formatting.h"
 
-namespace chromeos {
+namespace ash {
 
 LacrosDataMigrationScreenHandler::LacrosDataMigrationScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -68,4 +68,4 @@ void LacrosDataMigrationScreenHandler::SetFailureStatus(
       show_goto_files);
 }
 
-}  // namespace chromeos
+}  // namespace ash

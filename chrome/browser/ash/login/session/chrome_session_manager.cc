@@ -62,7 +62,7 @@ void StartKioskSession() {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
 
-  ShowLoginWizard(chromeos::AppLaunchSplashScreenView::kScreenId);
+  ShowLoginWizard(AppLaunchSplashScreenView::kScreenId);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
   VLOG(1) << "Kiosk app auto launch >> login-prompt-visible";

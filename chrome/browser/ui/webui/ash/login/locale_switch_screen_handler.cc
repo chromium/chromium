@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 LocaleSwitchScreenHandler::LocaleSwitchScreenHandler(
     CoreOobeView* core_oobe_view)
@@ -27,4 +27,4 @@ void LocaleSwitchScreenHandler::UpdateStrings() {
 void LocaleSwitchScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
-}  // namespace chromeos
+}  // namespace ash

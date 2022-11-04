@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"

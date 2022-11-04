@@ -17,10 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/wizard_context.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -31,6 +27,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
+class HIDDetectionView;
+class WizardContext;
 
 // Representation independent class that controls screen showing warning about
 // HID absence to users.
@@ -283,16 +282,9 @@ class HIDDetectionScreen : public BaseScreen,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
 namespace chromeos {
 using ::ash::HIDDetectionScreen;
-}
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::HIDDetectionScreen;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_HID_DETECTION_SCREEN_H_

@@ -14,8 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
@@ -26,8 +24,9 @@
 #include "net/base/net_errors.h"
 #include "ui/events/event_handler.h"
 
-namespace chromeos {
+namespace ash {
 
+class ErrorScreensHistogramHelper;
 class GaiaScreenHandler;
 
 // A class that handles the WebUI hooks in sign-in screen in OobeUI.
@@ -144,11 +143,6 @@ class SigninScreenHandler
   base::WeakPtrFactory<SigninScreenHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::SigninScreenHandler;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SIGNIN_SCREEN_HANDLER_H_

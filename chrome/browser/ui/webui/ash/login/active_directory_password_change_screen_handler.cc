@@ -9,7 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -44,4 +44,4 @@ void ActiveDirectoryPasswordChangeScreenHandler::ShowSignInError(
   CallExternalAPI("showErrorDialog", error_text);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -10,7 +10,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 FamilyLinkNoticeScreenHandler::FamilyLinkNoticeScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -49,4 +49,4 @@ void FamilyLinkNoticeScreenHandler::SetDomain(const std::string& value) {
   CallExternalAPI("setDomain", value);
 }
 
-}  // namespace chromeos
+}  // namespace ash

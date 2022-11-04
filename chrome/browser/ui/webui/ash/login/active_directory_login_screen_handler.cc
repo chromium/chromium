@@ -16,7 +16,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 ActiveDirectoryLoginScreenHandler::ActiveDirectoryLoginScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -58,4 +58,4 @@ void ActiveDirectoryLoginScreenHandler::SetErrorState(
   CallExternalAPI("setErrorState", username, errorState);
 }
 
-}  // namespace chromeos
+}  // namespace ash

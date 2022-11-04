@@ -8,10 +8,8 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
-class LacrosDataBackwardMigrationScreen;
-}
 
-namespace chromeos {
+class LacrosDataBackwardMigrationScreen;
 
 // Interface for dependency injection between LacrosDataBackwardMigrationScreen
 // and its WebUI representation.
@@ -56,13 +54,6 @@ class LacrosDataBackwardMigrationScreenHandler
   void SetFailureStatus() override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::LacrosDataBackwardMigrationScreenHandler;
-using ::chromeos::LacrosDataBackwardMigrationScreenView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_HANDLER_H_

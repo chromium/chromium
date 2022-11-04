@@ -1139,7 +1139,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::EasyUnlockService::RegisterPrefs(registry);
   ash::EnableAdbSideloadingScreen::RegisterPrefs(registry);
   ash::device_activity::DeviceActivityController::RegisterPrefs(registry);
-  chromeos::EnableDebuggingScreenHandler::RegisterPrefs(registry);
+  ash::EnableDebuggingScreenHandler::RegisterPrefs(registry);
   ash::FastTransitionObserver::RegisterPrefs(registry);
   ash::HWDataUsageController::RegisterLocalStatePrefs(registry);
   ash::KerberosCredentialsManager::RegisterLocalStatePrefs(registry);

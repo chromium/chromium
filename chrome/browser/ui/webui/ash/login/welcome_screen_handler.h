@@ -12,9 +12,10 @@
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 
 namespace chromeos {
-class CoreOobeView;
 
 // Interface for WelcomeScreenHandler.
 class WelcomeView : public base::SupportsWeakPtr<WelcomeView> {

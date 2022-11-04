@@ -12,10 +12,10 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 
 namespace ash {
+
+class DemoSetupScreenView;
 
 // Controls demo mode setup. The screen can be shown during OOBE. It allows
 // user to setup retail demo mode on the device.

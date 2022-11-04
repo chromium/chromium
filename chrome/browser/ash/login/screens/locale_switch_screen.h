@@ -11,13 +11,13 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/base/locale_util.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace ash {
+
+class LocaleSwitchView;
 
 // This screen waits for account information (locale and account capabilities)
 // to be fetched and handles OOBE locale switch for the post-login screens.

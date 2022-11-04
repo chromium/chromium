@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
+#include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "components/account_id/account_id.h"
 #include "services/device/public/mojom/input_service.mojom.h"

@@ -121,7 +121,7 @@
 using content::BrowserThread;
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -239,7 +239,7 @@ void UpdateAuthParams(base::Value::Dict& params) {
 }
 
 bool ShouldCheckUserTypeBeforeAllowing() {
-  if (!chromeos::features::IsFamilyLinkOnSchoolDeviceEnabled())
+  if (!features::IsFamilyLinkOnSchoolDeviceEnabled())
     return false;
 
   CrosSettings* cros_settings = CrosSettings::Get();
@@ -254,8 +254,8 @@ bool ShouldCheckUserTypeBeforeAllowing() {
 // Make this function fallible when version_loader::GetVersion()
 // returns an optional that is empty
 void GetVersionAndConsent(std::string* out_version, bool* out_consent) {
-  absl::optional<std::string> version =
-      version_loader::GetVersion(version_loader::VERSION_SHORT);
+  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_SHORT);
   *out_version = version.value_or("0.0.0.0");
   *out_consent = GoogleUpdateSettings::GetCollectStatsConsent();
 }
@@ -267,30 +267,32 @@ user_manager::UserType CalculateUserType(const AccountId& account_id) {
   return user_manager::USER_TYPE_REGULAR;
 }
 
-PinDialogManager* GetLoginScreenPinDialogManager() {
+chromeos::PinDialogManager* GetLoginScreenPinDialogManager() {
   DCHECK(ProfileHelper::IsSigninProfileInitialized());
-  CertificateProviderService* certificate_provider_service =
-      CertificateProviderServiceFactory::GetForBrowserContext(
+  chromeos::CertificateProviderService* certificate_provider_service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           ProfileHelper::GetSigninProfile());
   return certificate_provider_service->pin_dialog_manager();
 }
 
 base::Value::Dict MakeSecurityTokenPinDialogParameters(
     bool enable_user_input,
-    security_token_pin::ErrorLabel error_label,
+    chromeos::security_token_pin::ErrorLabel error_label,
     int attempts_left) {
   base::Value::Dict params;
 
   params.Set("enableUserInput", enable_user_input);
-  params.Set("hasError", error_label != security_token_pin::ErrorLabel::kNone);
+  params.Set("hasError",
+             error_label != chromeos::security_token_pin::ErrorLabel::kNone);
   params.Set("formattedError", GenerateErrorMessage(error_label, attempts_left,
                                                     enable_user_input));
   if (attempts_left == -1) {
     params.Set("formattedAttemptsLeft", std::u16string());
   } else {
-    params.Set("formattedAttemptsLeft",
-               GenerateErrorMessage(security_token_pin::ErrorLabel::kNone,
-                                    attempts_left, true));
+    params.Set(
+        "formattedAttemptsLeft",
+        GenerateErrorMessage(chromeos::security_token_pin::ErrorLabel::kNone,
+                             attempts_left, true));
   }
   return params;
 }
@@ -300,7 +302,7 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
   // the recovery without triggering the real recovery conditions which may be
   // difficult as of now.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kForceCryptohomeRecoveryForTesting))
+          switches::kForceCryptohomeRecoveryForTesting))
     return true;
 
   if (!account_id.is_valid())
@@ -310,11 +312,11 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
   // TODO(b/197615068): Add metric to record the number of times we prepared for
   // recovery and the number of times recovery is actually required.
   static constexpr int kPossibleReasons[] = {
-      static_cast<int>(ash::ReauthReason::kIncorrectPasswordEntered),
-      static_cast<int>(ash::ReauthReason::kInvalidTokenHandle),
-      static_cast<int>(ash::ReauthReason::kSyncFailed),
-      static_cast<int>(ash::ReauthReason::kPasswordUpdateSkipped),
-      static_cast<int>(ash::ReauthReason::kForgotPassword),
+      static_cast<int>(ReauthReason::kIncorrectPasswordEntered),
+      static_cast<int>(ReauthReason::kInvalidTokenHandle),
+      static_cast<int>(ReauthReason::kSyncFailed),
+      static_cast<int>(ReauthReason::kPasswordUpdateSkipped),
+      static_cast<int>(ReauthReason::kForgotPassword),
   };
   user_manager::KnownUser known_user(g_browser_process->local_state());
   absl::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
@@ -543,17 +545,17 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     }
   }
 
-  if (ash::features::IsCryptohomeRecoveryFlowEnabled() &&
+  if (features::IsCryptohomeRecoveryFlowEnabled() &&
       !gaia_reauth_request_token_.empty()) {
     params.Set("rart", gaia_reauth_request_token_);
   }
 
   PrefService* local_state = g_browser_process->local_state();
   if (local_state->IsManagedPreference(
-          ash::prefs::kUrlParameterToAutofillSAMLUsername)) {
-    params.Set("urlParameterToAutofillSAMLUsername",
-               local_state->GetString(
-                   ash::prefs::kUrlParameterToAutofillSAMLUsername));
+          prefs::kUrlParameterToAutofillSAMLUsername)) {
+    params.Set(
+        "urlParameterToAutofillSAMLUsername",
+        local_state->GetString(prefs::kUrlParameterToAutofillSAMLUsername));
   }
 
   was_security_token_pin_canceled_ = false;
@@ -938,7 +940,7 @@ void GaiaScreenHandler::HandleGaiaUIReady() {
 }
 
 void GaiaScreenHandler::HandleIsFirstSigninStep(bool is_first) {
-  ash::LoginScreen::Get()->SetIsFirstSigninStep(is_first);
+  LoginScreen::Get()->SetIsFirstSigninStep(is_first);
 }
 
 void GaiaScreenHandler::HandleSamlStateChanged(bool is_saml) {
@@ -1083,7 +1085,7 @@ void GaiaScreenHandler::StartClearingCookies(
   cookies_cleared_ = false;
   LOG_ASSERT(Profile::FromWebUI(web_ui()) ==
              ProfileHelper::Get()->GetSigninProfile());
-  ash::SigninProfileHandler::Get()->ClearSigninProfile(
+  SigninProfileHandler::Get()->ClearSigninProfile(
       base::BindOnce(&GaiaScreenHandler::OnCookiesCleared,
                      weak_factory_.GetWeakPtr(), std::move(on_clear_callback)));
 }
@@ -1210,9 +1212,9 @@ void GaiaScreenHandler::Reset() {
 
 void GaiaScreenHandler::ShowSecurityTokenPinDialog(
     const std::string& /*caller_extension_name*/,
-    security_token_pin::CodeType code_type,
+    chromeos::security_token_pin::CodeType code_type,
     bool enable_user_input,
-    security_token_pin::ErrorLabel error_label,
+    chromeos::security_token_pin::ErrorLabel error_label,
     int attempts_left,
     const absl::optional<AccountId>& /*authenticating_user_account_id*/,
     SecurityTokenPinEnteredCallback pin_entered_callback,
@@ -1354,13 +1356,13 @@ void GaiaScreenHandler::LoadAuthExtension(bool force) {
         AccountId::FromUserEmail(gaia::CanonicalizeEmail(context.email)));
   }
 
-  if (ash::features::IsCryptohomeRecoveryFlowEnabled() &&
+  if (features::IsCryptohomeRecoveryFlowEnabled() &&
       ShouldPrepareForRecovery(populated_account_id_)) {
     populated_account_id_.clear();
     auto callback = base::BindOnce(&GaiaScreenHandler::OnGaiaReauthTokenFetched,
                                    weak_factory_.GetWeakPtr(), context);
     gaia_reauth_token_fetcher_ =
-        std::make_unique<ash::GaiaReauthTokenFetcher>(std::move(callback));
+        std::make_unique<GaiaReauthTokenFetcher>(std::move(callback));
     gaia_reauth_token_fetcher_->Fetch();
     return;
   }
@@ -1392,4 +1394,4 @@ void GaiaScreenHandler::SAMLConfirmPassword(
       std::move(scraped_saml_passwords), std::move(user_context));
 }
 
-}  // namespace chromeos
+}  // namespace ash

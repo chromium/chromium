@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between GaiaPasswordChangedScreen and its
 // WebUI representation.
@@ -47,13 +47,6 @@ class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
   void GetAdditionalParameters(base::Value::Dict* dict) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::GaiaPasswordChangedScreenHandler;
-using ::chromeos::GaiaPasswordChangedView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_GAIA_PASSWORD_CHANGED_SCREEN_HANDLER_H_

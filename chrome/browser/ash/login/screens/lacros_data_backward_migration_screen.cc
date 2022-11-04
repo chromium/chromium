@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
 
 namespace ash {

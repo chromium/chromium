@@ -79,6 +79,7 @@
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"

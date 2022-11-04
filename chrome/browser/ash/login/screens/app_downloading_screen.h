@@ -8,10 +8,10 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 
 namespace ash {
+
+class AppDownloadingScreenView;
 
 // This is App Downloading screen that tells the user the selected Android apps
 // are being downloaded.

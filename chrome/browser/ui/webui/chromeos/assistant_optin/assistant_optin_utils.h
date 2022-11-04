@@ -95,7 +95,24 @@ GetActivityControlConsentSettingType(const SettingZippyList& setting_zippys);
 
 // TODO(https://crbug.com/1164001): remove when it moved to ash.
 namespace ash {
+using ::chromeos::ACTIVITY_CONTROL_SHOWN;
+using ::chromeos::CreateZippyData;
+using ::chromeos::FLOW_STARTED;
+using ::chromeos::GetActivityControlConsentSettingType;
+using ::chromeos::GetSettingsUiSelector;
+using ::chromeos::GetSettingsUiStrings;
+using ::chromeos::GetSettingsUiUpdate;
 using ::chromeos::IsHotwordDspAvailable;
-}
+using ::chromeos::IsVoiceMatchEnforcedOff;
+using ::chromeos::RecordActivityControlConsent;
+using ::chromeos::RecordAssistantActivityControlOptInStatus;
+using ::chromeos::RELATED_INFO_ACCEPTED;
+using ::chromeos::RELATED_INFO_SHOWN;
+using ::chromeos::RELATED_INFO_SKIPPED;
+using ::chromeos::VOICE_MATCH_ENROLLMENT_DONE;
+using ::chromeos::VOICE_MATCH_ENROLLMENT_ERROR;
+using ::chromeos::VOICE_MATCH_ENROLLMENT_SKIPPED;
+using ::chromeos::VOICE_MATCH_SHOWN;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UTILS_H_

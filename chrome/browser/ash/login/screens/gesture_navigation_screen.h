@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 
 namespace ash {
+
+class GestureNavigationScreenView;
 
 // The OOBE screen dedicated to gesture navigation education.
 class GestureNavigationScreen : public BaseScreen {

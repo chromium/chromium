@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/grit/generated_resources.h"

@@ -21,7 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskAutolaunchScreenHandler::KioskAutolaunchScreenHandler()
     : BaseScreenHandler(kScreenId) {
@@ -102,4 +102,4 @@ void KioskAutolaunchScreenHandler::OnKioskAppDataChanged(
   UpdateKioskApp();
 }
 
-}  // namespace chromeos
+}  // namespace ash

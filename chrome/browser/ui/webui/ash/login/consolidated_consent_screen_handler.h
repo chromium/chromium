@@ -12,10 +12,9 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
-class ConsolidatedConsentScreen;
-}
 
-namespace chromeos {
+class ConsolidatedConsentScreen;
+
 namespace {
 const char kGoogleEulaDefaultUrl[] =
     "https://policies.google.com/terms/embedded?hl=en";
@@ -74,13 +73,6 @@ class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ConsolidatedConsentScreenHandler;
-using ::chromeos::ConsolidatedConsentScreenView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_CONSOLIDATED_CONSENT_SCREEN_HANDLER_H_

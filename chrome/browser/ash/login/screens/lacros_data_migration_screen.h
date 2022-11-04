@@ -10,13 +10,14 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
+
+class LacrosDataMigrationScreenView;
 
 // A screen that shows loading spinner during user data is copied to lacros
 // directory. The screen is shown during login.

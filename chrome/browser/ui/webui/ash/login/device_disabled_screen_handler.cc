@@ -9,7 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 DeviceDisabledScreenHandler::DeviceDisabledScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -39,4 +39,4 @@ void DeviceDisabledScreenHandler::DeclareLocalizedValues(
                IDS_DEVICE_DISABLED_EXPLANATION_WITHOUT_DOMAIN);
 }
 
-}  // namespace chromeos
+}  // namespace ash

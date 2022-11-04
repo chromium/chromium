@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface between gesture navigation screen and its representation.
 class GestureNavigationScreenView
@@ -44,13 +44,6 @@ class GestureNavigationScreenHandler : public GestureNavigationScreenView,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::GestureNavigationScreenHandler;
-using ::chromeos::GestureNavigationScreenView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_GESTURE_NAVIGATION_SCREEN_HANDLER_H_

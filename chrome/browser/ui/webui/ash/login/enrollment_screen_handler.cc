@@ -47,7 +47,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Enrollment step names.
@@ -214,7 +214,7 @@ EnrollmentScreenHandler::EnrollmentScreenHandler(
       network_state_informer_(network_state_informer),
       error_screen_(error_screen),
       histogram_helper_(new ErrorScreensHistogramHelper(
-          ash::ErrorScreensHistogramHelper::ErrorParentScreen::kEnrollment)) {
+          ErrorScreensHistogramHelper::ErrorParentScreen::kEnrollment)) {
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
 }
@@ -1183,4 +1183,4 @@ base::Value::Dict EnrollmentScreenHandler::ScreenDataCommon() {
   return screen_data;
 }
 
-}  // namespace chromeos
+}  // namespace ash

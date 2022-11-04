@@ -8,10 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 
 namespace ash {
+
+class LacrosDataBackwardMigrationScreenView;
 
 // A screen that shows loading spinner during user data is copied to lacros
 // directory. The screen is shown during login.

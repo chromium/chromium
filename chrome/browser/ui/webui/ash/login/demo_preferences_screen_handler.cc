@@ -7,7 +7,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 DemoPreferencesScreenView::~DemoPreferencesScreenView() = default;
 
@@ -40,4 +40,4 @@ void DemoPreferencesScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_ERROR_TEXT);
 }
 
-}  // namespace chromeos
+}  // namespace ash

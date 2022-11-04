@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Version of AppLaunchSplashScreenHandler used for tests.
 class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
@@ -33,12 +33,6 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::FakeAppLaunchSplashScreenHandler;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_FAKE_APP_LAUNCH_SPLASH_SCREEN_HANDLER_H_

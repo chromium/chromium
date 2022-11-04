@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface of the demo mode setup screen view.
 class DemoSetupScreenView : public base::SupportsWeakPtr<DemoSetupScreenView> {
@@ -64,13 +64,6 @@ class DemoSetupScreenHandler : public BaseScreenHandler,
   void GetAdditionalParameters(base::Value::Dict* parameters) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::DemoSetupScreenHandler;
-using ::chromeos::DemoSetupScreenView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_DEMO_SETUP_SCREEN_HANDLER_H_

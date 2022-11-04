@@ -8,7 +8,7 @@
 
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 MockInputMethodManagerWithInputMethods::
     MockInputMethodManagerWithInputMethods() {
@@ -29,4 +29,4 @@ void MockInputMethodManagerWithInputMethods::AddInputMethod(
       GURL()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -23,7 +23,7 @@ int GetNumberOfUserSelectedApps() {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 AppDownloadingScreenHandler::AppDownloadingScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -47,4 +47,4 @@ void AppDownloadingScreenHandler::Show() {
   ShowInWebUI(std::move(data));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -892,7 +892,7 @@ TEST_F(ArcOobeOptInActiveInTest, OobeOptInActive) {
   EXPECT_FALSE(IsArcOobeOptInActive());
   // ARC ToS wizard but Onboarding flow completed.
   login_display_host()->StartWizard(
-      chromeos::ArcTermsOfServiceScreenView::kScreenId);
+      ash::ArcTermsOfServiceScreenView::kScreenId);
   EXPECT_FALSE(IsArcOobeOptInActive());
 }
 
@@ -912,8 +912,7 @@ TEST_F(DemoSetupFlowArcOptInTest, TermsOfServiceOobeNegotiationNeeded) {
       {"", "--arc-availability=officially-supported"});
   DisableDBusForProfileManager();
   CreateLoginDisplayHost();
-  login_display_host()->StartWizard(
-      chromeos::DemoPreferencesScreenView::kScreenId);
+  login_display_host()->StartWizard(ash::DemoPreferencesScreenView::kScreenId);
   login_display_host()
       ->GetWizardController()
       ->SimulateDemoModeSetupForTesting();
@@ -928,8 +927,7 @@ TEST_F(DemoSetupFlowArcOptInTest,
        "--arc-start-mode=always-start-with-no-play-store"});
   DisableDBusForProfileManager();
   CreateLoginDisplayHost();
-  login_display_host()->StartWizard(
-      chromeos::DemoPreferencesScreenView::kScreenId);
+  login_display_host()->StartWizard(ash::DemoPreferencesScreenView::kScreenId);
   login_display_host()
       ->GetWizardController()
       ->SimulateDemoModeSetupForTesting();

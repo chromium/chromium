@@ -13,18 +13,17 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "net/cookies/canonical_cookie.h"
 
-namespace chromeos {
+namespace ash {
+
 class CookieWaiter;
+class ErrorScreensHistogramHelper;
+class HelpAppLauncher;
 
 // Possible error states of the Active Directory screen. Must be in the same
 // order as ActiveDirectoryErrorState ( in enterprise_enrollment.js ) values.
@@ -235,13 +234,6 @@ class EnrollmentScreenHandler
   base::WeakPtrFactory<EnrollmentScreenHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ActiveDirectoryErrorState;
-using ::chromeos::EnrollmentScreenHandler;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ENROLLMENT_SCREEN_HANDLER_H_

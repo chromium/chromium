@@ -13,7 +13,7 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 struct SensorLocationToString {
   uint32_t description_id = 0;
@@ -23,42 +23,42 @@ struct SensorLocationToString {
 };
 
 constexpr auto kLocationToStringMap = base::MakeFixedFlatMap<
-    ash::quick_unlock::FingerprintLocation,
+    quick_unlock::FingerprintLocation,
     SensorLocationToString>(
-    {{ash::quick_unlock::FingerprintLocation::TABLET_POWER_BUTTON,
+    {{quick_unlock::FingerprintLocation::TABLET_POWER_BUTTON,
       {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_POWER_BUTTON_DESCRIPTION,
        IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_POWER_BUTTON_DESCRIPTION_CHILD,
        IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_POWER_BUTTON_ARIA_LABEL,
        false /*aria_label_includes_device*/}},
-     {ash::quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_LEFT,
+     {quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_LEFT,
       {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION,
        IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION_CHILD,
        IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_BOTTOM_LEFT_ARIA_LABEL,
        false /*aria_label_includes_device*/}},
-     {ash::quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_RIGHT,
+     {quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_RIGHT,
       {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION,
        IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION_CHILD,
        IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_BOTTOM_RIGHT_ARIA_LABEL,
        false /*aria_label_includes_device*/}},
-     {ash::quick_unlock::FingerprintLocation::KEYBOARD_TOP_RIGHT,
+     {quick_unlock::FingerprintLocation::KEYBOARD_TOP_RIGHT,
       {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION,
        IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION_CHILD,
        IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_TOP_RIGHT_ARIA_LABEL,
        false /*aria_label_includes_device*/}},
-     {ash::quick_unlock::FingerprintLocation::RIGHT_SIDE,
+     {quick_unlock::FingerprintLocation::RIGHT_SIDE,
       {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION,
        IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION_CHILD,
        IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_RIGHT_SIDE_ARIA_LABEL,
        true /*aria_label_includes_device*/}},
-     {ash::quick_unlock::FingerprintLocation::LEFT_SIDE,
+     {quick_unlock::FingerprintLocation::LEFT_SIDE,
       {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION,
        IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION_CHILD,
        IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_LEFT_SIDE_ARIA_LABEL,
        true /*aria_label_includes_device*/}},
-     {ash::quick_unlock::FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT,
+     {quick_unlock::FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT,
       {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT,
        IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT_CHILD}},
-     {ash::quick_unlock::FingerprintLocation::UNKNOWN,
+     {quick_unlock::FingerprintLocation::UNKNOWN,
       {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION,
        IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION_CHILD,
        IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION,
@@ -145,4 +145,4 @@ void FingerprintSetupScreenHandler::EnableAddAnotherFinger(bool enable) {
   CallExternalAPI("enableAddAnotherFinger", enable);
 }
 
-}  // namespace chromeos
+}  // namespace ash

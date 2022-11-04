@@ -11,7 +11,7 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 EncryptionMigrationScreenHandler::EncryptionMigrationScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -101,4 +101,4 @@ void EncryptionMigrationScreenHandler::SetMigrationProgress(double progress) {
   CallExternalAPI("setMigrationProgress", progress);
 }
 
-}  // namespace chromeos
+}  // namespace ash

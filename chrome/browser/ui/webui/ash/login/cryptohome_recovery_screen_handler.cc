@@ -7,7 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 CryptohomeRecoveryScreenHandler::CryptohomeRecoveryScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -21,4 +21,4 @@ void CryptohomeRecoveryScreenHandler::Show() {
   ShowInWebUI();
 }
 
-}  // namespace chromeos
+}  // namespace ash

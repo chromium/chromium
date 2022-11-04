@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between ErrorScreen and its actual
 // representation. Owned by ErrorScreen.
@@ -82,13 +82,11 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   base::WeakPtrFactory<ErrorScreenHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ErrorScreenHandler;
-using ::chromeos::ErrorScreenView;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ErrorScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ERROR_SCREEN_HANDLER_H_

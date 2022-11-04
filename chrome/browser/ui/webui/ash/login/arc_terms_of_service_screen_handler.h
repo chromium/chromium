@@ -23,8 +23,9 @@ namespace arc {
 class ArcOptInPreferenceHandler;
 }
 
-namespace chromeos {
+namespace ash {
 
+class ArcTermsOfServiceScreen;
 class ArcTermsOfServiceScreenView;
 
 class ArcTermsOfServiceScreenViewObserver {
@@ -80,7 +81,7 @@ class ArcTermsOfServiceScreenHandler
       public arc::ArcOptInPreferenceHandlerObserver,
       public OobeUI::Observer,
       public system::TimezoneSettings::Observer,
-      public chromeos::NetworkStateHandlerObserver,
+      public NetworkStateHandlerObserver,
       public session_manager::SessionManagerObserver {
  public:
   using TView = ArcTermsOfServiceScreenView;
@@ -115,7 +116,7 @@ class ArcTermsOfServiceScreenHandler
   // system::TimezoneSettings::Observer:
   void TimezoneChanged(const icu::TimeZone& timezone) override;
 
-  // chromeos::NetworkStateHandlerObserver:
+  // NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const NetworkState* network) override;
 
  private:
@@ -190,21 +191,12 @@ class ArcTermsOfServiceScreenHandler
   // To track if a child account is being set up.
   bool is_child_account_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   std::unique_ptr<arc::ArcOptInPreferenceHandler> pref_handler_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ArcTermsOfServiceScreenHandler;
-using ::chromeos::ArcTermsOfServiceScreenView;
-using ::chromeos::ArcTermsOfServiceScreenViewObserver;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ARC_TERMS_OF_SERVICE_SCREEN_HANDLER_H_

@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between FamilyLinkNoticeScreen and its
 // WebUI representation.
@@ -59,13 +59,6 @@ class FamilyLinkNoticeScreenHandler : public FamilyLinkNoticeView,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::FamilyLinkNoticeScreenHandler;
-using ::chromeos::FamilyLinkNoticeView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_FAMILY_LINK_NOTICE_SCREEN_HANDLER_H_

@@ -17,7 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 HIDDetectionScreenHandler::HIDDetectionScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -125,4 +125,4 @@ void HIDDetectionScreenHandler::GetAdditionalParameters(
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
-}  // namespace chromeos
+}  // namespace ash

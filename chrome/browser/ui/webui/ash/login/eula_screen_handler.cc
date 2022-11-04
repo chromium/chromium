@@ -26,7 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 EulaScreenHandler::EulaScreenHandler() : BaseScreenHandler(kScreenId) {}
 
@@ -128,4 +128,4 @@ void EulaScreenHandler::UpdateTpmDesc(
   CallExternalAPI("setTpmDesc", tpm_desc);
 }
 
-}  // namespace chromeos
+}  // namespace ash

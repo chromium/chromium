@@ -1605,7 +1605,7 @@ TEST_F(ArcSessionManagerPublicSessionTest, AuthFailure) {
 
 class ArcSessionOobeOptInNegotiatorTest
     : public ArcSessionManagerTest,
-      public chromeos::ArcTermsOfServiceScreenView,
+      public ash::ArcTermsOfServiceScreenView,
       public testing::WithParamInterface<bool> {
  public:
   ArcSessionOobeOptInNegotiatorTest() {
@@ -1690,17 +1690,17 @@ class ArcSessionOobeOptInNegotiatorTest
 
   void CloseLoginDisplayHost() { fake_login_display_host_.reset(); }
 
-  chromeos::ArcTermsOfServiceScreenView* view() { return this; }
+  ash::ArcTermsOfServiceScreenView* view() { return this; }
 
  private:
   // ArcTermsOfServiceScreenView:
   void AddObserver(
-      chromeos::ArcTermsOfServiceScreenViewObserver* observer) override {
+      ash::ArcTermsOfServiceScreenViewObserver* observer) override {
     observer_list_.AddObserver(observer);
   }
 
   void RemoveObserver(
-      chromeos::ArcTermsOfServiceScreenViewObserver* observer) override {
+      ash::ArcTermsOfServiceScreenViewObserver* observer) override {
     observer_list_.RemoveObserver(observer);
   }
 
@@ -1713,7 +1713,7 @@ class ArcSessionOobeOptInNegotiatorTest
 
   void Hide() override {}
 
-  base::ObserverList<chromeos::ArcTermsOfServiceScreenViewObserver>::Unchecked
+  base::ObserverList<ash::ArcTermsOfServiceScreenViewObserver>::Unchecked
       observer_list_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   base::test::ScopedFeatureList feature_list_;

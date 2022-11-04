@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 void FakeAppLaunchSplashScreenHandler::ShowErrorMessage(
     KioskAppLaunchError::Error error) {
@@ -34,4 +34,4 @@ FakeAppLaunchSplashScreenHandler::GetAppLaunchState() {
   return state_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

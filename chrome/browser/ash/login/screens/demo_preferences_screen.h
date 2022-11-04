@@ -10,10 +10,10 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 
 namespace ash {
+
+class DemoPreferencesScreenView;
 
 // Controls demo mode preferences. The screen can be shown during OOBE. It
 // allows user to choose preferences for retail demo mode.

@@ -8,7 +8,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 AutoEnrollmentCheckScreenHandler::AutoEnrollmentCheckScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -23,4 +23,4 @@ void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
                IDS_AUTO_ENROLLMENT_CHECK_SCREEN_MESSAGE);
 }
 
-}  // namespace chromeos
+}  // namespace ash

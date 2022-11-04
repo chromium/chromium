@@ -269,7 +269,7 @@ void LoginScreenClientImpl::LaunchPublicSession(
 void LoginScreenClientImpl::RequestPublicSessionKeyboardLayouts(
     const AccountId& account_id,
     const std::string& locale) {
-  chromeos::GetKeyboardLayoutsForLocale(
+  ash::GetKeyboardLayoutsForLocale(
       base::BindOnce(&LoginScreenClientImpl::SetPublicSessionKeyboardLayout,
                      weak_ptr_factory_.GetWeakPtr(), account_id, locale),
       locale, ash::input_method::InputMethodManager::Get());

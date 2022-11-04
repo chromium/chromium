@@ -17,7 +17,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 EnableDebuggingScreenHandler::EnableDebuggingScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -75,4 +75,4 @@ void EnableDebuggingScreenHandler::UpdateUIState(UIState state) {
   CallExternalAPI("updateState", static_cast<int>(state));
 }
 
-}  // namespace chromeos
+}  // namespace ash

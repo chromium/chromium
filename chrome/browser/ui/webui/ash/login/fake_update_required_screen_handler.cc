@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/login/fake_update_required_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 void FakeUpdateRequiredScreenHandler::SetUIState(
     UpdateRequiredView::UIState ui_state) {
   ui_state_ = ui_state;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // WebUI implementation of AutoEnrollmentCheckScreenView.
 class AutoEnrollmentCheckScreenHandler : public AutoEnrollmentCheckScreenView,
@@ -33,12 +33,6 @@ class AutoEnrollmentCheckScreenHandler : public AutoEnrollmentCheckScreenView,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::AutoEnrollmentCheckScreenHandler;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_AUTO_ENROLLMENT_CHECK_SCREEN_HANDLER_H_

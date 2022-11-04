@@ -9,7 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 GuestTosScreenHandler::GuestTosScreenHandler() : BaseScreenHandler(kScreenId) {}
 
@@ -40,4 +40,4 @@ void GuestTosScreenHandler::Show(const std::string& google_eula_url,
   ShowInWebUI(std::move(data));
 }
 
-}  // namespace chromeos
+}  // namespace ash

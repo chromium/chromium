@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface between the device disabled screen and its representation.
 class DeviceDisabledScreenView
@@ -50,12 +50,6 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::DeviceDisabledScreenHandler;
-using ::chromeos::DeviceDisabledScreenView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_DEVICE_DISABLED_SCREEN_HANDLER_H_

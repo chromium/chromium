@@ -45,7 +45,7 @@ const int kMaxGaiaReloadForProxyAuthDialog = 3;
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -71,7 +71,7 @@ SigninScreenHandler::SigninScreenHandler(
       proxy_auth_dialog_reload_times_(kMaxGaiaReloadForProxyAuthDialog),
       gaia_screen_handler_(gaia_screen_handler),
       histogram_helper_(std::make_unique<ErrorScreensHistogramHelper>(
-          ash::ErrorScreensHistogramHelper::ErrorParentScreen::kSignin)) {
+          ErrorScreensHistogramHelper::ErrorParentScreen::kSignin)) {
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
   gaia_screen_handler_->set_signin_screen_handler(this);
@@ -97,7 +97,7 @@ void SigninScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
 void SigninScreenHandler::Show() {
-  CHECK(ash::ExistingUserController::current_controller());
+  CHECK(ExistingUserController::current_controller());
   histogram_helper_->OnScreenShow();
 }
 
@@ -124,8 +124,7 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   // TODO(antrim): We will end up here when processing network state
   // notification but no ShowSigninScreen() was called so ExistingUserController
   // will be nullptr. Network state processing logic does not belong here.
-  auto* existing_user_controller =
-      ash::ExistingUserController::current_controller();
+  auto* existing_user_controller = ExistingUserController::current_controller();
   if (existing_user_controller &&
       (existing_user_controller->IsUserSigninCompleted() ||
        existing_user_controller->IsSigninInProgress())) {
@@ -300,7 +299,7 @@ void SigninScreenHandler::Observe(int type,
             base::BindOnce(
                 &SigninScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth,
                 weak_factory_.GetWeakPtr()),
-            ash::kProxyAuthTimeout);
+            kProxyAuthTimeout);
       }
       break;
     }
@@ -341,4 +340,4 @@ SigninScreenHandler::GetNetworkStateInformerStateForMigration() {
   return network_state_informer_->state();
 }
 
-}  // namespace chromeos
+}  // namespace ash

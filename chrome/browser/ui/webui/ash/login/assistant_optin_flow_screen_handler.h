@@ -21,7 +21,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between AssistantOptInFlowScreen
 // and its WebUI representation.
@@ -46,8 +46,8 @@ class AssistantOptInFlowScreenView
 class AssistantOptInFlowScreenHandler
     : public BaseScreenHandler,
       public AssistantOptInFlowScreenView,
-      public ash::AssistantStateObserver,
-      public chromeos::assistant::SpeakerIdEnrollmentClient {
+      public AssistantStateObserver,
+      public assistant::SpeakerIdEnrollmentClient {
  public:
   struct ConsentData {
     // Consent token used to complete the opt-in.
@@ -101,7 +101,7 @@ class AssistantOptInFlowScreenHandler
   void OnDialogClosed();
 
  private:
-  // ash::AssistantStateObserver:
+  // AssistantStateObserver:
   void OnAssistantSettingsEnabled(bool enabled) override;
   void OnAssistantStatusChanged(
       chromeos::assistant::AssistantStatus status) override;
@@ -150,7 +150,7 @@ class AssistantOptInFlowScreenHandler
   bool voice_match_enrollment_error_ = false;
 
   // Assistant optin flow type.
-  ash::FlowType flow_type_ = ash::FlowType::kConsentFlow;
+  FlowType flow_type_ = FlowType::kConsentFlow;
 
   // Time that get settings request is sent.
   base::TimeTicks send_request_time_;
@@ -175,13 +175,11 @@ class AssistantOptInFlowScreenHandler
   base::WeakPtrFactory<AssistantOptInFlowScreenHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::AssistantOptInFlowScreenHandler;
-using ::chromeos::AssistantOptInFlowScreenView;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::AssistantOptInFlowScreenHandler;
 }
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ASSISTANT_OPTIN_FLOW_SCREEN_HANDLER_H_

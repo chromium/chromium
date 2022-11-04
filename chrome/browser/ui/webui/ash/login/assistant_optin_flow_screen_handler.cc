@@ -34,19 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace assistant {
-using ::ash::assistant::ConsentFlowUi_ConsentStatus_ALREADY_CONSENTED;
-using ::ash::assistant::ConsentFlowUi_ConsentStatus_ASK_FOR_CONSENT;
-using ::ash::assistant::ConsentFlowUiUpdateResult;
-using ::ash::assistant::EmailOptInUpdateResult;
-using ::ash::assistant::GetSettingsUiResponse;
-using ::ash::assistant::SettingsResponseHeader_AcceptRejectLayout_EQUAL_WEIGHT;
-using ::ash::assistant::SettingsUiSelector;
-using ::ash::assistant::SettingsUiUpdateResult;
-}  // namespace assistant
+namespace ash {
 
 namespace {
 
@@ -57,10 +45,10 @@ constexpr char kFlowFinished[] = "flow-finished";
 constexpr char kReloadRequested[] = "reload-requested";
 constexpr char kVoiceMatchDone[] = "voice-match-done";
 
-bool IsKnownEnumValue(ash::FlowType flow_type) {
-  return flow_type == ash::FlowType::kConsentFlow ||
-         flow_type == ash::FlowType::kSpeakerIdEnrollment ||
-         flow_type == ash::FlowType::kSpeakerIdRetrain;
+bool IsKnownEnumValue(FlowType flow_type) {
+  return flow_type == FlowType::kConsentFlow ||
+         flow_type == FlowType::kSpeakerIdEnrollment ||
+         flow_type == FlowType::kSpeakerIdRetrain;
 }
 
 // Returns given name of the user if a child account is in use; returns empty
@@ -81,8 +69,8 @@ AssistantOptInFlowScreenHandler::AssistantOptInFlowScreenHandler(bool is_oobe)
 AssistantOptInFlowScreenHandler::~AssistantOptInFlowScreenHandler() {
   if (assistant::AssistantSettings::Get() && voice_match_enrollment_started_)
     StopSpeakerIdEnrollment();
-  if (ash::AssistantState::Get())
-    ash::AssistantState::Get()->RemoveObserver(this);
+  if (AssistantState::Get())
+    AssistantState::Get()->RemoveObserver(this);
 }
 
 void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
@@ -205,8 +193,7 @@ void AssistantOptInFlowScreenHandler::RegisterMessages() {
 
 void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
     base::Value::Dict* dict) {
-  dict->Set("voiceMatchDisabled",
-            chromeos::assistant::features::IsVoiceMatchDisabled());
+  dict->Set("voiceMatchDisabled", assistant::features::IsVoiceMatchDisabled());
   dict->Set("assistantLocale", g_browser_process->GetApplicationLocale());
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
@@ -248,11 +235,11 @@ void AssistantOptInFlowScreenHandler::SetupAssistantConnection() {
   }
 
   // Make sure enable Assistant service since we need it during the flow.
-  prefs->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
+  prefs->SetBoolean(assistant::prefs::kAssistantEnabled, true);
 
-  if (ash::AssistantState::Get()->assistant_status() ==
-      chromeos::assistant::AssistantStatus::NOT_READY) {
-    ash::AssistantState::Get()->AddObserver(this);
+  if (AssistantState::Get()->assistant_status() ==
+      assistant::AssistantStatus::NOT_READY) {
+    AssistantState::Get()->AddObserver(this);
   } else {
     SendGetSettingsRequest();
   }
@@ -309,7 +296,7 @@ void AssistantOptInFlowScreenHandler::OnDialogClosed() {
   // No need to disable for retrain flow since user has a model.
   // No need to disable if there's error during the enrollment.
   if (!voice_match_enrollment_done_ && !voice_match_enrollment_error_ &&
-      flow_type_ == ash::FlowType::kSpeakerIdEnrollment) {
+      flow_type_ == FlowType::kSpeakerIdEnrollment) {
     ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
         assistant::prefs::kAssistantHotwordEnabled, false);
   }
@@ -322,10 +309,10 @@ void AssistantOptInFlowScreenHandler::OnAssistantSettingsEnabled(bool enabled) {
 }
 
 void AssistantOptInFlowScreenHandler::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
-  if (status != chromeos::assistant::AssistantStatus::NOT_READY) {
+    assistant::AssistantStatus status) {
+  if (status != assistant::AssistantStatus::NOT_READY) {
     SendGetSettingsRequest();
-    ash::AssistantState::Get()->RemoveObserver(this);
+    AssistantState::Get()->RemoveObserver(this);
   }
 }
 
@@ -333,8 +320,8 @@ void AssistantOptInFlowScreenHandler::SendGetSettingsRequest() {
   if (!initialized_)
     return;
 
-  if (ash::AssistantState::Get()->assistant_status() ==
-      chromeos::assistant::AssistantStatus::NOT_READY) {
+  if (AssistantState::Get()->assistant_status() ==
+      assistant::AssistantStatus::NOT_READY) {
     return;
   }
 
@@ -405,7 +392,7 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
                   "opt-in flow.";
       PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
       prefs->SetBoolean(assistant::prefs::kAssistantDisabledByPolicy, true);
-      prefs->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, false);
+      prefs->SetBoolean(assistant::prefs::kAssistantEnabled, false);
       HandleFlowFinished();
       return;
     }
@@ -489,12 +476,12 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   dictionary.Set("voiceMatchEnforcedOff",
                  IsVoiceMatchEnforcedOff(prefs, is_oobe_in_progress));
   dictionary.Set("shouldSkipVoiceMatch",
-                 !ash::AssistantState::Get()->HasAudioInputDevice());
+                 !AssistantState::Get()->HasAudioInputDevice());
   dictionary.Set("childName", GetGivenNameIfIsChild());
-  dictionary.Set("isTabletMode",
-                 ash::TabletMode::Get()->InTabletMode() ||
-                     (is_oobe_in_progress &&
-                      ash::switches::ShouldOobeUseTabletModeFirstRun()));
+  dictionary.Set(
+      "isTabletMode",
+      TabletMode::Get()->InTabletMode() ||
+          (is_oobe_in_progress && switches::ShouldOobeUseTabletModeFirstRun()));
   ReloadContent(std::move(dictionary));
 
   // Skip activity control and users will be in opted out mode.
@@ -574,7 +561,7 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
     // Disable hotword for user if voice match enrollment has not completed.
     // No need to disable for retrain flow since user has a model.
     // No need to disable if there's error during the enrollment.
-    if (flow_type_ != ash::FlowType::kSpeakerIdRetrain &&
+    if (flow_type_ != FlowType::kSpeakerIdRetrain &&
         !voice_match_enrollment_error_) {
       prefs->SetBoolean(assistant::prefs::kAssistantHotwordEnabled, false);
     }
@@ -590,8 +577,7 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
     voice_match_enrollment_started_ = true;
     CHECK(assistant::AssistantSettings::Get());
     assistant::AssistantSettings::Get()->StartSpeakerIdEnrollment(
-        flow_type_ == ash::FlowType::kSpeakerIdRetrain,
-        weak_factory_.GetWeakPtr());
+        flow_type_ == FlowType::kSpeakerIdRetrain, weak_factory_.GetWeakPtr());
   } else if (action == kReloadRequested) {
     if (voice_match_enrollment_started_)
       StopSpeakerIdEnrollment();
@@ -648,7 +634,7 @@ void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
   const bool debugger_enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kShowOobeDevOverlay);
-  if (!prefs->GetBoolean(chromeos::assistant::prefs::kAssistantEnabled) &&
+  if (!prefs->GetBoolean(assistant::prefs::kAssistantEnabled) &&
       !debugger_enabled) {
     HandleFlowFinished();
     return;
@@ -656,10 +642,10 @@ void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
 
   initialized_ = true;
 
-  DCHECK(IsKnownEnumValue(static_cast<ash::FlowType>(flow_type)));
-  flow_type_ = static_cast<ash::FlowType>(flow_type);
+  DCHECK(IsKnownEnumValue(static_cast<FlowType>(flow_type)));
+  flow_type_ = static_cast<FlowType>(flow_type);
 
-  if (flow_type_ == ash::FlowType::kConsentFlow)
+  if (flow_type_ == FlowType::kConsentFlow)
     SendGetSettingsRequest();
 }
 
@@ -668,7 +654,7 @@ bool AssistantOptInFlowScreenHandler::DeviceHasBattery() {
   if (!chromeos::PowerManagerClient::Get())
     return true;
 
-  auto status = PowerManagerClient::Get()->GetLastStatus();
+  auto status = chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!status.has_value() || !status->has_battery_state())
     return true;
 
@@ -676,4 +662,4 @@ bool AssistantOptInFlowScreenHandler::DeviceHasBattery() {
          power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT;
 }
 
-}  // namespace chromeos
+}  // namespace ash

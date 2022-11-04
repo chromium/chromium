@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between LacrosDataMigrationScreen and its
 // WebUI representation.
@@ -68,13 +68,6 @@ class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
                         bool show_goto_files) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::LacrosDataMigrationScreenHandler;
-using ::chromeos::LacrosDataMigrationScreenView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_LACROS_DATA_MIGRATION_SCREEN_HANDLER_H_

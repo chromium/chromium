@@ -14,7 +14,7 @@ namespace base {
 class DictionaryValue;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Interface between HWDataCollection screen and its representation, either
 // WebUI or Views one. Note, do not forget to call OnViewDestroyed in the
@@ -52,13 +52,6 @@ class HWDataCollectionScreenHandler : public HWDataCollectionView,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::HWDataCollectionScreenHandler;
-using ::chromeos::HWDataCollectionView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_HARDWARE_DATA_COLLECTION_SCREEN_HANDLER_H_

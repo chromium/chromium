@@ -11,7 +11,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 ErrorScreenHandler::ErrorScreenHandler() : BaseScreenHandler(kScreenId) {}
 
@@ -20,8 +20,7 @@ ErrorScreenHandler::~ErrorScreenHandler() = default;
 void ErrorScreenHandler::Show() {
   base::Value::Dict data;
   if (LoginDisplayHost::default_host()) {
-    data.Set("hasUserPods",
-             ash::LoginDisplayHost::default_host()->HasUserPods());
+    data.Set("hasUserPods", LoginDisplayHost::default_host()->HasUserPods());
   }
   ShowInWebUI(std::move(data));
 }
@@ -96,4 +95,4 @@ void ErrorScreenHandler::DeclareLocalizedValues(
   builder->Add("offlineLogin", IDS_OFFLINE_LOGIN_HTML);
 }
 
-}  // namespace chromeos
+}  // namespace ash

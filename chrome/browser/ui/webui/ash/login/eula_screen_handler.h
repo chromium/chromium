@@ -10,16 +10,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "components/login/secure_module_util_chromeos.h"
 
 namespace ash {
-class EulaScreen;
-}
 
-namespace chromeos {
+class EulaScreen;
+class HelpAppLauncher;
 
 // Interface between eula screen and its representation, either WebUI
 // or Views one. Note, do not forget to call OnViewDestroyed in the
@@ -78,13 +75,6 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   base::WeakPtrFactory<EulaScreenHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::EulaScreenHandler;
-using ::chromeos::EulaView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_EULA_SCREEN_HANDLER_H_

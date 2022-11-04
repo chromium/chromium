@@ -11,13 +11,13 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
+
+class EnableAdbSideloadingScreenView;
 
 // Representation independent class that controls screen showing enable
 // adb sideloading screen to users.

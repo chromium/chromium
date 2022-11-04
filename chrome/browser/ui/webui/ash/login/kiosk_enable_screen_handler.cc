@@ -15,7 +15,7 @@
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskEnableScreenHandler::KioskEnableScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -43,4 +43,4 @@ void KioskEnableScreenHandler::ShowKioskEnabled(bool success) {
   CallExternalAPI("onCompleted", success);
 }
 
-}  // namespace chromeos
+}  // namespace ash

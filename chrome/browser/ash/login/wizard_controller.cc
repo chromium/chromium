@@ -136,6 +136,7 @@
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
@@ -243,7 +244,7 @@ const StaticOobeScreenId kResumableOobeScreens[] = {
     chromeos::WelcomeView::kScreenId,
     chromeos::NetworkScreenView::kScreenId,
     chromeos::UpdateView::kScreenId,
-    chromeos::EulaView::kScreenId,
+    EulaView::kScreenId,
     chromeos::EnrollmentScreenView::kScreenId,
     chromeos::AutoEnrollmentCheckScreenView::kScreenId,
 };
@@ -251,27 +252,27 @@ const StaticOobeScreenId kResumableOobeScreens[] = {
 const StaticOobeScreenId kResumablePostLoginScreens[] = {
     chromeos::TermsOfServiceScreenView::kScreenId,
     chromeos::SyncConsentScreenView::kScreenId,
-    chromeos::HWDataCollectionView::kScreenId,
-    chromeos::FingerprintSetupScreenView::kScreenId,
-    chromeos::GestureNavigationScreenView::kScreenId,
-    chromeos::ArcTermsOfServiceScreenView::kScreenId,
+    HWDataCollectionView::kScreenId,
+    FingerprintSetupScreenView::kScreenId,
+    GestureNavigationScreenView::kScreenId,
+    ArcTermsOfServiceScreenView::kScreenId,
     chromeos::RecommendAppsScreenView::kScreenId,
     chromeos::PinSetupScreenView::kScreenId,
     chromeos::MarketingOptInScreenView::kScreenId,
     chromeos::MultiDeviceSetupScreenView::kScreenId,
-    chromeos::ConsolidatedConsentScreenView::kScreenId,
+    ConsolidatedConsentScreenView::kScreenId,
     chromeos::ThemeSelectionScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
-    chromeos::EnableAdbSideloadingScreenView::kScreenId,
-    chromeos::EnableDebuggingScreenView::kScreenId,
-    chromeos::KioskAutolaunchScreenView::kScreenId,
-    chromeos::KioskEnableScreenView::kScreenId,
+    EnableAdbSideloadingScreenView::kScreenId,
+    EnableDebuggingScreenView::kScreenId,
+    KioskAutolaunchScreenView::kScreenId,
+    KioskEnableScreenView::kScreenId,
     chromeos::ManagementTransitionScreenView::kScreenId,
     chromeos::TpmErrorView::kScreenId,
     chromeos::WrongHWIDScreenView::kScreenId,
-    chromeos::LocalStateErrorScreenView::kScreenId,
+    LocalStateErrorScreenView::kScreenId,
 };
 
 bool IsResumableOobeScreen(OobeScreenId screen_id) {
@@ -298,7 +299,7 @@ struct Entry {
 // Some screens had multiple different names in the past (they have since been
 // unified). We need to always use the same name for UMA stats, though.
 constexpr const Entry kLegacyUmaOobeScreenNames[] = {
-    {chromeos::ArcTermsOfServiceScreenView::kScreenId, "arc_tos"},
+    {ArcTermsOfServiceScreenView::kScreenId, "arc_tos"},
     {chromeos::EnrollmentScreenView::kScreenId, "enroll"},
     {chromeos::WelcomeView::kScreenId, "network"},
     {chromeos::TermsOfServiceScreenView::kScreenId, "tos"}};

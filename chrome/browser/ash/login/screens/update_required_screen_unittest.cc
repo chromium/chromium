@@ -32,8 +32,6 @@
 namespace ash {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrated to ash::
-using ::chromeos::FakeUpdateRequiredScreenHandler;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::Return;

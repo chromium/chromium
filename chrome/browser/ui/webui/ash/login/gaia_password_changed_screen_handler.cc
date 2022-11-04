@@ -14,7 +14,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 GaiaPasswordChangedScreenHandler::GaiaPasswordChangedScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -55,7 +55,7 @@ void GaiaPasswordChangedScreenHandler::DeclareLocalizedValues(
 void GaiaPasswordChangedScreenHandler::GetAdditionalParameters(
     base::Value::Dict* dict) {
   dict->Set("isCryptohomeRecoveryUIFlowEnabled",
-            ash::features::IsCryptohomeRecoveryFlowUIEnabled());
+            features::IsCryptohomeRecoveryFlowUIEnabled());
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
@@ -67,4 +67,4 @@ void GaiaPasswordChangedScreenHandler::Show(const std::string& email,
   ShowInWebUI(std::move(data));
 }
 
-}  // namespace chromeos
+}  // namespace ash

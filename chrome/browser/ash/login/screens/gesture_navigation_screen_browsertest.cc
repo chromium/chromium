@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 

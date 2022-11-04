@@ -39,7 +39,7 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kMostRelevantLanguagesDivider[] = "MOST_RELEVANT_LANGUAGES_DIVIDER";
 
@@ -342,8 +342,7 @@ std::string CalculateSelectedLanguage(const std::string& requested_locale,
 
 void ResolveLanguageListInThreadPool(
     const std::string& locale,
-    std::unique_ptr<chromeos::locale_util::LanguageSwitchResult>
-        language_switch_result,
+    std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
     const scoped_refptr<base::TaskRunner> task_runner,
     input_method::InputMethodManager* input_method_manager,
     UILanguageListResolvedCallback resolved_callback) {
@@ -375,8 +374,8 @@ void ResolveLanguageListInThreadPool(
 
   const std::string list_locale =
       language_switch_result ? language_switch_result->loaded_locale : locale;
-  base::Value::List language_list(chromeos::GetUILanguageList(
-      nullptr, selected_code, input_method_manager));
+  base::Value::List language_list(
+      GetUILanguageList(nullptr, selected_code, input_method_manager));
 
   task_runner->PostTask(
       FROM_HERE,
@@ -420,8 +419,7 @@ void AdjustUILanguageList(const std::string& selected,
 }  // namespace
 
 void ResolveUILanguageList(
-    std::unique_ptr<chromeos::locale_util::LanguageSwitchResult>
-        language_switch_result,
+    std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
     input_method::InputMethodManager* input_method_manager,
     UILanguageListResolvedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -573,4 +571,4 @@ void GetKeyboardLayoutsForLocale(
                      input_method_manager, std::move(callback)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

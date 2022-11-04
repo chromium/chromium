@@ -6,7 +6,7 @@
 
 #include "google_apis/gaia/gaia_urls.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -30,4 +30,4 @@ void CookieWaiter::OnCookieChange(const net::CookieChangeInfo&) {
   on_cookie_change_.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 class CookieWaiter : public network::mojom::CookieChangeListener {
  public:
@@ -35,6 +35,6 @@ class CookieWaiter : public network::mojom::CookieChangeListener {
   base::OneShotTimer waiting_timer_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_COOKIE_WAITER_H_

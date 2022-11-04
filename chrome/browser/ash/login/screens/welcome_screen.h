@@ -163,7 +163,7 @@ class WelcomeScreen : public BaseScreen,
       std::unique_ptr<locale_util::LanguageSwitchResult>
           language_switch_result);
 
-  // Callback for chromeos::ResolveUILanguageList() (from l10n_util).
+  // Callback for ResolveUILanguageList() (from l10n_util).
   void OnLanguageListResolved(base::Value::List new_language_list,
                               const std::string& new_language_list_locale,
                               const std::string& new_selected_language);
