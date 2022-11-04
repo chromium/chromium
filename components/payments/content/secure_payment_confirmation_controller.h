@@ -55,6 +55,7 @@ class SecurePaymentConfirmationController
  private:
   void SetupModelAndShowDialogIfApplicable();
 
+  // Can be null when the webpage closes or the iframe refreshes or navigates.
   base::WeakPtr<PaymentRequest> request_;
 
   SecurePaymentConfirmationModel model_;

@@ -273,8 +273,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   autofill::PersonalDataManager* GetPersonalDataManager();
   autofill::RegionDataLoader* GetRegionDataLoader();
 
-  base::WeakPtr<Delegate> delegate() { return delegate_; }
-
   PaymentsProfileComparator* profile_comparator() {
     return &profile_comparator_;
   }
@@ -373,12 +371,14 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   const std::string app_locale_;
 
+  // These WeakPtrs can be null when the webpage closes or the iframe refreshes
+  // or navigates.
   base::WeakPtr<PaymentRequestSpec> spec_;
   base::WeakPtr<Delegate> delegate_;
   base::WeakPtr<JourneyLogger> journey_logger_;
   base::WeakPtr<CSPChecker> csp_checker_;
 
-  // Not owned. Never null. Will outlive this object.
+  // Not owned. Never null. Must outlive this object.
   raw_ptr<autofill::PersonalDataManager, DanglingUntriaged>
       personal_data_manager_;
 
