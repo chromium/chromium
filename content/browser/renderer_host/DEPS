@@ -28,6 +28,9 @@ specific_include_rules = {
     "+content/app_shim_remote_cocoa",
     "+components/remote_cocoa",
   ],
+  "blocked_scheme_navigation_browsertest\.cc": [
+    "+pdf/buildflags.h",
+  ],
   "embedded_frame_sink_provider_impl_unittest\.cc": [
     "+components/viz/service",
   ],

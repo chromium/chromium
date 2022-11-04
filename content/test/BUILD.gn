@@ -1570,6 +1570,7 @@ test("content_browsertests") {
     "//net:quic_test_tools",
     "//net:simple_quic_tools",
     "//net:test_support",
+    "//pdf:buildflags",
     "//ppapi/buildflags",
     "//services/audio/public/cpp",
     "//services/cert_verifier/public/mojom",

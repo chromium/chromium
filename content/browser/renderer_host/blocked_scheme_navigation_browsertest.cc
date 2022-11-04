@@ -34,6 +34,7 @@
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -1098,7 +1099,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   const GURL kPDFUrl(CreateURLWithBlockedScheme(
       "test.pdf", IsDataURLTest() ? pdf_base64 : kPDF, "application/pdf"));
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PDF)
   TestNavigationObserver observer(shell()->web_contents());
   EXPECT_TRUE(NavigateToURL(shell(), kPDFUrl));
   EXPECT_EQ(kPDFUrl, observer.last_navigation_url());
@@ -1116,18 +1117,20 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
                        PDF_WindowOpen_Block) {
   Navigate(GetTestURL());
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PDF)
   ExecuteScriptAndCheckWindowOpen(
       shell()->web_contents()->GetPrimaryMainFrame(), GetParam(),
       "document.getElementById('window-open-pdf').click()", NAVIGATION_BLOCKED);
 #else
   if (IsDataURLTest()) {
-    // On Android, data URL PDFs are downloaded upon navigation.
+    // When PDF Viewer is not available, data URL PDFs are downloaded upon
+    // navigation.
     ExecuteScriptAndCheckDownload(
         shell()->web_contents()->GetPrimaryMainFrame(),
         "document.getElementById('window-open-pdf').click()");
   } else {
-    // On Android, filesystem PDF URLs are navigated and should be blocked.
+    // When PDF Viewer is not available, filesystem PDF URLs are navigated and
+    // should be blocked.
     ExecuteScriptAndCheckWindowOpen(
         shell()->web_contents()->GetPrimaryMainFrame(), GetParam(),
         "document.getElementById('window-open-pdf').click()",
@@ -1142,19 +1145,21 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
                        PDF_Navigation_Block) {
   Navigate(GetTestURL());
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PDF)
   ExecuteScriptAndCheckPDFNavigation(
       shell()->web_contents()->GetPrimaryMainFrame(), GetParam(),
       "document.getElementById('navigate-top-frame-to-pdf').click()",
       NAVIGATION_BLOCKED);
 #else
   if (IsDataURLTest()) {
-    // On Android, data URL PDFs are downloaded upon navigation.
+    // When PDF Viewer is not available, data URL PDFs are downloaded upon
+    // navigation.
     ExecuteScriptAndCheckDownload(
         shell()->web_contents()->GetPrimaryMainFrame(),
         "document.getElementById('navigate-top-frame-to-pdf').click()");
   } else {
-    // On Android, filesystem PDF URLs are navigated and should be blocked.
+    // When PDF Viewer is not available, filesystem PDF URLs are navigated and
+    // should be blocked.
     ExecuteScriptAndCheckPDFNavigation(
         shell()->web_contents()->GetPrimaryMainFrame(), GetParam(),
         "document.getElementById('navigate-top-frame-to-pdf').click()",
@@ -1168,19 +1173,21 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest, PDF_FormPost_Block) {
   Navigate(GetTestURL());
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PDF)
   ExecuteScriptAndCheckPDFNavigation(
       shell()->web_contents()->GetPrimaryMainFrame(), GetParam(),
       "document.getElementById('form-post-to-pdf').click()",
       NAVIGATION_BLOCKED);
 #else
   if (IsDataURLTest()) {
-    // On Android, data URL PDFs are downloaded upon navigation.
+    // When PDF Viewer is not available, data URL PDFs are downloaded upon
+    // navigation.
     ExecuteScriptAndCheckDownload(
         shell()->web_contents()->GetPrimaryMainFrame(),
         "document.getElementById('form-post-to-pdf').click()");
   } else {
-    // On Android, filesystem PDF URLs are navigated and should be blocked.
+    // When PDF Viewer is not available, filesystem PDF URLs are navigated and
+    // should be blocked.
     ExecuteScriptAndCheckPDFNavigation(
         shell()->web_contents()->GetPrimaryMainFrame(), GetParam(),
         "document.getElementById('form-post-to-pdf').click()",
@@ -1200,14 +1207,15 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
       embedded_test_server()->GetURL(
           "b.com", base::StringPrintf("/%s_url_navigations.html", GetParam())));
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PDF)
   TestPDFNavigationFromFrame(
       GetParam(),
       "document.getElementById('navigate-top-frame-to-pdf').click()",
       NAVIGATION_BLOCKED);
 #else
   if (IsDataURLTest()) {
-    // On Android, data URL PDFs are downloaded upon navigation.
+    // When PDF Viewer is not available, data URL PDFs are downloaded upon
+    // navigation.
     RenderFrameHost* child =
         ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child);
@@ -1217,7 +1225,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
     ExecuteScriptAndCheckDownload(
         child, "document.getElementById('navigate-top-frame-to-pdf').click()");
   } else {
-    // On Android, filesystem PDF URLs are navigated and should be blocked.
+    // When PDF Viewer is not available, filesystem PDF URLs are navigated and
+    // should be blocked.
     TestPDFNavigationFromFrame(
         GetParam(),
         "document.getElementById('navigate-top-frame-to-pdf').click()",
@@ -1236,13 +1245,14 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
             embedded_test_server()->GetURL(
                 base::StringPrintf("/%s_url_navigations.html", GetParam())));
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PDF)
   TestWindowOpenFromFrame(GetParam(),
                           "document.getElementById('window-open-pdf').click()",
                           NAVIGATION_BLOCKED);
 #else
   if (IsDataURLTest()) {
-    // On Android, data URL PDFs are downloaded upon navigation.
+    // When PDF Viewer is not available, data URL PDFs are downloaded upon
+    // navigation.
     RenderFrameHost* child =
         ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child);
@@ -1252,7 +1262,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
     ExecuteScriptAndCheckDownload(
         child, "document.getElementById('window-open-pdf').click()");
   } else {
-    // On Android, filesystem PDF URLs are navigated and should be blocked.
+    // When PDF Viewer is not available, filesystem PDF URLs are navigated and
+    // should be blocked.
     TestWindowOpenFromFrame(
         GetParam(), "document.getElementById('window-open-pdf').click()",
         NAVIGATION_BLOCKED);
@@ -1268,14 +1279,15 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), CreateEmptyURLWithBlockedScheme()));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(), GetTestURL());
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PDF)
   TestPDFNavigationFromFrame(
       GetParam(),
       "document.getElementById('navigate-top-frame-to-pdf').click()",
       NAVIGATION_BLOCKED);
 #else
   if (IsDataURLTest()) {
-    // On Android, data URL PDFs are downloaded upon navigation.
+    // When PDF Viewer is not available, data URL PDFs are downloaded upon
+    // navigation.
     RenderFrameHost* child =
         ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child);
@@ -1285,7 +1297,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
     ExecuteScriptAndCheckDownload(
         child, "document.getElementById('navigate-top-frame-to-pdf').click()");
   } else {
-    // On Android, filesystem PDF URLs are navigated and should be blocked.
+    // When PDF Viewer is not available, filesystem PDF URLs are navigated and
+    // should be blocked.
     TestPDFNavigationFromFrame(
         GetParam(),
         "document.getElementById('navigate-top-frame-to-pdf').click()",
@@ -1301,13 +1314,14 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), CreateEmptyURLWithBlockedScheme()));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(), GetTestURL());
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PDF)
   TestWindowOpenFromFrame(GetParam(),
                           "document.getElementById('window-open-pdf').click()",
                           NAVIGATION_BLOCKED);
 #else
   if (IsDataURLTest()) {
-    // On Android, data URL PDFs are downloaded upon navigation.
+    // When PDF Viewer is not available, data URL PDFs are downloaded upon
+    // navigation.
     RenderFrameHost* child =
         ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child);
@@ -1317,7 +1331,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
     ExecuteScriptAndCheckDownload(
         child, "document.getElementById('window-open-pdf').click()");
   } else {
-    // On Android, filesystem PDF URLs are navigated to and should be blocked.
+    // When PDF Viewer is not available, filesystem PDF URLs are navigated to
+    // and should be blocked.
     TestWindowOpenFromFrame(
         GetParam(), "document.getElementById('window-open-pdf').click()",
         NAVIGATION_BLOCKED);
