@@ -75,4 +75,9 @@ bool FileDataSource::PassedTimingAllowOriginCheck() {
   return true;
 }
 
+bool FileDataSource::WouldTaintOrigin() {
+  // There are no HTTP responses, so this can safely return false.
+  return false;
+}
+
 }  // namespace media

@@ -73,6 +73,10 @@ class MEDIA_EXPORT DataSource {
   // check.
   virtual bool PassedTimingAllowOriginCheck() = 0;
 
+  // DataSource implementations that might make requests must ensure the value
+  // is accurate for cross origin resources.
+  virtual bool WouldTaintOrigin() = 0;
+
   // Assume fully buffered by default.
   virtual bool AssumeFullyBuffered() const;
 

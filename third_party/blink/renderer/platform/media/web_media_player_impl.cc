@@ -855,7 +855,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   // See https://crbug.com/936566.
   //
   // The credentials mode also has repercussions in WouldTaintOrigin(), but we
-  // access what we need from `mb_data_source_`->cors_mode() directly, instead
+  // access what we need from `data_source_`->cors_mode() directly, instead
   // of storing it here.
   allow_media_player_renderer_credentials_ = cors_mode != kCorsModeAnonymous;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1529,18 +1529,10 @@ bool WebMediaPlayerImpl::WouldTaintOrigin() const {
     return true;
   }
 
-  if (!mb_data_source_)
-    return false;
-
-  // When the resource is redirected to another origin we think it as
-  // tainted. This is actually not specified, and is under discussion.
-  // See https://github.com/whatwg/fetch/issues/737.
-  if (!mb_data_source_->HasSingleOrigin() &&
-      mb_data_source_->cors_mode() == UrlData::CORS_UNSPECIFIED) {
-    return true;
-  }
-
-  return mb_data_source_->IsCorsCrossOrigin();
+  // TODO(crbug/1377053): The default |false| value might have to be
+  // re-considered for MediaPlayerRenderer, but for now, leave behavior the
+  // same as it was.
+  return data_source_ ? data_source_->WouldTaintOrigin() : false;
 }
 
 double WebMediaPlayerImpl::MediaTimeForTimeValue(double timeValue) const {
@@ -4143,6 +4135,9 @@ bool WebMediaPlayerImpl::PassedTimingAllowOriginCheck() const {
   // revealed via the MediaSource or WebMediaPlayer that's using MSE.
   // TODO(1266991): Ensure that this returns the correct value for HLS media,
   // based on the TAO checks performed on those resources.
+  // TODO(crbug/1377053): The default |true| value might have to be
+  // re-considered for MediaPlayerRenderer, but for now, leave behavior the
+  // same as it was.
   return data_source_ ? data_source_->PassedTimingAllowOriginCheck() : true;
 }
 

@@ -83,6 +83,8 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
 
   bool PassedTimingAllowOriginCheck() override;
 
+  bool WouldTaintOrigin() override;
+
   // Returns the CorsMode of the underlying UrlData.
   UrlData::CorsMode cors_mode() const;
 
