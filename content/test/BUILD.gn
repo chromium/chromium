@@ -9,8 +9,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
-import("//build/rust/mixed_static_library.gni")
-import("//build/rust/rust_macro.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -29,40 +27,6 @@ import("//v8/gni/v8.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
-}
-
-if (enable_rust) {
-  rust_static_library("content_private_test_support") {
-    testonly = true
-
-    crate_name = "content_private_test_support"
-    crate_root = "content_private_test_support.rs"
-    sources = [ crate_root ]
-
-    public_deps = [ ":browser_test_macro" ]
-
-    deps = [
-      ":test_support",
-      "//testing/rust_gtest_interop",
-    ]
-
-    visibility = [ "//content/*" ]
-  }
-
-  rust_macro("browser_test_macro") {
-    testonly = true
-
-    crate_name = "browser_test_macro"
-    crate_root = "browser_test_macro.rs"
-    sources = [ crate_root ]
-    deps = [
-      "//third_party/rust/proc_macro2/v1:lib",
-      "//third_party/rust/quote/v1:lib",
-    ]
-
-    # This target is part of `content_private_test_support`.
-    visibility = [ ":*" ]
-  }
 }
 
 # Use a static library here because many test binaries depend on this but don't
@@ -602,10 +566,6 @@ static_library("test_support") {
     "//v8",
   ]
 
-  if (enable_rust) {
-    deps += [ "//testing/rust_gtest_interop" ]
-  }
-
   data_deps = [
     "//content/shell:pak",
     "//tools/v8_context_snapshot:v8_context_snapshot",
@@ -933,25 +893,6 @@ group("telemetry_gpu_integration_test_data") {
     "//content/test/gpu/run_gpu_integration_test.py",
   ]
   data_deps = [ ":telemetry_gpu_common_data" ]
-}
-
-if (enable_rust) {
-  rust_static_library("rust_public_browsertest_support") {
-    testonly = true
-
-    crate_name = "content_public_browsertest_support"
-    crate_root = "../public/test/content_public_browsertest_support.rs"
-    sources = [ crate_root ]
-
-    sources += [ "../public/test/content_browser_test.rs" ]
-    cxx_bindings = [ "../public/test/content_browser_test.rs" ]
-
-    deps = [
-      ":browsertest_support",
-      ":content_private_test_support",
-      "//testing/rust_gtest_interop",
-    ]
-  }
 }
 
 # browsertest_support can be used by targets that run content_shell based
@@ -1543,8 +1484,6 @@ test("content_browsertests") {
     "../test/url_loader_interceptor_test.cc",
   ]
 
-  rs_sources = [ "../browser/smoke_rust_browsertest.rs" ]
-
   if (enable_reporting) {
     sources += [
       "../browser/network/cross_origin_opener_policy_reporting_browsertest.cc",
@@ -1560,8 +1499,6 @@ test("content_browsertests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   configs += [ "//build/config:precompiled_headers" ]
-
-  rs_deps = [ ":rust_public_browsertest_support" ]
 
   public_deps = [
     ":test_interfaces",
