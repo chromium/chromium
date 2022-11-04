@@ -42,11 +42,6 @@ std::vector<ui::KeyboardCode> DecodeModifiers(int modifiers) {
   return modifier_vector;
 }
 
-void ToUpper(std::u16string& str) {
-  for (auto& ch : str)
-    ch = toupper(ch);
-}
-
 std::unique_ptr<views::View> CreateKeyItemView(ui::KeyboardCode key_code) {
   std::unique_ptr key_item_view = std::make_unique<KeyItemView>();
   const gfx::VectorIcon* vector_icon = GetVectorIconForKeyboardCode(key_code);
@@ -55,7 +50,6 @@ std::unique_ptr<views::View> CreateKeyItemView(ui::KeyboardCode key_code) {
   } else {
     std::u16string key_item_string =
         GetStringForKeyboardCode(key_code, /*remap_positional_key=*/false);
-    ToUpper(key_item_string);
     key_item_view->SetText(key_item_string);
   }
   return key_item_view;
