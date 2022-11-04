@@ -23,13 +23,16 @@ import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.WebApkDetailsForDefaultOfflinePage;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides access to more detail about webapks.
@@ -117,6 +120,21 @@ public class WebApkDataProvider {
         return result;
     }
 
+    private static boolean isWithinScope(String url, CustomTabActivity customTabActivity) {
+        BrowserServicesIntentDataProvider dataProvider = customTabActivity.getIntentDataProvider();
+        Set<Origin> origins = new HashSet<>();
+        origins.add(Origin.create(dataProvider.getUrlToLoad()));
+
+        List<String> additionalOrigins = dataProvider.getTrustedWebActivityAdditionalOrigins();
+        if (additionalOrigins != null) {
+            for (String origin : additionalOrigins) {
+                origins.add(Origin.create(origin));
+            }
+        }
+
+        return origins.contains(Origin.create(url));
+    }
+
     @CalledByNative
     public static String[] getOfflinePageInfo(int[] fields, String url, WebContents webContents) {
         Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
@@ -124,7 +142,7 @@ public class WebApkDataProvider {
         OfflineData offlineData = null;
         if (activity instanceof CustomTabActivity) {
             CustomTabActivity customTabActivity = (CustomTabActivity) activity;
-            if (customTabActivity.isInTwaMode()) {
+            if (isWithinScope(url, customTabActivity)) {
                 offlineData = getOfflinePageInfoForTwa(customTabActivity);
             }
         } else {
