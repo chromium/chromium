@@ -465,6 +465,11 @@ capabilities outside of the guidance provided here. In cases of clear violation
 of user expectations, we will attempt to remedy these policies and we will apply
 the guidance laid out in this document to any newly added policies.
 
+See the [Web Platform Security
+guidelines](https://chromium.googlesource.com/chromium/src/+/master/docs/security/web-platfom-security-guidelines.md#enterprise-policies)
+for more information on how enterprise policies should interact with Web
+Platform APIs.
+
 <a name="TOC-Can-I-use-EMET-to-help-protect-Chrome-against-attack-on-Microsoft-Windows-"></a>
 ### Can I use EMET to help protect Chrome against attack on Microsoft Windows?
 
@@ -639,6 +644,10 @@ provide some kind of security guarantee (e.g. encrypted instant messages or
 email). However, unless the JavaScript was itself transported to the client
 securely, it cannot actually provide any guarantee. (After all, a MITM attacker
 could have modified the code, if it was not transported securely.)
+
+See the [Web Platform Security
+guidelines](https://chromium.googlesource.com/chromium/src/+/master/docs/security/web-platform-security-guidelines.md#encryption)
+for more information on security guidelines applicable to web platform APIs.
 
 <a name="TOC-Which-origins-are-secure-"></a>
 ### Which origins are "secure"?
