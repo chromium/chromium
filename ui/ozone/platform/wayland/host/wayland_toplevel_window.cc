@@ -38,10 +38,19 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #endif
 
+namespace wl {
+
+bool g_disallow_setting_decoration_insets_for_testing = false;
+
+void AllowClientSideDecorationsForTesting(bool allow) {
+  g_disallow_setting_decoration_insets_for_testing = !allow;
+}
+
+}  // namespace wl
+
 namespace ui {
 
 namespace {
-bool decorations_allowed_for_test_ = true;
 
 bool ShouldSetBounds(PlatformWindowState state) {
   return state == PlatformWindowState::kNormal ||
@@ -49,7 +58,8 @@ bool ShouldSetBounds(PlatformWindowState state) {
          state == PlatformWindowState::kSnappedSecondary ||
          state == PlatformWindowState::kFloated;
 }
-}
+
+}  // namespace
 
 constexpr int kVisibleOnAllWorkspaces = -1;
 
@@ -316,9 +326,7 @@ bool WaylandToplevelWindow::ShouldUseNativeFrame() const {
   // This depends on availability of xdg-decoration protocol extension.
   // Returns false if there is no xdg-decoration protocol extension provided
   // even if use_native_frame_ is true.
-  return use_native_frame_ && const_cast<WaylandToplevelWindow*>(this)
-                                  ->connection()
-                                  ->xdg_decoration_manager_v1();
+  return use_native_frame_ && connection()->xdg_decoration_manager_v1();
 }
 
 bool WaylandToplevelWindow::ShouldUpdateWindowShape() const {
@@ -326,10 +334,8 @@ bool WaylandToplevelWindow::ShouldUpdateWindowShape() const {
 }
 
 bool WaylandToplevelWindow::CanSetDecorationInsets() const {
-  return decorations_allowed_for_test_ &&
-         const_cast<WaylandToplevelWindow*>(this)
-             ->connection()
-             ->SupportsSetWindowGeometry();
+  return connection()->SupportsSetWindowGeometry() &&
+         !wl::g_disallow_setting_decoration_insets_for_testing;
 }
 
 void WaylandToplevelWindow::SetOpaqueRegion(
@@ -365,11 +371,6 @@ void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
 
 bool WaylandToplevelWindow::IsScreenCoordinatesEnabled() const {
   return screen_coordinates_enabled_;
-}
-
-// static
-void WaylandToplevelWindow::AllowSettingDecorationInsetsForTest(bool allow) {
-  decorations_allowed_for_test_ = allow;
 }
 
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {

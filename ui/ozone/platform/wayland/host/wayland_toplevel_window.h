@@ -19,6 +19,18 @@
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 
+namespace wl {
+
+// Client-side decorations on Wayland take some portion of the window surface,
+// and when they are turned on or off, the window geometry is changed.  That
+// happens only once at the moment of switching the decoration mode, and has
+// no further impact on the user experience, but the initial geometry of a
+// top-level window is different on Wayland if compared to other platforms,
+// which affects certain tests.
+void AllowClientSideDecorationsForTesting(bool allow);
+
+}  // namespace wl
+
 namespace ui {
 
 class GtkSurface1;
@@ -86,14 +98,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // WaylandWindow overrides:
   bool IsScreenCoordinatesEnabled() const override;
-
-  // Client-side decorations on Wayland take some portion of the window surface,
-  // and when they are turned on or off, the window geometry is changed.  That
-  // happens only once at the moment of switching the decoration mode, and has
-  // no further impact on the user experience, but the initial geometry of a
-  // top-level window is different on Wayland if compared to other platforms,
-  // which affects certain tests.
-  static void AllowSettingDecorationInsetsForTest(bool allow);
 
  private:
   // WaylandWindow overrides:

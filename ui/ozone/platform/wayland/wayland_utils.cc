@@ -18,11 +18,11 @@ class WaylandScopedDisableClientSideDecorationsForTest
     : public PlatformUtils::ScopedDisableClientSideDecorationsForTest {
  public:
   WaylandScopedDisableClientSideDecorationsForTest() {
-    WaylandToplevelWindow::AllowSettingDecorationInsetsForTest(false);
+    wl::AllowClientSideDecorationsForTesting(false);
   }
 
   ~WaylandScopedDisableClientSideDecorationsForTest() override {
-    WaylandToplevelWindow::AllowSettingDecorationInsetsForTest(true);
+    wl::AllowClientSideDecorationsForTesting(true);
   }
 };
 
