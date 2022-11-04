@@ -1217,6 +1217,10 @@ TEST_P(QuotaDatabaseTest, Expiration) {
   ASSERT_TRUE(result.ok());
   EXPECT_TRUE(result->expiration.is_null());
 
+  QuotaErrorOr<std::set<BucketInfo>> expired_buckets = db.GetExpiredBuckets();
+  ASSERT_TRUE(expired_buckets.ok());
+  EXPECT_EQ(0U, expired_buckets->size());
+
   // Non-default `expiration` value.
   BucketInitParams params2(
       StorageKey::CreateFromStringForTesting("http://example/"),
@@ -1227,10 +1231,24 @@ TEST_P(QuotaDatabaseTest, Expiration) {
   EXPECT_EQ(params2.expiration, result->expiration);
 
   // Update `expiration` value.
-  const base::Time updated_time = base::Time::Now() + base::Days(1);
+  base::Time updated_time = base::Time::Now() + base::Days(1);
   result = db.UpdateBucketExpiration(result->id, updated_time);
   ASSERT_TRUE(result.ok());
   EXPECT_EQ(updated_time, result->expiration);
+
+  expired_buckets = db.GetExpiredBuckets();
+  ASSERT_TRUE(expired_buckets.ok());
+  EXPECT_EQ(0U, expired_buckets->size());
+
+  // Set expiration to the past.
+  updated_time = base::Time::Now() - base::Days(1);
+  result = db.UpdateBucketExpiration(result->id, updated_time);
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(updated_time, result->expiration);
+
+  expired_buckets = db.GetExpiredBuckets();
+  ASSERT_TRUE(expired_buckets.ok());
+  EXPECT_EQ(1U, expired_buckets->size());
 }
 
 TEST_P(QuotaDatabaseTest, Persistent) {

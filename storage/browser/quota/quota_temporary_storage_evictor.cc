@@ -144,7 +144,19 @@ void QuotaTemporaryStorageEvictor::StartEvictionTimerWithDelay(
 
 void QuotaTemporaryStorageEvictor::ConsiderEviction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Only look for expired buckets once per round.
+  if (round_statistics_.in_round) {
+    OnEvictedExpiredBuckets(blink::mojom::QuotaStatusCode::kOk);
+    return;
+  }
   OnEvictionRoundStarted();
+  quota_eviction_handler_->EvictExpiredBuckets(
+      base::BindOnce(&QuotaTemporaryStorageEvictor::OnEvictedExpiredBuckets,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void QuotaTemporaryStorageEvictor::OnEvictedExpiredBuckets(
+    blink::mojom::QuotaStatusCode status_code) {
   quota_eviction_handler_->GetEvictionRoundInfo(
       base::BindOnce(&QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo,
                      weak_factory_.GetWeakPtr()));

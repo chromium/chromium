@@ -202,6 +202,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       base::Time begin,
       base::Time end);
 
+  // Returns a set of all expired buckets.
+  QuotaErrorOr<std::set<BucketInfo>> GetExpiredBuckets();
+
   base::FilePath GetStoragePath() const { return storage_directory_->path(); }
 
   // Returns false if SetIsBootstrapped() has never been called before, which

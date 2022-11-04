@@ -838,6 +838,41 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
   QuotaDatabase::SetClockForTesting(nullptr);
 }
 
+// Make sure `EvictExpiredBuckets` deletes expired buckets.
+TEST_F(QuotaManagerImplTest, EvictExpiredBuckets) {
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  QuotaDatabase::SetClockForTesting(clock.get());
+  clock->SetNow(base::Time::Now());
+
+  BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
+  params.expiration = clock->Now() + base::Days(1);
+  auto bucket = UpdateOrCreateBucket(params);
+  ASSERT_TRUE(bucket.ok());
+
+  BucketInitParams params_b(ToStorageKey("http://b.com/"), "bucket_b");
+  params_b.expiration = clock->Now() + base::Days(10);
+  auto bucket_b = UpdateOrCreateBucket(params_b);
+  ASSERT_TRUE(bucket_b.ok());
+
+  // No specified expiration.
+  BucketInitParams params_c(ToStorageKey("http://c.com/"), "bucket_c");
+  auto bucket_c = UpdateOrCreateBucket(params_c);
+  ASSERT_TRUE(bucket_c.ok());
+
+  clock->Advance(base::Days(5));
+
+  // Evict expired buckets.
+  base::test::TestFuture<QuotaStatusCode> future;
+  quota_manager_impl_->EvictExpiredBuckets(future.GetCallback());
+  EXPECT_EQ(QuotaStatusCode::kOk, future.Get());
+
+  EXPECT_FALSE(GetBucketById(bucket->id).ok());
+  EXPECT_TRUE(GetBucketById(bucket_b->id).ok());
+  EXPECT_TRUE(GetBucketById(bucket_c->id).ok());
+
+  QuotaDatabase::SetClockForTesting(nullptr);
+}
+
 TEST_F(QuotaManagerImplTest, GetOrCreateBucketSync) {
   base::RunLoop loop;
   // Post the function call on a different thread to ensure that the

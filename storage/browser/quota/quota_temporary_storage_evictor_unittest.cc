@@ -31,10 +31,10 @@ namespace {
 
 class MockQuotaEvictionHandler : public QuotaEvictionHandler {
  public:
-  explicit MockQuotaEvictionHandler(QuotaTemporaryStorageEvictorTest* test)
-      : available_space_(0),
-        error_on_evict_buckets_data_(false),
-        error_on_get_usage_and_quota_(false) {}
+  void EvictExpiredBuckets(StatusCallback done) override {
+    ++evict_expired_buckets_count_;
+    std::move(done).Run(blink::mojom::QuotaStatusCode::kOk);
+  }
 
   void EvictBucketData(const BucketLocator& bucket,
                        StatusCallback callback) override {
@@ -98,6 +98,9 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
   void set_error_on_get_usage_and_quota(bool error_on_get_usage_and_quota) {
     error_on_get_usage_and_quota_ = error_on_get_usage_and_quota;
   }
+  size_t get_evict_expired_buckets_count() const {
+    return evict_expired_buckets_count_;
+  }
 
   // Simulates an access to `bucket`. It reorders the internal LRU list.
   // It internally uses AddBucket().
@@ -130,11 +133,13 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
   }
 
   QuotaSettings settings_;
-  int64_t available_space_;
+  int64_t available_space_ = 0;
   std::list<BucketLocator> bucket_order_;
   std::map<BucketId, int64_t> buckets_;
-  bool error_on_evict_buckets_data_;
-  bool error_on_get_usage_and_quota_;
+  bool error_on_evict_buckets_data_ = false;
+  bool error_on_get_usage_and_quota_ = false;
+  // The number of times `EvictExpiredBuckets()` has been called.
+  size_t evict_expired_buckets_count_ = 0;
 
   base::RepeatingClosure task_for_get_usage_and_quota_;
 };
@@ -152,7 +157,7 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
       const QuotaTemporaryStorageEvictorTest&) = delete;
 
   void SetUp() override {
-    quota_eviction_handler_ = std::make_unique<MockQuotaEvictionHandler>(this);
+    quota_eviction_handler_ = std::make_unique<MockQuotaEvictionHandler>();
 
     // Run multiple evictions in a single RunUntilIdle() when interval_ms == 0
     temporary_storage_evictor_ = std::make_unique<QuotaTemporaryStorageEvictor>(
@@ -228,6 +233,8 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
 };
 
 TEST_F(QuotaTemporaryStorageEvictorTest, SimpleEvictionTest) {
+  EXPECT_EQ(0U, quota_eviction_handler()->get_evict_expired_buckets_count());
+
   quota_eviction_handler()->AddBucket(
       CreateBucket("http://www.z.com", /*is_default=*/false), 3000);
   quota_eviction_handler()->AddBucket(
@@ -246,6 +253,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, SimpleEvictionTest) {
   EXPECT_EQ(1, statistics().num_evicted_buckets);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
   EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
+  EXPECT_EQ(1U, quota_eviction_handler()->get_evict_expired_buckets_count());
 }
 
 TEST_F(QuotaTemporaryStorageEvictorTest, MultipleEvictionTest) {
@@ -269,6 +277,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, MultipleEvictionTest) {
   EXPECT_EQ(2, statistics().num_evicted_buckets);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
   EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
+  EXPECT_EQ(1U, quota_eviction_handler()->get_evict_expired_buckets_count());
 }
 
 TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest) {
@@ -308,6 +317,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest) {
   EXPECT_EQ(3, statistics().num_evicted_buckets);
   EXPECT_EQ(2, statistics().num_eviction_rounds);
   EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
+  EXPECT_EQ(2U, quota_eviction_handler()->get_evict_expired_buckets_count());
 }
 
 TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest) {

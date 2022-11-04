@@ -74,6 +74,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
 
   void StartEvictionTimerWithDelay(int64_t delay_ms);
   void ConsiderEviction();
+  void OnEvictedExpiredBuckets(blink::mojom::QuotaStatusCode status);
   void OnGotEvictionRoundInfo(blink::mojom::QuotaStatusCode status,
                               const QuotaSettings& settings,
                               int64_t available_space,

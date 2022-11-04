@@ -71,6 +71,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaEvictionHandler {
                               int64_t global_usage,
                               bool global_usage_is_complete)>;
 
+  // Deletes all buckets that have explicit expiration dates which have passed.
+  virtual void EvictExpiredBuckets(StatusCallback done) = 0;
+
   // Called at the beginning of an eviction round to gather the info about
   // the current settings, capacity, and usage.
   virtual void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) = 0;
@@ -392,6 +395,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       storage::mojom::StorageType storage_type,
       GetGlobalUsageForInternalsCallback callback) override;
 
+  // QuotaEvictionHandler.
+  void EvictExpiredBuckets(StatusCallback done) override;
+  void GetEvictionBucket(blink::mojom::StorageType type,
+                         GetBucketCallback callback) override;
+  void EvictBucketData(const BucketLocator& bucket,
+                       StatusCallback callback) override;
+  void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) override;
+
   // Called by UI and internal modules.
   void GetPersistentHostQuota(const std::string& host, QuotaCallback callback);
   void SetPersistentHostQuota(const std::string& host,
@@ -515,7 +526,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   class GetUsageInfoTask;
   class StorageKeyGathererTask;
   class BucketDataDeleter;
-  class HostDataDeleter;
+  class BucketSetDataDeleter;
   class DumpBucketTableHelper;
   class StorageCleanupHelper;
 
@@ -604,14 +615,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                 QuotaClientTypes quota_client_types,
                                 StatusCallback callback);
 
-  // Removes the HostDataDeleter that completed its work.
+  // Removes the BucketSetDataDeleter that completed its work.
   //
-  // This method is static because it must call `delete_host_data_callback` even
-  // if the QuotaManagerImpl was destroyed.
-  static void DidDeleteHostData(base::WeakPtr<QuotaManagerImpl> quota_manager,
-                                StatusCallback delete_host_data_callback,
-                                HostDataDeleter* deleter,
-                                blink::mojom::QuotaStatusCode status_code);
+  // This method is static because it must call `callback` even if the
+  // QuotaManagerImpl was destroyed.
+  static void DidDeleteBuckets(base::WeakPtr<QuotaManagerImpl> quota_manager,
+                               StatusCallback callback,
+                               BucketSetDataDeleter* deleter,
+                               blink::mojom::QuotaStatusCode status_code);
 
   // Removes the BucketDataDeleter that completed its work.
   //
@@ -653,13 +664,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   std::set<BucketId> GetEvictionBucketExceptions();
   void DidGetEvictionBucket(GetBucketCallback callback,
                             const absl::optional<BucketLocator>& bucket);
-
-  // QuotaEvictionHandler.
-  void GetEvictionBucket(blink::mojom::StorageType type,
-                         GetBucketCallback callback) override;
-  void EvictBucketData(const BucketLocator& bucket,
-                       StatusCallback callback) override;
-  void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) override;
 
   void DidGetBucketInfoForEviction(
       const BucketLocator& bucket,
@@ -849,8 +853,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   GetVolumeInfoFn get_volume_info_fn_;
 
   std::unique_ptr<EvictionRoundInfoHelper> eviction_helper_;
-  std::map<HostDataDeleter*, std::unique_ptr<HostDataDeleter>>
-      host_data_deleters_;
+  std::map<BucketSetDataDeleter*, std::unique_ptr<BucketSetDataDeleter>>
+      bucket_set_data_deleters_;
   std::map<BucketDataDeleter*, std::unique_ptr<BucketDataDeleter>>
       bucket_data_deleters_;
   std::unique_ptr<StorageKeyGathererTask> storage_key_gatherer_;
