@@ -179,34 +179,34 @@ void RecordEnumerateDevicesLatency(base::TimeTicks start_time) {
 
 MediaStreamConstraints* ToMediaStreamConstraints(
     const UserMediaStreamConstraints* source) {
-  MediaStreamConstraints* options = MediaStreamConstraints::Create();
+  MediaStreamConstraints* const constraints = MediaStreamConstraints::Create();
   if (source->hasAudio())
-    options->setAudio(source->audio());
+    constraints->setAudio(source->audio());
   if (source->hasVideo())
-    options->setVideo(source->video());
-  return options;
+    constraints->setVideo(source->video());
+  return constraints;
 }
 
 MediaStreamConstraints* ToMediaStreamConstraints(
     const DisplayMediaStreamOptions* source) {
-  MediaStreamConstraints* options = MediaStreamConstraints::Create();
+  MediaStreamConstraints* const constraints = MediaStreamConstraints::Create();
   if (source->hasAudio())
-    options->setAudio(source->audio());
+    constraints->setAudio(source->audio());
   if (source->hasVideo())
-    options->setVideo(source->video());
+    constraints->setVideo(source->video());
   if (source->hasPreferCurrentTab())
-    options->setPreferCurrentTab(source->preferCurrentTab());
+    constraints->setPreferCurrentTab(source->preferCurrentTab());
   if (source->hasAutoSelectAllScreens())
-    options->setAutoSelectAllScreens(source->autoSelectAllScreens());
+    constraints->setAutoSelectAllScreens(source->autoSelectAllScreens());
   if (source->hasController())
-    options->setController(source->controller());
+    constraints->setController(source->controller());
   if (source->hasSelfBrowserSurface())
-    options->setSelfBrowserSurface(source->selfBrowserSurface());
+    constraints->setSelfBrowserSurface(source->selfBrowserSurface());
   if (source->hasSystemAudio())
-    options->setSystemAudio(source->systemAudio());
+    constraints->setSystemAudio(source->systemAudio());
   if (source->hasSurfaceSwitching())
-    options->setSurfaceSwitching(source->surfaceSwitching());
-  return options;
+    constraints->setSurfaceSwitching(source->surfaceSwitching());
+  return constraints;
 }
 
 }  // namespace
