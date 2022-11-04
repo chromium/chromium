@@ -126,6 +126,7 @@
 -InlineLoginHelperBrowserTest.UntrustedSigninDialogCancel
 -InspectUIFencedFrameTest.FencedFrameInFrontEnd
 -InspectUITest.LaunchUIDevtools
+-InteractiveBrowserTestBrowsertest.CheckResult
 -LiveCaptionControllerTest.OnAudioStreamEnd
 -ManagementUITest.ManagementStateChange
 -MediaEngagementBrowserTest.SessionMultipleTabsClosingParent
@@ -147,6 +148,7 @@
 -PersistentBackground/ExtensionWebRequestApiTestWithContextType.WebRequestWithWithheldPermissions/0
 -PredictionManagerModelDownloadingBrowserTest.GuestProfileReceivesModel
 -PredictionManagerModelDownloadingBrowserTest.TestSwitchProfileDoesntCrash
+-PrefsFunctionalTest.TestHomepageNewTabpagePrefs
 -PreinstalledAppsBrowserTest.TestUninstall
 -PreinstalledAppsMigrationBrowserTest.TestRollbackCompatibility
 -PreinstalledAppsMigrationBrowserTest.TestExtensionWasAlreadyUninstalled
@@ -225,6 +227,7 @@
 -SSLUITest.BadCertFollowedByGoodCert
 -StartupBrowserWithWebAppTest.LastUsedProfilesWithWebApp
 -SupportToolTest.All
+-TabModalConfirmDialogTest.Accept
 -TabRestoreTest.RestoreTabFromClosedWindowByID
 -TabStatsTrackerBrowserTest.TabSwitch
 -ToolbarAccountIconContainerViewBrowserTest.ShouldUpdateHighlightInGuestWindow
