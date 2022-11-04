@@ -152,14 +152,39 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
 
   CSSPropertyID resolved_property = ResolveCSSPropertyID(unresolved_property);
   CSSParserMode parser_mode = declaration->CssParserMode();
-  CSSValue* value = CSSParserFastPaths::MaybeParseValue(resolved_property,
-                                                        string, parser_mode);
+
+  // See if this property has a specific fast-path parser.
+  const CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+      resolved_property, string, parser_mode);
   if (value) {
     return declaration->SetProperty(CSSPropertyValue(
         CSSPropertyName(resolved_property), *value, important));
   }
+
+  // OK, that didn't work (either the property doesn't have a fast path,
+  // or the string is on some form that the fast-path parser doesn't support,
+  // e.g. a parse error). See if the value we are looking for is a longhand;
+  // if so, we can use a faster parsing function. In particular, we don't need
+  // to set up a vector for the results, since there will be only one.
+  //
+  // We only allow this path in standards mode, which rules out situations
+  // like @font-face parsing etc. (which have their own rules).
   const CSSParserContext* context = GetParserContext(
       secure_context_mode, style_sheet, execution_context, parser_mode);
+  const CSSProperty& property = CSSProperty::Get(resolved_property);
+  if (parser_mode == kHTMLStandardMode && property.IsProperty() &&
+      !property.IsShorthand()) {
+    CSSTokenizer tokenizer(string);
+    const auto tokens = tokenizer.TokenizeToEOF();
+    value =
+        CSSPropertyParser::ParseSingleValue(resolved_property, tokens, context);
+    if (value != nullptr) {
+      return declaration->SetProperty(CSSPropertyValue(
+          CSSPropertyName(resolved_property), *value, important));
+    }
+  }
+
+  // OK, that didn't work either, so we'll need the full-blown parser.
   return ParseValue(declaration, unresolved_property, string, important,
                     context);
 }
