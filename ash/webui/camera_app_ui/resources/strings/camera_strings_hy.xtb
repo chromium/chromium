@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Չհաջողվեց արտահանել <ph name="FILE" /> ֆայլը</translation>
 <translation id="1899697626337024495">Լուսանկարի լուծաչափը</translation>
 <translation id="1925845977604399247">Անցնել ցուցասրահ</translation>
+<translation id="199526504800285197">Տեսագրումը կանգնել է</translation>
+<translation id="1995951722691075581">Տեսագրումը կանգնեց, քանի որ սարքում բավարար տարածք չկա։ Նոր տեսագրությունների համար անհրաժեշտ է սարքում տարածք ազատել։</translation>
 <translation id="2022953316617983419">QR կոդ</translation>
 <translation id="2036868001356139588">Ժամաչափի տևողությունը</translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Լուսանկարեք և տեսագրեք ձեր տեսախցիկով:</translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2549985041256363841">Սկսել տեսագրումը</translation>
+<translation id="2577915835281444458">Տեսագրումը շուտով կկանգնի։ Տարածք ազատելու համար բացեք սարքի հիշողությունը։</translation>
 <translation id="2599796128805996109">Հետևի տեսախցիկ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> վ</translation>
 <translation id="2761536921376153655">Սկանավորման տեսակը</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Տեսանյութ</translation>
 <translation id="3838931309141338733">Սկանավորել գծակոդը</translation>
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
+<translation id="4060608699153044055">Դուք չեք կարող տեսագրել, քանի որ սարքում բավարար տարածք չկա։ Տեսագրումը սկսելու համար անհրաժեշտ է սարքում տարածք ազատել։</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ՄՊ</translation>
 <translation id="4118525110028899586">Դադարեցնել տեսագրումը</translation>
 <translation id="4121305183798804752">Փաստաթուղթը ջնջված է</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">Փաստաթղթի վերևի աջ անկյուն</translation>
 <translation id="7933675232020478311">Տեղափոխվում է ներքև ու աջ</translation>
 <translation id="7983668134180549431">Հայտնաբերվել է տեքստ։</translation>
+<translation id="8079255378695216066">Հնարավոր չէ սկսել տեսագրումը</translation>
 <translation id="8120146556401698679">Տեղաշարժում/թեքում/մասշտաբավորում</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8145038249676204903">Լուսանկարել</translation>

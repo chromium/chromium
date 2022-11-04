@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">คุณไม่ได้ใช้แท็บ <ph name="NUMBER_OF_TABS" /> แท็บมาระยะหนึ่งแล้ว ปิดแท็บเหล่านั้นไหม</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
-<translation id="1302104331113804646">การตั้งค่าการติดตามราคา</translation>
-<translation id="1378979118429748177">รับการแจ้งเตือนเมื่อมีการลดราคา</translation>
 <translation id="1403228085774130835">คุณค้นหาแท็บที่ปิดไปได้ในแท็บล่าสุดในส่วนเมนูหลักของ Chrome</translation>
 <translation id="1455506303394048917">ระบบจะลบกิจกรรมในแท็บที่ไม่ระบุตัวตนเหล่านี้ออกจากอุปกรณ์นี้</translation>
 <translation id="1499635324672558517">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดใช่ไหม</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">ไม่ต้องแสดงแนวแท็บอีกใช่ไหม</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ปิดแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{ปิดแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="8557923272772633250">ขยายกลุ่มแท็บที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
-<translation id="860282621117673749">การแจ้งเตือนการลดราคา</translation>
 <translation id="8714939927607906138">ราคาต่ำกว่า</translation>
 <translation id="8749939518995770034">ปิดแนวแท็บแล้ว</translation>
 <translation id="8820741577754260431">ดูการลดราคาในแท็บ</translation>

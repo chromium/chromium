@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> को एक्सपोर्ट नहीं किया जा सका</translation>
 <translation id="1899697626337024495">फ़ोटो रिज़ॉल्यूशन</translation>
 <translation id="1925845977604399247">गैलरी में जाएं</translation>
+<translation id="199526504800285197">वीडियो रिकॉर्डिंग रोक दी गई है</translation>
+<translation id="1995951722691075581">डिवाइस का स्टोरेज कम होने की वजह से, वीडियो रिकॉर्डिंग रुक गई है. ज़्यादा वीडियो रिकॉर्ड करने के लिए, आपको अपने डिवाइस पर कुछ जगह खाली करनी होगी.</translation>
 <translation id="2022953316617983419">क्यूआर कोड</translation>
 <translation id="2036868001356139588">टाइमर का कुल समय</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">वीडियो</translation>
 <translation id="3838931309141338733">बारकोड स्कैन करें</translation>
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>
+<translation id="4060608699153044055">डिवाइस का स्टोरेज कम होने की वजह से, वीडियो रिकॉर्डिंग नहीं की जा सकती. रिकॉर्डिंग शुरू करने के लिए, आपको अपने डिवाइस पर कुछ जगह खाली करनी होगी.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> एमपी</translation>
 <translation id="4118525110028899586">रिकॉर्डिंग रोकें</translation>
 <translation id="4121305183798804752">दस्तावेज़ मिल गया है</translation>
@@ -161,6 +164,7 @@
 <translation id="7748344063862150053">दस्तावेज़ का सबसे ऊपर वाला दायां कोना</translation>
 <translation id="7933675232020478311">सबसे नीचे दाईं ओर जा रहा है</translation>
 <translation id="7983668134180549431">टेक्स्ट पहचाना गया.</translation>
+<translation id="8079255378695216066">वीडियो रिकॉर्डिंग शुरू नहीं की जा सकी</translation>
 <translation id="8120146556401698679">पैन करें, झुकाएं, और ज़ूम करें</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>
 <translation id="8145038249676204903">फ़ोटो खींचने वाले मोड पर जाएं</translation>

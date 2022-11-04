@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Karty, które ostatnio nie były używane: <ph name="NUMBER_OF_TABS" />. Zamknąć je?</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="125153950246128346">Kliknij, by zobaczyć inną kartę</translation>
-<translation id="1302104331113804646">Ustawienia monitorowania cen</translation>
-<translation id="1378979118429748177">Otrzymuj powiadomienia o obniżkach cen</translation>
 <translation id="1403228085774130835">Zamknięte karty znajdziesz w sekcji Ostatnie karty w menu głównym Chrome</translation>
 <translation id="1455506303394048917">Twoja aktywność na tych kartach incognito zostanie usunięta z tego urządzenia</translation>
 <translation id="1499635324672558517">Zamknąć wszystkie karty incognito?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Nie pokazywać ponownie paska kart?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zamknij <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Zamknij <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Zamknij <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Zamknij <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="8557923272772633250">Rozwiń grupę kart z <ph name="NUMBER_OF_TABS" /> kartami.</translation>
-<translation id="860282621117673749">Alerty o obniżkach cen</translation>
 <translation id="8714939927607906138">Niższa cena</translation>
 <translation id="8749939518995770034">Zamknięto pasek kart</translation>
 <translation id="8820741577754260431">Pokazuj obniżki cen na kartach</translation>

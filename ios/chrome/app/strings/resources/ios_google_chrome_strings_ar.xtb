@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">‏تعذّر على Chrome البحث عن تحديثات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2732745070297234559">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
-<translation id="2919738076569633423">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK_TOS" />بنود الخدمة<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">‏اختيار <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chrome من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
 <translation id="3167189358072330585">‏لا يعمل حسابك على Google Chrome. يُرجى الاتصال بمشرف النطاق أو استخدام حساب Google عادي لتسجيل الدخول.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">‏أنت تجري تبديلاً لحسابات المزامنة من <ph name="USER_EMAIL1" /> إلى <ph name="USER_EMAIL2" />. يتم إدارة بيانات Chrome الحالية من خلال <ph name="DOMAIN" />. سيؤدي ذلك إلى إزالة بياناتك من هذا الجهاز، ولكن ستظل بياناتك في <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">‏تطلُب مؤسستك منك البقاء في وضع تسجيل الخروج من Chrome.</translation>
 <translation id="3988789688219830639">‏لا تتوفر لدي Google Chrome إمكانية الدخول إلى الصور أو الفيديوهات. تستطيع تفعيل الدخول في إعدادات iOS &gt; الخصوصية &gt; الصور.</translation>
-<translation id="4099578267706723511">‏يمكنك المساعدة في تحسين Chrome عن طريق إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google.</translation>
 <translation id="417201473131094001">‏غير متاح على Chrome Canary</translation>
 <translation id="4192781968753717021">‏استُخدمت كلمة المرور هذه في عملية اختراق للبيانات. ينصح "مدير كلمات المرور في Google" بتغيير كلمة مرورك الآن.</translation>
 <translation id="4233521129555661685">‏كان <ph name="USER_EMAIL1" /> يستخدم Chrome وتركَ إشارات مرجعية وكلمات مرور وغيرها من الإعدادات مُسجَّلة على هذا الجهاز.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">‏لمحة عن Google Chrome</translation>
 <translation id="7501046334262221972">‏انتقِل إلى "الإعدادات" لجعل Chrome المتصفِّح التلقائي على جهازك. انقر على "تطبيق المتصفّح التلقائي"، ثم اختَر Chrome.</translation>
 <translation id="756809126120519699">‏بيانات Chrome التي تم محوها</translation>
-<translation id="7626032353295482388">‏مرحبًا بك في Chrome‏</translation>
 <translation id="7662994914830945754">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، سجِّل الدخول وفعِّل المزامنة.</translation>
 <translation id="7693590760643069321">‏يمكنك الآن استخدام Chrome في أي وقت تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="7698568245838009292">‏متصفِّح Chrome يريد الوصول إلى الكاميرا</translation>

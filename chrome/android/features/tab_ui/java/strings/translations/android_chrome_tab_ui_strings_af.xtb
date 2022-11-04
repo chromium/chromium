@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
 <translation id="1181037720776840403">Verwyder</translation>
 <translation id="125153950246128346">Tik om nog 'n oortjie te sien</translation>
-<translation id="1302104331113804646">Prysnasporinginstellings</translation>
-<translation id="1378979118429748177">Word in kennis gestel wanneer pryse daal</translation>
 <translation id="1403228085774130835">Jy kan jou geslote oortjies in Onlangse oortjies op die Chrome-hoofkieslys kry</translation>
 <translation id="1455506303394048917">Jou aktiwiteit in hierdie Incognito-oortjies sal van hierdie toestel af uitgevee word</translation>
 <translation id="1499635324672558517">Maak alle Incognito-oortjies toe?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Moenie weer hierdie oortjiestrook wys nie?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Maak <ph name="TABS_COUNT_ONE" /> gekose oortjie toe}other{Maak <ph name="TABS_COUNT_MANY" /> gekose oortjies toe}}</translation>
 <translation id="8557923272772633250">Vou oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies uit.</translation>
-<translation id="860282621117673749">Opletberigte oor prysverlagings</translation>
 <translation id="8714939927607906138">Laer prys</translation>
 <translation id="8749939518995770034">Oortjiestrook is toegemaak</translation>
 <translation id="8820741577754260431">Sien prysdalings in jou oortjies</translation>

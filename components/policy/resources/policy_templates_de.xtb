@@ -1513,6 +1513,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Das Feld „<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" />“ ist eine eindeutige ID für einen Partnerdienstleister und identifiziert das Kundenkonto beim Dienstleister. Wenn der Nutzer beim Einrichten von <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> gebeten wird, sich anzumelden, sind nur Konten dieses Kundendienstleisters zulässig.
 
       Diese Richtlinie kann nur über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> konfiguriert werden.</translation>
+<translation id="2452225615952836461">Anfragemethoden immer groß schreiben</translation>
 <translation id="2454228136871844693">Für eine optimale Stabilität.</translation>
 <translation id="2455033019778127130">Verwendet das Standard-Browserverhalten, zeigt die Nutzungsbedingungen an und wartet auf die Zustimmung des Nutzers.</translation>
 <translation id="2460127623195247744">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
@@ -2224,6 +2225,17 @@ Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING
 <translation id="3101035417394748390">Die maximale Größe in Byte, die zwischen dem Client und dem Host über die Synchronisierung der Zwischenablage übertragen werden kann</translation>
 <translation id="3101501961102569744">Auswählen, wie Proxyserver-Einstellungen angegeben werden</translation>
 <translation id="3101709781009526431">Datum und Uhrzeit</translation>
+<translation id="3105764289283669411">Diese Richtlinie legt fest, ob Anfragemethoden groß geschrieben werden, wenn sie mit <ph name="ACAM_HEADER_NAME" />-Antwortheadern in <ph name="CORS" />-Preflight abgeglichen werden.
+
+Wenn die Richtlinie deaktiviert ist, werden Anfragemethoden groß geschrieben.
+Dies ist das Verhalten von <ph name="PRODUCT_NAME" /> 108 oder Versionen davor.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Anfragemethoden nicht groß geschrieben, es sei denn, es erfolgt ein die Groß-/Kleinschreibung nicht berücksichtigender Abgleich mit <ph name="DELETE_METHOD_NAME" />, <ph name="GET_METHOD_NAME" />, <ph name="HEAD_METHOD_NAME" />, <ph name="OPTIONS_METHOD_NAME" />, <ph name="POST_METHOD_NAME" /> oder <ph name="PUT_METHOD_NAME" />.
+Dadurch würde der Antwortheader <ph name="REJECTED_CASE" /> abgelehnt und der Antwortheader <ph name="ACCEPTED_CASE" /> akzeptiert.
+
+Hinweis: Die Anfragemethoden <ph name="POST_LOWERCASE_METHOD_NAME" /> und <ph name="PUT_LOWERCASE_METHOD_NAME" /> sind nicht betroffen, während <ph name="PATCH_LOWERCASE_METHOD_NAME" /> betroffen ist.
+
+Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 <translation id="3110248563985502478">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn diese Richtlinie aktiviert ist, werden veraltete Plug-ins als normale Plug-ins verwendet. Ist diese Einstellung deaktiviert, werden veraltete Plug-ins nicht verwendet.
 
       Ist diese Richtlinie nicht konfiguriert, müssen die Nutzer der Ausführung von veralteten Plug-ins zustimmen.</translation>
@@ -3755,6 +3767,13 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 
       Steht eine Richtlinie nicht auf der Liste und entsteht dadurch ein Konflikt zwischen Quellen, Bereichen oder Ebene, wird die Richtlinie mit der höchsten Priorität angewendet.</translation>
 <translation id="4646739075621507361">Druckaufträge ausgeben</translation>
+<translation id="4647870063570047503">Wenn diese Richtlinie aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mithilfe der integrierten Zertifikatsprüfung und dem Chrome Root Store als vertrauenswürdige Quelle.
+
+Falls diese Richtlinie deaktiviert ist, verwendet <ph name="PRODUCT_NAME" /> die Systemzertifikatsprüfung und die Root-Zertifikate des Systems.
+
+Wenn diese Richtlinie nicht konfiguriert ist, werden der Chrome Root Store oder die systemeigenen Root-Zertifikate verwendet.
+
+Diese Richtlinie wird voraussichtlich in Version 113 von <ph name="PRODUCT_NAME" /> für <ph name="MS_WIN_NAME" /> und für <ph name="MAC_OS_NAME" /> entfernt, wenn auch die Verwendung der von der Plattform bereitgestellten Zertifikatsprüfung und Root-Zertifikate nicht mehr unterstützt wird.</translation>
 <translation id="4649395978608361979">Lokale Druckziele</translation>
 <translation id="4650044303940238102">Einstellungen für lokale Schriftarten</translation>
 <translation id="4650759511838826572">URL-Protokollschemas deaktivieren</translation>
@@ -6739,6 +6758,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7724161903134898864">Wenn die Richtlinie auf "1" gesetzt ist, können Websites Pop-ups anzeigen. Wenn die Richtlinie auf "2" gesetzt ist, werden Pop-ups blockiert.
 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="BLOCK_POPUPS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="7728486978686128364">Anfragemethoden nie groß schreiben, außer DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Auf allen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
 <translation id="7732907212083471072">Entfernte Richtlinien</translation>
 <translation id="7734212505800048991">
@@ -8046,6 +8066,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Der Wert sollte in Sekunden angegeben werden.</translation>
 <translation id="9015578113567730893">Häufigkeit der Erhebung der Audiotelemetrie in Millisekunden.</translation>
+<translation id="9015952763003753868"><ph name="ACAM_HEADER_NAME" />-Abgleich in <ph name="CORS" />-Preflight richtlinienkonform machen</translation>
 <translation id="9020630127193895800">Tastaturbeleuchtungsfarbe „Indigo“</translation>
 <translation id="9031831501689819108">Unterstützung älterer Browser aktivieren</translation>
 <translation id="9035086760683255833">Mit dieser Richtlinie wird die Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" aktiviert.

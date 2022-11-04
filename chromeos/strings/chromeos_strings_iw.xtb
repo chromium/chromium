@@ -481,7 +481,6 @@
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">משפחה</translation>
-<translation id="5695599963893094957">צריך להקיש על מקש כלשהו במקלדת. אפשר להקיש על עד 4 מקשים בו זמנית.</translation>
 <translation id="5701381305118179107">מרכז</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">עדכון של <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">נכשל – ההרשאה נכשלה</translation>
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}two{שרתי שמות}many{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>

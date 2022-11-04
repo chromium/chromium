@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Non se puido exportar o ficheiro <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolución da foto</translation>
 <translation id="1925845977604399247">Ir á galería</translation>
+<translation id="199526504800285197">Detívose a gravación</translation>
+<translation id="1995951722691075581">A gravación detívose porque tes pouco espazo de almacenamento no dispositivo. Para gravar máis vídeos, terás que liberar espazo.</translation>
 <translation id="2022953316617983419">Código QR</translation>
 <translation id="2036868001356139588">Duración do temporizador</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Saca fotos e grava vídeos coa cámara.</translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
+<translation id="2577915835281444458">Deterase a gravación pronto. Vai ao almacenamento do dispositivo para liberar espazo.</translation>
 <translation id="2599796128805996109">Cámara traseira</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Tipo de busca</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Escanear código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
+<translation id="4060608699153044055">Non podes realizar gravacións porque tes pouco espazo de almacenamento no dispositivo. Para comezar a gravar, terás que liberar espazo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pór gravación en pausa</translation>
 <translation id="4121305183798804752">Detectouse un documento</translation>
@@ -160,6 +164,7 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="7748344063862150053">Esquina superior dereita do documento</translation>
 <translation id="7933675232020478311">Desprazándose cara abaixo e á dereita</translation>
 <translation id="7983668134180549431">Detectouse texto.</translation>
+<translation id="8079255378695216066">Non se puido iniciar a gravación</translation>
 <translation id="8120146556401698679">Panorámica, inclinación e zoom</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8145038249676204903">Cambiar a modo de cámara de fotos</translation>

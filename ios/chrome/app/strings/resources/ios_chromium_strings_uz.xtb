@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
-<translation id="102360288709523007">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini yuborish</translation>
 <translation id="1047130070405668746">Chromium brauzerini tanlang</translation>
 <translation id="1091252999271033193">Bunda Chromium har safar saytning mobil versiyasini talab qiladi.</translation>
 <translation id="1185134272377778587">Chromium haqida</translation>
@@ -71,10 +70,8 @@
 <translation id="5573014823074921752">Chromium maslahati. Ko‘proq varaqlarni tanlash uchun ekranning quyi yoki yuqorisida joylashgan asboblar panelidan Varaqlarni ko‘rsatish tugmasi ustiga bosib turing.</translation>
 <translation id="5700709190537129682">Chromium parollaringizni tekshira olmadi</translation>
 <translation id="5777187867430702742">Chromium sahifasi</translation>
-<translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chromium ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chromium ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="5983312940147103417">Chromiumni yaxshilash</translation>
-<translation id="602807004951640891">Chromium ishlatish orqali siz <ph name="BEGIN_LINK_TOS" />Xizmat shartlariga<ph name="END_LINK_TOS" /> rozilik bildirgan hisoblanasiz.</translation>
 <translation id="6062449165341879460">Tashkilotingiz (<ph name="DOMAIN" />) hisobingizdagi Chromium maʼlumotlari, bukmarklar, tarix, parollar va boshqa sozlamalaringizni koʻra oladi. Hisobdan chiqsangiz, bu qurilmadagi maʼlumotlaringiz tozalanadi.  Lekin, boshqaruvdagi Google hisobi maʼlumotlari joyida qoladi va tashkilotingiz ularni koʻra oladi. Tashkilotingiz Chromium funksiyasini oʻzgartirish mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi ham mumkin.</translation>
 <translation id="6119647025869519954">Chromium brauzerini asosiy deb belgilash uchun:
 1. Sozlamalarni oching

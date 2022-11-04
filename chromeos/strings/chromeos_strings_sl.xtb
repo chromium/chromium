@@ -481,7 +481,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Družina</translation>
-<translation id="5695599963893094957">Na tipkovnici vnesite poljubno tipko. Pritisnite lahko do 4 tipke naenkrat.</translation>
 <translation id="5701381305118179107">Na sredino</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Posodobi napravo <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Ni uspelo – Pooblastitev ni uspela.</translation>
 <translation id="7103252855940681301">Naprava <ph name="INDEX" /> od <ph name="COUNT" /> z imenom <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Ime dostopne točke (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Imenski strežnik}one{Imenski strežniki}two{Imenski strežniki}few{Imenski strežniki}other{Imenski strežniki}}</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>

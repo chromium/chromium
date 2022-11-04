@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Nevar eksportēt failu <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Fotoattēlu izšķirtspēja</translation>
 <translation id="1925845977604399247">Pāriet uz galeriju</translation>
+<translation id="199526504800285197">Ierakstīšana ir apturēta</translation>
+<translation id="1995951722691075581">Ierakstīšana tika apturēta, jo ierīces krātuvē ir maz brīvas vietas. Lai varētu ierakstīt vairāk videoklipu, ierīcē ir jāatbrīvo vieta.</translation>
 <translation id="2022953316617983419">Kvadrātkods</translation>
 <translation id="2036868001356139588">Taimera ilgums</translation>
 <translation id="2050339315714019657">Portrets</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Uzņemiet fotoattēlus un ierakstiet videoklipus, izmantojot savu kameru.</translation>
 <translation id="2517472476991765520">Meklēt</translation>
 <translation id="2549985041256363841">Sākt ierakstīšanu</translation>
+<translation id="2577915835281444458">Ierakstīšana drīz tiks pārtraukta. Lai atbrīvotu vietu, pārejiet uz ierīces krātuvi.</translation>
 <translation id="2599796128805996109">Aizmugurējā kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /></translation>
 <translation id="2761536921376153655">Meklēšanas veids</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenēt svītrkodu</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
+<translation id="4060608699153044055">Nevar veikt ierakstīšanu, jo ierīces krātuvē ir maz brīvas vietas. Lai varētu sākt ierakstīšanu, ierīcē ir jāatbrīvo vieta.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pārtraukt ierakstīšanu</translation>
 <translation id="4121305183798804752">Konstatēts dokuments</translation>
@@ -160,6 +164,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="7748344063862150053">Dokumenta augšējais labais stūris</translation>
 <translation id="7933675232020478311">Pārvietojas uz leju un pa labi</translation>
 <translation id="7983668134180549431">Konstatēts teksts.</translation>
+<translation id="8079255378695216066">Nevar sākt ierakstīšanu</translation>
 <translation id="8120146556401698679">Pārvietot/noliekt/tālummainīt</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8145038249676204903">Pārslēgt, lai uzņemtu fotoattēlu</translation>

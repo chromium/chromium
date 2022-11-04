@@ -484,6 +484,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3633097874324966332">Mở phần cài đặt Bluetooth để ghép nối thiết bị</translation>
 <translation id="3638400994746983214">Bật/tắt màn hình bảo vệ quyền riêng tư. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Đã quá hạn cập nhật</translation>
+<translation id="3659444876902283058">(Ngày <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Còn <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Hãy sạc thiết bị.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Người dùng được quản lý</translation>
@@ -1268,9 +1269,11 @@ Mới cài đặt</translation>
 <translation id="8052898407431791827">Đã sao chép vào bảng nhớ tạm</translation>
 <translation id="8054466585765276473">Đang tính toán thời lượng pin.</translation>
 <translation id="8083540854303889870">Lưu để dùng sau</translation>
+<translation id="8091153018031979607">Bắt đầu lúc <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Cập nhật tự động</translation>
 <translation id="8098591350844501178">Dừng truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Bật, tất cả</translation>
+<translation id="8113515504791187892">Nút Chọn để nói</translation>
 <translation id="8120151603115102514">Điện thoại của bạn không có màn hình khoá. Hãy nhập mật khẩu để mở khoá chiếc Chromebook của bạn.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
@@ -1380,6 +1383,7 @@ Mới cài đặt</translation>
 <translation id="8703634754197148428">Bắt đầu ghi. Sau khi quá trình ghi bắt đầu, hãy nhấn tổ hợp phím Alt + Shift + L để chuyển đến kệ rồi tìm nút dừng ghi</translation>
 <translation id="8721053961083920564">Bật/tắt tiếng. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Chụp toàn màn hình</translation>
+<translation id="8731487213223706745">Kết thúc lúc <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Bàn phím này có thể đang cố gắng đánh cắp thao tác nhấn phím của bạn</translation>
 <translation id="8735678380411481005">Màu đèn nền bàn phím</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
-<translation id="1302104331113804646">価格トラッキングの設定</translation>
-<translation id="1378979118429748177">値下げがあった場合に通知されます</translation>
 <translation id="1403228085774130835">閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます</translation>
 <translation id="1455506303394048917">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">次回からタブバーを表示しないよう設定しますか？</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを閉じます}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを閉じます}}</translation>
 <translation id="8557923272772633250">タブグループの <ph name="NUMBER_OF_TABS" /> 個のタブを展開します。</translation>
-<translation id="860282621117673749">値下げアラート</translation>
 <translation id="8714939927607906138">値下げ</translation>
 <translation id="8749939518995770034">タブバーを閉じました</translation>
 <translation id="8820741577754260431">タブで値下げ情報を確認します</translation>

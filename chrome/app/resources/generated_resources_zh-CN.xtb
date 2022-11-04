@@ -407,6 +407,7 @@
 <translation id="1388253969141979417">允许使用您的麦克风</translation>
 <translation id="1388728792929436380">待更新完毕后，<ph name="DEVICE_TYPE" /> 将会重启。</translation>
 <translation id="1389601498324964367">通过配额管理的存储空间</translation>
+<translation id="1390113502208199250">您必须将此设备恢复出厂设置才能使用 Chrome 教育版升级许可功能。</translation>
 <translation id="139013308650923562">可以使用您设备上安装的字体</translation>
 <translation id="1390548061267426325">在常规标签页中打开</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />无权通过“<ph name="PRINTER_NAME" />”进行打印。请与您的管理员联系。</translation>
@@ -477,6 +478,7 @@
 <translation id="1436784010935106834">已删除</translation>
 <translation id="1437986450143295708">请详细描述您遇到的问题</translation>
 <translation id="1439671507542716852">长期支持</translation>
+<translation id="1440090277117135316">学校注册已完成</translation>
 <translation id="144283815522798837">已选择 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 项</translation>
 <translation id="1442851588227551435">设置有效的 Kerberos 票据</translation>
 <translation id="1444628761356461360">此设置由设备所有者<ph name="OWNER_EMAIL" />管理。</translation>
@@ -1375,6 +1377,7 @@
 <translation id="2256115617011615191">立即重新启动</translation>
 <translation id="2257053455312861282">您只需添加一个学校帐号，便能以学生身份轻松登录网站、扩展程序和应用，同时仍在家长控制下执行操作。</translation>
 <translation id="2261323523305321874">您的管理员做出了一项系统级更改，致使一些旧个人资料遭到停用。</translation>
+<translation id="22614517036276112">此文档或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。</translation>
 <translation id="2262477216570151239">重复前的延迟时间</translation>
 <translation id="2263189956353037928">退出并重新登录</translation>
 <translation id="2263371730707937087">屏幕刷新频率</translation>
@@ -2386,6 +2389,7 @@
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
 <translation id="31774765611822736">在左侧新增标签页</translation>
 <translation id="3177909033752230686">网页语言：</translation>
+<translation id="3177914167275935955">您的设备随附了一份 Chrome 教育版升级许可，但您的用户名并未与 Google for Education 帐号关联。请先在辅助设备上前往 g.co/workspace/edusignup 创建一个 Google for Education 帐号。</translation>
 <translation id="3179982752812949580">文本字体</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3182749001423093222">拼写检查</translation>
@@ -3075,7 +3079,6 @@
 <translation id="3828029223314399057">搜索书签</translation>
 <translation id="3828953470056652895">我已阅读并同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />以及 <ph name="BEGIN_LINK3" />Play 服务条款<ph name="END_LINK3" />。</translation>
 <translation id="3829765597456725595">SMB 文件共享</translation>
-<translation id="3830268140528557982">日期：<ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{您的管理员重新开启了 1 个可能有害的扩展程序}other{您的管理员重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
 <translation id="3831436149286513437">Google 云端硬盘搜索建议</translation>
 <translation id="3834728400518755610">您必须关闭 Linux 才能更改麦克风设置。请关闭 Linux 以继续操作。</translation>
@@ -3837,7 +3840,6 @@
 <translation id="4556194354084985730">使用您已保存的密码轻松登录网站和应用。该功能处于关闭状态时，系统会在您登录到相应网站或应用之前询问您。</translation>
 <translation id="4558426062282641716">已请求获取自动启动权限</translation>
 <translation id="4559617833001311418">此网站正在使用您的动态传感器或光传感器。</translation>
-<translation id="4561098487691395071">或指定您的打印机 PPD</translation>
 <translation id="4561893854334016293">近期未更改过任何权限</translation>
 <translation id="4562155214028662640">添加指纹</translation>
 <translation id="4563210852471260509">初始输入语言是中文</translation>
@@ -4051,6 +4053,7 @@
 <translation id="4762489666082647806">指针颜色</translation>
 <translation id="4762718786438001384">设备磁盘空间严重不足</translation>
 <translation id="4763408175235639573">以下 Cookie 是系统在您查看此网页时设置的</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> 不是有效的 Google for Education 帐号。请与您的管理员联系。如果您本人就是管理员，则可通过访问 g.co/workspace/edusignup 来设置贵组织</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{此设备将被保存 1 个月，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {MONTHS} 个月，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="4765582662863429759">允许 Android 信息将短信从手机转送到 Chromebook</translation>
 <translation id="4766598565665644999">所有扩展程序都可以读取和更改 <ph name="HOST" /></translation>
@@ -4711,6 +4714,7 @@
 <translation id="5407167491482639988">无法听清</translation>
 <translation id="5408750356094797285">缩放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">保存在您的 Google 帐号中的密码</translation>
+<translation id="5411022484772257615">无法完成学校注册</translation>
 <translation id="5413640305322530561">详细了解诊断数据和使用情况数据</translation>
 <translation id="5414198321558177633">正在刷新配置文件列表。这可能需要几分钟的时间。</translation>
 <translation id="5414566801737831689">读取您访问过的网站对应的图标</translation>
@@ -4728,7 +4732,6 @@
 <translation id="5427278936122846523">一律翻译</translation>
 <translation id="5427459444770871191">顺时针旋转(&amp;C)</translation>
 <translation id="542750953150239272">继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。</translation>
-<translation id="5427936139162668357">查看 PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（可进行更新）</translation>
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">全角</translation>
@@ -5057,6 +5060,7 @@
 <translation id="5733866499231170760">ID 无效。您输入的格式不正确。请查看您已收到的说明，以确保使用正确的格式输入 ID。如果您无法解决此问题，请将该字段留空并继续安装。</translation>
 <translation id="5734362860645681824">通讯</translation>
 <translation id="5734697361979786483">添加文件共享</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{这些数据或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}=1{此文件或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}other{这些文件不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}}</translation>
 <translation id="5736796278325406685">请输入有效的用户名</translation>
 <translation id="5738093759615225354">您需要使用此密钥才能登录计算机</translation>
 <translation id="5738329404678738022">借助同步功能存储书签和其他数据</translation>
@@ -5494,6 +5498,7 @@
 <translation id="6129953537138746214">空格</translation>
 <translation id="6130692320435119637">添加 Wi-Fi</translation>
 <translation id="6130887916931372608">键盘按键</translation>
+<translation id="6132714462430777655">跳过学校注册？</translation>
 <translation id="6135823405800500595">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="6135826623269483856">不得管理您的所有显示屏上的窗口</translation>
 <translation id="6136114942382973861">关闭下载内容栏</translation>
@@ -6546,6 +6551,7 @@
 <translation id="7123030151043029868">允许自动下载多个文件</translation>
 <translation id="7123302939607518173">如果您认为与某项兴趣或某个网站相关的广告对您有用，可以添加该兴趣或网站。</translation>
 <translation id="7124013154139278147">为“上一项”操作分配开关</translation>
+<translation id="7124712201233930202">不符合贵组织的政策</translation>
 <translation id="7125029162161377569">Privacy Sandbox 试用计划推出后，网站既能减少使用您的信息，又能提供同样出色的浏览体验。这意味着您的隐私会受到更好的保护，而且跨网站跟踪也会减少。一旦新的功能可供试用，我们即会添加相应功能。</translation>
 <translation id="7125148293026877011">删除 Crostini</translation>
 <translation id="7127980134843952133">下载记录</translation>
@@ -6713,6 +6719,7 @@
 <translation id="7310598146671372464">未能成功登录。服务器不支持指定的 Kerberos 加密类型。请与您的管理员联系。</translation>
 <translation id="7311089766378749632">正在请求读取和更改 <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
+<translation id="7317831949569936035">学校注册</translation>
 <translation id="7320213904474460808">设置默认网络</translation>
 <translation id="7321545336522791733">无法连接到服务器</translation>
 <translation id="7323315405936922211">光标区域大小</translation>
@@ -8508,6 +8515,7 @@
 <translation id="897939795688207351">在 <ph name="ORIGIN" /> 上</translation>
 <translation id="8980345560318123814">反馈报告</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 已崩溃</translation>
+<translation id="8981038076986775523">详细了解如何使用麦克风</translation>
 <translation id="8981825781894055334">纸张不足</translation>
 <translation id="8983018820925880511">这份新个人资料将由 <ph name="DOMAIN" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> 可修改 <ph name="FILENAME" /></translation>

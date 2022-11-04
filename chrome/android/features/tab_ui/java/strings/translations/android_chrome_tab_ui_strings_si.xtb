@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">ඔබේ පටිතිවලින් <ph name="NUMBER_OF_TABS" /> ක් මෑතදී භාවිත වී නැත. ඒවා වසන්නද?</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="125153950246128346">වෙනත් පටිත්තක් බැලීමට තට්ටු කරන්න</translation>
-<translation id="1302104331113804646">මිල හඹා යාමේ සැකසීම්</translation>
-<translation id="1378979118429748177">මිල පහත වැටුණ විට දැනුම්දීම් ලබා ගන්න</translation>
 <translation id="1403228085774130835">Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත ටැබ තුළ ඔබට ඔබගේ වසන ලද ටැබ සොයා ගත හැකිය</translation>
 <translation id="1455506303394048917">මෙම අප්‍රකට ටැබවල ඔබගේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් ඉවත් කරනු ඇත</translation>
 <translation id="1499635324672558517">සියලු අප්‍රකට ටැබ වසන්නද?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">පටිත්ත තීරුව නැවත නොපෙන්වන්නද?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{තේරූ <ph name="TABS_COUNT_ONE" /> පටිත්ත වසන්න}one{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> වසරන්න}other{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> වසරන්න}}</translation>
 <translation id="8557923272772633250">ටැබ සමූහය ටැබ <ph name="NUMBER_OF_TABS" />ක් සමග දිග හරින්න.</translation>
-<translation id="860282621117673749">මිල පහත වැටීම් ඇඟවීම්</translation>
 <translation id="8714939927607906138">අඩු මිල</translation>
 <translation id="8749939518995770034">වැසූ පටිත්ත තීරුව</translation>
 <translation id="8820741577754260431">ඔබගේ ටැබවල මිල පහත වැටීම් බලන්න</translation>

@@ -481,7 +481,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
-<translation id="5695599963893094957">Prem qualsevol tecla del teclat, fins a 4 alhora.</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualitza <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
 <translation id="7103252855940681301">Dispositiu <ph name="INDEX" /> de <ph name="COUNT" />, anomenat <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Nom del punt d'accés (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>

@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">শেহতীয়াকৈ আপোনাৰ <ph name="NUMBER_OF_TABS" />টা টেব ব্যৱহাৰ কৰা হোৱা নাই। সেইকেইটা বন্ধ কৰিবনে?</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="125153950246128346">অন্য এটা টেব চাবলৈ টিপক</translation>
-<translation id="1302104331113804646">মূল্য ট্ৰেক কৰাৰ ছেটিং</translation>
-<translation id="1378979118429748177">মূল্য কমিলে জাননী পাওক</translation>
 <translation id="1403228085774130835">আপুনি Chromeৰ মুখ্য মেনুখনৰ তলত থকা শেহতীয়া টেবত আপোনাৰ বন্ধ কৰা টেব বিচাৰিব পাৰে</translation>
 <translation id="1455506303394048917">এই ইনক’গনিট’ টেবসমূহত আপুনি কৰা কাৰ্যকলাপ এই ডিভাইচটোৰ পৰা মচা হ’ব</translation>
 <translation id="1499635324672558517">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰিবনে?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">টেবৰ ষ্ট্ৰিপটো পুনৰ নেদেখুৱায় নেকি?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব বন্ধ কৰক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> টা টেবযুক্ত টেবৰ গোটটো বিস্তাৰ কৰক।</translation>
-<translation id="860282621117673749">মূল্য কমাৰ সতৰ্কবাৰ্তা</translation>
 <translation id="8714939927607906138">কম মূল্য</translation>
 <translation id="8749939518995770034">বন্ধ কৰা টেবৰ ষ্ট্ৰিপ</translation>
 <translation id="8820741577754260431">আপোনাৰ টেবসমূহত মূল্য কমাৰ বিষয়ে তথ্য চাওক</translation>

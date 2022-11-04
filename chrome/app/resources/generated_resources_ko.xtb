@@ -3102,7 +3102,6 @@
 <translation id="3828029223314399057">북마크 검색</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />Play 서비스 약관<ph name="END_LINK3" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="3829765597456725595">SMB 파일 공유</translation>
-<translation id="3830268140528557982">위치: <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{관리자가 1개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}other{관리자가 {NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}}</translation>
 <translation id="3831436149286513437">Google Drive 검색 추천어</translation>
 <translation id="3834728400518755610">마이크 설정을 변경하려면 Linux를 종료해야 합니다. 계속하려면 Linux를 종료하세요.</translation>
@@ -3866,7 +3865,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4556194354084985730">저장된 비밀번호로 사이트와 앱에 간편하게 로그인하세요. 사용 중지된 경우 로그인 전에 메시지가 표시됩니다.</translation>
 <translation id="4558426062282641716">자동 실행 권한 요청됨</translation>
 <translation id="4559617833001311418">사이트가 모션 센서 또는 조도 센서에 액세스 중입니다.</translation>
-<translation id="4561098487691395071">또는 프린터 PPD 지정</translation>
 <translation id="4561893854334016293">최근 변경된 권한 없음</translation>
 <translation id="4562155214028662640">지문 추가</translation>
 <translation id="4563210852471260509">중국어를 초기 입력 언어로 설정</translation>
@@ -4759,7 +4757,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5427278936122846523">항상 번역</translation>
 <translation id="5427459444770871191">시계 방향으로 회전(&amp;C)</translation>
 <translation id="542750953150239272">계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치할 수 있으며 모바일 데이터를 사용할 수도 있음에 동의하는 것으로 간주됩니다. 일부 앱에서는 인앱 구매가 제공될 수도 있습니다.</translation>
-<translation id="5427936139162668357">PPD 보기</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />(업데이트 사용 가능)</translation>
 <translation id="542948651837270806">신뢰할 수 있는 플랫폼 모듈 펌웨어 업데이트를 설치해야 합니다. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> 보기</translation>
 <translation id="5429818411180678468">전각</translation>

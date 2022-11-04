@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
 <translation id="2732745070297234559">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
 <translation id="2869959624320573933">Skráðu þig inn á Chrome</translation>
-<translation id="2919738076569633423">Með því að nota Chrome samþykkir þú <ph name="BEGIN_LINK_TOS" />þjónustuskilmálana<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Veldu <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Vegna þess að þú ert að skrá þig út af reikningi sem stýrt er af <ph name="SIGNOUT_MANAGED_DOMAIN" /> verður Chrome gögnum þínum eytt úr þessu tæki. Gögnin verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="3167189358072330585">Reikningurinn þinn virkar ekki í Google Chrome. Hafðu samband við stjórnanda lénsins eða notaðu venjulegan Google reikning til að skrá þig inn.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Þú ert að breyta samstillingarreikningi þínum úr <ph name="USER_EMAIL1" /> í <ph name="USER_EMAIL2" />.Fyrirliggjandi Chrome gögnum þínum er stjórnað af <ph name="DOMAIN" />. Þetta eyðir gögnunum þínum af þessu tæki en þau verða áfram geymd á <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Fyrirtækið þitt krefst þess að þú skráir þig ekki inn í Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome hefur ekki aðgang að myndunum þínum eða myndskeiðum. Veittu aðgang í iOS Settings &gt; Privacy &gt; Photos.</translation>
-<translation id="4099578267706723511">Hjálpaðu til við að bæta Google Chrome með því að senda talnagögn um notkun og tilkynningar um hrun til Google.</translation>
 <translation id="417201473131094001">Ekki stutt í Chrome Canary</translation>
 <translation id="4192781968753717021">Þetta aðgangsorð fannst í öryggisbroti. Google aðgangsorðastjórnun mælir með að þú breytir aðgangsorðinu þínu strax.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> notaði Chrome og skildi eftir bókamerki, aðgangsorð og aðrar stillingar í þessu tæki.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Um Google Chrome</translation>
 <translation id="7501046334262221972">Til að gera Chrome að sjálfgefnum vafra skaltu opna stillingarnar. Þar skaltu ýta á „Sjálfgefið vafraforrit“ og velja Chrome.</translation>
 <translation id="756809126120519699">Chrome gögnum eytt</translation>
-<translation id="7626032353295482388">Velkomin(n) í Chrome</translation>
 <translation id="7662994914830945754">Skráðu þig inn og kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="7693590760643069321">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="7698568245838009292">Chrome biður um aðgang að myndavélinni</translation>

@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
-<translation id="1302104331113804646">ဈေးနှုန်းစောင့်ကြည့်ခြင်း ဆက်တင်များ</translation>
-<translation id="1378979118429748177">ဈေးကျသည့်အခါ အကြောင်းကြားချက်ရယူနိုင်သည်</translation>
 <translation id="1403228085774130835">Chrome ပင်မမီနူးရှိ ‘လတ်တလောတဘ်များ’ တွင် သင်ပိတ်ထားသောတဘ်များကို ရှာတွေ့နိုင်သည်</translation>
 <translation id="1455506303394048917">ဤရုပ်ဖျက်တဘ်များရှိ သင့်လုပ်ဆောင်ချက်ကို ဤစက်မှ ဖယ်ရှားပါမည်</translation>
 <translation id="1499635324672558517">ရုပ်ဖျက်တဘ်အားလုံး ပိတ်မလား။</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">တဘ်ဘားတန်း ထပ်ပြရမလား။</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ရွေးထားသည့် တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ပိတ်ရန်}other{ရွေးထားသည့် တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ပိတ်ရန်}}</translation>
 <translation id="8557923272772633250">တဘ် <ph name="NUMBER_OF_TABS" /> ခုဖြင့် တဘ်အုပ်စုကို ချဲ့ပါ။</translation>
-<translation id="860282621117673749">ဈေးကျသွားကြောင်း သတိပေးချက်များ</translation>
 <translation id="8714939927607906138">ကျသွားသော ဈေးနှုန်း</translation>
 <translation id="8749939518995770034">တဘ်ဘားတန်း ပိတ်ထားသည်</translation>
 <translation id="8820741577754260431">သင့်တဘ်များတွင် ဈေးကျသွားသည်များကို ကြည့်နိုင်သည်</translation>

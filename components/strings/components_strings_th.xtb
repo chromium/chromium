@@ -1412,6 +1412,7 @@
 <translation id="4606870351894164739">มีประสิทธิภาพ</translation>
 <translation id="4607603470419975064">ปุ่มดูเคล็ดลับในการใช้ Chrome กด Enter เพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
 <translation id="4607608436550361748">ดูเคล็ดลับในการใช้ Chrome</translation>
+<translation id="4610279718074907952">เว็บไซต์นี้อยู่ในกลุ่มที่ <ph name="SET_OWNER" /> กำหนดไว้และสามารถดูกิจกรรมของคุณได้</translation>
 <translation id="4617273035598175554">ซอฟต์แวร์กราฟิกและแอนิเมชัน</translation>
 <translation id="4622292761762557753">โอนต่อไป</translation>
 <translation id="4627675673814409125">ตั้งค่านโยบายนี้ในระดับโปรไฟล์ Chrome ไม่ได้ และระบบจะไม่สนใจ</translation>
@@ -2387,6 +2388,7 @@
 <translation id="7130775116821607281">การอัปโหลดถูกบล็อก</translation>
 <translation id="7132939140423847331">ผู้ดูแลระบบของคุณห้ามไม่ให้คัดลอกข้อมูลนี้</translation>
 <translation id="7135130955892390533">แสดงสถานะ</translation>
+<translation id="7136009930065337683">ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดไม่ระบุตัวตน</translation>
 <translation id="7138472120740807366">วิธีการนำส่งสินค้า</translation>
 <translation id="7139892792842608322">ถาดหลัก</translation>
 <translation id="714064300541049402">เปลี่ยนตำแหน่งรูปภาพด้าน 2 ตามแกน X</translation>

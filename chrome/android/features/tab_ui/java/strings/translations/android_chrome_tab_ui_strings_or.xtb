@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="125153950246128346">ଅନ୍ୟଏକ ଟାବ୍ ଦେଖିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
-<translation id="1302104331113804646">ମୂଲ୍ୟ ଟ୍ରାକ୍ କରିବା ପାଇଁ ସେଟିଂସ୍</translation>
-<translation id="1378979118429748177">ମୂଲ୍ୟରେ ହ୍ରାସ ହେଲେ ସୂଚିତ ହୁଅନ୍ତୁ</translation>
 <translation id="1403228085774130835">ଆପଣ ଆପଣଙ୍କ ବନ୍ଦ କରାଯାଇଥିବା ଟାବଗୁଡ଼ିକୁ Chrome ମୁଖ୍ୟ ମେନୁ ଅଧୀନରେ "ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକ"ରେ ପାଇପାରିବେ</translation>
 <translation id="1455506303394048917">ଏହି ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଏହି ଡିଭାଇସରୁ ଖାଲି କରିଦିଆଯିବ</translation>
 <translation id="1499635324672558517">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">ଟାବ୍ ଷ୍ଟ୍ରିପ୍ ପୁଣି ଦେଖାଇବେ ନାହିଁ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରନ୍ତୁ।</translation>
-<translation id="860282621117673749">ମୂଲ୍ୟରେ ହ୍ରାସ ବିଷୟରେ ଆଲର୍ଟ</translation>
 <translation id="8714939927607906138">କମ୍ ଦାମ୍</translation>
 <translation id="8749939518995770034">ବନ୍ଦ କରାଯାଇଥିବା ଟାବ୍ ଷ୍ଟ୍ରିପ୍</translation>
 <translation id="8820741577754260431">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକରେ ମୂଲ୍ୟରେ ହ୍ରାସ ବିଷୟରେ ସୂଚନା ଦେଖନ୍ତୁ</translation>

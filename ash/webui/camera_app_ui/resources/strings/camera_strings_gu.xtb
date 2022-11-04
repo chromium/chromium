@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" />ની નિકાસ કરવામાં નિષ્ફળ રહ્યા</translation>
 <translation id="1899697626337024495">ફોટો રિઝોલ્યુશન</translation>
 <translation id="1925845977604399247">ગૅલેરી પર જાઓ</translation>
+<translation id="199526504800285197">રેકોર્ડિંગ બંધ થઈ ગયું</translation>
+<translation id="1995951722691075581">ડિવાઇસમાં અપર્યાપ્ત સ્ટોરેજ સ્પેસ હોવાને કારણે તમારું રેકોર્ડિંગ બંધ થઈ ગયું. વધુ વીડિયો રેકોર્ડ કરવા માટે, તમારે તમારા ડિવાઇસમાં જગ્યા ખાલી કરવી જરૂરી છે.</translation>
 <translation id="2022953316617983419">QR કોડ</translation>
 <translation id="2036868001356139588">ટાઇમર અવધિ</translation>
 <translation id="2050339315714019657">પોર્ટ્રેટ</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">તમારા કૅમેરા વડે ફોટા લો અને વીડિયો રેકોર્ડ કરો.</translation>
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
 <translation id="2549985041256363841">રેકોર્ડિંગ શરૂ કરો</translation>
+<translation id="2577915835281444458">ટૂંક સમયમાં રેકોર્ડિંગ બંધ થઈ જશે. સ્પેસ ખાલી કરવા માટે ડિવાઇસના સ્ટોરેજમાં જાઓ.</translation>
 <translation id="2599796128805996109">પાછળનો કૅમેરા</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> સેકન્ડ</translation>
 <translation id="2761536921376153655">સ્કૅનનો પ્રકાર</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">વીડિયો</translation>
 <translation id="3838931309141338733">બારકોડ સ્કૅન કરો</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
+<translation id="4060608699153044055">ડિવાઇસમાં અપર્યાપ્ત સ્ટોરેજ સ્પેસ હોવાને કારણે તમે રેકોર્ડ કરી શકશો નહીં. રેકોર્ડિંગ શરૂ કરવા માટે, તમારે તમારા ડિવાઇસમાં જગ્યા ખાલી કરવી જરૂરી છે.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">રેકોર્ડિંગ થોભાવો</translation>
 <translation id="4121305183798804752">દસ્તાવેજની ભાળ મળી</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">દસ્તાવેજનો સૌથી ઉપરનો જમણો ખૂણો</translation>
 <translation id="7933675232020478311">સૌથી નીચે જમણી દિશામાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="7983668134180549431">ટેક્સ્ટની જાણકારી મળી.</translation>
+<translation id="8079255378695216066">રેકોર્ડિંગ શરૂ કરી શકાતું નથી</translation>
 <translation id="8120146556401698679">ફેરવો ટિલ્ટ કરો નાનું-મોટું કરો</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8145038249676204903">ફોટો લેવા માટે સ્વિચ કરો</translation>

@@ -20,7 +20,6 @@
 <translation id="1084365883616172403">โพสต์ใน Facebook แล้ว</translation>
 <translation id="1085696779717592361">ใช้ Chrome โดยค่าเริ่มต้น</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
-<translation id="1104948393051856124">ยอมรับและดำเนินการต่อ</translation>
 <translation id="110724200315609752">เปลี่ยนเพื่อเปิดหน้าต่าง</translation>
 <translation id="1112015203684611006">การพิมพ์ล้มเหลว</translation>
 <translation id="1125564390852150847">สร้างแท็บใหม่</translation>
@@ -103,6 +102,7 @@
 <translation id="1657641691196698092">คุกกี้ที่บล็อก</translation>
 <translation id="165877110639533037">ไม่มีแท็บที่เปิดไว้</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />เป็น<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
 <translation id="168715261339224929">เปิดการซิงค์เพื่อรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่องของคุณ</translation>
 <translation id="1687475363370981210">ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว</translation>
 <translation id="1689333818294560261">ชื่อเล่น</translation>
@@ -166,7 +166,6 @@
 <translation id="2302742851632557585">เปลี่ยนรหัสผ่านในเว็บไซต์</translation>
 <translation id="2316709634732130529">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="2320166752086256636">ซ่อนแป้นพิมพ์</translation>
-<translation id="2328842561016935977">แตะ "รหัสผ่าน" แล้วแตะ "เพิ่ม"</translation>
 <translation id="2351097562818989364">รีเซ็ตการตั้งค่าการแปลภาษาของคุณแล้ว</translation>
 <translation id="235789365079050412">นโยบายความเป็นส่วนตัวของ Google</translation>
 <translation id="2359043044084662842">แปล</translation>
@@ -245,6 +244,7 @@
 <translation id="288655811176831528">ปิดแท็บ</translation>
 <translation id="2890171748217283516">ระบบจะบันทึกเว็บไซต์ที่คุณติดตามไว้ในบัญชี Google โดยคุณจัดการเว็บไซต์เหล่านี้ได้ในการตั้งค่า Discover</translation>
 <translation id="2898963176829412617">โฟลเดอร์ใหม่…</translation>
+<translation id="2902684821701498619">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="2916171785467530738">เติมข้อความค้นหาและ URL อัตโนมัติ</translation>
 <translation id="291754862089661335">จัดตำแหน่งโค้ด QR หรือบาร์โค้ดให้อยู่ในกรอบนี้</translation>
 <translation id="2920866371965792875">ติดตามเว็บไซต์นี้เพื่อดูข้อมูลอัปเดตได้ที่นี่</translation>
@@ -322,6 +322,7 @@
 <translation id="3478058380795961209">เดือนที่หมดอายุ</translation>
 <translation id="3482959374254649722">กำลังซิงค์แท็บ...</translation>
 <translation id="3484946776651937681">เปิดใน "ดาวน์โหลด"</translation>
+<translation id="3485558910355485767">หน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับเนื้อหาที่แนะนำ</translation>
 <translation id="3494788280727468875">ยืนยันการล้างข้อมูลการท่องเว็บ</translation>
 <translation id="35083190962747987">เปิด ${url}</translation>
@@ -368,6 +369,7 @@
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3861486700625780712">เลิกติดตาม</translation>
+<translation id="3863769054730344136">ส่งไปยังอุปกรณ์</translation>
 <translation id="387280738075653372">ดาวน์โหลด Chrome ที่นี่</translation>
 <translation id="3892144330757387737">คุณจะเห็นประวัติการเข้าชมที่นี่</translation>
 <translation id="3897092660631435901">เมนู</translation>
@@ -591,6 +593,7 @@
 <translation id="5659593005791499971">อีเมล</translation>
 <translation id="5669335982068190158">คุณออกจากระบบในขั้นตอนการรีเซ็ต iPhone แตะ "ดําเนินการต่อ" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">สร้างคิวอาร์โค้ด</translation>
 <translation id="567881659373499783">รุ่น <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{กำลังแสดงหน้าต่าง Chrome 1 หน้าต่าง}other{กำลังแสดงหน้าต่าง Chrome {count} หน้าต่าง}}</translation>
 <translation id="5701270923492462699">อนุญาตให้เข้าถึงกล้อง</translation>
@@ -665,7 +668,6 @@
 <translation id="6149061208933997199">ใช้รหัสผ่าน</translation>
 <translation id="6152406514676263192">ซิงค์เพื่อดูเนื้อหาที่เกี่ยวข้องที่สุดตามความสนใจของคุณ</translation>
 <translation id="6159839020698489198">ไม่บังคับ</translation>
-<translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6170450281939467187">แปลไม่สำเร็จ</translation>
 <translation id="6177442314419606057">ค้นหาใน Chrome</translation>
 <translation id="6184086493125982861">แสดงแท็บ</translation>
@@ -676,6 +678,7 @@
 <translation id="6219550825416862075">ยินดีต้อนรับกลับมา</translation>
 <translation id="6219688215832490856">ไม่ต้องแปล</translation>
 <translation id="6223816392543092032">ดูบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ในอุปกรณ์ทั้งหมด</translation>
+<translation id="6229318421047648685">ขอเว็บไซต์เวอร์ชันเดสก์ท็อป</translation>
 <translation id="6231782223312638214">แนะนำ</translation>
 <translation id="6232329973559504466">ค้นหาในโหมดไม่ระบุตัวตน</translation>
 <translation id="6232736989810857397">สิทธิ์นี้จะช่วยให้คุณสร้างกิจกรรมในปฏิทินได้ง่ายๆ โดยใช้ Google Lens</translation>
@@ -834,7 +837,6 @@
 <translation id="7291368939935408496">กำลังเตรียมรหัสผ่าน...</translation>
 <translation id="730958329302570991">เพิ่มรหัสผ่านของเว็บไซต์ใน Google เครื่องมือจัดการรหัสผ่านได้ง่ายๆ ทุกเมื่อ</translation>
 <translation id="7313347584264171202">คุณจะเห็นแท็บที่ไม่ระบุตัวตนที่นี่</translation>
-<translation id="7315813263062036945">แตะไอคอนค้นหาที่ด้านซ้ายบน</translation>
 <translation id="7336264872878993241">ดาวน์โหลดแล้ว <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
 <translation id="7340958967809483333">ตัวเลือกสำหรับ Discover</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
@@ -995,7 +997,6 @@
 <translation id="8605219856220328675">ปิดแท็บ</translation>
 <translation id="8620640915598389714">แก้ไข</translation>
 <translation id="8626393685701737946">คุณเปลี่ยนมุมมองเริ่มต้นของเว็บไซต์เป็นเดสก์ท็อปได้ในการตั้งค่า &gt; การตั้งค่าเนื้อหา</translation>
-<translation id="863090005774946393">องค์กรของคุณเป็นผู้จัดการเบราว์เซอร์ อาจมีการปิดใช้ฟีเจอร์บางอย่าง</translation>
 <translation id="8636825310635137004">เปิดการซิงค์เพื่อรับแท็บจากอุปกรณ์เครื่องอื่นๆ ของคุณ</translation>
 <translation id="8654802032646794042">ยกเลิก</translation>
 <translation id="8668210798914567634">หน้านี้ได้รับการบันทึกลงในรายการที่จะอ่านแล้ว</translation>

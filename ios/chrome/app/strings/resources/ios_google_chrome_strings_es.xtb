@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>
 <translation id="2732745070297234559">Chrome no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
-<translation id="2919738076569633423">Al usar Chrome, aceptas los <ph name="BEGIN_LINK_TOS" />Términos del Servicio<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chrome en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Ponte en contacto con el administrador del dominio o utiliza una cuenta de Google normal para iniciar sesión.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Estás cambiando las cuentas de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. Tus datos actuales de Chrome están administrados por <ph name="DOMAIN" />. Se van a eliminar tus datos de este dispositivo, pero van a permanecer en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Tu organización requiere que mantengas tu sesión cerrada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos y vídeos (para permitirlo, ve a Ajustes de iOS &gt; Privacidad &gt; Fotos).</translation>
-<translation id="4099578267706723511">Ayudar a mejorar Chrome enviando estadísticas de uso e informes sobre fallos.</translation>
 <translation id="417201473131094001">No compatible con Chrome Canary</translation>
 <translation id="4192781968753717021">Esta contraseña se ha encontrado en una quiebra de seguridad de datos. El gestor de contraseñas de Google te recomienda que cambies tu contraseña ahora.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> ha usado Chrome y ha dejado marcadores, contraseñas y otras configuraciones en este dispositivo.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Información de Google Chrome</translation>
 <translation id="7501046334262221972">Para seleccionar Chrome como navegador predeterminado, abre Ajustes, toca Aplicación de navegador predeterminada y, después, selecciona Chrome.</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
-<translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7662994914830945754">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
 <translation id="7693590760643069321">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>

@@ -481,7 +481,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famille</translation>
-<translation id="5695599963893094957">Appuyez sur une touche de votre clavier. Vous pouvez appuyer sur un maximum de quatre touches en même temps.</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Mettre à jour <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Échec - Échec de l'autorisation</translation>
 <translation id="7103252855940681301">Appareil <ph name="INDEX" /> sur <ph name="COUNT" /> nommé <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Nom du point d'accès (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveur de noms}one{Serveur de noms}other{Serveurs de noms}}</translation>
 <translation id="7143207342074048698">Connexion</translation>
 <translation id="7144878232160441200">Réessayer</translation>

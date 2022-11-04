@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
-<translation id="102360288709523007">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chromium。</translation>
 <translation id="1047130070405668746">选择“Chromium”</translation>
 <translation id="1091252999271033193">这意味着 Chromium 每次都会对移动网站发出请求。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
@@ -72,10 +71,8 @@
 <translation id="5573014823074921752">Chromium 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
 <translation id="5777187867430702742">Chromium 网页</translation>
-<translation id="5862307444128926510">欢迎使用 Chromium</translation>
 <translation id="5945387852661427312">您正要登录由 <ph name="DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chromium 数据。您的数据将与此帐号永久关联。退出 Chromium 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="5983312940147103417">帮助改善 Chromium</translation>
-<translation id="602807004951640891">使用 Chromium 即表示您同意接受<ph name="BEGIN_LINK_TOS" />服务条款<ph name="END_LINK_TOS" />。</translation>
 <translation id="6062449165341879460">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此帐号中存储的 Chromium 数据、书签、历史记录、密码和其他设置。当您退出帐号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 帐号中，且可供贵组织访问。贵组织也可专门针对上述帐号设置用户规范，这可能会改变 Chromium 的行为。</translation>
 <translation id="6119647025869519954">若要将 Chromium 设为默认浏览器，请执行以下操作：
 1. 打开“设置”

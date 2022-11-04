@@ -1525,6 +1525,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       El campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> es un ID único para un proveedor de servicios asociado que relaciona la cuenta del cliente con el proveedor de servicios. Cuando se le solicita al usuario que acceda como parte del proceso de configuración de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, solo se permiten cuentas de usuario asociadas a la cuenta del proveedor de servicios de este cliente.
 
       Esta política solo se puede establecer en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
+<translation id="2452225615952836461">Usar mayúsculas siempre en los métodos de solicitud</translation>
 <translation id="2454228136871844693">Optimiza la estabilidad.</translation>
 <translation id="2455033019778127130">Utiliza el comportamiento predeterminado del navegador, muestra las Condiciones del Servicio y espera a que el usuario las acepte</translation>
 <translation id="2460127623195247744">Esta política dejó de estar disponible. En su lugar, utiliza la política "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
@@ -2239,6 +2240,17 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
 <translation id="3101035417394748390">El tamaño máximo (en bytes) que puede transferirse entre el cliente y el host a través de la sincronización del portapapeles</translation>
 <translation id="3101501961102569744">Elegir cómo especificar la configuración del servidor proxy</translation>
 <translation id="3101709781009526431">Fecha y hora</translation>
+<translation id="3105764289283669411">Esta política controla si los métodos de solicitud están en mayúsculas cuando coinciden con los encabezados de respuesta <ph name="ACAM_HEADER_NAME" /> en la solicitud preliminar <ph name="CORS" />.
+
+Si la inhabilitas, se usarán mayúsculas en los métodos de solicitud.
+Este es el comportamiento en <ph name="PRODUCT_NAME" /> 108 o versiones anteriores.
+
+Si habilitas la política o no la estableces, no se usarán mayúsculas en los métodos de solicitud, a menos que no se distingan mayúsculas de minúsculas en <ph name="DELETE_METHOD_NAME" />, <ph name="GET_METHOD_NAME" />, <ph name="HEAD_METHOD_NAME" />, <ph name="OPTIONS_METHOD_NAME" />, <ph name="POST_METHOD_NAME" /> o<ph name="PUT_METHOD_NAME" />.
+Esta acción rechazará el encabezado de respuesta <ph name="REJECTED_CASE" /> y aceptará el encabezado de respuesta <ph name="ACCEPTED_CASE" />.
+
+Nota: Los métodos de solicitud <ph name="POST_LOWERCASE_METHOD_NAME" /> y <ph name="PUT_LOWERCASE_METHOD_NAME" /> no se ven afectados, mientras que <ph name="PATCH_LOWERCASE_METHOD_NAME" /> se ve afectado.
+
+Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="3110248563985502478">Esta política dejó de estar disponible en M88; Chrome ya no admite Flash. Si habilitas la política, se usarán normalmente los complementos desactualizados. Si la inhabilitas, no se usarán los complementos desactualizados.
 
       Si no la estableces, se solicitará permiso a los usuarios para ejecutar complementos desactualizados.</translation>
@@ -3804,6 +3816,13 @@ Si no estableces la política, los usuarios podrán cambiar la lista de apps fij
 
       Si la lista no incluye una política y hay conflicto entre fuentes, alcances o niveles, se aplicará la política con la prioridad más alta.</translation>
 <translation id="4646739075621507361">Informa trabajos de impresión</translation>
+<translation id="4647870063570047503">Si habilitas esta política, <ph name="PRODUCT_NAME" /> verificará los certificados del servidor mediante el verificador de certificados integrado con Chrome Root Store como fuente de confianza pública.
+
+Si la inhabilitas, <ph name="PRODUCT_NAME" /> usará el verificador de certificados del sistema y los certificados raíz del sistema.
+
+Si no la estableces, se podrán usar las raíces provistas por el sistema o Chrome Root Store.
+
+Se planea quitar esta política en la versión 113 de <ph name="PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />, cuando se quiten las raíces que proporciona la plataforma y la compatibilidad para usar el verificador de certificados.</translation>
 <translation id="4649395978608361979">Destinos de las impresoras locales</translation>
 <translation id="4650044303940238102">Configuración de fuentes locales</translation>
 <translation id="4650759511838826572">Inhabilitar los esquemas de protocolo de la dirección URL</translation>
@@ -6826,6 +6845,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7724161903134898864">Si estableces la política en 1, los sitios web podrán mostrar ventanas emergentes. Si la estableces en 2, se rechazarán las ventanas emergentes.
 
       Si no la estableces, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAME" />, pero los usuarios podrán cambiar esta configuración.</translation>
+<translation id="7728486978686128364">No usar mayúsculas en los métodos de solicitud, excepto DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Revertir el comportamiento de las cookies en todos los sitios conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="7732907212083471072">Políticas que se quitaron</translation>
 <translation id="7734212505800048991">
@@ -8143,6 +8163,7 @@ del dispositivo durante el acceso del usuario.</translation>
 
       El valor de la política debe especificarse en segundos.</translation>
 <translation id="9015578113567730893">Tasa de recopilación de telemetría del audio en milisegundos.</translation>
+<translation id="9015952763003753868">Hacer que las coincidencias de <ph name="ACAM_HEADER_NAME" /> en la especificación de solicitud preliminar <ph name="CORS" /> sean compatibles</translation>
 <translation id="9020630127193895800">Color índigo para la retroiluminación del teclado</translation>
 <translation id="9031831501689819108">Habilitar la Compatibilidad con navegadores heredados</translation>
 <translation id="9035086760683255833">Habilita la función de accesibilidad para destacar el cursor del teclado.

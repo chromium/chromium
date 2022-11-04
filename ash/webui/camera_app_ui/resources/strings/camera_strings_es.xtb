@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">No se puede exportar <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolución de las fotos</translation>
 <translation id="1925845977604399247">Ir a la galería</translation>
+<translation id="199526504800285197">Se ha parado la grabación</translation>
+<translation id="1995951722691075581">La grabación se ha parado porque hay poco espacio de almacenamiento en el dispositivo. Para grabar más vídeos, debes liberar espacio en tu dispositivo.</translation>
 <translation id="2022953316617983419">Código QR</translation>
 <translation id="2036868001356139588">Duración del temporizador</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Haz fotos y graba vídeos con la cámara.</translation>
 <translation id="2517472476991765520">Escanear</translation>
 <translation id="2549985041256363841">Iniciar grabación</translation>
+<translation id="2577915835281444458">La grabación se detendrá pronto. Ve al almacenamiento del dispositivo para liberar espacio.</translation>
 <translation id="2599796128805996109">Cámara trasera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Tipo de búsqueda</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Escanear código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
+<translation id="4060608699153044055">No puedes grabar porque hay poco espacio de almacenamiento en el dispositivo. Para empezar a grabar, debes liberar espacio en tu dispositivo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausar grabación</translation>
 <translation id="4121305183798804752">Documento detectado</translation>
@@ -160,6 +164,7 @@ Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta
 <translation id="7748344063862150053">Esquina superior derecha del documento</translation>
 <translation id="7933675232020478311">Moviendo hacia abajo a la derecha</translation>
 <translation id="7983668134180549431">Texto detectado.</translation>
+<translation id="8079255378695216066">No se puede iniciar la grabación</translation>
 <translation id="8120146556401698679">Panorámica, inclinación y zoom</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8145038249676204903">Cambiar al modo de cámara de fotos</translation>

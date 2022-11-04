@@ -1940,6 +1940,7 @@
 <translation id="274318651891194348">جارٍ البحث عن لوحة المفاتيح</translation>
 <translation id="2743301740238894839">البدء</translation>
 <translation id="2743387203779672305">نسخ إلى الحافظة</translation>
+<translation id="274362947316498129">هناك تطبيق يحاول الوصول إلى <ph name="DEVICE_NAME" />. يُرجى إيقاف إعدادات الخصوصية للسماح للتطبيق بالوصول إلى <ph name="DEVICE_NAME" />.</translation>
 <translation id="2745080116229976798">‏إخضاع مؤهل لـ Microsoft</translation>
 <translation id="2749756011735116528">تسجيل الدخول إلى <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">‏شريحة SIM</translation>
@@ -3087,7 +3088,6 @@
 <translation id="3828029223314399057">بحث في الإشارات المرجعية</translation>
 <translation id="3828953470056652895">‏لقد قرأت <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكلٍّ من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" /> و<ph name="BEGIN_LINK3" />بنود خدمة Google Play<ph name="END_LINK3" /> وأوافق عليها.</translation>
 <translation id="3829765597456725595">‏خادم مشاركة الملفات عبر بروتوكول SMB</translation>
-<translation id="3830268140528557982">على <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{أعاد مشرفك تفعيل إضافة واحدة يُحتمل أن تكون ضارة.}zero{أعاد مشرفك تفعيل {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة.}two{أعاد مشرفك تفعيل إضافتَين ({NUM_EXTENSIONS}) يُحتمل أن تكونا ضارتَين.}few{أعاد مشرفك تفعيل {NUM_EXTENSIONS} إضافات يُحتمل أن تكون ضارة.}many{أعاد مشرفك تفعيل {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة.}other{أعاد مشرفك تفعيل {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة.}}</translation>
 <translation id="3831436149286513437">‏إقتراحات بحث Google Drive</translation>
 <translation id="3834728400518755610">‏يتطلب تغيير إعدادات الميكروفون إيقاف تشغيل نظام التشغيل Linux. ويجب إيقاف نظام التشغيل Linux للمتابعة.</translation>
@@ -3110,6 +3110,7 @@
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3851428669031642514">تحميل النصوص البرمجية غير الآمنة</translation>
 <translation id="3852215160863921508">المساعدة في الإدخال</translation>
+<translation id="3853549894831560772">تم تشغيل <ph name="DEVICE_NAME" />.</translation>
 <translation id="3854599674806204102">حدِّد خيارًا</translation>
 <translation id="3854967233147778866">اقتراح ترجمة مواقع إلكترونية بلغات أخرى</translation>
 <translation id="3854976556788175030">درج الإخراج ممتلئ</translation>
@@ -3440,6 +3441,7 @@
 <translation id="4163560723127662357">لوحة مفاتيح غير معروفة</translation>
 <translation id="4165942112764990069">‏لا ينتمي البريد الإلكتروني <ph name="USER_EMAIL" /> إلى مؤسسة صالحة. يُرجى التواصل مع المشرف. وإذا كنت مشرفًا، يمكنك ضبط إعدادات مؤسستك بالانتقال إلى: g.co/ChromeEnterpriseAccount.</translation>
 <translation id="4165986682804962316">إعدادات المواقع الإلكترونية</translation>
+<translation id="4167212649627589331">يحاول تطبيق "<ph name="APP_NAME" />" الوصول إلى <ph name="DEVICE_NAME" />. يُرجى إيقاف إعدادات الخصوصية للسماح للتطبيق بالوصول إلى <ph name="DEVICE_NAME" />.</translation>
 <translation id="4167393659000039775">‏لا تتحمّل Google مسؤولية فقدان أي بيانات، كما أنّ نظام التشغيل <ph name="DEVICE_OS" /> قد لا يعمل على طُرُز الأجهزة غير المعتمَدة. تعرّف على مزيد من المعلومات على الرابط g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">‏تستخدم المواقع الإلكترونية عادةً JavaScript لعرض الميزات التفاعلية، مثل ألعاب الفيديو أو نماذج الويب.</translation>
 <translation id="4168015872538332605">تتم مشاركة بعض الإعدادات التي تنتمي إلى <ph name="PRIMARY_EMAIL" /> معك. لن تؤثر هذه الإعدادات في حسابك إلا عند استخدامك الدخول المتعدد.</translation>
@@ -3847,7 +3849,6 @@
 <translation id="4556194354084985730">يمكنك تسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات باستخدام كلمات المرور المحفوظة. في حال إيقاف هذا الإعداد، سيتم طلب الحصول على تأكيد منك قبل تسجيل الدخول إلى المواقع الإلكترونية والتطبيقات.</translation>
 <translation id="4558426062282641716">تمّ طلب إذن للتشغيل التلقائي</translation>
 <translation id="4559617833001311418">تم السماح لهذا الموقع بالوصول إلى أجهزة استشعار الإضاءة أو الحركة.</translation>
-<translation id="4561098487691395071">‏أو تحديد ملف PPD للطابعة</translation>
 <translation id="4561893854334016293">لم يتم تغيير أذونات مؤخرًا.</translation>
 <translation id="4562155214028662640">إضافة بصمة إصبع</translation>
 <translation id="4563210852471260509">لغة الإدخال الأولية هي الصينية</translation>
@@ -3901,6 +3902,7 @@
 <translation id="4610162781778310380">حدث خطأ في <ph name="PLUGIN_NAME" />.</translation>
 <translation id="4610637590575890427">هل تقصد الانتقال إلى <ph name="SITE" />؟</translation>
 <translation id="4611114513649582138">اتصال البيانات متاح</translation>
+<translation id="4612841084470706111">منح إمكانية الوصول إلى كل المواقع الإلكترونية المطلوبة</translation>
 <translation id="4613144866899789710">‏جارٍ إلغاء عملية تثبيت Linux...</translation>
 <translation id="4613271546271159013">لقد غيّرت الإضافة الصفحة المعروضة عندما فتحت علامة تبويب جديدة.</translation>
 <translation id="4615586811063744755">لم يتم اختيار أي ملفات تعريف ارتباط.</translation>
@@ -4737,7 +4739,6 @@
 <translation id="5427278936122846523">الترجمة دومًا</translation>
 <translation id="5427459444770871191">تدوير &amp;في اتجاه عقارب الساعة</translation>
 <translation id="542750953150239272">‏تعني متابعتك أنّك توافق على منح هذا الجهاز إذنًا بتنزيل التحديثات والتطبيقات وتثبيتها تلقائيًا من Google ومشغّل شبكة الجوّال والشركة المصنّعة لجهازك، مع احتمالية استخدام بيانات شبكة الجوّال. قد تتيح بعض هذه التطبيقات عمليات شراء داخل التطبيق.</translation>
-<translation id="5427936139162668357">‏الاطّلاع على ملف PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (هناك تحديث متاح)</translation>
 <translation id="542948651837270806">يجب تثبيت الإصدار المُحدَّث من البرامج الثابتة لوحدة للنظام الأساسي الموثوق به. الاطّلاع على <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">عرض كامل</translation>
@@ -5663,6 +5664,7 @@
 <translation id="6291949900244949761">‏طلب الإذن في حال محاولة أحد المواقع الوصول إلى أجهزة USB (مُوصى به)</translation>
 <translation id="6291953229176937411">إ&amp;ظهار في الباحث</translation>
 <translation id="6292699686837272722">عرض علامات التبويب بحجم متوسط</translation>
+<translation id="6293862149782163840">تم إيقاف <ph name="DEVICE_NAME" />.</translation>
 <translation id="6294759976468837022">سرعة الفحص التلقائي</translation>
 <translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="6295855836753816081">جارٍ الحفظ...</translation>
@@ -8485,6 +8487,7 @@
 <translation id="8940081510938872932">يجري الكمبيوتر الكثير من المهام في الوقت الحالي. أعد المحاولة لاحقًا.</translation>
 <translation id="8940381019874223173">‏من حسابك على "صور Google"</translation>
 <translation id="8941173171815156065">إلغاء الإذن "<ph name="PERMISSION" />"</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> غير مفعَّلة</translation>
 <translation id="894191600409472540">إنشاء كلمات مرور قوية</translation>
 <translation id="894360074127026135">‏الترقية الدولية لـ Netscape</translation>
 <translation id="8944099748578356325">استخدام البطارية بسرعة أكبر (حاليًا <ph name="BATTERY_PERCENTAGE" />%)</translation>

@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="125153950246128346">Presiona para ver otra pestaña</translation>
-<translation id="1302104331113804646">Configuración del seguimiento de precios</translation>
-<translation id="1378979118429748177">Recibe notificaciones cuando haya descuentos.</translation>
 <translation id="1403228085774130835">Puedes encontrar todas las pestañas cerradas en Pestañas recientes en el menú principal de Chrome</translation>
 <translation id="1455506303394048917">Tu actividad en las pestañas de incógnito se borrará del dispositivo</translation>
 <translation id="1499635324672558517">¿Quieres cerrar todas las pestañas de incógnito?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">¿No quieres volver a ver la barra de pestañas?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cierra <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Cierra <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="8557923272772633250">Expandir el grupo de pestañas, el cual tiene <ph name="NUMBER_OF_TABS" /> pestañas</translation>
-<translation id="860282621117673749">Alertas de descuentos</translation>
 <translation id="8714939927607906138">Precio más bajo</translation>
 <translation id="8749939518995770034">Se cerró la barra de pestañas</translation>
 <translation id="8820741577754260431">Visualiza los descuentos en las pestañas.</translation>

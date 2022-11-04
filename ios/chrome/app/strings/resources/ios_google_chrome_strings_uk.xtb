@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Веб-переглядачу Chrome не вдалося перевірити наявність оновлень. Повторіть спробу пізніше.</translation>
 <translation id="2732745070297234559">Chrome не вдалося перевірити всі паролі. Повторіть спробу завтра.</translation>
 <translation id="2869959624320573933">Увійдіть у Chrome</translation>
-<translation id="2919738076569633423">Користуючись Chrome, ви приймаєте <ph name="BEGIN_LINK_TOS" />Умови використання<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Виберіть <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Оскільки ви виходите з облікового запису, зареєстрованого в домені <ph name="SIGNOUT_MANAGED_DOMAIN" />, ваші дані Chrome буде видалено з цього пристрою. Вони залишаться в обліковому записі Chrome.</translation>
 <translation id="3167189358072330585">Ваш обліковий запис не працює в Google Chrome. Зв’яжіться з адміністратором свого домену або ввійдіть у звичайний обліковий запис Google.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Ви переходите з облікового запису для синхронізації <ph name="USER_EMAIL1" /> у <ph name="USER_EMAIL2" />. Ваші наявні дані Chrome збережені в домені <ph name="DOMAIN" />. Дані буде видалено з цього пристрою, але вони залишаться в обліковому записі <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Адміністратор вашої організації вимагає, щоб ви не входили в обліковий запис у Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome не має доступу до ваших фото чи відео. Надайте доступ у меню iOS "Параметри &gt; Конфіденційність &gt; Фото".</translation>
-<translation id="4099578267706723511">Допоможіть покращити Chrome, надсилаючи статистику та звіти про збої в Google.</translation>
 <translation id="417201473131094001">Не підтримується в Chrome Canary</translation>
 <translation id="4192781968753717021">Цей пароль розкрито через порушення безпеки даних. Google Менеджер паролів рекомендує негайно змінити його.</translation>
 <translation id="4233521129555661685">Користувач <ph name="USER_EMAIL1" /> застосовував Chrome і зберіг закладки, паролі й інші налаштування на цьому пристрої.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Про Google Chrome</translation>
 <translation id="7501046334262221972">Щоб зробити Chrome веб-переглядачем за умовчанням, відкрийте налаштування, натисніть "Веб-переглядач за умовчанням" і виберіть Chrome.</translation>
 <translation id="756809126120519699">Дані Chrome видалено</translation>
-<translation id="7626032353295482388">Вітаємо у Chrome!</translation>
 <translation id="7662994914830945754">Щоб переглядати свої вкладки Chrome на будь-якому пристрої, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="7693590760643069321">Тепер ви можете відкривати в Chrome посилання з повідомлень, документів та інших додатків.</translation>
 <translation id="7698568245838009292">Chrome потрібен доступ до камери</translation>

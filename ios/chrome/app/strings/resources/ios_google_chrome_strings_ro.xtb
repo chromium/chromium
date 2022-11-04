@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="2732745070297234559">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="2869959624320573933">Conectează-te la Chrome</translation>
-<translation id="2919738076569633423">Dacă folosești Chrome, accepți <ph name="BEGIN_LINK_TOS" />Termenii și condițiile<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Selectează <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chrome de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
 <translation id="3167189358072330585">Contul nu funcționează pe Google Chrome. Contactează administratorul domeniului sau folosește un Cont Google obișnuit pentru a te conecta.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chrome existente sunt gestionate de <ph name="DOMAIN" />. Astfel, se vor șterge datele de pe acest dispozitiv, dar datele vor rămâne în <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizația îți solicită să nu te conectezi la Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
-<translation id="4099578267706723511">Contribuie la îmbunătățirea Chrome trimițând statistici de utilizare și rapoarte de blocare la Google.</translation>
 <translation id="417201473131094001">Nu se acceptă pe Chrome Canary</translation>
 <translation id="4192781968753717021">Parola a fost găsită într-o încălcare a securității datelor. Managerul de parole Google recomandă să schimbi parola acum.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> folosea Chrome și marcajele, parolele și alte setări ale sale au rămas pe acest dispozitiv.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Despre Google Chrome</translation>
 <translation id="7501046334262221972">Pentru a seta Chrome ca browser prestabilit, deschide Setările. Atinge Aplicația browser prestabilită și selectează Chrome.</translation>
 <translation id="756809126120519699">Datele Chrome au fost șterse</translation>
-<translation id="7626032353295482388">Bun venit la Chrome</translation>
 <translation id="7662994914830945754">Pentru a vedea toate filele tale deschise în Chrome, conectează-te și activează sincronizarea</translation>
 <translation id="7693590760643069321">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="7698568245838009292">Chrome vrea să acceseze camera foto</translation>

@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">No es pot exportar <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolució de la foto</translation>
 <translation id="1925845977604399247">Ves a Galeria</translation>
+<translation id="199526504800285197">La gravació s'ha aturat</translation>
+<translation id="1995951722691075581">La gravació s'ha aturat perquè queda poc espai d'emmagatzematge al dispositiu. Per gravar més vídeos, has d'alliberar espai al dispositiu.</translation>
 <translation id="2022953316617983419">Codi QR</translation>
 <translation id="2036868001356139588">Durada del temporitzador</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Fes fotos i grava vídeos amb la càmera.</translation>
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
+<translation id="2577915835281444458">La gravació s'aturarà aviat. Ves a l'emmagatzematge del dispositiu per alliberar espai.</translation>
 <translation id="2599796128805996109">Càmera posterior</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Tipus de cerca</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Escaneja el codi de barres</translation>
 <translation id="3892148308691398805">Copia el text</translation>
+<translation id="4060608699153044055">No pots gravar perquè queda poc espai d'emmagatzematge al dispositiu. Per començar a gravar, has d'alliberar espai al dispositiu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Posa en pausa la gravació</translation>
 <translation id="4121305183798804752">S'ha detectat un document</translation>
@@ -160,6 +164,7 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="7748344063862150053">Extrem superior dret del document</translation>
 <translation id="7933675232020478311">S'està movent cap a la part inferior dreta</translation>
 <translation id="7983668134180549431">Text detectat.</translation>
+<translation id="8079255378695216066">No es pot iniciar la gravació</translation>
 <translation id="8120146556401698679">Panoràmica, inclinació i zoom</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8145038249676204903">Canvia al mode per fer fotos</translation>

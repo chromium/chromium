@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">നിങ്ങളുടെ ടാബുകളിൽ <ph name="NUMBER_OF_TABS" /> എണ്ണം അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ല. അവ അടയ്‌ക്കണോ?</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="125153950246128346">മറ്റൊരു ടാബ് കാണാൻ ടാപ്പ് ചെയ്യുക</translation>
-<translation id="1302104331113804646">നിരക്ക് ട്രാക്ക് ചെയ്യൽ ക്രമീകരണം</translation>
-<translation id="1378979118429748177">വിലയിടിയുമ്പോൾ അറിയിപ്പ് നേടുക</translation>
 <translation id="1403228085774130835">Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം</translation>
 <translation id="1455506303394048917">ഈ അദൃശ്യ ടാബുകളിൽ നിന്നുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി ഈ ഉപകരണത്തിൽ നിന്ന് മായ്ക്കും</translation>
 <translation id="1499635324672558517">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കണോ?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകൾ വീണ്ടും കാണിക്കേണ്ടതില്ലേ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് അടയ്‌ക്കുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ അടയ്‌ക്കുക}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.</translation>
-<translation id="860282621117673749">വിലയിടിവ് മുന്നറിയിപ്പുകൾ</translation>
 <translation id="8714939927607906138">കുറഞ്ഞ വില</translation>
 <translation id="8749939518995770034">തുറന്ന് വച്ച ടാബുകൾ അടച്ചു</translation>
 <translation id="8820741577754260431">നിങ്ങളുടെ ടാബുകളിൽ വിലയിടിവുകൾ കാണുക</translation>

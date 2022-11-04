@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> এক্সপোর্ট করা যাচ্ছে না</translation>
 <translation id="1899697626337024495">ফটো রেজোলিউশন</translation>
 <translation id="1925845977604399247">'গ্যালারি'তে যান</translation>
+<translation id="199526504800285197">রেকর্ডিং বন্ধ করা হয়েছে</translation>
+<translation id="1995951722691075581">ডিভাইস স্টোরেজ কম থাকার কারণে আপনার রেকর্ডিং বন্ধ হয়ে গেছে। আরও ভিডিও রেকর্ড করতে, আপনার ডিভাইসে জায়গা খালি করতে হবে।</translation>
 <translation id="2022953316617983419">QR কোড</translation>
 <translation id="2036868001356139588">টাইমারের সময়কাল</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">আপনার ক্যামেরা ব্যবহার করে ছবি তুলুন এবং ভিডিও রেকর্ড করুন।</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2549985041256363841">রেকর্ডিং শুরু করুন</translation>
+<translation id="2577915835281444458">রেকর্ডিং শীঘ্রই বন্ধ করা হবে। জায়গা খালি করতে ডিভাইস স্টোরেজে যান।</translation>
 <translation id="2599796128805996109">পিছনের ক্যামেরা</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />সেকেন্ড</translation>
 <translation id="2761536921376153655">স্ক্যানের ধরন</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">ভিডিও</translation>
 <translation id="3838931309141338733">বারকোড স্ক্যান করুন</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
+<translation id="4060608699153044055">ডিভাইস স্টোরেজ কম থাকার কারণে আপনি রেকর্ড করতে পারবেন না। রেকর্ডিং শুরু করতে, আপনার ডিভাইসে জায়গা খালি করতে হবে।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> এমপি</translation>
 <translation id="4118525110028899586">রেকর্ডিং পজ করুন</translation>
 <translation id="4121305183798804752">ডকুমেন্ট শনাক্ত হয়েছে</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">উপরে-ডানদিকের কোণার ডকুমেন্ট</translation>
 <translation id="7933675232020478311">নিচে ডানদিকে সরানো হচ্ছে</translation>
 <translation id="7983668134180549431">টেক্সট শনাক্ত করা গেছে।</translation>
+<translation id="8079255378695216066">রেকর্ডিং শুরু করা যাচ্ছে না</translation>
 <translation id="8120146556401698679">প্যান টিল্ট জুম</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8145038249676204903">ফটো মোডে পাল্টান</translation>

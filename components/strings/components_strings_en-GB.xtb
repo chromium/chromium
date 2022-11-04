@@ -1413,6 +1413,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4606870351894164739">Impactful</translation>
 <translation id="4607603470419975064">See Chrome tips button: press Enter to learn about Chrome features</translation>
 <translation id="4607608436550361748">See Chrome tips</translation>
+<translation id="4610279718074907952">This site is in a group, defined by <ph name="SET_OWNER" />, that can see your activity</translation>
 <translation id="4617273035598175554">Graphics and animation software</translation>
 <translation id="4622292761762557753">Transfer anyway</translation>
 <translation id="4627675673814409125">This policy cannot be set at the Chrome profile level and will be ignored.</translation>
@@ -2388,6 +2389,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7130775116821607281">Blocked upload</translation>
 <translation id="7132939140423847331">Your admin has prohibited this data from being copied.</translation>
 <translation id="7135130955892390533">Show status</translation>
+<translation id="7136009930065337683">Learn more about Incognito</translation>
 <translation id="7138472120740807366">Delivery method</translation>
 <translation id="7139892792842608322">Primary tray</translation>
 <translation id="714064300541049402">Side 2 image X shift</translation>

@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Nid yw <ph name="NUMBER_OF_TABS" /> o'ch tabiau wedi'u defnyddio'n ddiweddar. Cau'r tabiau?</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="125153950246128346">Tapiwch i weld tab arall</translation>
-<translation id="1302104331113804646">Gosodiadau dilyn prisiau</translation>
-<translation id="1378979118429748177">Cael hysbysiadau pan fydd prisiau'n gostwng</translation>
 <translation id="1403228085774130835">Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Tabiau diweddar o dan brif ddewislen Chrome</translation>
 <translation id="1455506303394048917">Bydd eich gweithgarwch yn y tabiau Anhysbys hyn yn cael ei glirio o'r ddyfais hon</translation>
 <translation id="1499635324672558517">Cau pob tab Anhysbys</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Peidio â dangos y stribed tabiau eto?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cau'r <ph name="TABS_COUNT_ONE" /> tab a ddewisir}zero{Cau'r <ph name="TABS_COUNT_MANY" /> tab a ddewisir}two{Cau'r <ph name="TABS_COUNT_MANY" /> dab a ddewisir}few{Cau'r <ph name="TABS_COUNT_MANY" /> thab a ddewisir}many{Cau'r <ph name="TABS_COUNT_MANY" /> thab a ddewisir}other{Cau'r <ph name="TABS_COUNT_MANY" /> tab a ddewisir}}</translation>
 <translation id="8557923272772633250">Ehangu'r grŵp tabiau sydd â <ph name="NUMBER_OF_TABS" /> o dabiau.</translation>
-<translation id="860282621117673749">Hysbysiadau gostyngiadau prisiau</translation>
 <translation id="8714939927607906138">Pris is</translation>
 <translation id="8749939518995770034">Wedi cau'r stribed tabiau</translation>
 <translation id="8820741577754260431">Gweld gostyngiadau prisiau yn eich tabiau</translation>

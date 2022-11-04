@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">‏Chrome اپ ڈیٹس چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2732745070297234559">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ کل دوبارہ کوشش کریں۔</translation>
 <translation id="2869959624320573933">‏Chrome میں سائن ان کریں</translation>
-<translation id="2919738076569633423">‏Chrome استعمال کر کے، آپ <ph name="BEGIN_LINK_TOS" />سروس کی شرائط<ph name="END_LINK_TOS" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="2957447865124070833">‏<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> منتخب کریں</translation>
 <translation id="3030414234702425231">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chrome ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
 <translation id="3167189358072330585">‏آپ کا اکاؤنٹ Google Chrome پر کام نہیں کرتا ہے۔ سائن ان کرنے کیلئے براہ کرم اپنے ڈومین کے منتظم سے رابطہ کریں یا ایک مستقل Google اکاؤنٹ استعمال کریں۔</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">‏آپ مطابقت پذیری اکاؤنٹس کو <ph name="USER_EMAIL1" /> سے <ph name="USER_EMAIL2" /> پر سوئچ کر رہے ہیں۔ آپ کا موجودہ Chrome ڈیٹا <ph name="DOMAIN" /> کے زیر انتظام ہے۔ اس سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن آپ کا ڈیٹا <ph name="USER_EMAIL1" /> میں باقی رہے گا۔</translation>
 <translation id="3984746313391923992">‏آپ کی تنظیم کا تقاضہ ہے کہ آپ Chrome سے سائن آؤٹ رہیں۔</translation>
 <translation id="3988789688219830639">‏Google Chrome کو آپ کی تصاویر یا ویڈیوز تک رسائی حاصل نہیں ہے۔ iOS ترتیبات &gt; رازداری &gt; تصاویر میں رسائی کو فعال کریں۔</translation>
-<translation id="4099578267706723511">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس بھیج کر Chrome کو بہتر بنانے میں مدد کریں۔</translation>
 <translation id="417201473131094001">‏Chrome Canary پر تعاون یافتہ نہیں ہے</translation>
 <translation id="4192781968753717021">‏یہ پاس ورڈ ڈیٹا کی خلاف ورزی میں ملا تھا۔ Google پاس ورڈ مینیجر آپ کے پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="4233521129555661685">‏<ph name="USER_EMAIL1" /> Chrome استعمال کر رہا تھا اور اس آلہ پر بُک مارکس، پاس ورڈز اور دیگر ترتیبات چھوڑ دی ہیں۔</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">‏Google Chrome کے بارے میں</translation>
 <translation id="7501046334262221972">‏Chrome کو اپنا ڈیفالٹ براؤزر بنانے کے لئے، ترتیبات کھولیں۔ ڈیفالٹ براؤزر ایپ پر تھپتھپائیں اور پھر Chrome منتخب کریں۔</translation>
 <translation id="756809126120519699">‏Chrome ڈیٹا صاف کر دیا گیا</translation>
-<translation id="7626032353295482388">‏Chrome میں خوش آمدید</translation>
 <translation id="7662994914830945754">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں کہیں بھی آپ Chrome استعمال کرتے ہیں، سائن ان کریں اور سِنک کو آن کریں</translation>
 <translation id="7693590760643069321">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس کو تھپتھپائیں تو آپ Chrome کا استعمال کر سکتے ہیں۔</translation>
 <translation id="7698568245838009292">‏Chrome کیمرے تک رسائی حاصل کرنا چاہے گا</translation>

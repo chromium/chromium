@@ -20,7 +20,6 @@
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
-<translation id="1104948393051856124">接受并继续</translation>
 <translation id="110724200315609752">切换到另一个已打开的窗口</translation>
 <translation id="1112015203684611006">打印操作失败。</translation>
 <translation id="1125564390852150847">创建新的标签页。</translation>
@@ -166,7 +165,6 @@
 <translation id="2302742851632557585">在网站上更改密码</translation>
 <translation id="2316709634732130529">使用建议的密码</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
-<translation id="2328842561016935977">点按“密码”，然后点按“添加”</translation>
 <translation id="2351097562818989364">您的翻译设置已重置。</translation>
 <translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2359043044084662842">翻译</translation>
@@ -228,6 +226,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">无法创建链接</translation>
 <translation id="2786701870377699570">跨各部已同步的设备搜索标签页</translation>
+<translation id="2797029671965852011">显示历史记录</translation>
 <translation id="2800683595868705743">离开标签页切换器</translation>
 <translation id="2815198996063984598">2. 点按“默认浏览器应用”</translation>
 <translation id="2820289420301699633">您的管理员控制着 Chrome，且可访问其中的数据</translation>
@@ -330,7 +329,9 @@
 <translation id="3530206579861815432">跨您的各部已同步的设备快速找到当前打开的和最近关闭的标签页。</translation>
 <translation id="3533202363250687977">关闭所有无痕式标签页</translation>
 <translation id="3533436815740441613">打开新的标签页</translation>
+<translation id="3540141921715814660">添加到“书签”</translation>
 <translation id="3551320343578183772">关闭标签页</translation>
+<translation id="3565207542107370586">清除浏览数据…</translation>
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
@@ -349,6 +350,7 @@
 <translation id="37207012422556617">热搜字词</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以无痕模式打开输入的网址。</translation>
 <translation id="3762232513783804601">专为 iPad 打造</translation>
+<translation id="3768725474733206671">重新打开最后关闭的标签页</translation>
 <translation id="3771033907050503522">无痕模式标签页</translation>
 <translation id="3775743491439407556">同步功能无法正常运行</translation>
 <translation id="3779810277399252432">无互联网连接。</translation>
@@ -360,9 +362,11 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3818293389945649617">查找下一个</translation>
 <translation id="3819183753496523827">您未联网。请检查您的互联网连接状况，然后重试。</translation>
+<translation id="3835964409414434850">转到下一个标签页</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3861486700625780712">取消关注</translation>
+<translation id="387280738075653372">可从此处下载 Chrome。</translation>
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3904829425754749514">贵组织已关闭同步功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
@@ -548,6 +552,7 @@
 <translation id="5300589172476337783">显示</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
+<translation id="536067926684072644">显示书签</translation>
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
 <translation id="5386314158584363703">您已关注的网站都会显示在此处</translation>
 <translation id="5388358297987318779">打开图片</translation>
@@ -580,6 +585,7 @@
 <translation id="5631164295104953411">添加付款方式</translation>
 <translation id="5636282538000367086">了解 Chrome 中的新变化</translation>
 <translation id="5652623411397330904">您跟踪的商品会在此处显示。</translation>
+<translation id="5657859710142657190">进入标签页网格</translation>
 <translation id="5659593005791499971">电子邮件</translation>
 <translation id="5669335982068190158">您在 iPhone 重置过程中退出了帐号。点按下方的“继续”即可登录。</translation>
 <translation id="5669528293118408608">www</translation>
@@ -596,6 +602,7 @@
 <translation id="5737974891429562743">帐号登录详细信息已过期，请进行更新以开始同步。</translation>
 <translation id="5738385766833540397">管理您所跟踪商品的降价提醒接收方式</translation>
 <translation id="5738887413654608789">这样可让您找到与目前周遭环境相关的网页。</translation>
+<translation id="5745916533876677730">转到上一个标签页</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
 <translation id="5765456154762864099">菜单 → 设置 → 默认浏览器</translation>
 <translation id="5782227691023083829">正在翻译...</translation>
@@ -612,6 +619,7 @@
 <translation id="5857090052475505287">新文件夹</translation>
 <translation id="5857675236236529683">准备就绪后，您可在此处找到自己的阅读清单</translation>
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
+<translation id="5859715514067755465">前进</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5869029295770560994">知道了</translation>
 <translation id="5871497086027727873">移动了1项</translation>
@@ -655,7 +663,7 @@
 <translation id="6149061208933997199">使用密码</translation>
 <translation id="6152406514676263192">开启同步功能后，您便会看到系统根据您的兴趣推荐的最相关的内容。</translation>
 <translation id="6159839020698489198">可选</translation>
-<translation id="6165508094623778733">了解详情</translation>
+<translation id="6170450281939467187">翻译失败</translation>
 <translation id="6177442314419606057">在 Chrome 中搜索</translation>
 <translation id="6184086493125982861">显示标签页</translation>
 <translation id="6187302354554850004">上次同步时间：<ph name="LAST_USED_TIME" /></translation>
@@ -691,6 +699,7 @@
 <translation id="6374469231428023295">重试</translation>
 <translation id="6377118281273296434">网站安全性</translation>
 <translation id="6380866119319257197">如果您忘记了密码或想更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
+<translation id="6383719166112032471">打开位置信息…</translation>
 <translation id="6387994324662817823">系统会将密码仅保存到此设备上的 Google 密码管理器中。</translation>
 <translation id="6389470377220713856">持卡人姓名</translation>
 <translation id="6403371459378431832">在所有设备上同步您的数据</translation>
@@ -702,6 +711,7 @@
 您的数据已于 <ph name="TIME" />使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="6418346271604475326">正在准备 PDF 文件</translation>
 <translation id="6434591244308415567">发生错误，请稍后重试。</translation>
+<translation id="6435236283694032571">添加到阅读清单</translation>
 <translation id="6439338047467462846">全部允许</translation>
 <translation id="6445051938772793705">国家/地区</translation>
 <translation id="6445981559479772097">短信已发送。</translation>
@@ -821,7 +831,6 @@
 <translation id="7291368939935408496">正在准备密码…</translation>
 <translation id="730958329302570991">随时都可轻松将登录网站时所用的密码添加到 Google 密码管理工具中。</translation>
 <translation id="7313347584264171202">您已打开的无痕模式标签页会显示在此处</translation>
-<translation id="7315813263062036945">点按左上角的“搜索”图标</translation>
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>
 <translation id="7346909386216857016">知道了</translation>
@@ -866,6 +875,7 @@
 <translation id="7701040980221191251">无</translation>
 <translation id="7720410380936703141">重试</translation>
 <translation id="7726702057919861819">菜单 → 历史 → 清除浏览数据</translation>
+<translation id="7738120385185846461">报告问题…</translation>
 <translation id="7741325291586284254">新的无痕式标签页</translation>
 <translation id="7756478488453921771">菜单 → 设置 → 付款方式</translation>
 <translation id="7765158879357617694">移动</translation>
@@ -962,6 +972,7 @@
 <translation id="8459333855531264009">不安全</translation>
 <translation id="8487667956631253959">已开启</translation>
 <translation id="8487700953926739672">可离线使用</translation>
+<translation id="8488923644885757471">打开新窗口</translation>
 <translation id="8490978609246021741">保存更改</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="850600235656508448">在无痕模式下打开</translation>
@@ -980,7 +991,6 @@
 <translation id="8605219856220328675">关闭标签页。</translation>
 <translation id="8620640915598389714">编辑</translation>
 <translation id="8626393685701737946">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版</translation>
-<translation id="863090005774946393">您的浏览器由贵单位管理。某些功能可能已停用。</translation>
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>
@@ -1015,6 +1025,7 @@
 <translation id="8881801611828450202">在 <ph name="SEARCH_ENGINE" /> 中搜索此图片</translation>
 <translation id="8891935667620843985">只需将 Chrome 设为默认浏览器应用，便可自动在 Chrome 中打开链接。</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
+<translation id="890565330728586731">返回</translation>
 <translation id="8909135823018751308">分享…</translation>
 <translation id="8911759861431145525">点按“添加”，然后输入您的信息</translation>
 <translation id="891658175948553296">在网站上突出显示文字</translation>

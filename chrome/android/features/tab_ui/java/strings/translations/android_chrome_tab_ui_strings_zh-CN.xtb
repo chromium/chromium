@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">您有 <ph name="NUMBER_OF_TABS" /> 个标签页最近未被使用过。关闭它们？</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="125153950246128346">点按即可查看另一标签页</translation>
-<translation id="1302104331113804646">价格跟踪设置</translation>
-<translation id="1378979118429748177">在商品降价时收到通知</translation>
 <translation id="1403228085774130835">您可通过在 Chrome 主菜单中点击“最近打开的标签页”找到您已关闭的标签页</translation>
 <translation id="1455506303394048917">您在这些无痕式标签页中的活动记录将从这个设备上清除</translation>
 <translation id="1499635324672558517">要关闭所有无痕式标签页吗？</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">不再显示标签栏？</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{关闭 <ph name="TABS_COUNT_ONE" /> 个所选标签页}other{关闭 <ph name="TABS_COUNT_MANY" /> 个所选标签页}}</translation>
 <translation id="8557923272772633250">展开包含 <ph name="NUMBER_OF_TABS" /> 个标签页的标签页组。</translation>
-<translation id="860282621117673749">降价提醒</translation>
 <translation id="8714939927607906138">降价了</translation>
 <translation id="8749939518995770034">已关闭标签栏</translation>
 <translation id="8820741577754260431">查看您打开的标签页上的降价商品</translation>

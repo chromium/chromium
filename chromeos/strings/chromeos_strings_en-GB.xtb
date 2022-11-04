@@ -220,6 +220,7 @@
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3156846309055100599">Scanning page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Captive portal detected</translation>
+<translation id="3160172848211257835">Send <ph name="BEGIN_LINK1" />system and app info<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Place your document on the scanner</translation>
 <translation id="3188257591659621405">My files</translation>
 <translation id="319101249942218879">Avatar image changed</translation>
@@ -481,7 +482,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5669267381087807207">Activating</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Family</translation>
-<translation id="5695599963893094957">Type any key on your keyboard. You can press up to four keys at the same time.</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
@@ -583,6 +583,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6575134580692778371">Not configured</translation>
 <translation id="6579509898032828423">Use this photo</translation>
 <translation id="6596816719288285829">IP Address</translation>
+<translation id="6599673642868607614">Thanks for your feedback. Your feedback helps us improve the Chromebook experience and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.</translation>
 <translation id="6618744767048954150">Running</translation>
 <translation id="6620487321149975369">Print jobs will appear in history unless they are removed manually</translation>
 <translation id="6624819909909965616">Can't upload file larger than 10 MB</translation>
@@ -691,6 +692,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7762130827864645708">Your password change was successful. Please use the new password from now on.</translation>
 <translation id="7763470514545477072">Domain suffix match</translation>
 <translation id="7769672763586021400">Model ID</translation>
+<translation id="7778717409420828014">Your feedback helps us improve the Chromebook experience and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.</translation>
 <translation id="7784116172884276937">No DNS servers are set up</translation>
 <translation id="779591286616261875">Send new report</translation>
 <translation id="7799817062559422778">Light mode</translation>

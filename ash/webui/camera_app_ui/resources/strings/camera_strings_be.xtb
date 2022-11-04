@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Не ўдалося экспартаваць файл "<ph name="FILE" />"</translation>
 <translation id="1899697626337024495">Раздзяляльнасць фота</translation>
 <translation id="1925845977604399247">Перайсці ў галерэю</translation>
+<translation id="199526504800285197">Запіс спынены</translation>
+<translation id="1995951722691075581">Запіс спынены: мала месца ў сховішчы прылады. Каб запісаць больш відэа, вызваліце месца.</translation>
 <translation id="2022953316617983419">QR-код</translation>
 <translation id="2036868001356139588">Час таймера</translation>
 <translation id="2050339315714019657">Кніжная</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Здымка камерай фота і відэа.</translation>
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2549985041256363841">Пачаць запіс</translation>
+<translation id="2577915835281444458">Запіс хутка спыніцца. Вызваліце месца ў сховішчы прылады.</translation>
 <translation id="2599796128805996109">Задняя камера</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> с</translation>
 <translation id="2761536921376153655">Тып праверкі</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Відэа</translation>
 <translation id="3838931309141338733">Сканіраваць штрыхкод</translation>
 <translation id="3892148308691398805">Скапіраваць тэкст</translation>
+<translation id="4060608699153044055">Запіс немагчымы: мала месца ў сховішчы прылады. Каб пачаць запіс, вызваліце месца.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Мпікс</translation>
 <translation id="4118525110028899586">Прыпыніць запіс</translation>
 <translation id="4121305183798804752">Выяўлены дакумент</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">Правы верхні вугал дакумента</translation>
 <translation id="7933675232020478311">Перамяшчаецца ўправа ўніз</translation>
 <translation id="7983668134180549431">Выяўлены тэкст.</translation>
+<translation id="8079255378695216066">Не ўдалося пачаць запіс</translation>
 <translation id="8120146556401698679">Зрушыць, нахіліць, змяніць маштаб</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8145038249676204903">Пераключыцца на здымку фота</translation>

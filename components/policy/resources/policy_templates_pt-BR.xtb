@@ -6432,6 +6432,11 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7274077256421167535">Ativar compartilhamento de energia via USB</translation>
 <translation id="7275334191706090484">Favoritos gerenciados</translation>
 <translation id="7275689301063927473">Nega a permissão para fontes locais em todos os sites por padrão</translation>
+<translation id="7275878175078795558">Se a política for definida como verdadeira, o <ph name="PRODUCT_NAME" /> sempre vai verificar a revogação de certificados de servidor validados com assinatura dos certificados de CA locais. Se o <ph name="PRODUCT_NAME" /> não conseguir informações sobre o status da revogação, o <ph name="PRODUCT_NAME" /> tratará esses certificados como revogados ("falha forçada").
+
+      Se a política for definida como falsa ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> vai usar configurações on-line de verificação da revogação.
+
+      No <ph name="MAC_OS_NAME" />, essa política não tem efeito quando a <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> é definida como falsa.</translation>
 <translation id="7278854311116092134">Nomes dos hosts de mensagens nativas a serem mantidos fora da lista de bloqueio</translation>
 <translation id="7291084543582732020">Se você ativar esta configuração, os usuários terão permissão para usar o Smart Lock caso os requisitos para o recurso sejam satisfeitos.
 

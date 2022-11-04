@@ -6324,6 +6324,11 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7274077256421167535">Energie delen via USB</translation>
 <translation id="7275334191706090484">Beheerde bookmarks</translation>
 <translation id="7275689301063927473">Het recht voor lokale lettertypen wordt standaard geweigerd voor alle sites</translation>
+<translation id="7275878175078795558">Als je het beleid instelt op True, voert <ph name="PRODUCT_NAME" /> altijd een intrekkingscontrole uit voor gevalideerde servercertificaten die zijn ondertekend door lokaal geïnstalleerde CA-certificaten. Als <ph name="PRODUCT_NAME" /> geen informatie over de intrekkingsstatus kan verkrijgen, beschouwt <ph name="PRODUCT_NAME" /> deze certificaten als ingetrokken ('hard-fail').
+
+      Als je het beleid instelt op False of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de bestaande instellingen voor online intrekkingscontrole.
+
+      Voor <ph name="MAC_OS_NAME" /> heeft dit beleid geen effect als het beleid <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> is ingesteld op False.</translation>
 <translation id="7278854311116092134">Namen van de hosts voor systeemeigen berichten die moeten worden vrijgesteld van de blokkeringslijst</translation>
 <translation id="7291084543582732020">Als je deze instelling aanzet, mogen gebruikers Smart Lock gebruiken als aan de vereisten voor de functie wordt voldaan.
 

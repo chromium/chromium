@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="125153950246128346">Башка өтмөктү көрүү үчүн таптап коюңуз</translation>
-<translation id="1302104331113804646">Бааларга көз салуу жөндөөлөрү</translation>
-<translation id="1378979118429748177">Баалар төмөндөгөндө билдирме алып турасыз</translation>
 <translation id="1403228085774130835">Жабылган өтмөктөрүңүздү Chome'дун негизги менюсундагы "Акыркы өтмөктөр" бөлүмүнөн таба аласыз</translation>
 <translation id="1455506303394048917">Ушул Жашыруун өтмөктөрдө издеген нерселериңиз бул түзмөктөн өчүрүлөт</translation>
 <translation id="1499635324672558517">Бардык жашыруун өтмөктөр жабылсынбы?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Өтмөк тасмасы экинчи көрсөтүлбөсүнбү?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> өтмөктөн турган өтмөктөр тобу жайылып көрүнсүн.</translation>
-<translation id="860282621117673749">Баалардын түшкөнү жөнүндө эскертүүлөр</translation>
 <translation id="8714939927607906138">Арзаныраак баа</translation>
 <translation id="8749939518995770034">Өтмөк тасмасы жабылды</translation>
 <translation id="8820741577754260431">Төмөндөгөн бааларды өтмөктөрдө көрөсүз</translation>

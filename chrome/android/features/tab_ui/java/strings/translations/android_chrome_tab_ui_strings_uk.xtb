@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="125153950246128346">Натисніть, щоб побачити іншу вкладку</translation>
-<translation id="1302104331113804646">Налаштування відстеження цін</translation>
-<translation id="1378979118429748177">Отримуйте сповіщення, коли ціни знижуються</translation>
 <translation id="1403228085774130835">Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome</translation>
 <translation id="1455506303394048917">Ваші дії на цих анонімних вкладках буде стерто з пристрою</translation>
 <translation id="1499635324672558517">Закрити всі анонімні вкладки?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Більше не показувати панель вкладок?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрити <ph name="TABS_COUNT_ONE" /> вибрану вкладку}one{Закрити <ph name="TABS_COUNT_MANY" /> вибрану вкладку}few{Закрити <ph name="TABS_COUNT_MANY" /> вибрані вкладки}many{Закрити <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Закрити <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
 <translation id="8557923272772633250">Розгорнути групу зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
-<translation id="860282621117673749">Сповіщення про зниження цін</translation>
 <translation id="8714939927607906138">Дешевше</translation>
 <translation id="8749939518995770034">Панель вкладок закрито</translation>
 <translation id="8820741577754260431">Переглядайте зниження цін на вкладках</translation>

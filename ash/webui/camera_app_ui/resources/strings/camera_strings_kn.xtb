@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> ರಫ್ತು ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1899697626337024495">ಫೋಟೋ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="1925845977604399247">ಗ್ಯಾಲರಿಗೆ ಹೋಗಿ</translation>
+<translation id="199526504800285197">ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
+<translation id="1995951722691075581">ಸಾಧನದಲ್ಲಿ ಕಡಿಮೆ ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳ ಇರುವ ಕಾರಣ ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಲಾಗಿದೆ. ಇನ್ನಷ್ಟು ವೀಡಿಯೊಗಳನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೀವು ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕು.</translation>
 <translation id="2022953316617983419">QR ಕೋಡ್</translation>
 <translation id="2036868001356139588">ಟೈಮರ್ ಅವಧಿ</translation>
 <translation id="2050339315714019657">ಪೋರ್ಟ್ರೇಟ್</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">ನಿಮ್ಮ ಕ್ಯಾಮರಾದ ಮೂಲಕ ಚಿತ್ರಗಳನ್ನು ತೆಗೆಯಿರಿ ಮತ್ತು ವೀಡಿಯೊಗಳನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಿ.</translation>
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
 <translation id="2549985041256363841">ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="2577915835281444458">ಶೀಘ್ರದಲ್ಲೇ ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಲಾಗುವುದು. ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಲು ಸಾಧನದ ಸಂಗ್ರಹಣೆಗೆ ಹೋಗಿ.</translation>
 <translation id="2599796128805996109">ಹಿಂಬದಿ ಕ್ಯಾಮರಾ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />ಸೆ</translation>
 <translation id="2761536921376153655">ಸ್ಕ್ಯಾನ್ ಪ್ರಕಾರ</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">ವೀಡಿಯೊ</translation>
 <translation id="3838931309141338733">ಬಾರ್‌ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="3892148308691398805">ಪಠ್ಯ ನಕಲಿಸಿ</translation>
+<translation id="4060608699153044055">ಸಾಧನದಲ್ಲಿ ಕಡಿಮೆ ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳ ಇರುವ ಕಾರಣ ನೀವು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೀವು ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕು.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ರೆಕಾರ್ಡಿಂಗ್ ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="4121305183798804752">ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">ಡಾಕ್ಯುಮೆಂಟ್ ಮೇಲಿನ ಬಲ ಮೂಲೆ</translation>
 <translation id="7933675232020478311">ಕೆಳಗೆ ಬಲ ದಿಕ್ಕಿನಲ್ಲಿ ಚಲಿಸುತ್ತಿದೆ</translation>
 <translation id="7983668134180549431">ಪಠ್ಯ ಪತ್ತೆಯಾಗಿದೆ.</translation>
+<translation id="8079255378695216066">ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8120146556401698679">ಪ್ಯಾನ್ ಮಾಡಿ ಟಿಲ್ಟ್ ಮಾಡಿ ಝೂಮ್ ಮಾಡಿ</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8145038249676204903">ಫೋಟೋ ತೆಗೆದುಕೊಳ್ಳಿ ಮೋಡ್‌ಗೆ ಬದಲಿಸಿ</translation>

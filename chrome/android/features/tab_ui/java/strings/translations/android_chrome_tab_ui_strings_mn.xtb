@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="125153950246128346">Өөр табыг харахын тулд товшино уу</translation>
-<translation id="1302104331113804646">Үнийн хяналтын тохиргоо</translation>
-<translation id="1378979118429748177">Үнэ буурсан тохиолдолд мэдэгдэл аваарай</translation>
 <translation id="1403228085774130835">Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табууд хэсгээс олох боломжтой</translation>
 <translation id="1455506303394048917">Таны эдгээр Нууцлалтай таб дахь үйл ажиллагааг энэ төхөөрөмжөөс арилгана</translation>
 <translation id="1499635324672558517">Бүх Нууцлалтай табыг хаах уу?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Tab мессежийг дахин харуулахгүй байх уу?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> таб бүхий бүлэг табыг дэлгэх.</translation>
-<translation id="860282621117673749">Үнэ бууралтын сэрэмжлүүлэг</translation>
 <translation id="8714939927607906138">Илүү хямд үнэ</translation>
 <translation id="8749939518995770034">Tab мессежийг хаасан</translation>
 <translation id="8820741577754260431">Табууд дээрх үнэ бууралтыг хараарай</translation>

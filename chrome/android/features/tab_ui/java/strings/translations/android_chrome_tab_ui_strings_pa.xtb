@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">ਤੁਹਾਡੀਆਂ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਦੀ ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੋਂ ਨਹੀਂ ਹੋਈ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="125153950246128346">ਕਿਸੇ ਹੋਰ ਟੈਬ ਨੂੰ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
-<translation id="1302104331113804646">ਕੀਮਤ 'ਤੇ ਨਜ਼ਰ ਰੱਖਣ ਸੰਬੰਧੀ ਸੈਟਿੰਗਾਂ</translation>
-<translation id="1378979118429748177">ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1403228085774130835">ਤੁਸੀਂ Chrome ਦੇ ਮੁੱਖ ਮੀਨੂ ਦੇ ਅਧੀਨ 'ਹਾਲੀਆ ਟੈਬਾਂ' ਵਿੱਚ ਆਪਣੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਟੈਬਾਂ ਲੱਭ ਸਕਦੇ ਹੋ</translation>
 <translation id="1455506303394048917">ਇਨ੍ਹਾਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਵਿਚਲੀ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="1499635324672558517">ਕੀ ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">ਕੀ ਟੈਬ ਪੱਟੀ ਨੂੰ ਦੁਬਾਰਾ ਨਹੀਂ ਦਿਖਾਉਣਾ ਹੈ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਬੰਦ ਕਰੋ}one{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਬੰਦ ਕਰੋ}other{ਚੁਣੀਆਂ ਹੋਈਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਬੰਦ ਕਰੋ}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।</translation>
-<translation id="860282621117673749">ਕੀਮਤ ਘਟਣ ਦੀਆਂ ਸੁਚੇਤਨਾਵਾਂ</translation>
 <translation id="8714939927607906138">ਘੱਟ ਕੀਮਤ</translation>
 <translation id="8749939518995770034">ਬੰਦ ਕੀਤੀ ਟੈਬ ਪੱਟੀ</translation>
 <translation id="8820741577754260431">ਆਪਣੀਆਂ ਟੈਬਾਂ 'ਤੇ ਘਟੀ ਕੀਮਤ ਦੇਖੋ</translation>

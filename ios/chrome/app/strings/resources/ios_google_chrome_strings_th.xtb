@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="2732745070297234559">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
 <translation id="2869959624320573933">ลงชื่อเข้าใช้ Chrome</translation>
-<translation id="2919738076569633423">การใช้ Chrome หมายความว่าคุณยอมรับ<ph name="BEGIN_LINK_TOS" />ข้อกำหนดในการให้บริการ<ph name="END_LINK_TOS" /></translation>
 <translation id="2957447865124070833">เลือก <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">เนื่องจากคุณกำลังออกจากระบบบัญชีที่จัดการโดย <ph name="SIGNOUT_MANAGED_DOMAIN" /> ข้อมูล Chrome ของคุณจะถูกลบออกจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ในบัญชี Google</translation>
 <translation id="3167189358072330585">บัญชีของคุณใช้งานไม่ได้บน Google Chrome โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">คุณกำลังเปลี่ยนบัญชีในการซิงค์จาก <ph name="USER_EMAIL1" /> เป็น <ph name="USER_EMAIL2" /> ข้อมูล Chrome ที่มีอยู่ของคุณจัดการโดย <ph name="DOMAIN" /> การเปลี่ยนบัญชีจะลบข้อมูลจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ใน <ph name="USER_EMAIL1" /></translation>
 <translation id="3984746313391923992">องค์กรกำหนดให้คุณออกจากระบบ Chrome ต่อไป</translation>
 <translation id="3988789688219830639">Google Chrome ไม่มีสิทธิ์เข้าถึงรูปภาพหรือวิดีโอของคุณ เปิดการเข้าถึงได้ในการตั้งค่า iOS &gt; ความเป็นส่วนตัว &gt; รูปภาพ</translation>
-<translation id="4099578267706723511">ช่วยให้ Chrome ทำงานได้ดีขึ้นโดยส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google</translation>
 <translation id="417201473131094001">ไม่รองรับใน Chrome Canary</translation>
 <translation id="4192781968753717021">ระบบพบว่ารหัสผ่านนี้มีการรั่วไหลจากการละเมิดข้อมูล Google เครื่องมือจัดการรหัสผ่านแนะนำให้เปลี่ยนรหัสผ่านทันที</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> ได้ใช้ Chrome และเก็บบุ๊กมาร์ก รหัสผ่าน รวมถึงการตั้งค่าอื่นๆ ไว้ในอุปกรณ์นี้</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">เกี่ยวกับ Google Chrome</translation>
 <translation id="7501046334262221972">หากต้องการกำหนดให้ Chrome เป็นเบราว์เซอร์เริ่มต้น ให้เปิดการตั้งค่า แล้วแตะ "แอปเบราว์เซอร์เริ่มต้น" จากนั้นเลือก Chrome</translation>
 <translation id="756809126120519699">ล้างข้อมูล Chrome แล้ว</translation>
-<translation id="7626032353295482388">ยินดีต้อนรับสู่ Chrome</translation>
 <translation id="7662994914830945754">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
 <translation id="7693590760643069321">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="7698568245838009292">Chrome ต้องการเข้าถึงกล้องถ่ายรูป</translation>

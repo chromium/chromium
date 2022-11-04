@@ -540,6 +540,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1495677929897281669">Back to tab</translation>
 <translation id="1500297251995790841">Unknown device [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Learn more about unsupported Chrome Apps</translation>
+<translation id="1503392482221435031">Automatically sends usage statistics to Google. You can turn crash reports on or off in your device's settings.</translation>
 <translation id="150411034776756821">Remove <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Shared folders are available in Windows at <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">export passwords</translation>
@@ -2702,6 +2703,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3461766685318630278">Create and delete extra containers.</translation>
 <translation id="3462311546193741693">Signs you out of most sites. You'll stay signed in to your Google Account so that your synced data can be cleared.</translation>
 <translation id="3462413494201477527">Cancel account setup?</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} password is saved on this device}other{{COUNT} passwords are saved on this device}}</translation>
 <translation id="346298925039590474">This mobile network will be available to all users on this device</translation>
 <translation id="3464145797867108663">Add work profile</translation>
 <translation id="346431825526753">This is an account for kids managed by <ph name="CUSTODIAN_EMAIL" />.</translation>
@@ -2998,6 +3000,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3743842571276656710">Enter PIN to pair with <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.</translation>
 <translation id="3747603683749989726">Turn on enhanced security?</translation>
+<translation id="3748424433435232460">A password for this account is already saved on this device</translation>
 <translation id="3748706263662799310">Report a bug</translation>
 <translation id="3750562496035670393">Chrome saved your password to this device, but you can save it to your Google Account instead. Then, all passwords in your Google Account will also be available while you're signed in.</translation>
 <translation id="3752253558646317685">Get your child to keep lifting their finger to save the fingerprint</translation>
@@ -3102,7 +3105,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3828029223314399057">Search bookmarks</translation>
 <translation id="3828953470056652895">I have read and agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />Play Terms of Service<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">SMB file share</translation>
-<translation id="3830268140528557982">on <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Your administrator turned 1 potentially harmful extension back on}other{Your administrator turned {NUM_EXTENSIONS} potentially harmful extensions back on}}</translation>
 <translation id="3831436149286513437">Google Drive search suggestions</translation>
 <translation id="3834728400518755610">The change in microphone setting requires Linux to shut down. Shut down Linux to proceed.</translation>
@@ -3179,6 +3181,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3897746662269329507">Your <ph name="DEVICE_TYPE" /> is built for gaming. The Explore app will open next where you can access hundreds of the latest games, see gaming offers and discover gaming features that come with your device.</translation>
 <translation id="3898233949376129212">Device language</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> wants to: <ph name="FIRST_PERMISSION" /> and <ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">Your password for <ph name="WEBSITE" /> is saved on this device and to your Google Account. Which one do you want to delete?</translation>
 <translation id="389901847090970821">Select keyboard</translation>
 <translation id="3900966090527141178">Export passwords</translation>
 <translation id="3902789559055749153">Choose how you want to create a passkey for <ph name="APP_NAME" /></translation>
@@ -3868,7 +3871,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4556194354084985730">Easily sign in to sites and apps with your saved passwords. When turned off, you’ll be asked before signing in.</translation>
 <translation id="4558426062282641716">Auto-launch permission requested</translation>
 <translation id="4559617833001311418">This site is accessing your motion or light sensors.</translation>
-<translation id="4561098487691395071">Or specify your printer PPD</translation>
 <translation id="4561893854334016293">No recently changed permissions</translation>
 <translation id="4562155214028662640">Add Fingerprint</translation>
 <translation id="4563210852471260509">Initial input language is Chinese</translation>
@@ -4761,7 +4763,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5427278936122846523">Always Translate</translation>
 <translation id="5427459444770871191">Rotate &amp;Clockwise</translation>
 <translation id="542750953150239272">By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
-<translation id="5427936139162668357">View PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update is available)</translation>
 <translation id="542948651837270806">An update for the trusted platform module firmware needs to be installed. See <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Fullwidth</translation>
@@ -5912,6 +5913,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Media licence</translation>
 <translation id="6511827214781912955">Consider deleting <ph name="FILENAME" />, so that others who use this device can't see your passwords</translation>
+<translation id="6512808201725371249">A password for this account is already saved to your Google Password Manager (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome will use mobile data if you're not connected to another network.</translation>
 <translation id="6514010653036109809">Available device:</translation>
 <translation id="6514565641373682518">This page has disabled your mouse cursor.</translation>
@@ -6330,6 +6332,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6897363604023044284">Choose sites to clear</translation>
 <translation id="6897688156970667447">Helpful in low light and saves battery</translation>
+<translation id="6897972855231767338">Learn more about browsing as a guest</translation>
 <translation id="6898440773573063262">Kiosk applications can now be configured to auto-launch on this device.</translation>
 <translation id="6900284862687837908">Background App: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
@@ -8635,6 +8638,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> wants to access the following content:</translation>
 <translation id="9057354806206861646">Update schedule</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{About 1 notification a day}other{About {NUM_NOTIFICATION} notifications a day}}</translation>
+<translation id="9061383912634843744">Automatically sign in to sites and apps using saved credentials. If turned off, you'll be asked for confirmation every time before signing in to a site or app.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Enable Auto-fill to fill out forms in a single click</translation>

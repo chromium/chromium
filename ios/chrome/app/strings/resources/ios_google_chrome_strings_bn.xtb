@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome-এ আপডেট চেক করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="2732745070297234559">Chrome সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করে দেখুন।</translation>
 <translation id="2869959624320573933">Chrome-এ সাইন-ইন করুন</translation>
-<translation id="2919738076569633423">Chrome ব্যবহার করে আপনি <ph name="BEGIN_LINK_TOS" />পরিষেবার শর্তাবলী<ph name="END_LINK_TOS" />তে সম্মতি জানাচ্ছেন।</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বেছে নিন</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> দ্বারা ম্যানেজ করা একটি অ্যাকাউন্ট থেকে আপনি সাইন-আউট করছেন বলে, এই ডিভাইস থেকে আপনার Chrome ডেটা মুছে যাবে। আপনার Google অ্যাকাউন্টে এই ডেটা থেকে যাবে।</translation>
 <translation id="3167189358072330585">আপনার অ্যাকাউন্ট Google Chrome-এ কাজ করে না৷ সাইন-ইন করার জন্য আপনার ডোমেন অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন বা কোন সাধারণ Google অ্যাকাউন্ট ব্যবহার করুন৷</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">আপনি সিঙ্ক অ্যাকাউন্টগুলিকে <ph name="USER_EMAIL1" /> থেকে <ph name="USER_EMAIL2" /> এ সুইচ করছেন। আপনার বিদ্যমান Chrome ডেটা <ph name="DOMAIN" /> দ্বারা পরিচালিত হয়। এটি এই ডিভাইস থেকে আপনার ডেটা মুছে দেবে, কিন্তু <ph name="USER_EMAIL1" /> এ আপনার ডেটা থাকবে।</translation>
 <translation id="3984746313391923992">আপনার সংস্থা আপনাকে Chrome থেকে সাইন-আউট করে থাকতে বলছে।</translation>
 <translation id="3988789688219830639">আপনার ছবি বা ভিডিওতে Google Chrome এর অ্যাক্সেস নেই। iOS সেটিংস &gt; গোপনীয়তা &gt; ফটোগুলিতে অ্যাক্সেস সক্ষম করুন।</translation>
-<translation id="4099578267706723511">Google-এ ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্টগুলি পাঠিয়ে Chrome-কে আরও ভাল করে তুলতে সহায়তা করুন৷</translation>
 <translation id="417201473131094001">'Chrome ক্যানারি'তে এই সুবিধা পাওয়া যাবে না</translation>
 <translation id="4192781968753717021">ডেটা লঙ্ঘনের ঘটনাতে এই পাসওয়ার্ডটি পাওয়া গেছে। Google Password Manager আপনার পাসওয়ার্ড এখনই পরিবর্তন করতে সাজেস্ট করছে।</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> Chrome ব্যবহার করছিলেন এবং এই ডিভাইসে বুকমার্ক, পাসওয়ার্ড এবং অন্যান্য সেটিংস রয়ে গেছে।</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Google Chrome সম্বন্ধে</translation>
 <translation id="7501046334262221972">Chrome-কে আপনার 'ডিফল্ট ব্রাউজার' হিসেবে সেট করতে, সেটিংস খুলুন। 'ডিফল্ট ব্রাউজার' অ্যাপে ট্যাপ করুন এবং Chrome বিকল্প বেছে নিন।</translation>
 <translation id="756809126120519699">Chrome ডেটা সাফ হয়েছে</translation>
-<translation id="7626032353295482388">Chrome এ স্বাগতম</translation>
 <translation id="7662994914830945754">একাধিক ডিভাইসে সাইন-ইন করে থাকুন ও সিঙ্ক চালু করে রাখুন, যাতে আপনি যেখান থেকেই Chrome ব্যবহার করুন না কেন, সেখানেই আপনি নিজের ট্যাবগুলি দেখতে পারেন</translation>
 <translation id="7693590760643069321">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্কে ট্যাপ করে তা যেকোনও সময় Chrome ব্রাউজারে খুলতে পারেন।</translation>
 <translation id="7698568245838009292">Chrome ক্যামেরা অ্যাক্সেস করতে চাইবে</translation>

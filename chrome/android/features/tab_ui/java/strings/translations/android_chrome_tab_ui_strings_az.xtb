@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> tab son zamanlarda istifadə edilməyib. Onlar bağlansın?</translation>
 <translation id="1181037720776840403">Silin</translation>
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
-<translation id="1302104331113804646">Qiymət izləmə ayarları</translation>
-<translation id="1378979118429748177">Qiymət endirildikdə bildiriş alın</translation>
 <translation id="1403228085774130835">Qapalı tablarınızı Chrome əsas menyusunda Son tablarda tapa bilərsiniz</translation>
 <translation id="1455506303394048917">Bu Anonim tablardakı fəaliyyətiniz bu cihazdan silinəcək</translation>
 <translation id="1499635324672558517">Bütün Anonim tablar bağlansın?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Tab zolağı bir daha göstərilməsin?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> tabeli bağlayın}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> tabeli bağlayın}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> tab olan tab qrupunu genişləndirin.</translation>
-<translation id="860282621117673749">Qiymət endirimi siqnalları</translation>
 <translation id="8714939927607906138">Aşağı qiymət</translation>
 <translation id="8749939518995770034">Tab zolağı bağlıdır</translation>
 <translation id="8820741577754260431">Tablarda qiymət endirimləri göstərilsin</translation>

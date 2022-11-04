@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
 <translation id="2732745070297234559">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="2869959624320573933">Logga in i Chrome</translation>
-<translation id="2919738076569633423">Genom att använda Chrome godkänner du <ph name="BEGIN_LINK_TOS" />användarvillkoren<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Välj <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Din data i Chrome raderas från den här enheten eftersom du loggar ut från ett konto som hanteras av <ph name="SIGNOUT_MANAGED_DOMAIN" />. Din data finns kvar i Google-kontot.</translation>
 <translation id="3167189358072330585">Kontot fungerar inte på Google Chrome. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chrome hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisationen kräver att du inte loggar in i Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
-<translation id="4099578267706723511">Hjälp till att förbättra Chrome genom att skicka användningsstatistik och felrapporter till Google.</translation>
 <translation id="417201473131094001">Stöds inte på Chrome Canary</translation>
 <translation id="4192781968753717021">Detta lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta dina lösenord nu.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> använde Chrome och har lämnat kvar bokmärken, lösenord och andra inställningar på enheten.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Om Google Chrome</translation>
 <translation id="7501046334262221972">Öppna inställningarna för att välja Chrome som standardwebbläsare. Tryck på Standardwebbläsarapp och välj sedan Chrome.</translation>
 <translation id="756809126120519699">Data i Chrome har rensats</translation>
-<translation id="7626032353295482388">Välkommen till Chrome</translation>
 <translation id="7662994914830945754">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="7693590760643069321">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="7698568245838009292">Chrome vill ha tillgång till kameran</translation>

@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
 <translation id="1181037720776840403">Kaldır</translation>
 <translation id="125153950246128346">Başka bir sekmeyi görmek için dokunun</translation>
-<translation id="1302104331113804646">Fiyat takibi ayarları</translation>
-<translation id="1378979118429748177">Fiyatlar düştüğünde haberdar olun</translation>
 <translation id="1403228085774130835">Kapatılan sekmelerinizi, Chrome ana menüsündeki son sekmelerde bulabilirsiniz</translation>
 <translation id="1455506303394048917">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>
 <translation id="1499635324672558517">Tüm gizli sekmeler kapatılsın mı?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Sekme şeridi tekrar gösterilmesin mi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi kapat}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu genişlet.</translation>
-<translation id="860282621117673749">Fiyat düşüşü uyarıları</translation>
 <translation id="8714939927607906138">Daha düşük fiyat</translation>
 <translation id="8749939518995770034">Sekme şeridi kapalı</translation>
 <translation id="8820741577754260431">Sekmelerinizde fiyat düşüşlerini görün</translation>

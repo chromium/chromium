@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
-<translation id="102360288709523007">Ndihmo në përmirësimin e Chromium duke dërguar te Google statistika përdorimi dhe raporte të ndërprerjeve aksidentale.</translation>
 <translation id="1047130070405668746">Zgjidh Chromium</translation>
 <translation id="1091252999271033193">Kjo do të thotë që Chromium do kërkojë sajtin në celular çdo herë.</translation>
 <translation id="1185134272377778587">Rreth Chromium</translation>
@@ -72,10 +71,8 @@
 <translation id="5573014823074921752">Këshillë për Chromium. Për më shumë opsione për skedat, shtyp dhe mbaj shtypur butonin "Shfaq skedat" në shiritin e veglave që ndodhet në fund ose në krye të ekranit tënd.</translation>
 <translation id="5700709190537129682">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua</translation>
 <translation id="5777187867430702742">Faqe e Chromium</translation>
-<translation id="5862307444128926510">Mirë se vjen në Chromium</translation>
 <translation id="5945387852661427312">Po identifikohesh me një llogari të menaxhuar nga <ph name="DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chromium. Të dhënat e tua do të lidhen përgjithmonë me këtë llogari. Dalja nga Chromium do të bëjë që të fshihen të dhënat e tua nga kjo pajisje, por ato do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
 <translation id="5983312940147103417">Përmirëso Chromium</translation>
-<translation id="602807004951640891">Duke përdorur Chromium, ti pranon <ph name="BEGIN_LINK_TOS" />Kushtet e shërbimit<ph name="END_LINK_TOS" />.</translation>
 <translation id="6062449165341879460">Organizata jote <ph name="DOMAIN" /> do të ketë qasje te të dhënat, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tua të tjera të Chromium që ti ruan në këtë llogari. Kur të dalësh nga llogaria, të dhënat e tua do të pastrohen nga kjo pajisje.  Sidoqoftë, të dhënat e tua do të qëndrojnë të ruajtura në "Llogarinë tënde të menaxhuar të Google" dhe do të jenë të disponueshme për organizatën tënde. Organizata jote mund të caktojë po ashtu politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chromium.</translation>
 <translation id="6119647025869519954">Për ta bërë Chromium shfletuesin e parazgjedhur:
 1. Hap "Cilësimet"

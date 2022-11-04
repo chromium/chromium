@@ -1413,6 +1413,7 @@
 <translation id="4606870351894164739">Упечатљиво</translation>
 <translation id="4607603470419975064">Дугме Погледајте Chrome савете, притисните Enter да бисте сазнали више о Chrome функцијама</translation>
 <translation id="4607608436550361748">Прикажи Chrome савете</translation>
+<translation id="4610279718074907952">Овај сајт је у групи, коју дефинише <ph name="SET_OWNER" />, који може да види ваше активности</translation>
 <translation id="4617273035598175554">Софтвер за графику и анимацију</translation>
 <translation id="4622292761762557753">Ипак пренеси</translation>
 <translation id="4627675673814409125">Ове смернице не могу да се подесе на нивоу Chrome профила и биће занемарене.</translation>
@@ -2387,6 +2388,7 @@
 <translation id="7130775116821607281">Отпремање је блокирано</translation>
 <translation id="7132939140423847331">Администратор је забранио копирање ових података.</translation>
 <translation id="7135130955892390533">Прикажи статус</translation>
+<translation id="7136009930065337683">Сазнајте више о режиму без архивирања</translation>
 <translation id="7138472120740807366">Начин испоруке</translation>
 <translation id="7139892792842608322">Примарна фиока</translation>
 <translation id="714064300541049402">Померање слике 2. стране по X оси</translation>

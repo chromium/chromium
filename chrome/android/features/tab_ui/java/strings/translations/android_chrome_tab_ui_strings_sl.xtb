@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Toliko zavihkov nedavno niste uporabljali: <ph name="NUMBER_OF_TABS" />. Ali jih želite zapreti?</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="125153950246128346">Dotaknite se, če želite prikazati drug zavihek</translation>
-<translation id="1302104331113804646">Nastavitve spremljanja cen</translation>
-<translation id="1378979118429748177">Prejmite obvestila ob znižanju cen.</translation>
 <translation id="1403228085774130835">Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma.</translation>
 <translation id="1455506303394048917">Vaša dejavnost na teh anonimnih zavihkih bo izbrisana iz te naprave.</translation>
 <translation id="1499635324672558517">Želite zapreti vse anonimne zavihke?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Ne želite več prikazati traku z zavihki?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zapiranje <ph name="TABS_COUNT_ONE" /> izbranega zavihka}one{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranega zavihka}two{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}few{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}other{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="8557923272772633250">Razširitev skupine zavihkov s toliko zavihki: <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="860282621117673749">Opozorila glede znižanja cen</translation>
 <translation id="8714939927607906138">Nižja cena</translation>
 <translation id="8749939518995770034">Zaprt trak z zavihki</translation>
 <translation id="8820741577754260431">Oglejte si znižanja cen na zavihkih.</translation>

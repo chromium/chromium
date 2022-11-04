@@ -3088,7 +3088,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3828029223314399057">Prehľadať záložky</translation>
 <translation id="3828953470056652895">Prečítal(a) som si <ph name="BEGIN_LINK1" />zmluvné podmienky spoločnosti Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />dodatočné zmluvné podmienky prehliadača Chrome a systému Chrome OS<ph name="END_LINK2" /> aj <ph name="BEGIN_LINK3" />zmluvné podmienky služby Play<ph name="END_LINK3" /> a súhlasím s nimi.</translation>
 <translation id="3829765597456725595">Zdieľané úložisko SMB</translation>
-<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Váš správca znova zapol 1 potenciálne škodlivé rozšírenie}few{Váš správca znova zapol {NUM_EXTENSIONS} potenciálne škodlivé rozšírenia}many{Your administrator turned {NUM_EXTENSIONS} potentially harmful extensions back on}other{Váš správca znova zapol {NUM_EXTENSIONS} potenciálnych škodlivých rozšírení}}</translation>
 <translation id="3831436149286513437">Návrhy vyhľadávania z Disku Google</translation>
 <translation id="3834728400518755610">Zmena nastavenia mikrofónu vyžaduje vypnutie systému Linux. Pokračujte vypnutím systému Linux.</translation>
@@ -3853,7 +3852,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4556194354084985730">Uloženými heslami sa môžete jednoducho prihlasovať na weboch a v aplikáciách. Keď je táto možnosť vypnutá, pred prihlásením sa zobrazí výzva.</translation>
 <translation id="4558426062282641716">Požaduje sa povolenie na automatické spustenie</translation>
 <translation id="4559617833001311418">Tento web má prístup k senzorom pohybu alebo svetla.</translation>
-<translation id="4561098487691395071">Alebo špecifikujte tlačiareň PPD</translation>
 <translation id="4561893854334016293">Žiadne nedávno zmenené povolenia</translation>
 <translation id="4562155214028662640">Pridať odtlačok</translation>
 <translation id="4563210852471260509">Úvodný jazyk vstupu: čínština</translation>
@@ -4746,7 +4744,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5427278936122846523">Vždy prekladať</translation>
 <translation id="5427459444770871191">Otočiť &amp;v smere hodinových ručičiek</translation>
 <translation id="542750953150239272">Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, vášho operátora a výrobcu zariadenia a v prípade potreby pri tom môže používať mobilné dáta. Niektoré tieto aplikácie môžu ponúkať nákupy v aplikácii.</translation>
-<translation id="5427936139162668357">Zobraziť PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (K dispozícií je aktualizácia)</translation>
 <translation id="542948651837270806">Musíte nainštalovať aktualizáciu firmvéru Trusted Platform Module. Pozrite si <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5429818411180678468">Celá šírka</translation>

@@ -20,7 +20,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1084365883616172403">Facebook post completed.</translation>
 <translation id="1085696779717592361">Use Chrome by default</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
-<translation id="1104948393051856124">Accept &amp; Continue</translation>
 <translation id="110724200315609752">Switch to open window</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
 <translation id="1125564390852150847">Create new tab.</translation>
@@ -103,6 +102,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1657641691196698092">Blocked cookies</translation>
 <translation id="165877110639533037">No open tabs</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">Request Mobile Site</translation>
 <translation id="168715261339224929">To get your bookmarks on all your devices, turn on sync.</translation>
 <translation id="1687475363370981210">Mark All Read</translation>
 <translation id="1689333818294560261">Nickname</translation>
@@ -166,7 +166,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2302742851632557585">Change password on website</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
-<translation id="2328842561016935977">Tap Passwords then tap add</translation>
 <translation id="2351097562818989364">Your translate settings have been reset.</translation>
 <translation id="235789365079050412">Google Privacy Policy</translation>
 <translation id="2359043044084662842">Translate</translation>
@@ -245,6 +244,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="288655811176831528">Close Tab</translation>
 <translation id="2890171748217283516">The sites that you follow are saved in your Google Account. You can Manage them in Discover settings.</translation>
 <translation id="2898963176829412617">New Folder…</translation>
+<translation id="2902684821701498619">Add to Reading List</translation>
 <translation id="2916171785467530738">Autocomplete searches and URLs</translation>
 <translation id="291754862089661335">Position QR code or bar code in this frame</translation>
 <translation id="2920866371965792875">To see updates from this site, follow it here.</translation>
@@ -322,6 +322,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3478058380795961209">Month of Expiry</translation>
 <translation id="3482959374254649722">Syncing your tabs...</translation>
 <translation id="3484946776651937681">Open in downloads</translation>
+<translation id="3485558910355485767">New incognito window</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about suggested content</translation>
 <translation id="3494788280727468875">Confirm clear browsing data</translation>
 <translation id="35083190962747987">Open ${url}</translation>
@@ -368,6 +369,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="385051799172605136">Back</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3861486700625780712">Unfollow</translation>
+<translation id="3863769054730344136">Send to Your Devices</translation>
 <translation id="387280738075653372">Download Chrome here.</translation>
 <translation id="3892144330757387737">You'll find your history here</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -591,6 +593,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5659593005791499971">Email</translation>
 <translation id="5669335982068190158">You were signed out as part of your iPhone reset. Tap continue below to sign in.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">Create a QR Code</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Now showing 1 Chrome window}other{Now showing {count} Chrome windows}}</translation>
 <translation id="5701270923492462699">Camera access allowed</translation>
@@ -665,7 +668,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6149061208933997199">Use Password</translation>
 <translation id="6152406514676263192">Sync for the most relevant content based on your interests.</translation>
 <translation id="6159839020698489198">optional</translation>
-<translation id="6165508094623778733">Learn more</translation>
 <translation id="6170450281939467187">Translation failed</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6184086493125982861">Show Tabs</translation>
@@ -676,6 +678,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6219550825416862075">Welcome back</translation>
 <translation id="6219688215832490856">Never translate</translation>
 <translation id="6223816392543092032">Get your bookmarks, history, passwords and other settings on all your devices.</translation>
+<translation id="6229318421047648685">Request Desktop Site</translation>
 <translation id="6231782223312638214">Suggested</translation>
 <translation id="6232329973559504466">Incognito search</translation>
 <translation id="6232736989810857397">This allows you to easily create calendar events using Google Lens.</translation>
@@ -834,7 +837,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7291368939935408496">Preparing Passwords…</translation>
 <translation id="730958329302570991">Easily add site passwords to Google Password Manager at any time.</translation>
 <translation id="7313347584264171202">You'll find your Incognito tabs here</translation>
-<translation id="7315813263062036945">At the top left, tap the Search icon</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
 <translation id="7346909386216857016">OK, got it</translation>
@@ -995,7 +997,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Edit</translation>
 <translation id="8626393685701737946">You can change the default site view to desktop in Settings &gt; Content Settings</translation>
-<translation id="863090005774946393">Your browser is managed by your organisation. Some features may be disabled.</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8654802032646794042">Cancel</translation>
 <translation id="8668210798914567634">This page has been saved to your Reading List.</translation>

@@ -481,7 +481,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
-<translation id="5695599963893094957">Presiona cualquier tecla en tu teclado. Puedes presionar hasta 4 teclas a la vez.</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Se produjo un error de autorización</translation>
 <translation id="7103252855940681301">El nombre del dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> es <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Nombre de punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nombres}other{Servidores de nombres}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>

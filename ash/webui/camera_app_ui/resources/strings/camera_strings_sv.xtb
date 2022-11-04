@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Det gick inte att exportera <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Fotoupplösning</translation>
 <translation id="1925845977604399247">Besök galleriet</translation>
+<translation id="199526504800285197">Inspelningen har avslutats</translation>
+<translation id="1995951722691075581">Inspelningen avslutades eftersom lagringsutrymmet är nästan fullt på enheten. Du måste frigöra utrymme på enheten om du vill spela in fler videor.</translation>
 <translation id="2022953316617983419">QR-kod</translation>
 <translation id="2036868001356139588">Timerns längd</translation>
 <translation id="2050339315714019657">Stående</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Ta foton och spela in video med kameran.</translation>
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2549985041256363841">Börja spela in</translation>
+<translation id="2577915835281444458">Inspelning avslutas snart. Gå till enhetens lagringsutrymme för att frigöra utrymme.</translation>
 <translation id="2599796128805996109">Bakre kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Sökningstyp</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Läs av streckkod</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
+<translation id="4060608699153044055">Det går inte att spela in eftersom det inte finns tillräckligt med lagringsutrymme på enheten. Du måste frigöra utrymme på enheten innan du kan börja spela in.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausa inspelning</translation>
 <translation id="4121305183798804752">Ett dokument identifierades</translation>
@@ -160,6 +164,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="7748344063862150053">Övre högra hörnet på dokumentet</translation>
 <translation id="7933675232020478311">Flyttas nedåt åt höger</translation>
 <translation id="7983668134180549431">Text har identifierats.</translation>
+<translation id="8079255378695216066">Det går inte att starta inspelningen</translation>
 <translation id="8120146556401698679">Panorera, luta och zooma</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8145038249676204903">Byt till fotoläge</translation>

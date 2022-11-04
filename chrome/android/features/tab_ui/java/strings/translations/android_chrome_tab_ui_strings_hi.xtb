@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल फ़िलहाल में इस्तेमाल नहीं हुआ है. उन्हें बंद करना चाहेंगे?</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="125153950246128346">कोई दूसरा टैब देखने के लिए टैप करें</translation>
-<translation id="1302104331113804646">कीमत को ट्रैक करने की सेटिंग</translation>
-<translation id="1378979118429748177">कीमत में कमी होने पर सूचना पाएं</translation>
 <translation id="1403228085774130835">आपके बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में देखे गए' टैब पर जाकर देखे जा सकते हैं</translation>
 <translation id="1455506303394048917">इन गुप्त टैब में की गई आपकी गतिविधि को इस डिवाइस से मिटा दिया जाएगा</translation>
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">क्या आप चाहते हैं कि टैब बार दोबारा न दिखाया जाए?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> चुना गया टैब बंद करें}one{<ph name="TABS_COUNT_MANY" /> चुने गए टैब बंद करें}other{<ph name="TABS_COUNT_MANY" /> चुने गए टैब बंद करें}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> टैब वाले टैब ग्रुप को बड़ा करें</translation>
-<translation id="860282621117673749">कीमत में कमी की सूचनाएं</translation>
 <translation id="8714939927607906138">कम कीमत</translation>
 <translation id="8749939518995770034">बंद किए गए टैब बार</translation>
 <translation id="8820741577754260431">अपने टैब पर कीमत में कमी देखें</translation>

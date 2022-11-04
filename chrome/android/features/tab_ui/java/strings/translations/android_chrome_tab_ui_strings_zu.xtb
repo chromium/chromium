@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> yamathebhu akho awakasetshenziswa kamuva nje. Wavale?</translation>
 <translation id="1181037720776840403">Susa</translation>
 <translation id="125153950246128346">Thepha ukuze ubone enye ithebhu</translation>
-<translation id="1302104331113804646">Amasethingi wokulandelela intengo</translation>
-<translation id="1378979118429748177">Yaziswa lapho izintengo zehla</translation>
 <translation id="1403228085774130835">Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome</translation>
 <translation id="1455506303394048917">Umsebenzi wakho kulamathebhu we-Incognito uzosulwa kusuka kule divayisi</translation>
 <translation id="1499635324672558517">Vala wonke amathebhu we-incognito?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Ungabonisi umugqa wamathebhu futhi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Vala ithebhu ekhethiwe engu-<ph name="TABS_COUNT_ONE" />}one{Vala amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" />}other{Vala amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="8557923272772633250">Nweba iqembu lethebhu ngamathebhu angu-<ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="860282621117673749">Izexwayiso zokwehla kwentengo</translation>
 <translation id="8714939927607906138">Intengo ephansi</translation>
 <translation id="8749939518995770034">Umugqa wamathebhu ovaliwe</translation>
 <translation id="8820741577754260431">Bona ukwehla kwentengo kumathebhu wakho</translation>

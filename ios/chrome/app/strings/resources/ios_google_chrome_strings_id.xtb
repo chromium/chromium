@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome tidak dapat memeriksa update. Coba lagi nanti.</translation>
 <translation id="2732745070297234559">Chrome tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
 <translation id="2869959624320573933">Login ke Chrome</translation>
-<translation id="2919738076569633423">Dengan menggunakan Chrome, Anda menyetujui <ph name="BEGIN_LINK_TOS" />Persyaratan Layanan<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Karena Anda logout dari akun yang dikelola oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chrome Anda akan dihapus dari perangkat ini. Data Anda akan tetap tersedia di Akun Google Anda.</translation>
 <translation id="3167189358072330585">Akun Anda tidak berfungsi di Google Chrome. Harap hubungi administrator domain atau gunakan Akun Google biasa untuk masuk.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Anda berganti akun sinkronisasi dari <ph name="USER_EMAIL1" /> ke <ph name="USER_EMAIL2" />. Data Chrome yang sudah ada dikelola oleh <ph name="DOMAIN" />. Tindakan ini akan menghapus data Anda dari perangkat berikut, namun data Anda akan tetap tersedia di <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisasi mengharuskan Anda tetap logout dari Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome tidak memiliki akses ke foto atau video Anda. Izinkan akses di iOS Settings &gt; Privacy &gt; Photos.</translation>
-<translation id="4099578267706723511">Bantu penyempurnaan Chrome dengan mengirimkan statistik penggunaan dan laporan error ke Google.</translation>
 <translation id="417201473131094001">Tidak didukung di Chrome Canary</translation>
 <translation id="4192781968753717021">Sandi ini ditemukan dalam pelanggaran data. Pengelola Sandi Google merekomendasikan untuk mengubah sandi Anda sekarang.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> menggunakan Chrome dan meninggalkan bookmark, sandi, serta setelan lainnya di perangkat ini.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Tentang Google Chrome</translation>
 <translation id="7501046334262221972">Untuk menjadikan Chrome sebagai browser default, buka Setelan. Ketuk Aplikasi Browser Default, lalu pilih Chrome.</translation>
 <translation id="756809126120519699">Data Chrome telah dihapus</translation>
-<translation id="7626032353295482388">Selamat Datang di Chrome</translation>
 <translation id="7662994914830945754">Untuk melihat tab Chrome Anda dari perangkat lain, login dan aktifkan sinkronisasi</translation>
 <translation id="7693590760643069321">Anda sekarang dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="7698568245838009292">Chrome Ingin Mengakses Kamera</translation>

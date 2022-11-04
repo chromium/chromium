@@ -481,7 +481,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ģimene</translation>
-<translation id="5695599963893094957">Nospiediet jebkuru tastatūras taustiņu. Vienlaikus varat nospiest līdz pat 4 taustiņiem.</translation>
 <translation id="5701381305118179107">Centrēt</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />. no <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Atjaunināt ierīci “<ph name="DEVICE_NAME" />”</translation>
@@ -627,6 +626,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Neizdevās — autorizācija neizdevās</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. ierīce no <ph name="COUNT" />, nosaukums: <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Piekļuves punkta nosaukums (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nosaukumu serveris}zero{Nosaukumu serveri}one{Nosaukumu serveri}other{Nosaukumu serveri}}</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>

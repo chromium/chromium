@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Pretende fechá-los?</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="125153950246128346">Toque para ver outro separador.</translation>
-<translation id="1302104331113804646">Definições de monitorização de preços</translation>
-<translation id="1378979118429748177">Receba notificações quando os preços descerem.</translation>
 <translation id="1403228085774130835">Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome</translation>
 <translation id="1455506303394048917">A sua atividade nestes separadores de navegação anónima vai ser limpa deste dispositivo</translation>
 <translation id="1499635324672558517">Fechar todos os separadores de navegação anónima?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Não mostrar a Faixa de separadores novamente?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="8557923272772633250">Expandir o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores</translation>
-<translation id="860282621117673749">Alertas de descida do preço</translation>
 <translation id="8714939927607906138">Preço mais baixo</translation>
 <translation id="8749939518995770034">Faixa de separadores fechada</translation>
 <translation id="8820741577754260431">Veja as descidas de preços nos seus separadores.</translation>

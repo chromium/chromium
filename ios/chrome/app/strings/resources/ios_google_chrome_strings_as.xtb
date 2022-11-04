@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chromeএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2732745070297234559">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2869959624320573933">Chromeত ছাইন-ইন কৰক</translation>
-<translation id="2919738076569633423">আপুনি Chrome ব্যৱহাৰ কৰি <ph name="BEGIN_LINK_TOS" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK_TOS" />ত সন্মত হৈছে।</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বাছনি কৰক</translation>
 <translation id="3030414234702425231">আপুনি যিহেতু <ph name="SIGNOUT_MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰি আছে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। আপোনাৰ ডেটা নিজৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="3167189358072330585">আপোনাৰ একাউণ্টে Google Chromeত কাম নকৰে। ছাইন ইন কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ ড'মেইনৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক বা সচাৰচৰ ব্যৱহাৰ কৰা এটা Google Account ব্যৱহাৰ কৰক।</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">আপুনি ছিংক কৰা একাউণ্ট <ph name="USER_EMAIL1" />ৰ পৰা <ph name="USER_EMAIL2" />লৈ সলনি কৰিছে। আপোনাৰ বৰ্তমানৰ Chromium ডেটা <ph name="DOMAIN" />এ পৰিচালনা কৰি আছে। এই কাৰ্যই আপোনাৰ ডেটা এই ডিভাইচটোৰপৰা মচি পেলাব কিন্তু আপোনাৰ ডেটাবোৰ <ph name="USER_EMAIL1" />ত থাকিব।</translation>
 <translation id="3984746313391923992">আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি Chromeৰ পৰা ছাইন আউট হৈ থকাৰ আৱশ্যক।</translation>
 <translation id="3988789688219830639">আপোনাৰ ফট’ বা ভিডিঅ’সমূহত Google Chromeৰ এক্সেছ নাই৷ iOS ছেটিং &gt; গোপনীয়তা &gt; ফট’-ত এক্সেছ সক্ষম কৰক।</translation>
-<translation id="4099578267706723511">Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই Chrome ক অধিক উন্নত কৰাত সহায় কৰক।</translation>
 <translation id="417201473131094001">Chrome Canaryত সমৰ্থিত নহয়</translation>
 <translation id="4192781968753717021">এই পাছৱৰ্ডটো এটা ডেটা উলংঘনত পোৱা গৈছে। Google Password Managerএ এই পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" />এ Chrome ব্যৱহাৰ কৰি আছিল আৰু এই ডিভাইচটোত বুকমাৰ্ক, পাছৱৰ্ড আৰু অন্য ছেটিং এৰি গৈছে।</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Google Chromeৰ বিষয়ে</translation>
 <translation id="7501046334262221972">Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিবলৈ ছেটিং খোলক। ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক আৰু তাৰ পাছত Chrome বাছনি কৰক।</translation>
 <translation id="756809126120519699">মচা Chrome ডেটা</translation>
-<translation id="7626032353295482388">Chromeলৈ স্বাগতম</translation>
 <translation id="7662994914830945754">আপুনি Chrome ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছাইন ইন কৰক আৰু ছিংক অন কৰক</translation>
 <translation id="7693590760643069321">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7698568245838009292">Chromeএ কেমেৰাটো এক্সেছ কৰিবলৈ বিচাৰে</translation>

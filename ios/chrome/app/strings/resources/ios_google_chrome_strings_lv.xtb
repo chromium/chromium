@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Pārlūkā Chrome nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="2732745070297234559">Pārlūkprogrammā Chrome nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt.</translation>
 <translation id="2869959624320573933">Pierakstīšanās pārlūkprogrammā Chrome</translation>
-<translation id="2919738076569633423">Izmantojot pārlūkprogrammu Chrome, jūs piekrītat <ph name="BEGIN_LINK_TOS" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Atlasiet <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chrome dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
 <translation id="3167189358072330585">Jūsu konts nedarbojas pārlūkā Google Chrome. Sazinieties ar savu domēna administratoru vai pierakstieties, izmantojot parastu Google kontu.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Jūs pārslēdzat sinhronizējamos kontus no konta <ph name="USER_EMAIL1" /> uz kontu <ph name="USER_EMAIL2" />. Jūsu esošie Chrome dati tiek pārvaldīti domēnā <ph name="DOMAIN" />. Pārslēdzot kontus, jūsu dati tiks dzēsti no šīs ierīces, taču tie paliks kontā <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Saskaņā ar jūsu organizācijas politiku ir atspējota pierakstīšanās pārlūkā Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nevar piekļūt jūsu fotoattēliem vai videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
-<translation id="4099578267706723511">Uzlabojiet pārlūku Chrome, uzņēmumam Google sūtot lietojuma statistiku un avāriju pārskatus.</translation>
 <translation id="417201473131094001">Netiek atbalstīta pārlūkā Chrome Canary.</translation>
 <translation id="4192781968753717021">Šī parole tika atklāta datu aizsardzības pārkāpuma dēļ. Google paroļu pārvaldnieks iesaka nekavējoties nomainīt paroli.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> izmantoja pārlūku Chrome un neizdzēsa grāmatzīmes, paroles un citus iestatījumus šajā ierīcē.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Par Google Chrome</translation>
 <translation id="7501046334262221972">Lai iestatītu Chrome kā noklusējuma pārlūku, atveriet iestatījumus. Pieskarieties vienumam “Noklusējuma pārlūka lietotne” un pēc tam atlasiet Chrome.</translation>
 <translation id="756809126120519699">Chrome dati tika notīrīti</translation>
-<translation id="7626032353295482388">Laipni lūdzam pārlūkā Chrome</translation>
 <translation id="7662994914830945754">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chrome, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="7693590760643069321">Tagad varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="7698568245838009292">Chrome pieprasa piekļuvi kamerai</translation>

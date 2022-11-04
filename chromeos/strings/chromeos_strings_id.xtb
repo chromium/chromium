@@ -481,7 +481,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Keluarga</translation>
-<translation id="5695599963893094957">Tekan sembarang tombol di keyboard. Anda dapat menekan hingga 4 tombol sekaligus.</translation>
 <translation id="5701381305118179107">Tengah</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> dari <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Gagal - Otorisasi Gagal</translation>
 <translation id="7103252855940681301">Perangkat <ph name="INDEX" /> dari <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Nama poin akses (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server nama}other{Server nama}}</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>

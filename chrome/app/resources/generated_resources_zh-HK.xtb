@@ -238,7 +238,7 @@
 <translation id="121384500095351701">無法安全下載此檔案</translation>
 <translation id="1215411991991485844">已新增背景應用程式</translation>
 <translation id="1216542092748365687">移除指紋</translation>
-<translation id="1216891999012841486">進一步瞭解如何修正更新錯誤</translation>
+<translation id="1216891999012841486">進一步了解點樣修正更新錯誤</translation>
 <translation id="1217114730239853757">係咪要啟用 ChromeOS Flex 內置嘅螢幕閱讀器 ChromeVox？要嘅話請㩒空格鍵。</translation>
 <translation id="1217483152325416304">系統即將刪除您的本機資料</translation>
 <translation id="1217668622537098248">完成後還原至先前的按左鍵操作</translation>
@@ -3101,7 +3101,6 @@
 <translation id="3828029223314399057">搜尋書籤</translation>
 <translation id="3828953470056652895">我已閱讀並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 Chrome OS 附加服務條款<ph name="END_LINK2" />》和《<ph name="BEGIN_LINK3" />Play 服務條款<ph name="END_LINK3" />》。</translation>
 <translation id="3829765597456725595">SMB 檔案共用</translation>
-<translation id="3830268140528557982">在 <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{您的管理員已重新開啟 1 個可能有害的擴充程式}other{您的管理員已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充程式}}</translation>
 <translation id="3831436149286513437">「Google 雲端硬碟」搜尋建議</translation>
 <translation id="3834728400518755610">Linux 需要關閉，麥克風設定的變更才會生效。關閉 Linux 即可繼續。</translation>
@@ -3867,7 +3866,6 @@
 <translation id="4556194354084985730">使用已儲存的密碼輕鬆登入網站和應用程式。如果關閉此設定，系統會在您登入前要求您開啟。</translation>
 <translation id="4558426062282641716">已要求自動啟動權限</translation>
 <translation id="4559617833001311418">此網站正在存取您的動作或光線感應器。</translation>
-<translation id="4561098487691395071">或指定打印機 PPD。</translation>
 <translation id="4561893854334016293">最近沒有變更過任何權限</translation>
 <translation id="4562155214028662640">新增指紋</translation>
 <translation id="4563210852471260509">初始輸入語言為中文</translation>
@@ -4760,7 +4758,6 @@
 <translation id="5427278936122846523">一律翻譯</translation>
 <translation id="5427459444770871191">順時針旋轉(&amp;C)</translation>
 <translation id="542750953150239272">繼續操作即代表您同意此裝置亦可自動下載及安裝由 Google、您的流動網絡供應商及裝置製造商提供的更新和應用程式 (可能會耗用流動數據)。部分應用程式可能會提供應用程式內購買。</translation>
-<translation id="5427936139162668357">查看 PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (有可用的更新)</translation>
 <translation id="542948651837270806">需要安裝信任平台模組韌體的更新。請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">全形</translation>
@@ -4992,7 +4989,7 @@
 <translation id="5632059346822207074">要求咗權限，㩒 Ctrl + Forward 就可以回覆</translation>
 <translation id="5632566673632479864">您的帳戶 <ph name="EMAIL" /> 已無法用作主要帳戶。 由於此帳戶由 <ph name="DOMAIN" /> 管理，因此系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。</translation>
 <translation id="5632592977009207922">下載中，尚餘 <ph name="PERCENT_REMAINING" />%</translation>
-<translation id="5633149627228920745">進一步瞭解系統需求</translation>
+<translation id="5633149627228920745">進一步了解系統要求</translation>
 <translation id="563371367637259496">流動網絡</translation>
 <translation id="5634446357546764049">查看近期旅行等活動的回憶</translation>
 <translation id="5635312199252507107">允許在特定網站上執行</translation>
@@ -8341,7 +8338,7 @@
 <translation id="8785622406424941542">觸控筆</translation>
 <translation id="8786824282808281903">當子女看到此圖示時，可以使用指紋識別身份或核准購物交易。</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{未命名的群組 - 1 個分頁}other{未命名的群組 - # 個分頁}}</translation>
-<translation id="8791157330927639737">進一步瞭解如何更新</translation>
+<translation id="8791157330927639737">進一步了解點樣更新</translation>
 <translation id="8791534160414513928">將「不追蹤」要求與瀏覽流量一併傳送</translation>
 <translation id="879413103056696865">開啟熱點時，您的 <ph name="PHONE_NAME" /> 將會：</translation>
 <translation id="8795916974678578410">開啟新視窗</translation>

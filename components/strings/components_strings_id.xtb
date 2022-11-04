@@ -137,6 +137,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="129553762522093515">Baru saja ditutup</translation>
 <translation id="1296930489679394997">Penjualan</translation>
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Coba hapus cookie Anda<ph name="END_LINK" /></translation>
+<translation id="1301227606947843452">Legal Ekstra</translation>
 <translation id="1301324364792935241">Periksa setelan DNS Aman Anda</translation>
 <translation id="1307966114820526988">Fitur yang Tidak Digunakan Lagi</translation>
 <translation id="1308113895091915999">Penawaran tersedia</translation>
@@ -264,6 +265,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1567040042588613346">Kebijakan ini berfungsi sebagaimana mestinya, tetapi nilai yang sama disetel di sumber lain dan digantikan oleh kebijakan ini.</translation>
 <translation id="1569487616857761740">Masukkan tanggal habis masa berlaku</translation>
 <translation id="1569694109004336106">Google Chrome mencoba mengaktifkan Windows Hello untuk mengisi sandi.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> inci</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Terjadi masalah sewaktu menampilkan halaman web ini.</translation>
 <translation id="1586541204584340881">Ekstensi yang telah Anda instal</translation>
@@ -443,6 +445,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="205212645995975601">BBQ &amp; pemanggangan</translation>
 <translation id="2053111141626950936">Halaman dalam bahasa <ph name="LANGUAGE" /> tidak akan diterjemahkan.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Jika kontrol ini aktif dan statusnya masih berlaku, Chrome akan menentukan grup besar, atau "kohor", yang paling mirip dengan aktivitas penjelajahan terbaru Anda. Pengiklan dapat memilih iklan untuk grup tersebut dan aktivitas penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Grup Anda diperbarui setiap hari.}=1{Jika kontrol ini aktif dan statusnya masih berlaku, Chrome akan menentukan grup besar, atau "kohor", yang paling mirip dengan aktivitas penjelajahan terbaru Anda. Pengiklan dapat memilih iklan untuk grup tersebut dan aktivitas penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Grup Anda diperbarui setiap hari.}other{Jika kontrol ini aktif dan statusnya masih berlaku, Chrome akan menentukan grup besar, atau "kohor", yang paling mirip dengan aktivitas penjelajahan terbaru Anda. Pengiklan dapat memilih iklan untuk grup tersebut dan aktivitas penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Grup Anda diperbarui setiap {NUM_DAYS} hari.}}</translation>
+<translation id="2059202684901022309">22 x 34 inci (55 x 86 cm)</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 saran}other{# saran}}</translation>
 <translation id="2066915425250589881">minta untuk dihapus</translation>
 <translation id="2068528718802935086">Bayi &amp; balita</translation>
@@ -532,6 +535,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2277753418458118549">Tampilkan detail koneksi</translation>
 <translation id="2283340219607151381">Simpan dan isi alamat</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' dihapus</translation>
+<translation id="2286383991450886080">34 x 44 inci (86 x 111 cm)</translation>
 <translation id="2288422996159078444">Apa pun yang Anda ketik, halaman mana pun yang Anda lihat, atau aktivitas lain di web sedang dipantau. Konten di situs dapat berubah tanpa pemberitahuan sebelumnya.</translation>
 <translation id="2289385804009217824">Pangkas</translation>
 <translation id="2292556288342944218">Akses Internet Anda diblokir</translation>
@@ -692,6 +696,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2709516037105925701">Isi otomatis</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info pembayaran dan kartu kredit di setelan Chrome</translation>
+<translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk keluar dari mode layar penuh</translation>
 <translation id="2721148159707890343">Permintaan berhasil</translation>
 <translation id="2723669454293168317">Jalankan pemeriksaan keamanan di setelan Chrome</translation>
@@ -699,6 +704,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2728127805433021124">Sertifikat server ditandai menggunakan algoritme yang lemah.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Jalankan Diagnostik Konektivitas<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Musik klasik</translation>
+<translation id="2731382536835015353">44 x 68 inci (111 x 172 cm)</translation>
 <translation id="2734319753272419592">Izinkan Google menggunakan keranjang Anda untuk menelusuri diskon yang dipersonalisasi. Jika tersedia, diskon akan otomatis muncul di keranjang.</translation>
 <translation id="2738330467931008676">Pilih Alamat Pengambilan</translation>
 <translation id="2740531572673183784">Oke</translation>
@@ -771,6 +777,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2955913368246107853">Tutup bilah cari</translation>
 <translation id="2958544468932521864">Kriket</translation>
 <translation id="2959113999220720579">Perawatan wajah &amp; tubuh</translation>
+<translation id="2962073860865348475">12 x 18 inci (30 x 45 cm)</translation>
 <translation id="2968103128155246731">Van &amp; minivan</translation>
 <translation id="2972581237482394796">&amp;Ulang</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, saat ini yang dipilih. <ph name="ROW_CONTENT" /></translation>
@@ -874,6 +881,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3249151924975132674">Pinjaman mahasiswa &amp; pembiayaan kuliah</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Periklanan &amp; pemasaran</translation>
+<translation id="3251133337102041130">Legal Pemerintah</translation>
 <translation id="3252266817569339921">Prancis</translation>
 <translation id="3254301855501243548">18 x 22 inci (45 x 55 cm)</translation>
 <translation id="3256863843508922226">Pensiun</translation>
@@ -886,6 +894,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3270156322180235608">Perjalanan udara</translation>
 <translation id="3270847123878663523">&amp;Urungkan Pengaturan Ulang</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ingin terhubung</translation>
+<translation id="3272091146646336650">Super B</translation>
 <translation id="3282085321714087552">Organisasi Anda, <ph name="ENROLLMENT_DOMAIN" />, telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
 <translation id="3282497668470633863">Tambahkan nama di kartu</translation>
 <translation id="3286372614333682499">potret</translation>
@@ -987,6 +996,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3531780078352352885">Lembar tugas</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ingin menggunakan mikrofon Anda</translation>
 <translation id="3533328374079021623">Kotak surat 5</translation>
+<translation id="3537165859691846083">Surat Plus</translation>
 <translation id="3542768452570884558">Buka Link di Jendela Baru</translation>
 <translation id="3547746132308051926">20 x 24 inci (50 x 60 cm)</translation>
 <translation id="3550112004925580947">Industri pelayanan</translation>
@@ -1097,6 +1107,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3787705759683870569">Masa berlaku <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Ukuran 16</translation>
 <translation id="3789841737615482174">Instal</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> inci)</translation>
 <translation id="3793574014653384240">Jumlah dan penyebab error yang terjadi baru-baru ini</translation>
 <translation id="3795344968043407227">Musik alternatif &amp; indie</translation>
 <translation id="3799805948399000906">Font diminta</translation>
@@ -1172,6 +1183,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4030383055268325496">&amp;Urungkan penambahan</translation>
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
 <translation id="4040350669425716613">Perguruan tinggi &amp; universitas</translation>
+<translation id="4047351652147966654">18 x 24 inci (45 x 60 cm)</translation>
 <translation id="405399507749852140">Dapatkan notifikasi jika ada diskon di situs mana pun</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Izinkan Google membantu Anda menemukan diskon untuk keranjang Anda</translation>
@@ -1486,6 +1498,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4813512666221746211">Kesalahan jaringan</translation>
 <translation id="4816492930507672669">Paskan dengan halaman</translation>
 <translation id="4819347708020428563">Edit anotasi dalam tampilan default?</translation>
+<translation id="4823325221257637040">Memulai</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat Spreadsheet Google baru dengan cepat</translation>
 <translation id="4825507807291741242">Kuat</translation>
 <translation id="483241715238664915">Aktifkan peringatan</translation>
@@ -1601,6 +1614,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5093232627742069661">Lipatan Z</translation>
 <translation id="5094747076828555589">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh Chromium. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="5097099694988056070">Statistik perangkat seperti penggunaan CPU/RAM</translation>
+<translation id="5097468150760963273">27 x 39 inci (68 x 99 cm)</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Situs tidak aman</translation>
 <translation id="5109892411553231226">Kelola Metode Pembayaran</translation>
@@ -1925,6 +1939,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5953516610448771166">Teks Otomatis tidak tersedia untuk media ini. Untuk mendapatkan teks, blokir <ph name="CONTENT_SETTINGS" /> untuk situs ini.</translation>
 <translation id="5955063559762970069">Hotel &amp; penginapan</translation>
 <translation id="5963413905009737549">Bagian</translation>
+<translation id="5967260682280773804">36 x 48 inci (91 x 121 cm)</translation>
 <translation id="5967592137238574583">Edit Info Kontak</translation>
 <translation id="5967867314010545767">Hapus dari histori</translation>
 <translation id="5968022600320704045">Tidak ada hasil penelusuran</translation>
@@ -1996,6 +2011,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6127379762771434464">Item dihapus</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Pelajari mode Samaran di Chrome lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6133984428121856852">Ekstensi file kosong atau salah format.</translation>
+<translation id="6139975341602920272">17 x 22 inci (43 x 55 cm)</translation>
 <translation id="6146055958333702838">Periksa semua kabel dan boot ulang router, modem, atau perangkat
     jaringan lain yang mungkin Anda gunakan.</translation>
 <translation id="614940544461990577">Coba:</translation>
@@ -2018,6 +2034,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6196640612572343990">Blokir cookie pihak ketiga</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6203231073485539293">Periksa koneksi internet Anda</translation>
+<translation id="6212314149070368045">AS Fanfold</translation>
 <translation id="6218753634732582820">Hapus alamat dari Chromium?</translation>
 <translation id="622039917539443112">Lipatan paralel</translation>
 <translation id="6221345481584921695">Google Safe Browsing baru saja <ph name="BEGIN_LINK" />mendeteksi software perusak<ph name="END_LINK" /> di <ph name="SITE" />. Situs web yang biasanya aman terkadang terinfeksi software perusak. Konten berbahaya datang dari <ph name="SUBRESOURCE_HOST" />, yang dikenal luas sebagai distributor software perusak.</translation>
@@ -2044,6 +2061,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="627746635834430766">Untuk membayar lebih cepat di pembelian selanjutnya, simpan kartu dan alamat penagihan ke Akun Google Anda.</translation>
 <translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk menampilkan kursor</translation>
 <translation id="6280223929691119688">Tidak dapat mengirim ke alamat ini. Pilih alamat lain.</translation>
+<translation id="6284292079994426700">26 x 38 inci (66 x 96 cm)</translation>
 <translation id="6285507000506177184">Tombol Kelola download di Chrome, tekan Enter untuk mengelola file yang telah Anda download di Chrome</translation>
 <translation id="6289939620939689042">Warna Halaman</translation>
 <translation id="6290238015253830360">Artikel yang disarankan ditampilkan di sini</translation>
@@ -2097,6 +2115,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6410264514553301377">Masukkan tanggal kedaluwarsa dan CVC <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6415778972515849510">Chromium dapat membantu Anda melindungi Akun Google dan mengubah sandi Anda.</translation>
+<translation id="6416877227920300343">EDP</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Gate fold</translation>
 <translation id="6428450836711225518">Verifikasi nomor telepon Anda</translation>
@@ -2110,6 +2129,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6443406338865242315">Ekstensi dan plugin yang telah Anda instal</translation>
 <translation id="6446608382365791566">Tambahkan informasi lainnya</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6450077999570164268">Kuarto</translation>
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">Konfirmasikan Pengiriman Ulang Formulir</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
@@ -2276,6 +2296,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6915804003454593391">Pengguna:</translation>
 <translation id="6916954549222464607">Perencanaan &amp; pengelolaan keuangan</translation>
 <translation id="6917795328362592458">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Untuk mengamankan akun Anda, Pengelola Sandi merekomendasikan untuk memeriksa sandi tersimpan Anda.</translation>
+<translation id="6925267999184670015">Amerika Utara B+</translation>
 <translation id="6934672428414710184">Nama ini dari Akun Google Anda</translation>
 <translation id="6936976777388162184">Ini adalah perangkat yang dipaketkan dan tidak dapat didaftarkan dengan Signage and Kiosk Upgrade.</translation>
 <translation id="6939469646605424232">Drama TV</translation>
@@ -2325,6 +2346,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7030436163253143341">Sertifikat tidak valid</translation>
 <translation id="7031646650991750659">Aplikasi Google Play yang telah diinstal</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk mengelola setelan privasi Akun Google Anda</translation>
+<translation id="7048095965575426564">Eropa Fanfold</translation>
 <translation id="7050187094878475250">Anda berusaha menjangkau <ph name="DOMAIN" />, namun server memberikan sertifikat yang masa berlakunya terlalu lama untuk dapat dipercaya.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Kartu ini tidak dapat disimpan sekarang}other{Kartu-kartu ini tidak dapat disimpan sekarang}}</translation>
 <translation id="7053983685419859001">Blokir</translation>
@@ -2387,6 +2409,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7192203810768312527">Sediakan ruang sebesar <ph name="SIZE" />. Sebagian situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
 <translation id="7193661028827781021">Referensi</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Administrator dapat melihat:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuka tab Samaran baru dan menjelajah secara pribadi</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi standar keamanan.</translation>
@@ -2485,12 +2508,14 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7421067045979951561">pengendali protokol</translation>
 <translation id="7426022697669111648">Tombol Lihat histori Chrome Anda, tekan Enter untuk melihat dan mengelola histori penjelajahan Anda di setelan Chrome</translation>
 <translation id="7427366580982928791">Perlindungan internet anak</translation>
+<translation id="7429429656042611765">Eksekutif</translation>
 <translation id="7437289804838430631">Tambahkan Info Kontak</translation>
 <translation id="7437490109271760224">Game kartu</translation>
 <translation id="7440140511386898319">Jelajahi saat offline</translation>
 <translation id="7441627299479586546">Subjek kebijakan salah</translation>
 <translation id="7442725080345379071">Oranye Muda</translation>
 <translation id="7445762425076701745">Identitas server yang Anda sambungkan tidak dapat divalidasi sepenuhnya. Anda terhubung ke server menggunakan nama yang hanya valid dalam jaringan Anda, yang mana otoritas sertifikat eksternal sama sekali tidak dapat memvalidasi kepemilikannya. Karena sejumlah otoritas sertifikat akan tetap menerbitkan sertifikat untuk nama tersebut, tidak dapat dipastikan apakah Anda akan terhubung ke situs web yang dimaksudkan dan bahwa tidak akan ada penyerang.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> tentang masalah ini.</translation>
 <translation id="7455133967321480974">Gunakan default global (Cekal)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2692,6 +2717,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mempelajari fitur-fitur Chrome</translation>
 <translation id="7950027195171824198">Kelola preferensi cookie di setelan Chrome</translation>
 <translation id="7951415247503192394">(32 bit)</translation>
+<translation id="7952192831285741665">Eropa EDP</translation>
 <translation id="7953569069500808819">Jahit tepi di atas</translation>
 <translation id="7956713633345437162">Bookmark seluler</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
@@ -2777,6 +2803,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8153865548451212769">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8157295877370077682">Keluar dari situs</translation>
 <translation id="8163866351304776260">Empat lubang di kiri</translation>
+<translation id="8175330382720204696">Surat Pemerintah</translation>
 <translation id="8175796834047840627">Chrome menawarkan untuk menyimpan informasi kartu ke Akun Google Anda karena Anda sedang login. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="8176440868214972690">Administrator perangkat ini telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
 <translation id="8184538546369750125">Gunakan default global (Izinkan)</translation>
@@ -2796,6 +2823,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8218327578424803826">Lokasi yang Ditetapkan:</translation>
 <translation id="8225771182978767009">Orang yang menyiapkan komputer ini telah memilih untuk memblokir situs ini.</translation>
 <translation id="8228419419708659934">Tampilan dua halaman</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Game olahraga</translation>
 <translation id="8232343881378637145">Suhu platform</translation>
@@ -2885,6 +2913,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8449155699563577224">17 x 24 inci (43 x 60 cm)</translation>
 <translation id="8449836157089738489">Buka semua di grup tab baru</translation>
 <translation id="8457125768502047971">Tak terbatas</translation>
+<translation id="8458202188076138974">Surat Ekstra</translation>
 <translation id="8461694314515752532">Enkripsikan data yang disinkronkan dengan frasa sandi sinkronisasi Anda sendiri</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kartu kredit}other{# kartu kredit}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
@@ -3091,6 +3120,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9042617223719777575">Kapasitas Besar</translation>
 <translation id="9044359186343685026">Gunakan Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048662076076074925">24 x 36 inci (60 x 91 cm)</translation>
 <translation id="9049981332609050619">Anda berupaya menjangkau <ph name="DOMAIN" />, tetapi server menyajikan sertifikat yang tidak valid.</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>
 <translation id="9056953843249698117">Toko</translation>

@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">تعذّر تصدير <ph name="FILE" /></translation>
 <translation id="1899697626337024495">درجة دقة الصورة</translation>
 <translation id="1925845977604399247">الانتقال إلى المعرض</translation>
+<translation id="199526504800285197">توقَّف التسجيل</translation>
+<translation id="1995951722691075581">توقَّف التسجيل بسبب انخفاض مساحة التخزين على الجهاز. لتسجيل المزيد من الفيديوهات، عليك إخلاء مساحة على جهازك.</translation>
 <translation id="2022953316617983419">رمز الاستجابة السريعة</translation>
 <translation id="2036868001356139588">مدة المؤقِّت</translation>
 <translation id="2050339315714019657">رأسي</translation>
@@ -77,6 +79,7 @@
 <translation id="3810838688059735925">الفيديوهات</translation>
 <translation id="3838931309141338733">مسح الرمز الشريطي ضوئيًا</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
+<translation id="4060608699153044055">لا يمكنك بدء التسجيل بسبب انخفاض مساحة التخزين على الجهاز. لبدء التسجيل، عليك إخلاء مساحة على جهازك.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ميغا بكسل</translation>
 <translation id="4118525110028899586">إيقاف التسجيل مؤقتًا</translation>
 <translation id="4121305183798804752">تم رصد مستند.</translation>
@@ -161,6 +164,7 @@
 <translation id="7748344063862150053">الزاوية العلوية اليمنى للمستند</translation>
 <translation id="7933675232020478311">جارٍ نقل زاوية المستند في اتجاه أسفل اليمين</translation>
 <translation id="7983668134180549431">تم رصد نص.</translation>
+<translation id="8079255378695216066">تعذُّر بدء التسجيل</translation>
 <translation id="8120146556401698679">عرض شامل، إمالة، تكبير/تصغير</translation>
 <translation id="8131740175452115882">التأكيد</translation>
 <translation id="8145038249676204903">التبديل لالتقاط صورة</translation>

@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> файлы экспортталмады.</translation>
 <translation id="1899697626337024495">Фотосурет ажыратымдылығы</translation>
 <translation id="1925845977604399247">Галереяға өту</translation>
+<translation id="199526504800285197">Жазу тоқтатылды</translation>
+<translation id="1995951722691075581">Құрылғының жад көлемі аз болғандықтан жазу тоқтатылды. Көбірек бейнелер жазу үшін құрылғыңызда орын босатуыңыз керек.</translation>
 <translation id="2022953316617983419">QR коды</translation>
 <translation id="2036868001356139588">Таймер ұзақтығы</translation>
 <translation id="2050339315714019657">Портреттік</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Камерамен фотосуретке және бейнеге түсіруге болады.</translation>
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="2549985041256363841">Бейнеге түсіруді бастау</translation>
+<translation id="2577915835281444458">Жазу жақын арада тоқтатылады. Орын босату үшін құрылғы жадына өтіңіз.</translation>
 <translation id="2599796128805996109">Артқы камера</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> с</translation>
 <translation id="2761536921376153655">Сканерлеу түрі</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Бейне</translation>
 <translation id="3838931309141338733">Сканерлеу штрих коды</translation>
 <translation id="3892148308691398805">Мәтінді көшіру</translation>
+<translation id="4060608699153044055">Құрылғының жад көлемі аз болғандықтан жазу мүмкін емес. Жазуды бастау үшін құрылғыңызда орын босатуыңыз керек.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> мегапиксель</translation>
 <translation id="4118525110028899586">Жазуды кідірту</translation>
 <translation id="4121305183798804752">Құжат анықталды</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">Құжаттың жоғарғы оң жақ бұрышы</translation>
 <translation id="7933675232020478311">Төменгі оң жаққа қарай жылжыту</translation>
 <translation id="7983668134180549431">Мәтін анықталды.</translation>
+<translation id="8079255378695216066">Жазуды бастау мүмкін емес</translation>
 <translation id="8120146556401698679">Панорама, қисайту, масштабтау</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8145038249676204903">Суретке түсіруге ауысу</translation>

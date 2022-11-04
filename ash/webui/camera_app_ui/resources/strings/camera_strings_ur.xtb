@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> کو برآمد کرنے سے قاصر</translation>
 <translation id="1899697626337024495">تصویری ریزولیوشن</translation>
 <translation id="1925845977604399247">گیلری میں جائیں</translation>
+<translation id="199526504800285197">ریکارڈنگ رک گئی ہے</translation>
+<translation id="1995951722691075581">آلے میں اسٹوریج کی جگہ کم ہونے کی وجہ سے آپ ریکارڈنگ رک گئی۔ مزید ویڈیوز ریکارڈ کرنے کے لیے، آپ کو اپنے آلے پر جگہ خالی کرنے کی ضرورت ہے۔</translation>
 <translation id="2022953316617983419">‏QR کوڈ</translation>
 <translation id="2036868001356139588">ٹائمر کا دورانیہ</translation>
 <translation id="2050339315714019657">پورٹریٹ</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">ویڈیو</translation>
 <translation id="3838931309141338733">بارکوڈ اسکین کریں</translation>
 <translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
+<translation id="4060608699153044055">آپ آلے میں اسٹوریج کی جگہ کم ہونے کی وجہ سے ریکارڈ نہیں کر سکتے۔ ریکارڈنگ شروع کرنے کے لیے آپ کو اپنے آلے پر جگہ خالی کرنے کی ضرورت ہے۔</translation>
 <translation id="4061162772429051350">‎<ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ریکارڈنگ موقوف کریں</translation>
 <translation id="4121305183798804752">دستاویز کا پتہ چلا</translation>
@@ -161,6 +164,7 @@
 <translation id="7748344063862150053">دستاویز کا اوپری دایاں کونا</translation>
 <translation id="7933675232020478311">نیچے دائیں سمت میں جا رہا ہے</translation>
 <translation id="7983668134180549431">ٹیکسٹ کا پتہ چلا۔</translation>
+<translation id="8079255378695216066">ریکارڈنگ شروع نہیں کی جا سکتی</translation>
 <translation id="8120146556401698679">پین کریں جھکائیں زوم کریں</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8145038249676204903">تصویر لینے کی وضع پر سوئچ کریں</translation>

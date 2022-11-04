@@ -696,7 +696,7 @@
 <translation id="2709516037105925701">自動填入</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理付款同信用卡資料</translation>
-<translation id="2715808615350965923">Super A</translation>
+<translation id="2715808615350965923">Super-A</translation>
 <translation id="271663710482723385">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可結束全螢幕模式</translation>
 <translation id="2721148159707890343">要求成功</translation>
 <translation id="2723669454293168317">在 Chrome 設定中執行安全檢查</translation>
@@ -2034,7 +2034,7 @@
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6197648101609735209">89 x 89 毫米</translation>
 <translation id="6203231073485539293">檢查互聯網連線</translation>
-<translation id="6212314149070368045">美國 Fanfold</translation>
+<translation id="6212314149070368045">US Fanfold</translation>
 <translation id="6218753634732582820">要從 Chromium 移除地址嗎？</translation>
 <translation id="622039917539443112">雙對摺</translation>
 <translation id="6221345481584921695">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到惡意軟件<ph name="END_LINK" />。即使是平常可以安全使用的網站，有時也會被惡意軟件感染。這些惡意內容來自已知的惡意軟件散佈網站 <ph name="SUBRESOURCE_HOST" />。</translation>
@@ -2129,7 +2129,7 @@
 <translation id="6443406338865242315">您已安裝的擴充程式和外掛程式</translation>
 <translation id="6446608382365791566">新增更多資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6450077999570164268">四開</translation>
+<translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">Chou 40 信封</translation>
 <translation id="6451458296329894277">確認重新提交表格</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
@@ -2346,7 +2346,7 @@
 <translation id="7030436163253143341">憑證無效</translation>
 <translation id="7031646650991750659">您已安裝的 Google Play 應用程式</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Google 帳戶私隱設定</translation>
-<translation id="7048095965575426564">歐洲 Fanfold</translation>
+<translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">您曾嘗試前往 <ph name="DOMAIN" />，但其伺服器憑證有效期過長，並不值得信任。</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{目前無法儲存此卡}other{目前無法儲存這些卡}}</translation>
 <translation id="7053983685419859001">封鎖</translation>
@@ -2719,7 +2719,7 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以了解 Chrome 嘅功能</translation>
 <translation id="7950027195171824198">在 Chrome 設定中管理 Cookie 偏好設定</translation>
 <translation id="7951415247503192394">(32 位元)</translation>
-<translation id="7952192831285741665">歐洲 EDP</translation>
+<translation id="7952192831285741665">European EDP</translation>
 <translation id="7953569069500808819">邊緣釘裝 (右側)</translation>
 <translation id="7956713633345437162">流動版書籤</translation>
 <translation id="7961015016161918242">從來沒有</translation>

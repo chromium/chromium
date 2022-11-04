@@ -484,6 +484,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3633097874324966332">Maak Bluetooth-instellings oop om jou toestel saam te bind</translation>
 <translation id="3638400994746983214">Wissel privaatheidskerm. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Tyd vir 'n opdatering</translation>
+<translation id="3659444876902283058">(Dag <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Ongeveer <ph name="TIME_LEFT" /> oor (<ph name="PERCENTAGE" />%).
 Koppel jou toestel aan krag.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Bestuurde gebruiker</translation>
@@ -1269,9 +1270,11 @@ Nuwe installasie</translation>
 <translation id="8052898407431791827">Gekopieer na knipbord</translation>
 <translation id="8054466585765276473">Bereken tans batterytyd.</translation>
 <translation id="8083540854303889870">Gestoor vir later</translation>
+<translation id="8091153018031979607">Begin om <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Outomatiese opdaterings</translation>
 <translation id="8098591350844501178">Hou op om skerm na <ph name="RECEIVER_NAME" /> toe uit te saai</translation>
 <translation id="8113423164597455979">Aan; alle prog.</translation>
+<translation id="8113515504791187892">Hardoplees-knoppie</translation>
 <translation id="8120151603115102514">Jou foon het nie 'n sluitskerm nie. Voer wagwoord in om jou Chromebook te ontsluit.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Bevestig</translation>
@@ -1381,6 +1384,7 @@ Nuwe installasie</translation>
 <translation id="8703634754197148428">Begin opname. Nadat die opname begin het, kan jy Alt + Shift + L gebruik om na die rak toe te gaan en die Stop Opname-knoppie te kry.</translation>
 <translation id="8721053961083920564">Wissel volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Volskermskoot</translation>
+<translation id="8731487213223706745">Eindig om <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Dit kan dalk probeer om jou sleuteldrukke te steel</translation>
 <translation id="8735678380411481005">Kleur van sleutelbord se agterlig</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

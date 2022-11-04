@@ -265,6 +265,7 @@
 <translation id="1567040042588613346">Правилово работи како што е предвидено, но истата вредност е поставена некаде на друго место и е заменета од правилово.</translation>
 <translation id="1569487616857761740">Внесете датум на истекување</translation>
 <translation id="1569694109004336106">Google Chrome се обидува да вклучи Windows Hello за пополнување лозинки.</translation>
+<translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Нешто тргна наопаку при прикажувањето на оваа веб-страница.</translation>
 <translation id="1586541204584340881">кои екстензии сте ги инсталирале</translation>
@@ -1107,6 +1108,7 @@
 <translation id="3787705759683870569">Истекува на <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Големина 16</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
+<translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3793574014653384240">Број на падови и причини за падовите што се случиле неодамна</translation>
 <translation id="3795344968043407227">Инди и алтернативна музика</translation>
 <translation id="3799805948399000906">Побаран е фонт</translation>
@@ -2516,6 +2518,7 @@
 <translation id="7441627299479586546">Погрешен предмет на правилото</translation>
 <translation id="7442725080345379071">Светлопортокалова</translation>
 <translation id="7445762425076701745">Идентитетот на серверот на кој сте поврзани не може целосно да се потврди. Поврзани сте со сервер кој користи име што важи само во рамките на вашата мрежа и нема начин надворешен орган за сертификати да ја провери сопственичката структура. Без разлика што некои органи за сертификати ќе издадат сертификати за овие имиња, не постои начин да се гарантира дека сте поврзани со планираната веб-страница, а не со напаѓач.</translation>
+<translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />да дознаете повеќе<ph name="END_LINK" /> за овој проблем.</translation>
 <translation id="7455133967321480974">Користи глобален стандард (Блокирај)</translation>
 <translation id="745640750744109667">A0x3</translation>
@@ -2823,6 +2826,7 @@
 <translation id="8218327578424803826">Доделена локација:</translation>
 <translation id="8225771182978767009">Лицето кое го поставило компјутерот избрало да се блокира сајтов.</translation>
 <translation id="8228419419708659934">Приказ на две страници</translation>
+<translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Спортски игри</translation>
 <translation id="8232343881378637145">Температура на платформата</translation>

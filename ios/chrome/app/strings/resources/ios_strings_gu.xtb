@@ -20,7 +20,6 @@
 <translation id="1084365883616172403">Facebook પોસ્ટ પૂર્ણ કરી છે.</translation>
 <translation id="1085696779717592361">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />નો હંમેશાં અનુવાદ કરો</translation>
-<translation id="1104948393051856124">સ્વીકારો અને ચાલુ રાખો</translation>
 <translation id="110724200315609752">ખુલ્લી વિંડો પર સ્વિચ કરો</translation>
 <translation id="1112015203684611006">છાપવાનું નિષ્ફળ થયું.</translation>
 <translation id="1125564390852150847">નવું ટૅબ બનાવો.</translation>
@@ -42,6 +41,7 @@
 <translation id="1229222343402087523">Chromeમાં ${searchPhrase} શોધો</translation>
 <translation id="1242044645101871359">ફરીથી સાઇન ઇન કરો</translation>
 <translation id="1254117744268754948">ફોલ્ડર પસંદ કરો</translation>
+<translation id="1254424942107648268">પાછલી શોધો</translation>
 <translation id="1258491128795710625">નવું શું છે</translation>
 <translation id="1265739287306757398">જાણો કેવી રીતે</translation>
 <translation id="1272079795634619415">રોકો</translation>
@@ -165,7 +165,6 @@
 <translation id="2302742851632557585">વેબસાઇટ પર પાસવર્ડ બદલો</translation>
 <translation id="2316709634732130529">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="2320166752086256636">કીબોર્ડ છુપાવો</translation>
-<translation id="2328842561016935977">પાસવર્ડ પર ટૅપ કરો પછી ઉમેરો પર ટૅપ કરો</translation>
 <translation id="2351097562818989364">તમારા અનુવાદ સેટિંગ રીસેટ કરવામાં આવ્યા છે.</translation>
 <translation id="235789365079050412">Google પ્રાઇવસી પૉલિસી</translation>
 <translation id="2359043044084662842">અનુવાદ કરો</translation>
@@ -186,6 +185,7 @@
 <translation id="2473876017985765807">તમે <ph name="WEBSITE" /> માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2476359652512522418">પસંદ કરેલું નથી</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
+<translation id="2496626742194544812">પહેલી ટૅબ પર જાઓ</translation>
 <translation id="2500374554657206846">પાસવર્ડ સાચવવાના વિકલ્પો</translation>
 <translation id="2523363575747517183">આ વેબસાઇટ વારંવાર અન્ય ઍપ્લિકેશન ખોલવાનો પ્રયાસ કરી રહી છે.</translation>
 <translation id="2529021024822217800">બધા ખોલો</translation>
@@ -201,6 +201,7 @@
 <translation id="2647269890314209800">ઉપયોગમાંની કુકી</translation>
 <translation id="2648803196158606475">વાંચેલું ડિલીટ કરો</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
+<translation id="2664621323652615289">રોકો</translation>
 <translation id="2671426118752779020">તમે Google પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPhone પરની અન્ય ઍપમાં કરી શકો છો.</translation>
 <translation id="2690858294534178585">કૅમેરા ઉપયોગમાં છે</translation>
 <translation id="2691653761409724435">ઑફલાઇન ઉપલબ્ધ નથી</translation>
@@ -359,6 +360,7 @@
 <translation id="380329542618494757">નામ</translation>
 <translation id="3803696231112616155">આ સાઇટનો અનુવાદ કરવાનું કહો</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
+<translation id="3818293389945649617">આગલી શોધો</translation>
 <translation id="3819183753496523827">તમે ઑફલાઇન છો. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="3835964409414434850">આગલા ટૅબ પર જાઓ</translation>
 <translation id="385051799172605136">પાછળ</translation>
@@ -389,6 +391,7 @@
 <translation id="4049507953662678203">તમારી પાસે નેટવર્ક કનેક્શન છે તેની ખાતરી કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="4063300985191096908">ફીડ પર જાઓ</translation>
 <translation id="408404951701638773">શોધ બાર સુધી પહોંચવું હવે વધુ સરળ છે</translation>
+<translation id="4092655288299341041">સહાય બતાવો</translation>
 <translation id="4108998448622696017">જોખમકારક ઇવેન્ટ થતી હોય ત્યારે તે શોધીને તેના વિશે તમને ચેતવણી આપે છે.</translation>
 <translation id="411254640334432676">ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="4112644173421521737">શોધો</translation>
@@ -660,7 +663,6 @@
 <translation id="6149061208933997199">પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="6152406514676263192">તમારી રુચિઓના આધારે સૌથી વધુ સંબંધિત કન્ટેન્ટ જોવા માટે સિંક કરો.</translation>
 <translation id="6159839020698489198">વૈકલ્પિક</translation>
-<translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6170450281939467187">અનુવાદ નિષ્ફળ થયો</translation>
 <translation id="6177442314419606057">Chromeમાં શોધો</translation>
 <translation id="6184086493125982861">ટૅબ્સ બતાવો</translation>
@@ -781,6 +783,7 @@
 <translation id="6859944681507688231">QR કોડ અથવા ક્રેડિટ કાર્ડ સ્કૅન કરવા માટે, સેટિંગમાં કૅમેરા ચાલુ કરો.</translation>
 <translation id="6867369562105931222">પાસવર્ડ</translation>
 <translation id="6869389390665537774">તમે જેની મુલાકાત લીધેલી હોય તેવા પેજ તમે તમારા ઇતિહાસમાં જોઈ શકો છો અથવા તેમાંથી તેને સાફ કરી શકો છો</translation>
+<translation id="687135068089457384">સેટિંગ બતાવો</translation>
 <translation id="6873263987691478642">વિભાજિત દૃશ્ય</translation>
 <translation id="6882836635272038266">જોખમકારક જણાતી હોય એવી વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેંશન સામે માનક સંરક્ષણ.</translation>
 <translation id="6888009575607455378">શું તમે ખરેખર તમારા ફેરફારો કાઢી નાખવા ઇચ્છો છો?</translation>
@@ -828,7 +831,6 @@
 <translation id="7291368939935408496">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
 <translation id="730958329302570991">Google Password Managerમાં કોઈપણ સમયે સાઇટના પાસવર્ડ સરળતાથી ઉમેરો.</translation>
 <translation id="7313347584264171202">તમને તમારી છૂપી ટૅબ અહીં મળશે</translation>
-<translation id="7315813263062036945">ઉપર ડાબી બાજુએ, શોધો આઇકન પર ટૅપ કરો</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ટકા ડાઉનલોડ થઈ</translation>
 <translation id="7340958967809483333">Discover માટેના વિકલ્પો</translation>
 <translation id="7346909386216857016">બરાબર, સમજાઇ ગયું</translation>
@@ -886,11 +888,13 @@
 <translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>
 <translation id="7839985698273989086">ઑફલાઇન પેજ</translation>
 <translation id="7840771868269352570">તમે પસંદ કરેલી આઇટમ કાઢી નાખવામાં આવશે.</translation>
+<translation id="7845466610722898">વાંચન સૂચિ બતાવો</translation>
 <translation id="784551991304901159">કન્ટેન્ટ જોવા માટે, મેનૂમાંથી 'ચાલુ કરો' પસંદ કરો</translation>
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7856733331829174190">ડાઉનલોડ ન કરી શક્યાં</translation>
 <translation id="785938070103630874">પાસવર્ડ, ચુકવણી પદ્ધતિઓ અથવા સરનામું વગેરે ખોલો</translation>
 <translation id="7859704718976024901">બ્રાઉઝિંગ ઇતિહાસ</translation>
+<translation id="7879275349003161544">ડાઉનલોડ કરેલી આઇટમ બતાવો</translation>
 <translation id="7884694604461143138">શોધ ઇતિહાસ (<ph name="COUNT" /> મળ્યાં)</translation>
 <translation id="7887198238286927132">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, Chrome આ ફીલ્ડ સ્વતઃ નહીં ભરે.</translation>
 <translation id="7911190106180361398">તમારી સંસ્થા તમને બધું જ સિંક કરવાની મંજૂરી આપતી નથી.</translation>
@@ -987,7 +991,6 @@
 <translation id="8605219856220328675">ટૅબ બંધ કરો.</translation>
 <translation id="8620640915598389714">ફેરફાર કરો</translation>
 <translation id="8626393685701737946">તમે સેટિંગ &gt; કન્ટેન્ટ સેટિંગમાં જઈને ડિફૉલ્ટ સાઇટ વ્યૂ બદલીને ડેસ્કટૉપ વ્યૂ મોડ કરી શકો છો</translation>
-<translation id="863090005774946393">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે. અમુક સુવિધા બંધ હોઈ શકે છે.</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="8654802032646794042">રદ કરો</translation>
 <translation id="8668210798914567634">આ પેજ, તમારી વાંચન સૂચિમાં સાચવવામાં આવ્યું છે.</translation>
@@ -1003,6 +1006,7 @@
 <translation id="8741995161408053644">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="8750037785291841318">તમને તમારી ટૅબ અહીં મળશે</translation>
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
+<translation id="8763613688786959833">છેલ્લી ટૅબ પર જાઓ</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" />ને અનફૉલો કરો</translation>
 <translation id="8775144690796719618">અમાન્ય URL</translation>
 <translation id="8787968206789828143">વેબ પર શોધો</translation>

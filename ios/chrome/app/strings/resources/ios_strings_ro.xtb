@@ -20,7 +20,6 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1084365883616172403">Postare pe Facebook finalizată.</translation>
 <translation id="1085696779717592361">Folosește Chrome în mod prestabilit</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
-<translation id="1104948393051856124">Acceptă și continuă</translation>
 <translation id="110724200315609752">Comută la fereastra deschisă</translation>
 <translation id="1112015203684611006">Printarea nu a reușit.</translation>
 <translation id="1125564390852150847">Creează o filă nouă.</translation>
@@ -166,7 +165,6 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2302742851632557585">Schimbă parola pentru site</translation>
 <translation id="2316709634732130529">Folosește parola sugerată</translation>
 <translation id="2320166752086256636">Ascunde tastatura</translation>
-<translation id="2328842561016935977">Atinge Parole, apoi atinge Adaugă</translation>
 <translation id="2351097562818989364">Setările de traducere au fost resetate.</translation>
 <translation id="235789365079050412">Politica de confidențialitate Google</translation>
 <translation id="2359043044084662842">Tradu</translation>
@@ -665,7 +663,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6149061208933997199">Folosește parola</translation>
 <translation id="6152406514676263192">Sincronizează pentru conținutul cel mai relevant în funcție de interesele tale.</translation>
 <translation id="6159839020698489198">opțional</translation>
-<translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6170450281939467187">Traducere nereușită</translation>
 <translation id="6177442314419606057">Caută în Chrome</translation>
 <translation id="6184086493125982861">Afișează butonul File</translation>
@@ -834,7 +831,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7291368939935408496">Se pregătesc parolele...</translation>
 <translation id="730958329302570991">Adaugă cu ușurință parole de pe site-uri în Managerul de parole Google oricând.</translation>
 <translation id="7313347584264171202">Aici vei vedea filele incognito</translation>
-<translation id="7315813263062036945">În stânga sus, atinge pictograma Căutare</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descărcat</translation>
 <translation id="7340958967809483333">Opțiuni pentru Discover</translation>
 <translation id="7346909386216857016">OK, am înțeles</translation>
@@ -995,7 +991,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8605219856220328675">Închide fila.</translation>
 <translation id="8620640915598389714">Editează</translation>
 <translation id="8626393685701737946">Poți să modifici vizualizarea prestabilită a site-urilor la computer în Setări &gt; Setări privind conținutul</translation>
-<translation id="863090005774946393">Browserul este gestionat de organizația ta. Este posibil ca unele funcții să fie dezactivate.</translation>
 <translation id="8636825310635137004">Pentru a accesa filele de pe alte dispozitive, activează sincronizarea.</translation>
 <translation id="8654802032646794042">Anulează</translation>
 <translation id="8668210798914567634">Această pagină a fost salvată în Lista de lectură.</translation>

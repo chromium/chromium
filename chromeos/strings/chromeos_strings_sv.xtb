@@ -481,7 +481,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familj</translation>
-<translation id="5695599963893094957">Tryck på valfri tangent på tangentbordet. Du kan trycka på upp till fyra tangenter på samma gång.</translation>
 <translation id="5701381305118179107">Centrera</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Uppdatera <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Misslyckades – auktoriseringen misslyckades</translation>
 <translation id="7103252855940681301">Enhet <ph name="INDEX" /> av <ph name="COUNT" /> heter <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Åtkomstpunktens namn (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Namnserver}other{Namnservrar}}</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>

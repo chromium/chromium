@@ -481,7 +481,6 @@
 <translation id="5669267381087807207">Жандырылууда</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Үй-бүлөлүк</translation>
-<translation id="5695599963893094957">Баскычтоптобу бир баскычты басып көрүңүз. Бир убакта 4 баскычка чейин бассаңыз болот.</translation>
 <translation id="5701381305118179107">Борбор</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ичинен <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> түзмөгүн жаңыртыңыз</translation>
@@ -627,6 +626,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Ишке ашкан жок – Уруксат берилген жок</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> түзмөктүн ичинен <ph name="NAME" /> деп аталган <ph name="INDEX" />-түзмөк.</translation>
+<translation id="7130438335435247835">Байланыш түйүнүнүн аталышы (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ысым сервери}other{Ысым серверлери}}</translation>
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>

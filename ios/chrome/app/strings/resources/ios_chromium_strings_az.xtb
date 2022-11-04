@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
-<translation id="102360288709523007">İstifadə statistikası və qəza raportlarını Google'a göndərməklə Chromium'un gəlişməsini sağlayın.</translation>
 <translation id="1047130070405668746">Chromium seçin</translation>
 <translation id="1091252999271033193">Yəni, Chromium hər dəfə mobil saytı tələb edəcək.</translation>
 <translation id="1185134272377778587">Chromium haqqında</translation>
@@ -72,10 +71,8 @@
 <translation id="5573014823074921752">Chromium məsləhəti. Daha çox tab seçimləri üçün ekranın aşağısında və ya yuxarısında yerləşən alət panelində "Tabları Göstərin" düyməsinə basıb saxlayın.</translation>
 <translation id="5700709190537129682">Chromium parollarınızı yoxlaya bilmir</translation>
 <translation id="5777187867430702742">Chromium Səhifəsi</translation>
-<translation id="5862307444128926510">Chromium'a xoş gəlmisiniz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tərəfindən idarə olunan hesab ilə daxil olursunuz və onun administratoruna Chromium datanız üzərində nəzarəti verirsiniz. Datanız həmişəlik bu hesab ilə əlaqələndiriləcək. Chromium'dan çıxmaq datanızı bu cihazdan siləcək, lakin data Google Hesabında qalacaq.</translation>
 <translation id="5983312940147103417">Chromium'u yaxşılaşdırın</translation>
-<translation id="602807004951640891">Chromium istifadə etməklə, <ph name="BEGIN_LINK_TOS" />Xidmət Şərtləri<ph name="END_LINK_TOS" /> ilə razılaşırsınız.</translation>
 <translation id="6062449165341879460">Təşkilatınızın (<ph name="DOMAIN" />) bu hesabda saxladığınız Chromium datası, əlfəcinlər, tarixçələr, parollar və digər ayarlara girişi olacaq. Hesabdan çıxdığınız zaman datanız bu cihazdan silinəcək.  Bununla belə, datanız idarə olunan Google Hesabınızda saxlanacaq və təşkilatınız üçün əlçatan olacaq. Təşkilatınız həmçinin Chromium'un davranışını dəyişə bilən hesab üçün xüsusi istifadəçi siyasətləri təyin edə bilər.</translation>
 <translation id="6119647025869519954">Chromium'u defolt etmək üçün:
 1. Ayarları açın

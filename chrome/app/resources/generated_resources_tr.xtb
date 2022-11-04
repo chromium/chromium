@@ -3084,7 +3084,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3828029223314399057">Yer işaretlerinde ara</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ve ChromeOS Ek Hizmet Şartları<ph name="END_LINK2" /> ile <ph name="BEGIN_LINK3" />Play Hizmet Şartları<ph name="END_LINK3" />'nı okudum ve kabul ediyorum.</translation>
 <translation id="3829765597456725595">SMB dosya paylaşımı</translation>
-<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" /> alanında</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Yöneticiniz zararlı olabilecek 1 uzantıyı tekrar açtı}other{Yöneticiniz zararlı olabilecek {NUM_EXTENSIONS} uzantıyı tekrar açtı}}</translation>
 <translation id="3831436149286513437">Google Drive arama önerileri</translation>
 <translation id="3834728400518755610">Mikrofon ayarlarında yapılan değişiklik, Linux'un kapatılmasını gerektirir. Devam etmek için Linux'u kapatın.</translation>
@@ -3849,7 +3848,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4556194354084985730">Kayıtlı şifrelerinizle sitelerde ve uygulamalarda kolayca oturum açın. Bu özellik kapalıyken oturum açmadan önce doğrulama istenir.</translation>
 <translation id="4558426062282641716">Otomatik başlatma izni istendi</translation>
 <translation id="4559617833001311418">Bu site hareket veya ışık sensörlerinize erişiyor.</translation>
-<translation id="4561098487691395071">Veya yazıcı PPD dosyanızı belirtin</translation>
 <translation id="4561893854334016293">Yakın zamanda değiştirilmiş izin yok</translation>
 <translation id="4562155214028662640">Parmak İzi Ekle</translation>
 <translation id="4563210852471260509">Başlangıç giriş dili Çince</translation>
@@ -4742,7 +4740,6 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5427278936122846523">Her Zaman Çevir</translation>
 <translation id="5427459444770871191">Saat &amp;Yönünde Döndür</translation>
 <translation id="542750953150239272">Devam ederek bu cihazın Google'dan, operatörünüzden ve cihazınızın üreticisinden (muhtemelen hücresel veri kullanarak) gönderilen güncelleme ve uygulamaları otomatik olarak indirip yükleyebileceğini kabul etmiş olursunuz. Bu uygulamalardan bazıları uygulama içi satın alma seçenekleri sunabilir.</translation>
-<translation id="5427936139162668357">PPD'yi göster</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Güncelleme mevcut)</translation>
 <translation id="542948651837270806">Güvenilir Platform Modülü donanım yazılımı için bir güncellemenin yüklenmesi gerekiyor. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> ürününe göz atın</translation>
 <translation id="5429818411180678468">Tam genişlik</translation>

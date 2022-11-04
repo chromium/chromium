@@ -481,7 +481,6 @@
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ଫ୍ୟାମିଲି</translation>
-<translation id="5695599963893094957">ଆପଣଙ୍କ କୀବୋର୍ଡରେ ଯେ କୌଣସି କୀ ଟାଇପ କରନ୍ତୁ। ଆପଣ ଗୋଟିଏ ସମୟରେ 4ଟି ପର୍ଯ୍ୟନ୍ତ କୀ ଦବାଇପାରିବେ।</translation>
 <translation id="5701381305118179107">କେନ୍ଦ୍ର</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ରୁ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରନ୍ତୁ</translation>
@@ -627,6 +626,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ବିଫଳ ହୋଇଛି - ଅଥୋରାଇଜେସନ ବିଫଳ ହୋଇଛି</translation>
 <translation id="7103252855940681301"><ph name="COUNT" />ଟିରୁ <ph name="NAME" /> ନାମ ଥିବା <ph name="INDEX" /> ନମ୍ବର ଡିଭାଇସ।</translation>
+<translation id="7130438335435247835">ଆକ୍ସେସ ପଏଣ୍ଟ ନାମ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ନାମ ସର୍ଭର୍}other{ନାମ ସର୍ଭର୍}}</translation>
 <translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>

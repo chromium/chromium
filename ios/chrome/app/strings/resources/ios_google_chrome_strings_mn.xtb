@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome-н шинэчлэлтийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2732745070297234559">Chrome бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдоно уу.</translation>
 <translation id="2869959624320573933">Chrome-д нэвтэрнэ үү</translation>
-<translation id="2919738076569633423">Chrome-г ашигласнаар та <ph name="BEGIN_LINK_TOS" />Үйлчилгээний нөхцөлийг<ph name="END_LINK_TOS" /> зөвшөөрч байна.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />-г сонгоно уу</translation>
 <translation id="3030414234702425231">Та <ph name="SIGNOUT_MANAGED_DOMAIN" />-н удирддаг бүртгэлээс гарч байгаа тул таны Chrome-н өгөгдлийг энэ төхөөрөмжөөс устгана. Таны өгөгдөл таны Google Бүртгэлд хэвээр үлдэнэ.</translation>
 <translation id="3167189358072330585">Таны бүртгэл Google Chrome-д ажиллахгүй байна. Нэвтрэхийн тулд та домайн админтайгаа холбогдох, эсвэл Google Бүртгэлийн энгийн хувилбарыг ашиглаарай.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Та синк хийх бүртгэлийг <ph name="USER_EMAIL1" />-с <ph name="USER_EMAIL2" /> рүү шилжүүлж байна. Таны одоогийн Chrome-н өгөгдлийг <ph name="DOMAIN" />-с удирддаг. Энэ нь таны өгөгдлийг төхөөрөмжөөс устгах хэдий ч таны өгөгдөл <ph name="USER_EMAIL1" />-д хадгалагдсан хэвээр байна.</translation>
 <translation id="3984746313391923992">Танай байгууллага танаас Chrome-с гарсан хэвээр байхыг шаардаж байна.</translation>
 <translation id="3988789688219830639">Google Chrome-д таны зураг, видеонд нэвтрэх зөвшөөрөл байхгүй байна. Та iOS Тохиргоо &gt; Нууцлал &gt; Зураг хэсэгт хандалтыг идэвхжүүлээрэй.</translation>
-<translation id="4099578267706723511">Хэрэглээний статистик мэдээ болон алдаа ослын тайланг автоматаар Google рүү илгээх замаар Google Chrome-ийг улам сайжруулахад тусална уу.</translation>
 <translation id="417201473131094001">Chrome Канар дээр дэмжихгүй</translation>
 <translation id="4192781968753717021">Энэ нууц үгийг өгөгдлийн зөрчлөөс оллоо. Google Password Manager нууц үгээ одоо өөрчлөхийг зөвлөж байна.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> энэ төхөөрөмж дээр Chrome-г ашиглаж байсан бөгөөд хавчуурга, нууц үг болон бусад тохиргоог үлдээсэн.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Google Chrome-ийн тухай</translation>
 <translation id="7501046334262221972">Chrome-г өгөгдмөл хөтчөө болгохын тулд Тохиргоог нээнэ үү. Өгөгдмөл хөтөч аппыг товшиж, дараа нь Chrome-г сонгоно уу.</translation>
 <translation id="756809126120519699">Chrome-н өгөгдлийг устгасан</translation>
-<translation id="7626032353295482388">Chrome-д тавтай морил</translation>
 <translation id="7662994914830945754">Та Chrome-г хаанаас ч ашигласан бай табуудаа харахын тулд нэвтрээд, синк хийхийг асаана уу</translation>
 <translation id="7693590760643069321">Та одоо Chrome-г хэзээд ч мессеж, документ болон бусад аппын холбоосыг товшин ашиглах боломжтой.</translation>
 <translation id="7698568245838009292">Chrome камерт хандах хүсэлтэй байна</translation>

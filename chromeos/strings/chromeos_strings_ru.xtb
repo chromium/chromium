@@ -481,7 +481,6 @@
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Семейство</translation>
-<translation id="5695599963893094957">Нажмите любую клавишу. Можно нажать до четырех клавиш одновременно.</translation>
 <translation id="5701381305118179107">Выровнять по центру</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Обновить программное обеспечение устройства "<ph name="DEVICE_NAME" />"</translation>
@@ -627,6 +626,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Сбой: ошибка авторизации</translation>
 <translation id="7103252855940681301">Устройство <ph name="INDEX" /> из <ph name="COUNT" /> под названием "<ph name="NAME" />".</translation>
+<translation id="7130438335435247835">Точка доступа</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>

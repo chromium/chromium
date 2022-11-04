@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">V poslednom čase ste nepoužili tento počet kariet: <ph name="NUMBER_OF_TABS" />. Chcete ich zavrieť?</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="125153950246128346">Klepnutím zobrazíte ďalšiu kartu</translation>
-<translation id="1302104331113804646">Nastavenia sledovania cien</translation>
-<translation id="1378979118429748177">Dostávajte upozornenia pri poklesoch cien</translation>
 <translation id="1403228085774130835">Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne</translation>
 <translation id="1455506303394048917">Vaša aktivita v týchto kartách inkognito bude vymazaná z tohto zariadenia</translation>
 <translation id="1499635324672558517">Chcete zavrieť všetky karty inkognito?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Už nechcete zobrazovať panel kariet?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavrieť <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zavrieť <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Close <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zavrieť <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="8557923272772633250">Rozbaľte skupinu s <ph name="NUMBER_OF_TABS" /> kartami.</translation>
-<translation id="860282621117673749">Upozornenia na poklesy cien</translation>
 <translation id="8714939927607906138">Nižšia cena</translation>
 <translation id="8749939518995770034">Zavretý panel kariet</translation>
 <translation id="8820741577754260431">Zobrazte si na kartách poklesy cien</translation>

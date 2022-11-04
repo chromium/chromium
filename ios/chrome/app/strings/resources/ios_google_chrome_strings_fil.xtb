@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Hindi matingnan ng Chrome kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="2732745070297234559">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="2869959624320573933">Mag-sign In sa Chrome</translation>
-<translation id="2919738076569633423">Sa paggamit ng Chrome, sumasang-ayon ka sa <ph name="BEGIN_LINK_TOS" />Mga Tuntunin ng Serbisyo<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Piliin ang <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chrome sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
 <translation id="3167189358072330585">Hindi gumagana ang iyong account sa Google Chrome. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Lumilipat ka mula sa naka-sync na account na <ph name="USER_EMAIL1" /> papunta sa <ph name="USER_EMAIL2" />. Pinamamahalaan ng <ph name="DOMAIN" /> ang kasalukuyan mong data sa Chrome. Ide-delete nito ang data mo sa device na ito, ngunit mananatili ang iyong data sa <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Hinihiling sa iyo ng organisasyon mo na manatiling naka-sign out sa Chrome.</translation>
 <translation id="3988789688219830639">Walang access ang Google Chrome sa larawan o video. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
-<translation id="4099578267706723511">Tulungang mapahusay ang Chrome sa pamamagitan ng pagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash.</translation>
 <translation id="417201473131094001">Hindi sinusuportahan sa Chrome Canary</translation>
 <translation id="4192781968753717021">Nakita sa isang paglabag sa data ang password na ito. Inirerekomenda ng Google Password Manager na palitan na ngayon ang password mo.</translation>
 <translation id="4233521129555661685">Ginamit ni <ph name="USER_EMAIL1" /> ang Chrome at nag-iwan siya ng mga bookmark, password, at iba pang mga setting sa device na ito.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Tungkol sa Google Chrome</translation>
 <translation id="7501046334262221972">Para itakda ang Chrome bilang iyong default na browser, buksan ang Mga Setting. I-tap ang Default na Browser App, at pagkatapos ay piliin ang Chrome.</translation>
 <translation id="756809126120519699">Na-clear ang data ng Chrome</translation>
-<translation id="7626032353295482388">Welcome sa Chrome</translation>
 <translation id="7662994914830945754">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, mag-sign in at i-on ang pag-sync</translation>
 <translation id="7693590760643069321">Magagamit mo na ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="7698568245838009292">Gustong I-access ng Chrome ang Camera</translation>

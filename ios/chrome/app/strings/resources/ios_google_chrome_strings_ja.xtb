@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="2869959624320573933">Chrome へのログイン</translation>
-<translation id="2919738076569633423">Chrome を使用すると、<ph name="BEGIN_LINK_TOS" />利用規約<ph name="END_LINK_TOS" />に同意したことになります。</translation>
 <translation id="2957447865124070833">[<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />] を選択する</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
 <translation id="3167189358072330585">このアカウントは Google Chrome では使用できません。ドメイン管理者に問い合わせるか、通常の Google アカウントでログインしてください。</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">同期アカウントを <ph name="USER_EMAIL1" /> から <ph name="USER_EMAIL2" /> へ切り替えます。既存の Chrome データは <ph name="DOMAIN" /> で管理されています。データはこのデバイスから削除されますが、<ph name="USER_EMAIL1" /> で保持されます。</translation>
 <translation id="3984746313391923992">組織が Chrome にログインしないように求めています。</translation>
 <translation id="3988789688219830639">Google Chrome で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
-<translation id="4099578267706723511">使用統計情報と障害レポートを Google に送信して、Chrome の品質向上にご協力ください。</translation>
 <translation id="417201473131094001">Chrome Canary ではサポートされていません</translation>
 <translation id="4192781968753717021">このパスワードはデータ侵害で検出されました。Google パスワード マネージャーでは、パスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> は Chrome を使用しており、ブックマークやパスワードなどの設定がこのデバイスに残っています。</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Google Chrome について</translation>
 <translation id="7501046334262221972">Chrome をデフォルトのブラウザにするには、[設定] を開き、[デフォルトのブラウザアプリ] をタップして、Chrome を選択します。</translation>
 <translation id="756809126120519699">Chrome データの消去完了</translation>
-<translation id="7626032353295482388">Chrome へようこそ</translation>
 <translation id="7662994914830945754">どのデバイスからでも Chrome で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>
 <translation id="7693590760643069321">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="7698568245838009292">Chrome がカメラへのアクセス許可を求めています</translation>

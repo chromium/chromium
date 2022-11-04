@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
 <translation id="2732745070297234559">Chrome 无法检查所有密码。请明天再试。</translation>
 <translation id="2869959624320573933">登录 Chrome</translation>
-<translation id="2919738076569633423">使用 Chrome 即表示您同意接受<ph name="BEGIN_LINK_TOS" />服务条款<ph name="END_LINK_TOS" />。</translation>
 <translation id="2957447865124070833">选择 <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">由于您正要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="3167189358072330585">无法在 Google Chrome 上登录您的帐号。请与您的网域管理员联系，或使用普通的 Google 帐号登录。</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">您正要将同步帐号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chrome 数据由 <ph name="DOMAIN" /> 管理。切换同步帐号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">贵组织要求您保持已退出 Chrome 的状态。</translation>
 <translation id="3988789688219830639">Google Chrome 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
-<translation id="4099578267706723511">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chrome。</translation>
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="4192781968753717021">此密码遭遇了数据泄露。Google 密码管理工具建议您立即更改密码。</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，并在此设备上保存了书签、密码及其他设置。</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">关于Google Chrome</translation>
 <translation id="7501046334262221972">若要将 Chrome 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chrome”。</translation>
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
-<translation id="7626032353295482388">欢迎使用 Chrome</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录帐号并开启同步功能</translation>
 <translation id="7693590760643069321">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>

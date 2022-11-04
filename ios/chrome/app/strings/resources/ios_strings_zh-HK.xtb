@@ -20,7 +20,6 @@
 <translation id="1084365883616172403">已順利發布到 Facebook。</translation>
 <translation id="1085696779717592361">預設為使用 Chrome</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
-<translation id="1104948393051856124">接受並繼續</translation>
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
 <translation id="1112015203684611006">無法列印。</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
@@ -166,7 +165,6 @@
 <translation id="2302742851632557585">變更網站上的密碼</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
 <translation id="2320166752086256636">隱藏鍵盤</translation>
-<translation id="2328842561016935977">輕按 [密碼] 和 [新增]</translation>
 <translation id="2351097562818989364">您的翻譯設定已重設。</translation>
 <translation id="235789365079050412">Google 私隱權政策</translation>
 <translation id="2359043044084662842">翻譯</translation>
@@ -393,7 +391,7 @@
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
 <translation id="4063300985191096908">前往「動態消息」</translation>
 <translation id="408404951701638773">簡易存取搜尋列</translation>
-<translation id="4092655288299341041">顯示說明資訊</translation>
+<translation id="4092655288299341041">顯示說明</translation>
 <translation id="4108998448622696017">偵測並在危險事件發生時發出警告。</translation>
 <translation id="411254640334432676">下載失敗。</translation>
 <translation id="4112644173421521737">搜尋</translation>
@@ -665,7 +663,6 @@
 <translation id="6149061208933997199">使用密碼</translation>
 <translation id="6152406514676263192">系統會根據您的興趣同步最相關的內容。</translation>
 <translation id="6159839020698489198">選填</translation>
-<translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6170450281939467187">無法翻譯</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6184086493125982861">顯示分頁</translation>
@@ -832,7 +829,6 @@
 <translation id="7291368939935408496">正在準備密碼…</translation>
 <translation id="730958329302570991">隨時可在「Google 密碼管理工具」中輕鬆新增網站密碼。</translation>
 <translation id="7313347584264171202">您可在此查看無痕式分頁</translation>
-<translation id="7315813263062036945">輕按左上方的「搜尋」圖示</translation>
 <translation id="7336264872878993241">已下載 <ph name="PERCENT" /> %</translation>
 <translation id="7340958967809483333">「探索」的選項</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
@@ -993,7 +989,6 @@
 <translation id="8605219856220328675">關閉分頁</translation>
 <translation id="8620640915598389714">編輯</translation>
 <translation id="8626393685701737946">如要將預設的網站檢視模式變更為桌面模式，請前往 [設定] &gt; [內容設定]</translation>
-<translation id="863090005774946393">您的瀏覽器由機構管理。部分功能可能已停用。</translation>
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8668210798914567634">此網頁已儲存至您的閱讀清單。</translation>
@@ -1009,7 +1004,7 @@
 <translation id="8741995161408053644">您的 Google 帳戶在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="8750037785291841318">您可在此查看分頁</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
-<translation id="8763613688786959833">前往下一個分頁</translation>
+<translation id="8763613688786959833">前往最後一個分頁</translation>
 <translation id="8764015330924122850">取消追蹤 <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">網址無效</translation>
 <translation id="8787968206789828143">在網絡上搜尋</translation>

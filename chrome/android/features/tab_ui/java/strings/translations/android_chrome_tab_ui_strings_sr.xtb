@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Имате више картица (<ph name="NUMBER_OF_TABS" />) које нисте користили у скорије време. Желите ли да их затворите?</translation>
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="125153950246128346">Додирните да бисте видели неку другу картицу</translation>
-<translation id="1302104331113804646">Подешавања праћења цене</translation>
-<translation id="1378979118429748177">Добијајте обавештења о снижењима</translation>
 <translation id="1403228085774130835">Затворене картице можете да пронађете у одељку Недавне картице у главном менију Chrome-а</translation>
 <translation id="1455506303394048917">Ваше активности на овим картицама без архивирања ће бити обрисане са овог уређаја</translation>
 <translation id="1499635324672558517">Желите да затворите све картице без архивирања?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Желите ли да се трака са картицама више не приказује?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затворите <ph name="TABS_COUNT_ONE" /> изабрану картицу}one{Затворите <ph name="TABS_COUNT_MANY" /> изабрану картицу}few{Затворите <ph name="TABS_COUNT_MANY" /> изабране картице}other{Затворите <ph name="TABS_COUNT_MANY" /> изабраних картица}}</translation>
 <translation id="8557923272772633250">Проширите групу са картица: <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="860282621117673749">Обавештења о снижењима</translation>
 <translation id="8714939927607906138">Нижа цена</translation>
 <translation id="8749939518995770034">Затворена трака са картицама</translation>
 <translation id="8820741577754260431">Прегледајте снижења на картицама</translation>

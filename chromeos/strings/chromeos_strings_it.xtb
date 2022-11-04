@@ -481,7 +481,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famiglia</translation>
-<translation id="5695599963893094957">Premi un tasto qualsiasi della tastiera. Puoi premere fino a 4 tasti contemporaneamente.</translation>
 <translation id="5701381305118179107">Centra</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Aggiorna <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Stampa non riuscita - Autorizzazione negata</translation>
 <translation id="7103252855940681301">Il nome del dispositivo <ph name="INDEX" /> di <ph name="COUNT" /> è: <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Nome punto di accesso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server dei nomi}other{Server dei nomi}}</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>

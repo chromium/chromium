@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="125153950246128346">برای دیدن برگه دیگر ضربه بزنید</translation>
-<translation id="1302104331113804646">تنظیمات پیگیری قیمت</translation>
-<translation id="1378979118429748177">دریافت اعلان هنگام کاهش قیمت‌ها</translation>
 <translation id="1403228085774130835">‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» در بخش منوی اصلی Chrome پیدا کنید</translation>
 <translation id="1455506303394048917">فعالیتتان در این «برگه‌های ناشناس» از این دستگاه حذف خواهد شد.</translation>
 <translation id="1499635324672558517">همه «برگه‌های ناشناس» بسته شود؟</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">نوار برگه دیگر نشان داده نشود؟</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{بستن <ph name="TABS_COUNT_ONE" /> برگه انتخابی}one{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}other{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}}</translation>
 <translation id="8557923272772633250">گسترده کردن گروه برگه با <ph name="NUMBER_OF_TABS" /> برگه.</translation>
-<translation id="860282621117673749">اعلان‌های کاهش قیمت</translation>
 <translation id="8714939927607906138">قیمت کمتر</translation>
 <translation id="8749939518995770034">نوار برگه بسته شد</translation>
 <translation id="8820741577754260431">دیدن کاهش قیمت در برگه‌ها</translation>

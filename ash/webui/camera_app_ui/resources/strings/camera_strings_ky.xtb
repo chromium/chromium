@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> файлын экспорттоо мүмкүн болбой жатат</translation>
 <translation id="1899697626337024495">Сүрөттүн дааналыгы</translation>
 <translation id="1925845977604399247">Галереяга өтүү</translation>
+<translation id="199526504800285197">Видео тартуу токтотулду</translation>
+<translation id="1995951722691075581">Түзмөктүн сактагычында орун аз болгондуктан, видео тартуу токтоп калды. Көбүрөөк видео тартуу үчүн түзмөгүңүздөн орун бошотуңуз.</translation>
 <translation id="2022953316617983419">QR коду</translation>
 <translation id="2036868001356139588">Таймердин узактыгы</translation>
 <translation id="2050339315714019657">Тигинен</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Камера менен сүрөт жана видео тартасыз.</translation>
 <translation id="2517472476991765520">Скандоо</translation>
 <translation id="2549985041256363841">Жаздырып баштоо</translation>
+<translation id="2577915835281444458">Бир аздан кийин видео тартылбай калат. Орун бошотуу үчүн түзмөктүн сактагычына өтүңүз.</translation>
 <translation id="2599796128805996109">Арткы камера</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек.</translation>
 <translation id="2761536921376153655">Скандоо түрү</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Штрихкодду скандоо</translation>
 <translation id="3892148308691398805">Текстти көчүрүү</translation>
+<translation id="4060608699153044055">Түзмөктүн сактагычында орун аз болгондуктан, видео тартууга болбойт. Видео тартып баштоо үчүн түзмөгүңүздөн орун бошотуңуз.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Мпикс.</translation>
 <translation id="4118525110028899586">Видео жаздырууну тындыруу</translation>
 <translation id="4121305183798804752">Документ аныкталды</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">Документтин жогорку оң бурчу</translation>
 <translation id="7933675232020478311">Төмөнкү оң жакка жылууда</translation>
 <translation id="7983668134180549431">Текст аныкталды.</translation>
+<translation id="8079255378695216066">Видео тартылбай жатат</translation>
 <translation id="8120146556401698679">Жылдырып кароо, кыйшайтуу, чоңойтуп/кичирейтүү параметрлери</translation>
 <translation id="8131740175452115882">Ырастоо</translation>
 <translation id="8145038249676204903">Сүрөт режимине которулуу</translation>

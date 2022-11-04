@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> teie vahelehte pole hiljuti kasutatud. Kas sulgeda need?</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="125153950246128346">Puudutage muu vahelehe vaatamiseks</translation>
-<translation id="1302104331113804646">Hinna jälgimise seaded</translation>
-<translation id="1378979118429748177">Saate hinnalanguste kohta märguandeid</translation>
 <translation id="1403228085774130835">Oma suletud vahelehed leiate Chrome'i peamenüüs olevast jaotisest Hiljutised vahelehed</translation>
 <translation id="1455506303394048917">Teie tegevused nendel inkognito vahelehtedel kustutatakse sellest seadmest</translation>
 <translation id="1499635324672558517">Kas sulgeda kõik inkognito vahelehed?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Kas te ei soovi enam vahelehtede riba kuvada?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> valitud vaheleht}other{Sule <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="8557923272772633250">Laienda <ph name="NUMBER_OF_TABS" /> vahelehega vahelehegruppi.</translation>
-<translation id="860282621117673749">Hinnalanguse märguanded</translation>
 <translation id="8714939927607906138">Soodsam hind</translation>
 <translation id="8749939518995770034">Vahelehtede riba suleti</translation>
 <translation id="8820741577754260431">Näete oma vahelehtedel hinnalangusi</translation>

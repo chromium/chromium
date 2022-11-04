@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">ផ្ទាំង <ph name="NUMBER_OF_TABS" /> របស់អ្នក​មិនត្រូវបាន​ប្រើទេ​នាពេល​ថ្មីៗនេះ។ បិទផ្ទាំង​ទាំងនោះឬ?</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
 <translation id="125153950246128346">ចុចដើម្បីមើល​ផ្ទាំងផ្សេងទៀត</translation>
-<translation id="1302104331113804646">ការកំណត់ការតាមដានតម្លៃ</translation>
-<translation id="1378979118429748177">ទទួលបានការជូនដំណឹងនៅពេលធ្លាក់ថ្លៃ</translation>
 <translation id="1403228085774130835">អ្នកអាចស្វែងរក​ផ្ទាំងដែលអ្នកបានបិទ​នៅក្នុងផ្ទាំង "ថ្មីៗ" ខាងក្រោមម៉ឺនុយ​ចម្បងរបស់ Chrome</translation>
 <translation id="1455506303394048917">សកម្មភាព​របស់អ្នក​នៅក្នុង​ផ្ទាំងឯកជន​ទាំងនេះ​នឹងត្រូវបាន​សម្អាតចេញពី​ឧបករណ៍នេះ</translation>
 <translation id="1499635324672558517">បិទ​ផ្ទាំងឯកជន​ទាំងអស់ឬ?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">កុំបង្ហាញរបារផ្ទាំងម្ដងទៀតឬ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="8557923272772633250">ពង្រីកក្រុមផ្ទាំង​ដែលមាន <ph name="NUMBER_OF_TABS" />ផ្ទាំង។</translation>
-<translation id="860282621117673749">ការជូនដំណឹងអំពីការធ្លាក់ថ្លៃ</translation>
 <translation id="8714939927607906138">តម្លៃ​ទាប​ជាង​មុន</translation>
 <translation id="8749939518995770034">បានបិទរបារផ្ទាំង</translation>
 <translation id="8820741577754260431">មើលការធ្លាក់ថ្លៃនៅក្នុងផ្ទាំងរបស់អ្នក</translation>

@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Ultimamente non se utilizaron <ph name="NUMBER_OF_TABS" /> das túas pestanas. Queres pechalas?</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="125153950246128346">Toca para ver outra pestana</translation>
-<translation id="1302104331113804646">Configuración do seguimento de prezos</translation>
-<translation id="1378979118429748177">Recibe notificacións cando baixen os prezos</translation>
 <translation id="1403228085774130835">Podes atopar as pestanas pechadas nas pestanas recentes, dispoñibles no menú principal de Chrome</translation>
 <translation id="1455506303394048917">A túa actividade nestas pestanas do modo de incógnito borrarase deste dispositivo</translation>
 <translation id="1499635324672558517">Queres pechar todas as pestanas do modo de incógnito?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Non queres que se volva mostrar esta franxa de pestanas?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Pechar <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Pechar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
 <translation id="8557923272772633250">Despregar grupo de pestanas con <ph name="NUMBER_OF_TABS" /> pestanas.</translation>
-<translation id="860282621117673749">Alertas de baixada de prezos</translation>
 <translation id="8714939927607906138">Prezo máis baixo</translation>
 <translation id="8749939518995770034">Franxa de pestanas pechada</translation>
 <translation id="8820741577754260431">Consulta as baixadas de prezo nas túas pestanas</translation>

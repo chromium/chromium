@@ -1525,6 +1525,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       El campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> es un ID único para un proveedor de servicios que identifica la cuenta del cliente con el proveedor de servicios. En la configuración de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, cuando se le pide al usuario que inicie sesión, solo se permiten las cuentas de usuario asociadas a la cuenta del proveedor de servicios de este cliente.
 
       Esta política solo se puede establecer desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
+<translation id="2452225615952836461">Utilizar métodos de solicitud siempre en mayúsculas</translation>
 <translation id="2454228136871844693">Optimizar para una mejor estabilidad.</translation>
 <translation id="2455033019778127130">Sigue el comportamiento predeterminado del navegador, muestra los Términos del Servicio y espera a que el usuario los acepte.</translation>
 <translation id="2460127623195247744">Esta política está obsoleta. Usa la política <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" /> en su lugar.
@@ -2236,6 +2237,17 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="3101035417394748390">Tamaño máximo (en bytes) que se puede transferir entre el cliente y el host mediante la sincronización del portapapeles</translation>
 <translation id="3101501961102569744">Seleccionar la forma de especificar la configuración del servidor proxy</translation>
 <translation id="3101709781009526431">Fecha y hora</translation>
+<translation id="3105764289283669411">Esta política controla si los métodos de solicitud se pondrán en mayúsculas cuando coincidan con encabezados de respuesta <ph name="ACAM_HEADER_NAME" /> en la solicitud preparatoria de <ph name="CORS" />.
+
+Si se inhabilita esta política, los métodos de solicitud se ponen en mayúsculas.
+Este es el comportamiento de la versión 108 de <ph name="PRODUCT_NAME" /> o anteriores.
+
+Si se habilita esta política o no se establece, los métodos de solicitud no se ponen en mayúsculas, salvo que coincidan sin distinguir entre mayúsculas y minúsculas con <ph name="DELETE_METHOD_NAME" />, <ph name="GET_METHOD_NAME" />, <ph name="HEAD_METHOD_NAME" />, <ph name="OPTIONS_METHOD_NAME" />, <ph name="POST_METHOD_NAME" /> o <ph name="PUT_METHOD_NAME" />.
+Esto rechazaría el encabezado de respuesta <ph name="REJECTED_CASE" /> y aceptaría el encabezado de respuesta <ph name="ACCEPTED_CASE" />.
+
+Nota: los métodos de solicitud <ph name="POST_LOWERCASE_METHOD_NAME" /> y <ph name="PUT_LOWERCASE_METHOD_NAME" /> no se ven afectados, pero <ph name="PATCH_LOWERCASE_METHOD_NAME" /> sí.
+
+Esta política es temporal y se eliminará más adelante.</translation>
 <translation id="3110248563985502478">Esta política está obsoleta en M88. Chrome ya no es compatible con Flash. Si la política se habilita, los complementos obsoletos se utilizarán como complementos normales. Si la política se inhabilita, los complementos obsoletos no se utilizarán.
 
       Si no se le asigna ningún valor, se pedirá permiso a los usuarios para ejecutar los complementos obsoletos.</translation>
@@ -3793,6 +3805,13 @@ Si no se establece la política, los usuarios podrán cambiar la lista de aplica
 
       Si una política no está en la lista y hay conflicto entre fuentes, permisos o niveles, la política con más prioridad se aplicará.</translation>
 <translation id="4646739075621507361">Informar de los trabajos de impresión</translation>
+<translation id="4647870063570047503">Si se habilita esta política, <ph name="PRODUCT_NAME" /> verificará los certificados de los servidores mediante el verificador de certificados integrado, usando Chrome Root Store como fuente de confianza pública.
+
+Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> usará el verificador de certificados del sistema y los certificados raíz del sistema.
+
+Si no se define esta política, se podrán usar Chrome Root Store o las raíces proporcionadas por el sistema.
+
+Se prevé que esta política se quite en la versión 113 de <ph name="PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />, en la que el uso del verificador de certificados y las raíces proporcionados por la plataforma dejarán de ser compatibles.</translation>
 <translation id="4649395978608361979">Destinos en impresoras locales</translation>
 <translation id="4650044303940238102">Ajustes de fuentes locales</translation>
 <translation id="4650759511838826572">Inhabilitar esquemas de protocolo de URL</translation>
@@ -6819,6 +6838,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7724161903134898864">Si se asigna el valor 1 a esta política, los sitios web podrán mostrar ventanas emergentes. Si se le asigna el valor 2, se denegarán las ventanas emergentes.
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="7728486978686128364">No utilizar métodos de solicitud en mayúsculas excepto en el caso de DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en todos los sitios web</translation>
 <translation id="7732907212083471072">Políticas retiradas</translation>
 <translation id="7734212505800048991">
@@ -8122,6 +8142,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 
       El valor de la política se debe especificar en segundos.</translation>
 <translation id="9015578113567730893">Intervalo de recogida de telemetría de audio en milisegundos.</translation>
+<translation id="9015952763003753868">Hacer que los <ph name="ACAM_HEADER_NAME" /> que coinciden en la solicitud preparatoria de <ph name="CORS" /> cumplan las especificaciones</translation>
 <translation id="9020630127193895800">Color índigo para la retroiluminación del teclado</translation>
 <translation id="9031831501689819108">Habilitar la compatibilidad con navegadores antiguos</translation>
 <translation id="9035086760683255833">Habilita la función de accesibilidad de elementos destacados.

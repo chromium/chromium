@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> ଏକ୍ସପୋର୍ଟ କରିବାରେ ଅକ୍ଷମ</translation>
 <translation id="1899697626337024495">ଫଟୋ ରିଜୋଲ୍ୟୁଶନ୍</translation>
 <translation id="1925845977604399247">ଗ୍ୟାଲେରୀକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="199526504800285197">ରେକର୍ଡିଂ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
+<translation id="1995951722691075581">ଡିଭାଇସର ଷ୍ଟୋରେଜ ସ୍ପେସ କମ୍ ଥିବା ଯୋଗୁଁ ଆପଣଙ୍କ ରେକର୍ଡିଂ ବନ୍ଦ ହୋଇଯାଇଛି। ଅଧିକ ଭିଡିଓକୁ ରେକର୍ଡ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡିଭାଇସରେ ସ୍ପେସ ଖାଲି କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="2022953316617983419">QR କୋଡ୍</translation>
 <translation id="2036868001356139588">ଟାଇମ୍‍ର ଅବଧି</translation>
 <translation id="2050339315714019657">ପୋଟ୍ରେଟ୍‌</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">ଆପଣଙ୍କର କ୍ୟାମେରାରେ ଫଟୋଗୁଡ଼ିକ ଉଠାନ୍ତୁ ଏବଂ ଭିଡିଓଗୁଡ଼ିକ ରେକର୍ଡ କରନ୍ତୁ।</translation>
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2549985041256363841">ରେକର୍ଡିଂ ଆରମ୍ଭ କରନ୍ତୁ</translation>
+<translation id="2577915835281444458">ରେକର୍ଡିଂ ଶୀଘ୍ର ବନ୍ଦ ହୋଇଯିବ। ସ୍ପେସ ଖାଲି କରିବା ପାଇଁ ଡିଭାଇସ ଷ୍ଟୋରେଜକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="2599796128805996109">ପଛ କ୍ୟାମେରା</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> ସେକେଣ୍ଡ</translation>
 <translation id="2761536921376153655">ସ୍କାନର ପ୍ରକାର</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">ଭିଡିଓ</translation>
 <translation id="3838931309141338733">ବାରକୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="3892148308691398805">ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
+<translation id="4060608699153044055">ଡିଭାଇସର ଷ୍ଟୋରେଜ ସ୍ପେସ କମ୍ ଥିବା ଯୋଗୁଁ ଆପଣ ରେକର୍ଡିଂ କରିପାରିବେ ନାହିଁ। ରେକର୍ଡିଂ ଆରମ୍ଭ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡିଭାଇସର ସ୍ପେସ ଖାଲି କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ରେକର୍ଡିଂ ବିରତ କରନ୍ତୁ</translation>
 <translation id="4121305183798804752">ଡକ୍ୟୁମେଣ୍ଟ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">ଡକ୍ୟୁମେଣ୍ଟର ଶୀର୍ଷ-ଡାହାଣ ପଟ କୋଣ</translation>
 <translation id="7933675232020478311">ନିମ୍ନ-ଡାହାଣ ପଟକୁ ମୁଭ ହେଉଛି</translation>
 <translation id="7983668134180549431">ଟେକ୍ସଟ୍ ଚିହ୍ନଟ କରାଯାଇଛି।</translation>
+<translation id="8079255378695216066">ରେକର୍ଡିଂ ଆରମ୍ଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8120146556401698679">ପ୍ୟାନ୍ ଟିଲ୍ଟ ଜୁମ୍</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8145038249676204903">ଫଟୋ ଉଠାଇବା ପାଇଁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>

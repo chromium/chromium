@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
-<translation id="1302104331113804646">Einstellungen für die Preisbeobachtung</translation>
-<translation id="1378979118429748177">Benachrichtigt werden, wenn günstigere Preise verfügbar sind</translation>
 <translation id="1403228085774130835">Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“</translation>
 <translation id="1455506303394048917">Deine Aktivitäten auf diesen Inkognitotabs werden von diesem Gerät gelöscht</translation>
 <translation id="1499635324672558517">Alle Inkognitotabs schließen?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Tableiste nicht mehr anzeigen?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs schließen}}</translation>
 <translation id="8557923272772633250">Tabgruppe mit <ph name="NUMBER_OF_TABS" /> Tabs maximieren</translation>
-<translation id="860282621117673749">Benachrichtigungen bei Preisnachlässen</translation>
 <translation id="8714939927607906138">Günstigerer Preis</translation>
 <translation id="8749939518995770034">Tableiste geschlossen</translation>
 <translation id="8820741577754260431">Preisnachlässe auf deinen Tabs sehen</translation>

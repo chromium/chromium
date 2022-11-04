@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు ఇటీవల ఉపయోగించబడలేదు. వాటిని మూసివేయాలా?</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="125153950246128346">మరొక ట్యాబ్‌ను చూడటానికి నొక్కండి</translation>
-<translation id="1302104331113804646">ధరను ట్రాక్ చేసే సెట్టింగ్‌లు</translation>
-<translation id="1378979118429748177">ధరలు తగ్గినప్పుడు నోటిఫికేషన్‌ను పొందండి</translation>
 <translation id="1403228085774130835">మీ మూసివేసిన ట్యాబ్‌లను మీరు Chrome ప్రధాన మెనూ కింద ఇటీవలి ట్యాబ్‌లలో కనుగొనవచ్చు</translation>
 <translation id="1455506303394048917">ఈ అజ్ఞాత ట్యాబ్‌లలోని మీ యాక్టివిటీ ఈ పరికరం నుండి క్లియర్ చేయబడుతుంది</translation>
 <translation id="1499635324672558517">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయాలా?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">ట్యాబ్‌ స్ట్రిప్‌ను మళ్లీ చూపవద్దా?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ఎంపిక చేసిన <ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను మూసివేయి}other{ఎంపిక చేసిన <ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను మూసివేయి}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
-<translation id="860282621117673749">ధర తగ్గింపు అలర్ట్‌లు</translation>
 <translation id="8714939927607906138">తక్కువ ధర</translation>
 <translation id="8749939518995770034">మూసివేయబడిన ట్యాబ్‌ స్ట్రిప్</translation>
 <translation id="8820741577754260431">మీ ట్యాబ్‌లలో ధర తగ్గింపు వివరాలను చూడండి</translation>

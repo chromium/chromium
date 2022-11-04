@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
-<translation id="1302104331113804646">Hintaseurannan asetukset</translation>
-<translation id="1378979118429748177">Saat ilmoituksia, kun hinnat laskevat</translation>
 <translation id="1403228085774130835">Löydät suljetut välilehdet Chromen päävalikon Hiljattain suljetut välilehdet ‑kohdasta</translation>
 <translation id="1455506303394048917">Toimintasi näillä incognito-välilehdillä tyhjennetään laitteelta</translation>
 <translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Etkö halua nähdä välilehtiriviä uudelleen?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="8557923272772633250">Laajenna välilehtiryhmä, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä.</translation>
-<translation id="860282621117673749">Ilmoitukset hinnanalennuksista</translation>
 <translation id="8714939927607906138">Edullisempi hinta</translation>
 <translation id="8749939518995770034">Suljettu välilehtirivi</translation>
 <translation id="8820741577754260431">Katso hinnanalennukset välilehdiltä</translation>

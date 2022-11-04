@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="125153950246128346">Trokit për të parë një skedë tjetër</translation>
-<translation id="1302104331113804646">Cilësimet e monitorimit të çmimeve</translation>
-<translation id="1378979118429748177">Merr njoftime kur bien çmimet</translation>
 <translation id="1403228085774130835">Skedat e mbyllura mund t'i gjesh në "Skedat e fundit" te menyja kryesore e Chrome</translation>
 <translation id="1455506303394048917">Aktiviteti yt në këto skeda "të fshehta" do të pastrohet nga kjo pajisje</translation>
 <translation id="1499635324672558517">Të mbyllen të gjitha skedat "e fshehta"?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Nuk do ta shfaqësh shiritin e skedave përsëri?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Mbyll <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Mbyll <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="8557923272772633250">Zgjero grupin e skedave me <ph name="NUMBER_OF_TABS" /> skeda.</translation>
-<translation id="860282621117673749">Alarme sinjalizuese për rënie çmimi</translation>
 <translation id="8714939927607906138">Çmim më i ulët</translation>
 <translation id="8749939518995770034">Shiriti i skedave i mbyllur</translation>
 <translation id="8820741577754260431">Shiko rëniet e çmimeve në skeda</translation>

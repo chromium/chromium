@@ -20,7 +20,6 @@
 <translation id="1084365883616172403">Facebook 게시가 완료되었습니다.</translation>
 <translation id="1085696779717592361">Chrome을 기본 브라우저로 사용</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
-<translation id="1104948393051856124">동의 및 계속</translation>
 <translation id="110724200315609752">열려 있는 다른 창으로 전환</translation>
 <translation id="1112015203684611006">인쇄 실패</translation>
 <translation id="1125564390852150847">새 탭 만들기</translation>
@@ -166,7 +165,6 @@
 <translation id="2302742851632557585">웹사이트에서 비밀번호 변경</translation>
 <translation id="2316709634732130529">추천 비밀번호 사용</translation>
 <translation id="2320166752086256636">키보드 숨기기</translation>
-<translation id="2328842561016935977">비밀번호를 탭하고 '추가' 탭하기</translation>
 <translation id="2351097562818989364">번역 설정이 재설정되었습니다.</translation>
 <translation id="235789365079050412">Google 개인정보처리방침</translation>
 <translation id="2359043044084662842">번역</translation>
@@ -665,7 +663,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6149061208933997199">비밀번호 사용</translation>
 <translation id="6152406514676263192">동기화하여 내 관심분야와 가장 관련성이 높은 콘텐츠를 받아보세요.</translation>
 <translation id="6159839020698489198">선택사항</translation>
-<translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6170450281939467187">번역 실패</translation>
 <translation id="6177442314419606057">Chrome에서 검색</translation>
 <translation id="6184086493125982861">탭 표시</translation>
@@ -834,7 +831,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7291368939935408496">비밀번호 준비 중...</translation>
 <translation id="730958329302570991">언제든지 Google 비밀번호 관리자에 사이트 비밀번호를 손쉽게 추가할 수 있습니다</translation>
 <translation id="7313347584264171202">여기에서 시크릿 탭을 확인할 수 있습니다</translation>
-<translation id="7315813263062036945">왼쪽 상단에서 검색 아이콘 탭하기</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% 다운로드됨</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>
 <translation id="7346909386216857016">확인</translation>
@@ -995,7 +991,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8605219856220328675">탭 닫기</translation>
 <translation id="8620640915598389714">수정</translation>
 <translation id="8626393685701737946">설정 &gt; 콘텐츠 설정에서 기본 사이트 보기를 데스크톱으로 변경할 수 있습니다.</translation>
-<translation id="863090005774946393">조직에서 관리하는 브라우저입니다. 일부 기능은 사용 중지될 수 있습니다.</translation>
 <translation id="8636825310635137004">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
 <translation id="8654802032646794042">취소</translation>
 <translation id="8668210798914567634">읽기 목록에 저장된 페이지입니다.</translation>

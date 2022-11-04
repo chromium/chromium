@@ -484,6 +484,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Zaległa aktualizacja</translation>
+<translation id="3659444876902283058">(dzień <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Pozostało około <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Podłącz urządzenie do zasilania.</translation>
 <translation id="366222428570480733">Użytkownik zarządzany <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -917,6 +918,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6064463340679478396">Nie używam już tego pliku</translation>
 <translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
 <translation id="6074087755403037157">Wersja beta</translation>
+<translation id="6093867385179428431">Wyłączone przez administratora</translation>
 <translation id="6095008505822982596">Prędkość mowy</translation>
 <translation id="6099678161144790572">Edytowane w zeszłym miesiącu</translation>
 <translation id="6103838137565245112">system</translation>
@@ -1266,9 +1268,11 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8052898407431791827">Skopiowano do schowka</translation>
 <translation id="8054466585765276473">Obliczanie czasu pracy na baterii.</translation>
 <translation id="8083540854303889870">Zapisane na później</translation>
+<translation id="8091153018031979607">Rozpoczęcie o <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatyczne aktualizacje</translation>
 <translation id="8098591350844501178">Zakończ przesyłanie ekranu do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Włączono (wszystkie aplikacje)</translation>
+<translation id="8113515504791187892">Przycisk Przeczytaj na głos</translation>
 <translation id="8120151603115102514">Twój telefon nie ma ekranu blokady. Aby odblokować Chromebooka, wpisz hasło.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
@@ -1378,6 +1382,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8703634754197148428">Rozpocznij nagrywanie. Po rozpoczęciu nagrywania możesz za pomocą Alt + Shift + L przejść na półkę, na której znajdziesz przycisk zatrzymujący nagrywanie.</translation>
 <translation id="8721053961083920564">Przełącz głośność. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Zrzut całego ekranu</translation>
+<translation id="8731487213223706745">Zakończenie o <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Klawiatura może próbować przechwycić naciskane klawisze</translation>
 <translation id="8735678380411481005">Kolor podświetlenia klawiatury</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

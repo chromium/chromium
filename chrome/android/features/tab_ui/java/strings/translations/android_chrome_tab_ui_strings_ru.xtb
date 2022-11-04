@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="125153950246128346">Нажмите, чтобы перейти на другую вкладку</translation>
-<translation id="1302104331113804646">Настройки отслеживания цен</translation>
-<translation id="1378979118429748177">Получать уведомления о скидках</translation>
 <translation id="1403228085774130835">Закрытые вкладки можно найти в главном меню Chrome в разделе "Недавние вкладки".</translation>
 <translation id="1455506303394048917">Связанная с ними информация будет удалена с этого устройства.</translation>
 <translation id="1499635324672558517">Закрыть все вкладки инкогнито?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Больше не показывать панель вкладок?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрыть <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Закрыть <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Закрыть <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Закрыть <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
 <translation id="8557923272772633250">Развернуть группу вкладок. Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="860282621117673749">Оповещения о скидках</translation>
 <translation id="8714939927607906138">Более низкая цена</translation>
 <translation id="8749939518995770034">Панель вкладок закрыта.</translation>
 <translation id="8820741577754260431">Показывать скидки на вкладках</translation>

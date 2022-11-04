@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> ਨੂੰ ਨਿਰਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1899697626337024495">ਫ਼ੋਟੋ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="1925845977604399247">ਗੈਲਰੀ 'ਤੇ ਜਾਓ</translation>
+<translation id="199526504800285197">ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ</translation>
+<translation id="1995951722691075581">ਡੀਵਾਈਸ ਦੀ ਸਟੋਰੇਜ ਘੱਟ ਹੋਣ ਕਰਕੇ ਤੁਹਾਡੀ ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ। ਹੋਰ ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨੀ ਪਵੇਗੀ।</translation>
 <translation id="2022953316617983419">QR ਕੋਡ</translation>
 <translation id="2036868001356139588">ਟਾਈਮਰ ਦੀ ਮਿਆਦ</translation>
 <translation id="2050339315714019657">ਪੋਰਟਰੇਟ</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">ਵੀਡਿਓ</translation>
 <translation id="3838931309141338733">ਬਾਰਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="3892148308691398805">ਲਿਖਤ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="4060608699153044055">ਡੀਵਾਈਸ ਦੀ ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਘੱਟ ਹੋਣ ਕਰਕੇ ਤੁਸੀਂ ਰਿਕਾਰਡ ਨਹੀਂ ਕਰ ਸਕਦੇ। ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨੀ ਪਵੇਗੀ।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ਰਿਕਾਰਡਿੰਗ ਰੋਕੋ</translation>
 <translation id="4121305183798804752">ਦਸਤਾਵੇਜ਼ ਦਾ ਪਤਾ ਲੱਗਿਆ</translation>
@@ -161,6 +164,7 @@
 <translation id="7748344063862150053">ਦਸਤਾਵੇਜ਼ ਦਾ ਉੱਪਰਲਾ-ਸੱਜਾ ਕੋਨਾ</translation>
 <translation id="7933675232020478311">ਇਹ ਹੇਠਾਂ-ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7983668134180549431">ਲਿਖਤ ਦਾ ਪਤਾ ਲੱਗਾ।</translation>
+<translation id="8079255378695216066">ਰਿਕਾਰਡਿੰਗ ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8120146556401698679">ਪੈਨ ਕਰੋ ਟੇਢਾ ਕਰੋ ਜ਼ੂਮ ਕਰੋ</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8145038249676204903">'ਫ਼ੋਟੋ ਖਿੱਚੋ' ਮੋਡ 'ਤੇ ਜਾਓ</translation>

@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="125153950246128346">અન્ય ટૅબ જોવા માટે ટૅપ કરો</translation>
-<translation id="1302104331113804646">કિંમત ટ્રૅક કરવા માટેના સેટિંગ</translation>
-<translation id="1378979118429748177">કિંમતમાં ઘટાડો થાય ત્યારે નોટિફિકેશન મેળવો</translation>
 <translation id="1403228085774130835">Chromeના મુખ્ય મેનૂ હેઠળ તાજેતરની ટૅબમાં તમે તમારી બંધ કરેલી ટૅબ શોધી શકશો</translation>
 <translation id="1455506303394048917">આ ડિવાઇસમાંથી આ છૂપી ટૅબમાંની તમારી પ્રવૃત્તિ સાફ કરવામાં આવશે</translation>
 <translation id="1499635324672558517">બધી છૂપી ટૅબ બંધ કરીએ?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">ટૅબ સ્ટ્રિપ ફરીથી ન બતાવીએ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બંધ કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.</translation>
-<translation id="860282621117673749">કિંમતમાં ઘટાડા વિશે અલર્ટ</translation>
 <translation id="8714939927607906138">ઓછી કિંમત</translation>
 <translation id="8749939518995770034">ટૅબ સ્ટ્રિપ બંધ કરી</translation>
 <translation id="8820741577754260431">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ</translation>

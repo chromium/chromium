@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
-<translation id="1302104331113804646">Narx kuzatuvi sozlamalari</translation>
-<translation id="1378979118429748177">Narxlar tushganda xabar olish</translation>
 <translation id="1403228085774130835">Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlar bandida chiqadi</translation>
 <translation id="1455506303394048917">Bu inkognito varaqlardagi xatti-harakatlaringiz ushbu qurilmadan tozalanadi</translation>
 <translation id="1499635324672558517">Barcha inkognito varaqlar yopilsinmi?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Darchalar paneli boshqa chiqmasinmi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni yopish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni yopish}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yoyish.</translation>
-<translation id="860282621117673749">Narx tushishi signallari</translation>
 <translation id="8714939927607906138">Past narxda</translation>
 <translation id="8749939518995770034">Darchalar paneli yopildi</translation>
 <translation id="8820741577754260431">Narxlar tushishini varaqlarda kuzating</translation>

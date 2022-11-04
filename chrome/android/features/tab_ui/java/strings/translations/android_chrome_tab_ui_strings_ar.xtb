@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">لم يتم استخدام <ph name="NUMBER_OF_TABS" /> من علامات التبويب مؤخرًا. هل تريد إغلاقها؟</translation>
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="125153950246128346">يُرجى النقر للاطِّلاع على علامة تبويب أخرى</translation>
-<translation id="1302104331113804646">إعدادات تتبُّع الأسعار</translation>
-<translation id="1378979118429748177">تلقّي إشعارات عند انخفاض الأسعار</translation>
 <translation id="1403228085774130835">‏يمكنك العثور على علامات التبويب المغلقة في "علامات التبويب الأخيرة" ضمن قائمة Chrome الرئيسية.</translation>
 <translation id="1455506303394048917">سيتم محو بيانات نشاطك ضمن علامات التبويب هذه في وضع التصفُّح المتخفي على هذا الجهاز.</translation>
 <translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">هل تريد عدم عرض شريط علامات التبويب مرة أخرى؟</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{إغلاق علامة تبويب واحدة محدّدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}two{إغلاق علامتَي تبويب محدّدتَين (<ph name="TABS_COUNT_MANY" />)}few{إغلاق <ph name="TABS_COUNT_MANY" /> علامات تبويب محدّدة}many{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}other{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}}</translation>
 <translation id="8557923272772633250">توسيع مجموعة علامات التبويب التي تحتوي على <ph name="NUMBER_OF_TABS" /> علامة تبويب</translation>
-<translation id="860282621117673749">إشعارات بانخفاض الأسعار</translation>
 <translation id="8714939927607906138">السعر المنخفض</translation>
 <translation id="8749939518995770034">شريط علامات التبويب مُغلق.</translation>
 <translation id="8820741577754260431">الاطّلاع على الأسعار المنخفضة في علامات التبويب</translation>

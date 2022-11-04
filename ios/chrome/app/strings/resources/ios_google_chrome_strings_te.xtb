@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome అప్‌డేట్‌లు ఏమైనా ఉన్నాయో లేదో చెక్ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2732745070297234559">Chromeకు అన్ని పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యపడలేదు. రేపు మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2869959624320573933">Chromeకు సైన్ ఇన్ చేయండి</translation>
-<translation id="2919738076569633423">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_LINK_TOS" />సేవా నిబంధనల<ph name="END_LINK_TOS" />కు అంగీకరిస్తున్నారు.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />ను ఎంచుకోండి</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> నిర్వహిస్తున్న ఖాతా నుండి మీరు సైన్ అవుట్ చేస్తున్నారు కనుక మీ Chrome డేటా ఈ పరికరం నుండి తొలగించబడుతుంది. మీ డేటా మీ Google ఖాతాలో అలాగే ఉంటుంది.</translation>
 <translation id="3167189358072330585">మీ ఖాతా Google Chromeలో పని చేయదు. దయచేసి మీ డొమైన్ నిర్వాహకుడిని సంప్రదించండి లేదా సైన్ ఇన్ చేయడానికి సాధారణ Google ఖాతాను ఉపయోగించండి.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">మీరు సింక్ ఖాతాలను <ph name="USER_EMAIL1" /> నుండి <ph name="USER_EMAIL2" />‌కు మారుస్తున్నారు. ఇప్పటికే ఉన్న మీ Chrome డేటా <ph name="DOMAIN" /> నిర్వహణలో ఉంది. దీని వలన మీ డేటా ఈ పరికరం నుండి తొలగించబడుతుంది. కానీ మీ డేటా <ph name="USER_EMAIL1" />లో అలాగే ఉంటుంది.</translation>
 <translation id="3984746313391923992">మీకు Chrome నుండి సైన్ అవుట్ అయ్యి ఉండాల్సిందిగా మీ సంస్థ కోరుతోంది.</translation>
 <translation id="3988789688219830639">Google Chrome మీ ఫోటోలు లేదా వీడియోలకు యాక్సెస్‌ను కలిగి లేదు. iOS సెట్టింగ్‌లు &gt; గోప్యత &gt; ఫోటోల్లో యాక్సెస్‌ను ప్రారంభించండి.</translation>
-<translation id="4099578267706723511">వినియోగ గణాంకాలు, క్రాష్ రిపోర్ట్‌లను Googleకు పంపి, తద్వారా Chromeను మెరుగుపరచడంలో సహాయపడండి.</translation>
 <translation id="417201473131094001">Chrome కెనరీలో సపోర్ట్ చేయదు</translation>
 <translation id="4192781968753717021">ఈ పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ పాస్‌వర్డ్‌ను ఇప్పుడే మార్చమని Google Password Manager సిఫార్సు చేస్తోంది.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> Chromeను ఉపయోగిస్తూ, బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌లను ఈ పరికరంలో అలాగే ఉంచారు.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Google Chrome గురించి</translation>
 <translation id="7501046334262221972">Chromeను మీ ఆటోమేటిక్ బ్రౌజర్‌గా చేయడానికి, సెట్టింగ్‌లను తెరవండి. ఆటోమేటిక్ బ్రౌజర్ యాప్‌ను ట్యాప్ చేసి, ఆపై Chromeను ఎంచుకోండి.</translation>
 <translation id="756809126120519699">Chrome డేటా తీసివేయబడింది</translation>
-<translation id="7626032353295482388">Chromeకు స్వాగతం</translation>
 <translation id="7662994914830945754">మీరు Chromeను ఎక్కడ ఉపయోగించినా మీ ట్యాబ్‌లను చూసేందుకు, సైన్ ఇన్ చేసి సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="7693590760643069321">మెసేజ్‌లు, డాక్యుమెంట్‌లు, ఇతర యాప్‌లలో లింక్‌లను ట్యాప్ చేయడం ద్వారా, మీరు ఎప్పుడైనా Chromeను ఉపయోగించవచ్చు.</translation>
 <translation id="7698568245838009292">కెమెరాను Chrome యాక్సెస్ చేయాలనుకుంటోంది</translation>

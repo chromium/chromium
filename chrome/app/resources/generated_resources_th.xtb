@@ -537,6 +537,7 @@
 <translation id="1495677929897281669">กลับไปที่แท็บ</translation>
 <translation id="1500297251995790841">อุปกรณ์ที่ไม่รู้จัก [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">ดูข้อมูลเพิ่มเติมเกี่ยวกับแอป Chrome ที่ไม่รองรับ</translation>
+<translation id="1503392482221435031">ส่งสถิติการใช้งานให้ Google โดยอัตโนมัติ คุณเปิดหรือปิดรายงานข้อขัดข้องได้ในการตั้งค่าของอุปกรณ์</translation>
 <translation id="150411034776756821">นำ <ph name="SITE" /> ออก</translation>
 <translation id="1504551620756424144">โฟลเดอร์ที่แชร์จะอยู่ใน Windows ที่ <ph name="BASE_DIR" /></translation>
 <translation id="1505494256539862015">ส่งออกรหัสผ่าน</translation>
@@ -2687,6 +2688,7 @@
 <translation id="3461766685318630278">สร้างและลบคอนเทนเนอร์เพิ่มเติม</translation>
 <translation id="3462311546193741693">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ แต่คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่เพื่อให้ล้างข้อมูลที่ซิงค์ได้</translation>
 <translation id="3462413494201477527">ยกเลิกการสร้างบัญชีใช่ไหม</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{ระบบบันทึกรหัสผ่าน {COUNT} รายการไว้ในอุปกรณ์นี้แล้ว}other{ระบบบันทึกรหัสผ่าน {COUNT} รายการไว้ในอุปกรณ์นี้แล้ว}}</translation>
 <translation id="346298925039590474">เครือข่ายมือถือนี้จะพร้อมใช้งานสำหรับผู้ใช้ทุกคนในอุปกรณ์นี้</translation>
 <translation id="3464145797867108663">เพิ่มโปรไฟล์งาน</translation>
 <translation id="346431825526753">นี่เป็นบัญชีสำหรับเด็กที่จัดการโดย <ph name="CUSTODIAN_EMAIL" /></translation>
@@ -2983,6 +2985,7 @@
 <translation id="3743842571276656710">ป้อน PIN เพื่อจับคู่กับ <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">หากต้องการนำแอปออก ให้ไปที่การตั้งค่า &gt; Google Play Store &gt; จัดการค่ากำหนด Android &gt; ตัวจัดการแอปหรือแอปพลิเคชัน แล้วแตะแอปที่คุณต้องการถอนการติดตั้ง (อาจต้องเลื่อนไปทางขวาหรือทางซ้ายเพื่อค้นหาแอป) และแตะถอนการติดตั้ง หรือปิดใช้</translation>
 <translation id="3747603683749989726">เปิดความปลอดภัยที่ปรับปรุงแล้วใช่ไหม</translation>
+<translation id="3748424433435232460">ระบบบันทึกรหัสผ่านสำหรับบัญชีนี้ไว้ในอุปกรณ์นี้อยู่แล้ว</translation>
 <translation id="3748706263662799310">รายงานข้อบกพร่อง</translation>
 <translation id="3750562496035670393">Chrome บันทึกรหัสผ่านของคุณลงในอุปกรณ์นี้แล้ว แต่คุณจะบันทึกลงในบัญชี Google แทนก็ได้ ซึ่งจะทำให้รหัสผ่านทั้งหมดในบัญชี Google พร้อมใช้งานตลอดเวลาที่คุณลงชื่อเข้าใช้ด้วย</translation>
 <translation id="3752253558646317685">ให้บุตรหลานยกนิ้วขึ้นเพื่อบันทึกลายนิ้วมือ</translation>
@@ -3087,7 +3090,6 @@
 <translation id="3828029223314399057">ค้นหาบุ๊กมาร์ก</translation>
 <translation id="3828953470056652895">ฉันได้อ่านและยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Chrome และ Chrome OS<ph name="END_LINK2" /> รวมถึง<ph name="BEGIN_LINK3" />ข้อกำหนดในการให้บริการของ Play<ph name="END_LINK3" /></translation>
 <translation id="3829765597456725595">พื้นที่แชร์ไฟล์ SMB</translation>
-<translation id="3830268140528557982">ใน <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{ผู้ดูแลระบบได้เปิดส่วนขยายที่อาจเป็นอันตราย 1 รายการขึ้นมาอีกครั้ง}other{ผู้ดูแลระบบได้เปิดส่วนขยายที่อาจเป็นอันตราย {NUM_EXTENSIONS} รายการขึ้นมาอีกครั้ง}}</translation>
 <translation id="3831436149286513437">คำแนะนำในการค้นหา Google ไดรฟ์</translation>
 <translation id="3834728400518755610">ต้องปิด Linux เพื่อทำการเปลี่ยนแปลงการตั้งค่าไมโครโฟน ปิด Linux เพื่อดำเนินการต่อ</translation>
@@ -3164,6 +3166,7 @@
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> สร้างมาเพื่อการเล่นเกม แอปสำรวจจะเปิดขึ้นถัดไปเพื่อให้คุณเข้าถึงเกมใหม่ล่าสุดหลายร้อยเกม ดูข้อเสนอเกี่ยวกับเกม และค้นพบฟีเจอร์สำหรับเล่นเกมที่มาพร้อมกับอุปกรณ์</translation>
 <translation id="3898233949376129212">ภาษาของอุปกรณ์</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ต้องการ<ph name="FIRST_PERMISSION" />และ<ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898743717925399322">ระบบบันทึกรหัสผ่านสำหรับ <ph name="WEBSITE" /> ไว้ในอุปกรณ์นี้และบัญชี Google ของคุณ คุณต้องการลบรหัสผ่านรายการใด</translation>
 <translation id="389901847090970821">เลือกแป้นพิมพ์</translation>
 <translation id="3900966090527141178">ส่งออกรหัสผ่าน</translation>
 <translation id="3902789559055749153">เลือกวิธีที่คุณต้องการสร้างพาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
@@ -3852,7 +3855,6 @@
 <translation id="4556194354084985730">ลงชื่อเข้าใช้เว็บไซต์และแอปได้อย่างง่ายดายด้วยรหัสผ่านที่บันทึกไว้ หากปิดการตั้งค่านี้ ระบบจะขอให้คุณยืนยันก่อนลงชื่อเข้าใช้</translation>
 <translation id="4558426062282641716">ขอสิทธิ์การเปิดอัตโนมัติแล้ว</translation>
 <translation id="4559617833001311418">เว็บไซต์นี้เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหวหรือแสงอยู่</translation>
-<translation id="4561098487691395071">หรือระบุ PPD ของเครื่องพิมพ์</translation>
 <translation id="4561893854334016293">ไม่มีการเปลี่ยนแปลงสิทธิ์เมื่อเร็วๆ นี้</translation>
 <translation id="4562155214028662640">เพิ่มลายนิ้วมือ</translation>
 <translation id="4563210852471260509">ภาษาป้อนข้อมูลเบื้องต้นคือจีน</translation>
@@ -4745,7 +4747,6 @@
 <translation id="5427278936122846523">แปลทุกครั้ง</translation>
 <translation id="5427459444770871191">หมุน&amp;ตามเข็มนาฬิกา</translation>
 <translation id="542750953150239272">การดำเนินการต่อเป็นการยอมรับว่าอุปกรณ์นี้อาจใช้อินเทอร์เน็ตมือถือดาวน์โหลดและติดตั้งการอัปเดตและแอปจาก Google, ผู้ให้บริการของคุณ และผู้ผลิตอุปกรณ์โดยอัตโนมัติด้วย บางแอปเหล่านี้อาจมีการซื้อในแอป</translation>
-<translation id="5427936139162668357">ดู PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (มีการอัปเดต)</translation>
 <translation id="542948651837270806">ต้องติดตั้งอัปเดตเฟิร์มแวร์ของโมดูลแพลตฟอร์มที่เชื่อถือได้ ดู <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">ตัวเต็ม</translation>
@@ -5893,6 +5894,7 @@
 <translation id="6508261954199872201">แอปพลิเคชัน: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">ใบอนุญาตสื่อ</translation>
 <translation id="6511827214781912955">พิจารณาลบไฟล์ <ph name="FILENAME" /> เพื่อให้ผู้อื่นที่ใช้อุปกรณ์นี้ไม่เห็นรหัสผ่านของคุณ</translation>
+<translation id="6512808201725371249">ระบบบันทึกรหัสผ่านสำหรับบัญชีนี้ไว้ใน Google เครื่องมือจัดการรหัสผ่าน (<ph name="USER_EMAIL" />) อยู่แล้ว</translation>
 <translation id="6513247462497316522">Google Chrome จะใช้ข้อมูลมือถือหากคุณไม่ได้เชื่อมต่อกับเครือข่ายอื่น</translation>
 <translation id="6514010653036109809">อุปกรณ์ที่พร้อมใช้งาน:</translation>
 <translation id="6514565641373682518">หน้าเว็บนี้ได้ปิดใช้งานเคอร์เซอร์เมาส์แล้ว</translation>
@@ -6311,6 +6313,7 @@
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6897363604023044284">เลือกเว็บไซต์เพื่อล้างข้อมูล</translation>
 <translation id="6897688156970667447">มีประโยชน์ในสภาวะแสงน้อยและประหยัดแบตเตอรี่</translation>
+<translation id="6897972855231767338">ดูข้อมูลเพิ่มเติมเกี่ยวกับการท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="6898440773573063262">แอปพลิเคชันคีออสก์สามารถกำหนดค่าให้เปิดอัตโนมัติบนอุปกรณ์นี้ได้แล้ว</translation>
 <translation id="6900284862687837908">แอปพื้นหลัง: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">การปกป้องที่ปรับปรุงแล้ว</translation>
@@ -8616,6 +8619,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ต้องการเข้าถึงเนื้อหาต่อไปนี้</translation>
 <translation id="9057354806206861646">อัปเดตกำหนดการ</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{การแจ้งเตือนประมาณ 1 รายการต่อวัน}other{การแจ้งเตือนประมาณ {NUM_NOTIFICATION} รายการต่อวัน}}</translation>
+<translation id="9061383912634843744">ลงชื่อเข้าใช้เว็บไซต์และแอปโดยอัตโนมัติด้วยข้อมูลเข้าสู่ระบบที่บันทึกไว้ หากปิดการตั้งค่านี้ ระบบจะขอให้คุณยืนยันทุกครั้งก่อนลงชื่อเข้าใช้เว็บไซต์หรือแอป</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">เกิดข้อผิดพลาดในบรรทัดที่ <ph name="ERROR_LINE_START" /> ถึง <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">เปิดใช้การป้อนอัตโนมัติเพื่อกรอกฟอร์มด้วยการคลิกเพียงครั้งเดียว</translation>

@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Impossible d'exporter <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Résolution des photos</translation>
 <translation id="1925845977604399247">Accéder à la galerie</translation>
+<translation id="199526504800285197">L'enregistrement a été interrompu</translation>
+<translation id="1995951722691075581">Votre enregistrement s'est arrêté en raison d'un espace de stockage insuffisant sur l'appareil. Pour enregistrer plus de vidéos, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="2022953316617983419">Code QR</translation>
 <translation id="2036868001356139588">Durée de la minuterie</translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3838931309141338733">Numériser le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
+<translation id="4060608699153044055">Vous ne pouvez pas enregistrer en raison du faible espace de stockage de l'appareil. Pour commencer l'enregistrement, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Interrompre l'enregistrement</translation>
 <translation id="4121305183798804752">Document détecté</translation>
@@ -161,6 +164,7 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="7748344063862150053">Coin supérieur droit du document</translation>
 <translation id="7933675232020478311">Déplacement vers la partie inférieure droite</translation>
 <translation id="7983668134180549431">Texte détecté.</translation>
+<translation id="8079255378695216066">Impossible de commencer l'enregistrement</translation>
 <translation id="8120146556401698679">Panoramique, inclinaison, zoom</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8145038249676204903">Passer au mode photo</translation>

@@ -31,6 +31,8 @@
 <translation id="1862930711583847113"><ph name="FILE" /> निर्यात गर्न सकिएन</translation>
 <translation id="1899697626337024495">तस्बिरको रिजोल्युसन</translation>
 <translation id="1925845977604399247">ग्यालेरीमा जानुहोस्</translation>
+<translation id="199526504800285197">रेकर्डिङ रोकिएको छ</translation>
+<translation id="1995951722691075581">डिभाइसको भण्डारणमा खाली ठाउँ कम भएकाले तपाईंको रेकर्डिङ रोकियो। तपाईं अझ धेरै भिडियोहरू रेकर्ड गर्न चाहनुहुन्छ भने तपाईंले आफ्नो डिभाइसको भण्डारणमा ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
 <translation id="2022953316617983419">QR कोड</translation>
 <translation id="2036868001356139588">टाइमरको अवधि</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">आफ्नो क्यामेरामार्फत तस्बिरहरू खिच्नुहोस् र भिडियोहरू रेकर्ड गर्नुहोस्।</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2549985041256363841">रेकर्डिङ सुरु गर्नुहोस्</translation>
+<translation id="2577915835281444458">रेकर्डिङ चाँडै नै बन्द हुने छ। डिभाइसको भण्डारणमा गएर त्यसमा ठाउँ खाली गर्नुहोस्।</translation>
 <translation id="2599796128805996109">पछाडिको क्यामेरा</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />सेकेन्ड</translation>
 <translation id="2761536921376153655">स्क्यानको प्रकार</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3838931309141338733">बारकोड स्क्यान गर्नुहोस्</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
+<translation id="4060608699153044055">डिभाइसको भण्डारणमा खाली ठाउँ कम भएकाले तपाईं रेकर्ड गर्न सक्नुहुन्न। तपाईं रेकर्डिङ सुरु गर्न चाहनुहुन्छ भने तपाईंले आफ्नो डिभाइसको भण्डारणमा ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> मेगापिक्सेल</translation>
 <translation id="4118525110028899586">रेकर्डिङ पज गर्नुहोस्</translation>
 <translation id="4121305183798804752">कागजात भेटियो</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">कागजातको सिरानको दायाँ कुना</translation>
 <translation id="7933675232020478311">पुछारको दायाँतिर सारिँदै छ</translation>
 <translation id="7983668134180549431">टेक्स्ट भेट्टियो।</translation>
+<translation id="8079255378695216066">रेकर्डिङ सुरु गर्न मिल्दैन</translation>
 <translation id="8120146556401698679">प्यान गर्नुहोस्, ढल्काउनुहोस्, जुम गर्नुहोस्</translation>
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8145038249676204903">तस्बिर खिच्ने मोड प्रयोग गर्नुहोस्</translation>

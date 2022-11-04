@@ -3087,7 +3087,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3828029223314399057">Căutați în marcaje</translation>
 <translation id="3828953470056652895">Am citit și sunt de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Chrome și sistemul de operare Chrome<ph name="END_LINK2" /> și <ph name="BEGIN_LINK3" />Termenii și condițiile Google Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Spații comune de stocare fișiere IMM</translation>
-<translation id="3830268140528557982">pe <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Administratorul a reactivat o extensie potențial dăunătoare}few{Administratorul a reactivat {NUM_EXTENSIONS} extensii potențial dăunătoare}other{Administratorul a reactivat {NUM_EXTENSIONS} de extensii potențial dăunătoare}}</translation>
 <translation id="3831436149286513437">Sugestii de căutare în Google Drive</translation>
 <translation id="3834728400518755610">Modificarea setării pentru microfon necesită repornirea sistemului de operare Linux. Închide Linux pentru a continua.</translation>
@@ -3852,7 +3851,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4556194354084985730">Conectează-te cu ușurință la site-uri și aplicații cu parolele salvate. Dacă opțiunea este dezactivată, ți se va solicita confirmarea înainte să te conectezi.</translation>
 <translation id="4558426062282641716">S-a solicitat permisiunea de lansare automată</translation>
 <translation id="4559617833001311418">Acest site îți accesează senzorii de mișcare sau de lumină.</translation>
-<translation id="4561098487691395071">Sau specifică fișierul PPD al imprimantei</translation>
 <translation id="4561893854334016293">Nu există permisiuni modificate recent</translation>
 <translation id="4562155214028662640">Adaugă o amprentă</translation>
 <translation id="4563210852471260509">Limba inițială de introducere este chineza</translation>
@@ -4745,7 +4743,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5427278936122846523">Tradu întotdeauna</translation>
 <translation id="5427459444770871191">Rotiți în sensul acelor de &amp;ceasornic</translation>
 <translation id="542750953150239272">Dacă alegi să continui, accepți ca acest dispozitiv să descarce și să instaleze automat actualizări și aplicații de la Google, de la operatorul tău și de la producătorul dispozitivului, posibil folosind datele mobile. Unele dintre aceste aplicații pot oferi achiziții în aplicație.</translation>
-<translation id="5427936139162668357">Afișează PPD-ul</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (este disponibilă o actualizare)</translation>
 <translation id="542948651837270806">Este necesară instalarea unei actualizări pentru firmware-ul Trusted Platform Module. Vezi <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Cu lățime întreagă</translation>

@@ -20,7 +20,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1084365883616172403">Príspevok bol uverejnený na Facebook.</translation>
 <translation id="1085696779717592361">Predvolené používanie Chromu</translation>
 <translation id="1103523840287552314">Vždy preložiť nasledujúci jazyk: <ph name="LANGUAGE" /></translation>
-<translation id="1104948393051856124">Prijať a pokračovať</translation>
 <translation id="110724200315609752">Prepnúť na otvorené okno</translation>
 <translation id="1112015203684611006">Tlač zlyhala.</translation>
 <translation id="1125564390852150847">Vytvoriť novú kartu.</translation>
@@ -166,7 +165,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2302742851632557585">Zmeniť heslo na webe</translation>
 <translation id="2316709634732130529">Použiť navrhnuté heslo</translation>
 <translation id="2320166752086256636">Skryť klávesnicu</translation>
-<translation id="2328842561016935977">Klepnite na Heslá a potom na Pridať</translation>
 <translation id="2351097562818989364">Nastavenia prekladov boli resetované.</translation>
 <translation id="235789365079050412">Pravidlá ochrany súkromia spoločnosti Google</translation>
 <translation id="2359043044084662842">Preložiť</translation>
@@ -665,7 +663,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6149061208933997199">Použiť heslo</translation>
 <translation id="6152406514676263192">Synchronizujte a získavajte tak najrelevantnejší obsah na základe svojich záujmov.</translation>
 <translation id="6159839020698489198">nepovinné</translation>
-<translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6170450281939467187">Nepodarilo sa preložiť</translation>
 <translation id="6177442314419606057">Hľadať v Chrome</translation>
 <translation id="6184086493125982861">Zobraziť karty</translation>
@@ -834,7 +831,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7291368939935408496">Pripravujú sa heslá...</translation>
 <translation id="730958329302570991">Kedykoľvek jednoducho pridávajte heslá webov do Správcu hesiel Google.</translation>
 <translation id="7313347584264171202">Tu nájdete svoje karty inkognito</translation>
-<translation id="7315813263062036945">Vľavo hore klepnite na ikonu vyhľadávania</translation>
 <translation id="7336264872878993241">Stiahnuté: <ph name="PERCENT" /> percent</translation>
 <translation id="7340958967809483333">Možnosti kanála Objaviť</translation>
 <translation id="7346909386216857016">Dobre</translation>
@@ -995,7 +991,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8605219856220328675">Zatvoriť kartu.</translation>
 <translation id="8620640915598389714">Upraviť</translation>
 <translation id="8626393685701737946">Predvolené zobrazenie webu môžete zmeniť na desktop v sekcii Nastavenia &gt; Nastavenia obsahu</translation>
-<translation id="863090005774946393">Prehliadač spravuje vaša organizácia. Niektoré funkcie môžu byť deaktivované.</translation>
 <translation id="8636825310635137004">Ak chcete získať karty zo svojich ostatných zariadení, zapnite synchronizáciu.</translation>
 <translation id="8654802032646794042">Zrušiť</translation>
 <translation id="8668210798914567634">Táto stránka bola uložená do čitateľského zoznamu.</translation>

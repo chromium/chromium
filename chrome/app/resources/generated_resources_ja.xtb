@@ -3063,7 +3063,6 @@
 <translation id="3828029223314399057">ブックマークを検索</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />、<ph name="BEGIN_LINK3" />Play 利用規約<ph name="END_LINK3" />を確認し、内容に同意します。</translation>
 <translation id="3829765597456725595">SMB ファイル共有</translation>
-<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{管理者が 1 個の有害な可能性がある拡張機能を再度有効にしました}other{管理者が {NUM_EXTENSIONS} 個の有害な可能性がある拡張機能を再度有効にしました}}</translation>
 <translation id="3831436149286513437">Google ドライブのファイル候補</translation>
 <translation id="3834728400518755610">マイクの設定を変更するには、Linux をシャットダウンする必要があります。続行するには Linux をシャットダウンしてください。</translation>
@@ -3824,7 +3823,6 @@
 <translation id="4556194354084985730">保存したパスワードを使ってサイトやアプリに簡単にログインできます。この機能がオフの場合は、ログイン前にパスワードの入力を求められます。</translation>
 <translation id="4558426062282641716">自動起動の許可の要求</translation>
 <translation id="4559617833001311418">このサイトはモーション センサーまたは光センサーにアクセスしています。</translation>
-<translation id="4561098487691395071">または、プリンタの PPD を指定してください</translation>
 <translation id="4561893854334016293">最近変更した権限はありません</translation>
 <translation id="4562155214028662640">指紋を追加</translation>
 <translation id="4563210852471260509">初期の入力言語を中国語にする</translation>
@@ -4707,7 +4705,6 @@
 <translation id="5427278936122846523">常に翻訳する</translation>
 <translation id="5427459444770871191">時計回りに回転(&amp;C)</translation>
 <translation id="542750953150239272">続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。</translation>
-<translation id="5427936139162668357">PPD を表示</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（アップデート利用可）</translation>
 <translation id="542948651837270806">Trusted Platform Module ファームウェアのアップデートをインストールする必要があります。<ph name="TPM_FIRMWARE_UPDATE_LINK" /> をご覧ください。</translation>
 <translation id="5429818411180678468">全角</translation>

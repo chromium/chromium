@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="125153950246128346">I-tap para tumingin ng iba pang tab</translation>
-<translation id="1302104331113804646">Mga setting ng pagsubaybay sa presyo</translation>
-<translation id="1378979118429748177">Maabisuhan kapag bumaba ang mga presyo</translation>
 <translation id="1403228085774130835">Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome</translation>
 <translation id="1455506303394048917">Maki-clear ang iyong aktibidad sa mga tab na Incognito na ito sa device na ito</translation>
 <translation id="1499635324672558517">Isara ang lahat ng tab na Incognito?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Huwag ipakita ulit ang tabstrip?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="8557923272772633250">I-expand ang grupo ng tab na may <ph name="NUMBER_OF_TABS" /> (na) tab.</translation>
-<translation id="860282621117673749">Mga alerto sa pagbaba ng presyo</translation>
 <translation id="8714939927607906138">Mas mababang presyo</translation>
 <translation id="8749939518995770034">Nakasarang tabstrip</translation>
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>

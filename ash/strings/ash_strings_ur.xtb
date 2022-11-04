@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">اپنے آلے کا جوڑا بنانے کے لیے بلوٹوتھ ترتیبات کھولیں</translation>
 <translation id="3638400994746983214">رازداری کا اسکرین ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="3649505501900178324">اپ ڈیٹ کرنا باقی ہے</translation>
+<translation id="3659444876902283058">(دن <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">تقریباً <ph name="TIME_LEFT" /> باقی ہے (%<ph name="PERCENTAGE" />)۔
 اپنے آلے کو پاور سے منسلک کریں۔</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> نظم کردہ صارف</translation>
@@ -1267,6 +1268,7 @@
 <translation id="8052898407431791827">کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="8054466585765276473">بیٹری کے وقت کا حساب لگایا جا رہا ہے۔</translation>
 <translation id="8083540854303889870">بعد کیلئے محفوظ کردہ</translation>
+<translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> کو شروع ہوگا</translation>
 <translation id="8091387634532529612">خودکار اپ ڈیٹس</translation>
 <translation id="8098591350844501178">اسکرین کو <ph name="RECEIVER_NAME" /> پر کاسٹ کرنا بند کریں</translation>
 <translation id="8113423164597455979">آن، سبھی ایپس</translation>
@@ -1379,6 +1381,7 @@
 <translation id="8703634754197148428">‏ریکارڈنگ شروع کریں۔ ریکارڈنگ شروع ہونے کے بعد، شیلف پر نیویگیٹ کرنے کیلئے Alt + Shift + L استعمال کریں اور 'ریکارڈنگ بند کریں' بٹن تلاش کریں</translation>
 <translation id="8721053961083920564">والیوم ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">فُل اسکرین کیپچر</translation>
+<translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> کو ختم ہوگا</translation>
 <translation id="8734991477317290293">ممکن ہے یہ آپ کی کلید کے اسٹروکس کو چوری کرنے کی کوشش کر رہا ہو</translation>
 <translation id="8735678380411481005">کی بورڈ بیک لائٹ کا رنگ</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،

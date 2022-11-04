@@ -137,6 +137,7 @@
 <translation id="129553762522093515">শেহতীয়াকৈ বন্ধ কৰা</translation>
 <translation id="1296930489679394997">বিক্ৰী</translation>
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />আপোনাৰ কুকিবোৰ মচি চাওক<ph name="END_LINK" /></translation>
+<translation id="1301227606947843452">লিগেল এক্সট্ৰা</translation>
 <translation id="1301324364792935241">আপোনাৰ সুৰক্ষিত DNS ছেটিংসমূহ পৰীক্ষা কৰক</translation>
 <translation id="1307966114820526988">অপ্ৰচলিত সুবিধাসমূহ</translation>
 <translation id="1308113895091915999">অফাৰ উপলব্ধ</translation>
@@ -444,6 +445,7 @@
 <translation id="205212645995975601">বিবিকিউ আৰু গ্ৰিলিং</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> ভাষাৰ পৃষ্ঠাসমূহ অনুবাদ কৰা নহয়।</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{এই নিয়ন্ত্ৰণটো অন কৰা অৱস্থাত আৰু স্থিতিটো সক্ৰিয় হৈ থাকিলে, Chromeএ আপোনাৰ শেহতীয়া ব্ৰাউজিঙৰ কাৰ্যকলাপৰ সৈতে সকলোতকৈ বেছি মিলা বহুতো লোকৰ গোট অথবা “একেধৰণৰ বৈশিষ্ট্য শ্বেয়াৰ কৰা গোট” নিৰ্ধাৰণ কৰে। বিজ্ঞাপনদাতাই গোটটোৰ বাবে বিজ্ঞাপন বাছনি কৰিব পাৰে আৰু আপোনাৰ ডিভাইচত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ ব্যক্তিগত কৰি ৰখা হয়। আপোনাৰ গোটটো প্ৰতিদিনে আপডে’ট কৰা হয়।}=1{এই নিয়ন্ত্ৰণটো অন কৰা অৱস্থাত আৰু স্থিতিটো সক্ৰিয় হৈ থাকিলে, Chromeএ আপোনাৰ শেহতীয়া ব্ৰাউজিঙৰ কাৰ্যকলাপৰ সৈতে সকলোতকৈ বেছি মিলা বহুতো লোকৰ গোট অথবা “একেধৰণৰ বৈশিষ্ট্য শ্বেয়াৰ কৰা গোট” নিৰ্ধাৰণ কৰে। বিজ্ঞাপনদাতাই গোটটোৰ বাবে বিজ্ঞাপন বাছনি কৰিব পাৰে আৰু আপোনাৰ ডিভাইচত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ ব্যক্তিগত কৰি ৰখা হয়। আপোনাৰ গোটটো প্ৰতিদিনে আপডে’ট কৰা হয়।}one{এই নিয়ন্ত্ৰণটো অন কৰা অৱস্থাত আৰু স্থিতিটো সক্ৰিয় হৈ থাকিলে, Chromeএ আপোনাৰ শেহতীয়া ব্ৰাউজিঙৰ কাৰ্যকলাপৰ সৈতে সকলোতকৈ বেছি মিলা বহুতো লোকৰ গোট অথবা “একেধৰণৰ বৈশিষ্ট্য শ্বেয়াৰ কৰা গোট” নিৰ্ধাৰণ কৰে। বিজ্ঞাপনদাতাই গোটটোৰ বাবে বিজ্ঞাপন বাছনি কৰিব পাৰে আৰু আপোনাৰ ডিভাইচত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ ব্যক্তিগত কৰি ৰখা হয়। আপোনাৰ গোটটো প্ৰতি {NUM_DAYS} দিনত আপডে’ট কৰা হয়।}other{এই নিয়ন্ত্ৰণটো অন কৰা অৱস্থাত আৰু স্থিতিটো সক্ৰিয় হৈ থাকিলে, Chromeএ আপোনাৰ শেহতীয়া ব্ৰাউজিঙৰ কাৰ্যকলাপৰ সৈতে সকলোতকৈ বেছি মিলা বহুতো লোকৰ গোট অথবা “একেধৰণৰ বৈশিষ্ট্য শ্বেয়াৰ কৰা গোট” নিৰ্ধাৰণ কৰে। বিজ্ঞাপনদাতাই গোটটোৰ বাবে বিজ্ঞাপন বাছনি কৰিব পাৰে আৰু আপোনাৰ ডিভাইচত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ ব্যক্তিগত কৰি ৰখা হয়। আপোনাৰ গোটটো প্ৰতি {NUM_DAYS} দিনত আপডে’ট কৰা হয়।}}</translation>
+<translation id="2059202684901022309">২২ x ৩৪ ইঞ্চি</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{১টা পৰামৰ্শ}one{#টা পৰামৰ্শ}other{#টা পৰামৰ্শ}}</translation>
 <translation id="2066915425250589881">মচাৰ বাবে অনুৰোধ জনাব</translation>
 <translation id="2068528718802935086">কেঁচুৱা আৰু খোজ কাঢ়িবলৈ শিকা শিশু</translation>
@@ -533,6 +535,7 @@
 <translation id="2277753418458118549">সংযোগৰ সবিশেষ দেখুৱাওক</translation>
 <translation id="2283340219607151381">ছেভ কৰক আৰু ঠিকনা পূৰ কৰক</translation>
 <translation id="2283447177162560884">’<ph name="PAGE_TITLE" />’ মচা হ’ল</translation>
+<translation id="2286383991450886080">৩৪ x ৪৪ ইঞ্চি</translation>
 <translation id="2288422996159078444">আপুনি টাইপ কৰা যিকোনো পাঠ, আপুনি চোৱা যিকোনো পৃষ্ঠা অথবা ৱেবত কৰা অন্য যিকোনো কার্যকলাপ চাই থকা হৈছে। আপোনাৰ অজ্ঞাতে ছাইটসমূহত থকা সমল সলনি কৰা হ’ব পাৰে।</translation>
 <translation id="2289385804009217824">ট্ৰিম কৰক</translation>
 <translation id="2292556288342944218">আপোনাৰ ইণ্টাৰনেটৰ এক্সেছ অৱৰোধ কৰা হ’ল</translation>
@@ -693,6 +696,7 @@
 <translation id="2709516037105925701">স্বয়ংপূৰ্তি</translation>
 <translation id="2713444072780614174">বগা</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিংসমূহত আপোনাৰ পৰিশোধসমূহ আৰু ক্ৰেডিট কাৰ্ডৰ তথ্য পৰিচালনা কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
+<translation id="2715808615350965923">ছুপাৰ A</translation>
 <translation id="271663710482723385">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ ওলাবলৈ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| টিপক</translation>
 <translation id="2721148159707890343">অনুৰোধ সফল হৈছে</translation>
 <translation id="2723669454293168317">Chromeৰ ছেটিঙত সুৰক্ষা পৰীক্ষা চলাওক</translation>
@@ -700,6 +704,7 @@
 <translation id="2728127805433021124">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰ স্বাক্ষৰ কৰাৰ এটা দুৰ্বল কলনবিধি ব্যৱহাৰ কৰি স্বাক্ষৰ কৰা হৈছে।</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Running Connectivity Diagnostics চলাই চাওক<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">শাস্ত্ৰীয় সংগীত</translation>
+<translation id="2731382536835015353">৪৪ x ৬৮ ইঞ্চি</translation>
 <translation id="2734319753272419592">ব্যক্তিগতকৃত ৰেহাইৰ সন্ধান কৰিবলৈ Googleক আপোনাৰ কাৰ্ট ব্যৱহাৰ কৰিবলৈ দিয়ক। উপলব্ধ হ’লে, ৰেহাইসমূহ স্বয়ংক্ৰিয়ভাৱে আপোনাৰ কাৰ্টত দেখা পোৱা যাব।</translation>
 <translation id="2738330467931008676">পিক আপ কৰাৰ ঠিকনা বাছনি কৰক</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
@@ -772,6 +777,7 @@
 <translation id="2955913368246107853">সন্ধান কৰা বাৰ বন্ধ কৰক</translation>
 <translation id="2958544468932521864">ক্ৰিকেট</translation>
 <translation id="2959113999220720579">মুখাৱয়ব আৰু শৰীৰৰ যত্ন</translation>
+<translation id="2962073860865348475">১২ x ১৮ ইঞ্চি</translation>
 <translation id="2968103128155246731">ৱেন্ আৰু মিনিৱেন্</translation>
 <translation id="2972581237482394796">&amp;ৰিডু কৰক</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, বর্তমান বাছনি কৰা হৈছে। <ph name="ROW_CONTENT" /></translation>
@@ -873,6 +879,7 @@
 <translation id="3249151924975132674">শিক্ষাৰ্থীৰ ঋণ আৰু কলেজৰ বাবে বিত্তীয় পুঁজিৰ যোগান</translation>
 <translation id="3249845759089040423">আকৰ্ষণীয়</translation>
 <translation id="3250640885957938546">বিজ্ঞাপন প্ৰচাৰ আৰু মাৰ্কেটিং</translation>
+<translation id="3251133337102041130">গ’ভাৰ্নমেণ্ট লিগেল</translation>
 <translation id="3252266817569339921">ফৰাচী</translation>
 <translation id="3254301855501243548">১৮ x ২২ ইঞ্চি</translation>
 <translation id="3256863843508922226">অৱসৰ আৰু পেঞ্চন</translation>
@@ -885,6 +892,7 @@
 <translation id="3270156322180235608">বিমান যাত্ৰা</translation>
 <translation id="3270847123878663523">পুনঃক্ৰম কৰাটো &amp;আনডু কৰক</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" />এ সংযোগ কৰিবলৈ বিচাৰিছে</translation>
+<translation id="3272091146646336650">ছুপাৰ B</translation>
 <translation id="3282085321714087552">আপোনাৰ প্ৰতিষ্ঠান <ph name="ENROLLMENT_DOMAIN" />এ এই ৱেবছাইটসমূহলৈ ছেটিং অথবা নীতিৰ দৰে কিছুমান তথ্য পঠিয়াইছে।</translation>
 <translation id="3282497668470633863">কাৰ্ডত নাম যোগ কৰক</translation>
 <translation id="3286372614333682499">প’ৰ্ট্ৰেইট</translation>
@@ -986,6 +994,7 @@
 <translation id="3531780078352352885">কামৰ শ্বীটসমূহ</translation>
 <translation id="3532844647053365774"><ph name="HOST" />এ আপোনাৰ মাইক্ৰ'ফ'ন ব্যৱহাৰ কৰিব খোজে</translation>
 <translation id="3533328374079021623">মেইলবক্স ৫</translation>
+<translation id="3537165859691846083">লেটাৰ প্লাছ</translation>
 <translation id="3542768452570884558">লিংকটো নতুন ৱিণ্ড’ত খোলক</translation>
 <translation id="3547746132308051926">২০ x ২৪ ইঞ্চি</translation>
 <translation id="3550112004925580947">আতিথ্য সেৱাৰ উদ্যােগ</translation>
@@ -1172,6 +1181,7 @@
 <translation id="4030383055268325496">যোগ কৰাটো &amp;আনডু কৰক</translation>
 <translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
 <translation id="4040350669425716613">মহাবিদ্যালয় আৰু বিশ্ববিদ্যালয়</translation>
+<translation id="4047351652147966654">১৮ x ২৪ ইঞ্চি</translation>
 <translation id="405399507749852140">কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক</translation>
 <translation id="4056223980640387499">ছেপিয়া</translation>
 <translation id="4063063121357725926">আপোনাৰ কাৰ্টৰ বাবে ৰেহাইৰ সন্ধান কৰিবলৈ Googleক আপোনাক সহায় কৰিবলৈ দিয়ক</translation>
@@ -1485,6 +1495,7 @@
 <translation id="4813512666221746211">নেটৱৰ্কৰ আসোঁৱাহ</translation>
 <translation id="4816492930507672669">পৃষ্ঠাৰ আকাৰ অনুসৰি খাপ খুৱাওক</translation>
 <translation id="4819347708020428563">ডিফ’ল্ট ভিউত এন’টেশ্বন সম্পাদনা কৰিবনে?</translation>
+<translation id="4823325221257637040">আৰম্ভ হৈ আছে</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, এখন নতুন Google Sheet ক্ষিপ্ৰভাৱে সৃষ্টি কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="4825507807291741242">শক্তিশালী</translation>
 <translation id="483241715238664915">সকীয়নি অন কৰক</translation>
@@ -1600,6 +1611,7 @@
 <translation id="5093232627742069661">Z-ফ'ল্ড</translation>
 <translation id="5094747076828555589">এই ছাৰ্ভাৰটোৱে এয়া <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে; ইয়াৰ সুৰক্ষা সম্পৰ্কীয় প্ৰমাণপত্ৰ Chromiumএ বিশ্বাস নকৰে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ’ব পাৰে।</translation>
 <translation id="5097099694988056070">PU/RAMৰ ব্যৱহাৰৰ দৰে ডিভাইচৰ পৰিসংখ্যা</translation>
+<translation id="5097468150760963273">২৭ x ৩৯ ইঞ্চি</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">ছাইটটো সুৰক্ষিত নহয়</translation>
 <translation id="5109892411553231226">পৰিশোধ পদ্ধতি পৰিচালনা কৰক</translation>
@@ -1924,6 +1936,7 @@
 <translation id="5953516610448771166">এই মিডিয়াৰ বাবে লাইভ কেপশ্বন উপলব্ধ নহয়। কেপশ্বন পাবলৈ, এই ছাইটটোৰ বাবে <ph name="CONTENT_SETTINGS" />ক অৱৰোধ কৰক।</translation>
 <translation id="5955063559762970069">হোটেল আৰু থকাৰ সুবিধা থকা আৱাস</translation>
 <translation id="5963413905009737549">শাখা</translation>
+<translation id="5967260682280773804">৩৬ x ৪৮ ইঞ্চি</translation>
 <translation id="5967592137238574583">সম্পর্কৰ তথ্য সম্পাদনা কৰক</translation>
 <translation id="5967867314010545767">ইতিহাসৰ পৰা আঁতৰাওক</translation>
 <translation id="5968022600320704045">সন্ধানৰ কোনো ফলাফল নাই</translation>
@@ -1995,6 +2008,7 @@
 <translation id="6127379762771434464">বস্তুটো আঁতৰোৱা হ’ল</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chromeত ইনক’গনিট’ৰ বিষয়ে অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="6133984428121856852">ফাইলৰ এক্সটেনশ্বনটো খালী অথবা ই ভালকৈ কাম কৰা নাই।</translation>
+<translation id="6139975341602920272">১৭ x ২২ ইঞ্চি</translation>
 <translation id="6146055958333702838">কোনো কেবল পৰীক্ষা কৰক আৰু আপুনি ব্যৱহাৰ কৰি থকা কোনো ৰাউটাৰ, ম’ডেম বা অন্য নেটৱৰ্ক ডিভাইচ ৰিবুট কৰক।</translation>
 <translation id="614940544461990577">এইখিনি কৰি চাওক:</translation>
 <translation id="6150036310511284407">বাওঁফালে তিনিবাৰ পাঞ্চ কৰক</translation>
@@ -2016,6 +2030,7 @@
 <translation id="6196640612572343990">তৃতীয়-পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="6197648101609735209">৮৯ x ৮৯ মি.মি.</translation>
 <translation id="6203231073485539293">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
+<translation id="6212314149070368045">ইউএছ ফেনফ’ল্ড</translation>
 <translation id="6218753634732582820">Chromiumৰ পৰা ঠিকনা আঁতৰাবনে?</translation>
 <translation id="622039917539443112">সমান্তৰালকৈ ফ'ল্ড কৰক</translation>
 <translation id="6221345481584921695">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ <ph name="SITE" />ত <ph name="BEGIN_LINK" />মালৱেৰ চিনাক্ত কৰিছে<ph name="END_LINK" />। সাধাৰণতে সুৰক্ষিত ৱেবছাইটসমূহ কেতিয়াবা মালৱেৰৰ দ্বাৰা প্ৰভাৱিত হয়। ক্ষতিকাৰক সমল এটা জনাজাত মালৱেৰ বিতৰণকাৰী <ph name="SUBRESOURCE_HOST" />ৰ পৰা আহে।</translation>
@@ -2042,6 +2057,7 @@
 <translation id="627746635834430766">পৰৱৰ্তী সময়ত দ্ৰুতভাৱে পৰিশোধ কৰিবলৈ আপোনাৰ কাৰ্ড আৰু বিলিঙৰ ঠিকনা নিজৰ Google একাউণ্টত ছেভ কৰক।</translation>
 <translation id="6279183038361895380">আপোনাৰ কাৰ্ছৰটো দেখুৱাবলৈ |<ph name="ACCELERATOR" />| টিপক</translation>
 <translation id="6280223929691119688">এই ঠিকনাটোত পঠিয়াব নোৱাৰি৷ অন্য এটা ঠিকনা বাছনি কৰক।</translation>
+<translation id="6284292079994426700">২৬ x ৩৮ ইঞ্চি</translation>
 <translation id="6285507000506177184">Chrome বুটামত ডাউনল’ড পৰিচালনা কৰক, আপুনি Chromeৰ জৰিয়তে ডাউনল’ড কৰা ফাইল পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="6289939620939689042">পৃষ্ঠাৰ ৰং</translation>
 <translation id="6290238015253830360">আপুনি পৰামৰ্শ দিয়া প্ৰবন্ধবোৰ ইয়াত দেখা যাব</translation>
@@ -2095,6 +2111,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />ৰ ম্যাদ উকলা তাৰিখ আৰু CVC দিয়ক</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6415778972515849510">Chromiumএ আপোনাৰ Google একাউণ্ট সুৰক্ষিত কৰাত আৰু আপোনৰ পাছৱৰ্ড সলনি কৰাত সহায় কৰিব পাৰে।</translation>
+<translation id="6416877227920300343">EDP</translation>
 <translation id="6425092077175753609">সামগ্ৰী</translation>
 <translation id="6427730057873428458">গে'ট ফ'ল্ড কৰক</translation>
 <translation id="6428450836711225518">আপোনাৰ ফ’ন নম্বৰটো সত্যাপন কৰক</translation>
@@ -2108,6 +2125,7 @@
 <translation id="6443406338865242315">আপুনি ইনষ্টল কৰা এক্সটেনশ্বন আৰু প্লাগইনসমূহ</translation>
 <translation id="6446608382365791566">অধিক তথ্য যোগ দিয়ক</translation>
 <translation id="6447842834002726250">কুকীসমূহ</translation>
+<translation id="6450077999570164268">কুৱাৰ্ট’</translation>
 <translation id="6450212216969386944">এনভেল’প শ্বু ৪০</translation>
 <translation id="6451458296329894277">ফৰ্ম পুনৰ দাখিল কৰিবলৈ নিশ্চিত কৰক</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
@@ -2274,6 +2292,7 @@
 <translation id="6915804003454593391">ব্যৱহাৰকাৰী:</translation>
 <translation id="6916954549222464607">বিত্তীয় পৰিকল্পনা আৰু পৰিচালনা</translation>
 <translation id="6917795328362592458">আপুনি এইমাত্ৰ ব্যৱহাৰ কৰা পাছৱৰ্ডটো এক ডেটা উলংঘনত বিচাৰি পোৱা গৈছে। আপোনাৰ একাউণ্টসমূহ সুৰক্ষিত কৰিবলৈ Password Managerএ আপোনাৰ ছেভ হৈ থকা পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ চুপাৰিছ কৰে।</translation>
+<translation id="6925267999184670015">উত্তৰ আমেৰিকাৰ B+</translation>
 <translation id="6934672428414710184">এই নামটো আপোনাৰ Google একাউণ্টৰ</translation>
 <translation id="6936976777388162184">এইটো এটা বাণ্ডল কৰা ডিভাইচ আৰু ইয়াক কিঅ’স্ক আৰু ছাইনেজ আপগ্ৰে’ডৰ সৈতে পঞ্জীয়ন কৰিব নোৱাৰি।</translation>
 <translation id="6939469646605424232">টিভিৰ নাটক</translation>
@@ -2323,6 +2342,7 @@
 <translation id="7030436163253143341">প্ৰমাণপত্ৰখন মান্য নহয়</translation>
 <translation id="7031646650991750659">আপুনি কোনবোৰ Google Play এপ্‌ ইনষ্টল কৰিছে</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপোনাৰ Google একাউণ্টৰ গোপনীয়তাৰ ছেটিং পৰিচালনা কৰিবলৈ প্ৰথমে টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
+<translation id="7048095965575426564">ইউৰোপীয়ান ফেনফ’ল্ড</translation>
 <translation id="7050187094878475250">আপুনি <ph name="DOMAIN" />লৈ যাবলৈ চেষ্টা কৰিছিল, কিন্তু ছাৰ্ভাৰটোৱে এখন প্ৰমাণপত্ৰ উপস্থাপন কৰিছে যাৰ ম্যাদ উকলাৰ সময় অৱধি যথেষ্ট দীঘল হোৱাৰ বাবে সেইখন বিশ্বাস কৰিব নোৱাৰি।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{এই মুহূৰ্তত এই কার্ডখন ছেভ কৰিব নোৱাৰি}one{এই মুহূৰ্তত এই কার্ডসমূহ ছেভ কৰিব নোৱাৰি}other{এই মুহূৰ্তত এই কার্ডসমূহ ছেভ কৰিব নোৱাৰি}}</translation>
 <translation id="7053983685419859001">অৱৰোধ কৰক</translation>
@@ -2385,6 +2405,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" />লৈকে বিনামূলীয়া। আপুনি পৰৱর্তী সময়ত কিছুমান ছাইট চাওতে লেহেমীয়াকৈ ল’ড হ’ব পাৰে।</translation>
 <translation id="7193661028827781021">প্ৰসংগ</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7199278868241956094">অ’ফিচিঅ’</translation>
 <translation id="7201591969684833065">আপোনাৰ প্ৰশাসকে এয়া চাব পাৰে:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ব্যক্তিগতভাৱে ব্ৰাউজ কৰাৰ বাবে এটা নতুন ইনক’গনিট’ টেব খুলিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />এ সুৰক্ষাৰ নীতি মানি নচলে।</translation>
@@ -2485,6 +2506,7 @@
 <translation id="7421067045979951561">প্ৰট’কল নিয়ন্ত্ৰক</translation>
 <translation id="7426022697669111648">আপোনাৰ Chromeৰ ইতিহাসৰ বুটাম চাওক, Chromeৰ ছেটিঙত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস চাবলৈ আৰু পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="7427366580982928791">ইণ্টাৰনেটত শিশুৰ সুৰক্ষা</translation>
+<translation id="7429429656042611765">এক্সিকিউটিভ</translation>
 <translation id="7437289804838430631">সম্পর্কৰ তথ্য যোগ কৰক</translation>
 <translation id="7437490109271760224">কাৰ্ড গে’ম</translation>
 <translation id="7440140511386898319">অফলাইন অৱস্থাত অন্বেষণ কৰক</translation>
@@ -2693,6 +2715,7 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ সুবিধাসমূহৰ বিষয়ে জানিবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="7950027195171824198">Chromeৰ ছেটিঙত আপোনাৰ কুকিৰ অগ্ৰাধিকাৰ পৰিচালনা কৰক</translation>
 <translation id="7951415247503192394">(৩২-বিট)</translation>
+<translation id="7952192831285741665">ইউৰোপীয়ান EDP</translation>
 <translation id="7953569069500808819">ওপৰৰ অংশৰ কাষত চিলাওক</translation>
 <translation id="7956713633345437162">ম'বাইল বুকমার্ক</translation>
 <translation id="7961015016161918242">কেতিয়াও নহয়</translation>
@@ -2778,6 +2801,7 @@
 <translation id="8153865548451212769">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />ত ডাউনল’ড কৰাটো চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত ডাউনল’ড কৰাটো চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত ডাউনল’ড কৰাটো চুপাৰিছ নকৰে}}</translation>
 <translation id="8157295877370077682">ছাইটটোৰ পৰা বাহিৰ হওক</translation>
 <translation id="8163866351304776260">বাওঁফালে চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
+<translation id="8175330382720204696">গ’ভাৰ্নমেণ্ট লেটাৰ</translation>
 <translation id="8175796834047840627">আপুনি ছাইন ইন কৰি থোৱাৰ বাবে Chromeএ আপোনাৰ Google একাউণ্টত আপোনাৰ কার্ডসমূহ ছেভ কৰাৰ সুবিধা দিছে। আপুনি ছেটিংসমূহ-ত এয়া সলনি কৰিব পাৰে।</translation>
 <translation id="8176440868214972690">এই ডিভাইচটোৰ প্ৰশাসকে এই ৱেবছাইটসমূহলৈ ছেটিং অথবা নীতিৰ দৰে কিছুমান তথ্য পঠিয়াইছে।</translation>
 <translation id="8184538546369750125">গ্ল’বেল ডিফ’ল্ট ব্যৱহাৰ কৰক (অনুমতি দিয়ক)</translation>
@@ -2889,6 +2913,7 @@
 <translation id="8449155699563577224">১৭ x ২৪ ইঞ্চি</translation>
 <translation id="8449836157089738489">নতুন টেবৰ গোটত আটাইবোৰ খোলক</translation>
 <translation id="8457125768502047971">অনিৰ্ধাৰিত</translation>
+<translation id="8458202188076138974">লেটাৰ এক্সট্ৰা</translation>
 <translation id="8461694314515752532">আপোনাৰ নিজৰ ছিংক পাছফ্ৰেজৰ সৈতে ছিংক কৰা ডেটা এনক্ৰিপ্ট কৰক।</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{১খন ক্ৰেডিট কাৰ্ড}one{#খন ক্ৰেডিট কাৰ্ড}other{#খন ক্ৰেডিট কাৰ্ড}}</translation>
 <translation id="8468358362970107653">এনভেল’প C3</translation>
@@ -3095,6 +3120,7 @@
 <translation id="9042617223719777575">সৰহীয়া বহনক্ষমতা</translation>
 <translation id="9044359186343685026">স্পৰ্শ আইডি ব্যৱহাৰ কৰক</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048662076076074925">২৪ x ৩৬ ইঞ্চি</translation>
 <translation id="9049981332609050619">আপুনি <ph name="DOMAIN" /> পাবলৈ প্ৰয়াস কৰিছে কিন্তু ছার্ভাৰে এখন অমান্য প্ৰমাণপত্ৰ উপস্থাপন কৰিছে।</translation>
 <translation id="9050666287014529139">পাছফ্ৰেজ</translation>
 <translation id="9056953843249698117">Store</translation>

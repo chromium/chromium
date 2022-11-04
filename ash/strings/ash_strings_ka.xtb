@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">თქვენი მოწყობილობის დასაწყვილებლად გახსენით Bluetooth პარამეტრები</translation>
 <translation id="3638400994746983214">კონფიდენციალურობის ეკრანის გადართვა. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">განახლება დაგვიანებულია</translation>
+<translation id="3659444876902283058">(დღე <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />-დან)</translation>
 <translation id="3659814201068740063">დარჩენილი დრო: დაახლოებით <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 დაუკავშირეთ თქვენი მოწყობილობა კვების ბლოკს.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> — მართული მომხმარებელი</translation>
@@ -1268,6 +1269,7 @@
 <translation id="8052898407431791827">დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="8054466585765276473">ბატარეის დროის გამოთვლა.</translation>
 <translation id="8083540854303889870">შენახულია სამომავლოდ</translation>
+<translation id="8091153018031979607">იწყება <ph name="START_TIME" />-ზე (<ph name="DAYS_ELAPSED" />)</translation>
 <translation id="8091387634532529612">ავტომატური განახლებები</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />-ში ეკრანის ტრანსლირების შეწყვეტა</translation>
 <translation id="8113423164597455979">ჩართული, ყველა აპისთვის</translation>
@@ -1380,6 +1382,7 @@
 <translation id="8703634754197148428">ჩაწერის დაწყება. ჩაწერის დაწყების შემდეგ თაროზე გადასასვლელად და ჩაწერის შეწყვეტის ღილაკის საპოვნელად გამოიყენეთ კლავიშთა კომბინაცია Alt + Shift + L</translation>
 <translation id="8721053961083920564">ხმის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">სრული ეკრანის აღბეჭდვა</translation>
+<translation id="8731487213223706745">სრულდება <ph name="END_TIME" />-ზე (<ph name="DAYS_ELAPSED" />)</translation>
 <translation id="8734991477317290293">ეს შეიძლება იყოს თქვენ მიერ აკრეფილი ტექსტის მოპარვის მცდელობა</translation>
 <translation id="8735678380411481005">კლავიატურის ფონური განათების ფერი</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

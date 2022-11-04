@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Datoteke <ph name="FILE" /> ni mogoče izvoziti</translation>
 <translation id="1899697626337024495">Ločljivost fotografije</translation>
 <translation id="1925845977604399247">V galerijo</translation>
+<translation id="199526504800285197">Snemanje je ustavljeno</translation>
+<translation id="1995951722691075581">Snemanje se je ustavilo zaradi pomanjkanja prostora za shranjevanje v napravi. Če želite posneti več videoposnetkov, morate sprostiti prostor v napravi.</translation>
 <translation id="2022953316617983419">Koda QR</translation>
 <translation id="2036868001356139588">Trajanje časovnika</translation>
 <translation id="2050339315714019657">Pokončno</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Fotografirajte in snemajte videoposnetke s fotoaparatom.</translation>
 <translation id="2517472476991765520">Išči</translation>
 <translation id="2549985041256363841">Začetek snemanja</translation>
+<translation id="2577915835281444458">Snemanje bo kmalu ustavljeno. Odprite shrambo v napravi, da sprostite prostor.</translation>
 <translation id="2599796128805996109">Hrbtni fotoaparat</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Vrsta iskanja</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Optično branje črtne kode</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
+<translation id="4060608699153044055">Snemanje ni mogoče zaradi pomanjkanja prostora za shranjevanje v napravi. Če želite začeti snemati, morate sprostiti prostor v napravi.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> mio. slikovnih pik</translation>
 <translation id="4118525110028899586">Začasna zaustavitev snemanja</translation>
 <translation id="4121305183798804752">Dokument je zaznan</translation>
@@ -160,6 +164,7 @@
 <translation id="7748344063862150053">Zgornji desni kot dokumenta</translation>
 <translation id="7933675232020478311">Premikanje proti spodnjemu desnemu kotu</translation>
 <translation id="7983668134180549431">Zaznano je bilo besedilo.</translation>
+<translation id="8079255378695216066">Snemanja ni mogoče začeti</translation>
 <translation id="8120146556401698679">Premikanje, nagibanje in povečanje/pomanjšanje</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8145038249676204903">Preklop na fotografiranje</translation>

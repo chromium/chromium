@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Nepavyko eksportuoti „<ph name="FILE" />“</translation>
 <translation id="1899697626337024495">Nuotraukos skyra</translation>
 <translation id="1925845977604399247">Eiti į galeriją</translation>
+<translation id="199526504800285197">Įrašymas sustabdytas</translation>
+<translation id="1995951722691075581">Įrašymas sustabdytas, nes per mažai vietos įrenginio saugykloje. Jei norite įrašyti daugiau vaizdo įrašų, turite atlaisvinti vietos įrenginyje.</translation>
 <translation id="2022953316617983419">QR kodas</translation>
 <translation id="2036868001356139588">Laikmačio trukmė</translation>
 <translation id="2050339315714019657">Stačias</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">Vaizdo</translation>
 <translation id="3838931309141338733">Nuskaityti brūkšninį kodą</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
+<translation id="4060608699153044055">Negalite įrašyti, nes per mažai vietos įrenginio saugykloje. Jei norite pradėti įrašymą, turite atlaisvinti vietos įrenginyje.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pristabdyti įrašymą</translation>
 <translation id="4121305183798804752">Aptiktas dokumentas</translation>
@@ -161,6 +164,7 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="7748344063862150053">Viršutinis dešinysis dokumento kampas</translation>
 <translation id="7933675232020478311">Perkeliama žemyn, dešinėn</translation>
 <translation id="7983668134180549431">Aptiktas tekstas.</translation>
+<translation id="8079255378695216066">Nepavyksta pradėti įrašymo</translation>
 <translation id="8120146556401698679">Pastumti, pakreipti, keisti mastelį</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8145038249676204903">Perjungti į fotografavimo režimą</translation>

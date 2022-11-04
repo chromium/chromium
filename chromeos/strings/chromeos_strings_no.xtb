@@ -481,7 +481,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
-<translation id="5695599963893094957">Trykk på en valgfri tast på tastaturet. Du kan trykke på opptil fire taster samtidig.</translation>
 <translation id="5701381305118179107">Midtstill</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Oppdater <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Mislykket – autorisasjonen mislyktes</translation>
 <translation id="7103252855940681301">Enhet <ph name="INDEX" /> av <ph name="COUNT" />. Navn: <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Navn på tilgangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navnetjener}other{Navnetjenere}}</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>

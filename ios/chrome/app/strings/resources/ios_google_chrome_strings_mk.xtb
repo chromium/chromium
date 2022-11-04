@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome не може да провери дали има ажурирања. Обидете се повторно подоцна.</translation>
 <translation id="2732745070297234559">Chrome не може да ги провери сите лозинки. Обидете се повторно утре.</translation>
 <translation id="2869959624320573933">Најавете се на Chrome</translation>
-<translation id="2919738076569633423">Ако го користите Chrome, се согласувате со <ph name="BEGIN_LINK_TOS" />Условите за користење<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chrome ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
 <translation id="3167189358072330585">Сметката не работи на Google Chrome. Контактирајте го администраторот на доменот или употребете обична сметка на Google за да се најавите.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Ги заменувате сметките за синхронизација од <ph name="USER_EMAIL1" /> на <ph name="USER_EMAIL2" />. Вашите постоечки податоци на Chrome се управувани од <ph name="DOMAIN" />. Ова ќе ги избрише податоците од уредов, но тие ќе останат на <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Вашата организација бара да останете одјавени од Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome нема пристап до фотографиите или видеата. Овозможете пристап во Поставки на iOS &gt; Приватност &gt; Фотографии.</translation>
-<translation id="4099578267706723511">Помогнете да го подобриме Google Chrome со автоматско испраќање статистика за користење и извештаи за падови до Google.</translation>
 <translation id="417201473131094001">Не е поддржана на Chrome Canary</translation>
 <translation id="4192781968753717021">Оваа лозинка е откриена при упад во податоци. Google Password Manager ви препорачува да ја промените лозинката веднаш.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> користеше Chrome и остави обележувачи, лозинки и други поставки на уредов.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">За Google Chrome</translation>
 <translation id="7501046334262221972">За да го поставите Chrome како стандарден прелистувач, отворете „Поставки“. Допрете „Стандардна апликација за прелистување“ и изберете Chrome.</translation>
 <translation id="756809126120519699">Податоците на Chrome се исчистени</translation>
-<translation id="7626032353295482388">Добре дојдовте на Chrome</translation>
 <translation id="7662994914830945754">За да ги гледате картичките секаде каде што користите Chrome, најавете се и вклучете синхронизација</translation>
 <translation id="7693590760643069321">Сега може да го користите Chrome секогаш кога ќе допрете линкови во пораките, документите и другите апликации.</translation>
 <translation id="7698568245838009292">Chrome би сакал да пристапи до камерата</translation>

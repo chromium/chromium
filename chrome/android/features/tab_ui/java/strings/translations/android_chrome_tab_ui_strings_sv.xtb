@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="125153950246128346">Tryck för att visa en annan flik</translation>
-<translation id="1302104331113804646">Inställningar för prisbevakning</translation>
-<translation id="1378979118429748177">Få aviseringar om prissänkning</translation>
 <translation id="1403228085774130835">Du hittar flikar som du har stängt under Senaste flikarna i Chromes huvudmeny</translation>
 <translation id="1455506303394048917">Aktivitet på de här inkognitoflikarna tas bort från enheten</translation>
 <translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Vill du sluta visa flikhuvudet?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Stäng <ph name="TABS_COUNT_ONE" /> vald flik}other{Stäng <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="8557923272772633250">Utöka flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar.</translation>
-<translation id="860282621117673749">Aviseringar om prissänkning</translation>
 <translation id="8714939927607906138">Lägre pris</translation>
 <translation id="8749939518995770034">Flikhuvudet har stängts</translation>
 <translation id="8820741577754260431">Se sänkta priser på flikar</translation>

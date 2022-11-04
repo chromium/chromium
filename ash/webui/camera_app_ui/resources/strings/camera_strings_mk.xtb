@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Не може да се извезе <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Фоторезолуција</translation>
 <translation id="1925845977604399247">Оди во галеријата</translation>
+<translation id="199526504800285197">Снимањето е запрено</translation>
+<translation id="1995951722691075581">Снимањето запре поради недоволен простор за складирање на уредот. За да снимите уште видеа, треба да ослободите простор на уредот.</translation>
 <translation id="2022953316617983419">QR-код</translation>
 <translation id="2036868001356139588">Времетраење на тајмерот</translation>
 <translation id="2050339315714019657">Портрет</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Скенирајте го бар-кодот</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
+<translation id="4060608699153044055">Не може да снимате поради недоволен простор за складирање на уредот. За да започнете со снимање, треба да ослободите простор на вашиот уред.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Паузирај го снимањето</translation>
 <translation id="4121305183798804752">Откриен е документ</translation>
@@ -161,6 +164,7 @@
 <translation id="7748344063862150053">Горен десен агол на документот</translation>
 <translation id="7933675232020478311">Се преместува долу десно</translation>
 <translation id="7983668134180549431">Препознаен е текст.</translation>
+<translation id="8079255378695216066">Не може да започнете со снимање</translation>
 <translation id="8120146556401698679">Движи Навали Зумирај</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8145038249676204903">Префрли на фотографирање</translation>

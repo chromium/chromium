@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">‏Chrome לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="2732745070297234559">‏Chrome לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
 <translation id="2869959624320573933">‏כניסה ל-Chrome</translation>
-<translation id="2919738076569633423">‏השימוש ב-Chrome מהווה הסכמה ל<ph name="BEGIN_LINK_TOS" />תנאים ולהגבלות<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">‏בוחרים באפשרות <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chrome שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
 <translation id="3167189358072330585">‏החשבון שלך לא פועל ב-Google Chrome. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">‏מתבצעת החלפה של חשבונות סנכרון מ-<ph name="USER_EMAIL1" /> ל-<ph name="USER_EMAIL2" />. הנתונים הקיימים שלך ב-Chrome מנוהלים על-ידי <ph name="DOMAIN" />. פעולה זו תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו ב-<ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">‏לפי דרישת הארגון שלך, אין אפשרות להתחבר לחשבון ב-Chrome.</translation>
 <translation id="3988789688219830639">‏ל-Google Chrome אין גישה לתמונות או לסרטונים שלך. אפשר גישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
-<translation id="4099578267706723511">‏אם שולחים אלינו נתוני שימוש ודוחות קריסה, עוזרים לשפר את Chrome.</translation>
 <translation id="417201473131094001">‏אין תמיכה ב-Chrome Canary</translation>
 <translation id="4192781968753717021">‏הסיסמה הזו נמצאה בפרצה באבטחת מידע. לפי מנהל הסיסמאות של Google, מומלץ לשנות את הסיסמה שלך עכשיו.</translation>
 <translation id="4233521129555661685">‏במכשיר הזה נעשה שימוש ב‑Chrome על ידי <ph name="USER_EMAIL1" /> ונשארו סימניות, סיסמאות והגדרות נוספות.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">‏אודות Google Chrome</translation>
 <translation id="7501046334262221972">‏כדי להגדיר את Chrome כדפדפן ברירת המחדל, יש לפתוח את ההגדרות. יש להקיש על 'אפליקציית ברירת מחדל לדפדפן' ואז לבחור ב-Chrome.</translation>
 <translation id="756809126120519699">‏נתוני Chrome נוקו</translation>
-<translation id="7626032353295482388">‏ברוך בואך אל Chrome</translation>
 <translation id="7662994914830945754">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="7693590760643069321">‏עכשיו משתמשים ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="7698568245838009292">‏ל-Chrome דרושה גישה למצלמה</translation>

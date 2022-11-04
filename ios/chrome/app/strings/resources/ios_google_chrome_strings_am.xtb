@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome ዝማኔዎች ካሉ መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="2732745070297234559">Chrome ሁሉንም የይለፍ ቃላት ማረጋገጥ አልቻለም። ነገ እንደገና ይሞክሩ።</translation>
 <translation id="2869959624320573933">በመለያ ወደ Chrome ይግቡ</translation>
-<translation id="2919738076569633423">Chromeን በመጠቀምዎ በ<ph name="BEGIN_LINK_TOS" />አገልግሎት ውሉ<ph name="END_LINK_TOS" /> ተስማማተዋል።</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />ን ይምረጡ</translation>
 <translation id="3030414234702425231">እርስዎ በ<ph name="SIGNOUT_MANAGED_DOMAIN" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ Chrome ውሂብዎ ከዚህ መሣሪያ ላይ ይሰረዛል። የእርስዎ ውሂብ በእርስዎ Google መለያ ውስጥ ይቆያል።</translation>
 <translation id="3167189358072330585">መለያዎ በGoogle Chrome ላይ አይሠራም። እባክዎ የጎራዎ አስተዳዳሪውን ያነጋግሩ ወይም ለመግባት መደበኛ የሆነ የGoogle መለያ ይጠቀሙ።</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">የስምረት መለያዎችን ከ<ph name="USER_EMAIL1" /> ወደ <ph name="USER_EMAIL2" /> እየቀየሩ ነው። ነባሩ የChrome ውሂብዎ በ<ph name="DOMAIN" /> ነው የሚተዳደረው። ይሄ ውሂብዎን ከዚህ መሣሪያዎ ይሰርዘዋል፣ ነገር ግን ውሂብዎ በ<ph name="USER_EMAIL1" /> ውስጥ እንዳለ ይቀራል።</translation>
 <translation id="3984746313391923992">ድርጅትዎ ከChrome ዘግተው እንደወጡ እንዲቆዩ ይፈልጋል።</translation>
 <translation id="3988789688219830639">Google Chrome የእርስዎ ፎቶዎች ወይም ቪዲዮዎች መዳረሻ የለውም። መዳረሻ በiOS ቅንብሮች &gt; ግላዊነት &gt; ፎቶዎች ውስጥ ያንቁ።</translation>
-<translation id="4099578267706723511">የአጠቃቀም ስታቲክሶችን እና የብልሽት ሪፖርቶችን ወደ Google በመላክ Chromeን የተሻለ ለማድረግ እገዛ ያድርጉ።</translation>
 <translation id="417201473131094001">በChrome Canary ላይ አይደገፍም</translation>
 <translation id="4192781968753717021">ይህ የይለፍ ቃል በውሂብ ጥሰት ላይ ተገኝቷል። Google የይለፍ ቃል አስተዳዳሪ የይለፍ ቃልዎን አሁን እንዲቀይሩ ይመክራል።</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> በዚህ መሣሪያ ላይ Chromeን እና ግራ ዕልባቶችን፣ የይለፍ ቃላትን እና ሌሎች ቅንብሮችን እየተጠቀመ ነበር።</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">ስለ Google Chrome</translation>
 <translation id="7501046334262221972">Chrome ን ነባሪ አሳሽዎ ለማድረግ ቅንብሮችን ይክፈቱ። ነባሪ የአሳሽ መተግበሪያን መታ ያድርጉ፣ እና ከዚያ Chrome ን ይምረጡ።</translation>
 <translation id="756809126120519699">የChrome ውሂብ ጸድቷል</translation>
-<translation id="7626032353295482388">ወደ Chrome እንኳን ደህና መጡ</translation>
 <translation id="7662994914830945754">Chromeን ከሚጠቀሙበት የትኛዉም ቦታ ሆነዉ ትሮችዎን ለማየት በመለያ ይግቡ እና ስምረትን ያብሩ</translation>
 <translation id="7693590760643069321">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromeን አሁን መጠቀም ይችላሉ።</translation>
 <translation id="7698568245838009292">Chrome ካሜራውን መድረስ ይፈልጋል</translation>

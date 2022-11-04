@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome kan niet checken op updates. Probeer het later opnieuw.</translation>
 <translation id="2732745070297234559">Chrome kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
 <translation id="2869959624320573933">Inloggen bij Chrome</translation>
-<translation id="2919738076569633423">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK_TOS" />servicevoorwaarden<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Selecteer <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chrome-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
 <translation id="3167189358072330585">Je account werkt niet in Google Chrome. Neem contact op met je domeinbeheerder of gebruik een gewoon Google-account om je aan te melden.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chrome-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Je organisatie vereist dat je uitgelogd blijft bij Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome heeft geen toegang tot je foto's of video's. Geef in iOS toegang via Instellingen &gt; Privacy &gt; Foto's.</translation>
-<translation id="4099578267706723511">Verzend automatisch gebruiksstatistieken en crashmeldingen naar Google.</translation>
 <translation id="417201473131094001">Niet ondersteund in Chrome Canary</translation>
 <translation id="4192781968753717021">Dit wachtwoord is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan je wachtwoord nu te wijzigen.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> heeft Chrome gebruikt en heeft bookmarks, wachtwoorden en andere instellingen op dit apparaat laten staan.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Over Google Chrome</translation>
 <translation id="7501046334262221972">Open Instellingen om Chrome in te stellen als standaardbrowser. Tik op 'Standaard browser-app' en selecteer Chrome.</translation>
 <translation id="756809126120519699">Chrome-gegevens gewist</translation>
-<translation id="7626032353295482388">Welkom bij Chrome</translation>
 <translation id="7662994914830945754">Log in en zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="7693590760643069321">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>

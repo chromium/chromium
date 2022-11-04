@@ -20,7 +20,6 @@
 <translation id="1084365883616172403">Facebook പങ്കിടൽ പൂർത്തിയായി.</translation>
 <translation id="1085696779717592361">ഡിഫോൾട്ടായി Chrome ഉപയോഗിക്കുക</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> എല്ലായ്പ്പോഴും വിവര്‍ത്തനം ചെയ്യുക </translation>
-<translation id="1104948393051856124">അംഗീകരിച്ച് തുടരുക</translation>
 <translation id="110724200315609752">തുറന്ന വിൻഡോയിലേക്ക് മാറുക</translation>
 <translation id="1112015203684611006">പ്രിന്റിംഗ് പരാജയപ്പെട്ടു.</translation>
 <translation id="1125564390852150847">പുതിയ ടാബ് സൃഷ്‌ടിക്കുക.</translation>
@@ -42,6 +41,7 @@
 <translation id="1229222343402087523">Chrome-ൽ ${searchPhrase} തിരയുക</translation>
 <translation id="1242044645101871359">വീണ്ടും സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="1254117744268754948">ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="1254424942107648268">മുമ്പത്തേത് കണ്ടെത്തുക</translation>
 <translation id="1258491128795710625">പുതിയതെന്താണ്</translation>
 <translation id="1265739287306757398">എങ്ങനെയെന്നറിയുക</translation>
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
@@ -165,7 +165,6 @@
 <translation id="2302742851632557585">വെബ്‌സൈറ്റിലെ പാസ്‌വേഡ് മാറ്റുക</translation>
 <translation id="2316709634732130529">നിർദ്ദേശിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="2320166752086256636">കീബോർഡ് മറയ്‌ക്കുക</translation>
-<translation id="2328842561016935977">പാസ്‌വേഡുകൾ ടാപ്പ് ചെയ്യുക, തുടർന്ന് 'ചേർക്കുക' ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2351097562818989364">നിങ്ങളുടെ വിവർത്തന ക്രമീകരണം റീസെറ്റ് ചെയ്‌തു.</translation>
 <translation id="235789365079050412">Google സ്വകാര്യതാ നയം</translation>
 <translation id="2359043044084662842">വിവർത്തനം ചെയ്യുക</translation>
@@ -186,6 +185,7 @@
 <translation id="2473876017985765807"><ph name="WEBSITE" /> എന്നതിനുള്ള പാസ്‌വേഡ് നിങ്ങൾ മുമ്പേ സംരക്ഷിച്ചു</translation>
 <translation id="2476359652512522418">തിരഞ്ഞെടുത്തിട്ടില്ല</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
+<translation id="2496626742194544812">ആദ്യ ടാബിലേക്ക് പോകുക</translation>
 <translation id="2500374554657206846">പാസ്‌വേഡ് സംരക്ഷിക്കാനുള്ള ഓപ്‌ഷനുകൾ</translation>
 <translation id="2523363575747517183">മറ്റൊരു ആപ്പ് തുറക്കാൻ ഈ വെബ്‌സൈറ്റ് ആവർത്തിച്ച് ശ്രമിക്കുന്നു.</translation>
 <translation id="2529021024822217800">എല്ലാം തുറക്കുക</translation>
@@ -201,6 +201,7 @@
 <translation id="2647269890314209800">ഉപയോഗത്തിലുള്ള കുക്കികൾ</translation>
 <translation id="2648803196158606475">വായിച്ചവ ഇല്ലാതാക്കുക</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
+<translation id="2664621323652615289">നിർത്തുക</translation>
 <translation id="2671426118752779020">Google പാസ്‌വേഡ് മാനേജറിൽ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ iPhone-ലുള്ള മറ്റ് ആപ്പുകളിൽ ഉപയോഗിക്കാനാകും.</translation>
 <translation id="2690858294534178585">ക്യാമറ ഉപയോഗത്തിലാണ്</translation>
 <translation id="2691653761409724435">ഓഫ്‌ലൈനിൽ ലഭ്യമല്ല</translation>
@@ -359,6 +360,7 @@
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
+<translation id="3818293389945649617">അടുത്തത് കണ്ടെത്തുക</translation>
 <translation id="3819183753496523827">നിങ്ങൾ ഓഫ്‌ലൈനാണ്. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3835964409414434850">അടുത്ത ടാബിലേക്ക് പോകുക</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
@@ -389,6 +391,7 @@
 <translation id="4049507953662678203">നിങ്ങൾക്ക് നെറ്റ്‌വർക്ക് കണക്ഷനുണ്ടെന്ന് ഉറപ്പാക്കി, വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4063300985191096908">ഫീഡിലേക്ക് പോകുക</translation>
 <translation id="408404951701638773">തിരയൽ ബാറിൽ എത്താൻ ഇപ്പോൾ എളുപ്പമാണ്</translation>
+<translation id="4092655288299341041">സഹായം കാണിക്കുക</translation>
 <translation id="4108998448622696017">അപകടകരമായ ഇവന്റുകൾ നടക്കുമ്പോൾ അവ കണ്ടെത്തുകയും നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുകയും ചെയ്യുന്നു.</translation>
 <translation id="411254640334432676">ഡൗൺലോഡ് പരാജയപ്പെട്ടു.</translation>
 <translation id="4112644173421521737">Search</translation>
@@ -660,7 +663,6 @@
 <translation id="6149061208933997199">പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="6152406514676263192">നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ അടിസ്ഥാനമാക്കി എറ്റവും പ്രസക്തമായ ഉള്ളടക്കം കാണാൻ സമന്വയിപ്പിക്കൂ.</translation>
 <translation id="6159839020698489198">ഓപ്‌ഷണൽ</translation>
-<translation id="6165508094623778733">കൂടുതലറിയുക</translation>
 <translation id="6170450281939467187">വിവർത്തനം ചെയ്യാനായില്ല</translation>
 <translation id="6177442314419606057">Chrome-ൽ തിരയുക</translation>
 <translation id="6184086493125982861">ടാബുകൾ കാണിക്കുക</translation>
@@ -781,6 +783,7 @@
 <translation id="6859944681507688231">QR കോഡോ ക്രെഡിറ്റ് കാര്‍ഡോ സ്‌കാൻ ചെയ്യാൻ, ക്രമീകരണത്തിൽ ക്യാമറ പ്രവർത്തനക്ഷമമാക്കുക.</translation>
 <translation id="6867369562105931222">പാസ്‌വേഡ്</translation>
 <translation id="6869389390665537774">നിങ്ങൾ സന്ദർശിച്ച പേജുകൾ കാണാനോ അവ നിങ്ങളുടെ ചരിത്രത്തിൽ നിന്ന് മായ്ക്കാനോ കഴിയും</translation>
+<translation id="687135068089457384">ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="6873263987691478642">വിഭജിത കാഴ്‌ച</translation>
 <translation id="6882836635272038266">അപകടകരമെന്ന് അറിയപ്പെടുന്ന വെബ്സൈറ്റുകൾ, ഡൗൺലോഡുകള്‍, വിപുലീകരണങ്ങൾ എന്നിവയ്ക്ക് എതിരായ സ്‌റ്റാൻഡേർഡ് സുരക്ഷ.</translation>
 <translation id="6888009575607455378">നിങ്ങളുടെ മാറ്റങ്ങൾ റദ്ദാക്കണമെന്ന് തീർച്ചയാണോ?</translation>
@@ -828,7 +831,6 @@
 <translation id="7291368939935408496">പാസ്‍വേഡുകൾ തയ്യാറാക്കുന്നു...</translation>
 <translation id="730958329302570991">സൈറ്റിന്റെ പാസ്‌വേഡുകൾ Google Password Manager-ലേക്ക് ഏതുസമയത്തും എളുപ്പത്തിൽ ചേർക്കുക.</translation>
 <translation id="7313347584264171202">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ ഇവിടെ കാണാം</translation>
-<translation id="7315813263062036945">മുകളിൽ ഇടതുഭാഗത്ത്, Search ഐക്കൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ശതമാനം ഡൗൺലോഡുചെയ്‌തു</translation>
 <translation id="7340958967809483333">Discover-നുള്ള ഓപ്ഷനുകൾ</translation>
 <translation id="7346909386216857016">മനസ്സിലായി</translation>
@@ -886,11 +888,13 @@
 <translation id="7807060072011926525">Google നൽകുന്നത്</translation>
 <translation id="7839985698273989086">പേജ് ഓഫ്‌ലൈനാണ്</translation>
 <translation id="7840771868269352570">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഇനങ്ങൾ നീക്കം ചെയ്യപ്പെടും.</translation>
+<translation id="7845466610722898">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ് കാണിക്കുക</translation>
 <translation id="784551991304901159">ഉള്ളടക്കം കാണാൻ, മെനുവിൽ നിന്ന് 'ഓണാക്കുക' തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7853202427316060426">പ്രവർത്തനം</translation>
 <translation id="7856733331829174190">ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="785938070103630874">പാസ്‌വേഡുകൾ, പേയ്മെന്റ് രീതികൾ, വിലാസം എന്നിവയും മറ്റും തുറക്കുക</translation>
 <translation id="7859704718976024901">ബ്രൗസിംഗ് ചരിത്രം</translation>
+<translation id="7879275349003161544">ഡൗൺലോഡുകൾ കാണിക്കുക</translation>
 <translation id="7884694604461143138">തിരയൽ ചരിത്രം (<ph name="COUNT" /> കണ്ടെത്തി)</translation>
 <translation id="7887198238286927132">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡ് സ്വമേധയാ പൂരിപ്പിക്കില്ല.</translation>
 <translation id="7911190106180361398">എല്ലാം സമന്വയിപ്പിക്കാൻ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കുന്നില്ല.</translation>
@@ -987,7 +991,6 @@
 <translation id="8605219856220328675">ടാബ് അടയ്‌ക്കുക.</translation>
 <translation id="8620640915598389714">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="8626393685701737946">ക്രമീകരണം &gt; ഉള്ളടക്ക ക്രമീകരണം എന്നതിൽ ഡിഫോൾട്ട് സൈറ്റ് കാഴ്‌ച നിങ്ങൾക്ക് ഡെസ്‌ക്‌ടോപ്പ് മോഡിലേക്ക് മാറ്റാം</translation>
-<translation id="863090005774946393">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്. ചില ഫീച്ചറുകൾ പ്രവർത്തനരഹിതമായിരിക്കാം.</translation>
 <translation id="8636825310635137004">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ ലഭിക്കാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുക.</translation>
 <translation id="8654802032646794042">റദ്ദാക്കുക</translation>
 <translation id="8668210798914567634">ഈ പേജ് നിങ്ങളുടെ വായന ലിസ്‌റ്റിൽ സംരക്ഷിച്ചു</translation>
@@ -1003,6 +1006,7 @@
 <translation id="8741995161408053644">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="8750037785291841318">നിങ്ങളുടെ ടാബുകൾ ഇവിടെ കാണാം</translation>
 <translation id="8756969031206844760">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
+<translation id="8763613688786959833">അവസാന ടാബിലേക്ക് പോകുക</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> പിന്തുടരുന്നത് ഒഴിവാക്കുക</translation>
 <translation id="8775144690796719618">URL അസാധുവാണ്</translation>
 <translation id="8787968206789828143">വെബിൽ തിരയുക</translation>

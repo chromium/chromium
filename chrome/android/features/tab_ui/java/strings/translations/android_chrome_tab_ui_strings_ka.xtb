@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">თქვენი <ph name="NUMBER_OF_TABS" /> ჩანართი ბოლო დროს არ გამოგიყენებიათ. გსურთ მათი დახურვა?</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="125153950246128346">შეეხეთ სხვა ჩანართის სანახავად</translation>
-<translation id="1302104331113804646">ფასებისთვის თვალის მიდევნების პარამეტრები</translation>
-<translation id="1378979118429748177">შეიტყვეთ ფასების დაწევის შესახებ</translation>
 <translation id="1403228085774130835">თქვენი დახურული ჩანართების პოვნა შეგიძლიათ Chrome-ის მთავარი მენიუს სექციაში „ბოლოდროინდელი ჩანართები“</translation>
 <translation id="1455506303394048917">ამ ინკოგნიტო ჩანართებში თქვენი აქტივობა ამ მოწყობილობიდან წაიშლება</translation>
 <translation id="1499635324672558517">დაიხუროს ყველა ინკოგნიტო ჩანართი?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">აღარ გამოჩნდეს ჩანართების ზოლი?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დახურვა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დახურვა}}</translation>
 <translation id="8557923272772633250">ჩანართების <ph name="NUMBER_OF_TABS" />-ჩანართიანი ჯგუფის გაფართოება.</translation>
-<translation id="860282621117673749">გაფრთხილებები ფასის დაწევაზე</translation>
 <translation id="8714939927607906138">უფრო დაბალი ფასი</translation>
 <translation id="8749939518995770034">ჩანართების ზოლი დახურულია</translation>
 <translation id="8820741577754260431">იხილეთ ინფორმაცია ფასების დაწევის შესახებ თქვენს ჩანართებზე</translation>

@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> af flipunum þínum hafa ekki verið notaðir nýlega. Viltu loka þeim?</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="125153950246128346">Ýttu til að sjá annan flipa</translation>
-<translation id="1302104331113804646">Stillingar verðvöktunar</translation>
-<translation id="1378979118429748177">Fá tilkynningu um verðlækkanir</translation>
 <translation id="1403228085774130835">Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome</translation>
 <translation id="1455506303394048917">Virknin þín í þessum huliðsflipum verður hreinsuð úr þessu tæki</translation>
 <translation id="1499635324672558517">Loka öllum huliðsflipum?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Viltu ekki að fliparæman verði sýnd aftur?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Loka <ph name="TABS_COUNT_ONE" /> völdum flipa}one{Loka <ph name="TABS_COUNT_MANY" /> völdum flipa}other{Loka <ph name="TABS_COUNT_MANY" /> völdum flipum}}</translation>
 <translation id="8557923272772633250">Stækka flipahóp með <ph name="NUMBER_OF_TABS" /> flipum.</translation>
-<translation id="860282621117673749">Tilkynningar um verðlækkanir</translation>
 <translation id="8714939927607906138">Lægra verð</translation>
 <translation id="8749939518995770034">Fliparæmu lokað</translation>
 <translation id="8820741577754260431">Sjá verðlækkanir á flipum</translation>

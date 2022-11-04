@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="125153950246128346">Tik om nog een tabblad te bekijken</translation>
-<translation id="1302104331113804646">Instellingen voor prijstracking</translation>
-<translation id="1378979118429748177">Melding krijgen als prijzen dalen</translation>
 <translation id="1403228085774130835">Je kunt je gesloten tabbladen vinden in Recente tabbladen in het hoofdmenu van Chrome</translation>
 <translation id="1455506303394048917">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>
 <translation id="1499635324672558517">Alle incognitotabbladen sluiten?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Tabbladstrook niet meer bekijken?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen sluiten}}</translation>
 <translation id="8557923272772633250">Tabbladgroep met <ph name="NUMBER_OF_TABS" /> tabbladen uitvouwen</translation>
-<translation id="860282621117673749">Meldingen over prijsdalingen</translation>
 <translation id="8714939927607906138">Lagere prijs</translation>
 <translation id="8749939518995770034">Tabbladstrook gesloten</translation>
 <translation id="8820741577754260431">Prijsdalingen bekijken op je tabbladen</translation>

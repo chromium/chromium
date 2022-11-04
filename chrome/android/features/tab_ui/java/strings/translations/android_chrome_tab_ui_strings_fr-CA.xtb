@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de vos onglets n'ont pas été utilisés récemment. Les fermer?</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="125153950246128346">Touchez pour afficher un autre onglet</translation>
-<translation id="1302104331113804646">Paramètres de suivi des prix</translation>
-<translation id="1378979118429748177">Recevez des notifications si les prix baissent</translation>
 <translation id="1403228085774130835">Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome</translation>
 <translation id="1455506303394048917">Votre activité dans ces onglets de navigation privée sera effacée de cet appareil</translation>
 <translation id="1499635324672558517">Fermer tous les onglets de navigation privée?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Ne plus afficher la bande d'onglets?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="8557923272772633250">Développer le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets.</translation>
-<translation id="860282621117673749">Alertes relatives aux baisses de prix</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8749939518995770034">Bande d'onglets fermée</translation>
 <translation id="8820741577754260431">Faites le suivi des baisses de prix dans vos onglets</translation>

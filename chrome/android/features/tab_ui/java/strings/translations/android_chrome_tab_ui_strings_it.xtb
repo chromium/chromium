@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="125153950246128346">Tocca per visualizzare un'altra scheda</translation>
-<translation id="1302104331113804646">Impostazioni di monitoraggio dei prezzi</translation>
-<translation id="1378979118429748177">Ricevi notifiche in caso di calo dei prezzi</translation>
 <translation id="1403228085774130835">Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome</translation>
 <translation id="1455506303394048917">La tua attività in queste schede di navigazione in incognito verrà cancellata da questo dispositivo</translation>
 <translation id="1499635324672558517">Chiudere tutte le schede di navigazione in incognito?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Non vuoi più mostrare la tabstrip?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Chiudi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="8557923272772633250">Espandi il gruppo di schede con <ph name="NUMBER_OF_TABS" /> schede</translation>
-<translation id="860282621117673749">Avvisi su cali di prezzo</translation>
 <translation id="8714939927607906138">Prezzo più basso</translation>
 <translation id="8749939518995770034">Tabstrip chiusa</translation>
 <translation id="8820741577754260431">Visualizza i cali di prezzo nelle tue schede</translation>

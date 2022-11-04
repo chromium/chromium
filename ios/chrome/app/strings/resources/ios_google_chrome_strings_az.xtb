@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="2732745070297234559">Chrome bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin.</translation>
 <translation id="2869959624320573933">Chrome'a daxil olun</translation>
-<translation id="2919738076569633423">Chrome istifadə etməklə, <ph name="BEGIN_LINK_TOS" />Xidmət Şərtləri<ph name="END_LINK_TOS" /> ilə razılaşırsınız.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> seçin</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tərəfindən idarə edilən hesabdan çıxdığınıza görə Chrome datası bu cihazdan silinəcək. Datanız Google Hesabında qalacaq.</translation>
 <translation id="3167189358072330585">Hesabınız Google Chrome üzərində işləmir. Domen administratorunuzla əlaqə saxlayın, və ya adi Google Hesab girişi istifadə edin.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Sinxronizasiya hesablarını <ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına keçirirsiniz. Mövcud Chrome datanız <ph name="DOMAIN" /> tərəfindən idarə olunur. Datanızı bu cihazdan siləcək, lakin data <ph name="USER_EMAIL1" /> hesabında qalacaq.</translation>
 <translation id="3984746313391923992">Təşkilatınız Chrome'dan çıxmış vəziyyətdə qalmağınızı tələb edir.</translation>
 <translation id="3988789688219830639">Google Chrome məhsulunun foto və videolarınıza girişi yoxdur. iOS Ayarları &gt; Məxfilik &gt; Fotolar bölməsindən girişi aktiv edin.</translation>
-<translation id="4099578267706723511">İstifadə statistikası və qəza raportlarını Google'a göndərməklə Chrome'un gəlişməsini sağlayın.</translation>
 <translation id="417201473131094001">Chrome Canary'də dəstəklənmir</translation>
 <translation id="4192781968753717021">Bu parol data pozuntusunda aşkarlanıb. Google Parol Meneceri parolunuzu indi dəyişdirmənizi tövsiyə edir.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> bu cihazda Chrome istifadə edirdi və əlfəcinlər, parollar və digər ayarlar qalıb.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Google Chrome haqqında</translation>
 <translation id="7501046334262221972">Chrome'u defolt brauzeriniz etmək üçün Ayarları açın. Defolt Brauzer Tətbiqinə toxunun və Chrome'u seçin.</translation>
 <translation id="756809126120519699">Chrome datası təmizləndi</translation>
-<translation id="7626032353295482388">Chrome'a xoş gəlmisiniz</translation>
 <translation id="7662994914830945754">Chrome istifadə etdiyiniz hər yerdən tabları görmək üçün daxil olun və sinxronizasiyanı aktiv edin</translation>
 <translation id="7693590760643069321">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
 <translation id="7698568245838009292">Chrome kameraya daxil olmaq istəyir</translation>

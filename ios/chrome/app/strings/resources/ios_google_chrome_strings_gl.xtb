@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="2732745070297234559">Chrome non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
-<translation id="2919738076569633423">Ao usar Chrome, aceptas as <ph name="BEGIN_LINK_TOS" />Condicións de servizo<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chrome deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
 <translation id="3167189358072330585">A túa conta non funciona en Google Chrome. Ponte en contacto co teu administrador de dominio ou utiliza unha conta normal de Google para iniciar sesión.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chrome actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A túa organización require que manteñas a sesión pechada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
-<translation id="4099578267706723511">Axúdanos a mellorar Chrome enviando estatísticas de uso e informes de erros a Google.</translation>
 <translation id="417201473131094001">Non compatible en Chrome Canary</translation>
 <translation id="4192781968753717021">Este contrasinal viuse implicado nunha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies agora.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estivo usando Chrome e deixou os marcadores, os contrasinais e outras opcións de configuración neste dispositivo.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Acerca de Google Chrome</translation>
 <translation id="7501046334262221972">Se queres que Chrome pase a ser o teu navegador predeterminado, abre Configuración. Toca Aplicación de navegador predeterminada e, a continuación, selecciona Chrome.</translation>
 <translation id="756809126120519699">Borráronse os datos de Chrome</translation>
-<translation id="7626032353295482388">Dámosche a benvida a Chrome</translation>
 <translation id="7662994914830945754">Para ver as túas pestanas desde calquera equipo no que utilices Chrome, inicia sesión e activa a sincronización</translation>
 <translation id="7693590760643069321">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="7698568245838009292">Chrome quere acceder á cámara</translation>

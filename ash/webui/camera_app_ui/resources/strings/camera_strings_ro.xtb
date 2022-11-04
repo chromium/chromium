@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Fișierul <ph name="FILE" /> nu poate fi exportat</translation>
 <translation id="1899697626337024495">Rezoluție foto</translation>
 <translation id="1925845977604399247">Accesează Galeria</translation>
+<translation id="199526504800285197">Înregistrarea a fost oprită</translation>
+<translation id="1995951722691075581">Înregistrarea s-a oprit din cauza spațiului de stocare redus de pe dispozitiv. Pentru a înregistra mai multe videoclipuri, trebuie să eliberezi spațiu pe dispozitiv.</translation>
 <translation id="2022953316617983419">Cod QR</translation>
 <translation id="2036868001356139588">Durata temporizatorului</translation>
 <translation id="2050339315714019657">Portret</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scanează codul de bare</translation>
 <translation id="3892148308691398805">Copiază textul</translation>
+<translation id="4060608699153044055">Nu poți înregistra din cauza spațiului de stocare redus de pe dispozitiv. Pentru a începe înregistrarea, trebuie să eliberezi spațiu pe dispozitiv.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Întrerupe înregistrarea</translation>
 <translation id="4121305183798804752">S-a detectat un document</translation>
@@ -161,6 +164,7 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="7748344063862150053">Colțul din dreapta sus al documentului</translation>
 <translation id="7933675232020478311">Se deplasează în jos, spre dreapta</translation>
 <translation id="7983668134180549431">A fost detectat text.</translation>
+<translation id="8079255378695216066">Înregistrarea nu poate începe</translation>
 <translation id="8120146556401698679">Deplasează Înclină Mărește / micșorează</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8145038249676204903">Comută pentru a fotografia</translation>

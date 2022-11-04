@@ -236,6 +236,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="121384500095351701">Impossibile scaricare il file in modo sicuro</translation>
 <translation id="1215411991991485844">Nuova applicazione in background aggiunta</translation>
 <translation id="1216542092748365687">Rimuovere l'impronta</translation>
+<translation id="1216891999012841486">Scopri di più sulla correzione degli errori di aggiornamento</translation>
 <translation id="1217114730239853757">Vuoi attivare ChromeVox, lo screen reader integrato per ChromeOS Flex? In questo caso, premi la barra spaziatrice.</translation>
 <translation id="1217483152325416304">I tuoi dati locali verranno eliminati a breve</translation>
 <translation id="1217668622537098248">Ripristina il clic con il pulsante sinistro dopo l'azione</translation>
@@ -1383,6 +1384,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2256115617011615191">Riavvia adesso</translation>
 <translation id="2257053455312861282">L'aggiunta di un account della scuola consente di accedere facilmente ai siti web, alle estensioni e alle app come studente, applicando al tempo stesso il Controllo genitori.</translation>
 <translation id="2261323523305321874">L'amministratore ha apportato una modifica a livello di sistema che disabilita alcuni vecchi profili.</translation>
+<translation id="22614517036276112">Questo documento o il tuo dispositivo non rispetta alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.</translation>
 <translation id="2262477216570151239">Ritardo prima della ripetizione</translation>
 <translation id="2263189956353037928">Esci e accedi nuovamente</translation>
 <translation id="2263371730707937087">Frequenza di aggiornamento dello schermo</translation>
@@ -3085,7 +3087,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3828029223314399057">Cerca tra i Preferiti</translation>
 <translation id="3828953470056652895">Ho letto e accetto i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" />, i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Chrome e ChromeOS<ph name="END_LINK2" /> e i <ph name="BEGIN_LINK3" />Termini di servizio di Google Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Condivisione file SMB</translation>
-<translation id="3830268140528557982">su <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{L'amministratore ha riattivato 1 estensione potenzialmente dannosa}other{L'amministratore ha riattivato {NUM_EXTENSIONS} estensioni potenzialmente dannose}}</translation>
 <translation id="3831436149286513437">Suggerimenti di ricerca di Google Drive</translation>
 <translation id="3834728400518755610">La modifica dell'impostazione del microfono richiede l'arresto di Linux. Arresta Linux per continuare.</translation>
@@ -3850,7 +3851,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4556194354084985730">Accedi facilmente ai siti e alle app con le password salvate. Se la funzionalità è disattivata, ti verrà chiesto prima di accedere.</translation>
 <translation id="4558426062282641716">Autorizzazione di avvio automatico richiesta</translation>
 <translation id="4559617833001311418">Questo sito ha accesso ai sensori di movimento o della luce.</translation>
-<translation id="4561098487691395071">Oppure specifica il file PPD della stampante</translation>
 <translation id="4561893854334016293">Nessuna autorizzazione modificata di recente</translation>
 <translation id="4562155214028662640">Aggiungi impronta digitale</translation>
 <translation id="4563210852471260509">La lingua di input iniziale è il cinese</translation>
@@ -4743,7 +4743,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5427278936122846523">Traduci sempre</translation>
 <translation id="5427459444770871191">Ruota in senso o&amp;rario</translation>
 <translation id="542750953150239272">Se continui, accetti che questo dispositivo possa anche scaricare e installare automaticamente aggiornamenti e app da Google, dal tuo operatore e dal produttore del tuo dispositivo, utilizzando eventualmente la rete dati. Alcune di queste app potrebbero offrire acquisti in-app.</translation>
-<translation id="5427936139162668357">Visualizza PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (aggiornamento disponibile)</translation>
 <translation id="542948651837270806">È necessario installare un aggiornamento del firmware Trusted Platform Module. Visita il sito <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Larghezza intera</translation>
@@ -4975,6 +4974,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5632059346822207074">Autorizzazione richiesta, premi Ctrl + Avanti per rispondere</translation>
 <translation id="5632566673632479864">Il tuo account <ph name="EMAIL" /> non è più consentito come account principale. Siccome l'account è gestito da <ph name="DOMAIN" />, i preferiti, la cronologia, le password e altre impostazioni verranno cancellati da questo dispositivo.</translation>
 <translation id="5632592977009207922">Download in corso: <ph name="PERCENT_REMAINING" />% rimanente</translation>
+<translation id="5633149627228920745">Scopri di più sui requisiti di sistema</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5634446357546764049">Visualizza ricordi dei tuoi ultimi viaggi e altro ancora</translation>
 <translation id="5635312199252507107">Consenti su siti specifici</translation>
@@ -5071,6 +5071,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5733866499231170760">ID non valido. Il formato inserito non è corretto. Controlla le istruzioni che hai ricevuto per assicurarti di inserire l'ID nel formato corretto. Se non riesci a risolvere questo problema, lascia il campo vuoto e continua con l'installazione.</translation>
 <translation id="5734362860645681824">Comunicazioni</translation>
 <translation id="5734697361979786483">Aggiungi condivisione file</translation>
+<translation id="5736092224453113618">{NUM_FILES,plural, =0{Questi dati o il tuo dispositivo non rispettano alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}=1{Questo file o il tuo dispositivo non rispetta alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}other{Questi file non rispettano alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}}</translation>
 <translation id="5736796278325406685">Inserisci un nome utente valido</translation>
 <translation id="5738093759615225354">Questa passkey è necessaria per accedere al tuo computer</translation>
 <translation id="5738329404678738022">Memorizza i tuoi preferiti e altro ancora con la sincronizzazione</translation>
@@ -6561,6 +6562,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7123030151043029868">Possono scaricare automaticamente più file</translation>
 <translation id="7123302939607518173">Consenti l'aggiunta di un interesse o di un sito se ritieni che gli annunci relativi all'elemento ti sarebbero utili.</translation>
 <translation id="7124013154139278147">Assegna sensore per "Precedente"</translation>
+<translation id="7124712201233930202">I criteri della tua organizzazione non sono stati rispettati</translation>
 <translation id="7125029162161377569">Con le prove di Privacy Sandbox, i siti possono offrire la stessa esperienza di navigazione utilizzando meno informazioni personali. Ciò significa più privacy per te e meno tracciamento tra siti. Aggiungeremo nuove prove quando saranno pronte per i test.</translation>
 <translation id="7125148293026877011">Eliminare Crostini</translation>
 <translation id="7127980134843952133">Cronologia download</translation>
@@ -8322,6 +8324,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8785622406424941542">Stilo</translation>
 <translation id="8786824282808281903">Quando tuo figlio vede questa icona può usare l'impronta per l'identificazione o per approvare gli acquisti.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Gruppo senza nome - 1 scheda}other{Gruppo senza nome - # schede}}</translation>
+<translation id="8791157330927639737">Scopri di più sugli aggiornamenti</translation>
 <translation id="8791534160414513928">Invia una richiesta "Non tenere traccia" con il tuo traffico di navigazione</translation>
 <translation id="879413103056696865">Quando l'hotspot è attivo, il tuo <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nuova finestra</translation>
@@ -8523,6 +8526,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="897939795688207351">Su <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Report di feedback</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Bloccata</translation>
+<translation id="8981038076986775523">Scopri di più sull'utilizzo di un microfono</translation>
 <translation id="8981825781894055334">Carta in esaurimento</translation>
 <translation id="8983018820925880511">Questo nuovo profilo verrà gestito da <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> può modificare il file <ph name="FILENAME" /></translation>

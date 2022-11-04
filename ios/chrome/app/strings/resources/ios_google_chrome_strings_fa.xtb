@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">‏Chrome موفق نشد به‌روزرسانی‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="2732745070297234559">‏Chrome نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید.</translation>
 <translation id="2869959624320573933">‏ورود به سیستم Chrome</translation>
-<translation id="2919738076569633423">‏بااستفاده از Chrome، موافقت خود را با <ph name="BEGIN_LINK_TOS" />شرایط خدمات<ph name="END_LINK_TOS" /> اعلام می‌کنید.</translation>
 <translation id="2957447865124070833">‏<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> را انتخاب کنید</translation>
 <translation id="3030414234702425231">‏ازآنجایی‌که درحال خارج شدن از حسابی هستید که <ph name="SIGNOUT_MANAGED_DOMAIN" /> آن را مدیریت می‌کند، داده‌های Chrome شما از این دستگاه حذف خواهد شد. داده‌هایتان در حساب Google شما باقی می‌ماند.</translation>
 <translation id="3167189358072330585">‏حساب شما در Google Chrome کار نمی‌کند. لطفاً با سرپرست دامنه‌تان تماس بگیرید یا از یک حساب Google معمولی برای ثبت ورود استفاده کنید.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">‏هم‌اکنون حساب‌های همگام‌سازی را از <ph name="USER_EMAIL1" /> به <ph name="USER_EMAIL2" /> تغییر می‌دهید. داده‌های موجود Chrome شما توسط <ph name="DOMAIN" /> مدیریت می‌شود. با این کار، داده‌هایتان از این دستگاه حذف می‌شود اما همچنان در <ph name="USER_EMAIL1" /> باقی می‌ماند.</translation>
 <translation id="3984746313391923992">‏سازمانتان از شما می‌خواهد خارج از سیستم Chrome باقی بمانید.</translation>
 <translation id="3988789688219830639">‏Google Chrome به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
-<translation id="4099578267706723511">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهتر شدن Chrome کمک کنید.</translation>
 <translation id="417201473131094001">‏در Chrome Canary پشتیبانی نمی‌شود</translation>
 <translation id="4192781968753717021">‏این گذرواژه در معرض نقض داده قرار گرفته است. «مدیر گذرواژه Google» توصیه می‌کند گذرواژه‌تان را همین‌حالا تغییر دهید.</translation>
 <translation id="4233521129555661685">‏<ph name="USER_EMAIL1" /> از Chrome استفاده می‌کرده است و نشانک‌ها، گذرواژه‌ها، و تنظیمات دیگری در این دستگاه ذخیره کرده است.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">‏درباره Google Chrome</translation>
 <translation id="7501046334262221972">‏برای تنظیم کردن Chrome به‌عنوان مرورگر پیش‌فرض، «تنظیمات» را باز کنید. روی «برنامه مرورگر پیش‌فرض» ضربه بزنید، سپس Chrome را انتخاب کنید.</translation>
 <translation id="756809126120519699">‏داده‌های Chrome پاک شد</translation>
-<translation id="7626032353295482388">‏به Chrome خوش آمدید</translation>
 <translation id="7662994914830945754">‏در همه دستگاه‌هایی که در آن‌ها از Chrome استفاده می‌کنید، به سیستم وارد شوید و همگام‌سازی را روشن کنید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="7693590760643069321">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر همیشه در Chrome باز شوند.</translation>
 <translation id="7698568245838009292">‏Chrome می‌خواهد به «دوربین» دسترسی داشته باشد</translation>

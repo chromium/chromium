@@ -1409,6 +1409,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4606870351894164739">Působivé</translation>
 <translation id="4607603470419975064">Tlačítko Zobrazit tipy k Chromu, stisknutím klávesy Enter zobrazíte další informace o funkcích Chromu</translation>
 <translation id="4607608436550361748">Zobrazit tipy k Chromu</translation>
+<translation id="4610279718074907952">Tento web je ve skupině definované vlastníkem <ph name="SET_OWNER" />, která může sledovat vaši aktivitu</translation>
 <translation id="4617273035598175554">Grafika a animační software</translation>
 <translation id="4622292761762557753">Přesto přenést</translation>
 <translation id="4627675673814409125">Tuto zásadu nelze nastavit na úrovni profilu Chrome, bude proto ignorována.</translation>
@@ -2383,6 +2384,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7130775116821607281">Nahrání je blokováno</translation>
 <translation id="7132939140423847331">Váš správce kopírování těchto dat zakázal.</translation>
 <translation id="7135130955892390533">Zobrazit stav</translation>
+<translation id="7136009930065337683">Další informace o anonymním režimu</translation>
 <translation id="7138472120740807366">Způsob doručení</translation>
 <translation id="7139892792842608322">Hlavní zásobník</translation>
 <translation id="714064300541049402">Posun obrázku strany 2 na ose X</translation>

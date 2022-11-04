@@ -20,7 +20,6 @@
 <translation id="1084365883616172403">Публикацията във Facebook е завършена.</translation>
 <translation id="1085696779717592361">Използване на Chrome по подразбиране</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
-<translation id="1104948393051856124">Приемам и напред</translation>
 <translation id="110724200315609752">Превключване към отворения прозорец</translation>
 <translation id="1112015203684611006">Неуспешно отпечатване.</translation>
 <translation id="1125564390852150847">Създаване на нов раздел.</translation>
@@ -166,7 +165,6 @@
 <translation id="2302742851632557585">Промяна на паролата на уебсайта</translation>
 <translation id="2316709634732130529">Ползване на предложената парола</translation>
 <translation id="2320166752086256636">Скриване на клавиатурата</translation>
-<translation id="2328842561016935977">Изберете „Пароли“, след което докоснете „Добавяне“.</translation>
 <translation id="2351097562818989364">Настройките ви за превод са нулирани.</translation>
 <translation id="235789365079050412">Декларация за поверителност на Google</translation>
 <translation id="2359043044084662842">Превод</translation>
@@ -665,7 +663,6 @@
 <translation id="6149061208933997199">Ползване на паролата</translation>
 <translation id="6152406514676263192">Включете синхронизирането, за да виждате най-подходящото съдържание въз основа на интересите си.</translation>
 <translation id="6159839020698489198">незадължително</translation>
-<translation id="6165508094623778733">Научете повече</translation>
 <translation id="6170450281939467187">Преводът не бе успешен</translation>
 <translation id="6177442314419606057">Търсене в Chrome</translation>
 <translation id="6184086493125982861">Показване на разделите</translation>
@@ -834,7 +831,6 @@
 <translation id="7291368939935408496">Паролите се подготвят...</translation>
 <translation id="730958329302570991">Можете лесно да добавяте пароли за сайтове към Google Мениджър на пароли по всяко време.</translation>
 <translation id="7313347584264171202">Тук ще се показват разделите ви в режим „инкогнито“</translation>
-<translation id="7315813263062036945">Докоснете иконата за търсене горе вляво.</translation>
 <translation id="7336264872878993241">Изтеглено: <ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
 <translation id="7346909386216857016">Добре, разбрах</translation>
@@ -995,7 +991,6 @@
 <translation id="8605219856220328675">Затваряне на раздела.</translation>
 <translation id="8620640915598389714">Редактиране</translation>
 <translation id="8626393685701737946">Можете да зададете настолния сайт като основен в „Настройки &gt; Настройки за съдържанието“</translation>
-<translation id="863090005774946393">Браузърът се управлява от организацията ви. Някои функции може да са деактивирани.</translation>
 <translation id="8636825310635137004">Включете синхронизирането, за да получите разделите си от другите си устройства.</translation>
 <translation id="8654802032646794042">Отказ</translation>
 <translation id="8668210798914567634">Тази страница е запазена в списъка ви за четене.</translation>

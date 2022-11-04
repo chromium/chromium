@@ -481,7 +481,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5669267381087807207">Virkjar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Fjölskylda</translation>
-<translation id="5695599963893094957">Ýttu á hvaða lykil sem er á lyklaborðinu. Hægt er að ýta á allt að 4 lykla í einu.</translation>
 <translation id="5701381305118179107">Miðjujafna</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Uppfæra <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Mistókst – Heimild fékkst ekki</translation>
 <translation id="7103252855940681301">Tæki <ph name="INDEX" /> af <ph name="COUNT" /> sem nefnist <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Heiti aðgangsstaðar (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nafnaþjónn}one{Nafnaþjónn}other{Nafnaþjónar}}</translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>

@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼，請明天再試。</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
-<translation id="2919738076569633423">使用 Chrome 即表示你同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
 <translation id="2957447865124070833">選取 [Chrome]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chrome 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
 <translation id="3167189358072330585">無法使用您的帳戶登入 Google Chrome，請洽詢您的網域管理員或使用一般 Google 帳戶登入。</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">您設定同步處理的帳戶即將從 <ph name="USER_EMAIL1" /> 改為 <ph name="USER_EMAIL2" />。您現有的 Chrome 資料是由 <ph name="DOMAIN" /> 所管理。系統會將您的資料從這個裝置上刪除，但繼續保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">貴機構要求你在 Chrome 保持登出狀態。</translation>
 <translation id="3988789688219830639">Google Chrome 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
-<translation id="4099578267706723511">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chrome 更臻完美。</translation>
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
 <translation id="4192781968753717021">這個密碼已在資料侵害事件中外洩，Google 密碼管理工具建議你立即變更密碼。</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，並將書籤、密碼和其他設定儲存在裝置上。</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">關於 Google Chrome</translation>
 <translation id="7501046334262221972">如要將 Chrome 設為預設瀏覽器，請開啟「設定」，然後輕觸 [預設的瀏覽器應用程式] 並選取 [Chrome]。</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
-<translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="7693590760643069321">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>

@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">请打开蓝牙设置为您的设备配对</translation>
 <translation id="3638400994746983214">开启/关闭隐私保护屏。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649505501900178324">更新逾期</translation>
+<translation id="3659444876902283058">（第 <ph name="CURRENT_DAY" /> 天，共 <ph name="TOTAL_DAYS" /> 天）</translation>
 <translation id="3659814201068740063">电量还剩大约 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
 请为设备接通电源。</translation>
 <translation id="366222428570480733">受管用户：<ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1265,6 +1266,7 @@
 <translation id="8052898407431791827">已复制到剪贴板</translation>
 <translation id="8054466585765276473">正在计算续航时间。</translation>
 <translation id="8083540854303889870">已保存供日后使用</translation>
+<translation id="8091153018031979607">开始时间：<ph name="START_TIME" /><ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">自动更新</translation>
 <translation id="8098591350844501178">停止将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">开启，所有应用</translation>
@@ -1377,6 +1379,7 @@
 <translation id="8703634754197148428">开始录制。录制开始后，使用 Alt + Shift + L 可转到任务栏并从中找到“停止录制”按钮</translation>
 <translation id="8721053961083920564">开启/关闭声音。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">截取整个屏幕</translation>
+<translation id="8731487213223706745">结束时间：<ph name="END_TIME" /><ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">当前连接的键盘可能会试图窃取您的击键操作</translation>
 <translation id="8735678380411481005">键盘背光颜色</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，

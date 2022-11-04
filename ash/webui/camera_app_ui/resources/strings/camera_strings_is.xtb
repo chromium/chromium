@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Ekki tókst að flytja <ph name="FILE" /> út</translation>
 <translation id="1899697626337024495">Upplausn mynda</translation>
 <translation id="1925845977604399247">Opna gallerí</translation>
+<translation id="199526504800285197">Upptaka var stöðvuð</translation>
+<translation id="1995951722691075581">Upptakan stöðvaðist sökum of lítils geymslurýmis í tækinu. Til að taka upp fleiri myndskeið þarftu fyrst að losa um pláss í tækinu.</translation>
 <translation id="2022953316617983419">QR-kóði</translation>
 <translation id="2036868001356139588">Tími niðurteljara</translation>
 <translation id="2050339315714019657">Skammsnið</translation>
@@ -47,6 +49,7 @@
 <translation id="2501953888035679275">Taktu myndir og taktu upp myndskeið með myndavélinni þinni.</translation>
 <translation id="2517472476991765520">Leita</translation>
 <translation id="2549985041256363841">Hefja upptöku</translation>
+<translation id="2577915835281444458">Upptöku lýkur fljótlega. Opnaðu geymslurými tækisins til að losa um pláss.</translation>
 <translation id="2599796128805996109">Aftari myndavél</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> sek.</translation>
 <translation id="2761536921376153655">Gerð leitar</translation>
@@ -77,6 +80,7 @@
 <translation id="3810838688059735925">Myndskeið</translation>
 <translation id="3838931309141338733">Skanna strikamerki</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
+<translation id="4060608699153044055">Þú getur ekki tekið upp sökum of lítils geymslurýmis í tækinu. Til að hefja upptöku þarftu fyrst að losa um pláss í tækinu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Gera hlé á upptöku</translation>
 <translation id="4121305183798804752">Skjal greindist</translation>
@@ -160,6 +164,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7748344063862150053">Efra, hægra horn skjals</translation>
 <translation id="7933675232020478311">Færist niður og til hægri</translation>
 <translation id="7983668134180549431">Texti greindist.</translation>
+<translation id="8079255378695216066">Ekki tekst að hefja upptöku</translation>
 <translation id="8120146556401698679">Hliðrun, halli og aðdráttur</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8145038249676204903">Skipta yfir í myndatöku</translation>

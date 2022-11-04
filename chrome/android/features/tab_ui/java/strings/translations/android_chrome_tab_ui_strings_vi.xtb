@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> trong tổng số các thẻ của mình. Bạn có muốn đóng các thẻ này không?</translation>
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="125153950246128346">Nhấn để xem một thẻ khác</translation>
-<translation id="1302104331113804646">Tùy chọn theo dõi giá</translation>
-<translation id="1378979118429748177">Nhận thông báo khi có mặt hàng giảm giá</translation>
 <translation id="1403228085774130835">Bạn có thể tìm thấy các thẻ mình đã đóng trong mục thẻ Gần đây trên trình đơn chính của Chrome</translation>
 <translation id="1455506303394048917">Hoạt động của bạn trong những thẻ ẩn danh này sẽ được xoá khỏi thiết bị này</translation>
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Không hiện lại dải thẻ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Đóng <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đóng <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="8557923272772633250">Mở rộng nhóm thẻ có <ph name="NUMBER_OF_TABS" /> thẻ.</translation>
-<translation id="860282621117673749">Thông báo khi có mặt hàng giảm giá</translation>
 <translation id="8714939927607906138">Giá thấp hơn</translation>
 <translation id="8749939518995770034">Đã đóng dải thẻ</translation>
 <translation id="8820741577754260431">Xem các mặt hàng giảm giá trong thẻ của bạn</translation>

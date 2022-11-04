@@ -481,7 +481,6 @@
 <translation id="5669267381087807207">Активація</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Сім’я</translation>
-<translation id="5695599963893094957">На клавіатурі натисніть будь-яку клавішу (можна до 4 клавіш одночасно).</translation>
 <translation id="5701381305118179107">По центру</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Оновити пристрій: <ph name="DEVICE_NAME" /></translation>
@@ -627,6 +626,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Не вдалося – помилка авторизації</translation>
 <translation id="7103252855940681301">Пристрій <ph name="INDEX" /> з <ph name="COUNT" />: "<ph name="NAME" />".</translation>
+<translation id="7130438335435247835">Ім’я точки доступу (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>

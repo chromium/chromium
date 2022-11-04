@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Tento počet vašich karet v poslední době nebyl použit: <ph name="NUMBER_OF_TABS" />. Chcete je zavřít?</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="125153950246128346">Další kartu zobrazíte klepnutím</translation>
-<translation id="1302104331113804646">Nastavení sledování cen</translation>
-<translation id="1378979118429748177">Dostávejte upozornění na pokles ceny</translation>
 <translation id="1403228085774130835">Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome</translation>
 <translation id="1455506303394048917">Vaše aktivita na těchto anonymních kartách bude z tohoto zařízení vymazána</translation>
 <translation id="1499635324672558517">Zavřít všechny anonymní karty?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Tuto lištu karet už nezobrazovat?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavřít <ph name="TABS_COUNT_ONE" /> vybranou kartu}few{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané karty}other{Zavřít <ph name="TABS_COUNT_MANY" /> vybraných karet}}</translation>
 <translation id="8557923272772633250">Rozbalit skupinu karet s <ph name="NUMBER_OF_TABS" /> kartami.</translation>
-<translation id="860282621117673749">Upozornění na pokles ceny</translation>
 <translation id="8714939927607906138">Nižší cena</translation>
 <translation id="8749939518995770034">Lišta karet byla zavřena</translation>
 <translation id="8820741577754260431">Zobrazit pokles ceny na kartách</translation>

@@ -481,7 +481,6 @@
 <translation id="5669267381087807207">සක්‍රීය වෙමින්...</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">පවුල</translation>
-<translation id="5695599963893094957">ඔබගේ යතුරුපුවරුවේ ඕනෑම යතුරක් ටයිප් කරන්න. ඔබට එකවර යතුරු 4ක් දක්වා එබිය හැකිය.</translation>
 <translation id="5701381305118179107">මධ්‍ය</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />න් <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> යාවත්කාලීන කරන්න</translation>
@@ -627,6 +626,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">අසාර්ථක විය - අනුමැතිය දීම අසාර්ථක විය</translation>
 <translation id="7103252855940681301">උපාංග <ph name="COUNT" />කින් <ph name="INDEX" /> <ph name="NAME" /> ලෙස නම් කර ඇත.</translation>
+<translation id="7130438335435247835">ප්‍රවේශ ලක්ෂ්‍ය නම (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{නම් සේවාදායකය}one{නම් සේවාදායක}other{නම් සේවාදායක}}</translation>
 <translation id="7143207342074048698">සම්බන්ධ වෙමින්…</translation>
 <translation id="7144878232160441200">නැවත උත්සහ කරන්න</translation>

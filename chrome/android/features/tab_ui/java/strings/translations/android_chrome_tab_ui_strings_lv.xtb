@@ -4,8 +4,6 @@
 <translation id="1075622780330595106">Vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
-<translation id="1302104331113804646">Cenu izsekošanas iestatījumi</translation>
-<translation id="1378979118429748177">Saņemiet paziņojumus par cenu kritumu.</translation>
 <translation id="1403228085774130835">Aizvērtās cilnes varat atrast Chrome galvenās izvēlnes sadaļā Nesen atvērtas cilnes</translation>
 <translation id="1455506303394048917">Jūsu darbības šajās inkognito cilnēs tiks notīrītas no šīs ierīces.</translation>
 <translation id="1499635324672558517">Vai aizvērt visas inkognito cilnes?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Vai nerādīt ciļņu joslu atkārtoti?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Aizvērt atlasīto cilni (skaits: <ph name="TABS_COUNT_ONE" />)}zero{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}one{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}other{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8557923272772633250">Izvērst ciļņu grupu. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="860282621117673749">Brīdinājumi par cenu kritumu</translation>
 <translation id="8714939927607906138">Zemāka cena</translation>
 <translation id="8749939518995770034">Ciļņu josla aizvērta</translation>
 <translation id="8820741577754260431">Skatiet cenu kritumu savās cilnēs.</translation>

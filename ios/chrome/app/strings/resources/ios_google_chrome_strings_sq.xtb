@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
 <translation id="2732745070297234559">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
 <translation id="2869959624320573933">Identifikohu në Chrome</translation>
-<translation id="2919738076569633423">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK_TOS" />Kushtet e shërbimit<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Zgjidh <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="SIGNOUT_MANAGED_DOMAIN" />, të dhënat e tua të Chrome do të fshihen nga kjo pajisje. Të dhënat e tua do të mbeten në "Llogarinë tënde të Google".</translation>
 <translation id="3167189358072330585">Llogaria jote nuk punon në Google Chrome. Kontakto me administratorin e domenit ose përdor një llogari të rregullt të Google për t'u identifikuar.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chrome po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizata jote kërkon që të qëndrosh i dalë nga Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
-<translation id="4099578267706723511">Ndihmo në përmirësimin e Chrome duke dërguar automatikisht te Google statistika përdorimi dhe raporte të ndërprerjeve aksidentale.</translation>
 <translation id="417201473131094001">Nuk mbështetet në Chrome Canary</translation>
 <translation id="4192781968753717021">Ky fjalëkalim është gjetur në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve i Google" rekomandon që ta ndryshosh fjalëkalimin tënd tani.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> po përdorte Chrome dhe ka lënë faqeshënues, fjalëkalime dhe cilësime të tjera në këtë pajisje.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Informacion për Google Chrome</translation>
 <translation id="7501046334262221972">Për ta bërë Chrome shfletuesin tënd të parazgjedhur, hap Settings. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit" dhe zgjidh "Chrome".</translation>
 <translation id="756809126120519699">Të dhënat e Chrome u pastruan</translation>
-<translation id="7626032353295482388">Mirë se vjen në Chrome</translation>
 <translation id="7662994914830945754">Për të parë skedat e tua nga çdo vend ku përdor Chrome, identifikohu dhe aktivizo sinkronizimin</translation>
 <translation id="7693590760643069321">Tani mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="7698568245838009292">Chrome dëshiron të ketë qasje te kamera</translation>

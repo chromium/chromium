@@ -20,7 +20,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1084365883616172403">Facebook’ka joylandi.</translation>
 <translation id="1085696779717592361">Chrome birlamchi boʻlsin</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
-<translation id="1104948393051856124">Davom etish</translation>
 <translation id="110724200315609752">Yopilmagan oynalarga oʻtish</translation>
 <translation id="1112015203684611006">Chop etilmadi.</translation>
 <translation id="1125564390852150847">Yangi sahifa ochish</translation>
@@ -166,7 +165,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2302742851632557585">Saytdagi parolni yangilash</translation>
 <translation id="2316709634732130529">Taklif qilingan parolni ishlatish</translation>
 <translation id="2320166752086256636">Klaviaturani berkitish</translation>
-<translation id="2328842561016935977">Parollar, keyin Kiritish ustiga bosing</translation>
 <translation id="2351097562818989364">Tarjima sozlamalari qayta tiklandi.</translation>
 <translation id="235789365079050412">Google maxfiylik siyosati</translation>
 <translation id="2359043044084662842">Tarjima qilish</translation>
@@ -665,7 +663,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6149061208933997199">Paroldan foydalanish</translation>
 <translation id="6152406514676263192">Qiziqishlar asosida eng mos kontent chiqishini sinxronlash.</translation>
 <translation id="6159839020698489198">ixtiyoriy</translation>
-<translation id="6165508094623778733">Batafsil</translation>
 <translation id="6170450281939467187">Tarjima qilinmadi</translation>
 <translation id="6177442314419606057">Chromedan qidirish</translation>
 <translation id="6184086493125982861">Tablarni ko‘rsatish</translation>
@@ -834,7 +831,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7291368939935408496">Parollar tayyorlanmoqda...</translation>
 <translation id="730958329302570991">Saytlardagi parollaringizni istalgan vaqt Google Parollar menejeriga oson kiriting.</translation>
 <translation id="7313347584264171202">Brauzer Inkognito varaqlari shu yerda chiqadi</translation>
-<translation id="7315813263062036945">Yuqori chap burchakdagi Qidiruv belgisini bosing</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% yuklab olindi</translation>
 <translation id="7340958967809483333">Discover parametrlari</translation>
 <translation id="7346909386216857016">OK</translation>
@@ -995,7 +991,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8605219856220328675">Sahifani yopish</translation>
 <translation id="8620640915598389714">O‘zgartirish</translation>
 <translation id="8626393685701737946">Saytning standart koʻrinishini kompyuter koʻrinishiga Sozlamalar &gt; Kontent sozlamalari orqali oʻzgartirish mumkin</translation>
-<translation id="863090005774946393">Brauzeringiz tashkilotingiz boshqaruvida. Ayrim funksiyalar ishlamasligi mumkin.</translation>
 <translation id="8636825310635137004">Boshqa qurilmalaringizdagi brauzer sahifalarini ko‘rish uchun sinxronizatsiyani yoqing.</translation>
 <translation id="8654802032646794042">Bekor qilish</translation>
 <translation id="8668210798914567634">Bu sahifa mutolaa ro‘yxatingizga saqlandi.</translation>

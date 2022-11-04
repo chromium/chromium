@@ -481,7 +481,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
-<translation id="5695599963893094957">Drücke eine beliebige Taste auf der Tastatur. Du kannst maximal 4 Tasten gleichzeitig drücken.</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">„<ph name="DEVICE_NAME" />“ aktualisieren</translation>
@@ -627,6 +626,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Fehler – Autorisierung fehlgeschlagen</translation>
 <translation id="7103252855940681301">Der Name des Geräts <ph name="INDEX" /> von <ph name="COUNT" /> lautet „<ph name="NAME" />“.</translation>
+<translation id="7130438335435247835">Zugangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nameserver}other{Nameserver}}</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>

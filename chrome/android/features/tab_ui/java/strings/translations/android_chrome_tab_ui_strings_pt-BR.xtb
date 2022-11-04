@@ -4,8 +4,6 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="125153950246128346">Toque para ver outra guia</translation>
-<translation id="1302104331113804646">Configurações de monitoramento de preço</translation>
-<translation id="1378979118429748177">Receber notificações de reduções no preço</translation>
 <translation id="1403228085774130835">É possível encontrar suas guias fechadas na opção "Guias recentes" no menu principal do Chrome</translation>
 <translation id="1455506303394048917">Sua atividade nessas guias anônimas será excluída deste dispositivo</translation>
 <translation id="1499635324672558517">Fechar todas as guias anônimas?</translation>
@@ -96,7 +94,6 @@
 <translation id="8304833501377495048">Deixar de mostrar a barra de guias?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Fechar <ph name="TABS_COUNT_MANY" /> guia selecionada}other{Fechar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>
 <translation id="8557923272772633250">Abrir grupo com <ph name="NUMBER_OF_TABS" /> guias.</translation>
-<translation id="860282621117673749">Alertas de redução no preço</translation>
 <translation id="8714939927607906138">Preço menor</translation>
 <translation id="8749939518995770034">Barra de guias fechada</translation>
 <translation id="8820741577754260431">Ver reduções no preço nas suas guias</translation>

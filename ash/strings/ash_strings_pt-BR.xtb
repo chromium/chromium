@@ -484,6 +484,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3633097874324966332">Abra as configurações do Bluetooth se quiser parear o dispositivo</translation>
 <translation id="3638400994746983214">Alternar tela de privacidade. <ph name="STATE_TEXT" /></translation>
 <translation id="3649505501900178324">Atualização atrasada</translation>
+<translation id="3659444876902283058">(dia <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Tempo restante: cerca de <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="366222428570480733">Usuário gerenciado <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1268,9 +1269,11 @@ Nova instalação</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">Calculando duração da bateria.</translation>
 <translation id="8083540854303889870">Salvos para mais tarde</translation>
+<translation id="8091153018031979607">Início: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Atualizações automáticas</translation>
 <translation id="8098591350844501178">Parar de transmitir tela para <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ativ. nos apps</translation>
+<translation id="8113515504791187892">Botão "Selecionar para ouvir"</translation>
 <translation id="8120151603115102514">Seu smartphone não tem uma tela de bloqueio. Para desbloquear o Chromebook, digite sua senha</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -1380,6 +1383,7 @@ Nova instalação</translation>
 <translation id="8703634754197148428">Iniciar gravação. Depois que a gravação for iniciada, pressione Alt + Shift + L para ir até a estante e localizar o botão para "Parar de gravar"</translation>
 <translation id="8721053961083920564">Altere o volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de tela cheia</translation>
+<translation id="8731487213223706745">Término: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Ele pode estar tentando capturar sua digitação</translation>
 <translation id="8735678380411481005">Cor da luz de fundo do teclado</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

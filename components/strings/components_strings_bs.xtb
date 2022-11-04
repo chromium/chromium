@@ -1413,6 +1413,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4606870351894164739">Privlačno</translation>
 <translation id="4607603470419975064">Dugme Prikaži savjete za Chrome, pritisnite Enter da saznate više o funkcijama Chromea</translation>
 <translation id="4607608436550361748">Prikaži savjete za Chrome</translation>
+<translation id="4610279718074907952">Ova je web-lokacija u grupi koju definira <ph name="SET_OWNER" /> i koja može vidjeti vaše aktivnosti</translation>
 <translation id="4617273035598175554">Softver za grafiku i animaciju</translation>
 <translation id="4622292761762557753">Ipak prenesi</translation>
 <translation id="4627675673814409125">Nije moguće postaviti ovo pravilo na nivou Chrome profila i bit će zanemareno.</translation>
@@ -2388,6 +2389,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7130775116821607281">Otpremanje je blokirano</translation>
 <translation id="7132939140423847331">Vaš administrator je zabranio kopiranje ovih podataka.</translation>
 <translation id="7135130955892390533">Prikaži status</translation>
+<translation id="7136009930065337683">Saznajte više o anonimnom načinu rada</translation>
 <translation id="7138472120740807366">Način dostave</translation>
 <translation id="7139892792842608322">Primarna ladica</translation>
 <translation id="714064300541049402">Pomak slike X sa strane 2</translation>

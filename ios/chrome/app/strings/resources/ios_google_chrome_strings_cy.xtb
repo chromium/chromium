@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Ni allai Chrome wirio am ddiweddariadau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="2732745070297234559">Ni allai Chrome wirio'r holl gyfrineiriau. Rhowch gynnig arall arni yfory.</translation>
 <translation id="2869959624320573933">Mewngofnodi i Chrome</translation>
-<translation id="2919738076569633423">Drwy ddefnyddio Chrome, rydych yn cytuno i'r <ph name="BEGIN_LINK_TOS" />Telerau Gwasanaeth<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Dewiswch <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="SIGNOUT_MANAGED_DOMAIN" />, bydd eich data Chrome yn cael eu dileu o'r ddyfais hon. Bydd eich data yn aros yn eich Cyfrif Google.</translation>
 <translation id="3167189358072330585">Nid yw'ch cyfrif yn gweithio ar Google Chrome. Cysylltwch â'ch gweinyddwr parth neu defnyddiwch Gyfrif Google rheolaidd i fewngofnodi.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Rydych yn newid cyfrifon cysoni o <ph name="USER_EMAIL1" /> i <ph name="USER_EMAIL2" />. Mae eich data Chrome presennol yn cael eu rheoli gan <ph name="DOMAIN" />. Bydd hyn yn dileu eich data o'r ddyfais hon, ond bydd eich data yn aros yn <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Mae eich sefydliad yn gofyn i chi barhau i fod wedi'ch allgofnodi o Chrome.</translation>
 <translation id="3988789688219830639">Nid oes gan Google Chrome fynediad at eich lluniau na fideos. Galluogwch fynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
-<translation id="4099578267706723511">Helpwch i wella Chrome drwy anfon ystadegau defnydd ac adroddiadau toriadau at Google.</translation>
 <translation id="417201473131094001">Ni chefnogir ar Chrome Canary</translation>
 <translation id="4192781968753717021">Canfuwyd y cyfrinair hwn mewn toriad data. Mae Rheolwr Cyfrineiriau Google yn argymell newid eich cyfrinair ar unwaith.</translation>
 <translation id="4233521129555661685">Roedd <ph name="USER_EMAIL1" /> yn defnyddio Chrome a gadawodd nodau tudalen, cyfrineiriau, a gosodiadau eraill ar y ddyfais hon.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Ynghylch Google Chrome</translation>
 <translation id="7501046334262221972">I wneud Chrome eich porwr diofyn, agorwch y Gosodiadau. Tapiwch Ap Pori Diofyn, a dewiswch Chrome.</translation>
 <translation id="756809126120519699">Wedi clirio data Chrome</translation>
-<translation id="7626032353295482388">Croeso i Chrome</translation>
 <translation id="7662994914830945754">Er mwyn gweld eich tabiau o ble bynnag rydych yn defnyddio Chrome, mewngofnodwch a throwch gysoni ymlaen</translation>
 <translation id="7693590760643069321">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="7698568245838009292">Hoffai Chrome gael mynediad at y Camera</translation>

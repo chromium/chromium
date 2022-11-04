@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome не можа да провери за актуализации. Опитайте отново по-късно.</translation>
 <translation id="2732745070297234559">Chrome не успя да провери всички пароли. Опитайте отново утре.</translation>
 <translation id="2869959624320573933">Влизане в Chrome</translation>
-<translation id="2919738076569633423">С използването на Chrome приемате <ph name="BEGIN_LINK_TOS" />Общите условия<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Тъй като излизате от профил, управляван от <ph name="SIGNOUT_MANAGED_DOMAIN" />, данните ви в Chrome ще бъдат изтрити от това устройство, но ще останат в профила ви в Google.</translation>
 <translation id="3167189358072330585">Профилът ви не е съвместим с Google Chrome. Моля, свържете се с администратора на домейна си или влезте с обикновен профил в Google.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">Заменяте настоящия профил за синхронизиране (<ph name="USER_EMAIL1" />) с друг (<ph name="USER_EMAIL2" />). Съществуващите ви данни в Chrome се управляват от <ph name="DOMAIN" />. Те ще се изтрият от това устройство, но ще останат в профила <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Организацията ви изисква да не влизате в профила си в Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome няма достъп до снимките или видеоклиповете ви. Активирайте го от „Settings“ &gt; „Privacy“ &gt; „Photos“ в iOS.</translation>
-<translation id="4099578267706723511">Помогнете за подобряването на Chrome, като изпращате до Google статистически данни за употребата и сигнали за сривове.</translation>
 <translation id="417201473131094001">Не се поддържа от Chrome Canary</translation>
 <translation id="4192781968753717021">Тази парола бе разкрита при нарушение на сигурността на данните. Google Мениджър на пароли ви препоръчва да я промените сега.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> използва Chrome и запази на това устройство отметки, пароли и други настройки.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Всичко за Google Chrome</translation>
 <translation id="7501046334262221972">За да направите Chrome браузъра си по подразбиране, отворете „Настройки“, докоснете „Стандартно приложение за браузър“ и изберете Chrome.</translation>
 <translation id="756809126120519699">Данните в Chrome са изчистени</translation>
-<translation id="7626032353295482388">Добре дошли в Chrome</translation>
 <translation id="7662994914830945754">Влезте в профила си и включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chrome</translation>
 <translation id="7693590760643069321">Вече можете да използвате Chrome всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
 <translation id="7698568245838009292">Chrome иска достъп до камерата</translation>

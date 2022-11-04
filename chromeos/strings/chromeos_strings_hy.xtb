@@ -481,7 +481,6 @@
 <translation id="5669267381087807207">Ակտիվացում</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ընտանիք</translation>
-<translation id="5695599963893094957">Ձեր ստեղնաշարին սեղմեք ցանկացած ստեղն։ Միաժամանակ կարող եք սեղմել 4 ստեղն։</translation>
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
@@ -627,6 +626,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Սխալ – չհաջողվեց թույլատրել</translation>
 <translation id="7103252855940681301">Սարք <ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />։</translation>
+<translation id="7130438335435247835">Մուտքի կետի անվանում (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Անվանումների սերվեր}one{Անվանումների սերվեր}other{Անվանումների սերվերներ}}</translation>
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>

@@ -32,7 +32,6 @@
 <translation id="2695886661449553974">Chrome ला अपडेट तपासता आली नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2732745070297234559">Chrome ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
 <translation id="2869959624320573933">Chrome वर साइन इन करा</translation>
-<translation id="2919738076569633423">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK_TOS" />सेवा अटी<ph name="END_LINK_TOS" /> यांना सहमती दर्शवता.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> निवडा</translation>
 <translation id="3030414234702425231">तुम्ही <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यातून साइन आउट केले आहे, तुमचा Chrom डेटा या डिव्हाइसवरून हटवला जाईल. तुमचा डेटा तुमच्या Google खाते मध्ये असेल</translation>
 <translation id="3167189358072330585">तुमचे खाते Google Chrome वर काम करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
@@ -51,7 +50,6 @@
 <translation id="3980220367029651214">तुम्ही संकालित केलेली खाती <ph name="USER_EMAIL1" /> वरून <ph name="USER_EMAIL2" /> वर स्विच करीत आहात. तुमचा विद्यमान Chrome डेटा <ph name="DOMAIN" /> द्वारे व्यवस्थापित केला आहे. हे तुमचा डेटा या डिव्हाइस वरून हटवेल परंतु तुमचा डेटा <ph name="USER_EMAIL1" /> मध्ये असेल.</translation>
 <translation id="3984746313391923992">तुमच्या संस्थेनुसार, तुम्ही Chrome मधून साइन आउट केलेले राहणे आवश्यक आहे.</translation>
 <translation id="3988789688219830639">Google Chrome ला तुमच्या फोटो आणि व्हिडिओ ॲक्सेस नाही. iOS सेटिंग्ज &gt; गोपनीयता &gt; फोटो  ॲक्सेस सक्षम करा.</translation>
-<translation id="4099578267706723511">वापरविषयक आकडेवारी आणि क्रॅश अहवाल Google कडे पाठवून Chrome अधिक चांगले करण्यास मदत करा.</translation>
 <translation id="417201473131094001">Chrome कॅनरी वर सपोर्ट नाही</translation>
 <translation id="4192781968753717021">हा पासवर्ड डेटा भंगामध्ये आढळला. Google Password Manager तुमचा पासवर्ड आता बदलण्याची शिफारस करतो.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> हा Chrome वापरत होता आणि त्याने या डिव्हाइसवर बुकमार्क, पासवर्ड आणि इतर सेटिंग्ज ठेवली आहेत.</translation>
@@ -106,7 +104,6 @@
 <translation id="7400722733683201933">Google Chrome बद्दल</translation>
 <translation id="7501046334262221972">Chrome ला तुमचे डीफॉल्ट ब्राउझर करण्यासाठी, सेटिंग्ज उघडा. डीफॉल्ट ब्राउझर अ‍ॅपवर टॅप करा आणि त्यानंतर Chrome निवडा.</translation>
 <translation id="756809126120519699">Chrome डेटा साफ केला</translation>
-<translation id="7626032353295482388">Chrome मध्ये स्वागत आहे</translation>
 <translation id="7662994914830945754">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="7693590760643069321">तुम्ही आता कधीही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप करता तेव्हा, Chrome वापरू शकता.</translation>
 <translation id="7698568245838009292">Chrome ला कॅमेरा ॲक्सेस करायचा आहे</translation>

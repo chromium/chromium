@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
-<translation id="102360288709523007">Saidia kuboresha Chromium kwa kutuma takwimu za matumizi na ripoti za kuacha kufanya kazi kwa Google.</translation>
 <translation id="1047130070405668746">Chagua Chromium</translation>
 <translation id="1091252999271033193">Hii inamaanisha kwamba Chromium itahitaji tovuti ya kifaa cha mkononi kila wakati.</translation>
 <translation id="1185134272377778587">Kuhusu Chromium</translation>
@@ -72,10 +71,8 @@
 <translation id="5573014823074921752">Kidokezo cha Chromium. Ili upate chaguo zaidi za kichupo, gusa na ushikilie kitufe cha 'Onyesha Vichupo' katika upau wa vidhibiti unaopatikana katika sehemu ya chini au juu ya skrini yako.</translation>
 <translation id="5700709190537129682">Chromium imeshindwa kukagua manenosiri yako</translation>
 <translation id="5777187867430702742">Ukurasa wa Chromium</translation>
-<translation id="5862307444128926510">Karibu kwenye Chromium</translation>
 <translation id="5945387852661427312">Unaingia kwa kutumia akaunti inayodhibitiwa na <ph name="DOMAIN" /> na kumpa msimamizi wa kikoa hicho udhibiti wa data yako ya Chromium. Data yako ya Chromium itahusishwa na akaunti hii daima. Kuondoka kwenye Chromium kutafuta data yako kwenye kifaa hiki, lakini itaendelea kuhifadhiwa katika Akaunti yako ya Google.</translation>
 <translation id="5983312940147103417">Boresha Chromium</translation>
-<translation id="602807004951640891">Kwa kutumia Chromium, unakubali <ph name="BEGIN_LINK_TOS" />Sheria na Masharti<ph name="END_LINK_TOS" />.</translation>
 <translation id="6062449165341879460">Shirika lako <ph name="DOMAIN" /> litakuwa na uwezo wa kufikia data yako ya Chromium, alamisho, historia, manenosiri na mipangilio mingine uliyohifadhi kwenye akaunti hii. Ukiondoka kwenye akaunti, data yako itafutwa kwenye kifaa hiki.  Hata hivyo, data yako itabaki imehifadhiwa kwenye akaunti yako ya Google inayosimamiwa na itapatikana katika shirika lako. Shirika lako linaweza pia kuweka sera mahususi za mtumiaji kwenye akaunti hiyo, hivyo zinaweza kubadilisha tabia ya Chromium.</translation>
 <translation id="6119647025869519954">Ili ufanye Chromium iwe kivinjari chako chaguomsingi:
 1. Fungua Mipangilio

@@ -20,7 +20,6 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1084365883616172403">Message Facebook terminé.</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
-<translation id="1104948393051856124">Accepter et continuer</translation>
 <translation id="110724200315609752">Retourner à la fenêtre ouverte</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
 <translation id="1125564390852150847">Créer un onglet.</translation>
@@ -166,7 +165,6 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2302742851632557585">Changer le mot de passe sur le site Web</translation>
 <translation id="2316709634732130529">Utiliser le mot de passe suggéré</translation>
 <translation id="2320166752086256636">Masquer le clavier</translation>
-<translation id="2328842561016935977">Toucher Mots de passe, puis toucher Ajouter</translation>
 <translation id="2351097562818989364">Les paramètres de traduction ont été réinitialisés.</translation>
 <translation id="235789365079050412">Politique de confidentialité de Google</translation>
 <translation id="2359043044084662842">Traduire</translation>
@@ -665,7 +663,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6149061208933997199">Utilis. mot de passe</translation>
 <translation id="6152406514676263192">Activez la synchronisation pour voir le contenu le plus pertinent en fonction de vos centres d'intérêt.</translation>
 <translation id="6159839020698489198">facultatif</translation>
-<translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6170450281939467187">Échec de la traduction</translation>
 <translation id="6177442314419606057">Rechercher dans Chrome</translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
@@ -834,7 +831,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7291368939935408496">Préparation des mots de passe en cours…</translation>
 <translation id="730958329302570991">Ajoutez facilement et à tout moment des mots de passe de site au gestionnaire de mots de passe de Google.</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
-<translation id="7315813263062036945">En haut à gauche, toucher l'icône de recherche</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
 <translation id="7340958967809483333">Options pour Découvertes</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
@@ -995,7 +991,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8605219856220328675">Fermer l'onglet.</translation>
 <translation id="8620640915598389714">Modifier</translation>
 <translation id="8626393685701737946">Vous pouvez modifier l'affichage du site par défaut pour le mode Bureau dans Paramètres &gt; Paramètres de contenu</translation>
-<translation id="863090005774946393">Votre navigateur est géré par votre organisation. Certaines fonctionnalités peuvent être désactivées.</translation>
 <translation id="8636825310635137004">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation.</translation>
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>
