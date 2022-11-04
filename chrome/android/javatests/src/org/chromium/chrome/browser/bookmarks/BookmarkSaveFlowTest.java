@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 
 import androidx.test.espresso.Espresso;
@@ -30,11 +32,15 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -43,6 +49,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -58,6 +65,7 @@ import java.util.concurrent.ExecutionException;
 /** Tests for the bookmark save flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Features.EnableFeatures(ChromeFeatureList.SHOPPING_LIST)
 public class BookmarkSaveFlowTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -69,8 +77,14 @@ public class BookmarkSaveFlowTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
     @Mock
     SubscriptionsManager mSubscriptionsManager;
+
+    @Mock
+    PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
 
     @Mock
     private UserEducationHelper mUserEducationHelper;
@@ -85,6 +99,7 @@ public class BookmarkSaveFlowTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
                 mActivityTestRule.getActivity());
+        mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -97,6 +112,13 @@ public class BookmarkSaveFlowTest {
         });
 
         loadBookmarkModel();
+        doAnswer((invocation) -> {
+            ((Callback<Boolean>) invocation.getArgument(3)).onResult(true);
+            return null;
+        })
+                .when(mMockPriceTrackingUtilsJni)
+                .setPriceTrackingStateForBookmark(
+                        any(Profile.class), anyLong(), anyBoolean(), any());
         doAnswer((invocation) -> {
             ((Callback<Integer>) invocation.getArgument(1))
                     .onResult(SubscriptionsManager.StatusCode.OK);
@@ -204,6 +226,13 @@ public class BookmarkSaveFlowTest {
                     /*wasBookmarkMoved=*/false, meta.build());
             return null;
         });
+        doAnswer((invocation) -> {
+            ((Callback<Boolean>) invocation.getArgument(3)).onResult(false);
+            return null;
+        })
+                .when(mMockPriceTrackingUtilsJni)
+                .setPriceTrackingStateForBookmark(
+                        any(Profile.class), anyLong(), anyBoolean(), any());
         doAnswer((invocation) -> {
             ((Callback<Integer>) invocation.getArgument(1))
                     .onResult(SubscriptionsManager.StatusCode.NETWORK_ERROR);

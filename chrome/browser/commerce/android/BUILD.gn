@@ -8,6 +8,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/commerce/PriceNotificationPreferenceFragment.java",
+    "java/src/org/chromium/chrome/browser/commerce/PriceTrackingUtils.java",
     "java/src/org/chromium/chrome/browser/commerce/PriceUtils.java",
     "java/src/org/chromium/chrome/browser/commerce/ShoppingFeatures.java",
     "java/src/org/chromium/chrome/browser/commerce/ShoppingServiceFactory.java",
@@ -69,6 +70,7 @@ android_library("javatests") {
 
 generate_jni("shopping_service_jni") {
   sources = [
+    "java/src/org/chromium/chrome/browser/commerce/PriceTrackingUtils.java",
     "java/src/org/chromium/chrome/browser/commerce/ShoppingServiceFactory.java",
   ]
 }

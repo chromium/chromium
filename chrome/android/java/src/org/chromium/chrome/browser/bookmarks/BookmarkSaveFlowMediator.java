@@ -15,6 +15,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
@@ -41,7 +42,7 @@ public class BookmarkSaveFlowMediator
     private boolean mWasBookmarkMoved;
     private SubscriptionsManager mSubscriptionsManager;
     private CommerceSubscription mSubscription;
-    private Callback<Integer> mSubscriptionsManagerCallback;
+    private Callback<Boolean> mSubscriptionsManagerCallback;
     private String mFolderName;
 
     /**
@@ -149,16 +150,16 @@ public class BookmarkSaveFlowMediator
 
     void handleNotificationSwitchToggle(CompoundButton view, boolean toggled) {
         if (mSubscriptionsManagerCallback == null) {
-            mSubscriptionsManagerCallback = mCallbackController.makeCancelable((Integer status) -> {
-                setPriceTrackingToggleVisualsOnly(
-                        status == SubscriptionsManager.StatusCode.OK && view.isChecked());
-                setPriceTrackingNotificationUiEnabled(status == SubscriptionsManager.StatusCode.OK);
-            });
+            mSubscriptionsManagerCallback =
+                    mCallbackController.makeCancelable((Boolean success) -> {
+                        setPriceTrackingToggleVisualsOnly(success && view.isChecked());
+                        setPriceTrackingNotificationUiEnabled(success);
+                    });
         }
 
         setPriceTrackingIconForEnabledState(toggled);
-        PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager, mBookmarkModel,
-                mBookmarkId, toggled, mSubscriptionsManagerCallback);
+        PriceTrackingUtils.setPriceTrackingStateForBookmark(Profile.getLastUsedRegularProfile(),
+                mBookmarkId.getId(), toggled, mSubscriptionsManagerCallback);
         PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(toggled
                         ? PriceTrackingState.PRICE_TRACKING_ENABLED
                         : PriceTrackingState.PRICE_TRACKING_DISABLED);

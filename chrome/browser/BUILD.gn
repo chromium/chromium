@@ -2912,6 +2912,7 @@ static_library("browser") {
       "browser_process_platform_part_android.h",
       "chrome_browser_main_android.cc",
       "chrome_browser_main_android.h",
+      "commerce/android/price_tracking_utils_android.cc",
       "commerce/android/shopping_service_factory_android.cc",
       "commerce/merchant_viewer/web_contents_helper.cc",
       "commerce/price_tracking/android/price_tracking_notification_bridge.cc",
