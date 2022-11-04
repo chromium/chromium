@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/run_loop.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -175,6 +176,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
 
     // Start in tablet mode.
     ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+    WaitForAppListTransitionAnimation();
 
     // Ensure async callbacks are run.
     base::RunLoop().RunUntilIdle();
@@ -1380,9 +1382,8 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
 };
 
 // Verify that installing an app under color sort works as expected.
-// TODO(crbug.com/1381204): Flaky.
 IN_PROC_BROWSER_TEST_F(AppListSortColorOrderBrowserTest,
-                       DISABLED_InstallAppUnderColorSort) {
+                       InstallAppUnderColorSort) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   WaitForAppListTransitionAnimation();
 
@@ -1395,6 +1396,15 @@ IN_PROC_BROWSER_TEST_F(AppListSortColorOrderBrowserTest,
 
   std::string yellow_app_id = LoadExtension(extension_path_)->id();
   EXPECT_FALSE(yellow_app_id.empty());
+
+  AppListModelUpdater* model_updater =
+      test::GetModelUpdater(AppListClientImpl::GetInstance());
+
+  // Set the yellow icon manually, because loading the icon is otherwise an
+  // async operation which has to be waited for.
+  model_updater->FindItem(yellow_app_id)
+      ->SetIcon(CreateImageSkia(16, 16, SK_ColorYELLOW),
+                /*is_placeholder=*/false);
 
   // Verify that the new app's position follows the color order.
   EXPECT_EQ(
