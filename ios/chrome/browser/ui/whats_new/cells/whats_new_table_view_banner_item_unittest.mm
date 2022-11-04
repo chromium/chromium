@@ -72,8 +72,12 @@ TEST_F(WhatsNewTableViewBannerItemTest, ItemProperties) {
   EXPECT_EQ(
       NO,
       banner_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-  EXPECT_EQ([[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
-                fontWithSize:15],
+
+  UIFont* detailLabelFont = [UIFont systemFontOfSize:15
+                                              weight:UIFontWeightRegular];
+  UIFontMetrics* detailLabelFontMetrics =
+      [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
+  EXPECT_EQ([detailLabelFontMetrics scaledFontForFont:detailLabelFont],
             banner_cell.detailTextLabel.font);
   EXPECT_EQ(5, banner_cell.detailTextLabel.numberOfLines);
 
@@ -140,8 +144,11 @@ TEST_F(WhatsNewTableViewBannerItemTest, ItemPropertiesBannerAtBottom) {
   EXPECT_EQ(
       NO,
       banner_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-  EXPECT_EQ([[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
-                fontWithSize:15],
+  UIFont* detailLabelFont = [UIFont systemFontOfSize:15
+                                              weight:UIFontWeightRegular];
+  UIFontMetrics* detailLabelFontMetrics =
+      [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
+  EXPECT_EQ([detailLabelFontMetrics scaledFontForFont:detailLabelFont],
             banner_cell.detailTextLabel.font);
   EXPECT_EQ(5, banner_cell.detailTextLabel.numberOfLines);
 

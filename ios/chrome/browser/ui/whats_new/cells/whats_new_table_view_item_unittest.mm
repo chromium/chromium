@@ -51,19 +51,21 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
   EXPECT_EQ([fontMetrics scaledFontForFont:font],
             whats_new_cell.textLabel.font);
   EXPECT_EQ(YES, whats_new_cell.textLabel.adjustsFontForContentSizeCategory);
-  EXPECT_EQ(1, whats_new_cell.textLabel.numberOfLines);
+  EXPECT_EQ(2, whats_new_cell.textLabel.numberOfLines);
 
   // Check detail text label.
   EXPECT_NSEQ(detail_text, whats_new_cell.detailTextLabel.text);
   EXPECT_EQ(
       NO,
       whats_new_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-  EXPECT_EQ([[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
-                fontWithSize:13],
+  UIFont* detailFont = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
+  UIFontMetrics* detailFontMetrics =
+      [UIFontMetrics metricsForTextStyle:UIFontTextStyleFootnote];
+  EXPECT_EQ([detailFontMetrics scaledFontForFont:detailFont],
             whats_new_cell.detailTextLabel.font);
   EXPECT_EQ(YES,
             whats_new_cell.detailTextLabel.adjustsFontForContentSizeCategory);
-  EXPECT_EQ(2, whats_new_cell.detailTextLabel.numberOfLines);
+  EXPECT_EQ(3, whats_new_cell.detailTextLabel.numberOfLines);
 
   // Check that the main background is set properly.
   UIImageView* main_background_image_view =
@@ -117,19 +119,21 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
   EXPECT_EQ([fontMetrics scaledFontForFont:font],
             whats_new_cell.textLabel.font);
   EXPECT_EQ(YES, whats_new_cell.textLabel.adjustsFontForContentSizeCategory);
-  EXPECT_EQ(1, whats_new_cell.textLabel.numberOfLines);
+  EXPECT_EQ(2, whats_new_cell.textLabel.numberOfLines);
 
   // Check detail text label.
   EXPECT_NSEQ(detail_text, whats_new_cell.detailTextLabel.text);
   EXPECT_EQ(
       NO,
       whats_new_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-  EXPECT_EQ([[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
-                fontWithSize:13],
+  UIFont* detailFont = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
+  UIFontMetrics* detailFontMetrics =
+      [UIFontMetrics metricsForTextStyle:UIFontTextStyleFootnote];
+  EXPECT_EQ([detailFontMetrics scaledFontForFont:detailFont],
             whats_new_cell.detailTextLabel.font);
   EXPECT_EQ(YES,
             whats_new_cell.detailTextLabel.adjustsFontForContentSizeCategory);
-  EXPECT_EQ(2, whats_new_cell.detailTextLabel.numberOfLines);
+  EXPECT_EQ(3, whats_new_cell.detailTextLabel.numberOfLines);
 
   // Check that the main background is set properly.
   UIImageView* main_background_image_view =

@@ -118,8 +118,12 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
     // Detail text label.
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _detailTextLabel.font = [[UIFont
-        preferredFontForTextStyle:UIFontTextStyleSubheadline] fontWithSize:15];
+    UIFont* detailLabelFont = [UIFont systemFontOfSize:15
+                                                weight:UIFontWeightRegular];
+    UIFontMetrics* detailLabelFontMetrics =
+        [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
+    _detailTextLabel.font =
+        [detailLabelFontMetrics scaledFontForFont:detailLabelFont];
     _detailTextLabel.numberOfLines = 5;
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
