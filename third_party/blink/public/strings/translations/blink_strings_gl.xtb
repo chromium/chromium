@@ -76,7 +76,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> seleccionados</translation>
 <translation id="4992066212339426712">Activar o son</translation>
 <translation id="49969490063480558">Introduce texto despois de "<ph name="ATSIGN" />". O enderezo electrónico "<ph name="INVALIDADDRESS" />" está incompleto.</translation>
-<translation id="5090250355906949916">barra de progresión do vídeo</translation>
+<translation id="5090250355906949916">barra de reprodución do vídeo</translation>
 <translation id="509897012892853729">Canle azul</translation>
 <translation id="5117590920725113268">Mostrar mes seguinte</translation>
 <translation id="5164977714490026579">O valor debe ser maior ou igual a <ph name="MINIMUM" />.</translation>
@@ -112,7 +112,7 @@
 <translation id="6281588256137006900">Luminosidade</translation>
 <translation id="6310801910862476708">Saír do modo de pantalla superposta</translation>
 <translation id="6398862346408813489">Mostra o panel de selección do mes</translation>
-<translation id="6404546809543547843">barra de progresión do audio</translation>
+<translation id="6404546809543547843">barra de reprodución do audio</translation>
 <translation id="6443871981718447451">mostra o menú de subtítulos</translation>
 <translation id="6550675742724504774">Opcións</translation>
 <translation id="6572309429103589720">A gramática non é válida</translation>

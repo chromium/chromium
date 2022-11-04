@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1057925581724305206">‏Full HD ‏(1080p)</translation>
 <translation id="1076394037877376434">מחיקת דף מס' <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">מצב מצלמה</translation>
 <translation id="1153190633558910465">הסתרת הרשת</translation>
@@ -21,6 +22,7 @@
 <translation id="1588438908519853928">רגיל</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1627744224761163218">‎4 x 4</translation>
+<translation id="1644345013557678440">‏HD ‏(720p)</translation>
 <translation id="1664224225747386870">לא צולם סרטון</translation>
 <translation id="1838104802459806957">הטייה מעלה</translation>
 <translation id="1843105061469674856">סריקה של דף נוסף</translation>
@@ -95,6 +97,7 @@
 <translation id="4705093842003735294">רזולוציה מלאה</translation>
 <translation id="4890010094662541459">‎3 x 3</translation>
 <translation id="491895758387112773">הקלטת סרטון במולטי-סטרימינג</translation>
+<translation id="4984613436295737187">‏Quad HD‏ (1440p)</translation>
 <translation id="5034763830503483128">יחס הגובה-רוחב של התמונה</translation>
 <translation id="5057360777601936059">המצלמה אינה זמינה כרגע.
         יש לבדוק אם המצלמה מחוברת כראוי.</translation>
@@ -103,6 +106,7 @@
 <translation id="5266635337630551423">הפינה הימנית העליונה במסמך</translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5320594929574852403">מתבצעת תזוזה לשמאל</translation>
+<translation id="5374917190292010970">‏4K‏ (2160p)</translation>
 <translation id="5444515100983837161">יש למקם את כל קצות המסמך בתוך המסגרת. הסריקה תתבצע בצורה הטובה ביותר אם המסמך והרקע יהיו בצבעים שונים.</translation>
 <translation id="5662366948659129155">מתבצעת סריקה של דף <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">ריבוע</translation>
