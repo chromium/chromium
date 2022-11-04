@@ -331,7 +331,8 @@ public class PseudoTab {
     }
 
     private static void readAllPseudoTabsFromStateFile(Context context) {
-        assert ChromeFeatureList.sInstantStart.isEnabled();
+        assert ChromeFeatureList.sInstantStart.isEnabled()
+                || ChromeFeatureList.sPaintPreviewShowOnStartup.isEnabled();
         if (sReadStateFile) return;
         sReadStateFile = true;
 

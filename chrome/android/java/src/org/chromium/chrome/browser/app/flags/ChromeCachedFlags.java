@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
+import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
@@ -116,6 +118,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sOptimizationGuidePushNotifications);
                 add(ChromeFeatureList.sOSKResizesVisualViewportByDefault);
                 add(ChromeFeatureList.sPaintPreviewDemo);
+                add(ChromeFeatureList.sPaintPreviewShowOnStartup);
                 add(ChromeFeatureList.sQueryTiles);
                 add(ChromeFeatureList.sQueryTilesOnStart);
                 add(ChromeFeatureList.sReadLater);
@@ -182,6 +185,8 @@ public class ChromeCachedFlags {
                         add(StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY);
                         add(StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE);
                         add(StartSurfaceConfiguration.USER_CLICK_THRESHOLD);
+                        add(StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM);
+                        add(PaintPreviewTabService.ALLOW_SRP);
                         add(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION);
                         add(TabPersistentStore.CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY_PARAM);
                         add(TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX);

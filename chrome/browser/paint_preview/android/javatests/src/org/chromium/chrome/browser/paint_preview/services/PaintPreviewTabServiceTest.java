@@ -70,6 +70,7 @@ public class PaintPreviewTabServiceTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true);
             mTab.loadUrl(new LoadUrlParams(url));
         });
         // Give the tab time to complete layout before hiding.
@@ -125,6 +126,7 @@ public class PaintPreviewTabServiceTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true);
             mTab.loadUrl(new LoadUrlParams(url));
         });
         // Give the tab time to complete layout before hiding.
