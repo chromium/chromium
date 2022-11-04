@@ -35,23 +35,12 @@ async function main() {
     },
   });
 
-  const {fileSystem} = await mountTestFileSystem();
-
-  /**
-   * @param {string} path
-   * @param {{create: boolean, exclusive: boolean}} options
-   * @returns {!Promise<!FileEntry>}
-   */
-  const getFileEntry = (path, options) => {
-    return new Promise(
-        (resolve, reject) =>
-            fileSystem.root.getFile(path, options, resolve, reject));
-  };
+  const fileSystem = await mountTestFileSystem();
 
   chrome.test.runTests([
     // Create a file which doesn't exist. Should succeed.
     async function createFileSuccessSimple() {
-      const fileEntry = await getFileEntry(
+      const fileEntry = await fileSystem.getFileEntry(
           TESTING_NEW_FILE.name, {create: true, exclusive: false});
 
       chrome.test.assertEq(TESTING_NEW_FILE.name, fileEntry.name);
@@ -61,7 +50,7 @@ async function main() {
 
     // Create a file which exists, non-exclusively. Should succeed.
     async function createFileOrOpenSuccess() {
-      const fileEntry = await getFileEntry(
+      const fileEntry = await fileSystem.getFileEntry(
           TESTING_FILE.name, {create: true, exclusive: false});
 
       chrome.test.assertEq(TESTING_FILE.name, fileEntry.name);
@@ -71,8 +60,8 @@ async function main() {
 
     // Create a file which exists, exclusively. Should fail.
     async function createFileExistsError() {
-      const error = await catchError(
-          getFileEntry(TESTING_FILE.name, {create: true, exclusive: true}));
+      const error = await catchError(fileSystem.getFileEntry(
+          TESTING_FILE.name, {create: true, exclusive: true}));
 
       chrome.test.assertTrue(!!error, 'Created a file, but should fail.');
       chrome.test.assertEq('InvalidModificationError', error.name);
