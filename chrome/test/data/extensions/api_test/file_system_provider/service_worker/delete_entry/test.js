@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import {catchError, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
-// For shared constants.
-import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
 async function main() {
   await navigator.serviceWorker.ready;
