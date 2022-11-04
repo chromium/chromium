@@ -4,28 +4,71 @@
 
 /**
  * @fileoverview Polymer element for displaying material design Update screen.
+ *
+ * UI for checking and downloading updates as part of the update process.
+ * 'indeterminate' paper-progress will recalculate styles on every frame
+ * when OOBE is loaded (even when another screen is open).
+ * So we make it 'indeterminate' only when the checking for updates dialog is
+ * shown, and make set to false when dialog is hidden.
+ *
+ * Example:
+ *    <checking-downloading-update> </checking-downloading-update>
+ *
+ * Attributes:
+ *  'checkingForUpdate' - Whether the screen is currently checking for updates.
+ *                        Shows the checking for updates dialog and hides the
+ *                        downloading dialog.
+ *  'progressValue' - Progress bar percent value.
+ *  'estimatedTimeLeft' - Time left in seconds for the update to complete
+ *                        download.
+ *  'hasEstimate' - True if estimated time left is to be shown.
+ *  'defaultProgressMessage' - Message showing either estimated time left or
+ *                             default update status.
+ *  'updateCompleted' - True if update is completed and probably manual action
+ *                      is required.
+ *  'cancelAllowed' - True if update cancellation is allowed.
+ *  'checkingForUpdatesKey' - ID of localized string shown while checking for
+ *                            updates.
+ *  'downloadingUpdatesKey' - ID of localized string shown while update is being
+ *                           downloaded.
+ *  'cancelHintKey' - ID of the localized string for update cancellation
+ *                    message.
  */
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {OobeI18nBehaviorInterface}
  */
-const CheckingDownloadingUpdateBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
+const CheckingDownloadingUpdateBase =
+    mixinBehaviors([OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement);
 
 /**
  * @polymer
  */
-/* #export */ class CheckingDownloadingUpdate extends
-    CheckingDownloadingUpdateBase {
+export class CheckingDownloadingUpdate extends CheckingDownloadingUpdateBase {
   static get is() {
     return 'checking-downloading-update';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
