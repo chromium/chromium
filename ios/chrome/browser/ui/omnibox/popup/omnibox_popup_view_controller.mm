@@ -358,7 +358,8 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
       return YES;
     case OmniboxKeyboardActionLeftArrow:
     case OmniboxKeyboardActionRightArrow:
-      if (self.carouselCell.isHighlighted) {
+      if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles) &&
+          self.carouselCell.isHighlighted) {
         return [self.carouselCell canPerformKeyboardAction:keyboardAction];
       }
       return NO;
