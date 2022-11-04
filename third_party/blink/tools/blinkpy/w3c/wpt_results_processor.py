@@ -181,6 +181,8 @@ class WPTResultsProcessor:
             test_name_prefix=metadata.get('test_name_prefix', ''))
         _log.info('Extracted artifacts for %d tests', len(test_names))
 
+        results['num_regressions'] = self._count_regressions(results['tests'])
+
         results_serialized = json.dumps(results)
         self.fs.write_text_file(full_results_json, results_serialized)
         self.fs.copyfile(full_results_json, raw_results_path)
@@ -481,6 +483,13 @@ class WPTResultsProcessor:
             'Extracted artifacts for %s: %s', test_name, ', '.join(
                 artifacts.artifacts) if artifacts.artifacts else '(none)')
         return artifacts
+
+    def _count_regressions(self, current_node) -> int:
+        """Recursively count number of regressions from test results trie."""
+        if current_node.get('actual'):
+            return int(current_node.get('is_regression', 0))
+
+        return sum(map(self._count_regressions, current_node.values()))
 
     def _trim_to_regressions(self, current_node):
         """Recursively remove non-regressions from the test results trie.
