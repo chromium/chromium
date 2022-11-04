@@ -32,6 +32,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
     std::string access_token;
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Enumeration of possible assistant manager service states.
   enum State {
     // Initial state, the service is created but not started yet.
     STOPPED = 0,
@@ -51,7 +54,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
     // e.g. the audio output.
     STOPPING = 4,
     // The libassistant mojom service is disconnected, e.g. process crashes.
-    DISCONNECTED = 5
+    DISCONNECTED = 5,
+
+    kMaxValue = DISCONNECTED
   };
 
   ~AssistantManagerService() override = default;

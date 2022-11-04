@@ -218,6 +218,16 @@ chromium-metrics-reviews@google.com.
   <summary>Amount of time spent in starting Assistant service.</summary>
 </histogram>
 
+<histogram name="Assistant.ServiceState" enum="State"
+    expires_after="2023-10-31">
+  <owner>wutao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the number of Assistant manager service in each state, to help
+    capture the service failure rate. Recorded when the service state changes.
+  </summary>
+</histogram>
+
 <histogram name="Assistant.SetDspHotwordLocale" enum="BooleanSuccess"
     expires_after="2023-05-01">
   <owner>xiaohuic@chromium.org</owner>

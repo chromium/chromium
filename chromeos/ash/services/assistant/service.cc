@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -52,6 +53,8 @@ namespace {
 
 constexpr char kScopeAssistant[] =
     "https://www.googleapis.com/auth/assistant-sdk-prototype";
+
+constexpr char kServiceStateHistogram[] = "Assistant.ServiceState";
 
 constexpr base::TimeDelta kMinTokenRefreshDelay = base::Milliseconds(1000);
 constexpr base::TimeDelta kMaxTokenRefreshDelay = base::Milliseconds(60 * 1000);
@@ -96,6 +99,10 @@ bool IsSignedOutMode() {
   // Assistant Tast tests.
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableGaiaServices);
+}
+
+void RecordServiceState(AssistantManagerService::State state) {
+  base::UmaHistogramEnumeration(kServiceStateHistogram, state);
 }
 
 }  // namespace
@@ -337,6 +344,7 @@ void Service::OnStateChanged(AssistantManagerService::State new_state) {
   if (new_state == AssistantManagerService::State::DISCONNECTED)
     OnLibassistantServiceDisconnected();
 
+  RecordServiceState(new_state);
   AssistantBrowserDelegate::Get()->OnAssistantStatusChanged(
       ToAssistantStatus(new_state));
 
