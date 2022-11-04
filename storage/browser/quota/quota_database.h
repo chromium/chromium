@@ -76,18 +76,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   ~QuotaDatabase();
 
-  // Returns quota if entry is found. Returns QuotaError::kNotFound no entry if
-  // found.
-  QuotaErrorOr<int64_t> GetHostQuota(const std::string& host,
-                                     blink::mojom::StorageType type);
-
-  // Returns whether the operation succeeded.
-  QuotaError SetHostQuota(const std::string& host,
-                          blink::mojom::StorageType type,
-                          int64_t quota);
-  QuotaError DeleteHostQuota(const std::string& host,
-                             blink::mojom::StorageType type);
-
   // Gets the bucket described by `params.storage_key` and `params.name`
   // for StorageType kTemporary and returns the BucketInfo. If a bucket fitting
   // the params doesn't exist, it creates a new bucket with the policies in

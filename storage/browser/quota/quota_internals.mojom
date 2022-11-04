@@ -23,7 +23,7 @@ struct BucketTableEntry {
 // This is a subset of blink::mojom::StorageType.
 enum StorageType {
   kTemporary = 0,
-  kPersistent = 1,
+  // kPersistent = 1,  DEPRECATED
   kSyncable = 2,
 };
 

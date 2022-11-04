@@ -262,9 +262,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Called by Web Apps (deprecated quota API).
   // This method is declared as virtual to allow test code to override it.
-  virtual void GetUsageAndQuotaForWebApps(const blink::StorageKey& storage_key,
-                                          blink::mojom::StorageType type,
-                                          UsageAndQuotaCallback callback);
+  void GetUsageAndQuotaForWebApps(const blink::StorageKey& storage_key,
+                                  blink::mojom::StorageType type,
+                                  UsageAndQuotaCallback callback);
 
   // Called by Web Apps (navigator.storage.estimate())
   // This method is declared as virtual to allow test code to override it.
@@ -404,10 +404,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) override;
 
   // Called by UI and internal modules.
-  void GetPersistentHostQuota(const std::string& host, QuotaCallback callback);
-  void SetPersistentHostQuota(const std::string& host,
-                              int64_t new_quota,
-                              QuotaCallback callback);
   void GetGlobalUsage(blink::mojom::StorageType type, UsageCallback callback);
   void GetStorageKeyUsageWithBreakdown(const blink::StorageKey& storage_key,
                                        blink::mojom::StorageType type,
@@ -445,13 +441,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // will not be disabled for any storage keys for which there are other
   // DevTools clients/QuotaOverrideHandle with an active override.
   void WithdrawOverridesForHandle(int handle_id);
-
-  // Cap size for per-host persistent quota determined by the histogram.
-  // Cap size for per-host persistent quota determined by the histogram.
-  // This is a bit lax value because the histogram says nothing about per-host
-  // persistent storage usage and we determined by global persistent storage
-  // usage that is less than 10GB for almost all users.
-  static constexpr int64_t kPerHostPersistentQuotaLimit = 10 * 1024 * kMBytes;
 
   static constexpr int kEvictionIntervalInMilliSeconds =
       30 * kMinutesInMilliSeconds;
@@ -674,12 +663,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetLruEvictableBucket(blink::mojom::StorageType type,
                              GetBucketCallback callback);
 
-  void DidGetPersistentHostQuota(const std::string& host,
-                                 QuotaErrorOr<int64_t> result);
-  void DidSetPersistentHostQuota(const std::string& host,
-                                 QuotaCallback callback,
-                                 const int64_t* new_quota,
-                                 QuotaError error);
   void DidGetLruEvictableBucket(QuotaErrorOr<BucketLocator> result);
   void GetQuotaSettings(QuotaSettingsCallback callback);
   void DidGetSettings(absl::optional<QuotaSettings> settings);
@@ -823,7 +806,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       client_types_;
 
   std::unique_ptr<UsageTracker> temporary_usage_tracker_;
-  std::unique_ptr<UsageTracker> persistent_usage_tracker_;
   std::unique_ptr<UsageTracker> syncable_usage_tracker_;
   // TODO(michaeln): Need a way to clear the cache, drop and
   // reinstantiate the trackers when they're not handling requests.
@@ -832,12 +814,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   EvictionContext eviction_context_;
   // Set when there is an eviction task in-flight.
   bool is_getting_eviction_bucket_ = false;
-
-  CallbackQueueMap<QuotaCallback,
-                   std::string,
-                   blink::mojom::QuotaStatusCode,
-                   int64_t>
-      persistent_host_quota_callbacks_;
 
   // Map from bucket id to eviction error count.
   std::map<BucketId, int> buckets_in_error_;

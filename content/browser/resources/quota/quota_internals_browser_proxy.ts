@@ -9,7 +9,7 @@ import {QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
 
 export enum StorageType {
   TEMPORARY = 0,
-  PERSISTENT = 1,
+  // PERSISTENT = 1, DEPRECATED
   SYNCABLE = 2,
 }
 

@@ -30,7 +30,7 @@ namespace storage {
 namespace {
 
 constexpr StorageType kTemporary = StorageType::kTemporary;
-constexpr StorageType kPersistent = StorageType::kPersistent;
+constexpr StorageType kSyncable = StorageType::kSyncable;
 
 constexpr QuotaClientType kClientFile = QuotaClientType::kFileSystem;
 constexpr QuotaClientType kClientDB = QuotaClientType::kIndexedDatabase;
@@ -331,36 +331,35 @@ TEST_F(MockQuotaManagerTest, GetBucket) {
       StorageKey::CreateFromStringForTesting("http://host1:1/");
   const StorageKey kStorageKey2 =
       StorageKey::CreateFromStringForTesting("http://host2:1/");
-  const char kBucketName[] = "bucket_name";
 
   {
     QuotaErrorOr<BucketInfo> created =
-        GetOrCreateBucket(kStorageKey1, kBucketName);
+        GetOrCreateBucket(kStorageKey1, kDefaultBucketName);
     EXPECT_TRUE(created.ok());
     QuotaErrorOr<BucketInfo> fetched =
-        GetBucket(kStorageKey1, kBucketName, kTemporary);
+        GetBucket(kStorageKey1, kDefaultBucketName, kTemporary);
     EXPECT_TRUE(fetched.ok());
     EXPECT_EQ(fetched.value(), created.value());
     EXPECT_EQ(fetched->storage_key, kStorageKey1);
-    EXPECT_EQ(fetched->name, kBucketName);
+    EXPECT_EQ(fetched->name, kDefaultBucketName);
     EXPECT_EQ(fetched->type, kTemporary);
   }
 
   {
     QuotaErrorOr<BucketInfo> created =
-        GetOrCreateBucket(kStorageKey2, kBucketName);
+        GetOrCreateBucket(kStorageKey2, kDefaultBucketName);
     EXPECT_TRUE(created.ok());
     QuotaErrorOr<BucketInfo> fetched =
-        GetBucket(kStorageKey2, kBucketName, kTemporary);
+        GetBucket(kStorageKey2, kDefaultBucketName, kTemporary);
     EXPECT_TRUE(fetched.ok());
     EXPECT_EQ(fetched.value(), created.value());
     EXPECT_EQ(fetched->storage_key, kStorageKey2);
-    EXPECT_EQ(fetched->name, kBucketName);
+    EXPECT_EQ(fetched->name, kDefaultBucketName);
     EXPECT_EQ(fetched->type, kTemporary);
   }
 
   QuotaErrorOr<BucketInfo> not_found =
-      GetBucket(kStorageKey1, kBucketName, kPersistent);
+      GetBucket(kStorageKey1, kDefaultBucketName, kSyncable);
   EXPECT_FALSE(not_found.ok());
 }
 
@@ -372,12 +371,12 @@ TEST_F(MockQuotaManagerTest, BasicBucketManipulation) {
 
   const BucketInfo temp_bucket1 =
       manager()->CreateBucket({kStorageKey1, "temp_host1"}, kTemporary);
-  const BucketInfo perm_bucket1 =
-      manager()->CreateBucket({kStorageKey1, "perm_host1"}, kPersistent);
+  const BucketInfo sync_bucket1 =
+      manager()->CreateBucket({kStorageKey1, kDefaultBucketName}, kSyncable);
   const BucketInfo temp_bucket2 =
       manager()->CreateBucket({kStorageKey2, "temp_host2"}, kTemporary);
-  const BucketInfo perm_bucket2 =
-      manager()->CreateBucket({kStorageKey2, "perm_host2"}, kPersistent);
+  const BucketInfo sync_bucket2 =
+      manager()->CreateBucket({kStorageKey2, kDefaultBucketName}, kSyncable);
 
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
   EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
@@ -387,29 +386,29 @@ TEST_F(MockQuotaManagerTest, BasicBucketManipulation) {
   EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
   EXPECT_TRUE(manager()->BucketHasData(temp_bucket1, kClientFile));
 
-  manager()->AddBucket(perm_bucket1, {kClientFile}, base::Time::Now());
+  manager()->AddBucket(sync_bucket1, {kClientFile}, base::Time::Now());
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
   EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
   EXPECT_TRUE(manager()->BucketHasData(temp_bucket1, kClientFile));
-  EXPECT_TRUE(manager()->BucketHasData(perm_bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(sync_bucket1, kClientFile));
 
   manager()->AddBucket(temp_bucket2, {kClientFile, kClientDB},
                        base::Time::Now());
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 3);
   EXPECT_EQ(manager()->BucketDataCount(kClientDB), 1);
   EXPECT_TRUE(manager()->BucketHasData(temp_bucket1, kClientFile));
-  EXPECT_TRUE(manager()->BucketHasData(perm_bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(sync_bucket1, kClientFile));
   EXPECT_TRUE(manager()->BucketHasData(temp_bucket2, kClientFile));
   EXPECT_TRUE(manager()->BucketHasData(temp_bucket2, kClientDB));
 
-  manager()->AddBucket(perm_bucket2, {kClientDB}, base::Time::Now());
+  manager()->AddBucket(sync_bucket2, {kClientDB}, base::Time::Now());
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 3);
   EXPECT_EQ(manager()->BucketDataCount(kClientDB), 2);
   EXPECT_TRUE(manager()->BucketHasData(temp_bucket1, kClientFile));
-  EXPECT_TRUE(manager()->BucketHasData(perm_bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(sync_bucket1, kClientFile));
   EXPECT_TRUE(manager()->BucketHasData(temp_bucket2, kClientFile));
   EXPECT_TRUE(manager()->BucketHasData(temp_bucket2, kClientDB));
-  EXPECT_TRUE(manager()->BucketHasData(perm_bucket2, kClientDB));
+  EXPECT_TRUE(manager()->BucketHasData(sync_bucket2, kClientDB));
 }
 
 TEST_F(MockQuotaManagerTest, BucketDeletion) {
@@ -420,7 +419,7 @@ TEST_F(MockQuotaManagerTest, BucketDeletion) {
   const BucketInfo bucket2 = manager()->CreateBucket(
       {StorageKey::CreateFromStringForTesting("http://host2:1/"),
        kDefaultBucketName},
-      kPersistent);
+      kSyncable);
   const BucketInfo bucket3 = manager()->CreateBucket(
       {StorageKey::CreateFromStringForTesting("http://host3:1/"),
        kDefaultBucketName},
@@ -518,16 +517,10 @@ TEST_F(MockQuotaManagerTest, QuotaAndUsage) {
   const BucketLocator storage_key1_temp_named_bucket =
       result->ToBucketLocator();
 
-  result = GetOrCreateBucketDeprecated(storage_key1, kPersistent,
-                                       kDefaultBucketName);
-  ASSERT_TRUE(result.ok());
-  const BucketLocator storage_key1_persist_default_bucket =
-      result->ToBucketLocator();
-
   result =
-      GetOrCreateBucketDeprecated(storage_key1, kPersistent, "non-default");
+      GetOrCreateBucketDeprecated(storage_key1, kSyncable, kDefaultBucketName);
   ASSERT_TRUE(result.ok());
-  const BucketLocator storage_key1_persist_named_bucket =
+  const BucketLocator storage_key1_sync_default_bucket =
       result->ToBucketLocator();
 
   result =
@@ -549,11 +542,10 @@ TEST_F(MockQuotaManagerTest, QuotaAndUsage) {
 
   // Set a quota for the same storage key using a different type to test that
   // these quotas don't affect one another.
-  manager()->SetQuota(storage_key1, kPersistent, 2000);
+  manager()->SetQuota(storage_key1, kSyncable, 2000);
   // Add usages for buckets tied to the same storage key but using a different
   // type to test that these don't affect one another.
-  manager()->UpdateUsage(storage_key1_persist_default_bucket.id, 20);
-  manager()->UpdateUsage(storage_key1_persist_named_bucket.id, 200);
+  manager()->UpdateUsage(storage_key1_sync_default_bucket.id, 20);
 
   // Set a quota and add usage for a different storage key to test that this
   // doesn't affect the quota and usage of the other storage key.
@@ -563,8 +555,8 @@ TEST_F(MockQuotaManagerTest, QuotaAndUsage) {
   SCOPED_TRACE("Checking usage and quota for storage_key1 (kTemporary)");
   CheckUsageAndQuota(storage_key1, kTemporary, 110, 1000);
 
-  SCOPED_TRACE("Checking usage and quota for storage_key1 (kPersistent)");
-  CheckUsageAndQuota(storage_key1, kPersistent, 220, 2000);
+  SCOPED_TRACE("Checking usage and quota for storage_key1 (kSyncable)");
+  CheckUsageAndQuota(storage_key1, kSyncable, 20, 2000);
 
   SCOPED_TRACE("Checking usage and quota for storage_key2 (kTemporary)");
   CheckUsageAndQuota(storage_key2, kTemporary, 30, 3000);

@@ -251,7 +251,7 @@ async function renderUsageAndQuotaStats() {
           usageAndQuotaRow.querySelector('.storage-key')!.remove();
         }
 
-        /* If the current storage type (temporary, persistent, syncable) is not
+        /* If the current storage type (temporary, syncable) is not
          * the first of its kind for a given storage key and storage type,
          * remove the Storage Type cells from the row before
          * appending the row to the table body.

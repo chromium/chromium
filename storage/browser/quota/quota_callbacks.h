@@ -77,44 +77,6 @@ class CallbackQueue {
   std::vector<CallbackType> callbacks_;
 };
 
-template <typename CallbackType, typename Key, typename... Args>
-class CallbackQueueMap {
- public:
-  using CallbackQueueType = CallbackQueue<CallbackType, Args...>;
-  using CallbackMap = std::map<Key, CallbackQueueType>;
-  using iterator = typename CallbackMap::iterator;
-
-  bool Add(const Key& key, CallbackType callback) {
-    return callback_map_[key].Add(std::move(callback));
-  }
-
-  bool HasCallbacks(const Key& key) const {
-    return base::Contains(callback_map_, key);
-  }
-
-  bool HasAnyCallbacks() const { return !callback_map_.empty(); }
-
-  iterator Begin() { return callback_map_.begin(); }
-  iterator End() { return callback_map_.end(); }
-
-  void Clear() { callback_map_.clear(); }
-
-  // Runs the callbacks added for the given |key| and clears the key
-  // from the map.
-  template <typename... RunArgs>
-  void Run(const Key& key, RunArgs&&... args) {
-    if (!this->HasCallbacks(key))
-      return;
-    CallbackQueueType queue;
-    queue.Swap(&callback_map_[key]);
-    callback_map_.erase(key);
-    queue.Run(std::forward<RunArgs>(args)...);
-  }
-
- private:
-  CallbackMap callback_map_;
-};
-
 }  // namespace storage
 
 #endif  // STORAGE_BROWSER_QUOTA_QUOTA_CALLBACKS_H_

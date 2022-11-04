@@ -48,13 +48,13 @@ namespace {
 // Declared to shorten the line lengths.
 static const blink::mojom::StorageType kTemp =
     blink::mojom::StorageType::kTemporary;
-static const blink::mojom::StorageType kPerm =
-    blink::mojom::StorageType::kPersistent;
+static const blink::mojom::StorageType kSync =
+    blink::mojom::StorageType::kSyncable;
 
 static const storage::mojom::StorageType kStorageTemp =
     storage::mojom::StorageType::kTemporary;
-static const storage::mojom::StorageType kStoragePerm =
-    storage::mojom::StorageType::kPersistent;
+static const storage::mojom::StorageType kStorageSync =
+    storage::mojom::StorageType::kSyncable;
 
 static constexpr char kDatabaseName[] = "QuotaManager";
 
@@ -192,51 +192,6 @@ TEST_P(QuotaDatabaseTest, RazeAndReopenWithNoDb) {
   }
 }
 
-TEST_P(QuotaDatabaseTest, HostQuota) {
-  auto db = CreateDatabase(use_in_memory_db());
-  EXPECT_TRUE(EnsureOpened(db.get()));
-
-  const char* kHost = "foo.com";
-  const int kQuota1 = 13579;
-  const int kQuota2 = kQuota1 + 1024;
-
-  QuotaErrorOr<int64_t> result = db->GetHostQuota(kHost, kTemp);
-  EXPECT_FALSE(result.ok());
-  EXPECT_EQ(result.error(), QuotaError::kNotFound);
-  result = db->GetHostQuota(kHost, kPerm);
-  EXPECT_FALSE(result.ok());
-  EXPECT_EQ(result.error(), QuotaError::kNotFound);
-
-  // Insert quota for temporary.
-  EXPECT_EQ(db->SetHostQuota(kHost, kTemp, kQuota1), QuotaError::kNone);
-  result = db->GetHostQuota(kHost, kTemp);
-  EXPECT_TRUE(result.ok());
-  EXPECT_EQ(kQuota1, result.value());
-
-  // Update quota for temporary.
-  EXPECT_EQ(db->SetHostQuota(kHost, kTemp, kQuota2), QuotaError::kNone);
-  result = db->GetHostQuota(kHost, kTemp);
-  EXPECT_TRUE(result.ok());
-  EXPECT_EQ(kQuota2, result.value());
-
-  // Quota for persistent must not be updated.
-  result = db->GetHostQuota(kHost, kPerm);
-  EXPECT_FALSE(result.ok());
-  EXPECT_EQ(result.error(), QuotaError::kNotFound);
-
-  // Delete temporary storage quota.
-  EXPECT_EQ(db->DeleteHostQuota(kHost, kTemp), QuotaError::kNone);
-  result = db->GetHostQuota(kHost, kTemp);
-  EXPECT_FALSE(result.ok());
-  EXPECT_EQ(result.error(), QuotaError::kNotFound);
-
-  // Delete persistent quota by setting it to zero.
-  EXPECT_EQ(db->SetHostQuota(kHost, kPerm, 0), QuotaError::kNone);
-  result = db->GetHostQuota(kHost, kPerm);
-  EXPECT_FALSE(result.ok());
-  EXPECT_EQ(result.error(), QuotaError::kNotFound);
-}
-
 TEST_P(QuotaDatabaseTest, UpdateOrCreateBucket) {
   auto db = CreateDatabase(use_in_memory_db());
   EXPECT_TRUE(EnsureOpened(db.get()));
@@ -323,20 +278,20 @@ TEST_P(QuotaDatabaseTest, GetOrCreateBucketDeprecated) {
   EXPECT_TRUE(EnsureOpened(db.get()));
   StorageKey storage_key =
       StorageKey::CreateFromStringForTesting("http://google/");
-  std::string bucket_name = "google_bucket";
 
   QuotaErrorOr<BucketInfo> result =
-      db->GetOrCreateBucketDeprecated({storage_key, bucket_name}, kPerm);
+      db->GetOrCreateBucketDeprecated({storage_key, kDefaultBucketName}, kSync);
   ASSERT_TRUE(result.ok());
 
   BucketInfo created_bucket = result.value();
   ASSERT_GT(created_bucket.id.value(), 0);
-  ASSERT_EQ(created_bucket.name, bucket_name);
+  ASSERT_EQ(created_bucket.name, kDefaultBucketName);
   ASSERT_EQ(created_bucket.storage_key, storage_key);
-  ASSERT_EQ(created_bucket.type, kPerm);
+  ASSERT_EQ(created_bucket.type, kSync);
 
   // Should return the same bucket when querying again.
-  result = db->GetOrCreateBucketDeprecated({storage_key, bucket_name}, kPerm);
+  result =
+      db->GetOrCreateBucketDeprecated({storage_key, kDefaultBucketName}, kSync);
   ASSERT_TRUE(result.ok());
 
   BucketInfo retrieved_bucket = result.value();
@@ -355,16 +310,16 @@ TEST_P(QuotaDatabaseTest, GetBucket) {
       StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
   QuotaErrorOr<BucketInfo> result =
-      db->CreateBucketForTesting(storage_key, bucket_name, kPerm);
+      db->CreateBucketForTesting(storage_key, bucket_name, kTemp);
   ASSERT_TRUE(result.ok());
 
   BucketInfo created_bucket = result.value();
   ASSERT_GT(created_bucket.id.value(), 0);
   ASSERT_EQ(created_bucket.name, bucket_name);
   ASSERT_EQ(created_bucket.storage_key, storage_key);
-  ASSERT_EQ(created_bucket.type, kPerm);
+  ASSERT_EQ(created_bucket.type, kTemp);
 
-  result = db->GetBucket(storage_key, bucket_name, kPerm);
+  result = db->GetBucket(storage_key, bucket_name, kTemp);
   ASSERT_TRUE(result.ok());
   EXPECT_EQ(result.value().id, created_bucket.id);
   EXPECT_EQ(result.value().name, created_bucket.name);
@@ -372,14 +327,14 @@ TEST_P(QuotaDatabaseTest, GetBucket) {
   ASSERT_EQ(result.value().type, created_bucket.type);
 
   // Can't retrieve buckets with name mismatch.
-  result = db->GetBucket(storage_key, "does_not_exist", kPerm);
+  result = db->GetBucket(storage_key, "does_not_exist", kTemp);
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   // Can't retrieve buckets with StorageKey mismatch.
   result =
       db->GetBucket(StorageKey::CreateFromStringForTesting("http://example/"),
-                    bucket_name, kPerm);
+                    bucket_name, kTemp);
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
@@ -393,14 +348,14 @@ TEST_P(QuotaDatabaseTest, GetBucketById) {
       StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
   QuotaErrorOr<BucketInfo> result =
-      db->CreateBucketForTesting(storage_key, bucket_name, kPerm);
+      db->CreateBucketForTesting(storage_key, bucket_name, kTemp);
   ASSERT_TRUE(result.ok());
 
   BucketInfo created_bucket = result.value();
   ASSERT_GT(created_bucket.id.value(), 0);
   ASSERT_EQ(created_bucket.name, bucket_name);
   ASSERT_EQ(created_bucket.storage_key, storage_key);
-  ASSERT_EQ(created_bucket.type, kPerm);
+  ASSERT_EQ(created_bucket.type, kTemp);
 
   result = db->GetBucketById(created_bucket.id);
   ASSERT_TRUE(result.ok());
@@ -436,14 +391,14 @@ TEST_P(QuotaDatabaseTest, GetBucketsForType) {
   BucketInfo temp_bucket2 = bucket_result.value();
 
   bucket_result =
-      db->CreateBucketForTesting(storage_key1, "perm_bucket", kPerm);
+      db->CreateBucketForTesting(storage_key1, kDefaultBucketName, kSync);
   ASSERT_TRUE(bucket_result.ok());
-  BucketInfo perm_bucket1 = bucket_result.value();
+  BucketInfo sync_bucket1 = bucket_result.value();
 
   bucket_result =
-      db->CreateBucketForTesting(storage_key3, "perm_bucket", kPerm);
+      db->CreateBucketForTesting(storage_key3, kDefaultBucketName, kSync);
   ASSERT_TRUE(bucket_result.ok());
-  BucketInfo perm_bucket2 = bucket_result.value();
+  BucketInfo sync_bucket2 = bucket_result.value();
 
   QuotaErrorOr<std::set<BucketInfo>> result = db->GetBucketsForType(kTemp);
   ASSERT_TRUE(result.ok());
@@ -452,12 +407,12 @@ TEST_P(QuotaDatabaseTest, GetBucketsForType) {
   EXPECT_TRUE(ContainsBucket(buckets, temp_bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, temp_bucket2));
 
-  result = db->GetBucketsForType(kPerm);
+  result = db->GetBucketsForType(kSync);
   ASSERT_TRUE(result.ok());
   buckets = BucketInfosToBucketLocators(result.value());
   ASSERT_EQ(2U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, perm_bucket1));
-  EXPECT_TRUE(ContainsBucket(buckets, perm_bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets, sync_bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets, sync_bucket2));
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
@@ -465,17 +420,17 @@ TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
   EXPECT_TRUE(EnsureOpened(db.get()));
 
   QuotaErrorOr<BucketInfo> temp_example_bucket1 = db->CreateBucketForTesting(
-      StorageKey::CreateFromStringForTesting("https://example.com/"), "default",
-      kTemp);
+      StorageKey::CreateFromStringForTesting("https://example.com/"),
+      kDefaultBucketName, kTemp);
   QuotaErrorOr<BucketInfo> temp_example_bucket2 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("http://example.com:123/"),
-      "default", kTemp);
+      kDefaultBucketName, kTemp);
   QuotaErrorOr<BucketInfo> perm_google_bucket1 = db->CreateBucketForTesting(
-      StorageKey::CreateFromStringForTesting("http://google.com/"), "default",
-      kPerm);
+      StorageKey::CreateFromStringForTesting("http://google.com/"),
+      kDefaultBucketName, kSync);
   QuotaErrorOr<BucketInfo> temp_google_bucket2 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("http://google.com:123/"),
-      "default", kTemp);
+      kDefaultBucketName, kTemp);
 
   QuotaErrorOr<std::set<BucketInfo>> result =
       db->GetBucketsForHost("example.com", kTemp);
@@ -484,11 +439,11 @@ TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
   EXPECT_TRUE(base::Contains(result.value(), temp_example_bucket1.value()));
   EXPECT_TRUE(base::Contains(result.value(), temp_example_bucket2.value()));
 
-  result = db->GetBucketsForHost("example.com", kPerm);
+  result = db->GetBucketsForHost("example.com", kSync);
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->size(), 0U);
 
-  result = db->GetBucketsForHost("google.com", kPerm);
+  result = db->GetBucketsForHost("google.com", kSync);
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->size(), 1U);
   EXPECT_TRUE(base::Contains(result.value(), perm_google_bucket1.value()));
@@ -517,13 +472,15 @@ TEST_P(QuotaDatabaseTest, GetBucketsForStorageKey) {
   ASSERT_TRUE(bucket_result.ok());
   BucketInfo temp_bucket2 = bucket_result.value();
 
-  bucket_result = db->CreateBucketForTesting(storage_key1, "perm_test", kPerm);
+  bucket_result =
+      db->CreateBucketForTesting(storage_key1, kDefaultBucketName, kSync);
   ASSERT_TRUE(bucket_result.ok());
-  BucketInfo perm_bucket1 = bucket_result.value();
+  BucketInfo sync_bucket1 = bucket_result.value();
 
-  bucket_result = db->CreateBucketForTesting(storage_key2, "perm_test", kPerm);
+  bucket_result =
+      db->CreateBucketForTesting(storage_key2, kDefaultBucketName, kSync);
   ASSERT_TRUE(bucket_result.ok());
-  BucketInfo perm_bucket2 = bucket_result.value();
+  BucketInfo sync_bucket2 = bucket_result.value();
 
   QuotaErrorOr<std::set<BucketInfo>> result =
       db->GetBucketsForStorageKey(storage_key1, kTemp);
@@ -533,11 +490,11 @@ TEST_P(QuotaDatabaseTest, GetBucketsForStorageKey) {
   EXPECT_TRUE(ContainsBucket(buckets, temp_bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, temp_bucket2));
 
-  result = db->GetBucketsForStorageKey(storage_key2, kPerm);
+  result = db->GetBucketsForStorageKey(storage_key2, kSync);
   ASSERT_TRUE(result.ok());
   buckets = BucketInfosToBucketLocators(result.value());
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, perm_bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets, sync_bucket2));
 }
 
 TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
@@ -578,7 +535,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
                                    kStorageTemp, "bucket_c", -1, 1, now, now);
   Entry bucket4 =
       mojom::BucketTableEntry::New(bucket_id4.value(), storage_key4.Serialize(),
-                                   kStoragePerm, "bucket_d", -1, 5, now, now);
+                                   kStorageSync, "bucket_d", -1, 5, now, now);
   Entry kTableEntries[] = {bucket1->Clone(), bucket2->Clone(), bucket3->Clone(),
                            bucket4->Clone()};
   AssignBucketTable(db.get(), kTableEntries);
@@ -748,8 +705,8 @@ TEST_P(QuotaDatabaseTest, GetStorageKeysForType) {
 
   db->CreateBucketForTesting(storage_key1, "bucket_a", kTemp);
   db->CreateBucketForTesting(storage_key2, "bucket_b", kTemp);
-  db->CreateBucketForTesting(storage_key2, "bucket_b", kPerm);
-  db->CreateBucketForTesting(storage_key3, "bucket_c", kPerm);
+  db->CreateBucketForTesting(storage_key2, kDefaultBucketName, kSync);
+  db->CreateBucketForTesting(storage_key3, kDefaultBucketName, kSync);
 
   QuotaErrorOr<std::set<StorageKey>> result = db->GetStorageKeysForType(kTemp);
   ASSERT_TRUE(result.ok());
@@ -757,7 +714,7 @@ TEST_P(QuotaDatabaseTest, GetStorageKeysForType) {
   ASSERT_TRUE(base::Contains(result.value(), storage_key2));
   ASSERT_FALSE(base::Contains(result.value(), storage_key3));
 
-  result = db->GetStorageKeysForType(kPerm);
+  result = db->GetStorageKeysForType(kSync);
   ASSERT_TRUE(result.ok());
   ASSERT_FALSE(base::Contains(result.value(), storage_key1));
   ASSERT_TRUE(base::Contains(result.value(), storage_key2));
@@ -790,8 +747,8 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   EXPECT_TRUE(result3.ok());
   BucketInfo bucket3 = result3.value();
   QuotaErrorOr<BucketInfo> result4 = db->CreateBucketForTesting(
-      StorageKey::CreateFromStringForTesting("http://example-d/"), "bucket_d",
-      kPerm);
+      StorageKey::CreateFromStringForTesting("http://example-d/"),
+      kDefaultBucketName, kSync);
   EXPECT_TRUE(result4.ok());
   BucketInfo bucket4 = result4.value();
 
@@ -870,7 +827,7 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   EXPECT_FALSE(ContainsBucket(buckets, bucket3));
   EXPECT_FALSE(ContainsBucket(buckets, bucket4));
 
-  result = db->GetBucketsModifiedBetween(kPerm, base::Time::FromJavaTime(0),
+  result = db->GetBucketsModifiedBetween(kSync, base::Time::FromJavaTime(0),
                                          base::Time::FromJavaTime(35));
   EXPECT_TRUE(result.ok());
   buckets = result.value();
@@ -893,7 +850,7 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
   storage_keys_by_type.emplace(
       kTemp, std::set<StorageKey>(kStorageKeys, std::end(kStorageKeys)));
   storage_keys_by_type.emplace(
-      kPerm, std::set<StorageKey>(kStorageKeys, std::end(kStorageKeys)));
+      kSync, std::set<StorageKey>(kStorageKeys, std::end(kStorageKeys)));
 
   EXPECT_EQ(db->RegisterInitialStorageKeyInfo(storage_keys_by_type),
             QuotaError::kNone);
