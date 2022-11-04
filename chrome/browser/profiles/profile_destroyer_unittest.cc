@@ -84,10 +84,6 @@ class ProfileDestroyerTest : public testing::Test,
     original_profile_keep_alive_.reset();
   }
 
-  void DestroyOffTheRecordProfileNow(Profile* profile) {
-    ProfileDestroyer::DestroyOffTheRecordProfileNow(profile);
-  }
-
   // Destroying profile is still not universally supported. We need to disable
   // some tests, because it isn't possible to start destroying the profile.
   bool IsScopedProfileKeepAliveSupported() {
@@ -242,7 +238,7 @@ TEST_P(ProfileDestroyerTest, ImmediateOTRProfileDestructionNowWithNoHost) {
 
   // Ask for immediate destruction of OTR profile with no hosts and expect
   // immediate destruction.
-  DestroyOffTheRecordProfileNow(OtrProfile(0));
+  ProfileDestroyer::DestroyOTRProfileImmediately(OtrProfile(0));
   EXPECT_FALSE(OtrProfile(0));
 }
 
@@ -257,7 +253,8 @@ TEST_P(ProfileDestroyerTest, CrashOTRProfileDestructionNowWithHosts) {
   CreatedRendererProcessHost(OtrProfile(0));
 
   // Immediate destruction of OTR profile with hosts will crash.
-  EXPECT_DEATH(DestroyOffTheRecordProfileNow(OtrProfile(0)), "");
+  EXPECT_DEATH(ProfileDestroyer::DestroyOTRProfileImmediately(OtrProfile(0)),
+               "");
 }
 #endif  // defined(GTEST_HAS_DEATH_TEST)
 

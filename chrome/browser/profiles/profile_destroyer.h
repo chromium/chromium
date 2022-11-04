@@ -17,9 +17,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 
-class DevToolsBrowserContextManager;
 class Profile;
-class ProfileImpl;
 
 // We use this class to destroy the profiles so that we can make sure it gets
 // done asynchronously after all render process hosts are gone.
@@ -38,6 +36,16 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // responsible for actually destroying the object.
   static void DestroyOTRProfileWhenAppropriate(Profile* profile);
 
+  // Similar to DestroyOTRProfileWhenAppropriate(), but with an explicit
+  // timeout to wait for the renderer host to be destroyed.
+  static void DestroyOTRProfileWhenAppropriateWithTimeout(
+      Profile* profile,
+      base::TimeDelta timeout);
+
+  // Force destroy |profile| immediately without waiting for dependent renderer
+  // process hosts to be destroyed.
+  static void DestroyOTRProfileImmediately(Profile* profile);
+
   // Force destroy all the profiles pending deletion. This is called by the
   // ProfileManager during shutdown.
   static void DestroyPendingProfilesForShutdown();
@@ -52,12 +60,6 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // timeout to wait for the renderer host to be destroyed.
   static void DestroyOriginalProfileWhenAppropriateWithTimeout(
       std::unique_ptr<Profile> profile,
-      base::TimeDelta timeout);
-
-  // Similar to DestroyOTRProfileWhenAppropriate(), but with an explicit
-  // timeout to wait for the renderer host to be destroyed.
-  static void DestroyOTRProfileWhenAppropriateWithTimeout(
-      Profile* profile,
       base::TimeDelta timeout);
 
   // Destroys an Original (non-off-the-record) profile immediately.
@@ -77,8 +79,11 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
                                  void* profile_ptr,
                                  bool include_spare_rph = false);
 
-  // Returns true if there is already a pending destroyer for |profile|.
-  static bool HasPendingDestroyerForProfile(const Profile* profile);
+  // Returns the profile destroyer that has |profile| as the underlying profile
+  // and that is not prepared for destruction if any.  Returns nullptr if such
+  // a profile destroyer does not exist..
+  static ProfileDestroyer* GetPendingDestroyerForProfile(
+      const Profile* profile);
 
   ProfileDestroyer(Profile* profile, base::TimeDelta timeout);
   ~ProfileDestroyer() override;
@@ -95,13 +100,6 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   virtual void RetryDestroyUnderlyingProfile() = 0;
 
  private:
-  friend class ProfileImpl;
-  friend class base::RefCounted<ProfileDestroyer>;
-  friend class ProfileDestroyerTest;
-
-  // For custom timeout, see DestroyProfileWhenAppropriateWithTimeout.
-  friend class DevToolsBrowserContextManager;
-
   // Starts monitoring the |hosts| and the timeout. If |hosts| is empty, then
   // this function will delete the profile now.
   void Start(const HostSet& hosts);

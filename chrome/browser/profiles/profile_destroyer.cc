@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -127,7 +128,7 @@ void ProfileDestroyer::DestroyOriginalProfileWhenAppropriateWithTimeout(
     base::TimeDelta timeout) {
   DCHECK(profile);
   DCHECK_EQ(profile.get(), profile->GetOriginalProfile());
-  DCHECK(!HasPendingDestroyerForProfile(profile.get()));
+  DCHECK(!GetPendingDestroyerForProfile(profile.get()));
 
   TRACE_EVENT(
       "shutdown",
@@ -157,13 +158,33 @@ void ProfileDestroyer::DestroyOTRProfileWhenAppropriate(Profile* profile) {
       profile, base::Seconds(kTimerDelaySeconds));
 }
 
+void ProfileDestroyer::DestroyOTRProfileImmediately(Profile* profile) {
+  TRACE_EVENT("shutdown", "ProfileDestroyer::DestroyOTRProfileImmediately",
+              [&](perfetto::EventContext ctx) {
+                auto* proto =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                        ->set_chrome_profile_destroyer();
+                proto->set_profile_ptr(reinterpret_cast<uint64_t>(profile));
+                proto->set_is_off_the_record(profile->IsOffTheRecord());
+              });
+
+  ProfileDestroyer* pending_destroger = GetPendingDestroyerForProfile(profile);
+  if (pending_destroger) {
+    pending_destroger->Timeout();
+    return;
+  }
+
+  // Passing zero timeout forces the destruction of the profile synchronously.
+  DestroyOTRProfileWhenAppropriateWithTimeout(profile, base::TimeDelta());
+}
+
 void ProfileDestroyer::DestroyOTRProfileWhenAppropriateWithTimeout(
     Profile* profile,
     base::TimeDelta timeout) {
   DCHECK(profile);
   DCHECK_NE(profile, profile->GetOriginalProfile());
 
-  if (HasPendingDestroyerForProfile(profile))
+  if (GetPendingDestroyerForProfile(profile))
     return;
 
   TRACE_EVENT("shutdown",
@@ -307,6 +328,12 @@ void ProfileDestroyer::Start(const HostSet& hosts) {
     return;
   }
 
+  if (timeout_.is_zero()) {
+    // Zero timeout means synchronous destruction of the underlying profile.
+    Timeout();
+    return;
+  }
+
   // We don't want to wait for RenderProcessHost to be destroyed longer than
   // timeout.
   timer_.Start(FROM_HERE, timeout_,
@@ -420,12 +447,14 @@ void ProfileDestroyer::ProfileDestroyer::Retry() {
   delete this;  // Final state.
 }
 
-// static
-bool ProfileDestroyer::HasPendingDestroyerForProfile(const Profile* profile) {
+// static.
+ProfileDestroyer* ProfileDestroyer::GetPendingDestroyerForProfile(
+    const Profile* profile) {
   for (ProfileDestroyer* destroyer : PendingDestroyers()) {
     if (destroyer->GetProfile() == profile &&
-        !destroyer->is_prepared_for_destruction())
-      return true;
+        !destroyer->is_prepared_for_destruction()) {
+      return destroyer;
+    }
   }
-  return false;
+  return nullptr;
 }

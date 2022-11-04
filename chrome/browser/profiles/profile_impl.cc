@@ -878,7 +878,7 @@ ProfileImpl::~ProfileImpl() {
   }
 
   for (Profile* otr_profile : raw_otr_profiles)
-    ProfileDestroyer::DestroyOffTheRecordProfileNow(otr_profile);
+    ProfileDestroyer::DestroyOTRProfileImmediately(otr_profile);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!primary_otr_available) {
