@@ -339,6 +339,7 @@ export interface ErrorInfo {
  */
 export enum ErrorType {
   BROKEN_THUMBNAIL = 'broken-thumbnail',
+  CHECK_COVER_FAILURE = 'check-cover-failed',
   DEVICE_INFO_UPDATE_FAILURE = 'device-info-update-failure',
   DEVICE_NOT_EXIST = 'device-not-exist',
   EMPTY_FILE = 'empty-file',

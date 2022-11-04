@@ -71,12 +71,12 @@ function getStackFrames(error: Error): StackFrame[] {
     }
   };
 
-  let frames: StackFrame[];
+  let frames: StackFrame[] = [];
   if (typeof error.stack === 'string') {
     // TODO(b/223324206): There is a known issue that when reporting error from
     // intent instance, the type from |error.stack| will be a string instead.
     frames = parseStackTrace(error.stack);
-  } else {
+  } else if (Array.isArray(error.stack)) {
     // Generally, error.stack returns whatever Error.prepareStackTrace returns.
     // Since we override Error.prepareStackTrace to return StackFrame[] here,
     // using "as unknown" first so that we can cast the type to StackFrame[].
@@ -96,10 +96,10 @@ function getErrorDescription(error: Error): string {
 /**
  * Gets formatted string stack from error.
  */
-function formatErrorStack(error: Error, frames: StackFrame[]|null): string {
+function formatErrorStack(error: Error, frames: StackFrame[]): string {
   const errorDesc = getErrorDescription(error);
   return errorDesc +
-      (frames ?? [])
+      frames
           .map(({fileName, funcName, lineNo, colNo}) => {
             let position = '';
             if (lineNo !== -1) {

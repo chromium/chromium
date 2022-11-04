@@ -22,6 +22,7 @@ import {
   MimeType,
   VideoType,
 } from './type.js';
+import {WaitableEvent} from './waitable_event.js';
 
 /**
  * Cover photo of gallery button.
@@ -100,6 +101,8 @@ export class GalleryButton implements ResultSaver {
 
   private readonly coverPhoto: HTMLImageElement;
 
+  private retryingCheckCover = false;
+
   constructor() {
     this.coverPhoto = dom.getFrom(this.button, 'img', HTMLImageElement);
 
@@ -138,8 +141,12 @@ export class GalleryButton implements ResultSaver {
     this.coverPhoto.src = cover?.url ?? '';
 
     if (file !== null) {
-      ChromeHelper.getInstance().monitorFileDeletion(file.name, () => {
-        this.checkCover();
+      ChromeHelper.getInstance().monitorFileDeletion(file.name, async () => {
+        try {
+          await this.checkCover();
+        } catch (e) {
+          reportError(ErrorType.CHECK_COVER_FAILURE, ErrorLevel.ERROR, e);
+        }
       });
     }
   }
@@ -167,15 +174,51 @@ export class GalleryButton implements ResultSaver {
       await this.updateCover(null);
       return;
     }
-    const filesWithTime = await Promise.all(
-        files.map(async (file) => ({
-                    file,
-                    time: (await file.getLastModificationTime()),
-                  })));
-    const lastFile =
-        filesWithTime.reduce((last, cur) => last.time > cur.time ? last : cur)
-            .file;
-    await this.updateCover(lastFile);
+
+    try {
+      const filesWithTime = await Promise.all(
+          files.map(async (file) => ({
+                      file,
+                      time: (await file.getLastModificationTime()),
+                    })));
+      const lastFile =
+          filesWithTime.reduce((last, cur) => last.time > cur.time ? last : cur)
+              .file;
+      await this.updateCover(lastFile);
+    } catch (e) {
+      // The file might be deleted at any time and cause the operation
+      // interrupted. Since it might take a while when doing bulk deletion, only
+      // try check cover again if the amount of files become stable.
+      if (e instanceof DOMException && !this.retryingCheckCover) {
+        this.retryingCheckCover = true;
+        try {
+          await this.waitUntilCameraFolderStable();
+          await this.checkCover();
+        } finally {
+          this.retryingCheckCover = false;
+        }
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  private async waitUntilCameraFolderStable(): Promise<void> {
+    let prevFileCount = (await filesystem.getEntries()).length;
+    const cameraFolderStable = new WaitableEvent();
+
+    async function checkFileCount() {
+      const newFileCount = (await filesystem.getEntries()).length;
+      if (prevFileCount === newFileCount) {
+        clearInterval(intervalId);
+        cameraFolderStable.signal();
+      } else {
+        prevFileCount = newFileCount;
+      }
+    }
+
+    const intervalId = setInterval(checkFileCount, 500);
+    return cameraFolderStable.wait();
   }
 
   async savePhoto(blob: Blob, name: string, metadata: Metadata|null):
