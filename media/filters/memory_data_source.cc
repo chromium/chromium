@@ -67,9 +67,4 @@ bool MemoryDataSource::PassedTimingAllowOriginCheck() {
   return true;
 }
 
-bool MemoryDataSource::WouldTaintOrigin() {
-  // There are no HTTP responses, so this can safely return false.
-  return false;
-}
-
 }  // namespace media
