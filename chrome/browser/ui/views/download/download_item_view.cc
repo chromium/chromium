@@ -1305,13 +1305,6 @@ void DownloadItemView::ShowOpenDialog(content::WebContents* web_contents) {
 
 void DownloadItemView::ShowContextMenuImpl(const gfx::Rect& rect,
                                            ui::MenuSourceType source_type) {
-  context_menu_.SetOnMenuWillShowCallback(base::BindRepeating(
-      [](base::TimeTicks start_time_ticks) {
-        base::UmaHistogramTimes("Download.Shelf.Views.ShowContextMenuTime",
-                                base::TimeTicks::Now() - start_time_ticks);
-      },
-      base::TimeTicks::Now()));
-
   // Similar hack as in MenuButtonController.
   // We're about to show the menu from a mouse press. By showing from the
   // mouse press event we block RootView in mouse dispatching. This also
