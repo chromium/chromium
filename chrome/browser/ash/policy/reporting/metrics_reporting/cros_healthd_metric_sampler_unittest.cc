@@ -38,33 +38,6 @@ constexpr int64_t kShutdownTimestampSeconds = 49;
 constexpr char kShutdownReason[] = "user-request";
 constexpr char kShutdownReasonNotApplicable[] = "N/A";
 
-cros_healthd::TelemetryInfoPtr CreateUsbBusResult(
-    std::vector<cros_healthd::BusDevicePtr> usb_devices) {
-  auto telemetry_info = cros_healthd::TelemetryInfo::New();
-  telemetry_info->bus_result =
-      cros_healthd::BusResult::NewBusDevices(std::move(usb_devices));
-  return telemetry_info;
-}
-
-cros_healthd::TelemetryInfoPtr CreateThunderboltBusResult(
-    std::vector<cros_healthd::ThunderboltSecurityLevel> security_levels) {
-  auto telemetry_info = cros_healthd::TelemetryInfo::New();
-  std::vector<cros_healthd::BusDevicePtr> bus_devices;
-
-  for (const auto& security_level : security_levels) {
-    auto tbt_device = cros_healthd::BusDevice::New();
-    tbt_device->bus_info = cros_healthd::BusInfo::NewThunderboltBusInfo(
-        cros_healthd::ThunderboltBusInfo::New(
-            security_level,
-            std::vector<cros_healthd::ThunderboltBusInterfaceInfoPtr>()));
-    bus_devices.push_back(std::move(tbt_device));
-  }
-
-  telemetry_info->bus_result =
-      cros_healthd::BusResult::NewBusDevices(std::move(bus_devices));
-  return telemetry_info;
-}
-
 cros_healthd::AudioInfoPtr CreateAudioInfo(
     bool output_mute,
     bool input_mute,

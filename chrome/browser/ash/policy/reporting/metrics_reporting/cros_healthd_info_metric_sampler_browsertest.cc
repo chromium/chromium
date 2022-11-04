@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
@@ -67,6 +69,78 @@ MetricData AssertInfo(Priority priority, const Record& record) {
 
 }  // namespace
 
+// ---- Bus ----
+
+class BusInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
+ public:
+  BusInfoSamplerBrowserTest(const BusInfoSamplerBrowserTest&) = delete;
+  BusInfoSamplerBrowserTest& operator=(const BusInfoSamplerBrowserTest&) =
+      delete;
+
+ protected:
+  BusInfoSamplerBrowserTest() = default;
+  ~BusInfoSamplerBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        kReportDeviceSecurityStatus, true);
+  }
+
+  // Is the given record about Bus info metric?
+  static bool IsRecordBusInfo(const Record& record) {
+    auto record_data = IsRecordInfo(record);
+    return record_data.has_value() &&
+           record_data.value().info_data().has_bus_device_info();
+  }
+
+  // Gets next enqueued memory info record. This is useful in excluding
+  // other types of records from being examined.
+  static std::tuple<Priority, Record> GetNextEnqueuedBusInfoRecord(
+      MissiveClientTestObserver* observer) {
+    Priority priority;
+    Record record;
+    do {
+      // If no record is enqueued, this line would time out when the loop
+      // is entered for the first time.
+      std::tie(priority, record) = observer->GetNextEnqueuedRecord();
+    } while (!IsRecordBusInfo(record));
+
+    return std::make_tuple(priority, record);
+  }
+
+ private:
+  CrosHealthdInfoMetricsHelper cros_healthd_info_metrics_helper_;
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+};
+
+IN_PROC_BROWSER_TEST_F(BusInfoSamplerBrowserTest, Thunderbolt) {
+  static constexpr std::array<::reporting::ThunderboltSecurityLevel, 2>
+      kErpSecurityLevels = {::reporting::ThunderboltSecurityLevel::
+                                THUNDERBOLT_SECURITY_NONE_LEVEL,
+                            ::reporting::ThunderboltSecurityLevel::
+                                THUNDERBOLT_SECURITY_SECURE_LEVEL};
+  const std::vector<cros_healthd::ThunderboltSecurityLevel>
+      kHealthdSecurityLevels = {
+          cros_healthd::ThunderboltSecurityLevel::kNone,
+          cros_healthd::ThunderboltSecurityLevel::kSecureLevel};
+  auto thunderbolt_bus_result =
+      ::reporting::test::CreateThunderboltBusResult(kHealthdSecurityLevels);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(thunderbolt_bus_result);
+  MissiveClientTestObserver observer(Destination::INFO_METRIC);
+  auto [priority, record] = GetNextEnqueuedBusInfoRecord(&observer);
+  auto info_data = AssertInfo(priority, record).info_data();
+  ASSERT_THAT(
+      static_cast<size_t>(info_data.bus_device_info().thunderbolt_info_size()),
+      Eq(kErpSecurityLevels.size()));
+  for (size_t i = 0; i < kErpSecurityLevels.size(); ++i) {
+    EXPECT_THAT(
+        info_data.bus_device_info().thunderbolt_info(i).security_level(),
+        Eq(kErpSecurityLevels[i]));
+  }
+}
+
 // ---- CPU ----
 
 class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
@@ -85,7 +159,7 @@ class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
         kReportDeviceCpuInfo, true);
   }
 
-  // Is the given record about memory info metric?
+  // Is the given record about CPU info metric?
   static bool IsRecordCpuInfo(const Record& record) {
     auto record_data = IsRecordInfo(record);
     return record_data.has_value() &&

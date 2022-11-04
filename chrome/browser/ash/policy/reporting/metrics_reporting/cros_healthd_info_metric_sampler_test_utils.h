@@ -15,7 +15,15 @@ namespace reporting::test {
 
 namespace cros_healthd = ::ash::cros_healthd::mojom;
 
+// ------- Bus -------
+
+cros_healthd::TelemetryInfoPtr CreateUsbBusResult(
+    std::vector<cros_healthd::BusDevicePtr> usb_devices);
+cros_healthd::TelemetryInfoPtr CreateThunderboltBusResult(
+    std::vector<cros_healthd::ThunderboltSecurityLevel> security_levels);
+
 // ------- CPU --------
+
 cros_healthd::KeylockerInfoPtr CreateKeylockerInfo(bool configured);
 cros_healthd::TelemetryInfoPtr CreateCpuResult(
     cros_healthd::KeylockerInfoPtr keylocker_info);
