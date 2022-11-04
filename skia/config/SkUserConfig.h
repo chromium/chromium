@@ -218,6 +218,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_LEGACY_MIPMAP_BUILDER
 
+#define SK_USE_LEGACY_GAMUT_CLAMP
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
