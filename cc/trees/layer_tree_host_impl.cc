@@ -340,7 +340,10 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
   ImageDecodeCacheHolder(const ImageDecodeCacheHolder&) = delete;
   ImageDecodeCacheHolder& operator=(const ImageDecodeCacheHolder&) = delete;
 
-  ~ImageDecodeCacheHolder() = default;
+  ~ImageDecodeCacheHolder() {
+    image_decode_cache_ptr_ = nullptr;
+    image_decode_cache_.reset();
+  }
 
  private:
   raw_ptr<ImageDecodeCache> image_decode_cache_ptr_ = nullptr;
