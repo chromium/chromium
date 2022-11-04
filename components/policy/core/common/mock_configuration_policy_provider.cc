@@ -57,9 +57,7 @@ void MockConfigurationPolicyProvider::SetAutoRefresh() {
 }
 
 void MockConfigurationPolicyProvider::RefreshWithSamePolicies() {
-  PolicyBundle bundle;
-  bundle.CopyFrom(policies());
-  UpdatePolicy(std::move(bundle));
+  UpdatePolicy(policies().Clone());
 }
 
 MockConfigurationPolicyObserver::MockConfigurationPolicyObserver() {}

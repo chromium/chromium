@@ -323,8 +323,7 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   DefaultChromeAppsMigrator chrome_apps_migrator;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto* provider : providers_) {
-    PolicyBundle provided_bundle;
-    provided_bundle.CopyFrom(provider->policies());
+    PolicyBundle provided_bundle = provider->policies().Clone();
     IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
         &provided_bundle.Get(chrome_namespace));

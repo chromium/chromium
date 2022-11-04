@@ -66,9 +66,8 @@ RestrictedMGSPolicyProvider::Create() {
 void RestrictedMGSPolicyProvider::RefreshPolicies() {}
 
 void RestrictedMGSPolicyProvider::UpdatePolicyBundle() {
-  PolicyBundle bundle;
   weak_factory_.InvalidateWeakPtrs();
-  bundle.CopyFrom(policies());
+  PolicyBundle bundle = policies().Clone();
 
   PolicyMap& chrome_policy =
       bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));

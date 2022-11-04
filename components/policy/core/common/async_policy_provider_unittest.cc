@@ -65,10 +65,7 @@ MockPolicyLoader::MockPolicyLoader(
 MockPolicyLoader::~MockPolicyLoader() {}
 
 PolicyBundle MockPolicyLoader::Load() {
-  PolicyBundle bundle;
-  const PolicyBundle* loaded = MockLoad();
-  bundle.CopyFrom(*loaded);
-  return bundle;
+  return MockLoad()->Clone();
 }
 
 }  // namespace

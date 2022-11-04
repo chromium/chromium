@@ -334,8 +334,7 @@ void ExtensionManagementPrefUpdaterBase::RemoveStringFromList(
 
 ExtensionManagementPolicyUpdater::ExtensionManagementPolicyUpdater(
     policy::MockConfigurationPolicyProvider* policy_provider)
-    : provider_(policy_provider) {
-  policies_.CopyFrom(provider_->policies());
+    : provider_(policy_provider), policies_(provider_->policies().Clone()) {
   const base::Value* policy_value =
       policies_
           .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,

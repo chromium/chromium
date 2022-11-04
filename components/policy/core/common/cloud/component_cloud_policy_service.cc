@@ -203,8 +203,7 @@ void ComponentCloudPolicyService::Backend::InitIfNeeded() {
   updater_ = std::make_unique<ComponentCloudPolicyUpdater>(
       task_runner_, std::move(external_policy_data_fetcher_), &store_);
 
-  std::unique_ptr<PolicyBundle> bundle(std::make_unique<PolicyBundle>());
-  bundle->CopyFrom(store_.policy());
+  auto bundle(std::make_unique<PolicyBundle>(store_.policy().Clone()));
   service_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ComponentCloudPolicyService::SetPolicy, service_,
@@ -235,8 +234,8 @@ void ComponentCloudPolicyService::Backend::
   }
   DVLOG(2) << "Installing updated policy from the component policy store";
 
-  std::unique_ptr<PolicyBundle> bundle(std::make_unique<PolicyBundle>());
-  bundle->CopyFrom(store_.policy());
+  std::unique_ptr<PolicyBundle> bundle(
+      std::make_unique<PolicyBundle>(store_.policy().Clone()));
   service_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ComponentCloudPolicyService::SetPolicy, service_,
@@ -525,7 +524,7 @@ void ComponentCloudPolicyService::FilterAndInstallPolicy() {
 
   // Make a copy in |policy_| and filter it and validate against the schemas;
   // this is what's passed to the outside world.
-  policy_.CopyFrom(*unfiltered_policy_);
+  policy_ = unfiltered_policy_->Clone();
   current_schema_map_->FilterBundle(policy_,
                                     /*drop_invalid_component_policies=*/false);
 

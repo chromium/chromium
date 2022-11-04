@@ -35,8 +35,8 @@ class POLICY_EXPORT PolicyBundle {
   // empty map if no entry for `ns` is present.
   const PolicyMap& Get(const PolicyNamespace& ns) const;
 
-  // |this| becomes a copy of |other|. Any existing PolicyMaps are dropped.
-  void CopyFrom(const PolicyBundle& other);
+  // Create a clone of `this`.
+  PolicyBundle Clone() const;
 
   // Merges the PolicyMaps of |this| with those of |other| for each namespace
   // in common. Also adds copies of the (namespace, PolicyMap) pairs in |other|

@@ -48,9 +48,7 @@ void ProxyPolicyProvider::RefreshPolicies() {
     // Subtle: if a RefreshPolicies() call comes after Shutdown() then the
     // current bundle should be served instead. This also does the right thing
     // if SetDelegate() was never called before.
-    PolicyBundle bundle;
-    bundle.CopyFrom(policies());
-    UpdatePolicy(std::move(bundle));
+    UpdatePolicy(policies().Clone());
   }
 }
 
@@ -64,9 +62,7 @@ void ProxyPolicyProvider::OnUpdatePolicy(
     return;
 
   DCHECK_EQ(delegate_, provider);
-  PolicyBundle bundle;
-  bundle.CopyFrom(delegate_->policies());
-  UpdatePolicy(std::move(bundle));
+  UpdatePolicy(delegate_->policies().Clone());
 }
 
 }  // namespace policy

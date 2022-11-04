@@ -128,7 +128,7 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
     // Keep existing policy, but do send an update.
     waiting_for_policy_refresh_ = false;
     weak_factory_.InvalidateWeakPtrs();
-    bundle.CopyFrom(policies());
+    bundle = policies().Clone();
   }
 
   PolicyMap& chrome_policy =

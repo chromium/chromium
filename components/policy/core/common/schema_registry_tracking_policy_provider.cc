@@ -92,7 +92,7 @@ void SchemaRegistryTrackingPolicyProvider::OnUpdatePolicy(
 
   PolicyBundle bundle;
   if (state_ == READY) {
-    bundle.CopyFrom(delegate_->policies());
+    bundle = delegate_->policies().Clone();
     schema_map()->FilterBundle(bundle,
                                /*drop_invalid_component_policies=*/true);
   } else {

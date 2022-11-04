@@ -116,7 +116,7 @@ TEST(PolicyBundleTest, CopyFrom) {
   EXPECT_TRUE(bundle0.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,
                                           kExtension0)).Equals(policy));
 
-  bundle1.CopyFrom(bundle0);
+  bundle1 = bundle0.Clone();
   EXPECT_FALSE(IsEmpty(bundle0));
   EXPECT_FALSE(IsEmpty(bundle1));
   EXPECT_TRUE(bundle0.Get(PolicyNamespace(POLICY_DOMAIN_CHROME,
@@ -231,24 +231,24 @@ TEST(PolicyBundleTest, Equals) {
 
   PolicyBundle other;
   EXPECT_FALSE(bundle.Equals(other));
-  other.CopyFrom(bundle);
+  other = bundle.Clone();
   EXPECT_TRUE(bundle.Equals(other));
 
   AddTestPolicies(&bundle.Get(
       PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1)));
   EXPECT_FALSE(bundle.Equals(other));
-  other.CopyFrom(bundle);
+  other = bundle.Clone();
   EXPECT_TRUE(bundle.Equals(other));
   AddTestPolicies(&other.Get(
       PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension2)));
   EXPECT_FALSE(bundle.Equals(other));
 
-  other.CopyFrom(bundle);
+  other = bundle.Clone();
   bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .Set(kPolicy0, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
            POLICY_SOURCE_CLOUD, base::Value(123), nullptr);
   EXPECT_FALSE(bundle.Equals(other));
-  other.CopyFrom(bundle);
+  other = bundle.Clone();
   EXPECT_TRUE(bundle.Equals(other));
   bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .Set(kPolicy0, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,

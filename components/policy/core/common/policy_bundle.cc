@@ -36,13 +36,12 @@ const PolicyMap& PolicyBundle::Get(const PolicyNamespace& ns) const {
   return it == end() ? GetEmptyPolicyMap() : it->second;
 }
 
-void PolicyBundle::CopyFrom(const PolicyBundle& other) {
-  DCHECK_NE(this, &other);
-
-  Clear();
-  for (const auto& entry_other : other) {
-    policy_bundle_[entry_other.first] = entry_other.second.Clone();
+PolicyBundle PolicyBundle::Clone() const {
+  PolicyBundle clone;
+  for (const auto& entry : policy_bundle_) {
+    clone.policy_bundle_[entry.first] = entry.second.Clone();
   }
+  return clone;
 }
 
 void PolicyBundle::MergeFrom(const PolicyBundle& other) {

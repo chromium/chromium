@@ -146,7 +146,7 @@ TEST_F(SchemaMapTest, FilterBundle) {
   expected_bundle.Get(chrome_ns).Set("ChromePolicy", POLICY_LEVEL_MANDATORY,
                                      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                                      base::Value("value"), nullptr);
-  bundle.CopyFrom(expected_bundle);
+  bundle = expected_bundle.Clone();
 
   // Unknown components are filtered out.
   PolicyNamespace another_extension_ns(POLICY_DOMAIN_EXTENSIONS, "xyz");
