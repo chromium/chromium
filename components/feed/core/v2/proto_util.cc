@@ -181,6 +181,10 @@ feedwire::Request CreateFeedQueryRequest(
         Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING);
   }
 
+  if (base::FeatureList::IsEnabled(kSyntheticCapabilities)) {
+    feed_request.add_client_capability(Capability::SYNTHETIC_CAPABILITIES);
+  }
+
   switch (request_metadata.tab_group_enabled_state) {
     case TabGroupEnabledState::kNone:
       feed_request.add_client_capability(Capability::OPEN_IN_TAB);

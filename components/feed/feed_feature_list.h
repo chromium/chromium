@@ -180,6 +180,10 @@ BASE_DECLARE_FEATURE(kFeedShowSignInCommand);
 // performance-oriented features in Feed.
 BASE_DECLARE_FEATURE(kFeedPerformanceStudy);
 
+// When enabled, allows the server to unilaterally alter capabilities sent
+// by the client, primarily to retroactively work around bugs.
+BASE_DECLARE_FEATURE(kSyntheticCapabilities);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

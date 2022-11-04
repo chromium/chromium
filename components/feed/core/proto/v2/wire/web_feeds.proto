@@ -7,6 +7,8 @@ syntax = "proto3";
 package feedwire.webfeed;
 
 import "components/feed/core/proto/v2/wire/consistency_token.proto";
+import "components/feed/core/proto/v2/wire/request.proto";
+import "components/feed/core/proto/v2/wire/response.proto";
 import "components/feed/core/proto/v2/wire/web_feed_matcher.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -74,4 +76,10 @@ message ListRecommendedWebFeedsRequest {
 }
 message ListRecommendedWebFeedsResponse {
   repeated WebFeed recommended_web_feeds = 1;
+}
+message QueryWebFeedsContentsRequest {
+  Request request = 1;
+}
+message QueryWebFeedsContentsResponse {
+  Response response = 1;
 }

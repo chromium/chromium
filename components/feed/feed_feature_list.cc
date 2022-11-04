@@ -207,4 +207,7 @@ BASE_FEATURE(kFeedPerformanceStudy,
              "FeedPerformanceStudy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyntheticCapabilities,
+             "FeedSyntheticCapabilities",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace feed
