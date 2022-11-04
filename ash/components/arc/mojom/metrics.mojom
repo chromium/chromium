@@ -158,6 +158,9 @@ enum ArcNetworkEvent {
   [MinVersion=22] kAndroidVpnIpv6Provisioned = 37,
   [MinVersion=22] kAndroidVpnIpv4Provisioned = 38,
   [MinVersion=24] kAndroidDisconnectHostVpn = 39,
+  [MinVersion=27] kArcHostVpnStarting = 40,
+  [MinVersion=27] kArcHostVpnRouteReplaced = 41,
+  [MinVersion=27] kArcHostVpnDisconnected = 42,
 };
 
 // These enum values are persisted to metrics thus must be treated as
@@ -189,6 +192,9 @@ enum ArcNetworkError {
   kNetdSnatStartError = 22,
   kNetdSnatStopError = 23,
   [MinVersion=19] kPasspointInvalidConfigurationError = 24,
+  [MinVersion=27] kArcHostVpnConnectionError = 25,
+  [MinVersion=27] kArcHostVpnCrashedError = 26,
+  [MinVersion=27] kArcHostVpnInternalError = 27,
 };
 
 // Describes the type of app kill being reported.

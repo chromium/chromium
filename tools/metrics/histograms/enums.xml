@@ -4404,6 +4404,9 @@ Unknown properties are collapsed to zero. -->
   <int value="22" label="SNAT start error (netd)"/>
   <int value="23" label="SNAT stop error (netd)"/>
   <int value="24" label="Invalid PasspointConfiguration (wifi)"/>
+  <int value="25" label="Service connection error (ArcHostVpnService)"/>
+  <int value="26" label="Service crashed error (ArcHostVpnService)"/>
+  <int value="27" label="Service internal error (ArcHostVpnService)"/>
 </enum>
 
 <enum name="ArcNetworkEvent">
@@ -4449,6 +4452,9 @@ Unknown properties are collapsed to zero. -->
   <int value="37" label="Android VPN IPv6 provisioning"/>
   <int value="38" label="Android VPN IPv4 provisioning"/>
   <int value="39" label="Disconnect host VPN"/>
+  <int value="40" label="Start service connection (ArcHostVpnService)"/>
+  <int value="41" label="Replace VPN routing interface (ArcHostVpnService)"/>
+  <int value="42" label="Disconnect service (ArcHostVpnService)"/>
 </enum>
 
 <enum name="ArcNotificationExpandState">
