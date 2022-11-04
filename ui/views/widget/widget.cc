@@ -805,10 +805,7 @@ void Widget::Show() {
     native_widget_->Show(preferred_show_state, gfx::Rect());
   }
 
-  if (base::FeatureList::IsEnabled(features::kWidgetLayering))
-    sublevel_manager_->EnsureOwnerSublevel();
-
-  internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetShown(this);
+  HandleShowRequested();
 }
 
 void Widget::Hide() {
@@ -827,7 +824,8 @@ void Widget::ShowInactive() {
     saved_show_state_ = ui::SHOW_STATE_NORMAL;
   }
   native_widget_->Show(ui::SHOW_STATE_INACTIVE, gfx::Rect());
-  internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetShown(this);
+
+  HandleShowRequested();
 }
 
 void Widget::Activate() {
@@ -2104,6 +2102,13 @@ void Widget::ClearFocusFromWidget() {
   // the root_view_ being removed.
   if (focus_manager)
     focus_manager->ViewRemoved(root_view_.get());
+}
+
+void Widget::HandleShowRequested() {
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering))
+    sublevel_manager_->EnsureOwnerSublevel();
+
+  internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetShown(this);
 }
 
 BEGIN_METADATA_BASE(Widget)
