@@ -143,7 +143,12 @@ Matches SequenceMatcher::GetMatchingBlocks() {
         FindLongestMatch(first_start, first_end, second_start, second_end);
 
     if (match.length > 0) {
-      matching_blocks_.push_back(match);
+      // Exclude matching blocks with whitespace only.
+      const bool whitespace_only =
+          match.length == 1 && first_string_[match.pos_first_string] == u' ';
+      if (!whitespace_only) {
+        matching_blocks_.push_back(match);
+      }
 
       // Recurse left.
       if (first_start < match.pos_first_string &&

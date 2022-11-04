@@ -254,9 +254,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCompleteNonMatchMultiToken) {
     const double relevance = CalculateRelevance(query, text);
     VLOG(1) << FormatRelevanceResult(query, text, relevance,
                                      /*query_first*/ false);
-    // TODO(crbug.com/1336160): Expect score is zero. Currently, the
-    // presence of whitespace in both text and query causes
-    // inappropriately high relevance scoring.
+    EXPECT_NEAR(relevance, kCompleteMismatchScore, kEps);
   }
 }
 

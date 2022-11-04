@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/string_matching/sequence_matcher.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::string_matching {
