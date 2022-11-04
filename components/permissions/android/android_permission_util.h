@@ -54,6 +54,21 @@ PermissionRepromptState ShouldRepromptUserForPermissions(
     content::WebContents* web_contents,
     const std::vector<ContentSettingsType>& content_settings_types);
 
+// Filters the given |content_setting_types| to keep only types which are
+// missing required Android permissions.
+std::vector<ContentSettingsType>
+GetContentSettingsWithMissingRequiredAndroidPermissions(
+    const std::vector<ContentSettingsType>& content_settings_types,
+    content::WebContents* web_contents);
+
+// Appends to `out_required_permissions` the required Android permissions, and
+// `out_optional_permissions` the optional Android permission, associated with
+// each content setting type in given list.
+void AppendRequiredAndOptionalAndroidPermissionsForContentSettings(
+    const std::vector<ContentSettingsType>& content_settings_types,
+    std::vector<std::string>& out_required_permissions,
+    std::vector<std::string>& out_optional_permissions);
+
 // Called to check whether Chrome settings and permissions allow requesting site
 // level notification permission.
 bool DoesAppLevelSettingsAllowSiteNotifications();

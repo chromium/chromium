@@ -166,6 +166,8 @@ source_set("permissions") {
       "android/permission_prompt/permission_prompt_infobar.h",
       "android/permissions_android_feature_list.cc",
       "android/permissions_android_feature_list.h",
+      "android/permissions_reprompt_controller_android.cc",
+      "android/permissions_reprompt_controller_android.h",
       "contexts/geolocation_permission_context_android.cc",
       "contexts/geolocation_permission_context_android.h",
       "contexts/nfc_permission_context_android.cc",
@@ -281,6 +283,7 @@ source_set("unit_tests") {
       "android/bluetooth_chooser_android_unittest.cc",
       "android/bluetooth_scanning_prompt_android_unittest.cc",
       "android/permission_prompt/permission_dialog_delegate_unittest.cc",
+      "android/permissions_reprompt_controller_android_unittest.cc",
     ]
   }
   deps = [

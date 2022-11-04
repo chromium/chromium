@@ -12,6 +12,7 @@
 #include "components/location/android/location_settings.h"
 #include "components/location/android/location_settings_impl.h"
 #include "components/permissions/android/android_permission_util.h"
+#include "components/permissions/android/permissions_reprompt_controller_android.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/pref_names.h"
@@ -118,12 +119,17 @@ void GeolocationPermissionContextAndroid::RequestPermission(
       ShouldRepromptUserForPermissions(web_contents,
                                        {ContentSettingsType::GEOLOCATION}) ==
           PermissionRepromptState::kShow) {
-    PermissionsClient::Get()->RepromptForAndroidPermissions(
-        web_contents, {ContentSettingsType::GEOLOCATION},
-        base::BindOnce(&GeolocationPermissionContextAndroid::
-                           HandleUpdateAndroidPermissions,
-                       weak_factory_.GetWeakPtr(), id, requesting_frame_origin,
-                       embedding_origin, std::move(callback)));
+    permissions::PermissionsRepromptControllerAndroid::CreateForWebContents(
+        web_contents);
+    permissions::PermissionsRepromptControllerAndroid::FromWebContents(
+        web_contents)
+        ->RepromptPermissionRequest(
+            {ContentSettingsType::GEOLOCATION}, content_settings_type(),
+            base::BindOnce(&GeolocationPermissionContextAndroid::
+                               HandleUpdateAndroidPermissions,
+                           weak_factory_.GetWeakPtr(), id,
+                           requesting_frame_origin, embedding_origin,
+                           std::move(callback)));
     return;
   }
 

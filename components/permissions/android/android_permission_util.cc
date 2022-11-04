@@ -68,6 +68,37 @@ PermissionRepromptState ShouldRepromptUserForPermissions(
   return PermissionRepromptState::kNoNeed;
 }
 
+std::vector<ContentSettingsType>
+GetContentSettingsWithMissingRequiredAndroidPermissions(
+    const std::vector<ContentSettingsType>& content_settings_types,
+    content::WebContents* web_contents) {
+  auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
+  DCHECK(window_android);
+
+  std::vector<ContentSettingsType> filtered_types;
+  for (ContentSettingsType content_settings_type : content_settings_types) {
+    if (HasRequiredAndroidPermissionsForContentSetting(window_android,
+                                                       content_settings_type)) {
+      continue;
+    }
+    filtered_types.push_back(content_settings_type);
+  }
+
+  return filtered_types;
+}
+
+void AppendRequiredAndOptionalAndroidPermissionsForContentSettings(
+    const std::vector<ContentSettingsType>& content_settings_types,
+    std::vector<std::string>& out_required_permissions,
+    std::vector<std::string>& out_optional_permissions) {
+  for (ContentSettingsType content_settings_type : content_settings_types) {
+    permissions::AppendRequiredAndroidPermissionsForContentSetting(
+        content_settings_type, &out_required_permissions);
+    permissions::AppendOptionalAndroidPermissionsForContentSetting(
+        content_settings_type, &out_optional_permissions);
+  }
+}
+
 bool DoesAppLevelSettingsAllowSiteNotifications() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_PermissionUtil_doesAppLevelSettingsAllowSiteNotifications(env);

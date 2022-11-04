@@ -26,11 +26,9 @@ class PermissionUpdateMessageController
     : public content::WebContentsUserData<PermissionUpdateMessageController> {
  public:
   // Creates a message to resolve conflicts in Android runtime permissions.
-  // The necessary runtime permissions are generated based on the list of
-  // ContentSettingsTypes passed in.
   //
-  // This function can only be called with one of
-  // ContentSettingsType::MEDIASTREAM_MIC,
+  // This function can only be called with |content_settings_types| as follow:
+  // // ContentSettingsType::MEDIASTREAM_MIC,
   // ContentSettingsType::MEDIASTREAM_CAMERA,
   // ContentSettingsType::GEOLOCATION, or
   // ContentSettingsType::AR or with both
@@ -40,6 +38,9 @@ class PermissionUpdateMessageController
   // The |callback| will not be triggered if `this` is deleted.
   void ShowMessage(
       const std::vector<ContentSettingsType>& content_settings_types,
+      const std::vector<ContentSettingsType>& filtered_content_settings_types,
+      const std::vector<std::string>& required_permissions,
+      const std::vector<std::string>& optional_permissions,
       PermissionUpdatedCallback callback);
 
   void ShowMessage(const std::vector<std::string>& required_android_permissions,
@@ -79,9 +80,7 @@ class PermissionUpdateMessageController
   // ContentSettingsType::MEDIASTREAM_MIC and
   // ContentSettingsType::MEDIASTREAM_CAMERA.
   std::tuple<int, int, int> GetPermissionUpdateUiResourcesId(
-      const std::vector<ContentSettingsType>& content_settings_types,
-      std::vector<std::string>& required_permissions,
-      std::vector<std::string>& optional_permissions);
+      const std::vector<ContentSettingsType>& content_settings_types);
 
   std::vector<std::unique_ptr<PermissionUpdateMessageDelegate>>
       message_delegates_;

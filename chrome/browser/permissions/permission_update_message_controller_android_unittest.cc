@@ -33,17 +33,23 @@ class PermissionUpdateMessageControllerAndroidTest
   }
 
   void ShowMedia(base::OnceCallback<void(bool)> callback) {
-    ShowMedia(std::move(callback), true);
-  }
-
-  void ShowMedia(base::OnceCallback<void(bool)> callback, bool expect_qneueue) {
-    if (expect_qneueue)
-      EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+    EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
     GetController()->ShowMessageInternal(
         {}, {}, {}, IDR_ANDROID_INFOBAR_GEOLOCATION,
         IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,
         IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT,
         std::move(callback));
+  }
+
+  void ShowDownload(base::OnceCallback<void(bool)> callback,
+                    bool expected_enqueue) {
+    if (expected_enqueue)
+      EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+
+    GetController()->ShowMessageInternal(
+        {}, {}, {}, IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
+        IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE,
+        IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT, std::move(callback));
   }
 
   size_t GetMessageDelegatesSize() {
@@ -148,9 +154,9 @@ TEST_F(PermissionUpdateMessageControllerAndroidTest,
        OnEnqueuingDuplciatedMessage) {
   base::MockOnceCallback<void(bool)> mock_permission_update_callback1;
   base::MockOnceCallback<void(bool)> mock_permission_update_callback2;
-  ShowMedia(mock_permission_update_callback1.Get());
+  ShowDownload(mock_permission_update_callback1.Get(), true);
   EXPECT_EQ(1u, GetMessageDelegatesSize());
-  ShowMedia(mock_permission_update_callback2.Get(), false);
+  ShowDownload(mock_permission_update_callback2.Get(), false);
   EXPECT_EQ(1u, GetMessageDelegatesSize());
   EXPECT_CALL(mock_permission_update_callback1, Run(false));
   EXPECT_CALL(mock_permission_update_callback2, Run(false));

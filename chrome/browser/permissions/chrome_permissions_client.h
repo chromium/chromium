@@ -95,6 +95,9 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   void RepromptForAndroidPermissions(
       content::WebContents* web_contents,
       const std::vector<ContentSettingsType>& content_settings_types,
+      const std::vector<ContentSettingsType>& filtered_content_settings_types,
+      const std::vector<std::string>& required_permissions,
+      const std::vector<std::string>& optional_permissions,
       PermissionsUpdatedCallback callback) override;
   int MapToJavaDrawableId(int resource_id) override;
 #else

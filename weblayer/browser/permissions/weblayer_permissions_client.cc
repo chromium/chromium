@@ -79,6 +79,9 @@ WebLayerPermissionsClient::GetChooserContext(
 void WebLayerPermissionsClient::RepromptForAndroidPermissions(
     content::WebContents* web_contents,
     const std::vector<ContentSettingsType>& content_settings_types,
+    const std::vector<ContentSettingsType>& filtered_content_settings_types,
+    const std::vector<std::string>& required_permissions,
+    const std::vector<std::string>& optional_permissions,
     PermissionsUpdatedCallback callback) {
   RequestAndroidPermissions(web_contents, content_settings_types,
                             std::move(callback));

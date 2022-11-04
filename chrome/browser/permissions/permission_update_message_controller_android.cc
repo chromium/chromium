@@ -17,23 +17,17 @@
 
 void PermissionUpdateMessageController::ShowMessage(
     const std::vector<ContentSettingsType>& content_settings_types,
+    const std::vector<ContentSettingsType>& filtered_content_settings_types,
+    const std::vector<std::string>& required_permissions,
+    const std::vector<std::string>& optional_permissions,
     PermissionUpdatedCallback callback) {
   DCHECK_EQ(permissions::ShouldRepromptUserForPermissions(
                 &GetWebContents(), content_settings_types),
             permissions::PermissionRepromptState::kShow)
-      << "Caller should check ShouldShowRepromptUserForPermissions before "
+      << "Caller should check ShouldRepromptUserForPermissions before "
          "creating the message ui.";
-  std::vector<std::string> required_permissions;
-  std::vector<std::string> optional_permissions;
-  ui::WindowAndroid* window_android =
-      GetWebContents().GetNativeView()->GetWindowAndroid();
-  const std::vector<ContentSettingsType> filtered_types =
-      GetContentSettingsWithMissingRequiredAndroidPermissions(
-          content_settings_types, window_android);
-  AppendRequiredAndOptionalAndroidPermissionsForContentSettings(
-      filtered_types, required_permissions, optional_permissions);
-  std::tuple<int, int, int> res = GetPermissionUpdateUiResourcesId(
-      filtered_types, required_permissions, optional_permissions);
+  const std::tuple<int, int, int> res =
+      GetPermissionUpdateUiResourcesId(filtered_content_settings_types);
   ShowMessageInternal(required_permissions, optional_permissions,
                       content_settings_types, std::get<0>(res),
                       std::get<1>(res), std::get<2>(res), std::move(callback));
@@ -61,10 +55,11 @@ void PermissionUpdateMessageController::ShowMessageInternal(
     int title_id,
     int description_id,
     PermissionUpdatedCallback callback) {
-  // crbug.com/1319880: Some permission clients tend to request to re-prompt
-  // more than expected.
   for (auto& delegate : message_delegates_) {
     if (delegate->GetTitleId() == title_id) {
+      // Duplicated messages must be filtered out in permission layer, except
+      // Download.
+      DCHECK(title_id == IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE);
       delegate->AttachAdditionalCallback(std::move(callback));
       return;
     }
@@ -89,9 +84,7 @@ void PermissionUpdateMessageController::DeleteMessage(
 
 std::tuple<int, int, int>
 PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
-    const std::vector<ContentSettingsType>& content_settings_types,
-    std::vector<std::string>& required_permissions,
-    std::vector<std::string>& optional_permissions) {
+    const std::vector<ContentSettingsType>& content_settings_types) {
   int message_id = -1;
   for (ContentSettingsType content_settings_type : content_settings_types) {
     switch (message_id) {

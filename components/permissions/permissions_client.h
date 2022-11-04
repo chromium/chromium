@@ -237,6 +237,9 @@ class PermissionsClient {
   virtual void RepromptForAndroidPermissions(
       content::WebContents* web_contents,
       const std::vector<ContentSettingsType>& content_settings_types,
+      const std::vector<ContentSettingsType>& filtered_content_settings_types,
+      const std::vector<std::string>& required_permissions,
+      const std::vector<std::string>& optional_permissions,
       PermissionsUpdatedCallback callback);
 
   // Converts the given chromium |resource_id| (e.g. IDR_INFOBAR_TRANSLATE) to

@@ -494,14 +494,20 @@ ChromePermissionsClient::MaybeCreateMessageUI(
 void ChromePermissionsClient::RepromptForAndroidPermissions(
     content::WebContents* web_contents,
     const std::vector<ContentSettingsType>& content_settings_types,
+    const std::vector<ContentSettingsType>& filtered_content_settings_types,
+    const std::vector<std::string>& required_permissions,
+    const std::vector<std::string>& optional_permissions,
     PermissionsUpdatedCallback callback) {
   if (messages::IsPermissionUpdateMessagesUiEnabled()) {
     PermissionUpdateMessageController::CreateForWebContents(web_contents);
     PermissionUpdateMessageController::FromWebContents(web_contents)
-        ->ShowMessage(content_settings_types, std::move(callback));
+        ->ShowMessage(content_settings_types, filtered_content_settings_types,
+                      required_permissions, optional_permissions,
+                      std::move(callback));
   } else {
     PermissionUpdateInfoBarDelegate::Create(
-        web_contents, content_settings_types, std::move(callback));
+        web_contents, content_settings_types, filtered_content_settings_types,
+        required_permissions, optional_permissions, std::move(callback));
   }
 }
 

@@ -17,6 +17,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/stl_util.h"
 #include "components/permissions/android/android_permission_util.h"
+#include "components/permissions/android/permissions_reprompt_controller_android.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/web_contents.h"
@@ -187,12 +188,17 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
 
     case permissions::PermissionRepromptState::kShow:
       // Otherwise, prompt the user that we need additional permissions.
-      permissions::PermissionsClient::Get()->RepromptForAndroidPermissions(
-          web_contents, permission_type,
-          base::BindOnce(
-              &MediaStreamDevicePermissionContext::OnAndroidPermissionDecided,
-              weak_ptr_factory_.GetWeakPtr(), id, requesting_origin,
-              embedding_origin, std::move(callback)));
+      permissions::PermissionsRepromptControllerAndroid::CreateForWebContents(
+          web_contents);
+      permissions::PermissionsRepromptControllerAndroid::FromWebContents(
+          web_contents)
+          ->RepromptPermissionRequest(
+              permission_type, content_settings_type_,
+              base::BindOnce(&MediaStreamDevicePermissionContext::
+                                 OnAndroidPermissionDecided,
+                             weak_ptr_factory_.GetWeakPtr(), id,
+                             requesting_origin, embedding_origin,
+                             std::move(callback)));
       return;
   }
 }
