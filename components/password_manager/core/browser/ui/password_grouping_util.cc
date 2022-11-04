@@ -155,10 +155,10 @@ std::vector<AffiliatedGroup> GetAffiliatedGroupsWithGroupingInfo(
     }
     // If the branding information is missing, create a default one with the
     // sign-on realm.
-    if (affiliated_group.GetBrandingInfo().name.empty() &&
-        affiliated_group.GetBrandingInfo().icon_url.is_empty()) {
+    if (affiliated_group.GetDisplayName().empty() &&
+        affiliated_group.GetIconURL().is_empty()) {
       affiliated_group.SetBrandingInfo(CreateBrandingInfoFromFacetURI(
-          affiliated_group.GetCredentialGroups()[0]));
+          *affiliated_group.GetCredentialGroups().begin()));
     }
     affiliated_groups.push_back(std::move(affiliated_group));
   }

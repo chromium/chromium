@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -1628,15 +1629,24 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
           Pair(federated_form.signon_realm, ElementsAre(federated_form))));
 
   // Setup results to compare.
-  std::vector<CredentialUIEntry> credential_group1;
-  credential_group1.emplace_back(form);
-  credential_group1.emplace_back(form2);
-  std::vector<CredentialUIEntry> credential_group2;
-  credential_group2.emplace_back(federated_form);
+  CredentialUIEntry credential1 = CredentialUIEntry(form);
+  CredentialUIEntry credential2 = CredentialUIEntry(form2);
+  AffiliatedGroup affiliated_group1;
+  affiliated_group1.AddCredential(credential1);
+  affiliated_group1.AddCredential(credential2);
+  FacetBrandingInfo branding_info1;
+  branding_info1.name = GetShownOrigin(credential1);
+  affiliated_group1.SetBrandingInfo(branding_info1);
+
+  CredentialUIEntry credential3 = CredentialUIEntry(federated_form);
+  AffiliatedGroup affiliated_group2;
+  affiliated_group2.AddCredential(credential3);
+  FacetBrandingInfo branding_info2;
+  branding_info2.name = GetShownOrigin(credential3);
+  affiliated_group2.SetBrandingInfo(branding_info2);
 
   EXPECT_THAT(presenter().GetAffiliatedGroups(),
-              UnorderedElementsAre(AffiliatedGroup(credential_group1),
-                                   AffiliatedGroup(credential_group2)));
+              UnorderedElementsAre(affiliated_group1, affiliated_group2));
 }
 
 TEST_F(SavedPasswordsPresenterTest, GetBlockedSites) {

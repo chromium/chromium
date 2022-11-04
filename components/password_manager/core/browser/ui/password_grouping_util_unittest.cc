@@ -8,6 +8,7 @@
 
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -50,14 +51,22 @@ TEST(PasswordGroupingUtilTest, GetAffiliatedGroupsWithGroupingInfo) {
 
   // Setup results to compare: form and federated form are in different
   // affiliated groups and blocked form is not stored here.
-  std::vector<CredentialUIEntry> credential_group1;
-  credential_group1.emplace_back(form);
-  std::vector<CredentialUIEntry> credential_group2;
-  credential_group2.emplace_back(federated_form);
+  CredentialUIEntry credential1 = CredentialUIEntry(form);
+  AffiliatedGroup affiliated_group1;
+  affiliated_group1.AddCredential(credential1);
+  FacetBrandingInfo branding_info1;
+  branding_info1.name = GetShownOrigin(credential1);
+  affiliated_group1.SetBrandingInfo(branding_info1);
+
+  CredentialUIEntry credential2 = CredentialUIEntry(federated_form);
+  AffiliatedGroup affiliated_group2;
+  affiliated_group2.AddCredential(credential2);
+  FacetBrandingInfo branding_info2;
+  branding_info2.name = GetShownOrigin(credential2);
+  affiliated_group2.SetBrandingInfo(branding_info2);
 
   EXPECT_THAT(GetAffiliatedGroupsWithGroupingInfo(password_grouping_info),
-              UnorderedElementsAre(AffiliatedGroup(credential_group1),
-                                   AffiliatedGroup(credential_group2)));
+              UnorderedElementsAre(affiliated_group1, affiliated_group2));
 }
 
 TEST(PasswordGroupingUtilTest, GroupPasswords) {

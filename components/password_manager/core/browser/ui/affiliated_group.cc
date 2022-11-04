@@ -9,11 +9,6 @@
 namespace password_manager {
 
 AffiliatedGroup::AffiliatedGroup() = default;
-
-AffiliatedGroup::AffiliatedGroup(
-    const std::vector<CredentialUIEntry> credential_groups)
-    : credential_groups_(std::move(credential_groups)) {}
-
 AffiliatedGroup::AffiliatedGroup(const AffiliatedGroup& other) = default;
 AffiliatedGroup::AffiliatedGroup(AffiliatedGroup&& other) = default;
 
@@ -25,27 +20,16 @@ AffiliatedGroup& AffiliatedGroup::operator=(const AffiliatedGroup& other) =
 AffiliatedGroup& AffiliatedGroup::operator=(AffiliatedGroup&& other) = default;
 
 void AffiliatedGroup::AddCredential(const CredentialUIEntry& credential) {
-  credential_groups_.push_back(credential);
+  credential_groups_.insert(credential);
 }
 
 bool operator==(const AffiliatedGroup& lhs, const AffiliatedGroup& rhs) {
-  if (lhs.GetCredentialGroups().size() != rhs.GetCredentialGroups().size()) {
+  if (!base::ranges::equal(lhs.GetCredentialGroups(),
+                           rhs.GetCredentialGroups())) {
     return false;
   }
-
-  // Sort credential groups vectors.
-  std::vector<CredentialUIEntry> lhs_credential_groups =
-      lhs.GetCredentialGroups();
-  std::sort(lhs_credential_groups.begin(), lhs_credential_groups.end());
-
-  std::vector<CredentialUIEntry> rhs_credential_groups =
-      rhs.GetCredentialGroups();
-  std::sort(rhs_credential_groups.begin(), rhs_credential_groups.end());
-
-  if (!base::ranges::equal(lhs_credential_groups, rhs_credential_groups)) {
-    return false;
-  }
-  return true;
+  return lhs.GetDisplayName() == rhs.GetDisplayName() &&
+         lhs.GetIconURL() == rhs.GetIconURL();
 }
 
 }  // namespace password_manager

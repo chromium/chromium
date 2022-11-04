@@ -450,7 +450,7 @@ std::vector<AffiliatedGroup> SavedPasswordsPresenter::GetAffiliatedGroups() {
   // Sort affiliated groups.
   std::sort(affiliated_groups_.begin(), affiliated_groups_.end(),
             [](const AffiliatedGroup& lhs, const AffiliatedGroup& rhs) {
-              return lhs.GetBrandingInfo().name < rhs.GetBrandingInfo().name;
+              return lhs.GetDisplayName() < rhs.GetDisplayName();
             });
   return affiliated_groups_;
 }
