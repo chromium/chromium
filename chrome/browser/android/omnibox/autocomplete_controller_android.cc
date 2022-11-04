@@ -186,11 +186,14 @@ void AutocompleteControllerAndroid::StartPrefetch(
       !BaseSearchProvider::IsNTPPage(page_classification);
 
   GURL current_url;
+  std::u16string auto_complete_text;
+
   if (!j_current_url.is_null()) {
+    auto_complete_text = ConvertJavaStringToUTF16(env, j_current_url);
     current_url = GURL(ConvertJavaStringToUTF16(env, j_current_url));
   }
 
-  AutocompleteInput input(u"", page_classification,
+  AutocompleteInput input(auto_complete_text, page_classification,
                           ChromeAutocompleteSchemeClassifier(profile_));
   input.set_current_url(current_url);
   input.set_focus_type(interaction_clobber_focus_type
