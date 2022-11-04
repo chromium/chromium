@@ -578,7 +578,7 @@ const char kInterstitialText[] =
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Reloading the page should show the interstitial again.
 - (void)test_SlowHTTPS_ReloadInterstitial {
-  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowServer->port()
                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
   // upgrade attempt.
@@ -662,7 +662,7 @@ const char kInterstitialText[] =
 // interstitial will be shown. Click through the interstitial, then reload the
 // page. The HTTP page should be shown.
 - (void)test_SlowHTTPS_ProceedInterstitial_Allowlisted {
-  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowServer->port()
                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
   // upgrade attempt.
@@ -723,7 +723,7 @@ const char kInterstitialText[] =
 // loading HTTPS page. The upgrade will be cancelled and the HTTPS-Only mode
 // interstitial will be shown. Tap Go back on the interstitial.
 - (void)test_SlowHTTPS_GoBack {
-  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowServer->port()
                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
   // upgrade attempt.
@@ -786,7 +786,7 @@ const char kInterstitialText[] =
 // interstitial. Then, navigate to a new page and go back. This should load the
 // HTTP URL without showing the interstitial again.
 - (void)test_SlowHTTPS_GoBackToAllowlistedSite {
-  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowServer->port()
                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
   // upgrade attempt.

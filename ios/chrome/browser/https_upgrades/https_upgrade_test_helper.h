@@ -24,8 +24,8 @@ class EmbeddedTestServer;
 // limitations on iOS. Instead, we use a faux-HTTPS server (goodHTTPSServer)
 // which is just another HTTP_SERVER but runs on a different port and returns a
 // different text than self.testServer. badHTTPSServer is a proper HTTPS_SERVER
-// that just serves bad HTTPS responses. slowHTTPSServer is a faux-HTTPS server
-// that serves hung responses.
+// that just serves bad HTTPS responses. slowServer is a server that serves hung
+// responses.
 @interface HttpsUpgradeTestCase : ChromeTestCase {
   // Counts the number of HTTP responses returned by the test server. Doesn't
   // count the faux-HTTPS or bad-HTTPS responses. Used to check if prerender
@@ -34,7 +34,7 @@ class EmbeddedTestServer;
   int _HTTPResponseCounter;
   std::unique_ptr<net::test_server::EmbeddedTestServer> _goodHTTPSServer;
   std::unique_ptr<net::test_server::EmbeddedTestServer> _badHTTPSServer;
-  std::unique_ptr<net::test_server::EmbeddedTestServer> _slowHTTPSServer;
+  std::unique_ptr<net::test_server::EmbeddedTestServer> _slowServer;
 }
 
 // The EmbeddedTestServer instance that serves faux-good HTTPS responses for
@@ -48,8 +48,7 @@ class EmbeddedTestServer;
     net::test_server::EmbeddedTestServer* badHTTPSServer;
 
 // The EmbeddedTestServer instance that serves a hung response for tests.
-@property(nonatomic, readonly)
-    net::test_server::EmbeddedTestServer* slowHTTPSServer;
+@property(nonatomic, readonly) net::test_server::EmbeddedTestServer* slowServer;
 
 @end
 

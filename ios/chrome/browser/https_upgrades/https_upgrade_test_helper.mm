@@ -33,22 +33,21 @@ namespace {
 
 const long kVeryLongTimeout = 100 * 3600 * 1000;
 
-// net::EmbeddedTestServer handler that responds with the request's query as the
-// title and body.
+// net::EmbeddedTestServer handler that responds with simple text.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     int* counter,
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url == "/") {
-    std::unique_ptr<net::test_server::BasicHttpResponse> response(
-        new net::test_server::BasicHttpResponse);
-    response->set_content_type("text/html");
-    response->set_content("HTTP_RESPONSE");
-    if (counter)
-      (*counter)++;
-    return std::move(response);
+  // Ignore favicon requests.
+  if (request.relative_url == "/favicon.ico") {
+    return nullptr;
   }
-  // Ignore everything else such as favicon URLs.
-  return nullptr;
+  std::unique_ptr<net::test_server::BasicHttpResponse> response(
+      new net::test_server::BasicHttpResponse);
+  response->set_content_type("text/html");
+  response->set_content("HTTP_RESPONSE");
+  if (counter)
+    (*counter)++;
+  return std::move(response);
 }
 
 std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
@@ -78,7 +77,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
   return std::move(response);
 }
 
-std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
+std::unique_ptr<net::test_server::HttpResponse> FakeHungResponse(
     const net::test_server::HttpRequest& request) {
   return std::make_unique<net::test_server::HungResponse>();
 }
@@ -107,14 +106,13 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   return _badHTTPSServer.get();
 }
 
-- (net::EmbeddedTestServer*)slowHTTPSServer {
-  if (!_slowHTTPSServer) {
-    _slowHTTPSServer = std::make_unique<net::EmbeddedTestServer>(
+- (net::EmbeddedTestServer*)slowServer {
+  if (!_slowServer) {
+    _slowServer = std::make_unique<net::EmbeddedTestServer>(
         net::test_server::EmbeddedTestServer::TYPE_HTTP);
-    _slowHTTPSServer->RegisterRequestHandler(
-        base::BindRepeating(&FakeHungHTTPSResponse));
+    _slowServer->RegisterRequestHandler(base::BindRepeating(&FakeHungResponse));
   }
-  return _slowHTTPSServer.get();
+  return _slowServer.get();
 }
 
 - (void)setUp {
@@ -129,8 +127,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
                  @"Test good faux-HTTPS server failed to start.");
   GREYAssertTrue(self.badHTTPSServer->Start(),
                  @"Test bad HTTPS server failed to start.");
-  GREYAssertTrue(self.slowHTTPSServer->Start(),
-                 @"Test slow faux-HTTPS server failed to start.");
+  GREYAssertTrue(self.slowServer->Start(),
+                 @"Test slow server failed to start.");
 
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Cannot setup histogram tester.");

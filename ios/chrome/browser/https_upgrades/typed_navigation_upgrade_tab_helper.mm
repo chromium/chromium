@@ -98,6 +98,8 @@ void TypedNavigationUpgradeTabHelper::DidStartNavigation(
       web_state->GetNavigationManager()->GetPendingItem();
   if (item_pending &&
       item_pending->GetHttpsUpgradeType() == web::HttpsUpgradeType::kOmnibox) {
+    upgraded_https_url_ = navigation_context->GetUrl();
+
     // TODO(crbug.com/1340742): Remove this scheme check once fixed. Without
     // the fix, kHttpsLoadStarted bucket is mildly overcounted.
     GURL url = item_pending->GetURL();
@@ -142,8 +144,13 @@ void TypedNavigationUpgradeTabHelper::DidFinishNavigation(
   if (state_ == State::kStoppedWithTimeout) {
     DCHECK(!timer_.IsRunning());
     RecordUMA(Event::kHttpsLoadTimedOut);
-    FallbackToHttp(web_state, navigation_context->GetUrl());
-    return;
+    // TODO(crbug.com/1379605): Cleanup this logic, we should only use
+    // upgraded_https_url_ here.
+    if (upgraded_https_url_.is_valid()) {
+      FallbackToHttp(web_state, upgraded_https_url_);
+    } else {
+      FallbackToHttp(web_state, navigation_context->GetUrl());
+    }
   }
 
   // Record success.
