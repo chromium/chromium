@@ -53,6 +53,21 @@ component("in_process_instance") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  deps = [
+    "//ash/constants:constants",
+    "//chromeos/ash/components/network",
+    "//chromeos/components/onc",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/onc",
+  ]
+  sources = [
+    "test_apn_data.cc",
+    "test_apn_data.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -60,6 +75,7 @@ source_set("unit_tests") {
 
   deps = [
     ":network_config",
+    ":test_support",
     "//ash/constants:constants",
     "//base",
     "//base/test:test_support",

@@ -40,6 +40,7 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
+#include "chromeos/services/network_config/test_apn_data.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
@@ -69,11 +70,6 @@ constexpr char kCellularTestApnId1[] = "1";
 constexpr char kCellularTestApnAuthenticationType1[] = "";
 constexpr char kCellularTestApnIpType1[] = "";
 constexpr char kCellularTestApnTypes1[] = "Default";
-
-// TODO(b/162365553) Remove when shill constants are added.
-constexpr char kShillApnId[] = "id";
-constexpr char kShillApnAuthenticationType[] = "authentication_type";
-constexpr char kShillApnTypes[] = "apn_types";
 
 constexpr char kCellularTestApn2[] = "TEST.APN2";
 constexpr char kCellularTestApnName2[] = "Test Apn 2";
@@ -148,17 +144,17 @@ void CompareTrafficCounters(
 }
 
 std::string CreateApnShillDict() {
-  return base::StringPrintf(
-      R"({"%s": "%s", "%s": "%s", "%s": "%s", "%s": "%s", "%s": "%s",
-          "%s": "%s", "%s": "%s", "%s": "%s", "%s": ["%s"]})",
-      shill::kApnProperty, kCellularTestApn1, shill::kApnNameProperty,
-      kCellularTestApnName1, shill::kApnUsernameProperty,
-      kCellularTestApnUsername1, shill::kApnPasswordProperty,
-      kCellularTestApnPassword1, shill::kApnAttachProperty,
-      kCellularTestApnAttach1, kShillApnId, kCellularTestApnId1,
-      kShillApnAuthenticationType, kCellularTestApnAuthenticationType1,
-      shill::kApnIpTypeProperty, kCellularTestApnIpType1, kShillApnTypes,
-      kCellularTestApnTypes1);
+  TestApnData test_apn_data;
+  test_apn_data.access_point_name = kCellularTestApn1;
+  test_apn_data.name = kCellularTestApnName1;
+  test_apn_data.username = kCellularTestApnUsername1;
+  test_apn_data.password = kCellularTestApnPassword1;
+  test_apn_data.attach = kCellularTestApnAttach1;
+  test_apn_data.id = kCellularTestApnId1;
+  test_apn_data.onc_authentication_type = kCellularTestApnAuthenticationType1;
+  test_apn_data.onc_ip_type = kCellularTestApnIpType1;
+  test_apn_data.onc_apn_types.emplace_back(kCellularTestApnTypes1);
+  return test_apn_data.AsApnShillDict();
 }
 
 }  // namespace
@@ -359,27 +355,25 @@ class CrosNetworkConfigTest : public testing::Test {
   }
 
   void SetupAPNList() {
-    base::Value apn_list(base::Value::Type::LIST);
-    base::Value apn_entry1(base::Value::Type::DICTIONARY);
-    apn_entry1.SetStringKey(shill::kApnNameProperty, kCellularTestApnName1);
-    apn_entry1.SetStringKey(shill::kApnProperty, kCellularTestApn1);
-    apn_entry1.SetStringKey(shill::kApnUsernameProperty,
-                            kCellularTestApnUsername1);
-    apn_entry1.SetStringKey(shill::kApnPasswordProperty,
-                            kCellularTestApnPassword1);
-    apn_list.Append(std::move(apn_entry1));
-    base::Value apn_entry2(base::Value::Type::DICTIONARY);
-    apn_entry2.SetStringKey(shill::kApnNameProperty, kCellularTestApnName2);
-    apn_entry2.SetStringKey(shill::kApnProperty, kCellularTestApn2);
-    apn_entry2.SetStringKey(shill::kApnUsernameProperty,
-                            kCellularTestApnUsername2);
-    apn_entry2.SetStringKey(shill::kApnPasswordProperty,
-                            kCellularTestApnPassword2);
-    apn_entry2.SetStringKey(shill::kApnAttachProperty, kCellularTestApnAttach2);
-    apn_list.Append(std::move(apn_entry2));
+    base::Value::List apn_entries;
+    TestApnData apn_entry1;
+    apn_entry1.access_point_name = kCellularTestApn1;
+    apn_entry1.name = kCellularTestApnName1;
+    apn_entry1.username = kCellularTestApnUsername1;
+    apn_entry1.password = kCellularTestApnPassword1;
+    apn_entries.Append(apn_entry1.AsShillApn());
+
+    TestApnData apn_entry2;
+    apn_entry2.access_point_name = kCellularTestApn2;
+    apn_entry2.name = kCellularTestApnName2;
+    apn_entry2.username = kCellularTestApnUsername2;
+    apn_entry2.password = kCellularTestApnPassword2;
+    apn_entry2.attach = kCellularTestApnAttach2;
+    apn_entries.Append(apn_entry2.AsShillApn());
 
     helper()->device_test()->SetDeviceProperty(
-        kCellularDevicePath, shill::kCellularApnListProperty, apn_list,
+        kCellularDevicePath, shill::kCellularApnListProperty,
+        base::Value(std::move(apn_entries)),
         /*notify_changed=*/true);
     base::RunLoop().RunUntilIdle();
   }
@@ -1507,13 +1501,13 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   // does not update the custom apn list.
   auto config = mojom::ConfigProperties::New();
   auto cellular_config = mojom::CellularConfigProperties::New();
-  auto new_apn = mojom::ApnProperties::New();
-  new_apn->access_point_name = kCellularTestApn1;
-  new_apn->name = kCellularTestApnName1;
-  new_apn->username = kCellularTestApnUsername1;
-  new_apn->password = kCellularTestApnPassword1;
-  new_apn->attach = kCellularTestApnAttach1;
-  cellular_config->apn = std::move(new_apn);
+  TestApnData test_apn_data1;
+  test_apn_data1.access_point_name = kCellularTestApn1;
+  test_apn_data1.name = kCellularTestApnName1;
+  test_apn_data1.username = kCellularTestApnUsername1;
+  test_apn_data1.password = kCellularTestApnPassword1;
+  test_apn_data1.attach = kCellularTestApnAttach1;
+  cellular_config->apn = test_apn_data1.AsMojoApn();
   config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
       std::move(cellular_config));
   SetProperties(kGUID, std::move(config));
@@ -1524,13 +1518,13 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   // Verify that custom APN list is updated properly.
   config = mojom::ConfigProperties::New();
   cellular_config = mojom::CellularConfigProperties::New();
-  new_apn = mojom::ApnProperties::New();
-  new_apn->access_point_name = kCellularTestApn3;
-  new_apn->name = kCellularTestApnName3;
-  new_apn->username = kCellularTestApnUsername3;
-  new_apn->password = kCellularTestApnPassword3;
-  new_apn->attach = kCellularTestApnAttach3;
-  cellular_config->apn = std::move(new_apn);
+  TestApnData test_apn_data3;
+  test_apn_data3.access_point_name = kCellularTestApn3;
+  test_apn_data3.name = kCellularTestApnName3;
+  test_apn_data3.username = kCellularTestApnUsername3;
+  test_apn_data3.password = kCellularTestApnPassword3;
+  test_apn_data3.attach = kCellularTestApnAttach3;
+  cellular_config->apn = test_apn_data3.AsMojoApn();
   config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
       std::move(cellular_config));
   SetProperties(kGUID, std::move(config));
@@ -1548,23 +1542,9 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
       properties->type_properties->get_cellular()->custom_apn_list.has_value());
   ASSERT_EQ(
       1u, properties->type_properties->get_cellular()->custom_apn_list->size());
-  ASSERT_EQ(kCellularTestApn3, properties->type_properties->get_cellular()
-                                   ->custom_apn_list->front()
-                                   ->access_point_name);
-  ASSERT_EQ(kCellularTestApnName3, properties->type_properties->get_cellular()
-                                       ->custom_apn_list->front()
-                                       ->name);
-  ASSERT_EQ(kCellularTestApnUsername3,
-            properties->type_properties->get_cellular()
-                ->custom_apn_list->front()
-                ->username);
-  ASSERT_EQ(kCellularTestApnPassword3,
-            properties->type_properties->get_cellular()
-                ->custom_apn_list->front()
-                ->password);
-  ASSERT_EQ(kCellularTestApnAttach3, properties->type_properties->get_cellular()
-                                         ->custom_apn_list->front()
-                                         ->attach);
+  const mojom::ApnPropertiesPtr& first_apn =
+      properties->type_properties->get_cellular()->custom_apn_list->front();
+  EXPECT_TRUE(test_apn_data3.IsMojoApnEquals(*first_apn));
 }
 
 TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {
