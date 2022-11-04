@@ -29,6 +29,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter;
@@ -129,6 +130,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     @Test
     @MediumTest
     @Feature({"Downloads"})
+    @DisabledTest(message = "https://crbug.com/1381286")
     public void testDefaultDialogShowSpinner() {
         startDownload(/*hasSDCard=*/true);
 
