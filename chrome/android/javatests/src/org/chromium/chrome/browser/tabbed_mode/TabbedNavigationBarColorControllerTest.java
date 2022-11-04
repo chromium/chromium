@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -107,6 +108,7 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1381509")
     public void testToggleFullscreen() throws TimeoutException {
         assertEquals("Navigation bar should be colorSurface before entering fullscreen mode.",
                 mRegularNavigationColor, mWindow.getNavigationBarColor());
