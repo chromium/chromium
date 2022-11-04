@@ -455,10 +455,10 @@ TimeTicks RolloverProtectedNow() {
       break;
 
     // Save the changed state. If the existing value is unchanged from the
-    // original, exit the loop.
-    int32_t check = g_last_time_and_rollovers.compare_exchange_strong(
+    // original so that the operation is successful. Exit the loop.
+    bool success = g_last_time_and_rollovers.compare_exchange_strong(
         original, state.as_opaque_32, std::memory_order_release);
-    if (check == original)
+    if (success)
       break;
 
     // Another thread has done something in between so retry from the top.
