@@ -86,7 +86,7 @@ js_library("gaia_dialog") {
   deps = [
     ":oobe_types.m",
     "./behaviors:oobe_dialog_host_behavior.m",
-    "./behaviors:oobe_i18n_behavior",
+    "./behaviors:oobe_i18n_behavior.m",
     "./buttons:oobe_back_button",
     "./buttons:oobe_text_button",
     "./dialogs:oobe_content_dialog.m",
@@ -190,7 +190,7 @@ js_library("oobe_carousel") {
 js_library("oobe_cr_lottie") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.js" ]
   deps = [
-    "behaviors:oobe_i18n_behavior",
+    "behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list =
@@ -227,7 +227,7 @@ js_library("oobe_types.m") {
 js_library("progress_list_item") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/progress_list_item.js" ]
   deps = [
-    "./behaviors:oobe_i18n_behavior",
+    "./behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
@@ -237,14 +237,14 @@ js_library("security_token_pin") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.js" ]
   deps = [
     ":oobe_types.m",
-    "./behaviors:oobe_i18n_behavior",
+    "./behaviors:oobe_i18n_behavior.m",
   ]
   extra_deps = [ ":web_components" ]
 }
 
 js_library("throbber_notice") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.js" ]
-  deps = [ "./behaviors:oobe_i18n_behavior" ]
+  deps = [ "./behaviors:oobe_i18n_behavior.m" ]
   extra_deps = [ ":web_components" ]
 }
 

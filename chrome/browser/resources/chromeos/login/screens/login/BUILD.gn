@@ -37,7 +37,7 @@ js_library("active_directory_password_change") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog.m",
@@ -52,7 +52,7 @@ js_library("cryptohome_recovery") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_loading_dialog.m",
   ]
@@ -64,7 +64,7 @@ js_library("encryption_migration") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog.m",
@@ -78,7 +78,7 @@ js_library("gaia_password_changed") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog.m",
@@ -116,7 +116,7 @@ js_library("management_transition") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog.m",
@@ -129,7 +129,7 @@ js_library("offline_login") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog.m",
@@ -145,7 +145,7 @@ js_library("update_required_card") {
     ":checking_downloading_update.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog.m",
@@ -159,7 +159,7 @@ js_library("checking_downloading_update.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/checking_downloading_update.m.js" ]
   deps = [
     "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog.m",
