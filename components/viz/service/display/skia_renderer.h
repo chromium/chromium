@@ -262,6 +262,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // quads. The default values perform no adjustment.
   sk_sp<SkColorFilter> GetColorSpaceConversionFilter(
       const gfx::ColorSpace& src,
+      absl::optional<uint32_t> src_bit_depth,
       absl::optional<gfx::HDRMetadata> src_hdr_metadata,
       const gfx::ColorSpace& dst,
       float resource_offset = 0.0f,

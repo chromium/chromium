@@ -908,6 +908,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
   gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes];
   external_resources.type = ExternalResourceTypeForHardwarePlanes(
       *video_frame, target, buffer_formats, use_stream_video_draw_quad_);
+  external_resources.bits_per_channel = video_frame->BitDepth();
 
   if (external_resources.type == VideoFrameResourceType::NONE) {
     DLOG(ERROR) << "Unsupported Texture format"

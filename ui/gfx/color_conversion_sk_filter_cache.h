@@ -28,15 +28,17 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
       delete;
   ~ColorConversionSkFilterCache();
 
-  // Retrieve an SkColorFilter to transform `src` to `dst`. The filter also
-  // applies the offset `src_resource_offset` and then scales by
-  // `src_resource_multiplier`. Apply tone mapping of `src` is HLG or PQ,
-  // using `sdr_max_luminance_nits`, `src_hdr_metadata`, and
+  // Retrieve an SkColorFilter to transform `src` to `dst`. The bit depth of
+  // `src` maybe specified in `src_bit_depth` (relevant only for YUV to RGB
+  // conversion). The filter also applies the offset `src_resource_offset` and
+  // then scales by `src_resource_multiplier`. Apply tone mapping of `src` is
+  // HLG or PQ, using `sdr_max_luminance_nits`, `src_hdr_metadata`, and
   // `dst_max_luminance_relative` as parameters.
   sk_sp<SkColorFilter> Get(const gfx::ColorSpace& src,
                            const gfx::ColorSpace& dst,
                            float resource_offset,
                            float resource_multiplier,
+                           absl::optional<uint32_t> src_bit_depth,
                            absl::optional<gfx::HDRMetadata> src_hdr_metadata,
                            float sdr_max_luminance_nits,
                            float dst_max_luminance_relative);
@@ -59,10 +61,12 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
  public:
   struct Key {
     Key(const gfx::ColorSpace& src,
+        uint32_t src_bit_depth,
         const gfx::ColorSpace& dst,
         float sdr_max_luminance_nits);
 
     gfx::ColorSpace src;
+    uint32_t src_bit_depth = 0;
     gfx::ColorSpace dst;
     float sdr_max_luminance_nits = 0.f;
 
