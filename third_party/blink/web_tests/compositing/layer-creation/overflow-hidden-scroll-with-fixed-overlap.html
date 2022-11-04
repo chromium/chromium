@@ -9,7 +9,30 @@
      ends up changing to include this type of (uncommon) overlap testing,
      rebaseline the expected.txt to have the same layer tree structure before
      and after the scroll update. -->
-<iframe id="iframe" srcdoc="
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+  if (window.testRunner && window.internals) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+  }
+
+  function runTest() {
+    runAfterLayoutAndPaint(function() {
+      if (window.testRunner) {
+        let dumpText = "Before:\n" + internals.layerTreeAsText(document);
+        let iframe = document.querySelector('iframe');
+        let iframeHtmlElem = iframe.contentDocument.documentElement;
+        iframeHtmlElem.scrollTop = iframeHtmlElem.offsetHeight;
+        runAfterLayoutAndPaint(function() {
+          dumpText += "\nAfter scroll:\n" + internals.layerTreeAsText(document);
+          document.querySelector('pre').textContent = dumpText;
+        }, true);
+      }
+    });
+  }
+</script>
+<iframe id="iframe" onload="runTest()" srcdoc="
   <style>
     html { overflow: hidden; }
     .fixed {
@@ -35,27 +58,3 @@
 "></iframe>
 
 <pre></pre>
-<script src="../../resources/run-after-layout-and-paint.js"></script>
-<script>
-if (window.testRunner && window.internals) {
-  testRunner.dumpAsText();
-  testRunner.waitUntilDone();
-  internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
-
-let iframe = document.querySelector('iframe');
-iframe.addEventListener('load', function() {
-  runAfterLayoutAndPaint(function() {
-    if (window.testRunner) {
-      let dumpText = "Before:\n" + internals.layerTreeAsText(document);
-      let iframeHtmlElem = iframe.contentDocument.documentElement;
-      iframeHtmlElem.scrollTop = iframeHtmlElem.offsetHeight;
-      runAfterLayoutAndPaint(function() {
-        dumpText += "\nAfter scroll:\n" + internals.layerTreeAsText(document);
-        document.querySelector('pre').textContent = dumpText;
-      }, true);
-    }
-  });
-});
-</script>
-
