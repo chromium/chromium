@@ -23,7 +23,9 @@ enum class ASH_PUBLIC_EXPORT NewScreencastPreconditionState {
   // The new screencast button is visible but is disabled.
   kDisabled = 1,
   // The new screencast button is enabled and the user can create new ones now.
-  kEnabled = 2
+  kEnabled = 2,
+  // The new screencast button is hidden.
+  kHidden = 3,
 };
 
 // The reason for the new screencast button state.
@@ -47,6 +49,10 @@ enum class ASH_PUBLIC_EXPORT NewScreencastPreconditionReason {
   kSodaInstallationErrorNeedsReboot = 11,
 
   kAudioCaptureDisabledByPolicy = 12,
+
+  // Enabled reason:
+  kEnabledBySoda = 13,
+  kEnabledByServerSideSpeechRecognition = 14,
 };
 
 // Struct used to provide the new screen cast precondition state and the reasons

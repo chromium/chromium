@@ -42,6 +42,7 @@ export const ProjectorError = {
 export const NewScreencastPreconditionState = {
   DISABLED: 1,
   ENABLED: 2,
+  HIDDEN: 3,
 };
 
 /**
@@ -66,4 +67,8 @@ export const NewScreencastPreconditionReason = {
   SODA_INSTALLATION_ERROR_NEEDS_REBOOT: 11,
 
   AUDIO_CAPTURE_DISABLED_BY_POLICY: 12,
+
+  // Enabled reason:
+  ENABLED_BY_SODA: 13,
+  ENABLED_BY_SERVER_SIDE_SPEECH_RECOGNITION: 14,
 };
