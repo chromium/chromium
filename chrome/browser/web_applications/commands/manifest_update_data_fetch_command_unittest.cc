@@ -573,6 +573,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, NoAppUpdateNeeded) {
 
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(), ManifestUpdateResult::kAppUpToDate);
+  EXPECT_FALSE(result.app_identity_update_allowed);
 }
 
 TEST_F(ManifestUpdateDataFetchCommandTest, AppNotEligible) {
@@ -597,6 +598,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, AppNotEligible) {
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(),
             ManifestUpdateResult::kAppNotEligible);
+  EXPECT_FALSE(result.app_identity_update_allowed);
 }
 
 TEST_F(ManifestUpdateDataFetchCommandTest, AppIdMismatch) {
@@ -621,6 +623,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, AppIdMismatch) {
 
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(), ManifestUpdateResult::kAppIdMismatch);
+  EXPECT_FALSE(result.app_identity_update_allowed);
 }
 
 TEST_F(ManifestUpdateDataFetchCommandTest, IconReadFromDiskFailed) {
@@ -652,6 +655,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, IconReadFromDiskFailed) {
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(),
             ManifestUpdateResult::kIconReadFromDiskFailed);
+  EXPECT_FALSE(result.app_identity_update_allowed);
 }
 
 TEST_F(ManifestUpdateDataFetchCommandTest, DoNotAcceptAppUpdateDialog) {
@@ -676,6 +680,7 @@ TEST_F(ManifestUpdateDataFetchCommandTest, DoNotAcceptAppUpdateDialog) {
 
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(), ManifestUpdateResult::kAppUpToDate);
+  EXPECT_FALSE(result.app_identity_update_allowed);
 }
 
 }  // namespace web_app
