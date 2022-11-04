@@ -1337,6 +1337,12 @@ bool ContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
       features::kSuppressDifferentOriginSubframeJSDialogs);
 }
 
+std::unique_ptr<AnchorElementPreconnectDelegate>
+ContentBrowserClient::CreateAnchorElementPreconnectDelegate(
+    RenderFrameHost& render_frame_host) {
+  return nullptr;
+}
+
 std::unique_ptr<SpeculationHostDelegate>
 ContentBrowserClient::CreateSpeculationHostDelegate(
     RenderFrameHost& render_frame_host) {

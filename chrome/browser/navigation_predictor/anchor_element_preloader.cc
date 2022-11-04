@@ -36,26 +36,13 @@ content::PreloadingFailureReason ToFailureReason(
 AnchorElementPreloader::~AnchorElementPreloader() = default;
 
 AnchorElementPreloader::AnchorElementPreloader(
-    content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::AnchorElementInteractionHost> receiver)
-    : content::DocumentService<blink::mojom::AnchorElementInteractionHost>(
-          render_frame_host,
-          std::move(receiver)) {}
+    content::RenderFrameHost& render_frame_host)
+    : render_frame_host_(render_frame_host) {}
 
-void AnchorElementPreloader::Create(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::AnchorElementInteractionHost>
-        receiver) {
-  CHECK(render_frame_host);
-  // The object is bound to the lifetime of the |render_frame_host| and the mojo
-  // connection. See DocumentService for details.
-  new AnchorElementPreloader(*render_frame_host, std::move(receiver));
-}
-
-void AnchorElementPreloader::OnPointerDown(const GURL& target) {
+void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   content::PreloadingData* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(
-          content::WebContents::FromRenderFrameHost(&render_frame_host()));
+          content::WebContents::FromRenderFrameHost(&render_frame_host_));
   url::SchemeHostPort scheme_host_port(target);
   content::PreloadingURLMatchCallback match_callback =
       base::BindRepeating(is_match_for_preconnect, scheme_host_port);
@@ -71,7 +58,7 @@ void AnchorElementPreloader::OnPointerDown(const GURL& target) {
       content::PreloadingType::kPreconnect, match_callback);
 
   if (!prefetch::IsSomePreloadingEnabled(
-          *Profile::FromBrowserContext(render_frame_host().GetBrowserContext())
+          *Profile::FromBrowserContext(render_frame_host_->GetBrowserContext())
                ->GetPrefs())) {
     attempt->SetEligibility(
         content::PreloadingEligibility::kPreloadingDisabled);
@@ -79,7 +66,7 @@ void AnchorElementPreloader::OnPointerDown(const GURL& target) {
   }
 
   auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
-      Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
+      Profile::FromBrowserContext(render_frame_host_->GetBrowserContext()));
   if (!loading_predictor) {
     attempt->SetEligibility(ToPreloadingEligibility(
         ChromePreloadingEligibility::kUnableToGetLoadingPredictor));

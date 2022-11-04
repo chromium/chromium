@@ -194,6 +194,7 @@ class FileSystemBackend;
 namespace content {
 enum class SiteIsolationMode;
 enum class SmsFetchFailureType;
+class AnchorElementPreconnectDelegate;
 class AuthenticatorRequestClientDelegate;
 class BluetoothDelegate;
 class BrowserChildProcessHost;
@@ -2257,6 +2258,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // main frame should be disallowed.
   virtual bool SuppressDifferentOriginSubframeJSDialogs(
       BrowserContext* browser_context);
+
+  // Allows the embedder to provide an AnchorElementPreconnectDelegate that will
+  // be used to make heuristics based preconnects.
+  virtual std::unique_ptr<AnchorElementPreconnectDelegate>
+  CreateAnchorElementPreconnectDelegate(RenderFrameHost& render_frame_host);
 
   // Allows the embedder to provide a SpeculationHostDelegate that will be used
   // to process speculation rules provided by the document hosted by

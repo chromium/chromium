@@ -80,6 +80,7 @@
 #include "chrome/browser/memory/chrome_browser_main_extra_parts_memory.h"
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
+#include "chrome/browser/navigation_predictor/anchor_element_preloader.h"
 #include "chrome/browser/net/cert_verifier_configuration.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -6840,6 +6841,12 @@ bool ChromeContentBrowserClient::IsFindInPageDisabledForOrigin(
 #else
   return false;
 #endif
+}
+
+std::unique_ptr<content::AnchorElementPreconnectDelegate>
+ChromeContentBrowserClient::CreateAnchorElementPreconnectDelegate(
+    content::RenderFrameHost& render_frame_host) {
+  return std::make_unique<AnchorElementPreloader>(render_frame_host);
 }
 
 std::unique_ptr<content::SpeculationHostDelegate>

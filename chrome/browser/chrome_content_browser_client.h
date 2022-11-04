@@ -795,6 +795,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool SuppressDifferentOriginSubframeJSDialogs(
       content::BrowserContext* browser_context) override;
 
+  std::unique_ptr<content::AnchorElementPreconnectDelegate>
+  CreateAnchorElementPreconnectDelegate(
+      content::RenderFrameHost& render_frame_host) override;
+
   std::unique_ptr<content::SpeculationHostDelegate>
   CreateSpeculationHostDelegate(
       content::RenderFrameHost& render_frame_host) override;
