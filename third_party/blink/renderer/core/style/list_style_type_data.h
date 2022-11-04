@@ -67,8 +67,11 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
   Type type_;
   AtomicString name_or_string_value_;
 
-  // The tree scope for looking up the custom counter style name
-  Member<const TreeScope> tree_scope_;
+  // The tree scope for looking up the custom counter style name.
+  // Must be weak reference to break the following ref cycle of both GC-ed and
+  // ref-counted objects:
+  // Document --> ComputedStyle --> ListStyleTypeData --> TreeScope(Document)
+  WeakMember<const TreeScope> tree_scope_;
 
   // The CounterStyle that we are using. The reference is updated on demand.
   // Note: this is NOT part of the computed value of 'list-style-type'.
