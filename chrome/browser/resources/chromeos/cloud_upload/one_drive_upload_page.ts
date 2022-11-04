@@ -1,0 +1,70 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+
+import {BaseSetupPageElement, CANCEL_SETUP_EVENT} from './base_setup_page.js';
+import {UserAction} from './cloud_upload.mojom-webui.js';
+import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import {getTemplate} from './one_drive_upload_page.html.js';
+
+/**
+ * The OneDriveUploadPageElement represents the setup page that prompts the user
+ * to upload the file to OneDrive.
+ */
+export class OneDriveUploadPageElement extends BaseSetupPageElement {
+  /** The name of the file to upload. */
+  private fileName: string|null = null;
+
+  constructor() {
+    super();
+  }
+
+  /**
+   * Sets the file name to be displayed by this dialog. Can be null if there is
+   * no file to upload.
+   * @param fileName Name of the file to be displayed.
+   */
+  setFileName(fileName: string|null) {
+    this.fileName = fileName;
+    if (this.isConnected) {
+      this.connectedCallback();
+    }
+  }
+
+  private get proxy(): CloudUploadBrowserProxy {
+    return CloudUploadBrowserProxy.getInstance();
+  }
+
+  /**
+   * Initialises the page specific content inside the page.
+   */
+  connectedCallback(): void {
+    this.innerHTML = getTemplate() as string;
+    const fileContainerElement =
+        this.querySelector('#file-container')! as HTMLElement;
+    const fileNameElement = this.querySelector('#file-name')! as HTMLElement;
+    const uploadButton = this.querySelector('.action-button')! as HTMLElement;
+    const cancelButton = this.querySelector('.cancel-button') as HTMLElement;
+
+    if (this.fileName != null) {
+      fileContainerElement.hidden = false;
+      fileNameElement.innerText = `File name: ${this.fileName}`;
+    }
+
+    uploadButton.addEventListener('click', () => this.onUploadButtonClick());
+    cancelButton.addEventListener('click', () => this.onCancelButtonClick());
+  }
+
+  private onUploadButtonClick(): void {
+    this.proxy.handler.respondAndClose(UserAction.kUpload);
+  }
+
+  private onCancelButtonClick(): void {
+    this.dispatchEvent(
+        new CustomEvent(CANCEL_SETUP_EVENT, {bubbles: true, composed: true}));
+  }
+}
+
+customElements.define('upload-page', OneDriveUploadPageElement);

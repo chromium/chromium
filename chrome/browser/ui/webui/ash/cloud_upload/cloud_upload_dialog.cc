@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash::cloud_upload {
@@ -62,20 +63,22 @@ void OpenODFSUrl(const storage::FileSystemURL& uploaded_file_url) {
       }));
 }
 
-void OnUploadActionReceived(Profile* profile,
-                            const storage::FileSystemURL& file_url,
-                            const UploadType upload_type,
-                            const std::string& action) {
+void OnCloudSetupComplete(Profile* profile,
+                          absl::optional<storage::FileSystemURL> file_url,
+                          const UploadType upload_type,
+                          const std::string& action) {
   if (action == kUserActionUpload) {
-    switch (upload_type) {
-      case UploadType::kOneDrive:
-        OneDriveUploadHandler::Upload(profile, file_url,
-                                      base::BindOnce(&OpenODFSUrl));
-        break;
-      case UploadType::kDrive:
-        DriveUploadHandler::Upload(profile, file_url,
-                                   base::BindOnce(&OpenDriveUrl));
-        break;
+    if (file_url.has_value()) {
+      switch (upload_type) {
+        case UploadType::kOneDrive:
+          OneDriveUploadHandler::Upload(profile, *file_url,
+                                        base::BindOnce(&OpenODFSUrl));
+          break;
+        case UploadType::kDrive:
+          DriveUploadHandler::Upload(profile, *file_url,
+                                     base::BindOnce(&OpenDriveUrl));
+          break;
+      }
     }
   } else if (action == kUserActionCancel) {
     UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
@@ -99,7 +102,7 @@ bool UploadAndOpen(Profile* profile,
     return false;
   }
   // TODO(crbug.com/1336924) Add support for multi-file selection.
-  OnUploadActionReceived(profile, file_urls[0], upload_type, kUserActionUpload);
+  OnCloudSetupComplete(profile, file_urls[0], upload_type, kUserActionUpload);
   return true;
 }
 
@@ -115,15 +118,17 @@ bool CloudUploadDialog::Show(
     return false;
   }
 
-  DCHECK(!file_urls.empty());
-  // TODO(crbug.com/1336924) Add support for multi-file selection.
-  const storage::FileSystemURL file_url = file_urls[0];
+  absl::optional<storage::FileSystemURL> file_url;
+  if (!file_urls.empty()) {
+    // TODO(crbug.com/1336924) Add support for multi-file selection.
+    file_url = file_urls[0];
+  }
 
   // The pointer is managed by an instance of `views::WebDialogView` and removed
   // in `SystemWebDialogDelegate::OnDialogClosed`.
   CloudUploadDialog* dialog = new CloudUploadDialog(
       file_url, upload_type,
-      base::BindOnce(&OnUploadActionReceived, profile, file_url, upload_type));
+      base::BindOnce(&OnCloudSetupComplete, profile, file_url, upload_type));
 
   dialog->ShowSystemDialog();
   return true;
@@ -136,12 +141,13 @@ void CloudUploadDialog::OnDialogClosed(const std::string& json_retval) {
   SystemWebDialogDelegate::OnDialogClosed(json_retval);
 }
 
-CloudUploadDialog::CloudUploadDialog(const storage::FileSystemURL& file_url,
-                                     const UploadType upload_type,
-                                     UploadRequestCallback callback)
+CloudUploadDialog::CloudUploadDialog(
+    absl::optional<storage::FileSystemURL> file_url,
+    const UploadType upload_type,
+    UploadRequestCallback callback)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUICloudUploadURL),
                               std::u16string() /* title */),
-      file_url_(file_url),
+      file_url_(std::move(file_url)),
       upload_type_(upload_type),
       callback_(std::move(callback)) {}
 
@@ -149,7 +155,9 @@ CloudUploadDialog::~CloudUploadDialog() = default;
 
 std::string CloudUploadDialog::GetDialogArgs() const {
   base::DictionaryValue args;
-  args.SetKey("fileName", base::Value(file_url_.path().BaseName().value()));
+  if (file_url_.has_value()) {
+    args.SetKey("fileName", base::Value(file_url_->path().BaseName().value()));
+  }
   switch (upload_type_) {
     case UploadType::kOneDrive:
       args.SetKey("uploadType", base::Value("OneDrive"));

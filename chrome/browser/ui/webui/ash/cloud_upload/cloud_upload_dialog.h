@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 class Profile;
@@ -49,7 +50,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   void OnDialogClosed(const std::string& json_retval) override;
 
  protected:
-  CloudUploadDialog(const storage::FileSystemURL& file_url,
+  CloudUploadDialog(absl::optional<storage::FileSystemURL> file_url,
                     const UploadType upload_type,
                     UploadRequestCallback callback);
   std::string GetDialogArgs() const override;
@@ -58,7 +59,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
 
  private:
-  const storage::FileSystemURL file_url_;
+  const absl::optional<storage::FileSystemURL> file_url_;
   const UploadType upload_type_;
   UploadRequestCallback callback_;
 };

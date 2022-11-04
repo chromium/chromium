@@ -11,7 +11,7 @@ build_webui("build") {
   web_component_files = [
     "base_setup_page.ts",
     "welcome_page.ts",
-    "upload_page.ts",
+    "one_drive_upload_page.ts",
   ]
   non_web_component_files = [
     "cloud_upload_browser_proxy.ts",

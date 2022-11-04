@@ -6,9 +6,8 @@ import 'chrome://cloud-upload/cloud_upload_dialog.js';
 
 import {PageHandlerRemote, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
-import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
-import {UploadType} from 'chrome://cloud-upload/upload_page.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {CloudUploadElement, UploadType} from 'chrome://cloud-upload/cloud_upload_dialog.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
@@ -18,20 +17,23 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
   handler: PageHandlerRemote&TestBrowserProxy;
   uploadType: UploadType;
+  fileName: string|null;
 
-  constructor(uploadType: UploadType) {
+  constructor(uploadType: UploadType, fileName: string|null) {
     this.handler = TestBrowserProxy.fromClass(PageHandlerRemote);
     this.uploadType = uploadType;
+    this.fileName = fileName;
   }
 
   getDialogArguments() {
     switch (this.uploadType) {
       case UploadType.ONE_DRIVE:
-        return JSON.stringify({fileName: 'file.docx', uploadType: 'OneDrive'});
+        return JSON.stringify(
+            {fileName: this.fileName, uploadType: 'OneDrive'});
       case UploadType.DRIVE:
-        return JSON.stringify({fileName: 'file.docx', uploadType: 'Drive'});
+        return JSON.stringify({fileName: this.fileName, uploadType: 'Drive'});
       default:
-        return JSON.stringify({fileName: 'file.docx', uploadType: ''});
+        return JSON.stringify({fileName: this.fileName, uploadType: ''});
     }
   }
 }
@@ -45,18 +47,19 @@ suite('<cloud-upload>', () => {
      called. */
   let testProxy: CloudUploadTestBrowserProxy;
 
-  const setupForUploadType = (uploadType: UploadType) => {
-    testProxy = new CloudUploadTestBrowserProxy(uploadType);
-    CloudUploadBrowserProxy.setInstance(testProxy);
+  const setupForUploadType =
+      (uploadType: UploadType, fileName: string|null) => {
+        testProxy = new CloudUploadTestBrowserProxy(uploadType, fileName);
+        CloudUploadBrowserProxy.setInstance(testProxy);
 
-    // Creates and attaches the <cloud-upload> element to the DOM tree.
-    cloudUploadApp =
-        document.createElement('cloud-upload') as CloudUploadElement;
-    container.appendChild(cloudUploadApp);
+        // Creates and attaches the <cloud-upload> element to the DOM tree.
+        cloudUploadApp =
+            document.createElement('cloud-upload') as CloudUploadElement;
+        container.appendChild(cloudUploadApp);
 
-    // Click the 'next' button on the welcome page.
-    cloudUploadApp.$('.action-button').click();
-  };
+        // Click the 'next' button on the welcome page.
+        cloudUploadApp.$('.action-button').click();
+      };
 
   /**
    * Runs prior to all the tests running, attaches a div to enable isolated
@@ -77,33 +80,31 @@ suite('<cloud-upload>', () => {
   });
 
   /**
-   * Tests that the dialog's content is correct for OneDrive.
+   * Tests that the dialog's content is correct for OneDrive when there is a
+   * file.
    */
-  test('Upload to OneDrive - title', async () => {
-    setupForUploadType(UploadType.ONE_DRIVE);
-    const titleElement = cloudUploadApp.$('div#title');
-    const uploadButton = cloudUploadApp.$('.action-button');
-    assertEquals(`Upload to OneDrive`, titleElement.innerText);
-    assertEquals(`Upload to OneDrive`, uploadButton.innerText);
+  test('Set up OneDrive with file', async () => {
+    setupForUploadType(UploadType.ONE_DRIVE, 'file.docx');
+    const fileContainer = cloudUploadApp.$('#file-container');
+    assertFalse(fileContainer.hidden);
   });
 
   /**
-   * Tests that the dialog's content is correct for Drive.
+   * Tests that the dialog's content is correct for OneDrive when there is no
+   * file.
    */
-  test('Upload to Drive - title', async () => {
-    setupForUploadType(UploadType.DRIVE);
-    const titleElement = cloudUploadApp.$('div#title');
-    const uploadButton = cloudUploadApp.$('.action-button');
-    assertEquals(`Upload to Drive`, titleElement.innerText);
-    assertEquals(`Upload to Drive`, uploadButton.innerText);
+  test('Set up OneDrive without file', async () => {
+    setupForUploadType(UploadType.ONE_DRIVE, null);
+    const fileContainer = cloudUploadApp.$('#file-container');
+    assertTrue(fileContainer.hidden);
   });
 
   /**
-   * Tests that clicking the upload button triggers the right `respondAndClose`
-   * mojo request.
+   * Tests that clicking the open file button triggers the right
+   * `respondAndClose` mojo request.
    */
-  test('Upload button', async () => {
-    setupForUploadType(UploadType.DRIVE);
+  test('Open file button', async () => {
+    setupForUploadType(UploadType.DRIVE, 'file.docx');
     cloudUploadApp.$('.action-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
@@ -112,11 +113,11 @@ suite('<cloud-upload>', () => {
   });
 
   /**
-   * Tests that clicking the cancel button triggers the right `respondAndClose`
+   * Tests that clicking the close button triggers the right `respondAndClose`
    * mojo request.
    */
-  test('Cancel button', async () => {
-    setupForUploadType(UploadType.DRIVE);
+  test('Close button', async () => {
+    setupForUploadType(UploadType.DRIVE, 'file.docx');
     cloudUploadApp.$('.cancel-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));

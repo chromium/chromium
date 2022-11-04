@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
 import {CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
 import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
-import {UploadPageElement} from './upload_page.js';
+import {OneDriveUploadPageElement} from './one_drive_upload_page.js';
 import {WelcomePageElement} from './welcome_page.js';
+
+export enum UploadType {
+  ONE_DRIVE = 0,
+  DRIVE = 1,
+}
 
 /**
  * The CloudUploadElement is the main dialog controller that aggregates all the
@@ -17,15 +24,19 @@ export class CloudUploadElement extends HTMLElement {
   pages: HTMLElement[];
   /** The current page index into `pages`. */
   private currentPageIdx: number = 0;
+  private fileName: string|null = null;
 
   constructor() {
     super();
+    this.processDialogArgs();
     this.attachShadow({mode: 'open'});
 
     // TODO(b/251046341): Adjust this once the rest of the pages are in place.
+    const oneDriveUploadPage = new OneDriveUploadPageElement();
+    oneDriveUploadPage.setFileName(this.fileName);
     this.pages = [
       new WelcomePageElement(),
-      new UploadPageElement(),
+      oneDriveUploadPage,
     ];
     for (let i = 0; i < this.pages.length; i++) {
       this.pages[i]?.setAttribute(
@@ -61,6 +72,24 @@ export class CloudUploadElement extends HTMLElement {
     this.currentPage?.remove();
     this.currentPageIdx = page;
     this.shadowRoot?.appendChild(this.currentPage!);
+  }
+
+  /**
+   * Initialises the class members based off the given dialog arguments.
+   */
+  private processDialogArgs(): void {
+    try {
+      const dialogArgs = this.proxy.getDialogArguments();
+      assert(dialogArgs);
+      const args = JSON.parse(dialogArgs);
+      assert(args);
+      if (args.fileName != null) {
+        this.fileName = args.fileName;
+      }
+    } catch (e) {
+      // TODO(b/243095484) Define expected behavior.
+      console.error(`Unable to get dialog arguments . Error: ${e}.`);
+    }
   }
 
   /**
