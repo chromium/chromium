@@ -38,6 +38,7 @@ public class AccessibilitySettings
     private AccessibilitySettingsDelegate mDelegate;
     private BooleanPreferenceDelegate mReaderForAccessibilityDelegate;
     private BooleanPreferenceDelegate mAccessibilityTabSwitcherDelegate;
+    private double mPageZoomLatestDefaultZoomPrefValue;
 
     private FontSizePrefs mFontSizePrefs;
     private FontSizePrefsObserver mFontSizePrefsObserver = new FontSizePrefsObserver() {
@@ -143,6 +144,14 @@ public class AccessibilitySettings
             mFontSizePrefs.recordUserFontPrefChange();
             mRecordFontSizeChangeOnStop = false;
         }
+
+        // Ensure that the user has set a default zoom value during this session.
+        if (mPageZoomLatestDefaultZoomPrefValue != 0.0) {
+            PageZoomUma.logSettingsDefaultZoomLevelChangedHistogram();
+            PageZoomUma.logSettingsDefaultZoomLevelValueHistogram(
+                    mPageZoomLatestDefaultZoomPrefValue);
+        }
+
         super.onStop();
     }
 
@@ -158,6 +167,8 @@ public class AccessibilitySettings
                 mReaderForAccessibilityDelegate.setEnabled((Boolean) newValue);
             }
         } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {
+            mPageZoomLatestDefaultZoomPrefValue =
+                    PageZoomUtils.convertSeekBarValueToZoomLevel((Integer) newValue);
             PageZoomUtils.setDefaultZoomBySeekBarValue(
                     mDelegate.getBrowserContextHandle(), (Integer) newValue);
         } else if (PREF_PAGE_ZOOM_ALWAYS_SHOW.equals(preference.getKey())) {

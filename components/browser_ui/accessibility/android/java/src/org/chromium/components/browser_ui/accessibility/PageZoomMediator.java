@@ -26,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class PageZoomMediator {
     private final PropertyModel mModel;
     private WebContents mWebContents;
+    private double mLatestZoomValue;
 
     public PageZoomMediator(PropertyModel model) {
         mModel = model;
@@ -59,16 +60,26 @@ public class PageZoomMediator {
 
         // Always show the menu item if the user has set this in Accessibility Settings.
         if (PageZoomUtils.shouldAlwaysShowZoomMenuItem()) {
+            PageZoomUma.logAppMenuEnabledStateHistogram(
+                    PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.USER_ENABLED);
             return true;
         }
 
         // The default (float) |fontScale| is 1, the default page zoom is 1.
+        // If the user has a system font scale other than the default, always show the menu item.
         boolean isUsingDefaultSystemFontScale = MathUtils.areFloatsEqual(SYSTEM_FONT_SCALE, 1f);
+        if (!isUsingDefaultSystemFontScale) {
+            PageZoomUma.logAppMenuEnabledStateHistogram(
+                    PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED);
+            return true;
+        }
 
-        // TODO(mschillaci): Replace with a delegate call, cannot depend directly on Profile.
-        boolean isUsingDefaultPageZoom = true;
-
-        return !isUsingDefaultSystemFontScale || !isUsingDefaultPageZoom;
+        // TODO(mschillaci): Decide whether to additionally enable app menu item depending on
+        // default page zoom. If yes, then replace with a delegate call, cannot depend directly on
+        // Profile.
+        PageZoomUma.logAppMenuEnabledStateHistogram(
+                PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.NOT_ENABLED);
+        return false;
     }
 
     /**
@@ -80,6 +91,15 @@ public class PageZoomMediator {
         initialize();
     }
 
+    /**
+     * Returns the latest updated user selected zoom value during this session.
+     * @return double representing latest updated zoom value. Returns placeholder 0.0 if user did
+     *         not select a zoom value during this session.
+     */
+    protected double latestZoomValue() {
+        return mLatestZoomValue;
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void handleDecreaseClicked(Void unused) {
         // When decreasing zoom, "snap" to the greatest preset value that is less than the current.
@@ -87,10 +107,7 @@ public class PageZoomMediator {
         int index = PageZoomUtils.getNextIndex(true, currentZoomFactor);
 
         if (index >= 0) {
-            mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE,
-                    PageZoomUtils.convertZoomFactorToSeekBarValue(AVAILABLE_ZOOM_FACTORS[index]));
-            setZoomLevel(mWebContents, AVAILABLE_ZOOM_FACTORS[index]);
-            updateButtonStates(AVAILABLE_ZOOM_FACTORS[index]);
+            handleIndexChanged(index);
         }
     }
 
@@ -101,10 +118,7 @@ public class PageZoomMediator {
         int index = PageZoomUtils.getNextIndex(false, currentZoomFactor);
 
         if (index <= AVAILABLE_ZOOM_FACTORS.length - 1) {
-            mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE,
-                    PageZoomUtils.convertZoomFactorToSeekBarValue(AVAILABLE_ZOOM_FACTORS[index]));
-            setZoomLevel(mWebContents, AVAILABLE_ZOOM_FACTORS[index]);
-            updateButtonStates(AVAILABLE_ZOOM_FACTORS[index]);
+            handleIndexChanged(index);
         }
     }
 
@@ -113,6 +127,7 @@ public class PageZoomMediator {
         setZoomLevel(mWebContents, PageZoomUtils.convertSeekBarValueToZoomFactor(newValue));
         mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE, newValue);
         updateButtonStates(PageZoomUtils.convertSeekBarValueToZoomFactor(newValue));
+        mLatestZoomValue = PageZoomUtils.convertSeekBarValueToZoomLevel(newValue);
     }
 
     private void initialize() {
@@ -124,6 +139,18 @@ public class PageZoomMediator {
                 convertZoomFactorToSeekBarValue(currentZoomFactor));
 
         updateButtonStates(currentZoomFactor);
+
+        // Reset latest zoom value when initializing
+        mLatestZoomValue = 0.0;
+    }
+
+    private void handleIndexChanged(int index) {
+        double zoomFactor = AVAILABLE_ZOOM_FACTORS[index];
+        int seekBarValue = PageZoomUtils.convertZoomFactorToSeekBarValue(zoomFactor);
+        mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE, seekBarValue);
+        setZoomLevel(mWebContents, zoomFactor);
+        updateButtonStates(zoomFactor);
+        mLatestZoomValue = PageZoomUtils.convertSeekBarValueToZoomLevel(seekBarValue);
     }
 
     private void updateButtonStates(double newZoomFactor) {

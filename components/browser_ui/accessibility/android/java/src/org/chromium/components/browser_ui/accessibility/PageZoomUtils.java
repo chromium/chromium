@@ -48,8 +48,8 @@ public class PageZoomUtils {
     public static final int PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE = 250;
 
     // The minimum and maximum zoom values as a percentage (e.g. 50% = 0.50, 300% = 3.0)
-    private static final float PAGE_ZOOM_MINIMUM_ZOOM_LEVEL = 0.50f;
-    private static final float PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL = 3.00f;
+    protected static final float PAGE_ZOOM_MINIMUM_ZOOM_LEVEL = 0.50f;
+    protected static final float PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL = 3.00f;
 
     /**
      * Returns whether the Accessibility Settings page should include the 'Zoom' UI. The page

@@ -249,6 +249,84 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.Android.PageZoom.AppMenuEnabledState"
+    enum="AccessibilityPageZoomAppMenuEnabledState" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the enabled state for the Page Zoom option on the main app menu. The
+    state will be one of the following enumerated states: 0) not enabled, 1)
+    enabled explicitly by the user on the Accessibility Page Zoom setting, 2)
+    enabled automatically if the user has an Android OS-wide default font size.
+    Recorded each time the app menu is opened.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.PageZoom.AppMenuSliderOpened"
+    enum="Boolean" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks whether the user opened the Page Zoom slider from the app menu
+    option. Recorded each time the slider is opened from the app menu.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.PageZoom.AppMenuSliderZoomLevelChanged"
+    enum="Boolean" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks whether the user changed the individual page zoom level on at least
+    one webpage from the app menu slider view. Recorded each time the slider is
+    dismissed if the user changed the zoom level before dismissal.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.PageZoom.AppMenuSliderZoomLevelValue"
+    units="%" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    For users who changed the individual page zoom level on at least one webpage
+    from the app menu slider view, tracks what zoom level has been set on the
+    page. Recorded each time the slider is dismissed if the user changed the
+    zoom level before dismissal.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.Android.PageZoom.SettingsDefaultZoomLevelChanged"
+    enum="Boolean" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks whether the user changed the default page zoom level from the
+    Accessibility Page Zoom settings page. Recorded each time the user closes
+    the Accessibility Page Zoom settings page if the user changed the zoom level
+    while the settings page was showing.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.PageZoom.SettingsDefaultZoomLevelValue"
+    units="%" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    For users who changed the default page zoom level from the Accessibility
+    Page Zoom settings page, tracks what default zoom level has been set in the
+    settings. Recorded each time the user closes the Accessibility Page Zoom
+    settings page if the user changed the zoom level while the settings page was
+    showing.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.ScreenReader{AccessibilityEveryReport}"
     enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->

@@ -36,6 +36,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediator.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtils.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewBinder.java",
     "java/src/org/chromium/components/browser_ui/accessibility/TextScalePreference.java",

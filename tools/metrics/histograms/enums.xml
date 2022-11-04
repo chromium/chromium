@@ -331,6 +331,18 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="7" label="PDF"/>
 </enum>
 
+<enum name="AccessibilityPageZoomAppMenuEnabledState">
+  <summary>Track enabled state of page zoom option on app menu.</summary>
+<!-- This must be kept in sync with
+PageZoomUma.AccessibilityPageZoomAppMenuEnabledState in
+components/browser_ui/accessibility/android/java/src/org/chromium/
+components/browser_ui/accessibility/PageZoomUma.java -->
+
+  <int value="0" label="Not Enabled"/>
+  <int value="1" label="User Enabled"/>
+  <int value="2" label="OS Enabled"/>
+</enum>
+
 <enum name="AccessibilityTreeUnserializeError">
   <summary>
     Tracks the type of failure that occured when unserializing the accessibility

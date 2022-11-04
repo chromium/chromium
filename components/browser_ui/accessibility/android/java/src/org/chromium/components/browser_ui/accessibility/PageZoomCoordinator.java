@@ -66,6 +66,8 @@ public class PageZoomCoordinator {
      * @param webContents   WebContents that this zoom UI will control.
      */
     public void show(WebContents webContents) {
+        PageZoomUma.logAppMenuSliderOpenedHistogram();
+
         // If inflating for the first time or showing from hidden, start animation
         if (mView == null) {
             // If the view has not been created, lazily inflate from the view stub.
@@ -125,6 +127,13 @@ public class PageZoomCoordinator {
             Animation animation = getOutAnimation();
             mView.startAnimation(animation);
             mView.setVisibility(View.GONE);
+
+            // Ensure that the user has set a zoom value during this session.
+            double zoomValue = mMediator.latestZoomValue();
+            if (zoomValue != 0.0) {
+                PageZoomUma.logAppMenuSliderZoomLevelChangedHistogram();
+                PageZoomUma.logAppMenuSliderZoomLevelValueHistogram(zoomValue);
+            }
         }
     }
 
