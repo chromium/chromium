@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -129,6 +130,7 @@ public final class ShareButtonControllerTest {
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:start_surface_variation/single"})
     @Restriction(
             {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @DisabledTest(message = "crbug.com/1381572")
     public void
     testShareButtonInToolbarNotAffectedByOverview() throws TimeoutException {
         // Sign in.
@@ -159,6 +161,7 @@ public final class ShareButtonControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1381572")
     public void testShareButtonInToolbarIsDisabledOnUpdate() {
         View experimentalButton = mActivityTestRule.getActivity()
                                           .getToolbarManager()
