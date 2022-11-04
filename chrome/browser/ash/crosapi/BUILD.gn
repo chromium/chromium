@@ -376,8 +376,8 @@ source_set("test_support") {
   deps = [
     ":crosapi",
     "//ash",
-    "//ash/app_list:app_list",
-    "//chrome/browser/chromeos:test_support",
+    "//ash/app_list",
+    "//chrome/browser/ash:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/crosapi/mojom",
@@ -441,6 +441,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_config",
     "//base/test:test_support",
+    "//chrome/browser/ash:test_support",
     "//chrome/browser/chromeos:test_support",
     "//chrome/common/printing",
     "//chrome/test:test_support",

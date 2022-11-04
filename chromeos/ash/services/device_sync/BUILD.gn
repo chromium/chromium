@@ -176,7 +176,7 @@ static_library("device_sync") {
 
   visibility = [
     ":*",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash:*",
     "//chrome/browser/chromeos",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/services/device_sync/public/cpp:prefs",

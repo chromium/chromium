@@ -7,6 +7,8 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash)
 
 source_set("smart_dim") {
+  friend = [ "//chrome/browser/ash:unit_tests" ]
+
   public = [
     "metrics.h",
     "ml_agent.h",

@@ -4245,6 +4245,7 @@ if (!is_android) {
         "//chrome/browser/ash:arc_test_support",
         "//chrome/browser/ash:key_permissions_proto",
         "//chrome/browser/ash:login_logout_event_proto",
+        "//chrome/browser/ash:test_support",
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
         "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",
@@ -6587,8 +6588,6 @@ test("unit_tests") {
     sources += [
       "../browser/apps/app_service/app_icon/app_icon_factory_unittest.cc",
       "../browser/apps/app_service/app_service_proxy_unittest.cc",
-      "../browser/apps/app_service/app_service_test.cc",
-      "../browser/apps/app_service/app_service_test.h",
       "../browser/apps/app_service/intent_util_unittest.cc",
       "../browser/apps/app_service/launch_utils_unittest.cc",
       "../browser/apps/app_service/publishers/publisher_unittest.cc",
@@ -7145,6 +7144,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome:packed_resources_integrity_hash",
+      "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/autofill_assistant/password_change/vector_icons:vector_icons",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/image_editor:image_editor_component_util",
@@ -7538,6 +7538,8 @@ test("unit_tests") {
       "//chrome/browser/apps/app_provisioning_service/proto:proto",
       "//chrome/browser/ash",
       "//chrome/browser/ash:arc_test_support",
+      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash:unit_tests",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/crosapi:unit_tests",
@@ -9886,6 +9888,7 @@ if (!is_android) {
     if (is_chromeos_ash) {
       deps += [
         "//ash/constants",
+        "//chrome/browser/ash:test_support",
         "//chrome/browser/chromeos:dlp_policy_event_proto",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",

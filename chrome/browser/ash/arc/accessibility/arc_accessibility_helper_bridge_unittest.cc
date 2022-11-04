@@ -45,7 +45,6 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_change_observer.h"
-#include "ui/wm/public/wm_public_export.h"
 
 using ash::ArcNotificationItem;
 using ash::ArcNotificationSurface;
