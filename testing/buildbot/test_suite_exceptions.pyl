@@ -1591,7 +1591,7 @@
       },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
-          'shards': 12,
+          'shards': 24,
           'quickrun_shards': 24,
         },
       },
@@ -2359,7 +2359,7 @@
       'Linux ASan LSan Tests (1)': {
         # These are slow on the ASan trybot for some reason, crbug.com/1257927
         'swarming': {
-          'shards': 6,
+          'shards': 12,
           'quickrun_shards': 12,
         },
       },
