@@ -1023,3 +1023,13 @@ fuzzer_test("extension_web_request_form_data_parser_fuzzer") {
     "//net",
   ]
 }
+
+fuzzer_test("extension_declarative_net_request_indexed_rule_fuzzer") {
+  sources = [ "api/declarative_net_request/indexed_rule_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//url",
+  ]
+}
