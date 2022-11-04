@@ -701,7 +701,7 @@
       // @font-face Font property descriptors auto range.
       // https://www.w3.org/TR/css-fonts-4/#font-prop-desc
       name: "CSSFontFaceAutoVariableRange",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSFontFaceSrcTechParsing",
