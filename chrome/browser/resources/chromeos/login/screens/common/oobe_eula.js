@@ -21,7 +21,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {WebViewHelper} from '../../components/web_view_helper.m.js';
 import {Oobe} from '../../cr_ui.m.js';
 

@@ -17,7 +17,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
-import {OobeI18nBehavior} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeI18nBehavior} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {LongTouchDetector} from '../../components/long_touch_detector.m.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 

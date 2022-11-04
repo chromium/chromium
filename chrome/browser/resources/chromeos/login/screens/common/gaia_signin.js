@@ -27,7 +27,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources
 import {AuthFlow, AuthMode, SUPPORTED_PARAMS} from '../../../../gaia_auth_host/authenticator.js';
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
 import {Oobe} from '../../cr_ui.m.js';
