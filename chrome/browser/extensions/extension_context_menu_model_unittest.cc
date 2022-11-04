@@ -1325,8 +1325,8 @@ TEST_F(ExtensionContextMenuModelTest,
       profile(), *extension,
       PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
                     URLPatternSet({pattern}), URLPatternSet()));
-  ScriptingPermissionsModifier modifier(profile(), extension);
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   const GURL kActiveUrl("http://www.example.com/");
   const GURL kOtherUrl("http://www.google.com/");
@@ -1348,6 +1348,7 @@ TEST_F(ExtensionContextMenuModelTest,
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
 
+  ScriptingPermissionsModifier modifier(profile(), extension);
   EXPECT_TRUE(modifier.HasGrantedHostPermission(kActiveUrl));
   EXPECT_TRUE(modifier.HasGrantedHostPermission(kOtherUrl));
 
@@ -1396,7 +1397,8 @@ TEST_F(ExtensionContextMenuModelTest,
 
   // Also explicitly grant google.com.
   modifier.GrantHostPermission(kOtherUrl);
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   // Navigate to a url that should have "customize by extension" site
   // permissions by default (which allows us to test the page access submenu).
@@ -1484,8 +1486,9 @@ TEST_F(ExtensionContextMenuModelTest,
                                   URLPatternSet());
   prefs->AddGrantedPermissions(extension->id(), b_com_permissions);
 
-  ScriptingPermissionsModifier modifier(profile(), extension);
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   const GURL a_com("https://a.com");
   content::WebContents* web_contents = AddTab(a_com);
@@ -1527,7 +1530,8 @@ TEST_F(ExtensionContextMenuModelTest,
     EXPECT_TRUE(HasCantAccessPageEntry(menu));
   }
 
-  modifier.SetWithholdHostPermissions(true);
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
 
   // However, if the extension has runtime-granted permissions to b.com, we
   // *should* display them in the menu.
@@ -1589,8 +1593,9 @@ TEST_F(ExtensionContextMenuModelTest,
           .Build();
   InitializeAndAddExtension(*extension);
 
-  ScriptingPermissionsModifier modifier(profile(), extension);
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   const GURL a_com("https://a.com");
   content::WebContents* web_contents = AddTab(a_com);
@@ -1640,8 +1645,9 @@ TEST_F(ExtensionContextMenuModelTest, TestClickingPageAccessLearnMore) {
       ExtensionBuilder("extension").AddPermission("*://a.com/*").Build();
   InitializeAndAddExtension(*extension);
 
-  ScriptingPermissionsModifier modifier(profile(), extension);
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   const GURL a_com("https://a.com");
   AddTab(a_com);
@@ -2072,8 +2078,9 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension").AddPermission("*://a.com/*").Build();
   InitializeAndAddExtension(*extension);
-  EXPECT_FALSE(ScriptingPermissionsModifier(profile(), extension)
-                   .HasWithheldHostPermissions());
+
+  EXPECT_FALSE(PermissionsManager::Get(profile())->HasWithheldHostPermissions(
+      extension->id()));
 
   AddTab(GURL("https://a.com"));
 

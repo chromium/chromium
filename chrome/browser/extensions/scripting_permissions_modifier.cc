@@ -50,8 +50,12 @@ void ScriptingPermissionsModifier::SetWithholdHostPermissions(
     bool should_withhold) {
   DCHECK(CanAffectExtension());
 
-  if (HasWithheldHostPermissions() == should_withhold)
+  PermissionsManager* permissions_manager =
+      PermissionsManager::Get(browser_context_);
+  if (permissions_manager->HasWithheldHostPermissions(extension_->id()) ==
+      should_withhold) {
     return;
+  }
 
   // Set the pref first, so that listeners for permission changes get the proper
   // value if they query HasWithheldHostPermissions().
@@ -62,13 +66,6 @@ void ScriptingPermissionsModifier::SetWithholdHostPermissions(
     WithholdHostPermissions();
   else
     GrantWithheldHostPermissions();
-}
-
-bool ScriptingPermissionsModifier::HasWithheldHostPermissions() const {
-  DCHECK(CanAffectExtension());
-
-  return PermissionsManager::Get(browser_context_)
-      ->HasWithheldHostPermissions(extension_->id());
 }
 
 bool ScriptingPermissionsModifier::CanAffectExtension() const {

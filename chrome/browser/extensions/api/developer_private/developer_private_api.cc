@@ -357,10 +357,12 @@ std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
     content::BrowserContext* context,
     const scoped_refptr<const Extension>& extension) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
-  ScriptingPermissionsModifier permissions_modifier(context, extension);
-  return permissions_modifier.HasWithheldHostPermissions()
-             ? prefs->GetRuntimeGrantedPermissions(extension->id())
-             : prefs->GetGrantedPermissions(extension->id());
+  if (PermissionsManager::Get(context)->HasWithheldHostPermissions(
+          extension->id())) {
+    return prefs->GetRuntimeGrantedPermissions(extension->id());
+  } else {
+    return prefs->GetGrantedPermissions(extension->id());
+  }
 }
 
 // Updates num_extensions counts in `site_groups` for `granted_hosts` from one

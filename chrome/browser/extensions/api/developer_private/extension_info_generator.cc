@@ -270,8 +270,6 @@ std::vector<developer::SiteControl> GetSpecificSiteControls(
 developer::RuntimeHostPermissions CreateRuntimeHostPermissionsInfo(
     content::BrowserContext* browser_context,
     const Extension& extension) {
-  ScriptingPermissionsModifier permissions_modifier(
-      browser_context, base::WrapRefCounted(&extension));
   developer::RuntimeHostPermissions runtime_host_permissions;
 
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context);
@@ -282,7 +280,8 @@ developer::RuntimeHostPermissions CreateRuntimeHostPermissionsInfo(
   std::unique_ptr<const PermissionSet> granted_permissions;
   // Add the host access data, including the mode and any runtime-granted
   // hosts.
-  if (!permissions_modifier.HasWithheldHostPermissions()) {
+  if (!PermissionsManager::Get(browser_context)
+           ->HasWithheldHostPermissions(extension.id())) {
     granted_permissions =
         extension_prefs->GetGrantedPermissions(extension.id());
     runtime_host_permissions.host_access = developer::HOST_ACCESS_ON_ALL_SITES;

@@ -1492,8 +1492,10 @@ TEST_F(DeveloperPrivateApiUnitTest, GrantHostPermission) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
+  EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
+                   ->HasWithheldHostPermissions(extension->id()));
+
   ScriptingPermissionsModifier modifier(profile(), extension.get());
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
   modifier.SetWithholdHostPermissions(true);
 
   const GURL kExampleCom("https://example.com/");
@@ -1535,8 +1537,10 @@ TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
+  EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
+                   ->HasWithheldHostPermissions(extension->id()));
+
   ScriptingPermissionsModifier modifier(profile(), extension.get());
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
   modifier.SetWithholdHostPermissions(true);
 
   auto run_remove_host_permission = [this, extension](
@@ -1599,18 +1603,21 @@ TEST_F(DeveloperPrivateApiUnitTest, UpdateHostAccess) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
-  ScriptingPermissionsModifier modifier(profile(), extension.get());
 
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
+  PermissionsManager* permissions_manager =
+      PermissionsManager::Get(browser()->profile());
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   RunUpdateHostAccess(*extension, "ON_CLICK");
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   RunUpdateHostAccess(*extension, "ON_ALL_SITES");
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
 }
 
 TEST_F(DeveloperPrivateApiUnitTest,
@@ -1621,14 +1628,17 @@ TEST_F(DeveloperPrivateApiUnitTest,
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
 
-  RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
   const GURL example_com("https://example.com");
   modifier.GrantHostPermission(example_com);
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  PermissionsManager* permissions_manager =
+      PermissionsManager::Get(browser()->profile());
+
+  RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
   EXPECT_TRUE(modifier.HasGrantedHostPermission(example_com));
 
   RunUpdateHostAccess(*extension, "ON_CLICK");
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
   EXPECT_FALSE(modifier.HasGrantedHostPermission(example_com));
 
   // NOTE(devlin): It's a bit unfortunate that by cycling between host access
@@ -1649,7 +1659,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // transitions between states. Since this is definitely a power-user surface,
   // this is likely okay.
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
   EXPECT_FALSE(modifier.HasGrantedHostPermission(example_com));
 }
 
@@ -1661,18 +1671,22 @@ TEST_F(DeveloperPrivateApiUnitTest,
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
 
-  RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
+  PermissionsManager* permissions_manager =
+      PermissionsManager::Get(browser()->profile());
   const GURL example_com("https://example.com");
+
+  RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
   modifier.GrantHostPermission(example_com);
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
   EXPECT_TRUE(modifier.HasGrantedHostPermission(example_com));
 
   RunUpdateHostAccess(*extension, "ON_ALL_SITES");
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(extension->id()));
   EXPECT_TRUE(modifier.HasGrantedHostPermission(example_com));
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
   EXPECT_FALSE(modifier.HasGrantedHostPermission(example_com));
 }
 
@@ -1703,14 +1717,17 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Even though <all_urls> has been granted, it was granted as a runtime host
   // pattern, so the extension is still is considered to have withheld host
   // permissions.
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  PermissionsManager* permissions_manager =
+      PermissionsManager::Get(browser()->profile());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+
   EXPECT_TRUE(modifier.HasGrantedHostPermission(kGoogleCom));
   EXPECT_TRUE(modifier.HasGrantedHostPermission(kChromiumCom));
 
   // Changing to specific sites should now remove the broad pattern, leaving
   // only the google match pattern.
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
   EXPECT_TRUE(modifier.HasGrantedHostPermission(kGoogleCom));
   EXPECT_FALSE(modifier.HasGrantedHostPermission(kChromiumCom));
 }
@@ -2236,8 +2253,10 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   get_user_and_extension_sites(R"([])");
 
+  EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
+                   ->HasWithheldHostPermissions(extension_1->id()));
+
   ScriptingPermissionsModifier modifier(profile(), extension_1.get());
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
   modifier.SetWithholdHostPermissions(true);
 
   get_user_and_extension_sites(R"([])");
@@ -2343,9 +2362,10 @@ TEST_F(DeveloperPrivateApiUnitTest,
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension->id(),
                          developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+  EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
+                   ->HasWithheldHostPermissions(extension->id()));
 
   ScriptingPermissionsModifier modifier(profile(), extension.get());
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
   modifier.SetWithholdHostPermissions(true);
 
   GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);

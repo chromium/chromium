@@ -40,14 +40,6 @@ class ScriptingPermissionsModifier {
   // which CanAffectExtension() returns true). Anything else will DCHECK.
   void SetWithholdHostPermissions(bool withhold);
 
-  // Returns whether Chrome has withheld host permissions from the extension.
-  // This may only be called for extensions that can be affected (i.e., for
-  // which CanAffectExtension() returns true). Anything else will DCHECK.
-  // TODO(emiliapaz): Prefer using
-  // `PermissionsManager::HasWithheldHostPermissions(extension)`. Remove after
-  // all callers are migrated.
-  bool HasWithheldHostPermissions() const;
-
   // Returns true if the associated extension can be affected by
   // runtime host permissions.
   bool CanAffectExtension() const;

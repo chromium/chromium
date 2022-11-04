@@ -426,12 +426,14 @@ TEST_F(ScriptingPermissionsModifierUnitTest, SwitchBehavior) {
               testing::UnorderedElementsAre(URLPattern::kAllUrlsPattern));
   EXPECT_TRUE(
       permissions_data->withheld_permissions().effective_hosts().is_empty());
-  ScriptingPermissionsModifier modifier(profile(), extension);
-  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   // Revoke access.
+  ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
-  EXPECT_TRUE(modifier.HasWithheldHostPermissions());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
   EXPECT_THAT(GetEffectivePatternsAsStrings(*extension), testing::IsEmpty());
   EXPECT_THAT(GetPatternsAsStrings(
                   permissions_data->withheld_permissions().effective_hosts()),
