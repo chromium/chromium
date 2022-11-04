@@ -140,6 +140,20 @@ export class UserPreview extends WithPersonalizationStore {
     return '';
   }
 
+  /**
+   * Creates style string with static background image url for default user
+   * images . Static image loads faster and will provide a smooth experience
+   * when the animated image complete loading.
+   */
+  private getImgBackgroudStyle_(url: Url|null): string {
+    // Only add background image for default user images.
+    if (!this.image_ || this.image_.invalidImage || !this.image_.defaultImage) {
+      return '';
+    }
+
+    return `background-image: url('` + url + `&staticEncode=true')`;
+  }
+
   private shouldShowDeprecatedImageSourceInfo_(image: UserImage|null): boolean {
     return !!image && !!image.defaultImage && !!image.defaultImage.sourceInfo &&
         isNonEmptyArray(image.defaultImage.sourceInfo.author.data) &&

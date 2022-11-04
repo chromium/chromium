@@ -114,15 +114,15 @@ suite('UserPreviewTest', function() {
         'blob url is shown for external image');
   });
 
-  test('displays placeholder image if user image is unavailable', async () => {
+  test('do not display image if user image is not ready yet', async () => {
     userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement!);
 
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
     assertEquals(
-        'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE', avatarImage.src,
-        'placeholder image is shown if user image is unavailable');
+        null, avatarImage,
+        'do not display image if user image is not ready yet');
   });
 
   test('displays placeholder image if user image is invalid', async () => {

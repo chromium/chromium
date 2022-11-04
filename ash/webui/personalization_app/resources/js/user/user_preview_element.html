@@ -15,6 +15,22 @@
     position: relative;
   }
 
+  #imageBorderContainer {
+    background-color: var(--personalization-app-grid-item-background-color);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+    height: 80px;
+    width: 80px;
+  }
+
+  #imageContainer #imageBorderContainer img {
+    background-size: 80px 80px;
+    border: 0;
+    border-radius: 50%;
+    height: 80px;
+    width: 80px;
+  }
+
   #imageContainer img {
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 50%;
@@ -152,11 +168,14 @@
           </svg>
         </div>
         <paper-ripple class="circle"></paper-ripple>
-        <img tabindex="0" id="avatar" class="clickable" src$="[[imageUrl_.url]]"
-            alt$="[[getImageAlt_(image_)]]"
-            role="button"
-            on-click="onClickUserSubpageLink_"
-            on-keypress="onClickUserSubpageLink_">
+        <div id="imageBorderContainer">
+          <img tabindex="0" id="avatar" class="clickable" src$="[[imageUrl_.url]]"
+              alt$="[[getImageAlt_(image_)]]"
+              role="button"
+              on-click="onClickUserSubpageLink_"
+              on-keypress="onClickUserSubpageLink_"
+              style$="[[getImgBackgroudStyle_(imageUrl_.url)]]">
+        </div>
       </template>
       <template is="dom-if"
           if="[[shouldShowSubpageView_(path, imageIsEnterpriseManaged_)]]">

@@ -69,7 +69,7 @@ export function selectUserImageUrl(state: PersonalizationState): Url|null {
   };
 
   if (!userImage) {
-    return placeHolderUrl;
+    return null;
   }
 
   // Generated types for |userImage| are incorrect for mojom unions. Only one
