@@ -79,9 +79,12 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/callback_forward.h"
 #include "base/ranges/algorithm.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -99,6 +102,7 @@
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
@@ -2523,16 +2527,88 @@ class TabletModeDesksTest : public DesksTest {
   void SetUp() override {
     DesksTest::SetUp();
 
-    // Enter tablet mode. Avoid TabletModeController::OnGetSwitchStates() from
-    // disabling tablet mode.
-    base::RunLoop().RunUntilIdle();
-    TabletModeControllerTestApi().EnterTabletMode();
+    // Enter tablet mode after detaching all mouse devices, as this is needed
+    // when running these tests on an actual workstation.
+    TabletModeControllerTestApi tablet_mode_test_api;
+    tablet_mode_test_api.DetachAllMice();
+    tablet_mode_test_api.EnterTabletMode();
   }
 
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
 };
+
+// Triggers a callback when the visibility of an observed window changes for the
+// first time since creation of this observer.
+class WindowVisibilityObserver : public aura::WindowObserver {
+ public:
+  WindowVisibilityObserver(aura::Window* window, base::OnceClosure callback)
+      : on_visibility_changed_callback_(std::move(callback)) {
+    DCHECK(on_visibility_changed_callback_);
+    observer_.Observe(window);
+  }
+  WindowVisibilityObserver(const WindowVisibilityObserver&) = delete;
+  WindowVisibilityObserver& operator=(const WindowVisibilityObserver&) = delete;
+  ~WindowVisibilityObserver() override = default;
+
+  // aura::WindowObserver:
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    if (observer_.IsObservingSource(window) && on_visibility_changed_callback_)
+      std::move(on_visibility_changed_callback_).Run();
+  }
+
+  void OnWindowDestroying(aura::Window* window) override {
+    DCHECK(observer_.IsObservingSource(window));
+    observer_.Reset();
+  }
+
+ private:
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
+
+  base::OnceClosure on_visibility_changed_callback_;
+};
+
+// Regression test for https://crbug.com/1368587.
+TEST_P(TabletModeDesksTest, CantDestroyBackdropWhileHiding) {
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(1u, controller->desks().size());
+  const Desk* desk_1 = controller->desks()[0].get();
+
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  wm::ActivateWindow(window.get());
+  EXPECT_EQ(window.get(), window_util::GetActiveWindow());
+
+  // Verify that there is a visible backdrop for the app window on the current
+  // desk.
+  auto* desk_1_backdrop_controller =
+      GetDeskBackdropController(desk_1, Shell::GetPrimaryRootWindow());
+  auto* backdrop_window = desk_1_backdrop_controller->backdrop_window();
+  ASSERT_TRUE(backdrop_window);
+  EXPECT_TRUE(backdrop_window->IsVisible());
+
+  // Intercept the visibility change notification of the backdrop (which will
+  // happen when we enter overview below), and hide the app window. This
+  // triggers an update of the backdrop while still in the process of hiding
+  // it. Now that the single app window available is hidden, the backdrop
+  // controller will try to destroy the backdrop. This should be prevented as
+  // we don't allow `BackdropController::Hide()` to be called recursively.
+  auto* app_window = window.get();
+  WindowVisibilityObserver observer{
+      backdrop_window,
+      base::BindLambdaForTesting([app_window, backdrop_window]() {
+        app_window->Hide();
+        EXPECT_FALSE(backdrop_window->IsVisible());
+      })};
+
+  // Enter overview and expect that the backdrop is still present for desk_1 but
+  // hidden.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_TRUE(desk_1_backdrop_controller->backdrop_window());
+  EXPECT_FALSE(desk_1_backdrop_controller->backdrop_window()->IsVisible());
+}
 
 TEST_P(TabletModeDesksTest, Backdrops) {
   auto* controller = DesksController::Get();

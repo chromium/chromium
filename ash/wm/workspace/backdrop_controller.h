@@ -183,6 +183,11 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   // in overview mode.
   bool pause_update_ = false;
 
+  // If true, we're inside the stack of `Hide()`. This is used to avoid
+  // recursively calling `Hide()` which may lead to destroying the backdrop
+  // widget while it's still being hidden. https://crbug.com/1368587.
+  bool is_hiding_backdrop_ = false;
+
   base::ScopedMultiSourceObservation<WindowBackdrop, WindowBackdrop::Observer>
       window_backdrop_observations_{this};
 
