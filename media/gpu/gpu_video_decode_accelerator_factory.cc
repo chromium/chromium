@@ -27,7 +27,8 @@
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_video_decode_accelerator.h"
 #include "ui/gl/gl_implementation.h"
-#elif BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(USE_V4L2_CODEC) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_slice_video_decode_accelerator.h"
 #include "media/gpu/v4l2/v4l2_video_decode_accelerator.h"
@@ -60,7 +61,8 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
 #if BUILDFLAG(USE_VAAPI)
   capabilities.supported_profiles =
       VaapiVideoDecodeAccelerator::GetSupportedProfiles();
-#elif BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(USE_V4L2_CODEC) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
   GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
       V4L2VideoDecodeAccelerator::GetSupportedProfiles(),
       &capabilities.supported_profiles);
@@ -99,7 +101,8 @@ GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
   static gpu::VideoDecodeAcceleratorCapabilities capabilities =
       GetDecoderCapabilitiesInternal(gpu_preferences, workarounds);
 
-#if BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_V4L2_CODEC) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
   // V4L2-only: the decoder devices may not be visible at the time the GPU
   // process is starting. If the capabilities vector is empty, try to query the
   // devices again in the hope that they will have appeared in the meantime.
@@ -144,7 +147,8 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
   // both. In those cases prefer the VA creation function.
 #if BUILDFLAG(USE_VAAPI)
     &GpuVideoDecodeAcceleratorFactory::CreateVaapiVDA,
-#elif BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(USE_V4L2_CODEC) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
     &GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA,
     &GpuVideoDecodeAcceleratorFactory::CreateV4L2SliceVDA,
 #endif
@@ -191,7 +195,8 @@ GpuVideoDecodeAcceleratorFactory::CreateVaapiVDA(
                                                 gl_client_.bind_image));
   return decoder;
 }
-#elif BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(USE_V4L2_CODEC) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
 std::unique_ptr<VideoDecodeAccelerator>
 GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA(
     const gpu::GpuDriverBugWorkarounds& /*workarounds*/,

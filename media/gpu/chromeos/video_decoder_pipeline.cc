@@ -215,7 +215,8 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
   } else {
 #if BUILDFLAG(USE_VAAPI)
     create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
-#elif BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(USE_V4L2_CODEC) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
     create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
 #else
     return nullptr;

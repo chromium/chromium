@@ -99,7 +99,8 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
       const gpu::GpuDriverBugWorkarounds& workarounds,
       const gpu::GpuPreferences& gpu_preferences,
       MediaLog* media_log) const;
-#elif BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(USE_V4L2_CODEC) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
   std::unique_ptr<VideoDecodeAccelerator> CreateV4L2VDA(
       const gpu::GpuDriverBugWorkarounds& workarounds,
       const gpu::GpuPreferences& gpu_preferences,
