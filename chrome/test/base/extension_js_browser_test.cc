@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -67,14 +68,16 @@ bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
 
   std::u16string script_16 = base::JoinString(scripts, u"\n");
   std::string script = base::UTF16ToUTF8(script_16);
+  auto result = extensions::BackgroundScriptExecutor::ExecuteScript(
+      extension_host_browser_context_, extension_id_, script,
+      extensions::BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
 
-  std::string result =
-      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-          Profile::FromBrowserContext(extension_host_browser_context_),
-          extension_id_, script);
+  if (!result.is_string())
+    return false;
 
+  std::string result_str = result.GetString();
   std::unique_ptr<base::Value> value_result =
-      base::JSONReader::ReadDeprecated(result);
+      base::JSONReader::ReadDeprecated(result_str);
   CHECK_EQ(base::Value::Type::DICTIONARY, value_result->type());
   base::DictionaryValue* dict_value =
       static_cast<base::DictionaryValue*>(value_result.get());

@@ -76,6 +76,7 @@ js_library("test_api_js") {
   externs_list = [
     "//third_party/chaijs/externs/chai-3.5.js",
     "//ui/webui/resources/js/dom_automation_controller.js",
+    "//third_party/closure_compiler/externs/test.js",
   ]
   deps = [ ":web_ui_test_bindings_js_library_for_compile" ]
 }
