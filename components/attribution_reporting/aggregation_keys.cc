@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 
 #include <string>
 #include <utility>
@@ -16,15 +16,14 @@
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace content {
+namespace attribution_reporting {
 
 namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 }  // namespace
 
 // static
-absl::optional<AttributionAggregationKeys> AttributionAggregationKeys::FromKeys(
-    Keys keys) {
+absl::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
   bool is_valid =
       keys.size() <=
           attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger &&
@@ -32,17 +31,16 @@ absl::optional<AttributionAggregationKeys> AttributionAggregationKeys::FromKeys(
         return key.first.size() <=
                attribution_reporting::kMaxBytesPerAggregationKeyId;
       });
-  return is_valid
-             ? absl::make_optional(AttributionAggregationKeys(std::move(keys)))
-             : absl::nullopt;
+  return is_valid ? absl::make_optional(AggregationKeys(std::move(keys)))
+                  : absl::nullopt;
 }
 
 // static
-base::expected<AttributionAggregationKeys, SourceRegistrationError>
-AttributionAggregationKeys::FromJSON(const base::Value* value) {
+base::expected<AggregationKeys, SourceRegistrationError>
+AggregationKeys::FromJSON(const base::Value* value) {
   // TODO(johnidel): Consider logging registration JSON metrics here.
   if (!value)
-    return AttributionAggregationKeys();
+    return AggregationKeys();
 
   const base::Value::Dict* dict = value->GetIfDict();
   if (!dict)
@@ -81,26 +79,21 @@ AttributionAggregationKeys::FromJSON(const base::Value* value) {
     keys.emplace_back(key_id, key);
   }
 
-  return AttributionAggregationKeys(Keys(base::sorted_unique, std::move(keys)));
+  return AggregationKeys(Keys(base::sorted_unique, std::move(keys)));
 }
 
-AttributionAggregationKeys::AttributionAggregationKeys(Keys keys)
-    : keys_(std::move(keys)) {}
+AggregationKeys::AggregationKeys(Keys keys) : keys_(std::move(keys)) {}
 
-AttributionAggregationKeys::AttributionAggregationKeys() = default;
+AggregationKeys::AggregationKeys() = default;
 
-AttributionAggregationKeys::~AttributionAggregationKeys() = default;
+AggregationKeys::~AggregationKeys() = default;
 
-AttributionAggregationKeys::AttributionAggregationKeys(
-    const AttributionAggregationKeys&) = default;
+AggregationKeys::AggregationKeys(const AggregationKeys&) = default;
 
-AttributionAggregationKeys::AttributionAggregationKeys(
-    AttributionAggregationKeys&&) = default;
+AggregationKeys::AggregationKeys(AggregationKeys&&) = default;
 
-AttributionAggregationKeys& AttributionAggregationKeys::operator=(
-    const AttributionAggregationKeys&) = default;
+AggregationKeys& AggregationKeys::operator=(const AggregationKeys&) = default;
 
-AttributionAggregationKeys& AttributionAggregationKeys::operator=(
-    AttributionAggregationKeys&&) = default;
+AggregationKeys& AggregationKeys::operator=(AggregationKeys&&) = default;
 
-}  // namespace content
+}  // namespace attribution_reporting

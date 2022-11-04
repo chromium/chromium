@@ -25,10 +25,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -2199,7 +2199,8 @@ TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
 }
 
 TEST_F(AttributionStorageTest, AttributionAggregationKeys_RoundTrips) {
-  auto aggregation_keys = AttributionAggregationKeys::FromKeys({{"key", 345}});
+  auto aggregation_keys =
+      attribution_reporting::AggregationKeys::FromKeys({{"key", 345}});
   ASSERT_TRUE(aggregation_keys.has_value());
   storage()->StoreSource(
       SourceBuilder().SetAggregationKeys(*aggregation_keys).Build());
@@ -2649,7 +2650,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           .SetDestinationOrigin(origin)
           .SetReportingOrigin(origin)
           .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
-          .SetAggregationKeys(*AttributionAggregationKeys::FromKeys({{"0", 1}}))
+          .SetAggregationKeys(
+              *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
   AttributionTrigger trigger1(origin, origin,
@@ -2816,7 +2818,8 @@ TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
   storage()->StoreSource(
       SourceBuilder()
           .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
-          .SetAggregationKeys(*AttributionAggregationKeys::FromKeys({{"0", 1}}))
+          .SetAggregationKeys(
+              *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
   EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(

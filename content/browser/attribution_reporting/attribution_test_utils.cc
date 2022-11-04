@@ -539,7 +539,7 @@ SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<uint64_t> dedup_keys) {
 }
 
 SourceBuilder& SourceBuilder::SetAggregationKeys(
-    AttributionAggregationKeys aggregation_keys) {
+    attribution_reporting::AggregationKeys aggregation_keys) {
   aggregation_keys_ = std::move(aggregation_keys);
   return *this;
 }
@@ -1374,23 +1374,6 @@ AttributionFilterSizeTestCase::Map AttributionFilterSizeTestCase::AsMap()
   return map;
 }
 
-bool operator==(const AttributionAggregationKeys& a,
-                const AttributionAggregationKeys& b) {
-  return a.keys() == b.keys();
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionAggregationKeys& aggregation_keys) {
-  out << "{";
-
-  const char* separator = "";
-  for (const auto& [key_id, key] : aggregation_keys.keys()) {
-    out << separator << key_id << ":" << key;
-    separator = ", ";
-  }
-  return out << "}";
-}
-
 EventTriggerDataMatcherConfig::EventTriggerDataMatcherConfig(
     ::testing::Matcher<uint64_t> data,
     ::testing::Matcher<int64_t> priority,
@@ -1475,13 +1458,14 @@ std::unique_ptr<MockDataHost> GetRegisteredDataHost(
 }
 
 TestAggregatableSourceProvider::TestAggregatableSourceProvider(size_t size) {
-  AttributionAggregationKeys::Keys::container_type keys;
+  attribution_reporting::AggregationKeys::Keys::container_type keys;
   keys.reserve(size);
   for (size_t i = 0; i < size; ++i) {
     keys.emplace_back(base::NumberToString(i), i);
   }
 
-  auto source = AttributionAggregationKeys::FromKeys(std::move(keys));
+  auto source =
+      attribution_reporting::AggregationKeys::FromKeys(std::move(keys));
   DCHECK(source.has_value());
   source_ = std::move(*source);
 }

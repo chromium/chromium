@@ -50,6 +50,7 @@ specific_include_rules = {
     "+components/attribution_reporting/source_registration_error.mojom.h",
   ],
   "attribution_simulator_input_parser_unittest.cc": [
+    "+components/attribution_reporting/aggregation_keys.h",
     "+components/attribution_reporting/constants.h",
   ],
   "gpu_browsertest_helpers.cc": [

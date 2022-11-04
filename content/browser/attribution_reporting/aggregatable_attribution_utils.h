@@ -16,11 +16,14 @@ namespace absl {
 class uint128;
 }  // namespace absl
 
+namespace attribution_reporting {
+class AggregationKeys;
+}  // namespace attribution_reporting
+
 namespace content {
 
 class AggregatableHistogramContribution;
 class AggregatableReportRequest;
-class AttributionAggregationKeys;
 class AttributionAggregatableTriggerData;
 class AttributionAggregatableValues;
 class AttributionFilterData;
@@ -31,7 +34,7 @@ CONTENT_EXPORT std::vector<AggregatableHistogramContribution>
 CreateAggregatableHistogram(
     const AttributionFilterData& source_filter_data,
     AttributionSourceType,
-    const AttributionAggregationKeys& keys,
+    const attribution_reporting::AggregationKeys& keys,
     const std::vector<AttributionAggregatableTriggerData>&
         aggregatable_trigger_data,
     const AttributionAggregatableValues& aggregatable_values);

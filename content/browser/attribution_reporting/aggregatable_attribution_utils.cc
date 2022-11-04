@@ -15,12 +15,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -52,13 +52,13 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const AttributionFilterData& source_filter_data,
     AttributionSourceType source_type,
-    const AttributionAggregationKeys& keys,
+    const attribution_reporting::AggregationKeys& keys,
     const std::vector<AttributionAggregatableTriggerData>&
         aggregatable_trigger_data,
     const AttributionAggregatableValues& aggregatable_values) {
   int num_trigger_data_filtered = 0;
 
-  AttributionAggregationKeys::Keys buckets = keys.keys();
+  attribution_reporting::AggregationKeys::Keys buckets = keys.keys();
 
   // For each piece of trigger data specified, check if its filters/not_filters
   // match for the given source, and if applicable modify the bucket based on

@@ -480,6 +480,7 @@ static_library("test_support") {
 
   public_deps = [
     ":test_interfaces",
+    "//components/attribution_reporting:test_support",
     "//components/download/public/common:test_support",
     "//components/enterprise/common:download_item_reroute_info",
     "//components/services/filesystem/public/mojom",

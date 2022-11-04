@@ -10,8 +10,8 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
@@ -56,7 +56,7 @@ struct SourceRegistration {
   int64_t priority;
   AttributionFilterData filter_data;
   absl::optional<uint64_t> debug_key;
-  AttributionAggregationKeys aggregation_keys;
+  attribution_reporting::AggregationKeys aggregation_keys;
   bool debug_reporting;
 };
 

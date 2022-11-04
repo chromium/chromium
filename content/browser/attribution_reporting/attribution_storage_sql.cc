@@ -27,9 +27,9 @@
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -304,7 +304,8 @@ absl::optional<AttributionFilterData> DeserializeFilterData(
   return AttributionFilterData::Create(std::move(filter_values));
 }
 
-std::string SerializeAggregationKeys(const AttributionAggregationKeys& keys) {
+std::string SerializeAggregationKeys(
+    const attribution_reporting::AggregationKeys& keys) {
   proto::AttributionAggregatableSource msg;
 
   for (const auto& [id, key] : keys.keys()) {
@@ -320,13 +321,13 @@ std::string SerializeAggregationKeys(const AttributionAggregationKeys& keys) {
   return str;
 }
 
-absl::optional<AttributionAggregationKeys> DeserializeAggregationKeys(
-    const std::string& str) {
+absl::optional<attribution_reporting::AggregationKeys>
+DeserializeAggregationKeys(const std::string& str) {
   proto::AttributionAggregatableSource msg;
   if (!msg.ParseFromString(str))
     return absl::nullopt;
 
-  AttributionAggregationKeys::Keys::container_type keys;
+  attribution_reporting::AggregationKeys::Keys::container_type keys;
   keys.reserve(msg.keys().size());
 
   for (const auto& [id, key] : msg.keys()) {
@@ -336,7 +337,7 @@ absl::optional<AttributionAggregationKeys> DeserializeAggregationKeys(
     keys.emplace_back(id, absl::MakeUint128(key.high_bits(), key.low_bits()));
   }
 
-  return AttributionAggregationKeys::FromKeys(std::move(keys));
+  return attribution_reporting::AggregationKeys::FromKeys(std::move(keys));
 }
 
 absl::optional<StoredSource::ActiveState> GetSourceActiveState(
@@ -406,7 +407,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   absl::optional<uint64_t> debug_key = ColumnUint64OrNull(statement, col++);
   int num_conversions = statement.ColumnInt(col++);
   int64_t aggregatable_budget_consumed = statement.ColumnInt64(col++);
-  absl::optional<AttributionAggregationKeys> aggregation_keys =
+  absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
       DeserializeAggregationKeys(statement.ColumnString(col++));
 
   if (source_origin.opaque() || destination_origin.opaque() ||

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
@@ -43,7 +43,7 @@ class CONTENT_EXPORT CommonSourceInfo {
                    int64_t priority,
                    AttributionFilterData filter_data,
                    absl::optional<uint64_t> debug_key,
-                   AttributionAggregationKeys aggregation_keys);
+                   attribution_reporting::AggregationKeys aggregation_keys);
 
   ~CommonSourceInfo();
 
@@ -81,7 +81,7 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   absl::optional<uint64_t> debug_key() const { return debug_key_; }
 
-  const AttributionAggregationKeys& aggregation_keys() const {
+  const attribution_reporting::AggregationKeys& aggregation_keys() const {
     return aggregation_keys_;
   }
 
@@ -112,7 +112,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   int64_t priority_;
   AttributionFilterData filter_data_;
   absl::optional<uint64_t> debug_key_;
-  AttributionAggregationKeys aggregation_keys_;
+  attribution_reporting::AggregationKeys aggregation_keys_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

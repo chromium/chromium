@@ -15,11 +15,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -402,8 +402,9 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
   }
 
-  absl::optional<AttributionAggregationKeys> aggregation_keys =
-      AttributionAggregationKeys::FromKeys(std::move(data->aggregation_keys));
+  absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
+      attribution_reporting::AggregationKeys::FromKeys(
+          std::move(data->aggregation_keys));
   if (!aggregation_keys.has_value()) {
     RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
     mojo::ReportBadMessage("AttributionDataHost: Invalid aggregatable source.");

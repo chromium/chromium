@@ -12,10 +12,10 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -254,7 +254,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetDebugKey(absl::nullopt)  // default
                   .SetDebugReporting(false)    // default
                   .SetAggregationKeys(
-                      *AttributionAggregationKeys::FromKeys({{"a", 1}}))
+                      *attribution_reporting::AggregationKeys::FromKeys(
+                          {{"a", 1}}))
                   .Build(),
               _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());

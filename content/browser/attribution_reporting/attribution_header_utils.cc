@@ -123,8 +123,9 @@ SourceRegistration::Parse(base::Value::Dict registration,
 
   result.filter_data = std::move(*filter_data);
 
-  base::expected<AttributionAggregationKeys, SourceRegistrationError>
-      aggregation_keys = AttributionAggregationKeys::FromJSON(
+  base::expected<attribution_reporting::AggregationKeys,
+                 SourceRegistrationError>
+      aggregation_keys = attribution_reporting::AggregationKeys::FromJSON(
           registration.Find("aggregation_keys"));
   if (!aggregation_keys.has_value())
     return base::unexpected(aggregation_keys.error());

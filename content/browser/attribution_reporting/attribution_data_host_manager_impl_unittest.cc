@@ -20,9 +20,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -141,7 +141,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
           DestinationOriginIs(destination_origin),
           ImpressionOriginIs(page_origin), SourcePriorityIs(20),
           SourceDebugKeyIs(789),
-          AggregationKeysAre(*AttributionAggregationKeys::FromKeys(
+          AggregationKeysAre(*attribution_reporting::AggregationKeys::FromKeys(
               {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
           SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
   {
@@ -1087,8 +1087,9 @@ TEST_F(AttributionDataHostManagerImplTest,
             SourceEventIdIs(10), DestinationOriginIs(destination_origin),
             ImpressionOriginIs(page_origin), SourcePriorityIs(20),
             SourceDebugKeyIs(789),
-            AggregationKeysAre(*AttributionAggregationKeys::FromKeys(
-                {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
+            AggregationKeysAre(
+                *attribution_reporting::AggregationKeys::FromKeys(
+                    {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
             SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_manager_, HandleSource);

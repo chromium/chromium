@@ -15,9 +15,9 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -33,6 +33,8 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
+
+using AttributionAggregationKeys = ::attribution_reporting::AggregationKeys;
 
 TEST(AttributionRegistrationParsingTest, ParseAggregationKeys) {
   const struct {

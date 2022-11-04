@@ -14,10 +14,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -39,7 +39,7 @@ using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
 TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   base::HistogramTester histograms;
 
-  auto source = AttributionAggregationKeys::FromKeys(
+  auto source = attribution_reporting::AggregationKeys::FromKeys(
       {{"key1", 345}, {"key2", 5}, {"key3", 123}});
   ASSERT_TRUE(source.has_value());
 
@@ -129,7 +129,8 @@ TEST(AggregatableAttributionUtilsTest,
      NoTriggerData_FilteredPercentageNotRecorded) {
   base::HistogramTester histograms;
 
-  auto source = AttributionAggregationKeys::FromKeys({{"key1", 345}});
+  auto source =
+      attribution_reporting::AggregationKeys::FromKeys({{"key1", 345}});
   ASSERT_TRUE(source.has_value());
 
   std::vector<AggregatableHistogramContribution> contributions =

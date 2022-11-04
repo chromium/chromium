@@ -22,12 +22,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -460,7 +461,7 @@ class SourceBuilder {
   SourceBuilder& SetDedupKeys(std::vector<uint64_t> dedup_keys);
 
   SourceBuilder& SetAggregationKeys(
-      AttributionAggregationKeys aggregation_keys);
+      attribution_reporting::AggregationKeys aggregation_keys);
 
   SourceBuilder& SetAggregatableBudgetConsumed(
       int64_t aggregatable_budget_consumed);
@@ -498,7 +499,7 @@ class SourceBuilder {
   // Ensure that we don't use uninitialized memory.
   StoredSource::Id source_id_{0};
   std::vector<uint64_t> dedup_keys_;
-  AttributionAggregationKeys aggregation_keys_;
+  attribution_reporting::AggregationKeys aggregation_keys_;
   int64_t aggregatable_budget_consumed_ = 0;
   std::vector<uint64_t> aggregatable_dedup_keys_;
   bool is_within_fenced_frame_ = false;
@@ -729,12 +730,6 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionAggregatableValues& values);
-
-bool operator==(const AttributionAggregationKeys& a,
-                const AttributionAggregationKeys& b);
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionAggregationKeys& aggregation_keys);
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManager* manager);
@@ -992,7 +987,7 @@ class TestAggregatableSourceProvider {
   SourceBuilder GetBuilder(base::Time source_time = base::Time::Now()) const;
 
  private:
-  AttributionAggregationKeys source_;
+  attribution_reporting::AggregationKeys source_;
 };
 
 TriggerBuilder DefaultAggregatableTriggerBuilder(

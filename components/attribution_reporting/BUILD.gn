@@ -12,12 +12,15 @@ mojom("source_registration_error_mojom") {
 
 component("attribution_reporting") {
   sources = [
+    "aggregation_keys.cc",
+    "aggregation_keys.h",
     "constants.h",
     "parse.cc",
     "parse.h",
   ]
 
   public_deps = [
+    ":source_registration_error_mojom",
     "//base",
     "//url",
   ]
@@ -39,6 +42,19 @@ source_set("unit_tests") {
     ":attribution_reporting",
     "//testing/gtest",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+
+  public_deps = [ ":attribution_reporting" ]
+
+  deps = [ "//base" ]
 }
 
 fuzzer_test("os_source_parse_fuzzer") {

@@ -46,7 +46,7 @@ CommonSourceInfo::CommonSourceInfo(
     int64_t priority,
     AttributionFilterData filter_data,
     absl::optional<uint64_t> debug_key,
-    AttributionAggregationKeys aggregation_keys)
+    attribution_reporting::AggregationKeys aggregation_keys)
     : source_event_id_(source_event_id),
       source_origin_(std::move(source_origin)),
       destination_origin_(std::move(destination_origin)),
