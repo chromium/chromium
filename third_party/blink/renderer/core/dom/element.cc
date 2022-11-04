@@ -5006,9 +5006,13 @@ bool Element::SupportsFocus() const {
   // always or else tabIndex() will change for all HTML elements.
   if (DelegatesFocus())
     return false;
+  auto has_toggle_trigger = [&]() -> bool {
+    const ComputedStyle* style = GetComputedStyle();
+    return style && style->ToggleTrigger();
+  };
   return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
          IsRootEditableElementWithCounting(*this) ||
-         SupportsSpatialNavigationFocus();
+         SupportsSpatialNavigationFocus() || has_toggle_trigger();
 }
 
 bool Element::SupportsSpatialNavigationFocus() const {
