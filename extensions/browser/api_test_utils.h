@@ -130,11 +130,6 @@ bool RunFunction(ExtensionFunction* function,
                  base::Value::List args,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  RunFunctionFlags flags);
-// DEPRECATED. Use the version above.
-bool RunFunction(ExtensionFunction* function,
-                 std::unique_ptr<base::ListValue> args,
-                 std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-                 RunFunctionFlags flags);
 
 }  // namespace api_test_utils
 }  // namespace extensions
