@@ -82,6 +82,7 @@ public class AssistantOnboardingHelperTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1381520")
     public void testBottomSheetOnboarding() {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
