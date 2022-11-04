@@ -152,6 +152,14 @@ public class FeedSliceViewTrackerTest {
 
     @Test
     @SmallTest
+    public void testGetChildVisibleRectCalledWithChildRect() {
+        mockViewDimensions(mChildA, 10, 10);
+        mTracker.isViewVisible(mChildA, 0.66f);
+        verify(mParentView).getChildVisibleRect(eq(mChildA), eq(new Rect(0, 0, 10, 10)), eq(null));
+    }
+
+    @Test
+    @SmallTest
     public void testIsItemCoveringViewport_JustEnough() {
         mockViewDimensions(mChildA, 100, 100);
         mockGetChildVisibleRect(mChildA, 0, 0, 100, 26);
