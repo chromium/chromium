@@ -457,7 +457,6 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
     GenerateStreamsUIThreadCheckResult ui_check_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  // TODO(crbug.com/1337580): Cover this block by a browser test.
   if (!ui_check_result.request_allowed) {
     std::move(callback).Run(
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
