@@ -109,10 +109,19 @@ template("trichrome_library_apk_tmpl") {
             version_code = trichrome_64_32_version_code
           }
         } else {
-          if (_use_stable_package_name_for_trichrome) {
-            version_code = trichrome_64_beta_version_code
+          _use_high_package_name_for_64bit_only_trichrome = is_high_end_android
+          if (_use_high_package_name_for_64bit_only_trichrome) {
+            if (_use_stable_package_name_for_trichrome) {
+              version_code = trichrome_64_high_beta_version_code
+            } else {
+              version_code = trichrome_64_high_version_code
+            }
           } else {
-            version_code = trichrome_64_version_code
+            if (_use_stable_package_name_for_trichrome) {
+              version_code = trichrome_64_beta_version_code
+            } else {
+              version_code = trichrome_64_version_code
+            }
           }
         }
       } else {

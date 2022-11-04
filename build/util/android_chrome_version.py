@@ -76,7 +76,7 @@ Tuple format:
 Here, (supported ABIs) is referring to the combination of browser ABI and
 webview library ABI present in a particular APK. For example, 64_32 implies a
 64-bit browser with an extra 32-bit Webview library. See also
-_ABIS_TO_BIT_MASK.
+_ABIS_TO_DIGIT_MASK.
 """
 _APKS = {
     '32': [
@@ -102,11 +102,13 @@ _APKS = {
         ('TRICHROME_32_64', 'TRICHROME', '32_64'),
         ('TRICHROME_64_32', 'TRICHROME', '64_32'),
         ('TRICHROME_64', 'TRICHROME', '64'),
+        ('TRICHROME_64_HIGH', 'TRICHROME', '64_high'),
         ('TRICHROME_BETA', 'TRICHROME_BETA', '32_64'),
         ('TRICHROME_32_BETA', 'TRICHROME_BETA', '32'),
         ('TRICHROME_32_64_BETA', 'TRICHROME_BETA', '32_64'),
         ('TRICHROME_64_32_BETA', 'TRICHROME_BETA', '64_32'),
         ('TRICHROME_64_BETA', 'TRICHROME_BETA', '64'),
+        ('TRICHROME_64_HIGH_BETA', 'TRICHROME_BETA', '64_high'),
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32_64'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32_64'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32_64'),
@@ -168,12 +170,13 @@ things here:
   version needs to be a higher versionCode, as otherwise a 64-bit device would
   prefer the 32-bit version that does not include any 64-bit code, and fail.
 """
-_ABIS_TO_BIT_MASK = {
+_ABIS_TO_DIGIT_MASK = {
     'arm': {
         '32': 0,
         '32_64': 3,
         '64_32': 4,
         '64': 5,
+        '64_high': 9,
     },
     'intel': {
         '32': 1,
@@ -241,7 +244,7 @@ def TranslateVersionCode(version_code, is_webview=False):
         package_name = package
         break
 
-  for arch, bitness_to_number in _ABIS_TO_BIT_MASK.items():
+  for arch, bitness_to_number in _ABIS_TO_DIGIT_MASK.items():
     for bitness, number in bitness_to_number.items():
       if abi_digit == number:
         abi = arch if arch != 'intel' else 'x86'
@@ -288,11 +291,13 @@ def GenerateVersionCodes(version_values, arch, is_next_build):
   version_codes = {}
 
   for apk, package, abis in _APKS[bitness]:
-    abi_bits = _ABIS_TO_BIT_MASK[mfg][abis]
-    package_bits = _PACKAGE_NAMES[package]
+    if abis == '64_high' and arch != 'arm64':
+      continue
+    abi_part = _ABIS_TO_DIGIT_MASK[mfg][abis]
+    package_part = _PACKAGE_NAMES[package]
 
     version_code_name = apk + '_VERSION_CODE'
-    version_code_val = base_version_code + abi_bits + package_bits
+    version_code_val = base_version_code + package_part + abi_part
     version_codes[version_code_name] = str(version_code_val)
 
   return version_codes

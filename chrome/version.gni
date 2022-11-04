@@ -37,6 +37,7 @@ if (is_mac) {
   ]
 } else if (target_os == "android") {
   import("//build/config/android/config.gni")
+  import("//build/config/chrome_build.gni")
 
   _version_dictionary_template +=
       "chrome_version_code = " + "\"@CHROME_VERSION_CODE@\" " +
@@ -65,12 +66,18 @@ if (is_mac) {
         "trichrome_64_32_version_code = \"@TRICHROME_64_32_VERSION_CODE@\" "
     _version_dictionary_template +=
         "trichrome_64_version_code = \"@TRICHROME_64_VERSION_CODE@\" "
+    if (target_cpu == "arm64") {
+      _version_dictionary_template += "trichrome_64_high_version_code = \"@TRICHROME_64_HIGH_VERSION_CODE@\" "
+    }
     _version_dictionary_template +=
         "trichrome_32_beta_version_code = \"@TRICHROME_32_BETA_VERSION_CODE@\" "
     _version_dictionary_template += "trichrome_32_64_beta_version_code = \"@TRICHROME_32_64_BETA_VERSION_CODE@\" "
     _version_dictionary_template += "trichrome_64_32_beta_version_code = \"@TRICHROME_64_32_BETA_VERSION_CODE@\" "
     _version_dictionary_template +=
         "trichrome_64_beta_version_code = \"@TRICHROME_64_BETA_VERSION_CODE@\" "
+    if (target_cpu == "arm64") {
+      _version_dictionary_template += "trichrome_64_high_beta_version_code = \"@TRICHROME_64_HIGH_BETA_VERSION_CODE@\" "
+    }
     _version_dictionary_template +=
         "webview_32_stable_version_code = \"@WEBVIEW_32_STABLE_VERSION_CODE@\" "
     _version_dictionary_template +=
@@ -142,11 +149,13 @@ if (is_mac) {
                            "trichrome_32_64_version_code",
                            "trichrome_64_32_version_code",
                            "trichrome_64_version_code",
+                           "trichrome_64_high_version_code",
                            "trichrome_beta_version_code",
                            "trichrome_32_beta_version_code",
                            "trichrome_32_64_beta_version_code",
                            "trichrome_64_32_beta_version_code",
                            "trichrome_64_beta_version_code",
+                           "trichrome_64_high_beta_version_code",
                            "webview_beta_version_code",
                            "webview_dev_version_code",
                            "webview_stable_version_code",
@@ -182,10 +191,23 @@ if (is_mac) {
       "TrichromeChrome3264: $trichrome_32_64_version_code",
       "TrichromeChrome6432: $trichrome_64_32_version_code",
       "TrichromeChrome64: $trichrome_64_version_code",
+    ]
+    if (target_cpu == "arm64") {
+      lines_to_write +=
+          [ "TrichromeChrome64High: $trichrome_64_high_version_code" ]
+    }
+    lines_to_write += [
       "TrichromeChrome32OpenBeta: $trichrome_32_beta_version_code",
       "TrichromeChrome3264OpenBeta: $trichrome_32_64_beta_version_code",
       "TrichromeChrome6432OpenBeta: $trichrome_64_32_beta_version_code",
       "TrichromeChrome64OpenBeta: $trichrome_64_beta_version_code",
+    ]
+    if (target_cpu == "arm64") {
+      lines_to_write += [
+        "TrichromeChrome64HighOpenBeta: $trichrome_64_high_beta_version_code",
+      ]
+    }
+    lines_to_write += [
       "AndroidWebview32Stable: $webview_32_stable_version_code",
       "AndroidWebview32Beta: $webview_32_beta_version_code",
       "AndroidWebview32Dev: $webview_32_dev_version_code",

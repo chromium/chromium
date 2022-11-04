@@ -136,6 +136,7 @@ if (current_toolchain == default_toolchain) {
 
   _use_stable_package_name_for_trichrome =
       use_stable_package_name_for_trichrome && android_channel == "beta"
+  _use_high_package_name_for_64bit_only_trichrome = is_high_end_android
 
   jinja_template("trichrome_library_android_manifest") {
     input = "java/AndroidManifest_trichrome_library.xml"
@@ -169,10 +170,18 @@ if (current_toolchain == default_toolchain) {
     jinja_template("trichrome_library_64_android_manifest") {
       input = "java/AndroidManifest_trichrome_library.xml"
       output = trichrome_library_64_android_manifest
-      if (_use_stable_package_name_for_trichrome) {
-        _version_code = trichrome_64_beta_version_code
+      if (_use_high_package_name_for_64bit_only_trichrome) {
+        if (_use_stable_package_name_for_trichrome) {
+          _version_code = trichrome_64_high_beta_version_code
+        } else {
+          _version_code = trichrome_64_high_version_code
+        }
       } else {
-        _version_code = trichrome_64_version_code
+        if (_use_stable_package_name_for_trichrome) {
+          _version_code = trichrome_64_beta_version_code
+        } else {
+          _version_code = trichrome_64_version_code
+        }
       }
       variables = trichrome_jinja_variables + [
                     "trichrome_version=$_version_code",
@@ -2762,10 +2771,18 @@ if (current_toolchain == default_toolchain) {
                 _version_code = trichrome_64_32_version_code
               }
             } else {
-              if (_use_stable_package_name_for_trichrome) {
-                _version_code = trichrome_64_beta_version_code
+              if (_use_high_package_name_for_64bit_only_trichrome) {
+                if (_use_stable_package_name_for_trichrome) {
+                  _version_code = trichrome_64_high_beta_version_code
+                } else {
+                  _version_code = trichrome_64_high_version_code
+                }
               } else {
-                _version_code = trichrome_64_version_code
+                if (_use_stable_package_name_for_trichrome) {
+                  _version_code = trichrome_64_beta_version_code
+                } else {
+                  _version_code = trichrome_64_version_code
+                }
               }
             }
           } else {
@@ -3607,10 +3624,18 @@ if (current_toolchain == default_toolchain) {
               _version_code = trichrome_64_32_version_code
             }
           } else {
-            if (_use_stable_package_name_for_trichrome) {
-              _version_code = trichrome_64_beta_version_code
+            if (_use_high_package_name_for_64bit_only_trichrome) {
+              if (_use_stable_package_name_for_trichrome) {
+                _version_code = trichrome_64_high_beta_version_code
+              } else {
+                _version_code = trichrome_64_high_version_code
+              }
             } else {
-              _version_code = trichrome_64_version_code
+              if (_use_stable_package_name_for_trichrome) {
+                _version_code = trichrome_64_beta_version_code
+              } else {
+                _version_code = trichrome_64_version_code
+              }
             }
           }
         } else {
