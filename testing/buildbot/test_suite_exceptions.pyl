@@ -91,6 +91,11 @@
           'shards': 3,
         },
       },
+      'android-nougat-x86-rel': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
    },
   },
   'android_webview_unittests': {
@@ -3157,6 +3162,9 @@
           # TODO(crbug.com/1264654): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
+        'swarming': {
+          'shards': 2,
+        },
       },
       'fuchsia-code-coverage': {
         'swarming': {
