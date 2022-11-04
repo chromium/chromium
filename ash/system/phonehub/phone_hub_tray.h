@@ -11,6 +11,7 @@
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_status_view.h"
+#include "ash/system/screen_layout_observer.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/bind.h"
@@ -41,7 +42,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
                                 public OnboardingView::Delegate,
                                 public PhoneStatusView::Delegate,
                                 public PhoneHubUiController::Observer,
-                                public SessionObserver {
+                                public SessionObserver,
+                                public ScreenLayoutObserver {
  public:
   explicit PhoneHubTray(Shelf* shelf);
   PhoneHubTray(const PhoneHubTray&) = delete;
@@ -72,6 +74,9 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // OnboardingView::Delegate:
   void HideStatusHeaderView() override;
+
+  // ScreenLayoutObserver:
+  void OnDisplayConfigurationChanged() override;
 
   // Provides the Eche icon and Eche loading indicator to
   // `EcheTray` in order to let `EcheTray` control the visibiliity

@@ -180,6 +180,13 @@ void PhoneHubTray::AnchorUpdated() {
     bubble_->bubble_view()->UpdateBubble();
 }
 
+void PhoneHubTray::OnDisplayConfigurationChanged() {
+  if (!bubble_ || !bubble_->GetBubbleView())
+    return;
+  bubble_->GetBubbleView()->ChangeAnchorRect(
+      shelf()->GetSystemTrayAnchorRect());
+}
+
 void PhoneHubTray::Initialize() {
   TrayBackgroundView::Initialize();
   UpdateVisibility();
