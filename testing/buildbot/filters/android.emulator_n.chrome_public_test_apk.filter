@@ -54,3 +54,9 @@
 
 # TODO(crbug/1370814)
 -org.chromium.chrome.browser.site_settings.SiteSettingsTest.testSiteExceptionCookiesBlocked
+
+# TODO(crbug/1370824)
+-org.chromium.chrome.features.start_surface.StartSurfaceBackButtonTest.testShow_SingleAsHomepageV2_BackButtonWithTabSwitcher__Instant_NoReturn
+
+# TODO(crbug/1377732)
+-org.chromium.chrome.features.start_surface.StartSurfaceTest.testShow_SingleAsHomepage_ResetScrollPosition__Instant_NoReturn
