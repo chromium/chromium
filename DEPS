@@ -597,7 +597,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/third_party/rust_src',
-        'version': 'version:2@2022-09-14',
+        'version': 'version:2@2022-11-01',
       },
     ],
     'dep_type': 'cipd',

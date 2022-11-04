@@ -41,6 +41,7 @@ if (toolchain_has_rust) {
     "adler",
     "alloc",
     "cfg_if",
+    "cfg_if-2",
     "compiler_builtins",
     "core",
     "getopts",

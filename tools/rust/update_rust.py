@@ -27,7 +27,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-RUST_REVISION = '20220914'
+RUST_REVISION = '20221101'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-10-15.
@@ -45,13 +45,13 @@ CRUBIT_SUB_REVISION = 1
 # This should almost always be None. When a breakage happens the fallback should
 # be temporary. Once fixed, the applicable revision(s) above should be updated
 # and FALLBACK_CLANG_VERSION should be reset to None.
-FALLBACK_CLANG_VERSION = 'llvmorg-16-init-8697-g60809cd2-1'
+FALLBACK_CLANG_VERSION = None
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
-    '7ba877972bd98eed652293c16650006967326d9d86d3adae59054c7ba0c41df5')
+    'c0909797c1901c32985a40ec6b54b9ccad8464aa5dbebd20235db094fee1a6bc')
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
@@ -90,7 +90,8 @@ def GetStampVersion():
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
         with open(VERSION_STAMP_PATH) as version_file:
             existing_stamp = version_file.readline().rstrip()
-        version_re = re.compile(r'rustc [0-9.]+-dev \((.+?) chromium\)')
+        version_re = re.compile(
+            r'rustc [0-9.]+-nightly \([0-9a-f -]+\) \((.+?) chromium\)')
         match = version_re.fullmatch(existing_stamp)
         if match is None:
             return None

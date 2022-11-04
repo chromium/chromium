@@ -65,7 +65,9 @@ RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust_src', 'src')
 STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0.json')
 # Download crates.io dependencies to rust-src subdir (rather than $HOME/.cargo)
 CARGO_HOME_DIR = os.path.join(RUST_SRC_DIR, 'cargo-home')
-RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'src', 'version')
+RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'version')
+RUST_SRC_GIT_COMMIT_INFO_FILE_PATH = os.path.join(RUST_SRC_DIR,
+                                                  'git-commit-info')
 RUST_TOOLCHAIN_LIB_DIR = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib')
 RUST_TOOLCHAIN_SRC_DIST_DIR = os.path.join(RUST_TOOLCHAIN_LIB_DIR, 'rustlib',
                                            'src', 'rust')
@@ -187,6 +189,18 @@ def GetTestArgs():
     return args
 
 
+def GetVersionStamp():
+    # We must generate a version stamp that contains the expected `rustc
+    # --version` output. This contains the Rust release version, git commit data
+    # that the nightly tarball was generated from, and chromium-specific package
+    # information.
+    with open(RUST_SRC_VERSION_FILE_PATH) as version_file:
+        rust_version = version_file.readline().rstrip()
+
+    return ('rustc %s (%s chromium)\n' %
+            (rust_version, GetPackageVersionForBuild()))
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Build and package Rust toolchain')
@@ -294,12 +308,8 @@ def main():
 
     RunXPy('install', DISTRIBUTION_ARTIFACTS, args.gcc_toolchain, args.verbose)
 
-    # Write expected `rustc --version` string to our toolchain directory.
-    with open(RUST_SRC_VERSION_FILE_PATH) as version_file:
-        rust_version = version_file.readline().rstrip()
     with open(VERSION_STAMP_PATH, 'w') as stamp:
-        stamp.write('rustc %s-dev (%s chromium)\n' %
-                    (rust_version, GetPackageVersionForBuild()))
+        stamp.write(GetVersionStamp())
 
     return 0
 
