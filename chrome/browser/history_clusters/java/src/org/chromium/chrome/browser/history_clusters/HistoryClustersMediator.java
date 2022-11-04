@@ -360,6 +360,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     void onHistoryDeletedExternally() {
         if (mQueryState == null) return;
+        mSelectionDelegate.clearSelection();
         resetModel();
         startQuery(mQueryState.getQuery());
     }

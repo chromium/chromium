@@ -988,7 +988,12 @@ public class HistoryClustersMediatorTest {
         verify(mBridge, times(1)).queryClusters("query");
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
+        mSelectionDelegate.toggleSelectionForItem(mVisit1);
+        mSelectionDelegate.toggleSelectionForItem(mVisit2);
+
         mMediator.onHistoryDeletedExternally();
+
+        assertTrue(mSelectionDelegate.getSelectedItems().isEmpty());
         assertThat(mModelList, hasExactItemTypes(ItemType.MORE_PROGRESS));
         verify(mBridge, times(2)).queryClusters("query");
     }
