@@ -273,3 +273,55 @@ After attaching gdb to the process you can use it normally. For example:
 Breakpoint 1 at 0x9750793c: main. (2 locations)
 (gdb) continue
 ```
+
+## Examine app data on a non-rooted device
+
+If you're developing on a non-rooted device such as a retail phone, security restrictions
+will prevent directly accessing the application's data. However, as long as the app is
+built with debugging enabled, you can use `adb shell run-as PACKAGENAME` to execute
+shell commands using the app's authorization, roughly equivalent to `su $user`.
+
+Non-Play-Store builds with `is_official_build=false` will by default set
+`android:debuggable="true"` in the app's manifest to allow debugging.
+
+For exammple, for a Chromium build, run the following:
+
+```
+adb shell run-as org.chromium.chrome
+```
+
+If successful, this will silently wait for input without printing anything.
+It acts as a simple shell despite not showing the usual `$ ` shell prompt.
+Just type commands and press RETURN to execute them.
+
+The starting directory is the app's user data directory where user preferences and other
+profile data are stored.
+
+```
+pwd
+/data/user/0/org.chromium.chrome
+
+find -type f
+./files/rList
+./shared_prefs/org.chromium.chrome_preferences.xml
+```
+
+If you need to access the app's application data directory, you need to look up the
+obfuscated installation path since you don't have read access to the */data/app/* directory.
+For example:
+
+```
+pm list packages -f org.chromium.chrome
+package:/data/app/~~ybTygSP5u72F9GN-3TMKXA==/org.chromium.chrome-zYY5mcB7YgB5pa3vfS3CBQ==/base.apk=org.chromium.chrome
+
+ls -l /data/app/~~ybTygSP5u72F9GN-3TMKXA==/org.chromium.chrome-zYY5mcB7YgB5pa3vfS3CBQ==/
+total 389079
+-rw-r--r-- 1 system system 369634375 2022-11-05 01:49 base.apk
+drwxr-xr-x 3 system system      3452 2022-11-05 01:49 lib
+-rw-r--r-- 1 system system   4591760 2022-11-05 01:49 split_autofill_assistant.apk
+-rw-r--r-- 1 system system    786666 2022-11-05 01:49 split_cablev2_authenticator.apk
+-rw-r--r-- 1 system system  21258500 2022-11-05 01:49 split_chrome.apk
+-rw-r--r-- 1 system system   1298934 2022-11-05 01:49 split_config.en.apk
+-rw-r--r-- 1 system system    413913 2022-11-05 01:49 split_dev_ui.apk
+-rw-r--r-- 1 system system     12432 2022-11-05 01:49 split_weblayer.apk
+```
