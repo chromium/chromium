@@ -14,6 +14,7 @@ namespace wl {
 class ScopedWlArray {
  public:
   explicit ScopedWlArray(const std::vector<int32_t> states);
+  ScopedWlArray(const ScopedWlArray& rhs);
   ScopedWlArray(ScopedWlArray&& rhs);
   ScopedWlArray& operator=(ScopedWlArray&& rhs);
   ~ScopedWlArray();

@@ -24,6 +24,8 @@ class TestDataOffer : public TestSelectionOffer {
 
   ~TestDataOffer() override;
 
+  static TestDataOffer* FromResource(wl_resource* resource);
+
   void SetActions(uint32_t dnd_actions, uint32_t preferred_action);
 
   void OnSourceActions(uint32_t source_actions);

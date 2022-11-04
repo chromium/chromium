@@ -124,6 +124,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, AsyncNoopStartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            StartDragWithWrongMimeType);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
+                           ForeignDragHandleAskAction);
 
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;

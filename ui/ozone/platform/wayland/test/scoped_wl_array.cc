@@ -14,6 +14,11 @@ ScopedWlArray::ScopedWlArray(const std::vector<int32_t> states) {
     AddStateToWlArray(state);
 }
 
+ScopedWlArray::ScopedWlArray(const ScopedWlArray& rhs) {
+  wl_array_init(&array_);
+  wl_array_copy(&array_, const_cast<wl_array*>(&rhs.array_));
+}
+
 ScopedWlArray::ScopedWlArray(ScopedWlArray&& rhs) {
   array_ = rhs.array_;
   // wl_array_init sets rhs.array_'s fields to nullptr, so that

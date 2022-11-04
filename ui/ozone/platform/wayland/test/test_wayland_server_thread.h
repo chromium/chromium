@@ -170,6 +170,12 @@ class TestWaylandServerThread : public base::Thread,
 
   void OnClientDestroyed(wl_client* client);
 
+  // Returns next available serial. Must be called on the server thread.
+  uint32_t GetNextSerial() const;
+  // Returns next available timestamp. Suitable for events sent from the server
+  // the client. Must be called on the server thread.
+  uint32_t GetNextTime();
+
  private:
   void SetupOutputs();
   bool SetupPrimarySelectionManager(PrimarySelectionProtocol protocol);

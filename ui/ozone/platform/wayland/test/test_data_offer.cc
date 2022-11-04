@@ -67,6 +67,15 @@ TestDataOffer::TestDataOffer(wl_resource* resource)
 
 TestDataOffer::~TestDataOffer() = default;
 
+// static
+TestDataOffer* TestDataOffer::FromResource(wl_resource* resource) {
+  if (!ResourceHasImplementation(resource, &wl_data_offer_interface,
+                                 &kTestDataOfferImpl)) {
+    return nullptr;
+  }
+  return GetUserDataAs<TestDataOffer>(resource);
+}
+
 void TestDataOffer::SetActions(uint32_t dnd_actions,
                                uint32_t preferred_action) {
   client_supported_actions_ = dnd_actions;

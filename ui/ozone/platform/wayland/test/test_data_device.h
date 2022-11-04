@@ -25,12 +25,6 @@ class TestDataDeviceManager;
 
 class TestDataDevice : public TestSelectionDevice {
  public:
-  struct DragDelegate {
-    virtual void StartDrag(TestDataSource* source,
-                           MockSurface* origin,
-                           uint32_t serial) = 0;
-  };
-
   TestDataDevice(wl_resource* resource, TestDataDeviceManager* manager);
 
   TestDataDevice(const TestDataDevice&) = delete;
@@ -38,13 +32,12 @@ class TestDataDevice : public TestSelectionDevice {
 
   ~TestDataDevice() override;
 
-  void set_drag_delegate(DragDelegate* delegate) { drag_delegate_ = delegate; }
-
   TestDataOffer* CreateAndSendDataOffer();
   void SetSelection(TestDataSource* data_source, uint32_t serial);
   void StartDrag(TestDataSource* data_source,
                  MockSurface* origin,
                  uint32_t serial);
+  void SendOfferAndEnter(MockSurface* origin, const gfx::Point& location);
 
   void OnEnter(uint32_t serial,
                wl_resource* surface,
@@ -55,10 +48,12 @@ class TestDataDevice : public TestSelectionDevice {
   void OnMotion(uint32_t time, wl_fixed_t x, wl_fixed_t y);
   void OnDrop();
 
- private:
-  raw_ptr<DragDelegate> drag_delegate_ = nullptr;
+  uint32_t drag_serial() const { return drag_serial_; }
 
+ private:
   const raw_ptr<TestDataDeviceManager> manager_;
+
+  uint32_t drag_serial_ = 0;
 };
 
 }  // namespace wl

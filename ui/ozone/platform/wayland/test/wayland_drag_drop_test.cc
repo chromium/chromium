@@ -12,6 +12,8 @@
 #include "base/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -20,6 +22,7 @@
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/test_touch.h"
+#include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 
 using testing::_;
 
@@ -40,68 +43,115 @@ TestWaylandOSExchangeDataProvideFactory::CreateProvider() {
   return std::make_unique<WaylandExchangeDataProvider>();
 }
 
-WaylandDragDropTest::WaylandDragDropTest() = default;
+WaylandDragDropTest::WaylandDragDropTest()
+    : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
 
 WaylandDragDropTest::~WaylandDragDropTest() = default;
 
 void WaylandDragDropTest::SendDndEnter(WaylandWindow* window,
                                        const gfx::Point& location) {
-  auto* surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->get_surface_id());
-  OfferAndEnter(surface, location);
+  const uint32_t surface_id = window->root_surface()->get_surface_id();
+  PostToServerAndWait(
+      [surface_id, location](wl::TestWaylandServerThread* server) {
+        auto* origin = server->GetObject<wl::MockSurface>(surface_id);
+        DCHECK(origin);
+        auto* data_device = server->data_device_manager()->data_device();
+        DCHECK(data_device);
+        data_device->SendOfferAndEnter(origin, location);
+      });
 }
 
 void WaylandDragDropTest::SendDndLeave() {
-  data_device_manager_->data_device()->OnLeave();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    server->data_device_manager()->data_device()->OnLeave();
+  });
 }
 
 void WaylandDragDropTest::SendDndMotion(const gfx::Point& location) {
-  EXPECT_TRUE(data_source_);
-  wl_fixed_t x = wl_fixed_from_int(location.x());
-  wl_fixed_t y = wl_fixed_from_int(location.y());
-  data_device_manager_->data_device()->OnMotion(NextTime(), x, y);
+  PostToServerAndWait([location](wl::TestWaylandServerThread* server) {
+    auto* data_source = server->data_device_manager()->data_source();
+    ASSERT_TRUE(data_source);
+    wl_fixed_t x = wl_fixed_from_int(location.x());
+    wl_fixed_t y = wl_fixed_from_int(location.y());
+    server->data_device_manager()->data_device()->OnMotion(
+        server->GetNextTime(), x, y);
+  });
 }
 
 void WaylandDragDropTest::SendDndDrop() {
-  EXPECT_TRUE(data_source_);
-  data_source_->OnFinished();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* data_source = server->data_device_manager()->data_source();
+    ASSERT_TRUE(data_source);
+    data_source->OnFinished();
+  });
 }
 
 void WaylandDragDropTest::SendDndCancelled() {
-  EXPECT_TRUE(data_source_);
-  data_source_->OnCancelled();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* data_source = server->data_device_manager()->data_source();
+    ASSERT_TRUE(data_source);
+    data_source->OnCancelled();
+  });
 }
 
 void WaylandDragDropTest::SendDndAction(uint32_t action) {
-  EXPECT_TRUE(data_source_);
-  data_source_->OnDndAction(action);
+  PostToServerAndWait([action](wl::TestWaylandServerThread* server) {
+    auto* data_source = server->data_device_manager()->data_source();
+    ASSERT_TRUE(data_source);
+    data_source->OnDndAction(action);
+  });
 }
 
-void WaylandDragDropTest::ReadData(
-    const std::string& mime_type,
-    wl::TestDataSource::ReadDataCallback callback) {
-  ASSERT_TRUE(data_source_);
-  data_source_->ReadData(mime_type, std::move(callback));
+void WaylandDragDropTest::ReadAndCheckData(const std::string& mime_type,
+                                           const std::string& expected_data) {
+  PostToServerAndWait(
+      [mime_type, expected_data](wl::TestWaylandServerThread* server) {
+        auto* data_source = server->data_device_manager()->data_source();
+        ASSERT_TRUE(data_source);
+
+        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        auto read_callback = base::BindOnce(
+            [](std::string expected_data, base::RunLoop* loop,
+               std::vector<uint8_t>&& data) {
+              std::string result(data.begin(), data.end());
+              EXPECT_EQ(expected_data, result);
+              loop->Quit();
+            },
+            std::move(expected_data), &run_loop);
+
+        data_source->ReadData(mime_type, std::move(read_callback));
+        run_loop.Run();
+      });
 }
 
 void WaylandDragDropTest::SendPointerEnter(
     WaylandWindow* window,
     MockPlatformWindowDelegate* delegate) {
-  auto* surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->get_surface_id());
-  wl_pointer_send_enter(pointer_->resource(), NextSerial(), surface->resource(),
-                        0, 0);
-  wl_pointer_send_frame(pointer_->resource());
+  const uint32_t surface_id = window->root_surface()->get_surface_id();
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    DCHECK(surface);
+    auto* pointer = server->seat()->pointer();
+    DCHECK(pointer);
+    wl_pointer_send_enter(pointer->resource(), server->GetNextSerial(),
+                          surface->resource(), 0, 0);
+    wl_pointer_send_frame(pointer->resource());
+  });
 }
 
 void WaylandDragDropTest::SendPointerLeave(
     WaylandWindow* window,
     MockPlatformWindowDelegate* delegate) {
-  auto* surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->get_surface_id());
-  wl_pointer_send_leave(pointer_->resource(), NextSerial(),
-                        surface->resource());
-  wl_pointer_send_frame(pointer_->resource());
+  const uint32_t surface_id = window->root_surface()->get_surface_id();
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    DCHECK(surface);
+    auto* pointer = server->seat()->pointer();
+    DCHECK(pointer);
+    wl_pointer_send_leave(pointer->resource(), server->GetNextSerial(),
+                          surface->resource());
+    wl_pointer_send_frame(pointer->resource());
+  });
 }
 
 void WaylandDragDropTest::SendPointerButton(
@@ -109,124 +159,100 @@ void WaylandDragDropTest::SendPointerButton(
     MockPlatformWindowDelegate* delegate,
     int button,
     bool pressed) {
-  const uint32_t serial = NextSerial();
-  uint32_t state = pressed ? WL_POINTER_BUTTON_STATE_PRESSED
-                           : WL_POINTER_BUTTON_STATE_RELEASED;
-  wl_pointer_send_button(pointer_->resource(), serial, NextTime(), button,
-                         state);
-  wl_pointer_send_frame(pointer_->resource());
+  PostToServerAndWait([pressed, button](wl::TestWaylandServerThread* server) {
+    uint32_t state = pressed ? WL_POINTER_BUTTON_STATE_PRESSED
+                             : WL_POINTER_BUTTON_STATE_RELEASED;
+    auto* pointer = server->seat()->pointer();
+    DCHECK(pointer);
+    wl_pointer_send_button(pointer->resource(), server->GetNextSerial(),
+                           server->GetNextTime(), button, state);
+    wl_pointer_send_frame(pointer->resource());
+  });
 }
 
 void WaylandDragDropTest::SendTouchDown(WaylandWindow* window,
                                         MockPlatformWindowDelegate* delegate,
                                         int id,
                                         const gfx::Point& location) {
-  auto* surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->get_surface_id());
-  wl_touch_send_down(
-      touch_->resource(), NextSerial(), NextTime(), surface->resource(), id,
-      wl_fixed_from_double(location.x()), wl_fixed_from_double(location.y()));
-  wl_touch_send_frame(touch_->resource());
+  const uint32_t surface_id = window->root_surface()->get_surface_id();
+  PostToServerAndWait(
+      [surface_id, id, location](wl::TestWaylandServerThread* server) {
+        auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+        DCHECK(surface);
+        auto* touch = server->seat()->touch();
+        DCHECK(touch);
+        wl_touch_send_down(touch->resource(), server->GetNextSerial(),
+                           server->GetNextTime(), surface->resource(), id,
+                           wl_fixed_from_double(location.x()),
+                           wl_fixed_from_double(location.y()));
+        wl_touch_send_frame(touch->resource());
+      });
 }
 
 void WaylandDragDropTest::SendTouchUp(int id) {
-  wl_touch_send_up(touch_->resource(), NextSerial(), NextTime(), id);
-  wl_touch_send_frame(touch_->resource());
+  PostToServerAndWait([id](wl::TestWaylandServerThread* server) {
+    auto* touch = server->seat()->touch();
+    DCHECK(touch);
+    wl_touch_send_up(touch->resource(), server->GetNextSerial(),
+                     server->GetNextTime(), id);
+    wl_touch_send_frame(touch->resource());
+  });
 }
 
 void WaylandDragDropTest::SendTouchMotion(WaylandWindow* window,
                                           MockPlatformWindowDelegate* delegate,
                                           int id,
                                           const gfx::Point& location) {
-  wl_touch_send_motion(touch_->resource(), NextSerial(), id,
-                       wl_fixed_from_double(location.x()),
-                       wl_fixed_from_double(location.y()));
-  wl_touch_send_frame(touch_->resource());
+  PostToServerAndWait([id, location](wl::TestWaylandServerThread* server) {
+    auto* touch = server->seat()->touch();
+    DCHECK(touch);
+    wl_touch_send_motion(touch->resource(), server->GetNextSerial(), id,
+                         wl_fixed_from_double(location.x()),
+                         wl_fixed_from_double(location.y()));
+    wl_touch_send_frame(touch->resource());
+  });
 }
 
 void WaylandDragDropTest::SetUp() {
   WaylandTest::SetUp();
 
-  wl_seat_send_capabilities(server_.seat()->resource(),
-                            WL_SEAT_CAPABILITY_POINTER |
-                                WL_SEAT_CAPABILITY_TOUCH |
-                                WL_SEAT_CAPABILITY_KEYBOARD);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER |
+                                  WL_SEAT_CAPABILITY_TOUCH |
+                                  WL_SEAT_CAPABILITY_KEYBOARD);
+    ASSERT_TRUE(server->data_device_manager());
+  });
 
-  Sync();
-  pointer_ = server_.seat()->pointer();
-  ASSERT_TRUE(pointer_);
-
-  touch_ = server_.seat()->touch();
-  ASSERT_TRUE(touch_);
-
-  data_device_manager_ = server_.data_device_manager();
-  ASSERT_TRUE(data_device_manager_);
-
-  data_source_ = nullptr;
-  data_device_manager_->data_device()->set_drag_delegate(this);
-}
-
-void WaylandDragDropTest::TearDown() {
-  data_device_manager_->data_device()->set_drag_delegate(nullptr);
-  data_device_manager_ = nullptr;
-}
-
-// wl::TestDataDevice::DragDelegate:
-void WaylandDragDropTest::StartDrag(wl::TestDataSource* source,
-                                    wl::MockSurface* origin,
-                                    uint32_t serial) {
-  EXPECT_FALSE(data_source_);
-  data_source_ = source;
-  OfferAndEnter(origin, {});
-  MockStartDrag(source, origin, serial);
-}
-
-uint32_t WaylandDragDropTest::NextSerial() {
-  static uint32_t serial = 0;
-  current_serial_ = ++serial;
-  return current_serial_;
-}
-
-uint32_t WaylandDragDropTest::NextTime() const {
-  static uint32_t timestamp = 0;
-  return ++timestamp;
-}
-
-void WaylandDragDropTest::OfferAndEnter(wl::MockSurface* surface,
-                                        const gfx::Point& location) {
-  ASSERT_TRUE(data_source_);
-  auto* data_device = data_device_manager_->data_device();
-
-  // Emulate server sending an wl_data_device::offer event.
-  auto* data_offer = data_device->OnDataOffer();
-  for (const auto& mime_type : data_source_->mime_types())
-    data_offer->OnOffer(mime_type, {});
-
-  // Emulate server sending an wl_data_device::enter event.
-  wl_data_device_send_enter(
-      data_device->resource(), NextSerial(), surface->resource(),
-      wl_fixed_from_int(location.x()), wl_fixed_from_int(location.y()),
-      data_offer->resource());
+  ASSERT_TRUE(connection_->seat());
+  ASSERT_TRUE(connection_->seat()->pointer());
+  ASSERT_TRUE(connection_->seat()->touch());
+  ASSERT_TRUE(connection_->seat()->keyboard());
 }
 
 void WaylandDragDropTest::ScheduleTestTask(base::OnceClosure test_task) {
+  scheduled_tasks_.emplace_back(std::move(test_task));
+  MaybeRunScheduledTasks();
+}
+
+void WaylandDragDropTest::MaybeRunScheduledTasks() {
+  if (is_task_running_ || scheduled_tasks_.empty())
+    return;
+
+  is_task_running_ = true;
+
+  auto next_task = std::move(scheduled_tasks_.front());
+  scheduled_tasks_.erase(scheduled_tasks_.begin());
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&WaylandDragDropTest::RunTestTask,
-                                base::Unretained(this), std::move(test_task)));
+                                base::Unretained(this), std::move(next_task)));
 }
 
 void WaylandDragDropTest::RunTestTask(base::OnceClosure test_task) {
-  Sync();
-
-  // The data source is created asynchronously by the drag controller. If it is
-  // null at this point, it means that the task for that has not yet executed,
-  // so try again a bit later.
-  if (!data_device_manager_->data_source()) {
-    ScheduleTestTask(std::move(test_task));
-    return;
-  }
-
+  DCHECK(is_task_running_);
   std::move(test_task).Run();
+  is_task_running_ = false;
+  MaybeRunScheduledTasks();
 }
 
 }  // namespace ui

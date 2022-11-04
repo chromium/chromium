@@ -210,7 +210,8 @@ void TestWaylandServerThread::RunAndWait(
 }
 
 void TestWaylandServerThread::RunAndWait(base::OnceClosure closure) {
-  base::RunLoop run_loop;
+  // Allow nestable tasks for dnd tests.
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   task_runner()->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&TestWaylandServerThread::DoRun, base::Unretained(this),
@@ -237,6 +238,17 @@ void TestWaylandServerThread::OnClientDestroyed(wl_client* client) {
 
   DCHECK_EQ(client_, client);
   client_ = nullptr;
+}
+
+uint32_t TestWaylandServerThread::GetNextSerial() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return wl_display_next_serial(display_.get());
+}
+
+uint32_t TestWaylandServerThread::GetNextTime() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  static uint32_t timestamp = 0;
+  return ++timestamp;
 }
 
 // By default, just make sure primary screen has bounds set. Otherwise delegates

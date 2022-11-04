@@ -102,11 +102,27 @@ void TestDataDevice::StartDrag(TestDataSource* source,
   DCHECK(origin);
 
   CHECK(manager_);
+  drag_serial_ = serial;
   manager_->set_data_source(source);
-
-  if (drag_delegate_)
-    drag_delegate_->StartDrag(source, origin, serial);
+  SendOfferAndEnter(origin, {});
   TestWaylandServerThread::FlushClientForResource(resource());
+}
+
+void TestDataDevice::SendOfferAndEnter(MockSurface* origin,
+                                       const gfx::Point& location) {
+  DCHECK(manager_->data_source());
+  auto* data_offer = OnDataOffer();
+  DCHECK(data_offer);
+  for (const auto& mime_type : manager_->data_source()->mime_types())
+    data_offer->OnOffer(mime_type, {});
+
+  auto* client = wl_resource_get_client(resource());
+  auto* display = wl_client_get_display(client);
+  DCHECK(display);
+  wl_data_device_send_enter(resource(), wl_display_get_serial(display),
+                            origin->resource(), wl_fixed_from_int(location.x()),
+                            wl_fixed_from_int(location.y()),
+                            data_offer->resource());
 }
 
 void TestDataDevice::OnEnter(uint32_t serial,

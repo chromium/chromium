@@ -26,6 +26,8 @@ class TestOutput : public GlobalObject {
 
   ~TestOutput() override;
 
+  static TestOutput* FromResource(wl_resource* resource);
+
   const gfx::Rect GetRect() { return rect_; }
   void SetRect(const gfx::Rect& rect);
   int32_t GetScale() const { return scale_; }

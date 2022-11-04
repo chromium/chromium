@@ -19,6 +19,11 @@ TestOutput::TestOutput()
 
 TestOutput::~TestOutput() = default;
 
+// static
+TestOutput* TestOutput::FromResource(wl_resource* resource) {
+  return GetUserDataAs<TestOutput>(resource);
+}
+
 void TestOutput::SetRect(const gfx::Rect& rect) {
   pending_rect_ = rect;
 }
