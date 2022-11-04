@@ -789,9 +789,22 @@ export function shimlessRMAAppTest() {
   test('LogsDialogCloses', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
     await openLogsDialog();
-    await clickButton('#closeLogDialogButton');
 
     const logsDialog = component.shadowRoot.querySelector('#logsDialog');
+    assertTrue(logsDialog.open);
+
+    await clickButton('#closeLogDialogButton');
+
+    assertTrue(!!logsDialog);
+    assertFalse(logsDialog.open);
+
+    // Verify logs dialog can be closed when the USB is unplugged.
+    service.triggerExternalDiskObserver(false, 0);
+    await openLogsDialog();
+    assertTrue(logsDialog.open);
+
+    await clickButton('#closeLogDialogButton');
+
     assertTrue(!!logsDialog);
     assertFalse(logsDialog.open);
   });
