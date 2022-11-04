@@ -18,10 +18,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -108,12 +106,16 @@ class LoginScreenExtensionsGoodContentScriptTest
 // enabled on the login/lock screen.
 IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsGoodContentScriptTest,
                        GoodExtensionEnabled) {
+  extensions::TestExtensionRegistryObserver login_screen_observer(
+      extensions::ExtensionRegistry::Get(GetOriginalSigninProfile()),
+      kGoodExtensionId);
   EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kGoodExtensionPath),
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kGoodExtensionPemPath),
-      ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
+      ExtensionForceInstallMixin::WaitMode::kLoad));
+  login_screen_observer.WaitForExtensionReady();
   EXPECT_TRUE(IsExtensionInstalled(kGoodExtensionId));
   ASSERT_TRUE(IsExtensionEnabled(kGoodExtensionId));
 
@@ -122,14 +124,12 @@ IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsGoodContentScriptTest,
   EXPECT_TRUE(IsExtensionInstalled(kGoodExtensionId));
   EXPECT_FALSE(IsExtensionEnabled(kGoodExtensionId));
 
-  // The user locks the session. The extension gets enabled and the background
-  // page is loaded again.
-  extensions::ExtensionHostTestHelper background_ready(
-      GetOriginalSigninProfile(), kGoodExtensionId);
-  background_ready.RestrictToType(
-      extensions::mojom::ViewType::kExtensionBackgroundPage);
+  // The user locks the session. The extension gets enabled.
+  extensions::TestExtensionRegistryObserver lock_screen_observer(
+      extensions::ExtensionRegistry::Get(GetOriginalSigninProfile()),
+      kGoodExtensionId);
   LockSession();
-  background_ready.WaitForHostCompletedFirstLoad();
+  lock_screen_observer.WaitForExtensionReady();
   ASSERT_TRUE(IsExtensionEnabled(kGoodExtensionId));
 }
 

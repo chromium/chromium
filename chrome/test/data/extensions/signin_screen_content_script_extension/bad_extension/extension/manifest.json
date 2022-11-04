@@ -1,10 +1,10 @@
 {
   "name": "Sign-in Screen with Disallowed Content Script Test Extension",
-  "version": "0.1",
-  "manifest_version": 2,
+  "version": "0.2",
+  "manifest_version": 3,
   "description": "The extension for testing the extensions installation in the Chrome OS sign-in profile with an non-allowlisted content script",
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
