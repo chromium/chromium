@@ -2373,6 +2373,8 @@ static_library("ui") {
       "ash/keyboard/chrome_keyboard_ui_factory.h",
       "ash/keyboard/chrome_keyboard_web_contents.cc",
       "ash/keyboard/chrome_keyboard_web_contents.h",
+      "ash/legacy_fingerprint_engine.cc",
+      "ash/legacy_fingerprint_engine.h",
       "ash/login_screen_client_impl.cc",
       "ash/login_screen_client_impl.h",
       "ash/login_screen_shown_observer.h",

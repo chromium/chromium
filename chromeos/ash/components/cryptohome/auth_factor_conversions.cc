@@ -18,6 +18,8 @@ namespace {
 
 using ::ash::ChallengeResponseKey;
 
+}  // namespace
+
 user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type) {
   switch (type) {
     case AuthFactorType::kUnknownLegacy:
@@ -37,8 +39,6 @@ user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type) {
       return user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT;
   }
 }
-
-}  // namespace
 
 AuthFactorType ConvertFactorTypeFromProto(user_data_auth::AuthFactorType type) {
   switch (type) {

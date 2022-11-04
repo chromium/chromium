@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/cryptohome_pin_engine.h"
+#include "chrome/browser/ui/ash/legacy_fingerprint_engine.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -75,11 +76,17 @@ InSessionAuthDialogClient* InSessionAuthDialogClient::Get() {
 
 bool InSessionAuthDialogClient::IsFingerprintAuthAvailable(
     const AccountId& account_id) {
-  ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      ash::quick_unlock::QuickUnlockFactory::GetForAccountId(account_id);
-  return quick_unlock_storage &&
-         quick_unlock_storage->fingerprint_storage()->IsFingerprintAvailable(
-             ash::quick_unlock::Purpose::kWebAuthn);
+  if (!ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
+    ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+        ash::quick_unlock::QuickUnlockFactory::GetForAccountId(account_id);
+    return quick_unlock_storage &&
+           quick_unlock_storage->fingerprint_storage()->IsFingerprintAvailable(
+               ash::quick_unlock::Purpose::kWebAuthn);
+  }
+
+  return legacy_fingerprint_engine_->IsFingerprintAvailable(
+      ash::LegacyFingerprintEngine::Purpose::kWebAuthn,
+      user_context_->GetAccountId());
 }
 
 ExtendedAuthenticator* InSessionAuthDialogClient::GetExtendedAuthenticator() {
@@ -93,13 +100,67 @@ ExtendedAuthenticator* InSessionAuthDialogClient::GetExtendedAuthenticator() {
 void InSessionAuthDialogClient::StartFingerprintAuthSession(
     const AccountId& account_id,
     base::OnceCallback<void(bool)> callback) {
-  GetExtendedAuthenticator()->StartFingerprintAuthSession(account_id,
-                                                          std::move(callback));
+  if (!ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
+    GetExtendedAuthenticator()->StartFingerprintAuthSession(
+        account_id, std::move(callback));
+    return;
+  }
+
+  legacy_fingerprint_engine_->PrepareLegacyFingerprintFactor(
+      std::move(user_context_),
+      base::BindOnce(
+          &InSessionAuthDialogClient::OnPrepareLegacyFingerprintFactor,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void InSessionAuthDialogClient::EndFingerprintAuthSession() {
-  DCHECK(extended_authenticator_);
-  extended_authenticator_->EndFingerprintAuthSession();
+void InSessionAuthDialogClient::OnPrepareLegacyFingerprintFactor(
+    base::OnceCallback<void(bool)> callback,
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<AuthenticationError> error) {
+  user_context_ = std::move(user_context);
+
+  if (error.has_value()) {
+    LOG(ERROR) << "Could not prepare legacy fingerprint auth factor, code: "
+               << error->get_cryptohome_code();
+    std::move(callback).Run(false);
+    return;
+  }
+
+  observation_.Observe(ash::UserDataAuthClient::Get());
+  std::move(callback).Run(true);
+}
+
+void InSessionAuthDialogClient::EndFingerprintAuthSession(
+    base::OnceClosure callback) {
+  if (!ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
+    DCHECK(extended_authenticator_);
+    extended_authenticator_->EndFingerprintAuthSession();
+    std::move(callback).Run();
+    return;
+  }
+
+  if (legacy_fingerprint_engine_.has_value()) {
+    legacy_fingerprint_engine_->TerminateLegacyFingerprintFactor(
+        std::move(user_context_),
+        base::BindOnce(
+            &InSessionAuthDialogClient::OnTerminateLegacyFingerprintFactor,
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
+void InSessionAuthDialogClient::OnTerminateLegacyFingerprintFactor(
+    base::OnceClosure callback,
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<AuthenticationError> error) {
+  // Proceed to updating the state and running the callback.
+  // We need this regardless of whether an error occurred.
+  if (error.has_value()) {
+    LOG(ERROR) << "Error terminating legacy fingerprint auth factor, code: "
+               << error->get_cryptohome_code();
+  }
+  user_context_ = std::move(user_context);
+  observation_.Reset();
+  std::move(callback).Run();
 }
 
 void InSessionAuthDialogClient::CheckPinAuthAvailability(
@@ -281,6 +342,7 @@ void InSessionAuthDialogClient::OnAuthSessionStarted(
   // Take temporary ownership of user_context to pass on later.
   user_context_ = std::move(user_context);
   pin_engine_.emplace(&auth_performer_);
+  legacy_fingerprint_engine_.emplace(&auth_performer_);
   std::move(callback).Run(true);
 }
 
@@ -315,16 +377,50 @@ void InSessionAuthDialogClient::OnPasswordAuthSuccess(
 
 void InSessionAuthDialogClient::AuthenticateUserWithFingerprint(
     base::OnceCallback<void(bool, ash::FingerprintState)> callback) {
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  DCHECK(user);
-  UserContext user_context(*user);
+  if (!ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
+    const user_manager::User* const user =
+        user_manager::UserManager::Get()->GetActiveUser();
+    DCHECK(user);
+    UserContext user_context(*user);
 
-  DCHECK(extended_authenticator_);
-  extended_authenticator_->AuthenticateWithFingerprint(
-      user_context,
-      base::BindOnce(&InSessionAuthDialogClient::OnFingerprintAuthDone,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+    DCHECK(extended_authenticator_);
+    extended_authenticator_->AuthenticateWithFingerprint(
+        user_context,
+        base::BindOnce(&InSessionAuthDialogClient::OnFingerprintAuthDone,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  DCHECK(!fingerprint_scan_done_callback_);
+  fingerprint_scan_done_callback_ = std::move(callback);
+}
+
+void InSessionAuthDialogClient::OnFingerprintScan(
+    const ::user_data_auth::FingerprintScanResult& result) {
+  if (!fingerprint_scan_done_callback_)
+    return;
+
+  switch (result) {
+    case user_data_auth::FINGERPRINT_SCAN_RESULT_SUCCESS:
+      std::move(fingerprint_scan_done_callback_)
+          .Run(true, ash::FingerprintState::AVAILABLE_DEFAULT);
+      break;
+    case user_data_auth::FINGERPRINT_SCAN_RESULT_RETRY:
+      std::move(fingerprint_scan_done_callback_)
+          .Run(false, ash::FingerprintState::AVAILABLE_DEFAULT);
+      break;
+    case user_data_auth::FINGERPRINT_SCAN_RESULT_LOCKOUT:
+      std::move(fingerprint_scan_done_callback_)
+          .Run(false, ash::FingerprintState::DISABLED_FROM_ATTEMPTS);
+      break;
+    case user_data_auth::FINGERPRINT_SCAN_RESULT_FATAL_ERROR:
+      std::move(fingerprint_scan_done_callback_)
+          .Run(false, ash::FingerprintState::UNAVAILABLE);
+      break;
+    default:
+      std::move(fingerprint_scan_done_callback_)
+          .Run(false, ash::FingerprintState::UNAVAILABLE);
+  }
 }
 
 void InSessionAuthDialogClient::OnFingerprintAuthDone(

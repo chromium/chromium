@@ -154,11 +154,19 @@ void WebAuthNDialogControllerImpl::DestroyAuthenticationDialog() {
   if (!dialog_)
     return;
 
+  if (dialog_->GetAuthMethods() & AuthDialogContentsView::kAuthFingerprint) {
+    client_->EndFingerprintAuthSession(
+        base::BindOnce(&WebAuthNDialogControllerImpl::ProcessFinalCleanups,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  ProcessFinalCleanups();
+}
+
+void WebAuthNDialogControllerImpl::ProcessFinalCleanups() {
   if (ash::features::IsUseAuthsessionForWebAuthNEnabled())
     client_->InvalidateAuthSession();
-
-  if (dialog_->GetAuthMethods() & AuthDialogContentsView::kAuthFingerprint)
-    client_->EndFingerprintAuthSession();
 
   dialog_.reset();
   source_window_tracker_.RemoveAll();

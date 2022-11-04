@@ -13,6 +13,8 @@
 namespace cryptohome {
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type);
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 AuthFactorType ConvertFactorTypeFromProto(user_data_auth::AuthFactorType type);
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 void SerializeAuthFactor(const AuthFactor& factor,

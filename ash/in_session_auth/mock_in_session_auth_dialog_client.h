@@ -45,7 +45,10 @@ class MockInSessionAuthDialogClient : public InSessionAuthDialogClient {
                base::OnceCallback<void(bool)> callback),
               (override));
 
-  MOCK_METHOD(void, EndFingerprintAuthSession, (), (override));
+  MOCK_METHOD(void,
+              EndFingerprintAuthSession,
+              (base::OnceClosure callback),
+              (override));
 
   MOCK_METHOD(void,
               CheckPinAuthAvailability,

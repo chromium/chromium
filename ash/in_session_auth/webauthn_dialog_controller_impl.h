@@ -73,6 +73,9 @@ class WebAuthNDialogControllerImpl : public WebAuthNDialogController {
       bool success,
       FingerprintState fingerprint_state);
 
+  // Process final cleanup tasks.
+  void ProcessFinalCleanups();
+
   // Called when auth succeeds to close the dialog and report success.
   void OnAuthSuccess();
 

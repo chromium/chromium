@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
@@ -66,6 +67,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   // Invalidates the session contained in `context`.
   virtual void InvalidateAuthSession(std::unique_ptr<UserContext> context,
                                      AuthOperationCallback callback);
+
+  // Prepares async auth factors such as fingerprint, activates the relevant
+  // sensors to start listening.
+  void PrepareAuthFactor(std::unique_ptr<UserContext> context,
+                         cryptohome::AuthFactorType type,
+                         AuthOperationCallback callback);
+
+  // Terminate async auth factors, disables relevant sensors.
+  void TerminateAuthFactor(std::unique_ptr<UserContext> context,
+                           cryptohome::AuthFactorType type,
+                           AuthOperationCallback callback);
 
   // Attempts to authenticate session using Key in `context`.
   // If key is a plain text, it is assumed that it is a knowledge-based key,
@@ -126,6 +138,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::InvalidateAuthSessionReply> reply);
+
+  void OnPrepareAuthFactor(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::PrepareAuthFactorReply> reply);
+
+  void OnTerminateAuthFactor(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::TerminateAuthFactorReply> reply);
 
   void HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,
                               AuthOperationCallback callback,
