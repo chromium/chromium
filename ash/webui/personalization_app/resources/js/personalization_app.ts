@@ -27,6 +27,7 @@ import './personalization_test_api.js';
 import './personalization_toast_element.js';
 import './personalization_breadcrumb_element.js';
 import './personalization_main_element.js';
+import './theme/color_scheme_icon_svg_element.js';
 import './theme/personalization_theme_element.js';
 import './theme/dynamic_color_element.js';
 import './user/avatar_camera_element.js';
@@ -79,6 +80,7 @@ export {PersonalizationThemeElement} from './theme/personalization_theme_element
 export {PersonalizationToastElement} from './personalization_toast_element.js';
 export {setDarkModeEnabledAction, SetDarkModeEnabledAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
 export {setThemeProviderForTesting} from './theme/theme_interface_provider.js';
+export {ColorSchemeIconSvgElement} from './theme/color_scheme_icon_svg_element.js';
 export {DynamicColorElement} from './theme/dynamic_color_element.js';
 export {ThemeObserver} from './theme/theme_observer.js';
 export {AvatarCamera, AvatarCameraMode} from './user/avatar_camera_element.js';

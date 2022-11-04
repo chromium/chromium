@@ -13,6 +13,13 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './dynamic_color_element.html.js';
 
+export interface DynamicColorScheme {
+  id: string;
+  primaryColor: string;
+  secondaryColor: string;
+  tertiaryColor: string;
+}
+
 export class DynamicColorElement extends WithPersonalizationStore {
   static get is() {
     return 'dynamic-color';
@@ -45,20 +52,43 @@ export class DynamicColorElement extends WithPersonalizationStore {
       schemes_: {
         type: Object,
         readOnly: true,
-        value: [
-          // TODO(254479725): Replace with colors fetched from the backend.
-          {id: 'tonal', primaryColor: 'var(--google-blue-500)'},
-          {id: 'neutral', primaryColor: 'var(--google-red-500)'},
-          {id: 'vibrant', primaryColor: 'var(--google-green-500)'},
-          {id: 'expressive', primaryColor: 'var(--google-orange-500)'},
-        ],
+        value(): DynamicColorScheme[] {
+          return [
+            // TODO(254479725): Replace with colors fetched from the
+            // backend.
+            {
+              id: 'tonal',
+              primaryColor: 'var(--google-blue-500)',
+              secondaryColor: 'var(--google-red-500)',
+              tertiaryColor: 'var(--google-green-500)',
+            },
+            {
+              id: 'neutral',
+              primaryColor: 'var(--google-red-500)',
+              secondaryColor: 'var(--google-blue-500)',
+              tertiaryColor: 'var(--google-green-500)',
+            },
+            {
+              id: 'vibrant',
+              primaryColor: 'var(--google-green-500)',
+              secondaryColor: 'var(--google-red-500)',
+              tertiaryColor: 'var(--google-blue-500)',
+            },
+            {
+              id: 'expressive',
+              primaryColor: 'var(--google-orange-500)',
+              secondaryColor: 'var(--google-red-500)',
+              tertiaryColor: 'var(--google-green-500)',
+            },
+          ];
+        },
       },
     };
   }
 
   automaticSeedColorEnabled: boolean;
   private staticColors_: string[];
-  private schemes_: Object[];
+  private schemes_: DynamicColorScheme[];
 }
 
 customElements.define(DynamicColorElement.is, DynamicColorElement);

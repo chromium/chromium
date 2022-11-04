@@ -88,6 +88,7 @@ web_component_files = [
   "js/personalization_toast_element.ts",
   "js/personalization_breadcrumb_element.ts",
   "js/theme/personalization_theme_element.ts",
+  "js/theme/color_scheme_icon_svg_element.ts",
   "js/theme/dynamic_color_element.ts",
   "js/user/avatar_camera_element.ts",
   "js/user/avatar_list_element.ts",

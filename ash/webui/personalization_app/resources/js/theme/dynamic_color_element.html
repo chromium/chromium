@@ -37,6 +37,7 @@
     width: 76px;
   }
 
+  color-scheme-icon-svg,
   svg {
     height: 48px;
     width: 48px;
@@ -56,10 +57,7 @@
     <template is="dom-if" if="[[automaticSeedColorEnabled]]">
       <template is="dom-repeat" items="[[schemes_]]" as="scheme">
         <cr-button>
-          <!-- TODO(b/254481177): Replace with the real SVG. -->
-          <svg>
-            <circle style$="fill: [[scheme.primaryColor]]" cx="24" cy="24" r="24"></circle>
-          </svg>
+          <color-scheme-icon-svg scheme="[[scheme]]"></color-scheme-icon-svg>
         </cr-button>
       </template>
     </template>
