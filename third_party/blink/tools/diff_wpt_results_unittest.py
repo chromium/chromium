@@ -167,8 +167,8 @@ class CreateCsvTest(unittest.TestCase):
         host.executive = MockExecutive(run_command_fn=process_cmds)
 
         with DataIO() as csv_out,                                                 \
-                _get_product_test_results(host, 'android_webview') as test_results,   \
-                _get_product_test_results(host, 'chrome_android') as baseline_results:
+                _get_product_test_results(host, 'android_webview', 0) as test_results,   \
+                _get_product_test_results(host, 'chrome_android', 0) as baseline_results:
 
             actual_results_json = json.loads(test_results.read())
             baseline_results_json = json.loads(baseline_results.read())

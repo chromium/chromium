@@ -32,21 +32,30 @@ class BBAgent(object):
                            'before trying again.')
             raise ex
 
-    def get_latest_finished_build(self, builder_name, try_build=False):
+    def get_finished_build(self, builder_name, number, try_build=False):
         self._check_luci_auth()
-        builder_path = ('chromium/' +
-                        ('try' if try_build else 'ci') +
-                        '/' + builder_name)
+        builder_path = ('chromium/' + ('try' if try_build else 'ci') + '/' +
+                        builder_name)
 
-        bb_output = self._host.executive.run_command(
-            [self.bb_bin_path, 'ls', '-1', '-json',
-             '-status', 'ended', builder_path]).strip()
+        # get build from the latest run if number == 0, otherwise get the build specified
+        # by number, must be within the latest 100 runs.
+        count = '100' if number else '-1'
+        bb_output = self._host.executive.run_command([
+            self.bb_bin_path, 'ls', count, '-json', '-status', 'ended',
+            builder_path
+        ]).strip()
         if not bb_output:
             return
 
-        json_output = json.loads(bb_output)
-        return Build(builder_name, json_output['number'],
-                     json_output['id'])
+        if not number:
+            json_output = json.loads(bb_output)
+            return Build(builder_name, json_output['number'],
+                         json_output['id'])
+
+        for line in bb_output.splitlines():
+            build = json.loads(line)
+            if build['number'] == number:
+                return Build(builder_name, number, build['id'])
 
     def get_build_test_results(self, build, step_name):
         self._check_luci_auth()

@@ -46,29 +46,40 @@ _log = logging.getLogger(os.path.basename(__file__))
 
 # Extend this script to compare the results between wptrunner/Chrome
 # and rwt/content_shell on Linux
-PRODUCTS = PRODUCTS + ['chrome_linux', 'content_shell']
+PRODUCTS = PRODUCTS + [
+    'chrome_linux', 'content_shell', 'wpt_content_shell_linux'
+]
 PRODUCTS_TO_STEPNAMES.update({
     'chrome_linux': 'wpt_tests_suite',
-    'content_shell': 'blink_wpt_tests'})
+    'wpt_content_shell_linux': 'wpt_tests_suite',
+    'content_shell': 'blink_wpt_tests'
+})
 PRODUCTS_TO_BUILDER_NAME = {
     'android_webview': 'android-webview-pie-x86-wpt-fyi-rel',
     'chrome_android': 'android-chrome-pie-x86-wpt-fyi-rel',
     'chrome_linux': 'linux-wpt-fyi-rel',
-    'content_shell': "Linux Tests"}
+    'wpt_content_shell_linux': 'linux-wpt-content-shell-fyi-rel',
+    'content_shell': "Linux Tests"
+}
 
 STEP_NAME_VARIANTS = {
     'chrome_public_wpt': ['chrome_public_wpt on Ubuntu-16.04 or Ubuntu-18.04'],
-    'system_webview_wpt': ['system_webview_wpt on Ubuntu-16.04 or Ubuntu-18.04'],
-    'wpt_tests_suite': ['wpt_tests_suite on Ubuntu-18.04'],
-    'blink_web_tests': ['blink_wpt_tests on Ubuntu-18.04']
+    'system_webview_wpt':
+    ['system_webview_wpt on Ubuntu-16.04 or Ubuntu-18.04'],
+    'wpt_tests_suite': ['wpt_tests_suite (experimental) on Ubuntu-18.04'],
+    'blink_wpt_tests': ['blink_wpt_tests on Ubuntu-18.04']
 }
 
 def map_tests_to_results(output_mp, input_mp, path=''):
     if 'actual' in input_mp:
         output_mp[path[1:]] = input_mp
     else:
+        # TODO: needs to be extended when we support virtual tests
         for k, v in input_mp.items():
-            map_tests_to_results(output_mp, v, path + '/' + k)
+            if k == 'wpt_internal':
+                map_tests_to_results(output_mp, v, "/wpt_internal")
+            else:
+                map_tests_to_results(output_mp, v, path + '/' + k)
 
 
 class WPTResultsDiffer(object):
@@ -188,7 +199,7 @@ def _get_build_test_results(host, product, build):
 
 
 @contextlib.contextmanager
-def _get_product_test_results(host, product, results_path=None):
+def _get_product_test_results(host, product, build_number, results_path=None):
     if results_path:
         json_results_obj = open(results_path, 'r')
     else:
@@ -196,12 +207,10 @@ def _get_product_test_results(host, product, results_path=None):
                    'product %s using the bb command'), product)
         builder_name = PRODUCTS_TO_BUILDER_NAME[product]
         # TODO: Note the builder name and number in the CSV file
-        latest_build = host.bb_agent.get_latest_finished_build(
-            builder_name)
-        _log.debug('The latest build for %s is %d',
-                   builder_name, latest_build.build_number)
+        build = host.bb_agent.get_finished_build(builder_name, build_number)
+        _log.debug('Using build %s(%d)', builder_name, build.build_number)
 
-        build_results = _get_build_test_results(host, product, latest_build)
+        build_results = _get_build_test_results(host, product, build)
         json_results_obj = tempfile.NamedTemporaryFile(mode='w+t')
         json_results_obj.write(json.dumps(build_results))
         json_results_obj.seek(0)
@@ -219,11 +228,22 @@ def main(args):
     parser.add_argument('--baseline-product', required=True, action='store',
                         choices=PRODUCTS,
                         help='Name of the baseline product')
+    parser.add_argument(
+        '--baseline-build-number',
+        type=int,
+        default=0,
+        help='The baseline builder to fetch results, default to latest.')
     parser.add_argument('--test-results-to-compare', required=False,
                         help='Path to actual test results JSON file')
     parser.add_argument('--product-to-compare', required=True, action='store',
                         choices=PRODUCTS,
                         help='Name of the product being compared')
+    parser.add_argument(
+        '--compare-build-number',
+        type=int,
+        default=0,
+        help=
+        'The product to compare builder to fetch results, default to latest.')
     parser.add_argument('--csv-output', required=True,
                         help='Path to CSV output file')
     parser.add_argument('--verbose', '-v', action='count', default=1,
@@ -247,9 +267,11 @@ def main(args):
 
     host = Host()
     actual_results_getter = _get_product_test_results(
-        host, args.product_to_compare, args.test_results_to_compare)
+        host, args.product_to_compare, args.compare_build_number,
+        args.test_results_to_compare)
     baseline_results_getter = _get_product_test_results(
-        host, args.baseline_product, args.baseline_test_results)
+        host, args.baseline_product, args.baseline_build_number,
+        args.baseline_test_results)
 
     with actual_results_getter as actual_results_content,            \
             baseline_results_getter as baseline_results_content,     \
@@ -264,7 +286,8 @@ def main(args):
         # names to their results map
         tests_to_actual_results = {}
         tests_to_baseline_results = {}
-        if args.product_to_compare == 'chrome_linux':
+        if (args.product_to_compare.startswith('chrome_linux') or
+                args.product_to_compare.startswith('wpt_content_shell_linux')):
             path = '/external/wpt'
         else:
             path = ''
@@ -272,7 +295,8 @@ def main(args):
                              actual_results_json['tests'],
                              path=path)
 
-        if args.baseline_product == 'chrome_linux':
+        if (args.baseline_product.startswith('chrome_linux') or
+                args.baseline_product.startswith('wpt_content_shell_linux')):
             path = '/external/wpt'
         else:
             path = ''
