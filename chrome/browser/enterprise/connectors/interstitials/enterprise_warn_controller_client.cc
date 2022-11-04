@@ -17,15 +17,16 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 
-// static
-std::unique_ptr<security_interstitials::MetricsHelper>
-EnterpriseWarnControllerClient::GetMetricsHelper(const GURL& url) {
+namespace {
+std::unique_ptr<security_interstitials::MetricsHelper> GetMetricsHelper(
+    const GURL& url) {
   security_interstitials::MetricsHelper::ReportDetails settings;
   settings.metric_prefix = "enterprise-warn";
 
   return std::make_unique<security_interstitials::MetricsHelper>(url, settings,
                                                                  nullptr);
 }
+}  // namespace
 
 EnterpriseWarnControllerClient::EnterpriseWarnControllerClient(
     content::WebContents* web_contents,

@@ -22,6 +22,7 @@ class EnterpriseWarnPage
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
 
+  // |request_url| is the URL which triggered the interstitial page.
   EnterpriseWarnPage(
       content::WebContents* web_contents,
       const GURL& request_url,

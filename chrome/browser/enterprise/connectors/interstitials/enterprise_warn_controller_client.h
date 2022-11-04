@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_ENTERPRISE_WARN_CONTROLLER_CLIENT_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_ENTERPRISE_WARN_CONTROLLER_CLIENT_H_
 
-#include <memory>
-
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "url/gurl.h"
 
@@ -18,9 +16,6 @@ class WebContents;
 class EnterpriseWarnControllerClient
     : public security_interstitials::SecurityInterstitialControllerClient {
  public:
-  static std::unique_ptr<security_interstitials::MetricsHelper>
-  GetMetricsHelper(const GURL& url);
-
   EnterpriseWarnControllerClient(content::WebContents* web_contents,
                                  const GURL& request_url);
 

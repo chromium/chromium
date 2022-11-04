@@ -335,11 +335,11 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
 
 std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
     content::WebContents* web_contents) {
-  GURL request_url("https://url-warned-example.net");
+  const GURL kRequestUrl("https://enterprise-warn.example.net");
   return std::make_unique<EnterpriseWarnPage>(
-      web_contents, request_url,
+      web_contents, kRequestUrl,
       std::make_unique<EnterpriseWarnControllerClient>(web_contents,
-                                                       request_url));
+                                                       kRequestUrl));
 }
 
 std::unique_ptr<TestSafeBrowsingBlockingPageQuiet>
