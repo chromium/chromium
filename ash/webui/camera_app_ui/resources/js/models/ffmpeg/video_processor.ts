@@ -185,7 +185,6 @@ class InputDevice {
    */
   cancel() {
     this.isCanceled = true;
-    this.endPush();
   }
 }
 
@@ -404,11 +403,15 @@ class FFMpegVideoProcessor {
    */
   async cancel(): Promise<void> {
     // Clear and make sure there is no pending task.
-    this.jobQueue.clear();
-    await this.jobQueue.flush();
-
-    this.inputDevice.cancel();
-    this.outputDevice.close();
+    await this.jobQueue.clear();
+    this.jobQueue.push(async () => {
+      this.inputDevice.cancel();
+      // When input device is cancelled, for some reason calling
+      // emscripten_force_exit() will not close the corresponding file
+      // descriptor. As a result, we explicitly close it here.
+      this.outputDevice.close();
+    });
+    await this.close();
   }
 }
 
