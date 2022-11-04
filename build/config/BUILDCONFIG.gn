@@ -6,7 +6,7 @@
 # WHAT IS THIS FILE?
 # =============================================================================
 #
-# This is the master GN build configuration. This file is loaded after the
+# This is the main GN build configuration. This file is loaded after the
 # build args (args.gn) for the build directory and after the toplevel ".gn"
 # file (which points to this file as the build configuration).
 #

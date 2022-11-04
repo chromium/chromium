@@ -28,7 +28,7 @@ custom_toolchain="//build/toolchain/linux/unbundle:default"
 host_toolchain="//build/toolchain/linux/unbundle:default"
 ```
 
-See [more docs on GN](https://gn.googlesource.com/gn/+/master/docs/quick_start.md).
+See [more docs on GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md).
 
 To cross-compile (not fully tested), add the following:
 

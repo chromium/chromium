@@ -1,6 +1,6 @@
 # Writing GN Templates
 GN and Ninja are documented here:
-* GN: https://gn.googlesource.com/gn/+/master/docs/
+* GN: https://gn.googlesource.com/gn/+/main/docs/
 * Ninja: https://ninja-build.org/manual.html
 
 [TOC]
@@ -101,7 +101,7 @@ Rationale:
 * use `$target_out_dir/$target_name.$EXTENSION`.
 
 **Option 3:** For outputs that are required at runtime
-(e.g. [runtime_deps](https://gn.googlesource.com/gn/+/master/docs/reference.md#runtime_deps)),
+(e.g. [runtime_deps](https://gn.googlesource.com/gn/+/main/docs/reference.md#runtime_deps)),
 options 1 & 2 do not work because they are not archived in builder/tester bot
 configurations. In this case:
 * use `$root_out_dir/gen.runtime` or `$root_out_dir/obj.runtime`.
@@ -148,7 +148,7 @@ Given identical inputs, they should produce byte-for-byte identical outputs.
 
 ## Style Guide
 Chromium GN files follow
-[GN's Style Guide](https://gn.googlesource.com/gn/+/master/docs/style_guide.md)
+[GN's Style Guide](https://gn.googlesource.com/gn/+/main/docs/style_guide.md)
 with a few additions.
 
 ### Action Granularity
@@ -211,7 +211,7 @@ only be applied to the final target (the one named `target_name`). Applying only
 to the final target ensures that the invoker-provided visibility does not
 prevent intermediate targets from depending on each other.
 
-[visibility]: https://gn.googlesource.com/gn/+/master/docs/reference.md#var_visibility
+[visibility]: https://gn.googlesource.com/gn/+/main/docs/reference.md#var_visibility
 
 Example:
 ```python
@@ -331,7 +331,7 @@ An alternative would be to explicitly set `visibility` on all inner targets,
 but doing so tends to be tedious and has little benefit.
 
 [this bug]: https://bugs.chromium.org/p/chromium/issues/detail?id=862232
-[forward_variables_from]: https://gn.googlesource.com/gn/+/master/docs/reference.md#func_forward_variables_from
+[forward_variables_from]: https://gn.googlesource.com/gn/+/main/docs/reference.md#func_forward_variables_from
 
 ## Useful Ninja Flags
 Useful ninja flags when developing build rules:
