@@ -17,7 +17,7 @@
     { "site_name": "bath_and_body_works" },
     { "site_name": "beachbody" },
     { "site_name": "bed_bath_beyond" },
-    { "site_name": "belk" },
+    { "site_name": "belk", "bug_number": 1376637 },
     { "site_name": "bestbuy" },
     { "site_name": "bhphotovideo", "bug_number":1173033 },
     { "site_name": "bloomingdales" },

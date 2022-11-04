@@ -485,11 +485,11 @@ class BrowserAutofillManager : public AutofillManager,
   // profile does not exist.
   AutofillProfile* GetProfile(int unique_id);
 
-  // Determines whether a fill on |form| initiated from |field| will wind up
-  // filling a credit card number. This is useful to determine if we will need
-  // to unmask a card.
+  // Determines whether a fill on |form| initiated from |triggered_field| will
+  // wind up filling a credit card number. This is useful to determine if we
+  // will need to unmask a card.
   bool WillFillCreditCardNumber(const FormData& form,
-                                const FormFieldData& field);
+                                const FormFieldData& triggered_field);
 
   // Fills or previews the credit card form.
   // Assumes the form and field are valid.
