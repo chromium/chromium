@@ -26,8 +26,6 @@ struct MoveOnlyValue {
  public:
   MoveOnlyValue() = default;
   explicit MoveOnlyValue(int data) : data(data) {}
-  MoveOnlyValue(const MoveOnlyValue&) = delete;
-  auto& operator=(const MoveOnlyValue&) = delete;
   MoveOnlyValue(MoveOnlyValue&&) = default;
   MoveOnlyValue& operator=(MoveOnlyValue&&) = default;
   ~MoveOnlyValue() = default;
@@ -90,7 +88,7 @@ TEST_F(TestFutureTest, WaitShouldReturnTrueWhenValueArrives) {
 TEST_F(TestFutureTest, WaitShouldReturnFalseIfTimeoutHappens) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Milliseconds(1));
 
-  // |ScopedRunLoopTimeout| will automatically fail the test when a timeout
+  // `ScopedRunLoopTimeout` will automatically fail the test when a timeout
   // happens, so we use EXPECT_FATAL_FAILURE to handle this failure.
   // EXPECT_FATAL_FAILURE only works on static objects.
   static bool success;
@@ -159,7 +157,7 @@ TEST_F(TestFutureTest, ShouldOnlyAllowSetValueToBeCalledOnce) {
                            "The value of a TestFuture can only be set once.");
 }
 
-TEST_F(TestFutureTest, ShouldUnblockWhenSetValueIsInvoked) {
+TEST_F(TestFutureTest, ShouldSignalWhenSetValueIsInvoked) {
   const int expected_value = 111;
   TestFuture<int> future;
 
@@ -313,6 +311,48 @@ TEST_F(TestFutureTest, ShouldSupportMultipleCvRefTypes) {
   EXPECT_EQ(expected_first_value, std::get<0>(take_result));
   EXPECT_EQ(expected_second_value, std::get<1>(take_result));
   EXPECT_EQ(expected_third_value, std::get<2>(take_result));
+}
+
+using TestFutureWithoutValuesTest = TestFutureTest;
+
+TEST_F(TestFutureWithoutValuesTest, IsReadyShouldBeTrueWhenSetValueIsInvoked) {
+  TestFuture<void> future;
+
+  EXPECT_FALSE(future.IsReady());
+
+  future.SetValue();
+
+  EXPECT_TRUE(future.IsReady());
+}
+
+TEST_F(TestFutureWithoutValuesTest, WaitShouldUnblockWhenSetValueIsInvoked) {
+  TestFuture<void> future;
+
+  RunLater([&future]() { future.SetValue(); });
+
+  ASSERT_FALSE(future.IsReady());
+  std::ignore = future.Wait();
+  EXPECT_TRUE(future.IsReady());
+}
+
+TEST_F(TestFutureWithoutValuesTest, WaitShouldUnblockWhenCallbackIsInvoked) {
+  TestFuture<void> future;
+
+  RunLater(future.GetCallback());
+
+  ASSERT_FALSE(future.IsReady());
+  std::ignore = future.Wait();
+  EXPECT_TRUE(future.IsReady());
+}
+
+TEST_F(TestFutureWithoutValuesTest, GetShouldUnblockWhenCallbackIsInvoked) {
+  TestFuture<void> future;
+
+  RunLater(future.GetCallback());
+
+  ASSERT_FALSE(future.IsReady());
+  future.Get();
+  EXPECT_TRUE(future.IsReady());
 }
 
 }  // namespace base::test

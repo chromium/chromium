@@ -18,14 +18,14 @@
 
 namespace base::test {
 
-// Related class to |base::test::TestFuture|, which allows its callback and
+// Related class to `base::test::TestFuture`, which allows its callback and
 // AddValue() method to be called multiple times.
 //
 // Each call to Take() will return one element in FIFO fashion.
 // If no element is available, Take() will wait until an element becomes
 // available.
 //
-// Just like |base::test::TestFuture|, |base::test::RepeatingTestFuture| also
+// Just like `base::test::TestFuture`, `base::test::RepeatingTestFuture` also
 // supports callbacks which take multiple values. If this is the case Take()
 // will return a tuple containing all values passed to the callback.
 //
@@ -36,12 +36,12 @@ namespace base::test {
 //
 //     InvokeCallbackAsyncTwice(future.GetCallback());
 //
-//     ResultType first_result = future.Get();
-//     ResultType second_result = future.Get();
+//     ResultType first_result = future.Take();
+//     ResultType second_result = future.Take();
 //
 //     // When you come here, InvokeCallbackAsyncTwice has finished,
-//     // |first_result| contains the value passed to the first invocation
-//     // of the callback, and |second_result| has the result of the second
+//     // `first_result` contains the value passed to the first invocation
+//     // of the callback, and `second_result` has the result of the second
 //     // invocation.
 //   }
 //
@@ -78,7 +78,6 @@ template <typename... Types>
 class RepeatingTestFuture {
  public:
   using TupleType = std::tuple<std::decay_t<Types>...>;
-  using FirstType = typename std::tuple_element<0, TupleType>::type;
 
   RepeatingTestFuture() = default;
   RepeatingTestFuture(const RepeatingTestFuture&) = delete;
@@ -118,7 +117,7 @@ class RepeatingTestFuture {
   // and unblock any waiters.
   // This method is templated so you can specify how you need the arguments to
   // be passed - be it const, as reference, or anything you can think off.
-  // By default the callback accepts the arguments as |Types...|.
+  // By default the callback accepts the arguments as `Types...`.
   //
   // Example usage:
   //
@@ -164,7 +163,7 @@ class RepeatingTestFuture {
   //
   // Will DCHECK if a timeout happens.
   template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
-  FirstType Take() {
+  auto Take() {
     return std::get<0>(TakeTuple());
   }
 

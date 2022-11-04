@@ -18,7 +18,7 @@ namespace {
 struct MoveOnlyValue {
  public:
   MoveOnlyValue() = default;
-  MoveOnlyValue(std::string data) : data(std::move(data)) {}
+  explicit MoveOnlyValue(std::string data) : data(std::move(data)) {}
   MoveOnlyValue(const MoveOnlyValue&) = delete;
   auto& operator=(const MoveOnlyValue&) = delete;
   MoveOnlyValue(MoveOnlyValue&&) = default;
@@ -79,7 +79,7 @@ TEST_F(RepeatingTestFutureTest,
   EXPECT_FALSE(future.IsEmpty());
 }
 
-TEST_F(RepeatingTestFutureTest, ShouldBeAbleToTakeElementsFiFo) {
+TEST_F(RepeatingTestFutureTest, ShouldTakeElementsFiFo) {
   RepeatingTestFuture<std::string> future;
 
   future.AddValue("first value");
@@ -122,7 +122,7 @@ TEST_F(RepeatingTestFutureTest,
 TEST_F(RepeatingTestFutureTest, WaitShouldReturnFalseIfTimeoutHappens) {
   test::ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
 
-  // |ScopedRunLoopTimeout| will automatically fail the test when a timeout
+  // `ScopedRunLoopTimeout` will automatically fail the test when a timeout
   // happens, so we use EXPECT_FATAL_FAILURE to handle this failure.
   // EXPECT_FATAL_FAILURE only works on static objects.
   static bool success;
