@@ -81,3 +81,10 @@ def test_read_element_text(session, inline):
 
     result = get_element_text(session, element.id)
     assert_success(result, "oo")
+
+
+def test_pretty_print_xml(session, inline):
+    session.url = inline("<xml><foo>che<bar>ese</bar></foo></xml>", doctype="xml")
+
+    elem = session.find.css("foo", all=False)
+    assert elem.text == "cheese"
