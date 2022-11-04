@@ -1918,5 +1918,43 @@ TEST_F(PointerTest, PointerStylus) {
   pointer.reset();
 }
 
+TEST_F(PointerTest, PointerStylus2) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
+
+  MockPointerDelegate delegate;
+  MockPointerStylusDelegate stylus_delegate;
+  Seat seat;
+  std::unique_ptr<Pointer> pointer(new Pointer(&delegate, &seat));
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  pointer->SetStylusDelegate(&stylus_delegate);
+
+  EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(surface))
+      .WillRepeatedly(testing::Return(true));
+
+  EXPECT_CALL(delegate, OnPointerEnter(surface, testing::_, 0));
+  EXPECT_CALL(delegate, OnPointerFrame()).Times(2);
+  EXPECT_CALL(stylus_delegate,
+              OnPointerToolChange(ui::EventPointerType::kMouse));
+
+  auto location = surface->window()->GetBoundsInScreen().origin();
+  generator.MoveMouseTo(location);
+
+  EXPECT_CALL(delegate, OnPointerButton(testing::_, testing::_, testing::_))
+      .Times(1);
+  EXPECT_CALL(delegate, OnPointerFrame()).Times(1);
+  EXPECT_CALL(stylus_delegate, OnPointerToolChange(ui::EventPointerType::kPen));
+
+  ui::MouseEvent ev1(ui::ET_MOUSE_PRESSED, location, location,
+                     ui::EventTimeForNow(), generator.flags(), 0,
+                     ui::PointerDetails(ui::EventPointerType::kPen));
+  generator.Dispatch(&ev1);
+
+  EXPECT_CALL(delegate, OnPointerDestroying(pointer.get()));
+  EXPECT_CALL(stylus_delegate, OnPointerDestroying(pointer.get()));
+  pointer.reset();
+}
+
 }  // namespace
 }  // namespace exo
