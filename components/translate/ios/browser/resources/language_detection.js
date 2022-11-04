@@ -5,9 +5,6 @@
 /**
  * @fileoverview Installs Language Detection management functions on the
  * __gCrWeb object.
- *
- * TODO(crbug.com/659442): Enable checkTypes error for this file.
- * @suppress {checkTypes}
  */
 
 __gCrWeb.languageDetection = {};

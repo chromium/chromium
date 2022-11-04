@@ -88,7 +88,6 @@ function isPasswordField_(element) {
  * Installs a MutationObserver to track the last password field that had
  * user input.
  * @param {Element} A password field that should be observed.
- * @suppress {checkTypes} Required for for...of loop on mutations.
  */
 function trackPasswordField_(field) {
   if (passwordFieldsObserver) {
@@ -411,7 +410,6 @@ function extractRemovedFormlessPasswordFieldsIds_(removedElements) {
  * milliseconds before sending a message to browser. A delay is used because
  * form mutations are likely to come in batches. An undefined or zero value for
  * |delay| would stop the MutationObserver, if any.
- * @suppress {checkTypes} Required for for...of loop on mutations.
  */
 __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
   if (formMutationObserver) {
