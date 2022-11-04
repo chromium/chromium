@@ -110,11 +110,10 @@ void WaylandTest::SetUp() {
 
 void WaylandTest::TearDown() {
   if (initialized_) {
-    if (server_mode_ == TestServerMode::kAsync) {
-      FlushServer();
-    } else {
+    if (server_mode_ != TestServerMode::kAsync)
       Sync();
-    }
+    else
+      SyncDisplay();
   }
 }
 
@@ -130,20 +129,25 @@ void WaylandTest::Sync() {
   server_.Pause();
 }
 
-void WaylandTest::FlushServer() {
-  base::OnceClosure empty_callback = base::DoNothing();
-  // Running anything on the server results in a flushing the server's event
-  // queue.
-  server_.RunAndWait(std::move(empty_callback));
-}
-
 void WaylandTest::PostToServerAndWait(
     base::OnceCallback<void(wl::TestWaylandServerThread* server)> callback) {
+  // Sync with the display to ensure client's requests are processed.
+  SyncDisplay();
+
   server_.RunAndWait(std::move(callback));
+
+  // Sync with the display to ensure server's events are received and processed.
+  SyncDisplay();
 }
 
 void WaylandTest::PostToServerAndWait(base::OnceClosure closure) {
+  // Sync with the display to ensure client's requests are processed.
+  SyncDisplay();
+
   server_.RunAndWait(std::move(closure));
+
+  // Sync with the display to ensure server's events are received and processed
+  SyncDisplay();
 }
 
 void WaylandTest::SetPointerFocusedWindow(WaylandWindow* window) {
@@ -195,6 +199,20 @@ void WaylandTest::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
 void WaylandTest::InitializeSurfaceAugmenter() {
   server_.EnsureSurfaceAugmenter();
   Sync();
+}
+
+void WaylandTest::SyncDisplay() {
+  ASSERT_EQ(server_mode_, TestServerMode::kAsync);
+  base::RunLoop run_loop;
+  wl::Object<wl_callback> sync_callback(
+      wl_display_sync(connection_->display_wrapper()));
+  wl_callback_listener listener = {
+      [](void* data, struct wl_callback* cb, uint32_t time) {
+        static_cast<base::RunLoop*>(data)->Quit();
+      }};
+  wl_callback_add_listener(sync_callback.get(), &listener, &run_loop);
+  connection_->Flush();
+  run_loop.Run();
 }
 
 }  // namespace ui

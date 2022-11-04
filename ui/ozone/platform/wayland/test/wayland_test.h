@@ -64,8 +64,6 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
 
   void Sync();
 
-  void FlushServer();
-
   // Posts 'callback' or 'closure' to run on the client thread; blocks till the
   // callable is run and all pending Wayland requests and events are delivered.
   void PostToServerAndWait(
@@ -119,6 +117,12 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
+  // Sets up a sync callback via wl_display.sync and waits until it's received.
+  // Requests are handled in-order and events are delivered in-order, thus sync
+  // is used as a barrier to ensure all previous requests and the resulting
+  // events have been handled.
+  void SyncDisplay();
+
   bool initialized_ = false;
 
 #if BUILDFLAG(USE_XKBCOMMON)

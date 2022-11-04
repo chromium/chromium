@@ -37,10 +37,6 @@ TEST_P(WaylandConnectionTest, Ping) {
       EXPECT_CALL(*server->xdg_shell(), Pong(1234));
     }
   });
-
-  // We should have received a request to ping and answered to that. Flush the
-  // server so that it has a chance to read the messages.
-  FlushServer();
 }
 
 TEST_P(WaylandConnectionTest, CompositorVersionTest) {
