@@ -110,7 +110,6 @@ using base::UserMetricsAction;
       UIKeyCommand.cr_back_2,
       UIKeyCommand.cr_forward_2,
       UIKeyCommand.cr_showDownloads_2,
-      UIKeyCommand.cr_showFirstTab,
       UIKeyCommand.cr_showTab2,
       UIKeyCommand.cr_showTab3,
       UIKeyCommand.cr_showTab4,
