@@ -22,6 +22,7 @@
 #include "base/task/task_traits.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
@@ -140,7 +141,8 @@ void AggregationServiceImpl::ClearData(
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
   storage_.AsyncCall(&AggregationServiceStorage::ClearDataBetween)
-      .WithArgs(delete_begin, delete_end, std::move(filter))
+      .WithArgs(delete_begin, delete_end, std::move(filter),
+                base::ElapsedTimer())
       .Then(base::BindOnce(
           [](base::OnceClosure done,
              base::WeakPtr<AggregationServiceImpl> aggregation_service) {

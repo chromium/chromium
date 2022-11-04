@@ -711,8 +711,15 @@ AggregationServiceStorageSql::AdjustOfflineReportTimes(
 void AggregationServiceStorageSql::ClearDataBetween(
     base::Time delete_begin,
     base::Time delete_end,
-    StoragePartition::StorageKeyMatcherFunction filter) {
+    StoragePartition::StorageKeyMatcherFunction filter,
+    base::ElapsedTimer elapsed_timer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Temporary histogram for investigating bug.
+  // TODO(crbug.com/1373392): Remove when resolved.
+  base::UmaHistogramLongTimes100(
+      "PrivacySandbox.AggregationService.Storage.Sql.ClearDataTaskDelay",
+      elapsed_timer.Elapsed());
 
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
     return;

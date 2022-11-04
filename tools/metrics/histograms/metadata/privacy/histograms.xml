@@ -378,6 +378,17 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.AggregationService.Storage.Sql.ClearDataTaskDelay"
+    units="ms" expires_after="2023-02-04">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records how long a ClearDataBetween() task waits in the database task runner
+    queue. Recorded for each ClearDataBetween() call when it starts running.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime"
     units="ms" expires_after="2023-02-23">
   <obsolete>

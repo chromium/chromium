@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_request_storage_id.h"
 #include "content/public/browser/storage_partition.h"
@@ -112,7 +113,11 @@ class AggregationServiceStorage {
   virtual void ClearDataBetween(
       base::Time delete_begin,
       base::Time delete_end,
-      StoragePartition::StorageKeyMatcherFunction filter) = 0;
+      StoragePartition::StorageKeyMatcherFunction filter,
+
+      // Temporary argument for investigating bug.
+      // TODO(crbug.com/1373392): Remove when resolved.
+      base::ElapsedTimer elapsed_timer = base::ElapsedTimer()) = 0;
 };
 
 }  // namespace content
