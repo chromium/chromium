@@ -178,6 +178,9 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   // Transposes this matrix in place.
   void Transpose();
 
+  // See Transform::Zoom().
+  void Zoom(double zoom_factor);
+
   // Applies the matrix to the vector in place.
   void MapScalars(double vec[4]) const;
 

@@ -3558,6 +3558,19 @@ TEST(XFormTest, ToString) {
       transform.ToDecomposedString());
 }
 
+TEST(XFormTest, Zoom) {
+  Transform transform;
+  InitializeTestMatrix(&transform);
+  auto zoomed = transform;
+  zoomed.Zoom(2.f);
+  Point3F p(41.f, 43.f, 47.f);
+  Point3F expected = p;
+  expected.Scale(0.5f, 0.5f, 0.5f);
+  expected = transform.MapPoint(expected);
+  expected.Scale(2.f, 2.f, 2.f);
+  EXPECT_POINT3F_EQ(expected, zoomed.MapPoint(p));
+}
+
 }  // namespace
 
 }  // namespace gfx

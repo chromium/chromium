@@ -295,6 +295,15 @@ void Matrix44::Transpose() {
   swap(matrix_[2][3], matrix_[3][2]);
 }
 
+void Matrix44::Zoom(double zoom_factor) {
+  matrix_[0][3] /= zoom_factor;
+  matrix_[1][3] /= zoom_factor;
+  matrix_[2][3] /= zoom_factor;
+  matrix_[3][0] *= zoom_factor;
+  matrix_[3][1] *= zoom_factor;
+  matrix_[3][2] *= zoom_factor;
+}
+
 void Matrix44::MapScalars(double vec[4]) const {
   Double4 v = LoadDouble4(vec);
   Double4 r0{matrix_[0][0], matrix_[1][0], matrix_[2][0], matrix_[3][0]};

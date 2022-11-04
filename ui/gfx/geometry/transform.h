@@ -355,6 +355,12 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Transposes this transform in place.
   void Transpose();
 
+  // Changes the transform to:
+  //     scale3d(z, z, z) * mat * scale3d(1/z, 1/z, 1/z)
+  // Useful for mapping zoomed points to their zoomed transformed result:
+  //     new_mat * (scale3d(z, z, z) * x) == scale3d(z, z, z) * (mat * x)
+  void Zoom(float zoom_factor);
+
   // Set 3rd row and 3rd column to (0, 0, 1, 0). Note that this flattening
   // operation is not quite the same as an orthographic projection and is
   // technically not a linear operation.

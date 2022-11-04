@@ -556,6 +556,14 @@ void Transform::Transpose() {
     EnsureFullMatrix().Transpose();
 }
 
+void Transform::Zoom(float zoom_factor) {
+  if (LIKELY(!full_matrix_)) {
+    axis_2d_.Zoom(zoom_factor);
+  } else {
+    matrix_.Zoom(zoom_factor);
+  }
+}
+
 void Transform::Flatten() {
   if (UNLIKELY(full_matrix_))
     matrix_.Flatten();

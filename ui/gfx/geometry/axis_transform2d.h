@@ -78,6 +78,11 @@ class GEOMETRY_EXPORT AxisTransform2d {
     translation_.Scale(-scale_.x(), -scale_.y());
   }
 
+  // Changes the transform to: scale(z) * mat * scale(1/z).
+  // Useful for mapping zoomed points to their zoomed transformed result:
+  //     new_mat * (scale(z) * x) == scale(z) * (mat * x).
+  void Zoom(float zoom_factor) { translation_.Scale(zoom_factor); }
+
   PointF MapPoint(const PointF& p) const {
     return PointF(MapX(p.x()), MapY(p.y()));
   }
