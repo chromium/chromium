@@ -4164,6 +4164,23 @@
       "features": [
         "disable_egl_ext_image_dma_buf_import_modifiers"
       ]
+    },
+    {
+      "id": 406,
+      "description": "VP9 decoder rejects submitted bitstream buffer on some old Intel drivers.",
+      "cr_bugs": [1376513],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "between",
+        "value": "23.20.16.4974",
+        "value2": "23.20.16.5044"
+      },
+      "features": [
+        "disable_accelerated_vp9_decode"
+      ]
     }
   ]
 }
