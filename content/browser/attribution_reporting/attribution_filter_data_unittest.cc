@@ -12,9 +12,9 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/attribution_reporting/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 
 namespace content {
 
@@ -39,24 +39,26 @@ TEST(AttributionFilterDataTest,
 }
 
 TEST(AttributionFilterDatTest, Create_LimitsFilterCount) {
-  EXPECT_TRUE(AttributionFilterData::Create(
-                  CreateFilterValues(blink::kMaxAttributionFiltersPerSource))
-                  .has_value());
+  EXPECT_TRUE(
+      AttributionFilterData::Create(
+          CreateFilterValues(attribution_reporting::kMaxFiltersPerSource))
+          .has_value());
 
   EXPECT_FALSE(
       AttributionFilterData::Create(
-          CreateFilterValues(blink::kMaxAttributionFiltersPerSource + 1))
+          CreateFilterValues(attribution_reporting::kMaxFiltersPerSource + 1))
           .has_value());
 }
 
 TEST(AttributionFilterDatTest, FromTriggerFilterValues_LimitsFilterCount) {
-  EXPECT_TRUE(AttributionFilters::Create(
-                  CreateFilterValues(blink::kMaxAttributionFiltersPerSource))
-                  .has_value());
+  EXPECT_TRUE(
+      AttributionFilters::Create(
+          CreateFilterValues(attribution_reporting::kMaxFiltersPerSource))
+          .has_value());
 
   EXPECT_FALSE(
       AttributionFilters::Create(
-          CreateFilterValues(blink::kMaxAttributionFiltersPerSource + 1))
+          CreateFilterValues(attribution_reporting::kMaxFiltersPerSource + 1))
           .has_value());
 }
 

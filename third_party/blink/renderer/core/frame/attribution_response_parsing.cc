@@ -14,8 +14,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/constants.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -96,15 +96,16 @@ bool ParseAttributionFilterData(
 
   const int kExclusiveMaxHistogramValue = 101;
 
-  static_assert(kMaxValuesPerAttributionFilter < kExclusiveMaxHistogramValue,
-                "Bump the version for histogram Conversions.ValuesPerFilter");
+  static_assert(
+      attribution_reporting::kMaxValuesPerFilter < kExclusiveMaxHistogramValue,
+      "Bump the version for histogram Conversions.ValuesPerFilter");
 
   static_assert(
-      kMaxAttributionFiltersPerSource < kExclusiveMaxHistogramValue,
+      attribution_reporting::kMaxFiltersPerSource < kExclusiveMaxHistogramValue,
       "Bump the version for histogram Conversions.FiltersPerFilterData");
 
   const wtf_size_t num_filters = object->size();
-  if (num_filters > kMaxAttributionFiltersPerSource)
+  if (num_filters > attribution_reporting::kMaxFiltersPerSource)
     return false;
 
   // The metrics are called potentially many times while parsing an attribution
@@ -116,7 +117,7 @@ bool ParseAttributionFilterData(
     const JSONObject::Entry entry = object->at(i);
 
     if (entry.first.CharactersSizeInBytes() >
-        kMaxBytesPerAttributionFilterString) {
+        attribution_reporting::kMaxBytesPerFilterString) {
       return false;
     }
 
@@ -125,7 +126,7 @@ bool ParseAttributionFilterData(
       return false;
 
     const wtf_size_t num_values = array->size();
-    if (num_values > kMaxValuesPerAttributionFilter)
+    if (num_values > attribution_reporting::kMaxValuesPerFilter)
       return false;
 
     UMA_HISTOGRAM_COUNTS_100("Conversions.ValuesPerFilter", num_values);
@@ -138,7 +139,7 @@ bool ParseAttributionFilterData(
         return false;
 
       if (value_str.CharactersSizeInBytes() >
-          kMaxBytesPerAttributionFilterString) {
+          attribution_reporting::kMaxBytesPerFilterString) {
         return false;
       }
 
@@ -161,7 +162,7 @@ bool ParseAggregationKeys(
   const int kExclusiveMaxHistogramValue = 101;
 
   static_assert(
-      kMaxAttributionAggregationKeysPerSourceOrTrigger <
+      attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger <
           kExclusiveMaxHistogramValue,
       "Bump the version for histogram Conversions.AggregatableKeysPerSource");
 
@@ -170,7 +171,7 @@ bool ParseAggregationKeys(
     return false;
 
   const wtf_size_t num_keys = object->size();
-  if (num_keys > kMaxAttributionAggregationKeysPerSourceOrTrigger)
+  if (num_keys > attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger)
     return false;
 
   base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource",
@@ -185,7 +186,7 @@ bool ParseAggregationKeys(
     DCHECK(value);
 
     if (key_id.CharactersSizeInBytes() >
-        kMaxBytesPerAttributionAggregationKeyId) {
+        attribution_reporting::kMaxBytesPerAggregationKeyId) {
       return false;
     }
 
@@ -297,7 +298,7 @@ bool ParseEventTriggerData(
     return false;
 
   // Do not proceed if too many event trigger data are specified.
-  if (array_value->size() > kMaxAttributionEventTriggerData)
+  if (array_value->size() > attribution_reporting::kMaxEventTriggerData)
     return false;
 
   // Process each event trigger.
@@ -359,7 +360,7 @@ bool ParseAttributionAggregatableTriggerData(
 
   const int kExclusiveMaxHistogramValue = 101;
 
-  static_assert(kMaxAttributionAggregatableTriggerDataPerTrigger <
+  static_assert(attribution_reporting::kMaxAggregatableTriggerDataPerTrigger <
                     kExclusiveMaxHistogramValue,
                 "Bump the version for histogram "
                 "Conversions.AggregatableTriggerDataLength");
@@ -369,8 +370,10 @@ bool ParseAttributionAggregatableTriggerData(
     return false;
 
   const wtf_size_t num_trigger_data = array->size();
-  if (num_trigger_data > kMaxAttributionAggregatableTriggerDataPerTrigger)
+  if (num_trigger_data >
+      attribution_reporting::kMaxAggregatableTriggerDataPerTrigger) {
     return false;
+  }
 
   base::UmaHistogramCounts100("Conversions.AggregatableTriggerDataLength",
                               num_trigger_data);
@@ -395,7 +398,7 @@ bool ParseAttributionAggregatableTriggerData(
     JSONArray* source_keys_val = object->GetArray("source_keys");
     if (!source_keys_val ||
         source_keys_val->size() >
-            kMaxAttributionAggregationKeysPerSourceOrTrigger) {
+            attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger) {
       return false;
     }
 
@@ -409,7 +412,7 @@ bool ParseAttributionAggregatableTriggerData(
       String source_key;
       if (!source_key_val->AsString(&source_key) ||
           source_key.CharactersSizeInBytes() >
-              kMaxBytesPerAttributionAggregationKeyId) {
+              attribution_reporting::kMaxBytesPerAggregationKeyId) {
         return false;
       }
       data->source_keys.push_back(std::move(source_key));
@@ -440,7 +443,8 @@ bool ParseAttributionAggregatableValues(
 
   const auto* object = JSONObject::Cast(json);
   if (!object ||
-      object->size() > kMaxAttributionAggregationKeysPerSourceOrTrigger) {
+      object->size() >
+          attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger) {
     return false;
   }
 
@@ -454,13 +458,13 @@ bool ParseAttributionAggregatableValues(
     DCHECK(value);
 
     if (key_id.CharactersSizeInBytes() >
-        kMaxBytesPerAttributionAggregationKeyId) {
+        attribution_reporting::kMaxBytesPerAggregationKeyId) {
       return false;
     }
 
     int key_value;
     if (!value->AsInteger(&key_value) || key_value <= 0 ||
-        key_value > kMaxAttributionAggregatableValue) {
+        key_value > attribution_reporting::kMaxAggregatableValue) {
       return false;
     }
 

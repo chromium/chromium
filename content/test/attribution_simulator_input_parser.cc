@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
@@ -36,7 +37,6 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -366,7 +366,7 @@ class AttributionSimulatorInputParser {
                                       std::move(filters),
                                       std::move(not_filters));
         }),
-        /*max_size=*/blink::kMaxAttributionEventTriggerData);
+        /*max_size=*/attribution_reporting::kMaxEventTriggerData);
 
     return event_triggers;
   }
@@ -621,7 +621,7 @@ class AttributionSimulatorInputParser {
 
               aggregatable_triggers.push_back(std::move(*trigger_data));
             }),
-        blink::kMaxAttributionAggregatableTriggerDataPerTrigger);
+        attribution_reporting::kMaxAggregatableTriggerDataPerTrigger);
 
     return aggregatable_triggers;
   }

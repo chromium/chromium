@@ -11,8 +11,8 @@
 #include "base/check.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 
 namespace content {
 
@@ -21,18 +21,18 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 bool IsValidForSourceOrTrigger(const AttributionFilterValues& filter_values) {
-  if (filter_values.size() > blink::kMaxAttributionFiltersPerSource)
+  if (filter_values.size() > attribution_reporting::kMaxFiltersPerSource)
     return false;
 
   for (const auto& [filter, values] : filter_values) {
-    if (filter.size() > blink::kMaxBytesPerAttributionFilterString)
+    if (filter.size() > attribution_reporting::kMaxBytesPerFilterString)
       return false;
 
-    if (values.size() > blink::kMaxValuesPerAttributionFilter)
+    if (values.size() > attribution_reporting::kMaxValuesPerFilter)
       return false;
 
     for (const auto& value : values) {
-      if (value.size() > blink::kMaxBytesPerAttributionFilterString)
+      if (value.size() > attribution_reporting::kMaxBytesPerFilterString)
         return false;
     }
   }
@@ -68,7 +68,7 @@ AttributionFilterData::FromJSON(base::Value* input_value) {
     return base::unexpected(SourceRegistrationError::kFilterDataWrongType);
 
   const size_t num_filters = dict->size();
-  if (num_filters > blink::kMaxAttributionFiltersPerSource)
+  if (num_filters > attribution_reporting::kMaxFiltersPerSource)
     return base::unexpected(SourceRegistrationError::kFilterDataTooManyKeys);
 
   if (dict->contains(kSourceTypeFilterKey)) {
@@ -80,7 +80,7 @@ AttributionFilterData::FromJSON(base::Value* input_value) {
   filter_values.reserve(dict->size());
 
   for (auto [filter, value] : *dict) {
-    if (filter.size() > blink::kMaxBytesPerAttributionFilterString)
+    if (filter.size() > attribution_reporting::kMaxBytesPerFilterString)
       return base::unexpected(SourceRegistrationError::kFilterDataKeyTooLong);
 
     base::Value::List* list = value.GetIfList();
@@ -90,7 +90,7 @@ AttributionFilterData::FromJSON(base::Value* input_value) {
     }
 
     const size_t num_values = list->size();
-    if (num_values > blink::kMaxValuesPerAttributionFilter)
+    if (num_values > attribution_reporting::kMaxValuesPerFilter)
       return base::unexpected(SourceRegistrationError::kFilterDataListTooLong);
 
     std::vector<std::string> values;
@@ -103,7 +103,7 @@ AttributionFilterData::FromJSON(base::Value* input_value) {
             SourceRegistrationError::kFilterDataValueWrongType);
       }
 
-      if (string->size() > blink::kMaxBytesPerAttributionFilterString) {
+      if (string->size() > attribution_reporting::kMaxBytesPerFilterString) {
         return base::unexpected(
             SourceRegistrationError::kFilterDataValueTooLong);
       }

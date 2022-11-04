@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
@@ -29,7 +30,6 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
@@ -102,8 +102,10 @@ void ReportBadMessageInsecureReportingOrigin() {
 
 absl::optional<std::vector<AttributionAggregatableTriggerData>> FromMojo(
     std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr> mojo) {
-  if (mojo.size() > blink::kMaxAttributionAggregatableTriggerDataPerTrigger)
+  if (mojo.size() >
+      attribution_reporting::kMaxAggregatableTriggerDataPerTrigger) {
     return absl::nullopt;
+  }
 
   std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
   aggregatable_trigger_data.reserve(mojo.size());
@@ -485,7 +487,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     return;
   }
 
-  if (data->event_triggers.size() > blink::kMaxAttributionEventTriggerData) {
+  if (data->event_triggers.size() >
+      attribution_reporting::kMaxEventTriggerData) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
     mojo::ReportBadMessage("AttributionDataHost: Too many event triggers.");
     return;

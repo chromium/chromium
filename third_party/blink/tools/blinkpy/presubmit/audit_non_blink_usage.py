@@ -1844,6 +1844,14 @@ _CONFIG = [
             'browsing_topics::ApiAccessFailureReason',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/frame/attribution_response_parsing.cc',
+        ],
+        'allowed': [
+            'attribution_reporting:.*',
+        ]
+    },
 ]
 
 

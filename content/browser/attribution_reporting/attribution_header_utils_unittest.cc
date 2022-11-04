@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
@@ -25,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -107,8 +107,8 @@ TEST(AttributionRegistrationParsingTest, ParseAggregationKeys_CheckSize) {
    private:
     std::string GetKey(size_t index) const {
       // Note that this might not be robust as
-      // `blink::kMaxAttributionAggregationKeysPerSourceOrTrigger` varies which
-      // might generate invalid JSON.
+      // `attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger` varies
+      // which might generate invalid JSON.
       return std::string(key_size, 'A' + index % 26 + 32 * (index / 26));
     }
   };
@@ -116,12 +116,13 @@ TEST(AttributionRegistrationParsingTest, ParseAggregationKeys_CheckSize) {
   const AttributionAggregatableSourceSizeTestCase kTestCases[] = {
       {"empty", true, 0, 0},
       {"max_keys", true,
-       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger, 1},
+       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger, 1},
       {"too_many_keys", false,
-       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger + 1, 1},
-      {"max_key_size", true, 1, blink::kMaxBytesPerAttributionAggregationKeyId},
+       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1, 1},
+      {"max_key_size", true, 1,
+       attribution_reporting::kMaxBytesPerAggregationKeyId},
       {"excessive_key_size", false, 1,
-       blink::kMaxBytesPerAttributionAggregationKeyId + 1},
+       attribution_reporting::kMaxBytesPerAggregationKeyId + 1},
   };
 
   for (const auto& test_case : kTestCases) {

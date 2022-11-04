@@ -22,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
@@ -50,7 +51,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
@@ -968,20 +968,20 @@ struct AttributionFilterSizeTestCase {
 
 constexpr AttributionFilterSizeTestCase kAttributionFilterSizeTestCases[] = {
     {"empty", true, 0, 0, 0, 0},
-    {"max_filters", true, blink::kMaxAttributionFiltersPerSource, 1, 0, 0},
-    {"too_many_filters", false, blink::kMaxAttributionFiltersPerSource + 1, 1,
-     0, 0},
-    {"max_filter_size", true, 1, blink::kMaxBytesPerAttributionFilterString, 0,
-     0},
+    {"max_filters", true, attribution_reporting::kMaxFiltersPerSource, 1, 0, 0},
+    {"too_many_filters", false, attribution_reporting::kMaxFiltersPerSource + 1,
+     1, 0, 0},
+    {"max_filter_size", true, 1,
+     attribution_reporting::kMaxBytesPerFilterString, 0, 0},
     {"excessive_filter_size", false, 1,
-     blink::kMaxBytesPerAttributionFilterString + 1, 0, 0},
-    {"max_values", true, 1, 0, blink::kMaxValuesPerAttributionFilter, 0},
-    {"too_many_values", false, 1, 0, blink::kMaxValuesPerAttributionFilter + 1,
-     0},
+     attribution_reporting::kMaxBytesPerFilterString + 1, 0, 0},
+    {"max_values", true, 1, 0, attribution_reporting::kMaxValuesPerFilter, 0},
+    {"too_many_values", false, 1, 0,
+     attribution_reporting::kMaxValuesPerFilter + 1, 0},
     {"max_value_size", true, 1, 0, 1,
-     blink::kMaxBytesPerAttributionFilterString},
+     attribution_reporting::kMaxBytesPerFilterString},
     {"excessive_value_size", false, 1, 0, 1,
-     blink::kMaxBytesPerAttributionFilterString + 1},
+     attribution_reporting::kMaxBytesPerFilterString + 1},
 };
 
 class TestAggregatableSourceProvider {

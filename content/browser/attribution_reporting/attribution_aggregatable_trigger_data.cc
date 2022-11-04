@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/ranges/algorithm.h"
+#include "components/attribution_reporting/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 
 namespace content {
 
@@ -20,12 +20,12 @@ AttributionAggregatableTriggerData::Create(
     AttributionFilters filters,
     AttributionFilters not_filters) {
   if (source_keys.size() >
-      blink::kMaxAttributionAggregationKeysPerSourceOrTrigger) {
+      attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger) {
     return absl::nullopt;
   }
 
   bool is_valid = base::ranges::all_of(source_keys, [](const auto& key) {
-    return key.size() <= blink::kMaxBytesPerAttributionAggregationKeyId;
+    return key.size() <= attribution_reporting::kMaxBytesPerAggregationKeyId;
   });
   if (!is_valid)
     return absl::nullopt;

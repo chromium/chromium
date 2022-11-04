@@ -12,6 +12,7 @@ mojom("source_registration_error_mojom") {
 
 component("attribution_reporting") {
   sources = [
+    "constants.h",
     "parse.cc",
     "parse.h",
   ]

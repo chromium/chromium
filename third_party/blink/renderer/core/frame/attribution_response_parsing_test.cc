@@ -10,10 +10,10 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/attribution_reporting/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -132,8 +132,8 @@ TEST(AttributionResponseParsingTest, ParseAggregationKeys_CheckSize) {
    private:
     String GetKey(wtf_size_t index) const {
       // Note that this might not be robust as
-      // `blink::kMaxAttributionAggregationKeysPerSourceOrTrigger` varies which
-      // might generate invalid JSON.
+      // `attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger` varies
+      // which might generate invalid JSON.
       return String(
           std::string(key_size, 'A' + index % 26 + 32 * (index / 26)));
     }
@@ -142,12 +142,13 @@ TEST(AttributionResponseParsingTest, ParseAggregationKeys_CheckSize) {
   const AttributionAggregatableSourceSizeTestCase kTestCases[] = {
       {"empty", true, 0, 0},
       {"max_keys", true,
-       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger, 1},
+       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger, 1},
       {"too_many_keys", false,
-       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger + 1, 1},
-      {"max_key_size", true, 1, blink::kMaxBytesPerAttributionAggregationKeyId},
+       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1, 1},
+      {"max_key_size", true, 1,
+       attribution_reporting::kMaxBytesPerAggregationKeyId},
       {"excessive_key_size", false, 1,
-       blink::kMaxBytesPerAttributionAggregationKeyId + 1},
+       attribution_reporting::kMaxBytesPerAggregationKeyId + 1},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -301,16 +302,17 @@ TEST(AttributionResponseParsingTest,
   const AttributionAggregatableTriggerSizeTestCase kTestCases[] = {
       {"empty", true, 0, 0, 0},
       {"max_trigger_data", true,
-       blink::kMaxAttributionAggregatableTriggerDataPerTrigger, 0, 0},
+       attribution_reporting::kMaxAggregatableTriggerDataPerTrigger, 0, 0},
       {"too_many_trigger_data", false,
-       blink::kMaxAttributionAggregatableTriggerDataPerTrigger + 1, 0, 0},
+       attribution_reporting::kMaxAggregatableTriggerDataPerTrigger + 1, 0, 0},
       {"max_key_count", true, 1,
-       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger, 0},
+       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger, 0},
       {"too many keys", false, 1,
-       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger + 1, 0},
-      {"max_key_size", true, 1, 1, kMaxBytesPerAttributionAggregationKeyId},
+       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1, 0},
+      {"max_key_size", true, 1, 1,
+       attribution_reporting::kMaxBytesPerAggregationKeyId},
       {"excessive_key_size", false, 1, 1,
-       kMaxBytesPerAttributionAggregationKeyId + 1},
+       attribution_reporting::kMaxBytesPerAggregationKeyId + 1},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -390,8 +392,8 @@ TEST(AttributionResponseParsingTest,
    private:
     String GetKey(wtf_size_t index) const {
       // Note that this might not be robust as
-      // `blink::kMaxAttributionAggregationKeysPerSourceOrTrigger` varies which
-      // might generate invalid JSON characters.
+      // `attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger` varies
+      // which might generate invalid JSON characters.
       return String(
           std::string(key_size, 'A' + index % 26 + 32 * (index / 26)));
     }
@@ -400,12 +402,13 @@ TEST(AttributionResponseParsingTest,
   const AttributionAggregatableValuesSizeTestCase kTestCases[] = {
       {"empty", true, 0, 0},
       {"max_keys", true,
-       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger, 1},
+       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger, 1},
       {"too_many_keys", false,
-       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger + 1, 1},
-      {"max_key_size", true, 1, blink::kMaxBytesPerAttributionAggregationKeyId},
+       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1, 1},
+      {"max_key_size", true, 1,
+       attribution_reporting::kMaxBytesPerAggregationKeyId},
       {"excessive_key_size", false, 1,
-       blink::kMaxBytesPerAttributionAggregationKeyId + 1},
+       attribution_reporting::kMaxBytesPerAggregationKeyId + 1},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -1430,8 +1433,8 @@ TEST(AttributionResponseParsingTest, FilterValuesHistogram) {
     bool expected;
   } kTestCases[] = {
       {0, true},
-      {kMaxValuesPerAttributionFilter, true},
-      {kMaxValuesPerAttributionFilter + 1, false},
+      {attribution_reporting::kMaxValuesPerFilter, true},
+      {attribution_reporting::kMaxValuesPerFilter + 1, false},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -1458,8 +1461,8 @@ TEST(AttributionResponseParsingTest, FiltersSizeHistogram) {
     bool expected;
   } kTestCases[] = {
       {0, true},
-      {kMaxAttributionFiltersPerSource, true},
-      {kMaxAttributionFiltersPerSource + 1, false},
+      {attribution_reporting::kMaxFiltersPerSource, true},
+      {attribution_reporting::kMaxFiltersPerSource + 1, false},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -1486,8 +1489,8 @@ TEST(AttributionResponseParsingTest, SourceAggregationKeysHistogram) {
     bool expected;
   } kTestCases[] = {
       {0, true},
-      {kMaxAttributionAggregationKeysPerSourceOrTrigger, true},
-      {kMaxAttributionAggregationKeysPerSourceOrTrigger + 1, false},
+      {attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger, true},
+      {attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1, false},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -1517,8 +1520,8 @@ TEST(AttributionResponseParsingTest, AggregatableTriggerDataHistogram) {
     bool expected;
   } kTestCases[] = {
       {0, true},
-      {kMaxAttributionAggregatableTriggerDataPerTrigger, true},
-      {kMaxAttributionAggregatableTriggerDataPerTrigger + 1, false},
+      {attribution_reporting::kMaxAggregatableTriggerDataPerTrigger, true},
+      {attribution_reporting::kMaxAggregatableTriggerDataPerTrigger + 1, false},
   };
 
   for (const auto& test_case : kTestCases) {

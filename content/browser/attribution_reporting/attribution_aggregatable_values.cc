@@ -7,23 +7,24 @@
 #include <utility>
 
 #include "base/ranges/algorithm.h"
+#include "components/attribution_reporting/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 
 namespace content {
 
 // static
 absl::optional<AttributionAggregatableValues>
 AttributionAggregatableValues::FromValues(Values values) {
-  if (values.size() > blink::kMaxAttributionAggregationKeysPerSourceOrTrigger) {
+  if (values.size() >
+      attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger) {
     return absl::nullopt;
   }
 
   bool is_valid = base::ranges::all_of(values, [](const auto& value) {
     return value.first.size() <=
-               blink::kMaxBytesPerAttributionAggregationKeyId &&
+               attribution_reporting::kMaxBytesPerAggregationKeyId &&
            value.second > 0 &&
-           value.second <= blink::kMaxAttributionAggregatableValue;
+           value.second <= attribution_reporting::kMaxAggregatableValue;
   });
   if (!is_valid)
     return absl::nullopt;

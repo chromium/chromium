@@ -12,9 +12,9 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 
 namespace content {
 
@@ -26,10 +26,11 @@ using ::attribution_reporting::mojom::SourceRegistrationError;
 absl::optional<AttributionAggregationKeys> AttributionAggregationKeys::FromKeys(
     Keys keys) {
   bool is_valid =
-      keys.size() <= blink::kMaxAttributionAggregationKeysPerSourceOrTrigger &&
+      keys.size() <=
+          attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger &&
       base::ranges::all_of(keys, [](const auto& key) {
         return key.first.size() <=
-               blink::kMaxBytesPerAttributionAggregationKeyId;
+               attribution_reporting::kMaxBytesPerAggregationKeyId;
       });
   return is_valid
              ? absl::make_optional(AttributionAggregationKeys(std::move(keys)))
@@ -49,7 +50,7 @@ AttributionAggregationKeys::FromJSON(const base::Value* value) {
 
   const size_t num_keys = dict->size();
 
-  if (num_keys > blink::kMaxAttributionAggregationKeysPerSourceOrTrigger) {
+  if (num_keys > attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger) {
     return base::unexpected(
         SourceRegistrationError::kAggregationKeysTooManyKeys);
   }
@@ -58,7 +59,7 @@ AttributionAggregationKeys::FromJSON(const base::Value* value) {
   keys.reserve(num_keys);
 
   for (auto [key_id, maybe_string_value] : *dict) {
-    if (key_id.size() > blink::kMaxBytesPerAttributionAggregationKeyId) {
+    if (key_id.size() > attribution_reporting::kMaxBytesPerAggregationKeyId) {
       return base::unexpected(
           SourceRegistrationError::kAggregationKeysKeyTooLong);
     }

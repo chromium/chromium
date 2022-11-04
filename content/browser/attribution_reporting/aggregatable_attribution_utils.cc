@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
@@ -29,7 +30,6 @@
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 
 namespace content {
 
@@ -104,7 +104,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
 
   const int kExclusiveMaxHistogramValue = 101;
 
-  static_assert(blink::kMaxAttributionAggregationKeysPerSourceOrTrigger <
+  static_assert(attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger <
                     kExclusiveMaxHistogramValue,
                 "Bump the version for histogram "
                 "Conversions.AggregatableReport.NumContributionsPerReport");

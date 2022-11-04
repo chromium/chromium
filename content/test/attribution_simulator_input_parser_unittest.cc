@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
@@ -25,7 +26,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -574,8 +574,8 @@ TEST(AttributionSimulatorInputParserTest, InvalidAggregatableTriggerDataSize) {
     size_t size;
     bool valid;
   } kTestCases[]{
-      {blink::kMaxAttributionAggregatableTriggerDataPerTrigger, true},
-      {blink::kMaxAttributionAggregatableTriggerDataPerTrigger + 1, false},
+      {attribution_reporting::kMaxAggregatableTriggerDataPerTrigger, true},
+      {attribution_reporting::kMaxAggregatableTriggerDataPerTrigger + 1, false},
   };
 
   static constexpr char kError[] =
@@ -616,8 +616,8 @@ TEST(AttributionSimulatorInputParserTest, InvalidEventTriggerDataSize) {
     size_t size;
     bool valid;
   } kTestCases[]{
-      {blink::kMaxAttributionEventTriggerData, true},
-      {blink::kMaxAttributionEventTriggerData + 1, false},
+      {attribution_reporting::kMaxEventTriggerData, true},
+      {attribution_reporting::kMaxEventTriggerData + 1, false},
   };
 
   static constexpr char kError[] =
