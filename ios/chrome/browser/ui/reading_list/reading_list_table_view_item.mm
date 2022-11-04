@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -42,6 +43,9 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
 
 // The image to supply as to the TableViewURLCell's `faviconBadgeView`.
 @property(nonatomic, strong) UIImage* distillationBadgeImage;
+
+// The color to supply as to the TableViewURLCell's `tintColor`.
+@property(nonatomic, strong) UIColor* distillationBadgeTintColor;
 
 @end
 
@@ -77,6 +81,7 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
           UseSymbols() ? DefaultSymbolTemplateWithPointSize(
                              kErrorCircleFillSymbol, kSymbolBadgeImagePointSize)
                        : [UIImage imageNamed:@"distillation_fail_new"];
+      self.distillationBadgeTintColor = [UIColor colorNamed:kGrey600Color];
       break;
     case ReadingListUIDistillationStatusSuccess:
       self.distillationBadgeImage =
@@ -84,6 +89,7 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
               ? DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
                                                    kSymbolBadgeImagePointSize)
               : [UIImage imageNamed:@"table_view_cell_check_mark"];
+      self.distillationBadgeTintColor = [UIColor colorNamed:kGreen500Color];
       break;
     case ReadingListUIDistillationStatusPending:
       self.distillationBadgeImage = nil;
@@ -107,6 +113,9 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
     URLCell.titleLabel.textColor = styler.cellTitleColor;
   [URLCell.faviconView configureWithAttributes:self.attributes];
   URLCell.faviconBadgeView.image = self.distillationBadgeImage;
+  if (UseSymbols()) {
+    URLCell.faviconBadgeView.tintColor = self.distillationBadgeTintColor;
+  }
   cell.isAccessibilityElement = YES;
   cell.accessibilityLabel = GetReadingListCellAccessibilityLabel(
       self.title, [self hostname], self.distillationState);
