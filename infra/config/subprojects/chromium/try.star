@@ -64,9 +64,7 @@ luci.bucket(
 
 luci.cq_group(
     name = "cq",
-    # TODO(crbug.com/1381521): Restore "cq.RETRY_ALL_FAILURES" when expirations
-    # have subsided.
-    retry_config = cq.RETRY_NONE,
+    retry_config = cq.RETRY_ALL_FAILURES,
     tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
     watch = cq.refset(
         repo = "https://chromium.googlesource.com/chromium/src",
