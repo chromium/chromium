@@ -109,17 +109,6 @@ impl<E: Into<Box<dyn std::error::Error>>> TestResult for std::result::Result<(),
 pub mod __private {
     use super::{GtestFactoryFunction, OpaqueTestingTest, Pin};
 
-    #[cxx::bridge(namespace=rust_gtest_interop)]
-    mod ffi {
-        unsafe extern "C++" {
-            include!("testing/rust_gtest_interop/rust_gtest_interop.h");
-            // TODO(danakj): C++ wants an int, but cxx doesn't support c_int, so we use i32.
-            // Similarly, C++ wants a char* but cxx doesn't support c_char, so we use u8.
-            // https://github.com/dtolnay/cxx/issues/1015
-            unsafe fn rust_gtest_add_failure_at(file: *const u8, line: i32, message: &str);
-        }
-    }
-
     /// Rust wrapper around the same C++ method.
     ///
     /// We have a wrapper to convert the file name into a C++-friendly string, and the line number
@@ -131,11 +120,23 @@ pub mod __private {
     /// https://github.com/dtolnay/cxx/issues/1015.
     pub fn add_failure_at(file: &'static str, line: u32, message: &str) {
         let null_term_file = std::ffi::CString::new(make_canonical_file_path(file)).unwrap();
+        let null_term_message = std::ffi::CString::new(message).unwrap();
+
+        extern "C" {
+            // The C++ mangled name for rust_gtest_interop::rust_gtest_add_failure_at(). This comes
+            // from `objdump -t` on the C++ object file.
+            fn _ZN18rust_gtest_interop25rust_gtest_add_failure_atEPKciS1_(
+                file: *const std::ffi::c_char,
+                line: i32,
+                message: *const std::ffi::c_char,
+            );
+
+        }
         unsafe {
-            ffi::rust_gtest_add_failure_at(
-                null_term_file.as_ptr() as *const u8,
+            _ZN18rust_gtest_interop25rust_gtest_add_failure_atEPKciS1_(
+                null_term_file.as_ptr(),
                 line.try_into().unwrap_or(-1),
-                message,
+                null_term_message.as_ptr(),
             )
         }
     }

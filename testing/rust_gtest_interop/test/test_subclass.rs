@@ -6,15 +6,6 @@ use rust_gtest_interop::prelude::*;
 
 pub use ffi::rust_gtest_interop::{TestSubclass, TestSubclassWithCustomTemplate};
 
-// TODO(adetaylor): Use autcxx here, but it is failing to work on android.
-// use autocxx::prelude::*;
-// include_cpp! {
-//     #include "testing/rust_gtest_interop/test/test_subclass.h"
-//     generate!("rust_gtest_interop::TestSubclass")
-//     generate!("rust_gtest_interop::TestSubclassWithCustomTemplate")
-//     safety!(unsafe_ffi)
-// }
-
 mod ffi {
     #[cxx::bridge(namespace = "rust_gtest_interop")]
     pub mod rust_gtest_interop {

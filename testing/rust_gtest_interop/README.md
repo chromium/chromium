@@ -142,6 +142,16 @@ src/
 
 ### Specifying a C++ TestSuite class
 
+#### Don't use this in Chromium.
+Note: this feature requires interop bindings from Rust to C++, as it requires
+Rust using a C++ subclass. Interop bindings in this direction are currently banned in Chromium.
+
+**It is preferable to write code that is shared between tests in Rust instead of
+using a C++ TestSuite class.** The exception would be when you must make use of
+a pre-existing C++ TestSuite class, which should never be the case without wider
+interop from Rust to C++.
+
+#### How to do it anyway.
 In C++, a specific TestSuite, which subclasses `testing::Test`, can be specified
 with the `TEST_F()` macro. For example `TEST_F(SomeSubclassOfTestingTest,
 Gadgets)`. The same can be done in Rust, by specifying a Rust wrapper around a

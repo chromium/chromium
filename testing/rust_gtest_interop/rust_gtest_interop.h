@@ -8,8 +8,6 @@
 #include <stdint.h>
 #include <type_traits>
 
-#include "third_party/rust/cxx/v1/crate/include/cxx.h"
-
 namespace testing {
 class Test;
 }
@@ -99,9 +97,9 @@ void rust_gtest_add_test(GtestFactoryFunction gtest_factory,
 //
 // SAFETY: This function makes copies of the strings so the pointers do not need
 // to outlive the function call.
-void rust_gtest_add_failure_at(const unsigned char* file,
+void rust_gtest_add_failure_at(const char* file,
                                int32_t line,
-                               rust::Str message);
+                               const char* message);
 
 }  // namespace rust_gtest_interop
 

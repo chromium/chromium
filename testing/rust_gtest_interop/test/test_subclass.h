@@ -33,10 +33,23 @@ class TestSubclass : public testing::Test {
 
 // A TestSuite that can be used from #[gtest_suite], and which uses a custom C++
 // class, `RunTestFromSetup`, to run the test function, instead of the
-// `RustTest` class. The `RUST_CUSTOM_TEMPLATE_TEST_SUITE_FACTORY()` macro
-// (which is called in the .cc file) will allow use of this class with the
-// `RustTestFromSetup` class, and allow the Rust wrapper to request that macro's
-// factory when implementing the rust_gtest_interop::TestSuite trait.
+// `RustTest` class.
+//
+// The point of this is to be able to replace the RustTest class which provides
+// the TestBody() entrypoint for the test. Most tests run their test body from
+// this entrypoint but it's possible to make the TestBody() a no-op and run the
+// actual test body somewhere else in the harness. A use case for such a thing
+// is Chromium's BrowserTestBase which runs the test body from a virtual
+// `RunTestOnMainThread()` method instead. In this case the `Test` subclass is
+// the test-specific harness, or the user may just use `Test` directly. But the
+// further subclass, or "CustomTemplate", would override `RunTestOnMainThread()`
+// instead of `TestBody()`. See https://crrev.com/c/chromium/src/+/4006855 for
+// an example of using this.
+//
+// The `RUST_CUSTOM_TEMPLATE_TEST_SUITE_FACTORY()` macro (which is called in the
+// .cc file) will allow use of this class with the `RustTestFromSetup` class,
+// and allow the Rust wrapper to request that macro's factory when implementing
+// the rust_gtest_interop::TestSuite trait.
 class TestSubclassWithCustomTemplate : public testing::Test {
  public:
   TestSubclassWithCustomTemplate();

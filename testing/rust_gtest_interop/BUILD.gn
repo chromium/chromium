@@ -18,7 +18,6 @@ if (enable_rust) {
       "expect_macros.rs",
       "rust_gtest_interop.rs",
     ]
-    rs_cxx_bindings = [ "rust_gtest_interop.rs" ]
     rs_deps = [
       # Macros re-exported from the rust_gtest_interop crate. Can only be
       # accessed through the crate, so not public_deps.
@@ -27,10 +26,7 @@ if (enable_rust) {
       # This is re-exported for the gtest_attribute macros.
       "//third_party/rust/small_ctor/v0_1:test_support",
     ]
-    deps = [
-      "//build/rust:cxx_cppdeps",
-      "//testing/gtest",
-    ]
+    deps = [ "//testing/gtest" ]
   }
 
   rust_macro("gtest_attribute") {
