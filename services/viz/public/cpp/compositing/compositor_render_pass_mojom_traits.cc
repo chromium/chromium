@@ -29,7 +29,8 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       !data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id) ||
       !data.ReadSubtreeSize(&(*out)->subtree_size) ||
       !data.ReadCopyRequests(&(*out)->copy_requests) ||
-      !data.ReadSharedElementResourceId(&(*out)->shared_element_resource_id) ||
+      !data.ReadViewTransitionElementResourceId(
+          &(*out)->view_transition_element_resource_id) ||
       !data.ReadId(&(*out)->id)) {
     return false;
   }

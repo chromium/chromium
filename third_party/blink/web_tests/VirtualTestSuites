@@ -934,22 +934,22 @@
     "args": ["--enable-fake-no-alloc-direct-call-for-testing"]
   },
   {
-    "prefix": "document-transition",
+    "prefix": "view-transition",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["wpt_internal/document-transition",
-              "document-transition",
-              "inspector-protocol/css/css-get-styles-for-document-transition.js"],
-    "args": ["--enable-features=DocumentTransition",
+    "bases": ["wpt_internal/view-transition",
+              "view-transition",
+              "inspector-protocol/css/css-get-styles-for-view-transition.js"],
+    "args": ["--enable-features=ViewTransition",
              "--enable-threaded-compositing",
              "--enable-gpu-rasterization"]
   },
   {
-    "prefix": "document-transition-wide-gamut",
+    "prefix": "view-transition-wide-gamut",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["wpt_internal/document-transition",
-              "document-transition",
-              "inspector-protocol/css/css-get-styles-for-document-transition.js"],
-    "args": ["--enable-features=DocumentTransition",
+    "bases": ["wpt_internal/view-transition",
+              "view-transition",
+              "inspector-protocol/css/css-get-styles-for-view-transition.js"],
+    "args": ["--enable-features=ViewTransition",
              "--enable-threaded-compositing",
              "--enable-gpu-rasterization",
              "--force-color-profile=display-p3-d65"]

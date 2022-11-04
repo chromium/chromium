@@ -797,7 +797,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 filters, backdrop_filters, backdrop_filter_bounds,
                 subtree_capture_id, output_rect.size(),
-                SharedElementResourceId(), has_transparent_background,
+                ViewTransitionElementResourceId(), has_transparent_background,
                 cache_render_pass, has_damage_from_contributing_content,
                 generate_mipmap, has_per_quad_damage);
   input->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
@@ -946,7 +946,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 cc::FilterOperations(), cc::FilterOperations(),
                 backdrop_filter_bounds, subtree_capture_id, output_rect.size(),
-                SharedElementResourceId(), has_transparent_background,
+                ViewTransitionElementResourceId(), has_transparent_background,
                 cache_render_pass, has_damage_from_contributing_content,
                 generate_mipmap, has_per_quad_damage);
 

@@ -1516,11 +1516,6 @@
     "owners": [ "steimel", "media-dev" ],
     "expiry_milestone": 120
   },
-   {
-    "name": "document-transition",
-    "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
-    "expiry_milestone" : 110
-  },
   {
     "name": "double-buffer-compositing",
     "owners": [ "hob", "chromeos-gfx@google.com" ],
@@ -6967,6 +6962,11 @@
     "name": "video-tutorials-instant-fetch",
     "owners": [ "shaktisahu"],
     "expiry_milestone": 102
+  },
+  {
+    "name": "view-transition",
+    "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
+    "expiry_milestone" : 110
   },
   {
     "name": "vm-per-boot-shader-cache",

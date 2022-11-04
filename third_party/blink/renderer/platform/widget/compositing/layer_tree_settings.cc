@@ -164,7 +164,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.skip_commits_if_not_synchronizing_compositor_state =
       base::FeatureList::IsEnabled(
           ::features::kSkipCommitsIfNotSynchronizingCompositorState) &&
-      !RuntimeEnabledFeatures::DocumentTransitionEnabled();
+      !RuntimeEnabledFeatures::ViewTransitionEnabled();
   settings.enable_synchronized_scrolling =
       base::FeatureList::IsEnabled(::features::kSynchronizedScrolling);
   Platform* platform = Platform::Current();

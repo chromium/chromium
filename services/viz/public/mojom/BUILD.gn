@@ -32,7 +32,6 @@ mojom("mojom") {
     "compositing/resource_settings.mojom",
     "compositing/returned_resource.mojom",
     "compositing/selection.mojom",
-    "compositing/shared_element_resource_id.mojom",
     "compositing/shared_quad_state.mojom",
     "compositing/subtree_capture_id.mojom",
     "compositing/surface_id.mojom",
@@ -42,6 +41,7 @@ mojom("mojom") {
     "compositing/transferable_resource.mojom",
     "compositing/vertical_scroll_direction.mojom",
     "compositing/video_detector_observer.mojom",
+    "compositing/view_transition_element_resource_id.mojom",
     "gpu.mojom",
     "hit_test/aggregated_hit_test_region.mojom",
     "hit_test/hit_test_region_list.mojom",
@@ -445,11 +445,11 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "viz.mojom.SharedElementResourceId"
-          cpp = "::viz::SharedElementResourceId"
+          mojom = "viz.mojom.ViewTransitionElementResourceId"
+          cpp = "::viz::ViewTransitionElementResourceId"
         },
       ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/shared_element_resource_id_mojom_traits.h" ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {

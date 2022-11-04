@@ -33,7 +33,7 @@
 #include "cc/trees/transform_node.h"
 #include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/display/de_jelly.h"
-#include "components/viz/common/shared_element_resource_id.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace cc {

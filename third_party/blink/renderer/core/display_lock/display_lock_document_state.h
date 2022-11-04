@@ -89,7 +89,7 @@ class CORE_EXPORT DisplayLockDocumentState final
   // Notify the display locks that shared elements have changed.
   void NotifySharedElementPseudoTreeChanged();
 
-  // Updates only the ancestor locks of the shared element transition elements.
+  // Updates only the ancestor locks of the view transition elements.
   // This is an optimization to be used by the display lock context.
   void UpdateSharedElementAncestorLocks();
 

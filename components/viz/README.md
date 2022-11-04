@@ -215,7 +215,7 @@ display compositor.
 | viz/common/*   |
 
 #### service/transitions
-**Transitions**: This directory is in support of the shared element transitions
+**Transitions**: This directory is in support of the view transitions
 project. See //third\_party/blink/rendering/core/document\_transition/README.md
 
 | Can depend on:        |

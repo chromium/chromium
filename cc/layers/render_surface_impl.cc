@@ -174,7 +174,7 @@ bool RenderSurfaceImpl::ShouldCacheRenderSurface() const {
 bool RenderSurfaceImpl::CopyOfOutputRequired() const {
   return HasCopyRequest() || ShouldCacheRenderSurface() ||
          SubtreeCaptureId().is_valid() ||
-         OwningEffectNode()->shared_element_resource_id.IsValid();
+         OwningEffectNode()->view_transition_element_resource_id.IsValid();
 }
 
 int RenderSurfaceImpl::TransformTreeIndex() const {
@@ -194,9 +194,9 @@ const EffectNode* RenderSurfaceImpl::OwningEffectNode() const {
       EffectTreeIndex());
 }
 
-const DocumentTransitionSharedElementId&
-RenderSurfaceImpl::GetDocumentTransitionSharedElementId() const {
-  return OwningEffectNode()->document_transition_shared_element_id;
+const ViewTransitionElementId& RenderSurfaceImpl::GetViewTransitionElementId()
+    const {
+  return OwningEffectNode()->view_transition_shared_element_id;
 }
 
 void RenderSurfaceImpl::SetClipRect(const gfx::Rect& clip_rect) {
@@ -337,7 +337,7 @@ void RenderSurfaceImpl::AccumulateContentRectFromContributingRenderSurface(
   // If this surface is a shared element id then it is being used to generate an
   // independent snapshot and won't contribute to its target surface.
   if (contributing_surface->OwningEffectNode()
-          ->shared_element_resource_id.IsValid())
+          ->view_transition_element_resource_id.IsValid())
     return;
 
   // The content rect of contributing surface is in its own space. Instead, we
@@ -425,8 +425,8 @@ RenderSurfaceImpl::CreateRenderPass() {
   pass->cache_render_pass = ShouldCacheRenderSurface();
   pass->has_damage_from_contributing_content =
       HasDamageFromeContributingContent();
-  pass->shared_element_resource_id =
-      OwningEffectNode()->shared_element_resource_id;
+  pass->view_transition_element_resource_id =
+      OwningEffectNode()->view_transition_element_resource_id;
   return pass;
 }
 
@@ -438,10 +438,10 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   if (unoccluded_content_rect.IsEmpty())
     return;
 
-  // If this render surface has a valid |shared_element_resource_id| then its
-  // being used to produce live content. Its content will be drawn to its
-  // actual position in the Viz process.
-  if (OwningEffectNode()->shared_element_resource_id.IsValid())
+  // If this render surface has a valid |view_transition_element_resource_id|
+  // then its being used to produce live content. Its content will be drawn to
+  // its actual position in the Viz process.
+  if (OwningEffectNode()->view_transition_element_resource_id.IsValid())
     return;
 
   const PropertyTrees* property_trees = layer_tree_impl_->property_trees();

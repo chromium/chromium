@@ -6,7 +6,6 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 
 namespace {
 
@@ -268,7 +268,7 @@ void DisplayLockDocumentState::NotifySharedElementPseudoTreeChanged() {
 }
 
 void DisplayLockDocumentState::UpdateSharedElementAncestorLocks() {
-  auto* transition = DocumentTransitionUtils::GetActiveTransition(*document_);
+  auto* transition = ViewTransitionUtils::GetActiveTransition(*document_);
   if (!transition)
     return;
 

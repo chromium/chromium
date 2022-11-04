@@ -69,10 +69,10 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
   void SetPseudoElement(
       PseudoId,
       PseudoElement*,
-      const AtomicString& document_transition_tag = g_null_atom) override;
+      const AtomicString& view_transition_tag = g_null_atom) override;
   PseudoElement* GetPseudoElement(
       PseudoId,
-      const AtomicString& document_transition_tag = g_null_atom) const override;
+      const AtomicString& view_transition_tag = g_null_atom) const override;
   PseudoElementData::PseudoElementVector GetPseudoElements() const override;
 
   CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(
@@ -464,23 +464,22 @@ inline void ElementRareData::ClearPseudoElements() {
 inline void ElementRareData::SetPseudoElement(
     PseudoId pseudo_id,
     PseudoElement* element,
-    const AtomicString& document_transition_tag) {
+    const AtomicString& view_transition_tag) {
   if (!pseudo_element_data_) {
     if (!element)
       return;
     pseudo_element_data_ = MakeGarbageCollected<PseudoElementData>();
   }
   pseudo_element_data_->SetPseudoElement(pseudo_id, element,
-                                         document_transition_tag);
+                                         view_transition_tag);
 }
 
 inline PseudoElement* ElementRareData::GetPseudoElement(
     PseudoId pseudo_id,
-    const AtomicString& document_transition_tag) const {
+    const AtomicString& view_transition_tag) const {
   if (!pseudo_element_data_)
     return nullptr;
-  return pseudo_element_data_->GetPseudoElement(pseudo_id,
-                                                document_transition_tag);
+  return pseudo_element_data_->GetPseudoElement(pseudo_id, view_transition_tag);
 }
 
 inline PseudoElementData::PseudoElementVector

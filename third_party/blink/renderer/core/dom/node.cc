@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
@@ -125,6 +124,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
@@ -1357,7 +1357,7 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
   if (auto* this_element = DynamicTo<Element>(this)) {
     this_element->SetAnimationStyleChange(false);
 
-    // The style walk for the pseudo tree created for a DocumentTransition is
+    // The style walk for the pseudo tree created for a ViewTransition is
     // done after resolving style for the author DOM. See
     // StyleEngine::RecalcTransitionPseudoStyle.
     // Since the dirty bits from the originating element (root element) are not
@@ -1367,10 +1367,10 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
       auto update_style_change = [](PseudoElement* pseudo_element) {
         pseudo_element->SetNeedsStyleRecalc(
             kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                   style_change_reason::kDocumentTransition));
+                                   style_change_reason::kViewTransition));
       };
-      DocumentTransitionUtils::ForEachTransitionPseudo(GetDocument(),
-                                                       update_style_change);
+      ViewTransitionUtils::ForEachTransitionPseudo(GetDocument(),
+                                                   update_style_change);
     }
   }
 

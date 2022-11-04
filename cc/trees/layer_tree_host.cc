@@ -36,7 +36,6 @@
 #include "cc/base/histograms.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
-#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/page_scale_animation.h"
@@ -68,6 +67,7 @@
 #include "cc/trees/transform_node.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "cc/trees/ukm_manager.h"
+#include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -506,11 +506,11 @@ void LayerTreeHost::NotifyTransitionRequestsFinished(
   // TODO(vmpstr): This might also be a good spot to expire long standing
   // requests if they were not finished.
   for (auto& sequence_id : sequence_ids) {
-    auto it = document_transition_callbacks_.find(sequence_id);
-    if (it == document_transition_callbacks_.end())
+    auto it = view_transition_callbacks_.find(sequence_id);
+    if (it == view_transition_callbacks_.end())
       continue;
     std::move(it->second).Run();
-    document_transition_callbacks_.erase(it);
+    view_transition_callbacks_.erase(it);
   }
 }
 
@@ -891,17 +891,15 @@ void LayerTreeHost::DidObserveFirstScrollDelay(
                                       first_scroll_timestamp);
 }
 
-void LayerTreeHost::AddDocumentTransitionRequest(
-    std::unique_ptr<DocumentTransitionRequest> request) {
+void LayerTreeHost::AddViewTransitionRequest(
+    std::unique_ptr<ViewTransitionRequest> request) {
   // Store the commit callback on LayerTreeHost, so that we can invoke them
   // when the request is finished.
-  DCHECK(
-      !base::Contains(document_transition_callbacks_, request->sequence_id()));
+  DCHECK(!base::Contains(view_transition_callbacks_, request->sequence_id()));
   if (auto callback = request->TakeFinishedCallback()) {
-    document_transition_callbacks_[request->sequence_id()] =
-        std::move(callback);
+    view_transition_callbacks_[request->sequence_id()] = std::move(callback);
   }
-  pending_commit_state()->document_transition_requests.push_back(
+  pending_commit_state()->view_transition_requests.push_back(
       std::move(request));
   SetNeedsCommit();
 }
@@ -2024,12 +2022,12 @@ void LayerTreeHost::SetDelegatedInkMetadata(
 }
 
 std::vector<base::OnceClosure>
-LayerTreeHost::TakeDocumentTransitionCallbacksForTesting() {
+LayerTreeHost::TakeViewTransitionCallbacksForTesting() {
   DCHECK(IsMainThread());
   std::vector<base::OnceClosure> result;
-  for (auto& item : document_transition_callbacks_)
+  for (auto& item : view_transition_callbacks_)
     result.push_back(std::move(item.second));
-  document_transition_callbacks_.clear();
+  view_transition_callbacks_.clear();
   return result;
 }
 

@@ -202,8 +202,8 @@ void SurfaceAnimationManager::UnrefResources(
 
 bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
     std::vector<TransferableResource>* resource_list,
-    const base::flat_map<SharedElementResourceId, const CompositorRenderPass*>*
-        element_id_to_pass,
+    const base::flat_map<ViewTransitionElementResourceId,
+                         const CompositorRenderPass*>* element_id_to_pass,
     const DrawQuad& quad,
     CompositorRenderPass& copy_pass) {
   if (quad.material != DrawQuad::Material::kSharedElement)
@@ -271,7 +271,7 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
   if (!active_frame.metadata.has_shared_element_resources)
     return;
 
-  // A frame created by resolving SharedElementResourceIds to their
+  // A frame created by resolving ViewTransitionElementResourceIds to their
   // corresponding static or live snapshot.
   DCHECK(!surface->HasInterpolatedFrame())
       << "Can not override interpolated frame";
@@ -279,7 +279,7 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
   resolved_frame.metadata = active_frame.metadata.Clone();
   resolved_frame.resource_list = active_frame.resource_list;
 
-  base::flat_map<SharedElementResourceId, const CompositorRenderPass*>
+  base::flat_map<ViewTransitionElementResourceId, const CompositorRenderPass*>
       element_id_to_pass;
   TransitionUtils::FilterCallback filter_callback = base::BindRepeating(
       &SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource,
@@ -294,10 +294,11 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
 
     // This must be done after copying the render pass so we use the render pass
     // id of |pass_copy| when replacing SharedElementDrawQuads.
-    if (pass_copy->shared_element_resource_id.IsValid()) {
-      DCHECK(element_id_to_pass.find(pass_copy->shared_element_resource_id) ==
+    if (pass_copy->view_transition_element_resource_id.IsValid()) {
+      DCHECK(element_id_to_pass.find(
+                 pass_copy->view_transition_element_resource_id) ==
              element_id_to_pass.end());
-      element_id_to_pass.emplace(pass_copy->shared_element_resource_id,
+      element_id_to_pass.emplace(pass_copy->view_transition_element_resource_id,
                                  pass_copy.get());
     }
 

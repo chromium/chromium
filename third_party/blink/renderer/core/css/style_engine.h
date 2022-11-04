@@ -598,11 +598,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Color ForcedBackgroundColor() const { return forced_background_color_; }
   Color ColorAdjustBackgroundColor() const;
 
-  void SetDocumentTransitionTags(const Vector<AtomicString>& tags) {
-    document_transition_tags_ = tags;
+  void SetViewTransitionTags(const Vector<AtomicString>& tags) {
+    view_transition_tags_ = tags;
   }
-  const Vector<AtomicString>& DocumentTransitionTags() const {
-    return document_transition_tags_;
+  const Vector<AtomicString>& ViewTransitionTags() const {
+    return view_transition_tags_;
   }
 
   StyleFetchedImage* CacheStyleImage(FetchParameters& params,
@@ -619,8 +619,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
 
-  RuleSet* DefaultDocumentTransitionStyle() const;
-  void InvalidateUADocumentTransitionStyle();
+  RuleSet* DefaultViewTransitionStyle() const;
+  void InvalidateUAViewTransitionStyle();
 
   const ActiveStyleSheetVector& ActiveUserStyleSheetsForDebug() const {
     return active_user_style_sheets_;
@@ -877,7 +877,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // elements. This is tracked by StyleEngine as opposed to
   // CSSDefaultStyleSheets since it is 1:1 with a Document and can be
   // dynamically updated.
-  Member<RuleSet> ua_document_transition_style_;
+  Member<RuleSet> ua_view_transition_style_;
 
   PendingInvalidations pending_invalidations_;
 
@@ -969,8 +969,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Member<LayoutObject> parent_for_detached_subtree_;
 
   // The set of IDs for which ::page-transition-container pseudo elements are
-  // generated during a DocumentTransition.
-  Vector<AtomicString> document_transition_tags_;
+  // generated during a ViewTransition.
+  Vector<AtomicString> view_transition_tags_;
 
   // Cache for sharing StyleFetchedImage between CSSValues referencing the same
   // URL.

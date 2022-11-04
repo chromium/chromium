@@ -1562,11 +1562,11 @@ transforms/transformed-document-element.html
 virtual/android/fullscreen/video-controls-timeline.html
 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
 virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html
-virtual/document-transition-wide-gamut/wpt_internal/document-transition/content-visibility-auto-shared-element.html
-virtual/document-transition-wide-gamut/wpt_internal/document-transition/content-with-clip-max-texture-size.html
-virtual/document-transition-wide-gamut/wpt_internal/document-transition/new-content-with-overflow-zoomed.html
-virtual/document-transition-wide-gamut/wpt_internal/document-transition/old-content-with-overflow-zoomed.html
-virtual/document-transition/wpt_internal/document-transition/
+virtual/view-transition-wide-gamut/wpt_internal/view-transition/content-visibility-auto-shared-element.html
+virtual/view-transition-wide-gamut/wpt_internal/view-transition/content-with-clip-max-texture-size.html
+virtual/view-transition-wide-gamut/wpt_internal/view-transition/new-content-with-overflow-zoomed.html
+virtual/view-transition-wide-gamut/wpt_internal/view-transition/old-content-with-overflow-zoomed.html
+virtual/view-transition/wpt_internal/view-transition/
 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/nested-opaque-ad-sizes.https.html
 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes.https.html
 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/nested-opaque-ad-sizes.https.html

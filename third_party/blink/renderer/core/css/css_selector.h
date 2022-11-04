@@ -316,9 +316,9 @@ class CORE_EXPORT CSSSelector {
     kPseudoVideoPersistentAncestor,
 
     // The following selectors are used to target pseudo elements created for
-    // DocumentTransition.
+    // ViewTransition.
     // See
-    // https://github.com/WICG/shared-element-transitions/blob/main/explainer.md
+    // https://github.com/WICG/view-transitions/blob/main/explainer.md
     // for details.
     kPseudoPageTransition,
     kPseudoPageTransitionContainer,

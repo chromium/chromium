@@ -29,7 +29,7 @@
 #endif
 
 namespace cc {
-class DocumentTransitionRequest;
+class ViewTransitionRequest;
 }
 
 namespace blink {
@@ -50,7 +50,7 @@ enum class PaintArtifactCompositorUpdateReason {
   kLocalFrameViewUpdateLayerDebugInfo = 4,
   kLocalFrameViewBenchmarking = 5,
   kDisplayLockContextNeedsPaintArtifactCompositorUpdate = 6,
-  kDocumentTransitionNotifyChanges = 7,
+  kViewTransitionNotifyChanges = 7,
   kFrameCaretSetVisible = 8,
   kFrameCaretPaint = 9,
   kInspectorOverlayAgentDisableFrameOverlay = 10,
@@ -165,7 +165,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
       scoped_refptr<const PaintArtifact> artifact,
       const ViewportProperties& viewport_properties,
       const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-      Vector<std::unique_ptr<cc::DocumentTransitionRequest>> requests);
+      Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests);
 
   // Fast-path update where the painting of existing composited layers changed,
   // but property trees and compositing decisions remain the same. See:

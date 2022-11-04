@@ -18,13 +18,12 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData> {
   PseudoElementData(const PseudoElementData&) = delete;
   PseudoElementData& operator=(const PseudoElementData&) = delete;
 
-  void SetPseudoElement(
-      PseudoId,
-      PseudoElement*,
-      const AtomicString& document_transition_tag = g_null_atom);
+  void SetPseudoElement(PseudoId,
+                        PseudoElement*,
+                        const AtomicString& view_transition_tag = g_null_atom);
   PseudoElement* GetPseudoElement(
       PseudoId,
-      const AtomicString& document_transition_tag = g_null_atom) const;
+      const AtomicString& view_transition_tag = g_null_atom) const;
 
   using PseudoElementVector = HeapVector<Member<PseudoElement>, 2>;
   PseudoElementVector GetPseudoElements() const;
@@ -70,7 +69,7 @@ inline void PseudoElementData::ClearPseudoElements() {
 inline void PseudoElementData::SetPseudoElement(
     PseudoId pseudo_id,
     PseudoElement* element,
-    const AtomicString& document_transition_tag) {
+    const AtomicString& view_transition_tag) {
   PseudoElement* previous_element = nullptr;
   switch (pseudo_id) {
     case kPseudoIdBefore:
@@ -102,7 +101,7 @@ inline void PseudoElementData::SetPseudoElement(
         transition_data_ = MakeGarbageCollected<TransitionPseudoElementData>();
       if (transition_data_) {
         transition_data_->SetPseudoElement(pseudo_id, element,
-                                           document_transition_tag);
+                                           view_transition_tag);
         if (!transition_data_->HasPseudoElements())
           transition_data_ = nullptr;
       }
@@ -117,7 +116,7 @@ inline void PseudoElementData::SetPseudoElement(
 
 inline PseudoElement* PseudoElementData::GetPseudoElement(
     PseudoId pseudo_id,
-    const AtomicString& document_transition_tag) const {
+    const AtomicString& view_transition_tag) const {
   if (kPseudoIdBefore == pseudo_id)
     return generated_before_;
   if (kPseudoIdAfter == pseudo_id)
@@ -135,7 +134,7 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
     return generated_first_letter_;
   if (IsTransitionPseudoElement(pseudo_id)) {
     return transition_data_ ? transition_data_->GetPseudoElement(
-                                  pseudo_id, document_transition_tag)
+                                  pseudo_id, view_transition_tag)
                             : nullptr;
   }
   return nullptr;

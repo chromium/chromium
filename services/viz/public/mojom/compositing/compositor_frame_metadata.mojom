@@ -74,7 +74,7 @@ struct CompositorFrameMetadata {
   // representing their coordinates in the root render pass system.
   RegionCaptureBounds capture_bounds;
 
-  // Indicates if this frame is embedding SharedElementResourceIds which need to
+  // Indicates if this frame is embedding ViewTransitionElementResourceIds which need to
   // be replaced by corresponding live render passes or cached textures in the
   // Viz process.
   bool has_shared_element_resources;

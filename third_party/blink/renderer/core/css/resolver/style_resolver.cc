@@ -756,7 +756,7 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
   const auto pseudo_id = GetPseudoId(element, collector);
   if (pseudo_id != kPseudoIdNone) {
     if (IsTransitionPseudoElement(pseudo_id)) {
-      func(GetDocument().GetStyleEngine().DefaultDocumentTransitionStyle());
+      func(GetDocument().GetStyleEngine().DefaultViewTransitionStyle());
     } else if (auto* rule_set =
                    default_style_sheets.DefaultPseudoElementStyleOrNull()) {
       func(rule_set);
@@ -1655,7 +1655,7 @@ Element* StyleResolver::FindContainerForElement(
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
     Element* element,
     PseudoId pseudo_id,
-    const AtomicString& document_transition_tag,
+    const AtomicString& view_transition_tag,
     unsigned rules_to_include) {
   DCHECK(element);
   StyleResolverState state(GetDocument(), *element);
@@ -1669,7 +1669,7 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
   // TODO(obrufau): support collecting rules for nested ::marker
   if (!element->IsPseudoElement()) {
     CollectPseudoRulesForElement(*element, collector, pseudo_id,
-                                 document_transition_tag, rules_to_include);
+                                 view_transition_tag, rules_to_include);
   }
 
   if (tracker_)
@@ -1687,10 +1687,10 @@ void StyleResolver::CollectPseudoRulesForElement(
     const Element& element,
     ElementRuleCollector& collector,
     PseudoId pseudo_id,
-    const AtomicString& document_transition_tag,
+    const AtomicString& view_transition_tag,
     unsigned rules_to_include) {
   collector.SetPseudoElementStyleRequest(
-      StyleRequest(pseudo_id, nullptr, document_transition_tag));
+      StyleRequest(pseudo_id, nullptr, view_transition_tag));
 
   if (rules_to_include & kUACSSRules)
     MatchUARules(element, collector);

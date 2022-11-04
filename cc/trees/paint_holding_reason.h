@@ -13,7 +13,7 @@ enum class PaintHoldingReason {
 
   // Deferred to allow the document to be updated asynchronously for a
   // transition.
-  kDocumentTransition,
+  kViewTransition,
 };
 
 }  // namespace cc

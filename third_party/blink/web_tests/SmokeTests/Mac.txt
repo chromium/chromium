@@ -1424,8 +1424,8 @@ virtual/disable-ua-client-hint/external/wpt/client-hints/http-equiv-accept-ch-no
 virtual/disable-ua-client-hint/external/wpt/client-hints/service-workers/new-request-critical.https.window.html
 virtual/disable-ua-client-hint/wpt_internal/client-hints/accept_ch_feature_policy_allow_legacy_hints.tentative.sub.https.html
 virtual/document-domain-disabled-by-default/external/wpt/document-policy/experimental-features/document-domain/document-domain.tentative.sub.html
-virtual/document-transition/wpt_internal/document-transition/new-content-container-writing-modes.html
-virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html
+virtual/view-transition/wpt_internal/view-transition/new-content-container-writing-modes.html
+virtual/view-transition/wpt_internal/view-transition/one-element-two-targets.html
 virtual/elastic-overscroll/fixed-elements-dont-overscroll.html
 virtual/exotic-color-space/images/2-comp.html
 virtual/exotic-color-space/images/color-jpeg-with-color-profile.html

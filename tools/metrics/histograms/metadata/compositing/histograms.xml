@@ -1374,9 +1374,9 @@ chromium-metrics-reviews@google.com.
     <variant name="RAF" summary="raf driven animations"/>
     <variant name="ScrollbarScroll" summary="scrollbar scrolling"/>
     <variant name="SETCompositorAnimation"
-        summary="compositor animations during a shared element transition"/>
+        summary="compositor animations during a view transition"/>
     <variant name="SETMainThreadAnimation"
-        summary="main thread animations during a shared element transition"/>
+        summary="main thread animations during a view transition"/>
     <variant name="TouchScroll" summary="touch scrolling"/>
     <variant name="WheelScroll" summary="wheel scrolling"/>
   </token>

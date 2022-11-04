@@ -117,7 +117,7 @@ RenderPassBuilder& RenderPassBuilder::AddStubCopyOutputRequest(
 
 RenderPassBuilder& RenderPassBuilder::AddSharedElementQuad(
     const gfx::Rect& rect,
-    const SharedElementResourceId& id) {
+    const ViewTransitionElementResourceId& id) {
   auto* sqs = AppendDefaultSharedQuadState(rect, rect);
   auto* quad = pass_->CreateAndAppendDrawQuad<SharedElementDrawQuad>();
   quad->SetNew(sqs, rect, rect, id);

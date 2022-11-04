@@ -2,7 +2,7 @@ specific_include_rules = {
   "layout_theme\.cc|layout_theme_mac\.mm": [
     "+ui/native_theme/native_theme.h",
   ],
-  "layout_document_transition_content*": [
-    "+cc/layers/document_transition_content_layer.h",
+  "layout_view_transition_content*": [
+    "+cc/layers/view_transition_content_layer.h",
   ],
 }

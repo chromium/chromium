@@ -23,12 +23,12 @@ enum class PaintHoldingCommitTrigger {
   kTimeoutFCP = 3,
   // The timeout was never set, probably due to non-main frame
   kNotDeferred = 4,
-  // The commit was triggered by a document transition start
-  kDocumentTransition = 5,
-  // The commit was triggered by a timeout waiting for document transition start
-  kTimeoutDocumentTransition = 6,
+  // The commit was triggered by a view transition start
+  kViewTransition = 5,
+  // The commit was triggered by a timeout waiting for view transition start
+  kTimeoutViewTransition = 6,
   // Required for UMA enum
-  kMaxValue = kTimeoutDocumentTransition
+  kMaxValue = kTimeoutViewTransition
 };
 
 PaintHoldingCommitTrigger ReasonToTimeoutTrigger(PaintHoldingReason reason);

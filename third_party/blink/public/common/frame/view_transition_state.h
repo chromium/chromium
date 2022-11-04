@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_VIEW_TRANSITION_STATE_H_
 
 #include "base/unguessable_token.h"
-#include "components/viz/common/shared_element_resource_id.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -19,7 +19,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
   gfx::SizeF border_box_size_in_css_space;
   gfx::Transform viewport_matrix;
   gfx::RectF overflow_rect_in_layout_space;
-  viz::SharedElementResourceId snapshot_id;
+  viz::ViewTransitionElementResourceId snapshot_id;
   int32_t paint_order = 0;
   bool is_root = false;
 };

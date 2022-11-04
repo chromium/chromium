@@ -1096,7 +1096,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return false;
   }
 
-  virtual bool IsDocumentTransitionContent() const {
+  virtual bool IsViewTransitionContent() const {
     NOT_DESTROYED();
     return false;
   }

@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class DocumentTransitionSupplement;
+class ViewTransitionSupplement;
 class FragmentData;
 class LayoutObject;
 class PaintLayer;
@@ -79,7 +79,7 @@ class CORE_EXPORT CullRectUpdater {
 
   PaintLayer& starting_layer_;
   PropertyTreeState root_state_ = PropertyTreeState::Uninitialized();
-  DocumentTransitionSupplement* document_transition_supplement_;
+  ViewTransitionSupplement* view_transition_supplement_;
 };
 
 // Used when painting with a custom top-level cull rect, e.g. when printing a

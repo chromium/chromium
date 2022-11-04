@@ -142,7 +142,7 @@ class FrontendOperationScope {
 
 Element* GetPseudoIdAndTag(Element* element,
                            PseudoId& element_pseudo_id,
-                           AtomicString& document_transition_tag) {
+                           AtomicString& view_transition_tag) {
   auto* resolved_element = element;
   if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
     resolved_element = IsTransitionPseudoElement(pseudo_element->GetPseudoId())
@@ -153,7 +153,7 @@ Element* GetPseudoIdAndTag(Element* element,
       return nullptr;
 
     element_pseudo_id = pseudo_element->GetPseudoId();
-    document_transition_tag = pseudo_element->document_transition_tag();
+    view_transition_tag = pseudo_element->view_transition_tag();
   }
   return resolved_element;
 }
@@ -1000,9 +1000,8 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
   Element* animating_element = element;
 
   PseudoId element_pseudo_id = kPseudoIdNone;
-  AtomicString document_transition_tag = g_null_atom;
-  element =
-      GetPseudoIdAndTag(element, element_pseudo_id, document_transition_tag);
+  AtomicString view_transition_tag = g_null_atom;
+  element = GetPseudoIdAndTag(element, element_pseudo_id, view_transition_tag);
   if (!element)
     return Response::ServerError("Pseudo element has no parent");
 
@@ -1020,7 +1019,7 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
 
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(&document);
   InspectorStyleResolver resolver(element, element_pseudo_id,
-                                  document_transition_tag);
+                                  view_transition_tag);
 
   // Matched rules.
   *matched_css_rules = BuildArrayForMatchedRuleList(resolver.MatchedRules());
@@ -1046,9 +1045,9 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
                 InspectorDOMAgent::ProtocolPseudoElementType(match->pseudo_id))
             .setMatches(BuildArrayForMatchedRuleList(match->matched_rules))
             .build());
-    if (match->document_transition_tag) {
+    if (match->view_transition_tag) {
       pseudo_id_matches->fromJust()->back()->setPseudoIdentifier(
-          match->document_transition_tag);
+          match->view_transition_tag);
     }
   }
 
@@ -1086,9 +1085,9 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
               .setMatches(
                   BuildArrayForMatchedRuleList(pseudo_match->matched_rules))
               .build());
-      if (pseudo_match->document_transition_tag) {
+      if (pseudo_match->view_transition_tag) {
         parent_pseudo_element_matches->back()->setPseudoIdentifier(
-            pseudo_match->document_transition_tag);
+            pseudo_match->view_transition_tag);
       }
     }
 
@@ -2582,8 +2581,8 @@ void InspectorCSSAgent::ResetPseudoStates() {
 HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
     Element* element) {
   PseudoId pseudo_id = kPseudoIdNone;
-  AtomicString document_transition_tag = g_null_atom;
-  element = GetPseudoIdAndTag(element, pseudo_id, document_transition_tag);
+  AtomicString view_transition_tag = g_null_atom;
+  element = GetPseudoIdAndTag(element, pseudo_id, view_transition_tag);
   if (!element)
     return {};
 
@@ -2604,7 +2603,7 @@ HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
 
   HeapVector<Member<CSSStyleRule>> rules =
       FilterDuplicateRules(style_resolver.PseudoCSSRulesForElement(
-          element, pseudo_id, document_transition_tag,
+          element, pseudo_id, view_transition_tag,
           StyleResolver::kAllCSSRules));
   HeapVector<Member<CSSStyleDeclaration>> styles;
   if (!pseudo_id && element->style())

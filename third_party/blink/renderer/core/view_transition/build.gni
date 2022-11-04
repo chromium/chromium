@@ -1,0 +1,23 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_view_transition = [
+  "view_transition.cc",
+  "view_transition.h",
+  "view_transition_content_element.cc",
+  "view_transition_content_element.h",
+  "view_transition_pseudo_element_base.cc",
+  "view_transition_pseudo_element_base.h",
+  "view_transition_request.h",
+  "view_transition_request_forward.h",
+  "view_transition_style_builder.cc",
+  "view_transition_style_builder.h",
+  "view_transition_style_tracker.cc",
+  "view_transition_style_tracker.h",
+  "view_transition_supplement.cc",
+  "view_transition_supplement.h",
+  "view_transition_utils.h",
+]
+
+blink_core_tests_view_transition = [ "view_transition_test.cc" ]

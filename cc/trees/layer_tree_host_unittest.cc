@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/features.h"
-#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/heads_up_display_layer.h"
@@ -70,6 +69,7 @@
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/swap_promise_manager.h"
 #include "cc/trees/transform_node.h"
+#include "cc/view_transition/view_transition_request.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -9929,7 +9929,7 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
 
 MULTI_THREAD_TEST_F(LayerTreeHostUkmSmoothnessMemoryOwnership);
 
-class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
+class LayerTreeHostTestViewTransitionsPropagatedToMetadata
     : public LayerTreeHostTest {
  protected:
   void SetupTree() override {
@@ -9938,8 +9938,8 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
   }
 
   void BeginTest() override {
-    layer_tree_host()->AddDocumentTransitionRequest(
-        DocumentTransitionRequest::CreateCapture(
+    layer_tree_host()->AddViewTransitionRequest(
+        ViewTransitionRequest::CreateCapture(
             /*document_tag=*/0, /*shared_element_count=*/0,
             viz::NavigationID::Null(), {},
             base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
@@ -9970,7 +9970,7 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
-    LayerTreeHostTestDocumentTransitionsPropagatedToMetadata);
+    LayerTreeHostTestViewTransitionsPropagatedToMetadata);
 
 class LayerTreeHostTestDebugStateDowngrade : public LayerTreeHostTest {
   void InitializeSettings(LayerTreeSettings* settings) override {

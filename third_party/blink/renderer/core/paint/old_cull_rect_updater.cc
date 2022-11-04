@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/paint/old_cull_rect_updater.h"
 
 #include "base/auto_reset.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -16,6 +15,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -121,7 +121,7 @@ bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
   }
 
   if (auto* transition =
-          DocumentTransitionUtils::GetActiveTransition(object.GetDocument())) {
+          ViewTransitionUtils::GetActiveTransition(object.GetDocument())) {
     // This means that the contents of the object are drawn elsewhere, so we
     // shouldn't cull it.
     if (transition->IsRepresentedViaPseudoElements(object)) {

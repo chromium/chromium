@@ -74,7 +74,7 @@ struct PresentationFeedback;
 
 namespace cc {
 
-class DocumentTransitionRequest;
+class ViewTransitionRequest;
 class HeadsUpDisplayLayer;
 class LayerTreeHostImpl;
 class LayerTreeHostImplClient;
@@ -861,10 +861,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
 
-  void AddDocumentTransitionRequest(
-      std::unique_ptr<DocumentTransitionRequest> request);
+  void AddViewTransitionRequest(std::unique_ptr<ViewTransitionRequest> request);
 
-  std::vector<base::OnceClosure> TakeDocumentTransitionCallbacksForTesting();
+  std::vector<base::OnceClosure> TakeViewTransitionCallbacksForTesting();
 
   // Returns a percentage of dropped frames of the last second.
   double GetPercentDroppedFrames() const;
@@ -1064,7 +1063,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   EventsMetricsManager events_metrics_manager_;
 
   // A list of callbacks that need to be invoked when they are processed.
-  base::flat_map<uint32_t, base::OnceClosure> document_transition_callbacks_;
+  base::flat_map<uint32_t, base::OnceClosure> view_transition_callbacks_;
 
   // Set if WaitForCommitCompletion() was called before commit completes. Used
   // for histograms.

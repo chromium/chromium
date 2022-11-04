@@ -41832,7 +41832,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3927" label="HiddenBackfaceWith3D"/>
   <int value="3928" label="MainFrameNonSecurePrivateAddressSpace"/>
   <int value="3930" label="HTMLMediaElementControlsListNoPlaybackRate"/>
-  <int value="3931" label="DocumentTransition"/>
+  <int value="3931" label="OBSOLETE_DocumentTransition"/>
   <int value="3932" label="SpeculationRules"/>
   <int value="3933" label="V8AbortSignal_Abort_Method"/>
   <int value="3934" label="SelectionBackgroundColorInversion"/>
@@ -42306,6 +42306,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4381"
       label="ViewportDependentLazyLoadedImageWithoutSizesAttribute"/>
   <int value="4382" label="V8MediaStreamTrack_ApplyConstraints_Method"/>
+  <int value="4383" label="ViewTransition"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -57378,7 +57379,6 @@ from previous Chrome versions.
   <int value="-2130982324" label="DesktopPWAsWebBundles:disabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
   <int value="-2129781123" label="RequestDesktopSiteZoom:enabled"/>
-  <int value="-2129013032" label="DocumentTransition:enabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
   <int value="-2128535212" label="GuestOsFiles:enabled"/>
   <int value="-2127806304" label="Enable16Desks:disabled"/>
@@ -58849,7 +58849,6 @@ from previous Chrome versions.
   <int value="-1294944922" label="Canvas2dStaysGPUOnReadback:disabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
-  <int value="-1293566107" label="DocumentTransition:disabled"/>
   <int value="-1292766410" label="IntentChipSkipsPicker:disabled"/>
   <int value="-1292615467"
       label="OmniboxSuggestionTransparencyOptions:disabled"/>
@@ -62295,6 +62294,7 @@ from previous Chrome versions.
   <int value="760542355" label="ServiceWorkerScriptFullCodeCache:enabled"/>
   <int value="761770770"
       label="OverrideLanguagePrefsForHrefTranslate:disabled"/>
+  <int value="762030626" label="ViewTransition:disabled"/>
   <int value="762324154" label="ZeroSuggestPrefetchingOnWeb:disabled"/>
   <int value="762700519" label="enable-checker-imaging"/>
   <int value="763667542"
@@ -63319,6 +63319,7 @@ from previous Chrome versions.
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>
   <int value="1376437124" label="show-cert-link"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>
+  <int value="1377802847" label="ViewTransition:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
   <int value="1379182781" label="MessagesForAndroidNearOomReduction:disabled"/>
   <int value="1379287559" label="FilesArchivemount2:enabled"/>
@@ -76921,7 +76922,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="LocalFrameViewUpdateLayerDebugInfo"/>
   <int value="5" label="LocalFrameViewBenchmarking"/>
   <int value="6" label="DisplayLockContextNeedsPaintArtifactCompositorUpdate"/>
-  <int value="7" label="DocumentTransitionNotifyChanges"/>
+  <int value="7" label="ViewTransitionNotifyChanges"/>
   <int value="8" label="FrameCaretSetVisible"/>
   <int value="9" label="FrameCaretPaint"/>
   <int value="10" label="InspectorOverlayAgentDisableFrameOverlay"/>
@@ -76954,8 +76955,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="First Contentful Paint"/>
   <int value="3" label="FCP Timeout"/>
   <int value="4" label="Not Deferred"/>
-  <int value="5" label="Document Transition"/>
-  <int value="6" label="Document Transition Timeout"/>
+  <int value="5" label="View Transition"/>
+  <int value="6" label="View Transition Timeout"/>
 </enum>
 
 <enum name="PaintHoldingInputTiming">

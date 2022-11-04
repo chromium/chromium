@@ -115,11 +115,11 @@ constexpr CompositingReasonStringMap kCompositingReasonsStringMap[] = {
      "Ancestor in same 3D rendering context has a hidden backface"},
     {CompositingReason::kTransform3DSceneLeaf, "Transform3DSceneLeaf",
      "Leaf of a 3D scene, for flattening its descendants into that scene"},
-    {CompositingReason::kDocumentTransitionSharedElement,
-     "DocumentTransitionSharedElement",
-     "This element is shared during document transition"},
-    {CompositingReason::kDocumentTransitionPseudoElement,
-     "DocumentTransitionContentElement",
+    {CompositingReason::kViewTransitionSharedElement,
+     "ViewTransitionSharedElement",
+     "This element is shared during view transition"},
+    {CompositingReason::kViewTransitionPseudoElement,
+     "ViewTransitionContentElement",
      "This element is a part of a pseudo element tree representing the shared "
      "element transition"},
 };

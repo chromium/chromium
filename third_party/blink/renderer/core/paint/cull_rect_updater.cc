@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 
 #include "base/auto_reset.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -16,6 +15,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -73,7 +73,7 @@ bool SetFragmentContentsCullRect(PaintLayer& layer,
 
 bool ShouldUseInfiniteCullRect(
     const PaintLayer& layer,
-    DocumentTransitionSupplement* document_transition_supplement,
+    ViewTransitionSupplement* view_transition_supplement,
     bool& subtree_should_use_infinite_cull_rect) {
   if (RuntimeEnabledFeatures::InfiniteCullRectEnabled())
     return true;
@@ -148,8 +148,8 @@ bool ShouldUseInfiniteCullRect(
     }
   }
 
-  if (document_transition_supplement) {
-    auto* transition = document_transition_supplement->GetActiveTransition();
+  if (view_transition_supplement) {
+    auto* transition = view_transition_supplement->GetActiveTransition();
 
     // This means that the contents of the object are drawn elsewhere, so we
     // shouldn't cull it.
@@ -179,7 +179,7 @@ bool HasScrolledEnough(const LayoutObject& object) {
 CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer)
     : starting_layer_(starting_layer) {
   DCHECK(RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled());
-  document_transition_supplement_ = DocumentTransitionSupplement::FromIfExists(
+  view_transition_supplement_ = ViewTransitionSupplement::FromIfExists(
       starting_layer.GetLayoutObject().GetDocument());
 }
 
@@ -209,7 +209,7 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
   Context context;
   context.current.container = &starting_layer_;
   bool should_use_infinite = ShouldUseInfiniteCullRect(
-      starting_layer_, document_transition_supplement_,
+      starting_layer_, view_transition_supplement_,
       context.current.subtree_should_use_infinite_cull_rect);
 
   auto& fragment = object.GetMutableForPainting().FirstFragment();
@@ -342,7 +342,7 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
   bool should_use_infinite_cull_rect =
       !context.current.subtree_is_out_of_cull_rect &&
       ShouldUseInfiniteCullRect(
-          layer, document_transition_supplement_,
+          layer, view_transition_supplement_,
           context.current.subtree_should_use_infinite_cull_rect);
 
   for (auto* fragment = &first_fragment; fragment;
@@ -487,11 +487,11 @@ void CullRectUpdater::PaintPropertiesChanged(
   bool should_use_infinite_cull_rect = false;
   if (object.HasLayer()) {
     bool subtree_should_use_infinite_cull_rect = false;
-    auto* document_transition_supplement =
-        DocumentTransitionSupplement::FromIfExists(object.GetDocument());
+    auto* view_transition_supplement =
+        ViewTransitionSupplement::FromIfExists(object.GetDocument());
     should_use_infinite_cull_rect = ShouldUseInfiniteCullRect(
-        *To<LayoutBoxModelObject>(object).Layer(),
-        document_transition_supplement, subtree_should_use_infinite_cull_rect);
+        *To<LayoutBoxModelObject>(object).Layer(), view_transition_supplement,
+        subtree_should_use_infinite_cull_rect);
     if (should_use_infinite_cull_rect &&
         object.FirstFragment().GetCullRect().IsInfinite() &&
         object.FirstFragment().GetContentsCullRect().IsInfinite()) {

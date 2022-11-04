@@ -111,19 +111,17 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       // Iterate the list of IDs until we hit the entry for |node's| ID. The
       // sibling is the next ID in the list which generates a pseudo element.
       bool found = false;
-      for (const auto& document_transition_tag :
-           parent_element->GetDocument()
-               .GetStyleEngine()
-               .DocumentTransitionTags()) {
+      for (const auto& view_transition_tag : parent_element->GetDocument()
+                                                 .GetStyleEngine()
+                                                 .ViewTransitionTags()) {
         if (!found) {
-          if (document_transition_tag ==
-              pseudo_element->document_transition_tag())
+          if (view_transition_tag == pseudo_element->view_transition_tag())
             found = true;
           continue;
         }
 
         if (auto* sibling = parent_element->GetPseudoElement(
-                kPseudoIdPageTransitionContainer, document_transition_tag)) {
+                kPseudoIdPageTransitionContainer, view_transition_tag)) {
           return sibling;
         }
       }

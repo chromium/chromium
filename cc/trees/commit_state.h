@@ -17,7 +17,6 @@
 #include "cc/benchmarks/micro_benchmark_impl.h"
 #include "cc/cc_export.h"
 #include "cc/debug/layer_tree_debug_state.h"
-#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/event_listener_properties.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/overscroll_behavior.h"
@@ -32,6 +31,7 @@
 #include "cc/trees/presentation_time_callback_buffer.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/viewport_property_ids.h"
+#include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/delegated_ink_metadata.h"
@@ -142,10 +142,9 @@ struct CC_EXPORT CommitState {
   std::vector<PresentationTimeCallbackBuffer::MainCallback>
       pending_presentation_time_callbacks;
   std::vector<std::unique_ptr<MicroBenchmarkImpl>> benchmarks;
-  // A list of document transitions that need to be transported from Blink to
+  // A list of view transitions that need to be transported from Blink to
   // Viz, as a CompositorFrameTransitionDirective.
-  std::vector<std::unique_ptr<DocumentTransitionRequest>>
-      document_transition_requests;
+  std::vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
   std::vector<std::unique_ptr<SwapPromise>> swap_promises;
   std::vector<UIResourceRequest> ui_resource_request_queue;
   base::flat_map<UIResourceId, gfx::Size> ui_resource_sizes;

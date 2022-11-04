@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 
 #include "base/containers/adapters.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -20,6 +19,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
@@ -93,7 +93,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
       !painting_background_in_contents_space &&
       layout_view_.FirstFragment().PaintProperties()->Scroll();
   bool is_represented_via_pseudo_elements = [this]() {
-    if (auto* transition = DocumentTransitionUtils::GetActiveTransition(
+    if (auto* transition = ViewTransitionUtils::GetActiveTransition(
             layout_view_.GetDocument())) {
       return transition->IsRepresentedViaPseudoElements(layout_view_);
     }

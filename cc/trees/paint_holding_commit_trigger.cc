@@ -12,8 +12,8 @@ PaintHoldingCommitTrigger ReasonToTimeoutTrigger(PaintHoldingReason reason) {
   switch (reason) {
     case PaintHoldingReason::kFirstContentfulPaint:
       return PaintHoldingCommitTrigger::kTimeoutFCP;
-    case PaintHoldingReason::kDocumentTransition:
-      return PaintHoldingCommitTrigger::kTimeoutDocumentTransition;
+    case PaintHoldingReason::kViewTransition:
+      return PaintHoldingCommitTrigger::kTimeoutViewTransition;
   }
   NOTREACHED();
   return PaintHoldingCommitTrigger::kTimeoutFCP;

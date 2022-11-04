@@ -76,7 +76,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
     OutputCopyResult root_result;
     std::vector<absl::optional<OutputCopyResult>> shared_results;
-    base::flat_set<SharedElementResourceId> empty_resource_ids;
+    base::flat_set<ViewTransitionElementResourceId> empty_resource_ids;
   };
 
   SurfaceSavedFrame(CompositorFrameTransitionDirective directive,
@@ -97,7 +97,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // For testing functionality that ensures that we have a valid frame.
   void CompleteSavedFrameForTesting();
 
-  base::flat_set<SharedElementResourceId> GetEmptyResourceIds() const;
+  base::flat_set<ViewTransitionElementResourceId> GetEmptyResourceIds() const;
 
  private:
   enum class ResultType { kRoot, kShared };

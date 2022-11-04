@@ -29,8 +29,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_pseudo_element_base.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -44,27 +42,28 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-PseudoElement* PseudoElement::Create(
-    Element* parent,
-    PseudoId pseudo_id,
-    const AtomicString& document_transition_tag) {
+PseudoElement* PseudoElement::Create(Element* parent,
+                                     PseudoId pseudo_id,
+                                     const AtomicString& view_transition_tag) {
   if (pseudo_id == kPseudoIdFirstLetter) {
     return MakeGarbageCollected<FirstLetterPseudoElement>(parent);
   } else if (IsTransitionPseudoElement(pseudo_id)) {
     auto* transition =
-        DocumentTransitionUtils::GetActiveTransition(parent->GetDocument());
+        ViewTransitionUtils::GetActiveTransition(parent->GetDocument());
     DCHECK(transition);
     return transition->CreatePseudoElement(parent, pseudo_id,
-                                           document_transition_tag);
+                                           view_transition_tag);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
          pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
-                                             document_transition_tag);
+                                             view_transition_tag);
 }
 
 const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
@@ -148,7 +147,7 @@ AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
       StringBuilder builder;
       builder.Append(PseudoElementTagName(pseudo_id).LocalName());
       builder.Append("(");
-      builder.Append(pseudo->document_transition_tag());
+      builder.Append(pseudo->view_transition_tag());
       builder.Append(")");
       return AtomicString(builder.ReleaseString());
     }
@@ -171,12 +170,12 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
 
 PseudoElement::PseudoElement(Element* parent,
                              PseudoId pseudo_id,
-                             const AtomicString& document_transition_tag)
+                             const AtomicString& view_transition_tag)
     : Element(PseudoElementTagName(pseudo_id),
               &parent->GetDocument(),
               kCreateElement),
       pseudo_id_(pseudo_id),
-      document_transition_tag_(document_transition_tag) {
+      view_transition_tag_(view_transition_tag) {
   DCHECK_NE(pseudo_id, kPseudoIdNone);
   parent->GetTreeScope().AdoptIfNeeded(*this);
   SetParentOrShadowHostNode(parent);
@@ -204,7 +203,7 @@ scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
   Element* parent = ParentOrShadowHostElement();
   return parent->StyleForPseudoElement(
       style_recalc_context, StyleRequest(pseudo_id_, parent->GetComputedStyle(),
-                                         document_transition_tag_));
+                                         view_transition_tag_));
 }
 
 scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(

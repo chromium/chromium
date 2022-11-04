@@ -168,7 +168,7 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
 
   // This represents a list of directives to execute in order to support the
-  // document transitions.
+  // view transitions.
   std::vector<CompositorFrameTransitionDirective> transition_directives;
 
   // A map of region capture crop ids associated with this frame to the

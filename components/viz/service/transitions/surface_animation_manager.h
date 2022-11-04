@@ -55,7 +55,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   void RefResources(const std::vector<TransferableResource>& resources);
   void UnrefResources(const std::vector<ReturnedResource>& resources);
 
-  // Replaced SharedElementResourceIds with corresponding ResourceIds if
+  // Replaced ViewTransitionElementResourceIds with corresponding ResourceIds if
   // necessary.
   void ReplaceSharedElementResources(Surface* surface);
 
@@ -75,7 +75,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
   bool FilterSharedElementsWithRenderPassOrResource(
       std::vector<TransferableResource>* resource_list,
-      const base::flat_map<SharedElementResourceId,
+      const base::flat_map<ViewTransitionElementResourceId,
                            const CompositorRenderPass*>* element_id_to_pass,
       const DrawQuad& quad,
       CompositorRenderPass& copy_pass);
@@ -84,7 +84,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   TransferableResourceTracker transferable_resource_tracker_;
 
   std::unique_ptr<SurfaceSavedFrame> saved_frame_;
-  base::flat_set<SharedElementResourceId> empty_resource_ids_;
+  base::flat_set<ViewTransitionElementResourceId> empty_resource_ids_;
 
   absl::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
 };

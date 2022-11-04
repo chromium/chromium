@@ -11,8 +11,6 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -63,12 +61,14 @@
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
-#include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/graphics/view_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/outsets_f.h"
@@ -1655,9 +1655,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 void FragmentPaintPropertyTreeBuilder::UpdateSharedElementTransitionEffect() {
   if (NeedsPaintPropertyUpdate()) {
     if (full_context_.direct_compositing_reasons &
-        CompositingReason::kDocumentTransitionSharedElement) {
+        CompositingReason::kViewTransitionSharedElement) {
       auto* transition =
-          DocumentTransitionUtils::GetActiveTransition(object_.GetDocument());
+          ViewTransitionUtils::GetActiveTransition(object_.GetDocument());
       DCHECK(transition);
 
       OnUpdateEffect(transition->UpdateEffect(object_, *context_.current_effect,
@@ -2919,7 +2919,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
   // shown). Offset painting of content so that it paints at the fixed viewport
   // origin rather than behind the UI.
   if (auto* transition =
-          DocumentTransitionUtils::GetActiveTransition(object_.GetDocument());
+          ViewTransitionUtils::GetActiveTransition(object_.GetDocument());
       transition && transition->IsRootTransitioning()) {
     if (object_.IsDocumentElement()) {
       PhysicalOffset offset =

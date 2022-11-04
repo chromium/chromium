@@ -7,14 +7,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_callback.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
@@ -118,10 +118,10 @@ TEST_F(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued) {
   ASSERT_EQ(0u, MockAXObject::num_children_changed_calls_);
 }
 
-class AXDocumentTransitionTest : public testing::Test,
-                                 private ScopedDocumentTransitionForTest {
+class AXViewTransitionTest : public testing::Test,
+                             private ScopedViewTransitionForTest {
  public:
-  AXDocumentTransitionTest() : ScopedDocumentTransitionForTest(true) {}
+  AXViewTransitionTest() : ScopedViewTransitionForTest(true) {}
 
   void SetUp() override {
     web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
@@ -141,7 +141,7 @@ class AXDocumentTransitionTest : public testing::Test,
   void UpdateAllLifecyclePhasesAndFinishDirectives() {
     UpdateAllLifecyclePhasesForTest();
     for (auto& callback :
-         LayerTreeHost()->TakeDocumentTransitionCallbacksForTesting()) {
+         LayerTreeHost()->TakeViewTransitionCallbacksForTesting()) {
       std::move(callback).Run();
     }
   }
@@ -162,9 +162,9 @@ class AXDocumentTransitionTest : public testing::Test,
         DocumentUpdateReason::kTest);
   }
 
-  using State = DocumentTransition::State;
+  using State = ViewTransition::State;
 
-  State GetState(DocumentTransition* transition) const {
+  State GetState(ViewTransition* transition) const {
     return transition->state_;
   }
 
@@ -172,7 +172,7 @@ class AXDocumentTransitionTest : public testing::Test,
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
 };
 
-TEST_F(AXDocumentTransitionTest, TransitionPseudoNotRelevant) {
+TEST_F(AXViewTransitionTest, TransitionPseudoNotRelevant) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       .shared {
@@ -191,12 +191,11 @@ TEST_F(AXDocumentTransitionTest, TransitionPseudoNotRelevant) {
   ExceptionState& exception_state = v8_scope.GetExceptionState();
 
   MockFunctionScope funcs(script_state);
-  auto* document_transition_callback =
-      V8DocumentTransitionCallback::Create(funcs.ExpectCall());
+  auto* view_transition_callback =
+      V8ViewTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* transition = DocumentTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), document_transition_callback,
-      exception_state);
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), view_transition_callback, exception_state);
 
   ScriptPromiseTester finish_tester(script_state, transition->finished());
 

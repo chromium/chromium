@@ -34,9 +34,10 @@ struct StructTraits<
     return element.render_pass_id;
   }
 
-  static viz::SharedElementResourceId shared_element_resource_id(
+  static viz::ViewTransitionElementResourceId
+  view_transition_element_resource_id(
       const viz::CompositorFrameTransitionDirective::SharedElement& element) {
-    return element.shared_element_resource_id;
+    return element.view_transition_element_resource_id;
   }
 
   static bool Read(

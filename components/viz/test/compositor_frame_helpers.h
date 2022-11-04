@@ -100,8 +100,9 @@ class RenderPassBuilder {
   // important attributes are stored in an optional struct parameter. The
   // optional params struct is POD so that designated initializers can be used
   // to construct a new object with specified parameters overridden.
-  RenderPassBuilder& AddSharedElementQuad(const gfx::Rect& rect,
-                                          const SharedElementResourceId& id);
+  RenderPassBuilder& AddSharedElementQuad(
+      const gfx::Rect& rect,
+      const ViewTransitionElementResourceId& id);
   RenderPassBuilder& AddSolidColorQuad(const gfx::Rect& rect,
                                        SkColor4f color,
                                        SolidColorQuadParms params = {});

@@ -50,10 +50,10 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
     // [src_element, dst_element] has a null src_element.
     std::vector<absl::optional<PositionedResource>> shared;
 
-    // A map from renderer generated SharedElementResourceId to the
+    // A map from renderer generated ViewTransitionElementResourceId to the
     // corresponding cached resource. The resources are the same as |shared|
     // above.
-    base::flat_map<SharedElementResourceId, TransferableResource>
+    base::flat_map<ViewTransitionElementResourceId, TransferableResource>
         element_id_to_resource;
   };
 

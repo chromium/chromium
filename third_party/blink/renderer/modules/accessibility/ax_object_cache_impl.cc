@@ -1268,8 +1268,7 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
   }
 
   // The remaining possible pseudo element types are not relevant.
-  if (node.IsBackdropPseudoElement() ||
-      node.IsDocumentTransitionPseudoElement()) {
+  if (node.IsBackdropPseudoElement() || node.IsViewTransitionPseudoElement()) {
     return false;
   }
 

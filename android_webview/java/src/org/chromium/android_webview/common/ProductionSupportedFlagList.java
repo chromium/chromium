@@ -336,9 +336,9 @@ public final class ProductionSupportedFlagList {
                     "Reduces fine-grained UMA metrics for IntersectionObserver."),
             Flag.baseFeature(BlinkFeatures.PRETOKENIZE_CSS,
                     "If enabled, CSS will be tokenized in a background thread when possible."),
-            Flag.baseFeature(BlinkFeatures.DOCUMENT_TRANSITION,
-                    "Enables the experimental Shared Element Transitions API."
-                            + " See https://github.com/WICG/shared-element-transitions/blob/main/explainer.md."),
+            Flag.baseFeature(BlinkFeatures.VIEW_TRANSITION,
+                    "Enables the experimental View Transitions API."
+                            + " See https://github.com/WICG/view-transitions/blob/main/explainer.md."),
             Flag.baseFeature(BlinkFeatures.CSS_OVERFLOW_FOR_REPLACED_ELEMENTS,
                     "Enables respecting the CSS overflow property on replaced elements."
                             + " See https://chromestatus.com/feature/5137515594383360."),

@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/display_lock/content_visibility_auto_state_changed_event.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -34,6 +33,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
 #include "third_party/blink/renderer/core/style/toggle_trigger.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -1161,7 +1161,7 @@ void DisplayLockContext::ResetAndDetermineIfAncestorIsSharedElement() {
   if (!ConnectedToView())
     return;
 
-  auto* transition = DocumentTransitionUtils::GetActiveTransition(*document_);
+  auto* transition = ViewTransitionUtils::GetActiveTransition(*document_);
   if (!transition)
     return;
 

@@ -80,7 +80,7 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   bool current_frame_had_raf_ = false;
   // True if there is a raf scheduled for the next frame.
   bool next_frame_has_pending_raf_ = false;
-  // True if there is an ongoing shared element transition.
+  // True if there is an ongoing view transition.
   bool has_shared_element_transition_ = false;
 };
 

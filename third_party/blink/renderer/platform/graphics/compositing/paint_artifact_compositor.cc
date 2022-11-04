@@ -10,12 +10,12 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "cc/base/features.h"
-#include "cc/document_transition/document_transition_request.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/mutator_host.h"
+#include "cc/view_transition/view_transition_request.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/adjust_mask_layer_geometry.h"
@@ -644,8 +644,7 @@ void PaintArtifactCompositor::Update(
     scoped_refptr<const PaintArtifact> artifact,
     const ViewportProperties& viewport_properties,
     const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-    Vector<std::unique_ptr<cc::DocumentTransitionRequest>>
-        transition_requests) {
+    Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests) {
   const bool unification_enabled =
       base::FeatureList::IsEnabled(features::kScrollUnification);
   // See: |UpdateRepaintedLayers| for repaint updates.
@@ -662,7 +661,7 @@ void PaintArtifactCompositor::Update(
     return;
 
   for (auto& request : transition_requests)
-    host->AddDocumentTransitionRequest(std::move(request));
+    host->AddViewTransitionRequest(std::move(request));
 
   host->property_trees()->scroll_tree_mutable().SetScrollCallbacks(
       scroll_callbacks_);
@@ -745,7 +744,7 @@ void PaintArtifactCompositor::Update(
     if (layer.subtree_property_changed())
       root_layer_->SetNeedsCommit();
 
-    auto shared_element_id = layer.DocumentTransitionResourceId();
+    auto shared_element_id = layer.ViewTransitionResourceId();
     if (shared_element_id.IsValid()) {
       host->property_trees()
           ->effect_tree_mutable()

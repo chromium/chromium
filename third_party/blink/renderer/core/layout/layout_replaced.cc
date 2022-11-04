@@ -36,10 +36,10 @@
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_document_transition_content.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
+#include "third_party/blink/renderer/core/layout/layout_view_transition_content.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -109,7 +109,7 @@ void LayoutReplaced::StyleDidChange(StyleDifference diff,
         "Specifying 'overflow: visible' on img, video and canvas tags may "
         "cause them to produce visual content outside of the element bounds. "
         "See "
-        "https://github.com/WICG/shared-element-transitions/blob/main/"
+        "https://github.com/WICG/view-transitions/blob/main/"
         "debugging_overflow_on_images.md for details.";
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
@@ -191,7 +191,7 @@ static inline bool LayoutObjectHasIntrinsicAspectRatio(
   DCHECK(layout_object);
   return layout_object->IsImage() || layout_object->IsCanvas() ||
          IsA<LayoutVideo>(layout_object) ||
-         IsA<LayoutDocumentTransitionContent>(layout_object);
+         IsA<LayoutViewTransitionContent>(layout_object);
 }
 
 void LayoutReplaced::RecalcVisualOverflow() {

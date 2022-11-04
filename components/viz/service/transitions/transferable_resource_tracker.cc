@@ -50,10 +50,11 @@ TransferableResourceTracker::ImportResources(
     if (shared_result.has_value()) {
       resource_frame.shared[i].emplace(
           ImportResource(std::move(*shared_result)));
-      auto shared_element_resource_id =
-          directive.shared_elements()[i].shared_element_resource_id;
-      if (shared_element_resource_id.IsValid()) {
-        resource_frame.element_id_to_resource[shared_element_resource_id] =
+      auto view_transition_element_resource_id =
+          directive.shared_elements()[i].view_transition_element_resource_id;
+      if (view_transition_element_resource_id.IsValid()) {
+        resource_frame
+            .element_id_to_resource[view_transition_element_resource_id] =
             resource_frame.shared[i]->resource;
       }
     }

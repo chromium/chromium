@@ -44,7 +44,6 @@
 #include "cc/base/switches.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
-#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scrollbar_animation_controller.h"
@@ -96,6 +95,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/tree_synchronizer.h"
+#include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -1308,7 +1308,7 @@ bool LayerTreeHostImpl::HasDamage() const {
 
   return root_surface_has_visible_damage ||
          active_tree_->property_trees()->effect_tree().HasCopyRequests() ||
-         hud_wants_to_draw_ || active_tree_->HasDocumentTransitionRequests();
+         hud_wants_to_draw_ || active_tree_->HasViewTransitionRequests();
 }
 
 DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
@@ -1344,7 +1344,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // crbug.com/805673.
   active_tree_->ResetHandleVisibilityChanged();
 
-  base::flat_set<viz::SharedElementResourceId> known_resource_ids;
+  base::flat_set<viz::ViewTransitionElementResourceId> known_resource_ids;
   // Create the render passes in dependency order.
   size_t render_surface_list_size = frame->render_surface_list->size();
   for (size_t i = 0; i < render_surface_list_size; ++i) {
@@ -1360,9 +1360,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     if (should_draw_into_render_pass)
       frame->render_passes.push_back(render_surface->CreateRenderPass());
     if (render_surface->OwningEffectNode()
-            ->shared_element_resource_id.IsValid()) {
-      known_resource_ids.insert(
-          render_surface->OwningEffectNode()->shared_element_resource_id);
+            ->view_transition_element_resource_id.IsValid()) {
+      known_resource_ids.insert(render_surface->OwningEffectNode()
+                                    ->view_transition_element_resource_id);
     }
   }
 
@@ -1771,7 +1771,7 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
         pass->backdrop_filters.IsEmpty() &&
         // TODO(khushalsagar) : Send information about no-op passes to viz to
         // retain this optimization for shared elements. See crbug.com/1265178.
-        !pass->shared_element_resource_id.IsValid()) {
+        !pass->view_transition_element_resource_id.IsValid()) {
       // Remove the pass and decrement |i| to counter the for loop's increment,
       // so we don't skip the next pass in the loop.
       frame->render_passes.erase(frame->render_passes.begin() + i);
@@ -1791,7 +1791,7 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
     viz::CompositorRenderPass* pass =
         frame->render_passes[frame->render_passes.size() - 2 - i].get();
     if (!pass->copy_requests.empty() ||
-        pass->shared_element_resource_id.IsValid()) {
+        pass->view_transition_element_resource_id.IsValid()) {
       continue;
     }
     if (pass_references[pass->id])
@@ -2720,10 +2720,10 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
 
-  DocumentTransitionRequest::SharedElementMap shared_element_render_pass_id_map;
+  ViewTransitionRequest::SharedElementMap shared_element_render_pass_id_map;
   for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
     const auto& shared_element_id =
-        render_surface->GetDocumentTransitionSharedElementId();
+        render_surface->GetViewTransitionElementId();
     if (!shared_element_id.valid())
       continue;
 
@@ -2738,10 +2738,10 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     shared_element_render_pass_id_map[shared_element_id].render_pass_id =
         render_surface->render_pass_id();
     shared_element_render_pass_id_map[shared_element_id].resource_id =
-        render_surface->OwningEffectNode()->shared_element_resource_id;
+        render_surface->OwningEffectNode()->view_transition_element_resource_id;
   }
 
-  for (auto& request : active_tree_->TakeDocumentTransitionRequests()) {
+  for (auto& request : active_tree_->TakeViewTransitionRequests()) {
     metadata.transition_directives.push_back(
         request->ConstructDirective(shared_element_render_pass_id_map));
   }

@@ -49,7 +49,7 @@ namespace cc {
 
 enum class ActivelyScrollingType;
 class DebugRectHistory;
-class DocumentTransitionRequest;
+class ViewTransitionRequest;
 class DroppedFrameCounter;
 class HeadsUpDisplayLayerImpl;
 class ImageDecodeCache;
@@ -791,16 +791,15 @@ class CC_EXPORT LayerTreeImpl {
     return host_impl_->viewport_mobile_optimized();
   }
 
-  // Add a document transition request from the embedder.
-  void AddDocumentTransitionRequest(
-      std::unique_ptr<DocumentTransitionRequest> request);
+  // Add a view transition request from the embedder.
+  void AddViewTransitionRequest(std::unique_ptr<ViewTransitionRequest> request);
 
-  // Returns all of the document transition requests stored so far, and empties
+  // Returns all of the view transition requests stored so far, and empties
   // the internal list.
-  std::vector<std::unique_ptr<DocumentTransitionRequest>>
-  TakeDocumentTransitionRequests();
+  std::vector<std::unique_ptr<ViewTransitionRequest>>
+  TakeViewTransitionRequests();
 
-  bool HasDocumentTransitionRequests() const;
+  bool HasViewTransitionRequests() const;
 
   void ClearVisualUpdateDurations();
   void SetVisualUpdateDurations(
@@ -969,8 +968,7 @@ class CC_EXPORT LayerTreeImpl {
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata_;
 
   // Document transition requests to be transferred to Viz.
-  std::vector<std::unique_ptr<DocumentTransitionRequest>>
-      document_transition_requests_;
+  std::vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests_;
 
   // The cumulative time spent performing visual updates for all Surfaces before
   // this one.

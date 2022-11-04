@@ -169,7 +169,7 @@ static String ForeignLayerTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(ForeignLayerLinkHighlight);
     DEBUG_STRING_CASE(ForeignLayerViewportScroll);
     DEBUG_STRING_CASE(ForeignLayerViewportScrollbar);
-    DEBUG_STRING_CASE(ForeignLayerDocumentTransitionContent);
+    DEBUG_STRING_CASE(ForeignLayerViewTransitionContent);
     DEFAULT_CASE;
   }
 }

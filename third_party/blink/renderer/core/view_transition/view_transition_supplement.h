@@ -1,0 +1,81 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_SUPPLEMENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_SUPPLEMENT_H_
+
+#include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_request.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace blink {
+class ViewTransition;
+class V8ViewTransitionCallback;
+
+class CORE_EXPORT ViewTransitionSupplement
+    : public GarbageCollected<ViewTransitionSupplement>,
+      public Supplement<Document>,
+      public ViewTransition::Delegate {
+ public:
+  static const char kSupplementName[];
+
+  // Supplement functionality.
+  static ViewTransitionSupplement* From(Document&);
+  static ViewTransitionSupplement* FromIfExists(const Document&);
+
+  // Creates and starts a same-document ViewTransition initiated using the
+  // script API.
+  static ViewTransition* startViewTransition(ScriptState*,
+                                             Document&,
+                                             V8ViewTransitionCallback* callback,
+                                             ExceptionState&);
+
+  // Creates a ViewTransition to cache the state of a Document before a
+  // navigation. The cached state is provided to the caller using the
+  // |ViewTransitionStateCallback|.
+  static void SnapshotDocumentForNavigation(
+      Document&,
+      ViewTransition::ViewTransitionStateCallback);
+
+  // Creates a ViewTransition using cached state from the previous Document
+  // of a navigation. This ViewTransition is responsible for running
+  // animations on the new Document using the cached state.
+  static void CreateFromSnapshotForNavigation(
+      Document&,
+      ViewTransitionState transition_state);
+
+  ViewTransition* GetActiveTransition();
+
+  explicit ViewTransitionSupplement(Document&);
+  ~ViewTransitionSupplement() override;
+
+  // GC functionality.
+  void Trace(Visitor* visitor) const override;
+
+  // ViewTransition::Delegate implementation.
+  void AddPendingRequest(std::unique_ptr<ViewTransitionRequest>) override;
+  VectorOf<std::unique_ptr<ViewTransitionRequest>> TakePendingRequests();
+  void OnTransitionFinished(ViewTransition* transition) override;
+
+ private:
+  ViewTransition* StartTransition(ScriptState* script_state,
+                                  Document& document,
+                                  V8ViewTransitionCallback* callback,
+                                  ExceptionState& exception_state);
+  void StartTransition(Document& document,
+                       ViewTransition::ViewTransitionStateCallback callback);
+  void StartTransition(Document& document,
+                       ViewTransitionState transition_state);
+
+  Member<ViewTransition> transition_;
+
+  VectorOf<std::unique_ptr<ViewTransitionRequest>> pending_requests_;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_SUPPLEMENT_H_

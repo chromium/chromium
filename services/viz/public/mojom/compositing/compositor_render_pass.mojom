@@ -8,7 +8,7 @@ import "services/viz/public/mojom/compositing/compositor_render_pass_id.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/quads.mojom";
-import "services/viz/public/mojom/compositing/shared_element_resource_id.mojom";
+import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
@@ -25,7 +25,7 @@ struct CompositorRenderPass {
   gfx.mojom.RRectF? backdrop_filter_bounds;
   SubtreeCaptureId subtree_capture_id;
   gfx.mojom.Size subtree_size;
-  SharedElementResourceId shared_element_resource_id;
+  ViewTransitionElementResourceId view_transition_element_resource_id;
   bool has_transparent_background;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;

@@ -99,7 +99,7 @@ class CONTENT_EXPORT SynchronousCompositor {
       uint32_t layer_tree_frame_sink_id,
       std::vector<viz::ReturnedResource> resources) = 0;
 
-  // Notifies the client when a directive for DocumentTransition, submitted in
+  // Notifies the client when a directive for ViewTransition, submitted in
   // a previous CompositorFrame, has finished executing.
   virtual void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t layer_tree_frame_sink_id,

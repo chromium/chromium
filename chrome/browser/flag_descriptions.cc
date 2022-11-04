@@ -823,9 +823,9 @@ const char kDisallowDocWrittenScriptsUiDescription[] =
     "Disallows fetches for third-party parser-blocking scripts inserted into "
     "the main frame via document.write.";
 
-const char kDocumentTransitionName[] = "documentTransition API";
-const char kDocumentTransitionDescription[] =
-    "Controls the availability of the documentTransition JavaScript API.";
+const char kViewTransitionName[] = "viewTransition API";
+const char kViewTransitionDescription[] =
+    "Controls the availability of the viewTransition JavaScript API.";
 
 const char kEnableAutoDisableAccessibilityName[] = "Auto-disable Accessibility";
 const char kEnableAutoDisableAccessibilityDescription[] =

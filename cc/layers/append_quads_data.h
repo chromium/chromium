@@ -45,8 +45,8 @@ class CC_EXPORT AppendQuadsData {
   // activate.
   std::vector<viz::SurfaceId> activation_dependencies;
 
-  // Indicates if any layer has SharedElementResourceIds which need to be
-  // swapped with actual viz::ResourceIds in the Viz process.
+  // Indicates if any layer has ViewTransitionElementResourceIds which need to
+  // be swapped with actual viz::ResourceIds in the Viz process.
   bool has_shared_element_resources = false;
 };
 

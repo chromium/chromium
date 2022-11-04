@@ -478,8 +478,8 @@ extern const char kDebugShortcutsDescription[];
 extern const char kDisallowDocWrittenScriptsUiName[];
 extern const char kDisallowDocWrittenScriptsUiDescription[];
 
-extern const char kDocumentTransitionName[];
-extern const char kDocumentTransitionDescription[];
+extern const char kViewTransitionName[];
+extern const char kViewTransitionDescription[];
 
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];

@@ -63,8 +63,8 @@ std::unordered_set<uint64_t> ProcessStack(
   auto write_render_pass = [&str](const CompositorRenderPass* pass) {
     str << "(" << pass << ") render pass id=" << pass->id.GetUnsafeValue()
         << " output_rect=" << pass->output_rect.ToString();
-    if (pass->shared_element_resource_id.IsValid())
-      str << " " << pass->shared_element_resource_id.ToString();
+    if (pass->view_transition_element_resource_id.IsValid())
+      str << " " << pass->view_transition_element_resource_id.ToString();
     str << "\n";
   };
   auto write_sqs = [&str](const SharedQuadState* sqs) {
@@ -262,7 +262,7 @@ TransitionUtils::CopyPassWithQuadFiltering(
       source_pass.transform_to_root_target, source_pass.filters,
       source_pass.backdrop_filters, source_pass.backdrop_filter_bounds,
       source_pass.subtree_capture_id, source_pass.subtree_size,
-      source_pass.shared_element_resource_id,
+      source_pass.view_transition_element_resource_id,
       source_pass.has_transparent_background, source_pass.cache_render_pass,
       source_pass.has_damage_from_contributing_content,
       source_pass.generate_mipmap, source_pass.has_per_quad_damage);

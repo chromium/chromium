@@ -3238,7 +3238,7 @@ enum WebFeature {
   kHiddenBackfaceWith3D = 3927,
   kMainFrameNonSecurePrivateAddressSpace = 3928,
   kHTMLMediaElementControlsListNoPlaybackRate = 3930,
-  kDocumentTransition = 3931,
+  kOBSOLETE_DocumentTransition = 3931,
   kSpeculationRules = 3932,
   kV8AbortSignal_Abort_Method = 3933,
   kSelectionBackgroundColorInversion = 3934,
@@ -3701,6 +3701,7 @@ enum WebFeature {
   kClearPerformanceEntries = 4380,
   kViewportDependentLazyLoadedImageWithoutSizesAttribute = 4381,
   kV8MediaStreamTrack_ApplyConstraints_Method = 4382,
+  kViewTransition = 4383,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -684,11 +684,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleFrame) {
 TEST_F(SurfaceAggregatorValidSurfaceTest, SharedElementQuad) {
   CompositorFrame frame =
       CompositorFrameBuilder()
-          .AddRenderPass(
-              RenderPassBuilder(kSurfaceSize)
-                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kRed)
-                  .AddSharedElementQuad(gfx::Rect(5, 5),
-                                        SharedElementResourceId::Generate()))
+          .AddRenderPass(RenderPassBuilder(kSurfaceSize)
+                             .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kRed)
+                             .AddSharedElementQuad(
+                                 gfx::Rect(5, 5),
+                                 ViewTransitionElementResourceId::Generate()))
           .Build();
 
   root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),

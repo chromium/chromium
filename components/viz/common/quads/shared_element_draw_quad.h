@@ -6,7 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_QUADS_SHARED_ELEMENT_DRAW_QUAD_H_
 
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/shared_element_resource_id.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
@@ -22,15 +22,15 @@ class VIZ_COMMON_EXPORT SharedElementDrawQuad : public DrawQuad {
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              const SharedElementResourceId& id);
+              const ViewTransitionElementResourceId& id);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              const SharedElementResourceId& id);
+              const ViewTransitionElementResourceId& id);
 
-  SharedElementResourceId resource_id;
+  ViewTransitionElementResourceId resource_id;
 
   static const SharedElementDrawQuad* MaterialCast(const DrawQuad* quad);
 

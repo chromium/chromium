@@ -21,7 +21,7 @@ SharedElementDrawQuad& SharedElementDrawQuad::operator=(
 void SharedElementDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                    const gfx::Rect& rect,
                                    const gfx::Rect& visible_rect,
-                                   const SharedElementResourceId& id) {
+                                   const ViewTransitionElementResourceId& id) {
   // Force blending since at this stage we don't have information about whether
   // the replaced content will be opaque.
   bool needs_blending = true;
@@ -34,7 +34,7 @@ void SharedElementDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                    const gfx::Rect& rect,
                                    const gfx::Rect& visible_rect,
                                    bool needs_blending,
-                                   const SharedElementResourceId& id) {
+                                   const ViewTransitionElementResourceId& id) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSharedElement, rect,
                    visible_rect, needs_blending);
   resource_id = id;
@@ -48,7 +48,8 @@ const SharedElementDrawQuad* SharedElementDrawQuad::MaterialCast(
 
 void SharedElementDrawQuad::ExtendValue(
     base::trace_event::TracedValue* value) const {
-  value->SetString("shared_element_resource_id", resource_id.ToString());
+  value->SetString("view_transition_element_resource_id",
+                   resource_id.ToString());
 }
 
 }  // namespace viz

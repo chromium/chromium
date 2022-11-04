@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
-#include "services/viz/public/cpp/compositing/shared_element_resource_id_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
 
 namespace mojo {
@@ -63,7 +63,8 @@ bool StructTraits<
              data,
          viz::CompositorFrameTransitionDirective::SharedElement* out) {
   return data.ReadRenderPassId(&out->render_pass_id) &&
-         data.ReadSharedElementResourceId(&out->shared_element_resource_id);
+         data.ReadViewTransitionElementResourceId(
+             &out->view_transition_element_resource_id);
 }
 
 // static

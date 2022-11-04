@@ -22,7 +22,7 @@ enum class DocumentUpdateReason {
   kCanvas,
   kContextMenu,
   kDisplayLock,
-  kDocumentTransition,
+  kViewTransition,
   kDragImage,
   kEditing,
   kFindInPage,

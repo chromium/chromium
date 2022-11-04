@@ -1,4 +1,0 @@
-include_rules = [
-    "+cc/document_transition/document_transition_request.h",
-    "+components/viz/common/shared_element_resource_id.h"
-]

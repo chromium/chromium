@@ -566,7 +566,7 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       SetRare(
           nodes->getPseudoType(nullptr), index,
           InspectorDOMAgent::ProtocolPseudoElementType(element->GetPseudoId()));
-      if (auto tag = To<PseudoElement>(element)->document_transition_tag()) {
+      if (auto tag = To<PseudoElement>(element)->view_transition_tag()) {
         SetRare(nodes->getPseudoIdentifier(nullptr), index, tag);
       }
     }

@@ -42,11 +42,11 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/base/features.h"
-#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"
 #include "cc/trees/layer_tree_host.h"
+#include "cc/view_transition/view_transition_request.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -64,8 +64,6 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_request.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -159,6 +157,8 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_request.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -2376,8 +2376,8 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   // This may change due to https://github.com/w3c/csswg-drafts/issues/7874
   absl::optional<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
       forced_activatable_locks_scope;
-  if (auto* transition = DocumentTransitionUtils::GetActiveTransition(
-          *frame_->GetDocument())) {
+  if (auto* transition =
+          ViewTransitionUtils::GetActiveTransition(*frame_->GetDocument())) {
     if (transition->NeedsUpToDateTags()) {
       forced_activatable_locks_scope.emplace(
           frame_->GetDocument()
@@ -2490,18 +2490,18 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     if (needs_to_repeat_lifecycle)
       continue;
 
-    // DocumentTransition mutates the tree and mirrors post layout transform for
+    // ViewTransition mutates the tree and mirrors post layout transform for
     // shared elements to UA created elements. This may dirty style/layout
     // requiring another lifecycle update.
-    needs_to_repeat_lifecycle = RunDocumentTransitionSteps(target_state);
+    needs_to_repeat_lifecycle = RunViewTransitionSteps(target_state);
 
 #if DCHECK_IS_ON()
-    // We shouldn't need up to date tags after running document transition
+    // We shouldn't need up to date tags after running view transition
     // steps. The only way we should run into a situation where we need up to
     // date tags is outside of the lifecycle, and the value should be cleared in
-    // document transition steps.
-    if (auto* transition = DocumentTransitionUtils::GetActiveTransition(
-            *frame_->GetDocument())) {
+    // view transition steps.
+    if (auto* transition =
+            ViewTransitionUtils::GetActiveTransition(*frame_->GetDocument())) {
       DCHECK(!transition->NeedsUpToDateTags());
     }
 #endif
@@ -2559,7 +2559,7 @@ bool LocalFrameView::RunCSSToggleSteps() {
   return re_run_lifecycles;
 }
 
-bool LocalFrameView::RunDocumentTransitionSteps(
+bool LocalFrameView::RunViewTransitionSteps(
     DocumentLifecycle::LifecycleState target_state) {
   DCHECK(frame_ && frame_->GetDocument());
 
@@ -2567,11 +2567,11 @@ bool LocalFrameView::RunDocumentTransitionSteps(
     return false;
 
   auto* transition =
-      DocumentTransitionUtils::GetActiveTransition(*frame_->GetDocument());
+      ViewTransitionUtils::GetActiveTransition(*frame_->GetDocument());
   if (!transition)
     return false;
 
-  transition->RunDocumentTransitionStepsDuringMainFrame();
+  transition->RunViewTransitionStepsDuringMainFrame();
   return Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean;
 }
 
@@ -3115,31 +3115,30 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
         });
   }
 
-  WTF::Vector<std::unique_ptr<DocumentTransitionRequest>>
-      document_transition_requests;
+  WTF::Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
   // TODO(vmpstr): We should make this work for subframes as well.
-  AppendDocumentTransitionRequests(document_transition_requests);
+  AppendViewTransitionRequests(view_transition_requests);
 
   paint_artifact_compositor_->Update(
       paint_controller_->GetPaintArtifactShared(), viewport_properties,
-      scroll_translation_nodes, std::move(document_transition_requests));
+      scroll_translation_nodes, std::move(view_transition_requests));
 
   CreatePaintTimelineEvents();
 }
 
-void LocalFrameView::AppendDocumentTransitionRequests(
-    WTF::Vector<std::unique_ptr<DocumentTransitionRequest>>& requests) {
+void LocalFrameView::AppendViewTransitionRequests(
+    WTF::Vector<std::unique_ptr<ViewTransitionRequest>>& requests) {
   DCHECK(frame_ && frame_->GetDocument());
   auto pending_requests =
-      DocumentTransitionUtils::GetPendingRequests(*frame_->GetDocument());
+      ViewTransitionUtils::GetPendingRequests(*frame_->GetDocument());
   for (auto& pending_request : pending_requests)
     requests.push_back(std::move(pending_request));
 }
 
-void LocalFrameView::VerifySharedElementsForDocumentTransition() {
+void LocalFrameView::VerifySharedElementsForViewTransition() {
   DCHECK(frame_ && frame_->GetDocument());
   auto* transition =
-      DocumentTransitionUtils::GetActiveTransition(*frame_->GetDocument());
+      ViewTransitionUtils::GetActiveTransition(*frame_->GetDocument());
   if (!transition)
     return;
 
@@ -3217,11 +3216,11 @@ void LocalFrameView::UpdateStyleAndLayoutIfNeededRecursive() {
   GetFrame().GetPage()->GetDragCaret().UpdateStyleAndLayoutIfNeeded();
 
   // If we're running the lifecycle with intent of painting, we need to
-  // verify the shared element transitions, since any requests will be
+  // verify the view transitions, since any requests will be
   // propagated to the compositor.
   if (GetFrame().LocalFrameRoot().View()->target_state_ ==
       DocumentLifecycle::kPaintClean) {
-    VerifySharedElementsForDocumentTransition();
+    VerifySharedElementsForViewTransition();
   }
 }
 

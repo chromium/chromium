@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -95,6 +94,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/core/xml/document_xpath_evaluator.h"
 #include "third_party/blink/renderer/core/xml/xpath_result.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -121,8 +121,7 @@ void ForEachSupportedPseudo(const Element* element, Functor& func) {
       func(pseudo_element);
   }
   if (element == element->GetDocument().documentElement()) {
-    DocumentTransitionUtils::ForEachTransitionPseudo(element->GetDocument(),
-                                                     func);
+    ViewTransitionUtils::ForEachTransitionPseudo(element->GetDocument(), func);
   }
 }
 
@@ -1837,7 +1836,7 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
 
     if (element->GetPseudoId()) {
       value->setPseudoType(ProtocolPseudoElementType(element->GetPseudoId()));
-      if (auto tag = To<PseudoElement>(element)->document_transition_tag())
+      if (auto tag = To<PseudoElement>(element)->view_transition_tag())
         value->setPseudoIdentifier(tag);
     } else {
       if (!element->ownerDocument()->xmlVersion().empty())
@@ -2379,8 +2378,9 @@ void InspectorDOMAgent::PseudoElementDestroyed(PseudoElement* pseudo_element) {
   Element* parent = pseudo_element->ParentOrShadowHostElement();
   DCHECK(parent);
   int parent_id = BoundNodeId(parent);
-  // Since the pseudo element tree created for a document transition is destroyed with in-order
-  // traversal, the parent node (::page-transition) are destroyed before its children
+  // Since the pseudo element tree created for a view transition is destroyed
+  // with in-order traversal, the parent node (::page-transition) are destroyed
+  // before its children
   // (::page-transition-container).
   DCHECK(parent_id || IsTransitionPseudoElement(pseudo_element->GetPseudoId()));
 

@@ -52,7 +52,8 @@ CompositorFrameTransitionDirective::SharedElement::operator=(SharedElement&&) =
 bool CompositorFrameTransitionDirective::SharedElement::operator==(
     const SharedElement& other) const {
   return render_pass_id == other.render_pass_id &&
-         shared_element_resource_id == other.shared_element_resource_id;
+         view_transition_element_resource_id ==
+             other.view_transition_element_resource_id;
 }
 
 bool CompositorFrameTransitionDirective::SharedElement::operator!=(

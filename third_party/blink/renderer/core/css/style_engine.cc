@@ -65,7 +65,6 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -102,6 +101,7 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -2004,18 +2004,17 @@ void StyleEngine::EnsureUAStyleForPseudoElement(PseudoId pseudo_id) {
 }
 
 void StyleEngine::EnsureUAStyleForTransitionPseudos() {
-  if (ua_document_transition_style_)
+  if (ua_view_transition_style_)
     return;
 
   // Note that we don't need to mark any state dirty for style invalidation
   // here. This is done externally by the code which invalidates this style
   // sheet.
-  auto* transition =
-      DocumentTransitionUtils::GetActiveTransition(GetDocument());
+  auto* transition = ViewTransitionUtils::GetActiveTransition(GetDocument());
   auto* style_sheet_contents = CSSDefaultStyleSheets::ParseUASheet(
       transition ? transition->UAStyleSheet() : "");
-  ua_document_transition_style_ = MakeGarbageCollected<RuleSet>();
-  ua_document_transition_style_->AddRulesFromSheet(
+  ua_view_transition_style_ = MakeGarbageCollected<RuleSet>();
+  ua_view_transition_style_->AddRulesFromSheet(
       style_sheet_contents, CSSDefaultStyleSheets::ScreenEval());
 }
 
@@ -2029,13 +2028,13 @@ void StyleEngine::EnsureUAStyleForForcedColors() {
   }
 }
 
-RuleSet* StyleEngine::DefaultDocumentTransitionStyle() const {
-  DCHECK(ua_document_transition_style_);
-  return ua_document_transition_style_.Get();
+RuleSet* StyleEngine::DefaultViewTransitionStyle() const {
+  DCHECK(ua_view_transition_style_);
+  return ua_view_transition_style_.Get();
 }
 
-void StyleEngine::InvalidateUADocumentTransitionStyle() {
-  ua_document_transition_style_ = nullptr;
+void StyleEngine::InvalidateUAViewTransitionStyle() {
+  ua_view_transition_style_ = nullptr;
 }
 
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {
@@ -2914,7 +2913,7 @@ void StyleEngine::RecalcTransitionPseudoStyle() {
   // we can optimize this to only when the pseudo element tree is dirtied.
   SelectorFilterRootScope filter_scope(nullptr);
   document_->documentElement()->RecalcTransitionPseudoTreeStyle(
-      document_transition_tags_);
+      view_transition_tags_);
 }
 
 void StyleEngine::RecalcStyle() {
@@ -2971,7 +2970,7 @@ void StyleEngine::RebuildLayoutTree(
         root_element.GetReattachParent());
     if (rebuild_transition_pseudo_tree == RebuildTransitionPseudoTree::kYes) {
       document_->documentElement()->RebuildTransitionPseudoLayoutTree(
-          document_transition_tags_);
+          view_transition_tags_);
     }
     layout_tree_rebuild_root_.Clear();
     propagate_to_root = IsA<HTMLHtmlElement>(root_element) ||
@@ -3510,7 +3509,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(text_tracks_);
   visitor->Trace(vtt_originating_element_);
   visitor->Trace(parent_for_detached_subtree_);
-  visitor->Trace(ua_document_transition_style_);
+  visitor->Trace(ua_view_transition_style_);
   visitor->Trace(style_image_cache_);
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
   FontSelectorClient::Trace(visitor);

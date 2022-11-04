@@ -25,7 +25,6 @@ import("//third_party/blink/renderer/core/context_features/build.gni")
 import("//third_party/blink/renderer/core/core.gni")
 import("//third_party/blink/renderer/core/css/build.gni")
 import("//third_party/blink/renderer/core/display_lock/build.gni")
-import("//third_party/blink/renderer/core/document_transition/build.gni")
 import("//third_party/blink/renderer/core/dom/build.gni")
 import("//third_party/blink/renderer/core/editing/build.gni")
 import("//third_party/blink/renderer/core/events/build.gni")
@@ -70,6 +69,7 @@ import("//third_party/blink/renderer/core/timing/build.gni")
 import("//third_party/blink/renderer/core/trustedtypes/build.gni")
 import("//third_party/blink/renderer/core/typed_arrays/build.gni")
 import("//third_party/blink/renderer/core/url/build.gni")
+import("//third_party/blink/renderer/core/view_transition/build.gni")
 import("//third_party/blink/renderer/core/workers/build.gni")
 import("//third_party/blink/renderer/core/xml/build.gni")
 import("//third_party/blink/renderer/core/xmlhttprequest/build.gni")
@@ -215,9 +215,8 @@ component("core") {
       rebase_path(blink_core_sources_context_features, "", "context_features")
   sources += rebase_path(blink_core_sources_css, "", "css")
   sources += rebase_path(blink_core_sources_display_lock, "", "display_lock")
-  sources += rebase_path(blink_core_sources_document_transition,
-                         "",
-                         "document_transition")
+  sources +=
+      rebase_path(blink_core_sources_view_transition, "", "view_transition")
   sources += rebase_path(blink_core_sources_dom, "", "dom")
   sources += rebase_path(blink_core_sources_editing, "", "editing")
   sources += rebase_path(blink_core_sources_events, "", "events")
@@ -1324,9 +1323,8 @@ source_set("unit_tests") {
       rebase_path(blink_core_tests_content_capture, "", "content_capture")
   sources += rebase_path(blink_core_tests_css, "", "css")
   sources += rebase_path(blink_core_tests_display_lock, "", "display_lock")
-  sources += rebase_path(blink_core_tests_document_transition,
-                         "",
-                         "document_transition")
+  sources +=
+      rebase_path(blink_core_tests_view_transition, "", "view_transition")
   sources += rebase_path(blink_core_tests_dom, "", "dom")
   sources += rebase_path(blink_core_tests_editing, "", "editing")
   sources += rebase_path(blink_core_tests_events, "", "events")

@@ -26,7 +26,6 @@
 #include "cc/animation/animation_id_provider.h"
 #include "cc/base/features.h"
 #include "cc/base/histograms.h"
-#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -72,6 +71,7 @@
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -18493,7 +18493,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSibling) {
       GetInputHandler().FindFrameElementIdAtPoint(gfx::PointF(30, 30)));
 }
 
-TEST_F(LayerTreeHostImplTest, DocumentTransitionRequestCausesDamage) {
+TEST_F(LayerTreeHostImplTest, ViewTransitionRequestCausesDamage) {
   const gfx::Size viewport_size(100, 100);
   SetupDefaultRootLayer(viewport_size);
   UpdateDrawProperties(host_impl_->active_tree());
@@ -18517,8 +18517,8 @@ TEST_F(LayerTreeHostImplTest, DocumentTransitionRequestCausesDamage) {
   did_request_redraw_ = false;
 
   // Adding a transition effect should cause us to redraw.
-  host_impl_->active_tree()->AddDocumentTransitionRequest(
-      DocumentTransitionRequest::CreateAnimateRenderer(
+  host_impl_->active_tree()->AddViewTransitionRequest(
+      ViewTransitionRequest::CreateAnimateRenderer(
           /*document_tag=*/0, viz::NavigationID::Null()));
 
   // Ensure there is damage and we requested a redraw.

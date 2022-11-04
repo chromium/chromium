@@ -14,7 +14,7 @@
 
 namespace viz {
 
-// This class is a collection of utils used by document transition API.
+// This class is a collection of utils used by view transition API.
 class VIZ_COMMON_EXPORT TransitionUtils {
  public:
   // Computes the opacity value of the given target_id as drawn in the root

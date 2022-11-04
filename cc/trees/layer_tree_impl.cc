@@ -34,7 +34,6 @@
 #include "cc/base/histograms.h"
 #include "cc/base/math_util.h"
 #include "cc/base/synced_property.h"
-#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
@@ -54,6 +53,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "cc/trees/tree_synchronizer.h"
+#include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/traced_value.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -743,8 +743,8 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
     delegated_ink_metadata_.reset();
 
   // Transfer page transition directives.
-  for (auto& request : commit_state.document_transition_requests)
-    AddDocumentTransitionRequest(std::move(request));
+  for (auto& request : commit_state.view_transition_requests)
+    AddViewTransitionRequest(std::move(request));
 
   SetVisualUpdateDurations(
       commit_state.previous_surfaces_visual_update_duration,
@@ -874,8 +874,8 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
     target_tree->clear_delegated_ink_metadata();
   }
 
-  for (auto& request : TakeDocumentTransitionRequests())
-    target_tree->AddDocumentTransitionRequest(std::move(request));
+  for (auto& request : TakeViewTransitionRequests())
+    target_tree->AddViewTransitionRequest(std::move(request));
 
   target_tree->SetVisualUpdateDurations(
       previous_surfaces_visual_update_duration_, visual_update_duration_);
@@ -2900,20 +2900,20 @@ std::string LayerTreeImpl::LayerListAsJson() const {
   return value.ToFormattedJSON();
 }
 
-void LayerTreeImpl::AddDocumentTransitionRequest(
-    std::unique_ptr<DocumentTransitionRequest> request) {
-  document_transition_requests_.push_back(std::move(request));
+void LayerTreeImpl::AddViewTransitionRequest(
+    std::unique_ptr<ViewTransitionRequest> request) {
+  view_transition_requests_.push_back(std::move(request));
   // We need to send the request to viz.
   SetNeedsRedraw();
 }
 
-std::vector<std::unique_ptr<DocumentTransitionRequest>>
-LayerTreeImpl::TakeDocumentTransitionRequests() {
-  return std::move(document_transition_requests_);
+std::vector<std::unique_ptr<ViewTransitionRequest>>
+LayerTreeImpl::TakeViewTransitionRequests() {
+  return std::move(view_transition_requests_);
 }
 
-bool LayerTreeImpl::HasDocumentTransitionRequests() const {
-  return !document_transition_requests_.empty();
+bool LayerTreeImpl::HasViewTransitionRequests() const {
+  return !view_transition_requests_.empty();
 }
 
 bool LayerTreeImpl::IsReadyToActivate() const {

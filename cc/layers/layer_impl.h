@@ -459,7 +459,8 @@ class CC_EXPORT LayerImpl {
   virtual gfx::ContentColorUsage GetContentColorUsage() const;
 
   virtual void NotifyKnownResourceIdsBeforeAppendQuads(
-      const base::flat_set<viz::SharedElementResourceId>& known_resource_ids) {}
+      const base::flat_set<viz::ViewTransitionElementResourceId>&
+          known_resource_ids) {}
 
  protected:
   // When |will_always_push_properties| is true, the layer will not itself set

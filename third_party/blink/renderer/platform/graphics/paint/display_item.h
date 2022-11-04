@@ -109,8 +109,8 @@ class PLATFORM_EXPORT DisplayItem {
     kForeignLayerLinkHighlight,
     kForeignLayerViewportScroll,
     kForeignLayerViewportScrollbar,
-    kForeignLayerDocumentTransitionContent,
-    kForeignLayerLast = kForeignLayerDocumentTransitionContent,
+    kForeignLayerViewTransitionContent,
+    kForeignLayerLast = kForeignLayerViewTransitionContent,
 
     kClipPaintPhaseFirst,
     kClipPaintPhaseLast = kClipPaintPhaseFirst + kPaintPhaseMax,
