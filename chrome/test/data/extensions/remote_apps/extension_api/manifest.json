@@ -1,10 +1,10 @@
 {
   "name": "Remote Apps Extension API",
-  "version": "0.1",
-  "manifest_version": 2,
+  "version": "0.2",
+  "manifest_version": 3,
   "description": "Browser test for Remote Apps Extension API",
   "background": {
-    "scripts": ["test.js"]
+    "service_worker": "test.js"
   },
   "permissions": [
     "enterprise.remoteApps"
