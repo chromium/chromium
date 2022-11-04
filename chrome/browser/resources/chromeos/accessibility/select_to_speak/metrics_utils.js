@@ -160,6 +160,7 @@ MetricsUtils.EnumerationMetric;
 MetricsUtils.StartSpeechMethod = {
   MOUSE: 0,
   KEYSTROKE: 1,
+  CONTEXT_MENU: 2,
 };
 
 /**

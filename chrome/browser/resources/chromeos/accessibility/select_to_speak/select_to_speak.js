@@ -229,7 +229,9 @@ export class SelectToSpeak {
               contexts: ['selection'],
               onclick: () => {
                 chrome.automation.getFocus(
-                    focusedNode => this.requestSpeakSelectedText_(focusedNode));
+                    focusedNode => this.requestSpeakSelectedText_(
+                        MetricsUtils.StartSpeechMethod.CONTEXT_MENU,
+                        focusedNode));
               },
             });
           }
@@ -329,8 +331,10 @@ export class SelectToSpeak {
    * Queues up selected text for reading by finding the Position objects
    * representing the selection.
    * @private
+   * @param {MetricsUtils.StartSpeechMethod} method the method that
+   *     caused the text to speak.
    */
-  requestSpeakSelectedText_(focusedNode) {
+  requestSpeakSelectedText_(method, focusedNode) {
     // If nothing is selected, return early. Check if the focused node has
     // textSelStart and textSelEnd. For native UI like the omnibox, the root
     // might not have a selectionStartObject and selectionEndObject. Therefore
@@ -415,7 +419,7 @@ export class SelectToSpeak {
 
     this.cancelIfSpeaking_(true /* clear the focus ring */);
     this.readNodesBetweenPositions_(
-        firstPosition, lastPosition, true /* userRequested */, focusedNode);
+        firstPosition, lastPosition, method, focusedNode);
   }
 
   /**
@@ -424,17 +428,18 @@ export class SelectToSpeak {
    *     start reading.
    * @param {NodeUtils.Position} lastPosition The last position at which to
    *     stop reading.
-   * @param {boolean} userRequested Whether the selection is explicitly
-   *     requested by the user. If true, we will clear focus ring and record the
-   *     event.
+   * @param {MetricsUtils.StartSpeechMethod | null} method the method used to
+   *     activate the speech, null if not actived by user.
    * @param {AutomationNode=} focusedNode The node with user focus.
    * @private
    */
-  readNodesBetweenPositions_(
-      firstPosition, lastPosition, userRequested, focusedNode) {
+  readNodesBetweenPositions_(firstPosition, lastPosition, method, focusedNode) {
     const nodes = [];
     let selectedNode = firstPosition.node;
-
+    // If the method is set, a user requested the speech.
+    const userRequested = method !== null;
+    /**@type {number} */
+    const methodNumber = method !== null ? method : -1;
     // Certain nodes such as omnibox store text value in the value property,
     // instead of the name property. The getNodeName method in ParagraphUtils
     // does handle this case properly, so use this static method to get text
@@ -502,8 +507,7 @@ export class SelectToSpeak {
       }
       if (userRequested) {
         MetricsUtils.recordStartEvent(
-            MetricsUtils.StartSpeechMethod.KEYSTROKE, this.prefsManager_,
-            this.enhancedVoicesFlag_);
+            methodNumber, this.prefsManager_, this.enhancedVoicesFlag_);
       }
     } else {
       // Gsuite apps include webapps beyond Docs, see getGSuiteAppRoot and
@@ -529,8 +533,7 @@ export class SelectToSpeak {
         });
         if (userRequested) {
           MetricsUtils.recordStartEvent(
-              MetricsUtils.StartSpeechMethod.KEYSTROKE, this.prefsManager_,
-              this.enhancedVoicesFlag_);
+              methodNumber, this.prefsManager_, this.enhancedVoicesFlag_);
         }
       });
     }
@@ -796,7 +799,8 @@ export class SelectToSpeak {
       // onKeystrokeSelection: Keys pressed for reading highlighted text.
       onKeystrokeSelection: () => {
         chrome.automation.getFocus(
-            focusedNode => this.requestSpeakSelectedText_(focusedNode));
+            focusedNode => this.requestSpeakSelectedText_(
+                MetricsUtils.StartSpeechMethod.KEYSTROKE, focusedNode));
       },
       // onRequestCancel: User requested canceling input/speech.
       onRequestCancel: () => {

@@ -22292,6 +22292,7 @@ metrics consent we also won't be able to send UMA metrics. -->
 <enum name="CrosSelectToSpeakStartSpeechMethod">
   <int value="0" label="Hold Search and click or drag"/>
   <int value="1" label="Ctrl + S to read selection"/>
+  <int value="2" label="Context menu option to read selection"/>
 </enum>
 
 <enum name="CrosSelectToSpeakStateChangeEvent">
