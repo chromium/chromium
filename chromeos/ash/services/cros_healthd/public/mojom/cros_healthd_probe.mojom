@@ -865,14 +865,16 @@ struct OsInfo {
 // device. This structure decomposes a full version string
 // (e.g. "87.13544.59.0") into its parts:
 //
-// NextMinVersion: 1, NextIndex: 4
+// NextMinVersion: 2, NextIndex: 5
 [Stable]
 struct OsVersion {
   // The OS version release milestone (e.g. "87").
   string release_milestone@0;
   // The OS version build number (e.g. "13544").
   string build_number@1;
-  // The OS version patch number (e.g. "59.0").
+  // The OS version branch number (e.g. "59").
+  [MinVersion=1] string? branch_number@4;
+  // The OS version patch number (e.g. "0").
   string patch_number@2;
   // The OS release channel (e.g. "stable-channel").
   string release_channel@3;
