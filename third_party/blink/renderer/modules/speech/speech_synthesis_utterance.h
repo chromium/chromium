@@ -94,7 +94,8 @@ class SpeechSynthesisUtterance final
 
   // mojom::blink::SpeechSynthesisClient
   void OnStartedSpeaking() override;
-  void OnFinishedSpeaking() override;
+  void OnFinishedSpeaking(
+      mojom::blink::SpeechSynthesisErrorCode error_code) override;
   void OnPausedSpeaking() override;
   void OnResumedSpeaking() override;
   void OnEncounteredWordBoundary(uint32_t char_index,

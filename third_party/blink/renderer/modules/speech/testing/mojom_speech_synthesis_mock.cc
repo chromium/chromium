@@ -64,7 +64,8 @@ void MojomSpeechSynthesisMock::SpeakingErrorOccurred(TimerBase*) {
 
 void MojomSpeechSynthesisMock::SpeakingFinished(TimerBase*) {
   DCHECK(current_utterance_);
-  current_client_->OnFinishedSpeaking();
+  current_client_->OnFinishedSpeaking(
+      blink::mojom::SpeechSynthesisErrorCode::kNoError);
   SpeakNext();
 }
 

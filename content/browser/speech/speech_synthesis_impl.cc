@@ -36,10 +36,16 @@ class EventThunk : public UtteranceEventDelegate {
         client_->OnStartedSpeaking();
         break;
       case TTS_EVENT_END:
+        client_->OnFinishedSpeaking(
+            blink::mojom::SpeechSynthesisErrorCode::kNoError);
+        break;
       case TTS_EVENT_INTERRUPTED:
+        client_->OnFinishedSpeaking(
+            blink::mojom::SpeechSynthesisErrorCode::kInterrupted);
+        break;
       case TTS_EVENT_CANCELLED:
-        // The web platform API does not differentiate these events.
-        client_->OnFinishedSpeaking();
+        client_->OnFinishedSpeaking(
+            blink::mojom::SpeechSynthesisErrorCode::kCancelled);
         break;
       case TTS_EVENT_WORD:
         client_->OnEncounteredWordBoundary(char_index, char_length);

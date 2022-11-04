@@ -26,6 +26,24 @@ struct SpeechSynthesisVoice {
   bool is_default;
 };
 
+// These enum values are error codes described in SpeechSynthesisErrorCode,
+// https://wicg.github.io/speech-api/#enumdef-speechsynthesiserrorcode.
+// This enum is passed to OnFinishedSpeaking().
+// TODO(https://crbug.com/1365948): Specify all errors mentioned in the spec.
+enum SpeechSynthesisErrorCode {
+  // A cancel method call caused the SpeechSynthesisUtterance to be removed
+  // from the queue before it had begun being spoken.
+  kCancelled,
+  // A cancel method call caused the SpeechSynthesisUtterance to be
+  // interrupted after it has begun being spoken and before it completed.
+  kInterrupted,
+  // Used for all errors except the above errors.
+  kErrorOccurred,
+  // No errors. If the utterance finishes without errors, this value is
+  // passed to OnFinishedSpeaking().
+  kNoError,
+};
+
 // This interface receives updates to the list of voices. See SpeechSynthesis'
 // AddVoiceListObserver method.
 interface SpeechSynthesisVoiceListObserver {
@@ -40,7 +58,7 @@ interface SpeechSynthesisClient {
   OnStartedSpeaking();
 
   // The utterance finished, and no further events will be received.
-  OnFinishedSpeaking();
+  OnFinishedSpeaking(SpeechSynthesisErrorCode error_code);
 
   // The utterance was paused.
   OnPausedSpeaking();

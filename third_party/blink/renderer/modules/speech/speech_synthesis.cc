@@ -223,13 +223,16 @@ void SpeechSynthesis::DidResumeSpeaking(SpeechSynthesisUtterance* utterance) {
   FireEvent(event_type_names::kResume, utterance, 0, 0, String());
 }
 
-void SpeechSynthesis::DidFinishSpeaking(SpeechSynthesisUtterance* utterance) {
-  HandleSpeakingCompleted(utterance, false);
+void SpeechSynthesis::DidFinishSpeaking(
+    SpeechSynthesisUtterance* utterance,
+    mojom::blink::SpeechSynthesisErrorCode error_code) {
+  HandleSpeakingCompleted(utterance, error_code);
 }
 
 void SpeechSynthesis::SpeakingErrorOccurred(
     SpeechSynthesisUtterance* utterance) {
-  HandleSpeakingCompleted(utterance, true);
+  HandleSpeakingCompleted(
+      utterance, mojom::blink::SpeechSynthesisErrorCode::kErrorOccurred);
 }
 
 void SpeechSynthesis::WordBoundaryEventOccurred(
@@ -271,7 +274,7 @@ void SpeechSynthesis::StartSpeakingImmediately() {
 
 void SpeechSynthesis::HandleSpeakingCompleted(
     SpeechSynthesisUtterance* utterance,
-    bool error_occurred) {
+    mojom::blink::SpeechSynthesisErrorCode error_code) {
   DCHECK(utterance);
 
   // Special handling for audio descriptions.
@@ -285,16 +288,31 @@ void SpeechSynthesis::HandleSpeakingCompleted(
     should_start_speaking = !utterance_queue_.empty();
   }
 
+  // https://wicg.github.io/speech-api/#speechsynthesiserrorevent-attributes
+  // The below errors are matched with SpeechSynthesisErrorCode values.
+  static constexpr char kErrorCanceled[] = "canceled";
+  static constexpr char kErrorInterrupted[] = "interrupted";
+  static constexpr char kErrorSynthesisFailed[] = "synthesis-failed";
+
   // Always fire the event, because the platform may have asynchronously
   // sent an event on an utterance before it got the message that we
   // canceled it, and we should always report to the user what actually
   // happened.
-  if (error_occurred) {
-    // TODO(csharrison): Actually pass the correct message. For now just use a
-    // generic error.
-    FireErrorEvent(utterance, 0, "synthesis-failed");
-  } else {
-    FireEvent(event_type_names::kEnd, utterance, 0, 0, String());
+  switch (error_code) {
+    case mojom::blink::SpeechSynthesisErrorCode::kInterrupted:
+      FireErrorEvent(utterance, 0, kErrorInterrupted);
+      break;
+    case mojom::blink::SpeechSynthesisErrorCode::kCancelled:
+      FireErrorEvent(utterance, 0, kErrorCanceled);
+      break;
+    case mojom::blink::SpeechSynthesisErrorCode::kErrorOccurred:
+      // TODO(csharrison): Actually pass the correct message. For now just use a
+      // generic error.
+      FireErrorEvent(utterance, 0, kErrorSynthesisFailed);
+      break;
+    case mojom::blink::SpeechSynthesisErrorCode::kNoError:
+      FireEvent(event_type_names::kEnd, utterance, 0, 0, String());
+      break;
   }
 
   // Start the next utterance if we just finished one and one was pending.
