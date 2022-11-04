@@ -70,6 +70,10 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     aggregator().DoNotChooseNextFrameForTest();
   }
 
+  void SetIntersectionObserverSamplePeriodForTesting(size_t period) {
+    aggregator_->SetIntersectionObserverSamplePeriodForTesting(period);
+  }
+
   base::TimeTicks Now() { return test_task_runner_->NowTicks(); }
 
  protected:
@@ -372,6 +376,8 @@ TEST_F(LocalFrameUkmAggregatorTest, AggregatedPreFCPEventRecorded) {
   if (!base::TimeTicks::IsHighResolution())
     return;
 
+  SetIntersectionObserverSamplePeriodForTesting(1);
+
   // Be sure to not choose the next frame. We shouldn't need to record an
   // UpdateTime metric in order to record an aggregated metric.
   DoNotChooseNextFrameForTest();
@@ -576,7 +582,7 @@ TEST_F(LocalFrameUkmAggregatorTest, IterativeTimer) {
 TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
   if (!base::TimeTicks::IsHighResolution())
     return;
-  aggregator().SetIntersectionObserverSamplePeriod(2);
+  SetIntersectionObserverSamplePeriodForTesting(2);
   cc::ActiveFrameSequenceTrackers trackers =
       1 << static_cast<unsigned>(
           cc::FrameSequenceTrackerType::kSETMainThreadAnimation);
@@ -638,12 +644,16 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
 
 class LocalFrameUkmAggregatorSimTest : public SimTest {
  protected:
+  LocalFrameUkmAggregator& local_root_aggregator() {
+    return LocalFrameRoot().GetFrame()->View()->EnsureUkmAggregator();
+  }
+
   void ChooseNextFrameForTest() {
-    LocalFrameRoot()
-        .GetFrame()
-        ->View()
-        ->EnsureUkmAggregator()
-        .ChooseNextFrameForTest();
+    local_root_aggregator().ChooseNextFrameForTest();
+  }
+
+  bool IsBeforeFCPForTesting() {
+    return local_root_aggregator().IsBeforeFCPForTesting();
   }
 
   void TestIntersectionObserverCounts(Document& document) {
@@ -787,11 +797,11 @@ TEST_F(LocalFrameUkmAggregatorSimTest, LocalFrameRootPrePostFCPMetrics) {
   LocalFrame& local_frame_root = *LocalFrameRoot().GetFrame();
   ASSERT_FALSE(local_frame_root.IsMainFrame());
   ASSERT_TRUE(local_frame_root.IsLocalRoot());
-  auto& ukm_aggregator = local_frame_root.View()->EnsureUkmAggregator();
-  EXPECT_TRUE(ukm_aggregator.IsBeforeFCPForTesting());
+
+  EXPECT_TRUE(IsBeforeFCPForTesting());
   // Simulate the first contentful paint.
   PaintTiming::From(*local_frame_root.GetDocument()).MarkFirstContentfulPaint();
-  EXPECT_FALSE(ukm_aggregator.IsBeforeFCPForTesting());
+  EXPECT_FALSE(IsBeforeFCPForTesting());
 }
 
 TEST_F(LocalFrameUkmAggregatorSimTest, DidReachFirstContentfulPaintMetric) {

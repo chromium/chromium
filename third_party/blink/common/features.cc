@@ -1588,10 +1588,6 @@ BASE_FEATURE(kWebRtcThreadsUseResourceEfficientType,
              "WebRtcThreadsUseResourceEfficientType",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThrottleIntersectionObserverUMA,
-             "ThrottleIntersectionObserverUMA",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebRtcMetronome,
              "WebRtcMetronome",
              base::FEATURE_DISABLED_BY_DEFAULT);

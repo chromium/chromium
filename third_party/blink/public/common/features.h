@@ -811,10 +811,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kWebRtcThreadsUseResourceEfficientType);
 
-// If enabled, fine-grained UMA metrics for IntersectionObserver will only be
-// collected on 10% of animation frames.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleIntersectionObserverUMA);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcMetronome);
 
 // If enabled, all of FileSystemAccessSyncAccessHandle methods are synchronous.

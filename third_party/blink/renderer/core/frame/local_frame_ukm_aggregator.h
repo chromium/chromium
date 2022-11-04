@@ -324,12 +324,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // RecordEndOfFrameMetrics.
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics();
 
-  bool IsBeforeFCPForTesting() const;
-
-  void SetIntersectionObserverSamplePeriod(size_t period) {
-    intersection_observer_sample_period_ = period;
-  }
-
  private:
   struct AbsoluteMetricRecord {
     std::unique_ptr<CustomCountHistogram> pre_fcp_uma_counter;
@@ -380,6 +374,12 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // LocalFrameUkmAggregator.
   void SetTickClockForTesting(const base::TickClock* clock);
 
+  bool IsBeforeFCPForTesting() const;
+
+  void SetIntersectionObserverSamplePeriodForTesting(size_t period) {
+    intersection_observer_sample_period_ = period;
+  }
+
   // UKM system data
   const int64_t source_id_;
   ukm::UkmRecorder* const recorder_;
@@ -426,7 +426,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // granular metrics are useful for pinpointing regressions, but we can get
   // most of the benefit even if we downsample them. This value controls how
   // frequently we collect granular IntersectionObserver metrics.
-  size_t intersection_observer_sample_period_ = 1;
+  size_t intersection_observer_sample_period_ = 10;
 };
 
 }  // namespace blink

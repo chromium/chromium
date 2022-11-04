@@ -332,8 +332,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BaseFeatures.ALWAYS_ABANDON_SCHEDULED_TASK,
                     "Controls whether or not the scheduled task is always abandoned when a timer "
                             + "is stopped or resets."),
-            Flag.baseFeature(BlinkFeatures.THROTTLE_INTERSECTION_OBSERVER_UMA,
-                    "Reduces fine-grained UMA metrics for IntersectionObserver."),
             Flag.baseFeature(BlinkFeatures.PRETOKENIZE_CSS,
                     "If enabled, CSS will be tokenized in a background thread when possible."),
             Flag.baseFeature(BlinkFeatures.VIEW_TRANSITION,
