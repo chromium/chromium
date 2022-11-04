@@ -5,8 +5,10 @@
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
@@ -22,6 +24,7 @@
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "v8/include/v8-function-callback.h"
 
 namespace ui {
 
@@ -42,6 +45,29 @@ v8::Local<v8::Object> RectToV8Object(v8::Isolate* isolate,
       .Build();
 }
 
+// Helper class that wraps a V8 handler function to run with V8 or gin
+// arguments.
+class GenericHandlerFunctionWrapper : public V8HandlerFunctionWrapper {
+ public:
+  explicit GenericHandlerFunctionWrapper(
+      base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>
+          handler_function)
+      : handler_function_(handler_function) {}
+
+  void Run(gin::Arguments* arguments) override {
+    // TODO: Convert callback to use gin::Arguments.
+    const v8::FunctionCallbackInfo<v8::Value>* args =
+        arguments->GetFunctionCallbackInfo();
+    DCHECK(args);
+    handler_function_.Run(*args);
+  }
+
+ private:
+  ~GenericHandlerFunctionWrapper() override = default;
+  base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>
+      handler_function_;
+};
+
 //
 // Helper class that helps implement bindings for a JavaScript function
 // that takes a single input argument consisting of a Tree ID. Looks up
@@ -53,7 +79,7 @@ typedef void (*TreeIDFunction)(v8::Isolate* isolate,
                                v8::ReturnValue<v8::Value> result,
                                AutomationAXTreeWrapper* tree_wrapper);
 
-class TreeIDWrapper : public base::RefCountedThreadSafe<TreeIDWrapper> {
+class TreeIDWrapper : public V8HandlerFunctionWrapper {
  public:
   TreeIDWrapper(AutomationTreeManagerOwner* automation_tree_manager_owner,
                 AutomationV8Router* automation_router,
@@ -62,7 +88,11 @@ class TreeIDWrapper : public base::RefCountedThreadSafe<TreeIDWrapper> {
         automation_router_(automation_router),
         function_(function) {}
 
-  void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  void Run(gin::Arguments* arguments) override {
+    // TODO: Convert to use gin::Arguments.
+    DCHECK(arguments->GetFunctionCallbackInfo());
+    const v8::FunctionCallbackInfo<v8::Value>& args =
+        *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
     if (args.Length() != 1 || !args[0]->IsString())
       automation_router_->ThrowInvalidArgumentsException();
@@ -83,9 +113,7 @@ class TreeIDWrapper : public base::RefCountedThreadSafe<TreeIDWrapper> {
   }
 
  private:
-  virtual ~TreeIDWrapper() = default;
-
-  friend class base::RefCountedThreadSafe<TreeIDWrapper>;
+  ~TreeIDWrapper() override = default;
 
   AutomationTreeManagerOwner* automation_tree_manager_owner_;
   AutomationV8Router* automation_router_;
@@ -104,7 +132,7 @@ typedef base::RepeatingCallback<void(v8::Isolate* isolate,
                                      AXNode* node)>
     NodeIDFunction;
 
-class NodeIDWrapper : public base::RefCountedThreadSafe<NodeIDWrapper> {
+class NodeIDWrapper : public V8HandlerFunctionWrapper {
  public:
   NodeIDWrapper(AutomationTreeManagerOwner* automation_tree_manager_owner,
                 AutomationV8Router* automation_router,
@@ -113,7 +141,11 @@ class NodeIDWrapper : public base::RefCountedThreadSafe<NodeIDWrapper> {
         automation_router_(automation_router),
         function_(function) {}
 
-  void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  void Run(gin::Arguments* arguments) override {
+    // TODO: Convert to use gin::Arguments.
+    DCHECK(arguments->GetFunctionCallbackInfo());
+    const v8::FunctionCallbackInfo<v8::Value>& args =
+        *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
     if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
       automation_router_->ThrowInvalidArgumentsException();
@@ -137,7 +169,7 @@ class NodeIDWrapper : public base::RefCountedThreadSafe<NodeIDWrapper> {
   }
 
  private:
-  virtual ~NodeIDWrapper() = default;
+  ~NodeIDWrapper() override = default;
 
   friend class base::RefCountedThreadSafe<NodeIDWrapper>;
 
@@ -159,8 +191,7 @@ typedef void (*NodeIDPlusAttributeFunction)(v8::Isolate* isolate,
                                             AXNode* node,
                                             const std::string& attribute);
 
-class NodeIDPlusAttributeWrapper
-    : public base::RefCountedThreadSafe<NodeIDPlusAttributeWrapper> {
+class NodeIDPlusAttributeWrapper : public V8HandlerFunctionWrapper {
  public:
   NodeIDPlusAttributeWrapper(
       AutomationTreeManagerOwner* automation_tree_manager_owner,
@@ -170,7 +201,11 @@ class NodeIDPlusAttributeWrapper
         automation_router_(automation_router),
         function_(function) {}
 
-  void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  void Run(gin::Arguments* arguments) override {
+    // TODO: Convert to use gin::Arguments.
+    DCHECK(arguments->GetFunctionCallbackInfo());
+    const v8::FunctionCallbackInfo<v8::Value>& args =
+        *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
     if (args.Length() < 3 || !args[0]->IsString() || !args[1]->IsNumber() ||
         !args[2]->IsString()) {
@@ -198,9 +233,7 @@ class NodeIDPlusAttributeWrapper
   }
 
  private:
-  virtual ~NodeIDPlusAttributeWrapper() = default;
-
-  friend class base::RefCountedThreadSafe<NodeIDPlusAttributeWrapper>;
+  ~NodeIDPlusAttributeWrapper() override = default;
 
   AutomationTreeManagerOwner* automation_tree_manager_owner_;
   AutomationV8Router* automation_router_;
@@ -223,8 +256,7 @@ typedef base::RepeatingCallback<void(v8::Isolate* isolate,
                                      bool clipped)>
     NodeIDPlusRangeFunction;
 
-class NodeIDPlusRangeWrapper
-    : public base::RefCountedThreadSafe<NodeIDPlusRangeWrapper> {
+class NodeIDPlusRangeWrapper : public V8HandlerFunctionWrapper {
  public:
   NodeIDPlusRangeWrapper(
       AutomationTreeManagerOwner* automation_tree_manager_owner,
@@ -234,7 +266,11 @@ class NodeIDPlusRangeWrapper
         automation_router_(automation_router),
         function_(function) {}
 
-  void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  void Run(gin::Arguments* arguments) override {
+    // TODO: Convert to use gin::Arguments.
+    DCHECK(arguments->GetFunctionCallbackInfo());
+    const v8::FunctionCallbackInfo<v8::Value>& args =
+        *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
     if (args.Length() < 5 || !args[0]->IsString() || !args[1]->IsNumber() ||
         !args[2]->IsNumber() || !args[3]->IsNumber() || !args[4]->IsBoolean()) {
@@ -264,9 +300,7 @@ class NodeIDPlusRangeWrapper
   }
 
  private:
-  virtual ~NodeIDPlusRangeWrapper() = default;
-
-  friend class base::RefCountedThreadSafe<NodeIDPlusRangeWrapper>;
+  ~NodeIDPlusRangeWrapper() override = default;
 
   AutomationTreeManagerOwner* automation_tree_manager_owner_;
   AutomationV8Router* automation_router_;
@@ -281,8 +315,7 @@ typedef base::RepeatingCallback<void(v8::Isolate* isolate,
                                      bool boolVal)>
     NodeIDPlusStringBoolFunction;
 
-class NodeIDPlusStringBoolWrapper
-    : public base::RefCountedThreadSafe<NodeIDPlusStringBoolWrapper> {
+class NodeIDPlusStringBoolWrapper : public V8HandlerFunctionWrapper {
  public:
   NodeIDPlusStringBoolWrapper(
       AutomationTreeManagerOwner* automation_tree_manager_owner,
@@ -292,7 +325,11 @@ class NodeIDPlusStringBoolWrapper
         automation_router_(automation_router),
         function_(function) {}
 
-  void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  void Run(gin::Arguments* arguments) override {
+    // TODO: Convert to use gin::Arguments.
+    DCHECK(arguments->GetFunctionCallbackInfo());
+    const v8::FunctionCallbackInfo<v8::Value>& args =
+        *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
     if (args.Length() < 4 || !args[0]->IsString() || !args[1]->IsNumber() ||
         !args[2]->IsString() || !args[3]->IsBoolean()) {
@@ -321,9 +358,7 @@ class NodeIDPlusStringBoolWrapper
   }
 
  private:
-  virtual ~NodeIDPlusStringBoolWrapper() = default;
-
-  friend class base::RefCountedThreadSafe<NodeIDPlusStringBoolWrapper>;
+  ~NodeIDPlusStringBoolWrapper() override = default;
 
   AutomationTreeManagerOwner* automation_tree_manager_owner_;
   AutomationV8Router* automation_router_;
@@ -340,8 +375,7 @@ using NodeIDPlusDimensionsFunction =
                                  int width,
                                  int height)>;
 
-class NodeIDPlusDimensionsWrapper
-    : public base::RefCountedThreadSafe<NodeIDPlusDimensionsWrapper> {
+class NodeIDPlusDimensionsWrapper : public V8HandlerFunctionWrapper {
  public:
   NodeIDPlusDimensionsWrapper(
       AutomationTreeManagerOwner* automation_tree_manager_owner,
@@ -351,7 +385,11 @@ class NodeIDPlusDimensionsWrapper
         automation_router_(automation_router),
         function_(function) {}
 
-  void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  void Run(gin::Arguments* arguments) override {
+    // TODO: Convert to use gin::Arguments.
+    DCHECK(arguments->GetFunctionCallbackInfo());
+    const v8::FunctionCallbackInfo<v8::Value>& args =
+        *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
     if (args.Length() < 6 || !args[0]->IsString() || !args[1]->IsInt32() ||
         !args[2]->IsInt32() || !args[3]->IsInt32() || !args[4]->IsInt32() ||
@@ -382,7 +420,7 @@ class NodeIDPlusDimensionsWrapper
   }
 
  private:
-  virtual ~NodeIDPlusDimensionsWrapper() = default;
+  ~NodeIDPlusDimensionsWrapper() override = default;
 
   friend class base::RefCountedThreadSafe<NodeIDPlusDimensionsWrapper>;
 
@@ -399,8 +437,7 @@ typedef base::RepeatingCallback<void(
     const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type)>
     NodeIDPlusEventFunction;
 
-class NodeIDPlusEventWrapper
-    : public base::RefCountedThreadSafe<NodeIDPlusEventWrapper> {
+class NodeIDPlusEventWrapper : public V8HandlerFunctionWrapper {
  public:
   NodeIDPlusEventWrapper(
       AutomationTreeManagerOwner* automation_tree_manager_owner,
@@ -410,7 +447,11 @@ class NodeIDPlusEventWrapper
         automation_router_(automation_router),
         function_(function) {}
 
-  void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  void Run(gin::Arguments* arguments) override {
+    // TODO: Convert to use gin::Arguments.
+    DCHECK(arguments->GetFunctionCallbackInfo());
+    const v8::FunctionCallbackInfo<v8::Value>& args =
+        *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
     if (args.Length() < 3 || !args[0]->IsString() || !args[1]->IsInt32() ||
         !args[2]->IsString()) {
@@ -454,9 +495,7 @@ class NodeIDPlusEventWrapper
   }
 
  private:
-  virtual ~NodeIDPlusEventWrapper() = default;
-
-  friend class base::RefCountedThreadSafe<NodeIDPlusEventWrapper>;
+  ~NodeIDPlusEventWrapper() override = default;
 
   AutomationTreeManagerOwner* automation_tree_manager_owner_;
   AutomationV8Router* automation_router_;
@@ -567,10 +606,11 @@ void AutomationV8Bindings::AddV8Routes() {
   // It's safe to use base::Unretained(this) here because these bindings
   // will only be called on a valid AutomationV8Bindings instance
   // and none of the functions have any side effects.
-#define ROUTE_FUNCTION(FN)                     \
-  automation_v8_router_->RouteHandlerFunction( \
-      #FN, "automation",                       \
-      base::BindRepeating(&AutomationV8Bindings::FN, base::Unretained(this)))
+  scoped_refptr<GenericHandlerFunctionWrapper> wrapper;
+#define ROUTE_FUNCTION(FN)                                                     \
+  wrapper = base::MakeRefCounted<GenericHandlerFunctionWrapper>(               \
+      base::BindRepeating(&AutomationV8Bindings::FN, base::Unretained(this))); \
+  automation_v8_router_->RouteHandlerFunction(#FN, "automation", wrapper);
   ROUTE_FUNCTION(GetChildIDAtIndex);
   ROUTE_FUNCTION(GetFocus);
   ROUTE_FUNCTION(GetHtmlAttributes);
@@ -1461,18 +1501,16 @@ void AutomationV8Bindings::AddV8Routes() {
 
 void AutomationV8Bindings::RouteTreeIDFunction(const std::string& name,
                                                TreeIDFunction callback) {
-  scoped_refptr<TreeIDWrapper> wrapper = new TreeIDWrapper(
+  auto wrapper = base::MakeRefCounted<TreeIDWrapper>(
       automation_tree_manager_owner_, automation_v8_router_, callback);
-  automation_v8_router_->RouteHandlerFunction(
-      name, base::BindRepeating(&TreeIDWrapper::Run, wrapper));
+  automation_v8_router_->RouteHandlerFunction(name, wrapper);
 }
 
 void AutomationV8Bindings::RouteNodeIDFunction(const std::string& name,
                                                NodeIDFunction callback) {
   auto wrapper = base::MakeRefCounted<NodeIDWrapper>(
       automation_tree_manager_owner_, automation_v8_router_, callback);
-  automation_v8_router_->RouteHandlerFunction(
-      name, base::BindRepeating(&NodeIDWrapper::Run, wrapper));
+  automation_v8_router_->RouteHandlerFunction(name, wrapper);
 }
 
 void AutomationV8Bindings::RouteNodeIDPlusAttributeFunction(
@@ -1480,8 +1518,7 @@ void AutomationV8Bindings::RouteNodeIDPlusAttributeFunction(
     NodeIDPlusAttributeFunction callback) {
   auto wrapper = base::MakeRefCounted<NodeIDPlusAttributeWrapper>(
       automation_tree_manager_owner_, automation_v8_router_, callback);
-  automation_v8_router_->RouteHandlerFunction(
-      name, base::BindRepeating(&NodeIDPlusAttributeWrapper::Run, wrapper));
+  automation_v8_router_->RouteHandlerFunction(name, wrapper);
 }
 
 void AutomationV8Bindings::RouteNodeIDPlusRangeFunction(
@@ -1489,8 +1526,7 @@ void AutomationV8Bindings::RouteNodeIDPlusRangeFunction(
     NodeIDPlusRangeFunction callback) {
   auto wrapper = base::MakeRefCounted<NodeIDPlusRangeWrapper>(
       automation_tree_manager_owner_, automation_v8_router_, callback);
-  automation_v8_router_->RouteHandlerFunction(
-      name, base::BindRepeating(&NodeIDPlusRangeWrapper::Run, wrapper));
+  automation_v8_router_->RouteHandlerFunction(name, wrapper);
 }
 
 void AutomationV8Bindings::RouteNodeIDPlusStringBoolFunction(
@@ -1498,8 +1534,7 @@ void AutomationV8Bindings::RouteNodeIDPlusStringBoolFunction(
     NodeIDPlusStringBoolFunction callback) {
   auto wrapper = base::MakeRefCounted<NodeIDPlusStringBoolWrapper>(
       automation_tree_manager_owner_, automation_v8_router_, callback);
-  automation_v8_router_->RouteHandlerFunction(
-      name, base::BindRepeating(&NodeIDPlusStringBoolWrapper::Run, wrapper));
+  automation_v8_router_->RouteHandlerFunction(name, wrapper);
 }
 
 void AutomationV8Bindings::RouteNodeIDPlusDimensionsFunction(
@@ -1507,8 +1542,7 @@ void AutomationV8Bindings::RouteNodeIDPlusDimensionsFunction(
     NodeIDPlusDimensionsFunction callback) {
   auto wrapper = base::MakeRefCounted<NodeIDPlusDimensionsWrapper>(
       automation_tree_manager_owner_, automation_v8_router_, callback);
-  automation_v8_router_->RouteHandlerFunction(
-      name, base::BindRepeating(&NodeIDPlusDimensionsWrapper::Run, wrapper));
+  automation_v8_router_->RouteHandlerFunction(name, wrapper);
 }
 
 void AutomationV8Bindings::RouteNodeIDPlusEventFunction(
@@ -1516,8 +1550,7 @@ void AutomationV8Bindings::RouteNodeIDPlusEventFunction(
     NodeIDPlusEventFunction callback) {
   auto wrapper = base::MakeRefCounted<NodeIDPlusEventWrapper>(
       automation_tree_manager_owner_, automation_v8_router_, callback);
-  automation_v8_router_->RouteHandlerFunction(
-      name, base::BindRepeating(&NodeIDPlusEventWrapper::Run, wrapper));
+  automation_v8_router_->RouteHandlerFunction(name, wrapper);
 }
 
 void AutomationV8Bindings::GetFocus(

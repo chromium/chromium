@@ -112,6 +112,8 @@ source_set("platform") {
       "automation/automation_v8_bindings.cc",
       "automation/automation_v8_bindings.h",
       "automation/automation_v8_router.h",
+      "automation/v8_handler_function_wrapper.cc",
+      "automation/v8_handler_function_wrapper.h",
     ]
 
     deps = [

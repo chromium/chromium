@@ -64,13 +64,13 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   void ThrowInvalidArgumentsException(bool is_fatal = true) const override;
   v8::Isolate* GetIsolate() const override;
   v8::Local<v8::Context> GetContext() const override;
-  void RouteHandlerFunction(
-      const std::string& name,
-      AutomationV8Router::HandlerFunction handler_function) override;
-  void RouteHandlerFunction(
-      const std::string& name,
-      const std::string& api_name,
-      AutomationV8Router::HandlerFunction handler_function) override;
+  void RouteHandlerFunction(const std::string& name,
+                            scoped_refptr<ui::V8HandlerFunctionWrapper>
+                                handler_function_wrapper) override;
+  void RouteHandlerFunction(const std::string& name,
+                            const std::string& api_name,
+                            scoped_refptr<ui::V8HandlerFunctionWrapper>
+                                handler_function_wrapper) override;
   ui::TreeChangeObserverFilter ParseTreeChangeObserverFilter(
       const std::string& filter) const override;
   std::string GetMarkerTypeString(ax::mojom::MarkerType type) const override;

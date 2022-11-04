@@ -212,16 +212,20 @@ v8::Local<v8::Context> AutomationInternalCustomBindings::GetContext() const {
 
 void AutomationInternalCustomBindings::RouteHandlerFunction(
     const std::string& name,
-    AutomationV8Router::HandlerFunction handler_function) {
-  ObjectBackedNativeHandler::RouteHandlerFunction(name, handler_function);
+    scoped_refptr<ui::V8HandlerFunctionWrapper> handler_function_wrapper) {
+  ObjectBackedNativeHandler::RouteHandlerFunction(
+      name, base::BindRepeating(&ui::V8HandlerFunctionWrapper::RunV8,
+                                handler_function_wrapper));
 }
 
 void AutomationInternalCustomBindings::RouteHandlerFunction(
     const std::string& name,
     const std::string& api_name,
-    AutomationV8Router::HandlerFunction handler_function) {
-  ObjectBackedNativeHandler::RouteHandlerFunction(name, api_name,
-                                                  handler_function);
+    scoped_refptr<ui::V8HandlerFunctionWrapper> handler_function_wrapper) {
+  ObjectBackedNativeHandler::RouteHandlerFunction(
+      name, api_name,
+      base::BindRepeating(&ui::V8HandlerFunctionWrapper::RunV8,
+                          handler_function_wrapper));
 }
 
 ui::TreeChangeObserverFilter

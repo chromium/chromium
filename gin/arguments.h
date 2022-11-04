@@ -100,6 +100,12 @@ class GIN_EXPORT Arguments {
   // array used by Get/PeekNext().
   std::vector<v8::Local<v8::Value>> GetAll() const;
 
+  // Returns the original v8::FunctionCallbackInfo used to construct this
+  // Arguments if it exists, or nullptr otherwise.
+  const v8::FunctionCallbackInfo<v8::Value>* GetFunctionCallbackInfo() const {
+    return info_for_function_;
+  }
+
   void ThrowError() const;
   void ThrowTypeError(const std::string& message) const;
 

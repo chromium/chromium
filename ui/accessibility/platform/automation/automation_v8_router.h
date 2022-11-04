@@ -8,6 +8,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
+#include "ui/accessibility/platform/automation/v8_handler_function_wrapper.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-value.h"
 
@@ -61,13 +62,13 @@ class AX_EXPORT AutomationV8Router {
   // Methods for routing Javascript methods to C++.
   //
 
-  using HandlerFunction =
-      base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>;
-  virtual void RouteHandlerFunction(const std::string& name,
-                                    HandlerFunction handler_function) = 0;
-  virtual void RouteHandlerFunction(const std::string& name,
-                                    const std::string& api_name,
-                                    HandlerFunction handler_function) = 0;
+  virtual void RouteHandlerFunction(
+      const std::string& name,
+      scoped_refptr<V8HandlerFunctionWrapper> handler_function_wrapper) = 0;
+  virtual void RouteHandlerFunction(
+      const std::string& name,
+      const std::string& api_name,
+      scoped_refptr<V8HandlerFunctionWrapper> handler_function_wrapper) = 0;
 
   //
   // Methods for passing information from C++ to Javascript.
