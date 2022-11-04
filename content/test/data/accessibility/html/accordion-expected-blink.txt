@@ -17,7 +17,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Accordion Section #2'
 ++++++region ignored invisible
 ++++++++paragraph ignored invisible
-++++++++++staticText ignored name='Content for second section of accordion element.'
+++++++++++staticText ignored invisible name='Content for second section of accordion element.'
 ++++++heading name='Accordion Section #3'
 ++++++++button collapsed name='Accordion Section #3' controlsIds=
 ++++++++++paragraph
@@ -25,7 +25,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Accordion Section #3'
 ++++++region ignored invisible
 ++++++++paragraph ignored invisible
-++++++++++staticText ignored name='Content for third section of accordion element.'
+++++++++++staticText ignored invisible name='Content for third section of accordion element.'
 ++++++heading name='Accordion Section #4'
 ++++++++button expanded name='Accordion Section #4' restriction=disabled
 ++++++++++paragraph

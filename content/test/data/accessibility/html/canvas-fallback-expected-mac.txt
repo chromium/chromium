@@ -11,7 +11,5 @@ AXWebArea
 ++++++++AXStaticText AXValue='This is another paragraph in fallback'
 ++++++AXStaticText AXValue='<newline>    '
 ++++++AXStaticText AXValue='<newline>    '
-++++++AXStaticText AXValue='Display none text in fallback content '
 ++++++AXStaticText AXValue='<newline>    '
-++++++AXStaticText AXValue='Visibility hidden paragraph in fallback content'
 ++++++AXStaticText AXValue='<newline>  '

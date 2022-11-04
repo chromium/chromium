@@ -11,7 +11,7 @@ rootWebArea
 ++++++++++++++staticText name='Day'
 ++++++++++++++++inlineTextBox name='Day'
 ++++++++++++columnHeader ignored invisible
-++++++++++++++staticText ignored name='Year'
+++++++++++++++staticText ignored invisible name='Year'
 ++++++++++++columnHeader name='Weather' ariaCellColumnIndex=5 ariaCellRowIndex=2
 ++++++++++++++staticText name='Weather'
 ++++++++++++++++inlineTextBox name='Weather'
@@ -23,7 +23,7 @@ rootWebArea
 ++++++++++++++staticText name='01'
 ++++++++++++++++inlineTextBox name='01'
 ++++++++++++cell ignored invisible
-++++++++++++++staticText ignored name='2017'
+++++++++++++++staticText ignored invisible name='2017'
 ++++++++++++cell name='Sunny' ariaCellColumnIndex=5 ariaCellRowIndex=3
 ++++++++++++++staticText name='Sunny'
 ++++++++++++++++inlineTextBox name='Sunny'
@@ -35,7 +35,7 @@ rootWebArea
 ++++++++++++++staticText name='02'
 ++++++++++++++++inlineTextBox name='02'
 ++++++++++++cell ignored invisible
-++++++++++++++staticText ignored name='2017'
+++++++++++++++staticText ignored invisible name='2017'
 ++++++++++++cell name='Rainy' ariaCellColumnIndex=5 ariaCellRowIndex=4
 ++++++++++++++staticText name='Rainy'
 ++++++++++++++++inlineTextBox name='Rainy'

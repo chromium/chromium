@@ -6,7 +6,7 @@ rootWebArea
 ++++++genericContainer ignored
 ++++++++dialog ignored invisible
 ++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored name='Some Text'
+++++++++++++staticText ignored invisible name='Some Text'
 === Start Continuation ===
 rootWebArea
 ++genericContainer ignored invisible

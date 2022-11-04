@@ -3842,6 +3842,13 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
 // * "content-visibility: auto" is "paint when it's scrolled into the viewport,
 //   but its layout information is not updated when it isn't"
 bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) const {
+  // The the parent element of text is hidden, then the text is hidden too.
+  // This helps provide more consistent results in edge cases, e.g. text inside
+  // of a <canvas> or display:none content.
+  if (RoleValue() == ax::mojom::blink::Role::kStaticText &&
+      ParentObject()->IsHiddenViaStyle())
+    return true;
+
   if (style) {
     if (GetLayoutObject())
       return style->Visibility() != EVisibility::kVisible;
