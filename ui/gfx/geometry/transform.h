@@ -16,7 +16,6 @@
 
 namespace gfx {
 
-class AxisTransform2d;
 class BoxF;
 class Rect;
 class RectF;
@@ -45,15 +44,9 @@ struct DecomposedTransform;
 //
 class GEOMETRY_SKIA_EXPORT Transform {
  public:
-  Transform();
-  ~Transform();
+  constexpr Transform() : axis_2d_() {}
 
-  Transform(const Transform& rhs);
-  Transform& operator=(const Transform& rhs);
-  Transform(Transform&&);
-  Transform& operator=(Transform&&);
-
-  explicit Transform(const AxisTransform2d& axis_2d);
+  explicit Transform(const AxisTransform2d& axis_2d) : axis_2d_(axis_2d) {}
 
   // Creates a transform from explicit 16 matrix elements in row-major order.
   // Always creates a double precision 4x4 matrix.
@@ -142,13 +135,15 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Resets this transform to the identity transform.
   // TODO(crbug.com/1359528): Rename this to SetIdentity or remove it.
   void MakeIdentity() {
-    matrix_ = nullptr;
+    full_matrix_ = false;
     axis_2d_ = AxisTransform2d();
   }
 
   bool operator==(const Transform& rhs) const {
-    if (LIKELY(!matrix_ && !rhs.matrix_))
+    if (LIKELY(!full_matrix_ && !rhs.full_matrix_))
       return axis_2d_ == rhs.axis_2d_;
+    if (full_matrix_ && rhs.full_matrix_)
+      return matrix_ == rhs.matrix_;
     return GetFullMatrix() == rhs.GetFullMatrix();
   }
   bool operator!=(const Transform& rhs) const { return !(*this == rhs); }
@@ -157,14 +152,14 @@ class GEOMETRY_SKIA_EXPORT Transform {
   double rc(int row, int col) const {
     DCHECK_LE(static_cast<unsigned>(row), 3u);
     DCHECK_LE(static_cast<unsigned>(col), 3u);
-    if (LIKELY(!matrix_)) {
+    if (LIKELY(!full_matrix_)) {
       float m[4][4] = {{axis_2d_.scale().x(), 0, 0, axis_2d_.translation().x()},
                        {0, axis_2d_.scale().y(), 0, axis_2d_.translation().y()},
                        {0, 0, 1, 0},
                        {0, 0, 0, 1}};
       return m[row][col];
     }
-    return matrix_->rc(row, col);
+    return matrix_.rc(row, col);
   }
 
   // Sets a value in the matrix at |row|, |col|. It forces full double precision
@@ -264,22 +259,22 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns true if this is the identity matrix.
   // This function modifies a mutable variable in |matrix_|.
   bool IsIdentity() const {
-    return LIKELY(!matrix_) ? axis_2d_ == AxisTransform2d()
-                            : matrix_->IsIdentity();
+    return LIKELY(!full_matrix_) ? axis_2d_ == AxisTransform2d()
+                                 : matrix_.IsIdentity();
   }
 
   // Returns true if the matrix is either identity or pure translation.
   bool IsIdentityOrTranslation() const {
-    return LIKELY(!matrix_) ? axis_2d_.scale() == Vector2dF(1, 1)
-                            : matrix_->IsIdentityOrTranslation();
+    return LIKELY(!full_matrix_) ? axis_2d_.scale() == Vector2dF(1, 1)
+                                 : matrix_.IsIdentityOrTranslation();
   }
 
   // Returns true if the matrix is either the identity or a 2d translation.
   // TODO(crbug.com/1359528): Rename "2D" to "2d".
   bool IsIdentityOr2DTranslation() const {
-    return LIKELY(!matrix_)
+    return LIKELY(!full_matrix_)
                ? axis_2d_.scale() == Vector2dF(1, 1)
-               : matrix_->IsIdentityOrTranslation() && matrix_->rc(2, 3) == 0;
+               : matrix_.IsIdentityOrTranslation() && matrix_.rc(2, 3) == 0;
   }
 
   // Returns true if the matrix is either identity or pure translation,
@@ -289,13 +284,13 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Returns true if the matrix is either a positive scale and/or a translation.
   bool IsPositiveScaleOrTranslation() const {
-    if (LIKELY(!matrix_))
+    if (LIKELY(!full_matrix_))
       return axis_2d_.scale().x() > 0.0 && axis_2d_.scale().y() > 0.0;
 
-    if (!matrix_->IsScaleOrTranslation())
+    if (!matrix_.IsScaleOrTranslation())
       return false;
-    return matrix_->rc(0, 0) > 0.0 && matrix_->rc(1, 1) > 0.0 &&
-           matrix_->rc(2, 2) > 0.0;
+    return matrix_.rc(0, 0) > 0.0 && matrix_.rc(1, 1) > 0.0 &&
+           matrix_.rc(2, 2) > 0.0;
   }
 
   // Returns true if the matrix is identity or, if the matrix consists only
@@ -307,14 +302,14 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns true if the matrix has only x and y scaling components, including
   // identity.
   bool IsScale2d() const {
-    return LIKELY(!matrix_) ? axis_2d_.translation().IsZero()
-                            : matrix_->IsScale() && matrix_->rc(2, 2) == 1;
+    return LIKELY(!full_matrix_) ? axis_2d_.translation().IsZero()
+                                 : matrix_.IsScale() && matrix_.rc(2, 2) == 1;
   }
 
   // Returns true if the matrix is has only scaling and translation components,
   // including identity.
   bool IsScaleOrTranslation() const {
-    return LIKELY(!matrix_) || matrix_->IsScaleOrTranslation();
+    return LIKELY(!full_matrix_) || matrix_.IsScaleOrTranslation();
   }
 
   // Returns true if axis-aligned 2d rects will remain axis-aligned after being
@@ -330,12 +325,13 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns true if the matrix has any perspective component that would
   // change the w-component of a homogeneous point.
   bool HasPerspective() const {
-    return UNLIKELY(matrix_) && matrix_->HasPerspective();
+    return UNLIKELY(full_matrix_) && matrix_.HasPerspective();
   }
 
   // Returns true if this transform is non-singular.
   bool IsInvertible() const {
-    return LIKELY(!matrix_) ? axis_2d_.IsInvertible() : matrix_->IsInvertible();
+    return LIKELY(!full_matrix_) ? axis_2d_.IsInvertible()
+                                 : matrix_.IsInvertible();
   }
 
   // If |this| is invertible, inverts |this| and stores the result in
@@ -532,33 +528,37 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
  private:
   // Used internally to construct Transform with parameters in col-major order.
-  Transform(double r0c0,
-            double r1c0,
-            double r2c0,
-            double r3c0,
-            double r0c1,
-            double r1c1,
-            double r2c1,
-            double r3c1,
-            double r0c2,
-            double r1c2,
-            double r2c2,
-            double r3c2,
-            double r0c3,
-            double r1c3,
-            double r2c3,
-            double r3c3);
-  Transform(float scale_x, float scale_y, float trans_x, float trans_y);
+  // clang-format off
+  Transform(double r0c0, double r1c0, double r2c0, double r3c0,
+            double r0c1, double r1c1, double r2c1, double r3c1,
+            double r0c2, double r1c2, double r2c2, double r3c2,
+            double r0c3, double r1c3, double r2c3, double r3c3)
+      : full_matrix_(true),
+        matrix_(r0c0, r1c0, r2c0, r3c0,
+                r0c1, r1c1, r2c1, r3c1,
+                r0c2, r1c2, r2c2, r3c2,
+                r0c3, r1c3, r2c3, r3c3) {}
+  // clang-format on
+
+  Transform(float scale_x, float scale_y, float trans_x, float trans_y)
+      : axis_2d_(AxisTransform2d::FromScaleAndTranslation(
+            Vector2dF(scale_x, scale_y),
+            Vector2dF(trans_x, trans_y))) {}
 
   Point3F MapPointInternal(const Matrix44& matrix, const Point3F& point) const;
 
   Matrix44 GetFullMatrix() const;
   Matrix44& EnsureFullMatrix();
 
-  // axis_2d_ is used if matrix_is nullptr, otherwise *matrix_ is used.
+  // axis_2d_ is used if full_matrix_ is false, otherwise matrix_ is used.
   // See the class documentation for more details about how we use them.
-  AxisTransform2d axis_2d_;
-  std::unique_ptr<Matrix44> matrix_;
+  bool full_matrix_ = false;
+  union {
+    // Each constructor must explicitly initialize one of the following,
+    // according to the value of full_matrix_.
+    AxisTransform2d axis_2d_;
+    Matrix44 matrix_;
+  };
 };
 
 // This is declared here for use in gtest-based unit tests but is defined in

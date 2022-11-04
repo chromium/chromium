@@ -1158,7 +1158,6 @@ TEST(XFormTest, ComposeIdentity) {
   EXPECT_EQ(0.0, decomp.quaternion.z());
   EXPECT_EQ(1.0, decomp.quaternion.w());
 
-  Transform composed = Transform::Compose(decomp);
   EXPECT_TRUE(Transform::Compose(decomp).IsIdentity());
 }
 
