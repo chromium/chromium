@@ -320,7 +320,7 @@ PausableScriptExecutor::~PausableScriptExecutor() = default;
 void PausableScriptExecutor::Run() {
   ExecutionContext* context = GetExecutionContext();
   DCHECK(context);
-  if (!context->IsContextPaused()) {
+  if (!context->IsContextFrozenOrPaused()) {
     ExecuteAndDestroySelf();
     return;
   }
