@@ -2694,7 +2694,6 @@ crbug.com/723741 virtual/threaded/http/tests/devtools/tracing/idle-callback.js [
 # Untriaged failures after https://crrev.com/c/543695/.
 # These need to be updated but appear not to be related to that change.
 crbug.com/626703 http/tests/devtools/indexeddb/database-refresh-view.js [ Failure Pass ]
-crbug.com/626703 crbug.com/946710 http/tests/devtools/extensions/extensions-sidebar.js [ Crash Failure Pass Timeout ]
 
 crbug.com/805463 external/wpt/acid/acid3/numbered-tests.html [ Skip ]
 
