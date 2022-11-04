@@ -82,7 +82,7 @@ void PortAllocatorSession::GetPortConfigurations() {
 
 void PortAllocatorSession::OnIceConfig(const IceConfig& ice_config) {
   ice_config_ = ice_config;
-  ConfigReady(GetPortConfiguration().release());
+  ConfigReady(GetPortConfiguration());
 }
 
 std::unique_ptr<cricket::PortConfiguration>
