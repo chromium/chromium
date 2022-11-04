@@ -123,23 +123,19 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   multitask_menu_widget_->Init(std::move(params));
   multitask_menu_widget_->SetVisibilityChangedAnimationsEnabled(false);
 
-  // `clip_view` exists to paint to a layer so that it can clip descendent views
-  // which also paint to a layer. This clips the multitask menu so that it
-  // appears to be sliding out from the top, even if the window above it is
-  // stacked below it, which is the case when we are bottom stacked in portrait
-  // mode, and the wallpaper is visible in the top snapped section.
-  // `SetMasksToBounds` is recommended over `SetClipRect`, which is relative to
-  // the layer and would clip within its own bounds.
-  views::View* clip_view =
-      multitask_menu_widget_->SetContentsView(std::make_unique<views::View>());
-  clip_view->SetBorder(views::CreateEmptyBorder(kWidgetOutsets.ToInsets()));
-  clip_view->SetUseDefaultFillLayout(true);
-  clip_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  clip_view->layer()->SetFillsBoundsOpaquely(false);
-  clip_view->layer()->SetMasksToBounds(true);
+  // Clip the widget's root view so that the menu appears to be sliding out from
+  // the top, even if the window above it is stacked below it, which is the case
+  // when we are bottom snapped in portrait mode, and the wallpaper is visible
+  // in the top snapped section. `SetMasksToBounds` is recommended over
+  // `SetClipRect`, which is relative to the layer and would clip within its own
+  // bounds.
+  views::View* root_view = multitask_menu_widget_->GetRootView();
+  root_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  root_view->layer()->SetMasksToBounds(true);
 
-  multitask_menu_view_ = clip_view->AddChildView(
+  multitask_menu_view_ = multitask_menu_widget_->SetContentsView(
       std::make_unique<TabletModeMultitaskMenuView>(window_, callback));
+  multitask_menu_view_->SizeToPreferredSize();
 
   // TODO(sophiewen): Add shadows on `multitask_menu_view_`.
 
