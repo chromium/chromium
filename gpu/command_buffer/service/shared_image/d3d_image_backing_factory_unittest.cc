@@ -1689,11 +1689,21 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
   ASSERT_EQ(shared_image_refs.size(), 2u);
 
   // Setup GL shaders, framebuffers, uniforms, etc.
-  static const char* kVideoFragmentShaderSrc =
+  static const char* kVideoFragmentShaderSrcTextureExternal =
       "#extension GL_OES_EGL_image_external : require\n"
       "precision mediump float;\n"
       "uniform samplerExternalOES u_texture_y;\n"
       "uniform samplerExternalOES u_texture_uv;\n"
+      "varying vec2 v_texCoord;\n"
+      "void main() {\n"
+      "  gl_FragColor.r = texture2D(u_texture_y, v_texCoord).r;\n"
+      "  gl_FragColor.gb = texture2D(u_texture_uv, v_texCoord).rg;\n"
+      "  gl_FragColor.a = 1.0;\n"
+      "}\n";
+  static const char* kVideoFragmentShaderSrcTexture2D =
+      "precision mediump float;\n"
+      "uniform sampler2D u_texture_y;\n"
+      "uniform sampler2D u_texture_uv;\n"
       "varying vec2 v_texCoord;\n"
       "void main() {\n"
       "  gl_FragColor.r = texture2D(u_texture_y, v_texCoord).r;\n"
@@ -1715,7 +1725,10 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
   GLuint fragment_shader = api->glCreateShaderFn(GL_FRAGMENT_SHADER);
   SCOPED_GL_CLEANUP_VAR(api, DeleteShader, fragment_shader);
   ASSERT_NE(fragment_shader, 0u);
-  api->glShaderSourceFn(fragment_shader, 1, &kVideoFragmentShaderSrc, nullptr);
+  api->glShaderSourceFn(fragment_shader, 1,
+                        use_factory ? &kVideoFragmentShaderSrcTexture2D
+                                    : &kVideoFragmentShaderSrcTextureExternal,
+                        nullptr);
   api->glCompileShaderFn(fragment_shader);
   api->glGetShaderivFn(fragment_shader, GL_COMPILE_STATUS, &status);
   ASSERT_NE(status, 0);
@@ -1801,12 +1814,12 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
     ASSERT_NE(uv_texture_access, nullptr);
 
     api->glActiveTextureFn(GL_TEXTURE0);
-    api->glBindTextureFn(GL_TEXTURE_EXTERNAL_OES,
+    api->glBindTextureFn(use_factory ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES,
                          y_texture->GetTexturePassthrough()->service_id());
     ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
     api->glActiveTextureFn(GL_TEXTURE1);
-    api->glBindTextureFn(GL_TEXTURE_EXTERNAL_OES,
+    api->glBindTextureFn(use_factory ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES,
                          uv_texture->GetTexturePassthrough()->service_id());
     ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 

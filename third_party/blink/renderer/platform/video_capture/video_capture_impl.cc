@@ -531,15 +531,6 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
       buffer_context_->gpu_factories()->ImageTextureTarget(
           gpu_memory_buffer_->GetFormat());
 
-#if BUILDFLAG(IS_WIN)
-  // Explicitly set GL_TEXTURE_EXTERNAL_OES since ImageTextureTarget() will
-  // return GL_TEXTURE_2D due to GMB factory not supporting NV12 DXGI GMBs.
-  // See https://crbug.com/1253791#c17
-  // TODO(sunnyps): This shouldn't be needed after
-  // https://chromium-review.googlesource.com/c/angle/angle/+/3856660
-  texture_target = GL_TEXTURE_EXTERNAL_OES;
-#endif  // BUILDFLAG(IS_WIN)
-
   // TODO(sunnyps): Get rid of NV12_DUAL_GMB format and instead rely on enabled
   // by default multi plane shared images on Windows.
 
