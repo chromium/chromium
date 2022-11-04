@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Layout for managed disclaimer preference presented on a preference screen aligned with radio
+     buttons, such as the Preload pages settings and Safe Browsing settings. -->
+<org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ManagedDisclaimerView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:drawablePadding="20dp"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    android:padding="16dp"
+    android:paddingStart="20dp"
+    android:focusable="true" />

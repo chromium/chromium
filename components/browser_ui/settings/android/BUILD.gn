@@ -77,6 +77,7 @@ android_resources("java_resources") {
     "java/res/layout/clickable_spans_text_message_preference_layout.xml",
     "java/res/layout/image_button_widget.xml",
     "java/res/layout/long_summary_text_message_preference.xml",
+    "java/res/layout/managed_disclaimer_preference_for_radio_groups.xml",
     "java/res/layout/preference_chrome_image_view.xml",
     "java/res/layout/preference_spinner.xml",
     "java/res/layout/preference_spinner_single_line.xml",
