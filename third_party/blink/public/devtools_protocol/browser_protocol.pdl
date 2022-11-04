@@ -9300,6 +9300,17 @@ experimental domain Storage
     returns
       array of SharedStorageEntry entries
 
+  # Deletes entry for `key` (if it exists) for a given origin's shared storage.
+  experimental command deleteSharedStorageEntry
+    parameters
+      string ownerOrigin
+      string key
+
+  # Clears all entries for a given origin's shared storage.
+  experimental command clearSharedStorageEntries
+    parameters
+      string ownerOrigin
+
   # Enables/disables issuing of sharedStorageAccessed events.
   experimental command setSharedStorageTracking
     parameters

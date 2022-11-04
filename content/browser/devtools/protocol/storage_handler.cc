@@ -1072,6 +1072,79 @@ void StorageHandler::GetSharedStorageEntries(
       base::BindOnce(&RetrieveSharedStorageEntries, std::move(callback)));
 }
 
+namespace {
+
+template <typename CallbackType>
+void DispatchSharedStorageCallback(
+    std::unique_ptr<CallbackType> callback,
+    storage::SharedStorageManager::OperationResult result) {
+  if (result != storage::SharedStorageManager::OperationResult::kSuccess) {
+    callback->sendFailure(Response::ServerError("Database error"));
+    return;
+  }
+
+  callback->sendSuccess();
+}
+
+}  // namespace
+
+void StorageHandler::DeleteSharedStorageEntry(
+    const std::string& owner_origin_string,
+    const std::string& key,
+    std::unique_ptr<DeleteSharedStorageEntryCallback> callback) {
+  auto manager_or_response = GetSharedStorageManager();
+  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+    return;
+  }
+
+  storage::SharedStorageManager* manager =
+      absl::get<storage::SharedStorageManager*>(manager_or_response);
+  DCHECK(manager);
+
+  GURL owner_origin_url(owner_origin_string);
+  if (!owner_origin_url.is_valid()) {
+    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
+    return;
+  }
+  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
+  DCHECK(!owner_origin.opaque());
+
+  manager->Delete(
+      owner_origin, base::UTF8ToUTF16(key),
+      base::BindOnce(
+          &DispatchSharedStorageCallback<DeleteSharedStorageEntryCallback>,
+          std::move(callback)));
+}
+
+void StorageHandler::ClearSharedStorageEntries(
+    const std::string& owner_origin_string,
+    std::unique_ptr<ClearSharedStorageEntriesCallback> callback) {
+  auto manager_or_response = GetSharedStorageManager();
+  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+    return;
+  }
+
+  storage::SharedStorageManager* manager =
+      absl::get<storage::SharedStorageManager*>(manager_or_response);
+  DCHECK(manager);
+
+  GURL owner_origin_url(owner_origin_string);
+  if (!owner_origin_url.is_valid()) {
+    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
+    return;
+  }
+  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
+  DCHECK(!owner_origin.opaque());
+
+  manager->Clear(
+      owner_origin,
+      base::BindOnce(
+          &DispatchSharedStorageCallback<ClearSharedStorageEntriesCallback>,
+          std::move(callback)));
+}
+
 Response StorageHandler::SetSharedStorageTracking(bool enable) {
   if (enable) {
     if (!GetSharedStorageWorkletHostManager())

@@ -1087,6 +1087,7 @@
       "wpt_internal/shared_storage",
       "external/wpt/shared-storage",
       "http/tests/inspector-protocol/storage/shared-storage.js",
+      "http/tests/inspector-protocol/storage/shared-storage-delete.js",
       "http/tests/inspector-protocol/storage/shared-storage-tracking-disabled.js"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride"]
@@ -1098,6 +1099,7 @@
       "wpt_internal/shared_storage",
       "external/wpt/shared-storage",
       "http/tests/inspector-protocol/storage/shared-storage.js",
+      "http/tests/inspector-protocol/storage/shared-storage-delete.js",
       "http/tests/inspector-protocol/storage/shared-storage-tracking-disabled.js"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/shadow_dom,PrivacySandboxAdsAPIsOverride"]
