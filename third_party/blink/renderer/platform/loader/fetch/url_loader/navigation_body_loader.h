@@ -193,6 +193,7 @@ class PLATFORM_EXPORT NavigationBodyLoader
       std::unique_ptr<OffThreadBodyReader, OffThreadBodyReaderDeleter>;
   OffThreadBodyReaderPtr off_thread_body_reader_;
   bool should_send_directly_to_preload_scanner_ = false;
+  size_t max_data_to_process_per_task_ = 0;
 
   base::WeakPtrFactory<NavigationBodyLoader> weak_factory_{this};
 };
