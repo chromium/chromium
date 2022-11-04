@@ -28,18 +28,12 @@ class AX_EXPORT AutomationV8Router {
   // Gets the V8 script context.
   virtual v8::Local<v8::Context> GetContext() const = 0;
 
-  // Returns whether this extension has the "interact" permission set (either
-  // explicitly or implicitly after manifest parsing).
-  // TODO(crbug.com/1357889): This is specific to the extensions system and
-  // should be removed from this more generic location.
-  virtual bool IsInteractPermitted() const = 0;
-
   virtual void StartCachingAccessibilityTrees() = 0;
 
   virtual void StopCachingAccessibilityTrees() = 0;
 
   //
-  // Methods converting to and from strings
+  // Methods converting to and from strings.
   //
 
   // Parses a string representing the tree change observer filter.
@@ -64,10 +58,6 @@ class AX_EXPORT AutomationV8Router {
 
   virtual void RouteHandlerFunction(
       const std::string& name,
-      scoped_refptr<V8HandlerFunctionWrapper> handler_function_wrapper) = 0;
-  virtual void RouteHandlerFunction(
-      const std::string& name,
-      const std::string& api_name,
       scoped_refptr<V8HandlerFunctionWrapper> handler_function_wrapper) = 0;
 
   //

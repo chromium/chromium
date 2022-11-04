@@ -610,7 +610,7 @@ void AutomationV8Bindings::AddV8Routes() {
 #define ROUTE_FUNCTION(FN)                                                     \
   wrapper = base::MakeRefCounted<GenericHandlerFunctionWrapper>(               \
       base::BindRepeating(&AutomationV8Bindings::FN, base::Unretained(this))); \
-  automation_v8_router_->RouteHandlerFunction(#FN, "automation", wrapper);
+  automation_v8_router_->RouteHandlerFunction(#FN, wrapper);
   ROUTE_FUNCTION(GetChildIDAtIndex);
   ROUTE_FUNCTION(GetFocus);
   ROUTE_FUNCTION(GetHtmlAttributes);
@@ -620,7 +620,6 @@ void AutomationV8Bindings::AddV8Routes() {
   ROUTE_FUNCTION(DestroyAccessibilityTree);
   ROUTE_FUNCTION(AddTreeChangeObserver);
   ROUTE_FUNCTION(RemoveTreeChangeObserver);
-  ROUTE_FUNCTION(IsInteractPermitted);
   ROUTE_FUNCTION(GetState);
   ROUTE_FUNCTION(StartCachingAccessibilityTrees);
   ROUTE_FUNCTION(StopCachingAccessibilityTrees);
@@ -1928,13 +1927,6 @@ void AutomationV8Bindings::GetMarkers(v8::Isolate* isolate,
   }
 
   result.Set(gin::ConvertToV8(isolate, markers));
-}
-
-void AutomationV8Bindings::IsInteractPermitted(
-    const v8::FunctionCallbackInfo<v8::Value>& args) const {
-  bool permitted = automation_v8_router_->IsInteractPermitted();
-  args.GetReturnValue().Set(
-      v8::Boolean::New(automation_v8_router_->GetIsolate(), permitted));
 }
 
 void AutomationV8Bindings::GetState(

@@ -67,10 +67,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   void RouteHandlerFunction(const std::string& name,
                             scoped_refptr<ui::V8HandlerFunctionWrapper>
                                 handler_function_wrapper) override;
-  void RouteHandlerFunction(const std::string& name,
-                            const std::string& api_name,
-                            scoped_refptr<ui::V8HandlerFunctionWrapper>
-                                handler_function_wrapper) override;
   ui::TreeChangeObserverFilter ParseTreeChangeObserverFilter(
       const std::string& filter) const override;
   std::string GetMarkerTypeString(ax::mojom::MarkerType type) const override;
@@ -83,7 +79,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   std::string GetEventTypeString(
       const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
           event_type) const override;
-  bool IsInteractPermitted() const override;
   // This enables the MessageFilter that allows us to listen to accessibility
   // events forwarded to this process.
   void StartCachingAccessibilityTrees() override;
@@ -98,6 +93,11 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
 
   // ObjectBackedNativeHandler overrides:
   void Invalidate() override;
+
+  // Returns whether this extension has the "interact" permission set (either
+  // explicitly or implicitly after manifest parsing).
+  void IsInteractPermitted(
+      const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   // Handle accessibility events from the browser process sent
   // over IPC.
