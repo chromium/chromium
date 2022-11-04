@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/ash/cryptohome_pin_engine.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
@@ -115,6 +116,14 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
       base::OnceCallback<void(bool, ash::FingerprintState)> callback,
       user_data_auth::CryptohomeErrorCode error);
 
+  // Passed as a callback to `CryptohomePinEngine::InPinAuthAvailable`
+  // Takes back ownership of the `user_context` that was borrowed by
+  // `CryptohomePinEngine` and notifies callers of pin availability status.
+  void OnCheckPinAuthAvailability(
+      base::OnceCallback<void(bool)> callback,
+      bool is_pin_auth_available,
+      std::unique_ptr<ash::UserContext> user_context);
+
   // Used to authenticate the user to unlock supervised users.
   scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator_;
 
@@ -123,6 +132,8 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
 
   // Used to start and authenticate auth sessions.
   ash::AuthPerformer auth_performer_;
+
+  absl::optional<ash::CryptohomePinEngine> pin_engine_;
 
   std::unique_ptr<ash::UserContext> user_context_;
 

@@ -19,10 +19,12 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/cryptohome_pin_engine.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -103,9 +105,29 @@ void InSessionAuthDialogClient::EndFingerprintAuthSession() {
 void InSessionAuthDialogClient::CheckPinAuthAvailability(
     const AccountId& account_id,
     base::OnceCallback<void(bool)> callback) {
-  // PinBackend may be using cryptohome backend or prefs backend.
-  ash::quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
-      account_id, ash::quick_unlock::Purpose::kWebAuthn, std::move(callback));
+  if (!ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
+    // PinBackend may be using cryptohome backend or prefs backend.
+    ash::quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
+        account_id, ash::quick_unlock::Purpose::kWebAuthn, std::move(callback));
+    return;
+  }
+
+  auto on_pin_availability_checked =
+      base::BindOnce(&InSessionAuthDialogClient::OnCheckPinAuthAvailability,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+
+  CHECK(pin_engine_.has_value());
+  pin_engine_->IsPinAuthAvailable(ash::CryptohomePinEngine::Purpose::kWebAuthn,
+                                  std::move(user_context_),
+                                  std::move(on_pin_availability_checked));
+}
+
+void InSessionAuthDialogClient::OnCheckPinAuthAvailability(
+    base::OnceCallback<void(bool)> callback,
+    bool is_pin_auth_available,
+    std::unique_ptr<UserContext> user_context) {
+  user_context_ = std::move(user_context);
+  std::move(callback).Run(is_pin_auth_available);
 }
 
 void InSessionAuthDialogClient::StartAuthSession(
@@ -129,11 +151,12 @@ void InSessionAuthDialogClient::InvalidateAuthSession() {
   if (user_context_) {
     auth_performer_.InvalidateAuthSession(std::move(user_context_),
                                           base::DoNothing());
+    pin_engine_.reset();
   }
 }
 
 void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
-    const std::string& password,
+    const std::string& secret,
     bool authenticated_by_pin,
     base::OnceCallback<void(bool)> callback) {
   // TODO(b/156258540): Pick/validate the correct user.
@@ -141,10 +164,10 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
       user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(user);
   auto user_context = std::make_unique<UserContext>(*user);
-  Key key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password);
+  Key key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), secret);
   user_context->SetIsUsingPin(authenticated_by_pin);
   user_context->SetSyncPasswordData(password_manager::PasswordHashData(
-      user->GetAccountId().GetUserEmail(), base::UTF8ToUTF16(password),
+      user->GetAccountId().GetUserEmail(), base::UTF8ToUTF16(secret),
       false /*force_update*/));
   if (user->GetAccountId().GetAccountType() == AccountType::ACTIVE_DIRECTORY &&
       (user_context->GetUserType() !=
@@ -156,7 +179,15 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
   DCHECK(!pending_auth_state_);
   pending_auth_state_.emplace(std::move(callback));
 
-  if (authenticated_by_pin) {
+  if (!authenticated_by_pin) {
+    // TODO(yichengli): If user type is SUPERVISED, use supervised
+    // authenticator?
+    user_context->SetKey(std::move(key));
+    AuthenticateWithPassword(std::move(user_context), secret);
+    return;
+  }
+
+  if (!ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
     ash::quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
         std::move(user_context), std::move(key),
         ash::quick_unlock::Purpose::kWebAuthn,
@@ -165,10 +196,11 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
     return;
   }
 
-  // TODO(yichengli): If user type is SUPERVISED, use supervised authenticator?
-
-  user_context->SetKey(std::move(key));
-  AuthenticateWithPassword(std::move(user_context), password);
+  pin_engine_->Authenticate(
+      cryptohome::RawPin(secret), std::move(user_context_),
+      base::BindOnce(&InSessionAuthDialogClient::OnAuthVerified,
+                     weak_factory_.GetWeakPtr(),
+                     /*authenticated_by_password=*/false));
 }
 
 void InSessionAuthDialogClient::OnPinAttemptDone(
@@ -207,6 +239,7 @@ void InSessionAuthDialogClient::AuthenticateWithPassword(
   // on other UserDataAuth dbus calls that involve the auth_session_id stored
   // in this `user_context`.
   CHECK(user_context_);
+
   const cryptohome::AuthFactor* password_factor =
       user_context_->GetAuthFactorsData().FindOnlinePasswordFactor();
   if (!password_factor) {
@@ -247,6 +280,7 @@ void InSessionAuthDialogClient::OnAuthSessionStarted(
 
   // Take temporary ownership of user_context to pass on later.
   user_context_ = std::move(user_context);
+  pin_engine_.emplace(&auth_performer_);
   std::move(callback).Run(true);
 }
 

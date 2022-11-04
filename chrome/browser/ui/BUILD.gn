@@ -2311,6 +2311,8 @@ static_library("ui") {
       "ash/clipboard_util.h",
       "ash/crosapi_new_window_delegate.cc",
       "ash/crosapi_new_window_delegate.h",
+      "ash/cryptohome_pin_engine.cc",
+      "ash/cryptohome_pin_engine.h",
       "ash/default_pinned_apps.cc",
       "ash/default_pinned_apps.h",
       "ash/desks/chrome_desks_templates_delegate.cc",
