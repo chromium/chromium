@@ -14,3 +14,13 @@ mojom("mojom") {
   ]
   webui_module_path = "/"
 }
+
+action("gen_routes") {
+  script = "gen_routes.py"
+  outputs = [ "$target_gen_dir/routes.h" ]
+  deps = [ ":mojom" ]
+  args = [
+    "--gen_dir",
+    rebase_path(target_gen_dir, root_build_dir),
+  ]
+}

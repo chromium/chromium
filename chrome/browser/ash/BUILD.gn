@@ -4112,6 +4112,7 @@ source_set("unit_tests") {
     "../ui/webui/settings/ash/search/search_handler_unittest.cc",
     "../ui/webui/settings/ash/search/search_tag_registry_unittest.cc",
     "../ui/webui/settings/ash/settings_user_action_tracker_unittest.cc",
+    "../ui/webui/settings/chromeos/constants/routes_util_unittest.cc",
     "accessibility/pumpkin_installer_unittest.cc",
     "account_manager/account_apps_availability_unittest.cc",
     "account_manager/account_manager_edu_coexistence_controller_unittest.cc",

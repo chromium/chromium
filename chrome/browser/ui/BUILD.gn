@@ -3461,7 +3461,10 @@ static_library("ui") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom" ]
+    deps += [
+      "//chrome/browser/ui/webui/settings/chromeos/constants:gen_routes",
+      "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {

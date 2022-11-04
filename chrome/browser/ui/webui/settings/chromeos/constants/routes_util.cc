@@ -7,152 +7,31 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
 
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include <string>
 
-namespace chromeos {
-namespace settings {
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.h"
+
+namespace chromeos::settings {
+
+namespace {
+
+std::string RemoveQuery(std::string path) {
+  std::string::size_type input_index = path.find('?');
+  if (input_index != std::string::npos)
+    path.resize(input_index);
+  return path;
+}
+
+}  // namespace
 
 const char kOsSignOutSubPage[] = "osSignOut";
 
-// Any changes here need to be kept in sync with the mapping in
-// chrome_new_window_client.cc - for routes that can be opened from ARC++.
-// TODO(khorimoto): Instead of listing out every path, use an enum parameter.
 bool IsOSSettingsSubPage(const std::string& sub_page) {
-  static const char* const kPaths[] = {
-      // Network section.
-      chromeos::settings::mojom::kNetworkSectionPath,
-      chromeos::settings::mojom::kEthernetDetailsSubpagePath,
-      chromeos::settings::mojom::kWifiNetworksSubpagePath,
-      chromeos::settings::mojom::kWifiDetailsSubpagePath,
-      chromeos::settings::mojom::kKnownNetworksSubpagePath,
-      chromeos::settings::mojom::kMobileDataNetworksSubpagePath,
-      chromeos::settings::mojom::kCellularDetailsSubpagePath,
-      chromeos::settings::mojom::kTetherDetailsSubpagePath,
-      chromeos::settings::mojom::kVpnDetailsSubpagePath,
-      chromeos::settings::mojom::kApnSubpagePath,
-
-      // Bluetooth section.
-      chromeos::settings::mojom::kBluetoothSectionPath,
-      chromeos::settings::mojom::kBluetoothDevicesSubpagePath,
-      chromeos::settings::mojom::kBluetoothDeviceDetailSubpagePath,
-
-      // MultiDevice section.
-      chromeos::settings::mojom::kMultiDeviceSectionPath,
-      chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath,
-      chromeos::settings::mojom::kSmartLockSubpagePath,
-      chromeos::settings::mojom::kNearbyShareSubpagePath,
-
-      // People section.
-      chromeos::settings::mojom::kPeopleSectionPath,
-      chromeos::settings::mojom::kMyAccountsSubpagePath,
-      chromeos::settings::mojom::kSyncSubpagePath,
-      chromeos::settings::mojom::kSyncSetupSubpagePath,
-
-      // Device section.
-      chromeos::settings::mojom::kDeviceSectionPath,
-      chromeos::settings::mojom::kPointersSubpagePath,
-      chromeos::settings::mojom::kKeyboardSubpagePath,
-      chromeos::settings::mojom::kStylusSubpagePath,
-      chromeos::settings::mojom::kDisplaySubpagePath,
-      chromeos::settings::mojom::kAudioSubpagePath,
-      chromeos::settings::mojom::kStorageSubpagePath,
-      chromeos::settings::mojom::kExternalStorageSubpagePath,
-      chromeos::settings::mojom::kPowerSubpagePath,
-
-      // Personalization section.
-      chromeos::settings::mojom::kPersonalizationSectionPath,
-
-      // Search and Assistant section.
-      chromeos::settings::mojom::kSearchAndAssistantSectionPath,
-      chromeos::settings::mojom::kAssistantSubpagePath,
-      chromeos::settings::mojom::kSearchSubpagePath,
-
-      // Apps section.
-      chromeos::settings::mojom::kAppsSectionPath,
-      chromeos::settings::mojom::kAppManagementSubpagePath,
-      chromeos::settings::mojom::kAppDetailsSubpagePath,
-      chromeos::settings::mojom::kGooglePlayStoreSubpagePath,
-      chromeos::settings::mojom::kPluginVmSharedPathsSubpagePath,
-      chromeos::settings::mojom::kArcVmUsbPreferencesSubpagePath,
-
-      // Crostini section.
-      chromeos::settings::mojom::kCrostiniSectionPath,
-      chromeos::settings::mojom::kCrostiniDetailsSubpagePath,
-      chromeos::settings::mojom::kCrostiniManageSharedFoldersSubpagePath,
-      chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath,
-      chromeos::settings::mojom::kCrostiniBackupAndRestoreSubpagePath,
-      chromeos::settings::mojom::kCrostiniDevelopAndroidAppsSubpagePath,
-      chromeos::settings::mojom::kCrostiniPortForwardingSubpagePath,
-      chromeos::settings::mojom::kCrostiniExtraContainersSubpagePath,
-      chromeos::settings::mojom::kBruschettaDetailsSubpagePath,
-      chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath,
-
-      // Date and Time section.
-      chromeos::settings::mojom::kDateAndTimeSectionPath,
-      chromeos::settings::mojom::kTimeZoneSubpagePath,
-
-      // Privacy and Security section.
-      chromeos::settings::mojom::kPrivacyAndSecuritySectionPath,
-      chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2,
-      chromeos::settings::mojom::kFingerprintSubpagePathV2,
-      chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2,
-      chromeos::settings::mojom::kSmartPrivacySubpagePath,
-      chromeos::settings::mojom::kPrivacyHubSubpagePath,
-
-      // Languages and Input section.
-      chromeos::settings::mojom::kLanguagesAndInputSectionPath,
-      chromeos::settings::mojom::kSmartInputsSubpagePath,
-      chromeos::settings::mojom::kInputMethodOptionsSubpagePath,
-      chromeos::settings::mojom::kLanguagesSubpagePath,
-      chromeos::settings::mojom::kInputSubpagePath,
-      chromeos::settings::mojom::kEditDictionarySubpagePath,
-      chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath,
-
-      // Files section.
-      chromeos::settings::mojom::kFilesSectionPath,
-      chromeos::settings::mojom::kNetworkFileSharesSubpagePath,
-
-      // Printing section.
-      chromeos::settings::mojom::kPrintingSectionPath,
-      chromeos::settings::mojom::kPrintingDetailsSubpagePath,
-
-      // Accessibility section.
-      chromeos::settings::mojom::kAccessibilitySectionPath,
-      chromeos::settings::mojom::kManageAccessibilitySubpagePath,
-      chromeos::settings::mojom::kTextToSpeechPagePath,
-      chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath,
-      chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath,
-      chromeos::settings::mojom::kCursorAndTouchpadSubpagePath,
-      chromeos::settings::mojom::kAudioAndCaptionsSubpagePath,
-      chromeos::settings::mojom::kTextToSpeechSubpagePath,
-      chromeos::settings::mojom::kSwitchAccessOptionsSubpagePath,
-      chromeos::settings::mojom::kCaptionsSubpagePath,
-
-      // Reset section.
-      chromeos::settings::mojom::kResetSectionPath,
-
-      // About Chrome OS section.
-      chromeos::settings::mojom::kAboutChromeOsSectionPath,
-      chromeos::settings::mojom::kAboutChromeOsDetailsSubpagePath,
-      chromeos::settings::mojom::kDetailedBuildInfoSubpagePath,
-
-      // Kerberos section.
-      chromeos::settings::mojom::kKerberosSectionPath,
-      chromeos::settings::mojom::kKerberosAccountsV2SubpagePath,
-  };
-
   // Sub-pages may have query parameters, e.g. networkDetail?guid=123456.
-  std::string sub_page_without_query = sub_page;
-  std::string::size_type input_index = sub_page.find('?');
-  if (input_index != std::string::npos)
-    sub_page_without_query.resize(input_index);
+  std::string sub_page_without_query = RemoveQuery(sub_page);
 
   for (const char* p : kPaths) {
-    std::string path_without_query = p;
-    std::string::size_type path_index = path_without_query.find('?');
-    if (path_index != std::string::npos)
-      path_without_query.resize(path_index);
-
+    std::string path_without_query = RemoveQuery(p);
     if (sub_page_without_query == path_without_query)
       return true;
   }
@@ -164,7 +43,6 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
   return false;
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace chromeos::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_CONSTANTS_ROUTES_UTIL_H_
