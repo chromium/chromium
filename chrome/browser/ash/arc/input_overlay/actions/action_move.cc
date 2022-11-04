@@ -444,35 +444,21 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
   size_t index = it - keys.begin();
   DCHECK(index >= 0 && index < kActionMoveKeysSize);
 
-  DCHECK_LT(current_position_idx_, touch_down_positions_.size());
-  if (current_position_idx_ >= touch_down_positions_.size())
-    return false;
-
   if (key_event->type() == ui::ET_KEY_PRESSED) {
     if (!touch_id_) {
-      // First key press generates touch press.
-      touch_id_ = TouchIdManager::GetInstance()->ObtainTouchID();
+      DCHECK_LT(current_position_idx_, touch_down_positions_.size());
+      if (current_position_idx_ >= touch_down_positions_.size())
+        return false;
       last_touch_root_location_ = touch_down_positions_[current_position_idx_];
-      rewritten_events.emplace_back(
-          ui::EventType::ET_TOUCH_PRESSED, last_touch_root_location_,
-          last_touch_root_location_, key_event->time_stamp(),
-          ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
-      ui::Event::DispatcherApi(&(rewritten_events.back()))
-          .set_target(touch_injector_->window());
+      // First key press generates touch press.
+      if (!CreateTouchPressedEvent(key_event->time_stamp(), rewritten_events))
+        return false;
     }
-    DCHECK(touch_id_);
-    if (!touch_id_)
-      return false;
 
     // Generate touch move.
     CalculateMoveVector(touch_down_positions_[current_position_idx_], index,
                         /*key_press=*/true, content_bounds, rotation_transform);
-    rewritten_events.emplace_back(
-        ui::EventType::ET_TOUCH_MOVED, last_touch_root_location_,
-        last_touch_root_location_, key_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
-    ui::Event::DispatcherApi(&(rewritten_events.back()))
-        .set_target(touch_injector_->window());
+    CreateTouchMovedEvent(key_event->time_stamp(), rewritten_events);
     keys_pressed_.emplace(key_event->code());
   } else {
     if (!VerifyOnKeyRelease(key_event->code()))
@@ -483,21 +469,10 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
       CalculateMoveVector(touch_down_positions_[current_position_idx_], index,
                           /*key_press=*/false, content_bounds,
                           rotation_transform);
-      rewritten_events.emplace_back(
-          ui::EventType::ET_TOUCH_MOVED, last_touch_root_location_,
-          last_touch_root_location_, key_event->time_stamp(),
-          ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
-      ui::Event::DispatcherApi(&(rewritten_events.back()))
-          .set_target(touch_injector_->window());
+      CreateTouchMovedEvent(key_event->time_stamp(), rewritten_events);
     } else {
       // Generate touch release.
-      rewritten_events.emplace_back(
-          ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
-          last_touch_root_location_, key_event->time_stamp(),
-          ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
-      ui::Event::DispatcherApi(&(rewritten_events.back()))
-          .set_target(touch_injector_->window());
-      OnTouchReleased();
+      CreateTouchReleasedEvent(key_event->time_stamp(), rewritten_events);
       move_vector_.set_x(0);
       move_vector_.set_y(0);
     }
@@ -537,28 +512,16 @@ bool ActionMove::RewriteMouseEvent(
   if (type == ui::ET_MOUSE_RELEASED)
     DCHECK(touch_id_);
   if (!touch_id_) {
-    touch_id_ = TouchIdManager::GetInstance()->ObtainTouchID();
     if (current_position_idx_ < touch_down_positions_.size())
       last_touch_root_location_ = touch_down_positions_[current_position_idx_];
-    rewritten_events.emplace_back(
-        ui::EventType::ET_TOUCH_PRESSED, last_touch_root_location_,
-        last_touch_root_location_, mouse_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
+    if (!CreateTouchPressedEvent(mouse_event->time_stamp(), rewritten_events))
+      return false;
   } else if (type == ui::ET_MOUSE_EXITED || type == ui::ET_MOUSE_RELEASED) {
-    rewritten_events.emplace_back(
-        ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
-        last_touch_root_location_, mouse_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
-    OnTouchReleased();
+    CreateTouchReleasedEvent(mouse_event->time_stamp(), rewritten_events);
   } else {
     DCHECK(type == ui::ET_MOUSE_MOVED || type == ui::ET_MOUSE_DRAGGED);
-    rewritten_events.emplace_back(
-        ui::EventType::ET_TOUCH_MOVED, last_touch_root_location_,
-        last_touch_root_location_, mouse_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
+    CreateTouchMovedEvent(mouse_event->time_stamp(), rewritten_events);
   }
-  ui::Event::DispatcherApi(&(rewritten_events.back()))
-      .set_target(touch_injector_->window());
   return true;
 }
 

@@ -161,12 +161,19 @@ class Action {
   // |touch_injector| must be non-NULL and own this Action.
   explicit Action(TouchInjector* touch_injector);
 
+  // Create a touch pressed/moved/released event with |time_stamp| and save it
+  // in |touch_events|.
+  bool CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
+                               std::list<ui::TouchEvent>& touch_events);
+  void CreateTouchMovedEvent(const base::TimeTicks& time_stamp,
+                             std::list<ui::TouchEvent>& touch_events);
+  void CreateTouchReleasedEvent(const base::TimeTicks& time_stamp,
+                                std::list<ui::TouchEvent>& touch_events);
+
   bool IsRepeatedKeyEvent(const ui::KeyEvent& key_event);
   // Verify the key release event. If it is verified, it continues to simulate
   // the touch event. Otherwise, consider it as discard.
   bool VerifyOnKeyRelease(ui::DomCode code);
-  void OnTouchReleased();
-  void OnTouchCancelled();
   // Process after unbinding the input mapping.
   void PostUnbindInputProcess();
 
@@ -213,6 +220,14 @@ class Action {
   raw_ptr<ActionView> action_view_ = nullptr;
 
  private:
+  void OnTouchReleased();
+  void OnTouchCancelled();
+  // Create a touch event of |type| with |time_stamp| and save it
+  // in |touch_events|.
+  void CreateTouchEvent(ui::EventType type,
+                        const base::TimeTicks& time_stamp,
+                        std::list<ui::TouchEvent>& touch_events);
+
   // Mainly for default action to mark if it is deleted.
   bool deleted_ = false;
 

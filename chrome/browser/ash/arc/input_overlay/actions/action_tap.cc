@@ -296,27 +296,13 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
     return true;
 
   if (key_event->type() == ui::ET_KEY_PRESSED) {
-    if (touch_id_) {
-      LOG(ERROR) << "Touch ID shouldn't be set for the initial press: "
-                 << ui::KeycodeConverter::DomCodeToCodeString(
-                        key_event->code());
-      return false;
-    }
-
-    touch_id_ = TouchIdManager::GetInstance()->ObtainTouchID();
-    DCHECK(touch_id_);
-    if (!touch_id_)
-      return false;
+    DCHECK_LT(current_position_idx_, touch_down_positions_.size());
     if (current_position_idx_ >= touch_down_positions_.size())
       return false;
     last_touch_root_location_ = touch_down_positions_[current_position_idx_];
+    if (!CreateTouchPressedEvent(key_event->time_stamp(), rewritten_events))
+      return false;
 
-    rewritten_events.emplace_back(
-        ui::EventType::ET_TOUCH_PRESSED, last_touch_root_location_,
-        last_touch_root_location_, key_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
-    ui::Event::DispatcherApi(&(rewritten_events.back()))
-        .set_target(touch_injector_->window());
     if (!current_input_->is_modifier_key()) {
       keys_pressed_.emplace(key_event->code());
     } else {
@@ -325,28 +311,14 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
       // can still receive the release event. To avoid error in
       // AcceleratorHistory, original press event is still sent.
       keep_original_event = true;
-      rewritten_events.emplace_back(
-          ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
-          last_touch_root_location_, key_event->time_stamp(),
-          ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
-      ui::Event::DispatcherApi(&(rewritten_events.back()));
-      OnTouchReleased();
+      CreateTouchReleasedEvent(key_event->time_stamp(), rewritten_events);
     }
   } else {
     if (!VerifyOnKeyRelease(key_event->code()))
       return true;
 
-    rewritten_events.emplace_back(
-        ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
-        last_touch_root_location_, key_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
-    ui::Event::DispatcherApi(&(rewritten_events.back()))
-        .set_target(touch_injector_->window());
-
-    last_touch_root_location_.set_x(0);
-    last_touch_root_location_.set_y(0);
+    CreateTouchReleasedEvent(key_event->time_stamp(), rewritten_events);
     keys_pressed_.erase(key_event->code());
-    OnTouchReleased();
   }
   return true;
 }
@@ -370,7 +342,6 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
     DCHECK(touch_id_);
 
   if (!touch_id_) {
-    touch_id_ = TouchIdManager::GetInstance()->ObtainTouchID();
     if (current_position_idx_ < touch_down_positions_.size()) {
       last_touch_root_location_ = touch_down_positions_[current_position_idx_];
     } else {
@@ -380,19 +351,12 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
       float scale = touch_injector_->window()->GetHost()->device_scale_factor();
       last_touch_root_location_.Scale(scale);
     }
-    rewritten_events.emplace_back(
-        ui::EventType::ET_TOUCH_PRESSED, last_touch_root_location_,
-        last_touch_root_location_, mouse_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
+
+    if (!CreateTouchPressedEvent(mouse_event->time_stamp(), rewritten_events))
+      return false;
   } else {
-    rewritten_events.emplace_back(
-        ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
-        last_touch_root_location_, mouse_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
-    OnTouchReleased();
+    CreateTouchReleasedEvent(mouse_event->time_stamp(), rewritten_events);
   }
-  ui::Event::DispatcherApi(&(rewritten_events.back()))
-      .set_target(touch_injector_->window());
   return true;
 }
 

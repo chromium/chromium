@@ -439,6 +439,34 @@ bool Action::IsDefaultAction() const {
   return id_ <= kMaxDefaultActionID;
 }
 
+bool Action::CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
+                                     std::list<ui::TouchEvent>& touch_events) {
+  if (touch_id_) {
+    LOG(ERROR) << "Touch ID shouldn't be set for the initial press.";
+    return false;
+  }
+
+  touch_id_ = TouchIdManager::GetInstance()->ObtainTouchID();
+  if (!touch_id_) {
+    LOG(ERROR) << "Failed to obtain a new touch ID.";
+    return false;
+  }
+
+  CreateTouchEvent(ui::EventType::ET_TOUCH_PRESSED, time_stamp, touch_events);
+  return true;
+}
+
+void Action::CreateTouchMovedEvent(const base::TimeTicks& time_stamp,
+                                   std::list<ui::TouchEvent>& touch_events) {
+  CreateTouchEvent(ui::EventType::ET_TOUCH_MOVED, time_stamp, touch_events);
+}
+
+void Action::CreateTouchReleasedEvent(const base::TimeTicks& time_stamp,
+                                      std::list<ui::TouchEvent>& touch_events) {
+  CreateTouchEvent(ui::EventType::ET_TOUCH_RELEASED, time_stamp, touch_events);
+  OnTouchReleased();
+}
+
 bool Action::IsRepeatedKeyEvent(const ui::KeyEvent& key_event) {
   if ((key_event.flags() & ui::EF_IS_REPEAT) &&
       (key_event.type() == ui::ET_KEY_PRESSED)) {
@@ -467,22 +495,6 @@ bool Action::VerifyOnKeyRelease(ui::DomCode code) {
     return false;
 
   return true;
-}
-
-void Action::OnTouchReleased() {
-  DCHECK(touch_id_);
-  TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
-  touch_id_ = absl::nullopt;
-  keys_pressed_.clear();
-  if (original_positions_.empty())
-    return;
-  current_position_idx_ =
-      (current_position_idx_ + 1) % original_positions_.size();
-}
-
-void Action::OnTouchCancelled() {
-  OnTouchReleased();
-  current_position_idx_ = 0;
 }
 
 void Action::PostUnbindInputProcess() {
@@ -567,6 +579,35 @@ void Action::UpdateTouchDownPositions() {
             << "}";
   }
   DCHECK_EQ(touch_down_positions_.size(), original_positions_.size());
+}
+
+void Action::OnTouchReleased() {
+  last_touch_root_location_.set_x(0);
+  last_touch_root_location_.set_y(0);
+  DCHECK(touch_id_);
+  TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
+  touch_id_ = absl::nullopt;
+  keys_pressed_.clear();
+  if (original_positions_.empty())
+    return;
+  current_position_idx_ =
+      (current_position_idx_ + 1) % original_positions_.size();
+}
+
+void Action::OnTouchCancelled() {
+  OnTouchReleased();
+  current_position_idx_ = 0;
+}
+
+void Action::CreateTouchEvent(ui::EventType type,
+                              const base::TimeTicks& time_stamp,
+                              std::list<ui::TouchEvent>& touch_events) {
+  DCHECK(touch_id_);
+  touch_events.emplace_back(
+      type, last_touch_root_location_, last_touch_root_location_, time_stamp,
+      ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
+  ui::Event::DispatcherApi(&(touch_events.back()))
+      .set_target(touch_injector_->window());
 }
 
 }  // namespace input_overlay
