@@ -52,19 +52,20 @@ bool MockWebRtcAudioSource::remote() const {
 
 MockMediaStream::MockMediaStream(const std::string& id) : id_(id) {}
 
-bool MockMediaStream::AddTrack(AudioTrackInterface* track) {
+bool MockMediaStream::AddTrack(rtc::scoped_refptr<AudioTrackInterface> track) {
   audio_track_vector_.emplace_back(track);
   NotifyObservers();
   return true;
 }
 
-bool MockMediaStream::AddTrack(VideoTrackInterface* track) {
+bool MockMediaStream::AddTrack(rtc::scoped_refptr<VideoTrackInterface> track) {
   video_track_vector_.emplace_back(track);
   NotifyObservers();
   return true;
 }
 
-bool MockMediaStream::RemoveTrack(AudioTrackInterface* track) {
+bool MockMediaStream::RemoveTrack(
+    rtc::scoped_refptr<AudioTrackInterface> track) {
   auto it = FindTrack(&audio_track_vector_, track->id());
   if (it == audio_track_vector_.end())
     return false;
@@ -73,7 +74,8 @@ bool MockMediaStream::RemoveTrack(AudioTrackInterface* track) {
   return true;
 }
 
-bool MockMediaStream::RemoveTrack(VideoTrackInterface* track) {
+bool MockMediaStream::RemoveTrack(
+    rtc::scoped_refptr<VideoTrackInterface> track) {
   auto it = FindTrack(&video_track_vector_, track->id());
   if (it == video_track_vector_.end())
     return false;

@@ -132,10 +132,12 @@ class MockMediaStream : public webrtc::MediaStreamInterface {
  public:
   explicit MockMediaStream(const std::string& id);
 
-  bool AddTrack(webrtc::AudioTrackInterface* track) override;
-  bool AddTrack(webrtc::VideoTrackInterface* track) override;
-  bool RemoveTrack(webrtc::AudioTrackInterface* track) override;
-  bool RemoveTrack(webrtc::VideoTrackInterface* track) override;
+  bool AddTrack(rtc::scoped_refptr<webrtc::AudioTrackInterface> track) override;
+  bool AddTrack(rtc::scoped_refptr<webrtc::VideoTrackInterface> track) override;
+  bool RemoveTrack(
+      rtc::scoped_refptr<webrtc::AudioTrackInterface> track) override;
+  bool RemoveTrack(
+      rtc::scoped_refptr<webrtc::VideoTrackInterface> track) override;
   std::string id() const override;
   webrtc::AudioTrackVector GetAudioTracks() override;
   webrtc::VideoTrackVector GetVideoTracks() override;

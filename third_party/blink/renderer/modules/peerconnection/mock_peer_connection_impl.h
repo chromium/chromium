@@ -196,9 +196,9 @@ class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
   GetTransceivers() const override;
   MOCK_CONST_METHOD0(GetSctpTransport,
                      rtc::scoped_refptr<webrtc::SctpTransportInterface>());
-  rtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
-      const std::string& label,
-      const webrtc::DataChannelInit* config) override;
+  webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::DataChannelInterface>>
+  CreateDataChannelOrError(const std::string& label,
+                           const webrtc::DataChannelInit* config) override;
 
   bool GetStats(webrtc::StatsObserver* observer,
                 webrtc::MediaStreamTrackInterface* track,

@@ -413,12 +413,12 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     rtc::scoped_refptr<webrtc::MediaStreamInterface> stream(
         mock_dependency_factory_->CreateLocalMediaStream(stream_label).get());
     if (!video_track_label.empty()) {
-      InvokeAddTrack(
-          stream, MockWebRtcVideoTrack::Create(video_track_label.Utf8()).get());
+      InvokeAddTrack<webrtc::VideoTrackInterface>(
+          stream, MockWebRtcVideoTrack::Create(video_track_label.Utf8()));
     }
     if (!audio_track_label.empty()) {
-      InvokeAddTrack(
-          stream, MockWebRtcAudioTrack::Create(audio_track_label.Utf8()).get());
+      InvokeAddTrack<webrtc::AudioTrackInterface>(
+          stream, MockWebRtcAudioTrack::Create(audio_track_label.Utf8()));
     }
     mock_peer_connection_->AddRemoteStream(stream.get());
     return stream;
@@ -530,25 +530,26 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   template <typename T>
   void InvokeAddTrack(
       const rtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
-      T* webrtc_track) {
+      const scoped_refptr<T>& webrtc_track) {
     InvokeOnSignalingThread(CrossThreadBindOnce(
         [](webrtc::MediaStreamInterface* remote_stream, T* webrtc_track) {
-          EXPECT_TRUE(remote_stream->AddTrack(webrtc_track));
+          EXPECT_TRUE(
+              remote_stream->AddTrack(rtc::scoped_refptr<T>(webrtc_track)));
         },
         CrossThreadUnretained(remote_stream.get()),
-        CrossThreadUnretained(webrtc_track)));
+        CrossThreadUnretained(webrtc_track.get())));
   }
 
   template <typename T>
   void InvokeRemoveTrack(
       const rtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
-      T* webrtc_track) {
+      const scoped_refptr<T> webrtc_track) {
     InvokeOnSignalingThread(CrossThreadBindOnce(
         [](webrtc::MediaStreamInterface* remote_stream, T* webrtc_track) {
           EXPECT_TRUE(remote_stream->RemoveTrack(webrtc_track));
         },
         CrossThreadUnretained(remote_stream.get()),
-        CrossThreadUnretained(webrtc_track)));
+        CrossThreadUnretained(webrtc_track.get())));
   }
 
   bool HasReceiverForEveryTrack(
@@ -779,7 +780,6 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescriptionParseError) {
 
 TEST_F(RTCPeerConnectionHandlerTest, setConfiguration) {
   webrtc::PeerConnectionInterface::RTCConfiguration config;
-  config.sdp_semantics = webrtc::SdpSemantics::kPlanB;
 
   EXPECT_CALL(*mock_tracker_.Get(),
               TrackSetConfiguration(pc_handler_.get(), _));
@@ -790,7 +790,6 @@ TEST_F(RTCPeerConnectionHandlerTest, setConfiguration) {
 // blink error and false is returned.
 TEST_F(RTCPeerConnectionHandlerTest, setConfigurationError) {
   webrtc::PeerConnectionInterface::RTCConfiguration config;
-  config.sdp_semantics = webrtc::SdpSemantics::kPlanB;
 
   mock_peer_connection_->set_setconfiguration_error_type(
       webrtc::RTCErrorType::INVALID_MODIFICATION);

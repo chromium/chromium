@@ -454,8 +454,8 @@ MockPeerConnectionImpl::GetTransceivers() const {
   return transceivers;
 }
 
-rtc::scoped_refptr<webrtc::DataChannelInterface>
-MockPeerConnectionImpl::CreateDataChannel(
+webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::DataChannelInterface>>
+MockPeerConnectionImpl::CreateDataChannelOrError(
     const std::string& label,
     const webrtc::DataChannelInit* config) {
   return rtc::scoped_refptr<webrtc::DataChannelInterface>(
