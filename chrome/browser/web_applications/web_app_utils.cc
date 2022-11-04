@@ -480,11 +480,17 @@ bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
 
 bool CanUserUninstallWebApp(WebAppSources sources) {
   WebAppSources specified_sources;
-  specified_sources[WebAppManagement::kDefault] = true;
-  specified_sources[WebAppManagement::kSync] = true;
-  specified_sources[WebAppManagement::kWebAppStore] = true;
-  specified_sources[WebAppManagement::kSubApp] = true;
-  specified_sources[WebAppManagement::kOem] = true;
+  for (WebAppManagement::Type type : {
+           WebAppManagement::kDefault,
+           WebAppManagement::kSync,
+           WebAppManagement::kWebAppStore,
+           WebAppManagement::kSubApp,
+           WebAppManagement::kOem,
+           WebAppManagement::kCommandLine,
+       }) {
+    specified_sources.set(type);
+  }
+
   return HasAnySpecifiedSourcesAndNoOtherSources(sources, specified_sources);
 }
 

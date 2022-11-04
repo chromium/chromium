@@ -621,6 +621,18 @@ TEST_F(InstallIsolatedWebAppCommandTest,
               NotNull());
 }
 
+TEST_F(InstallIsolatedWebAppCommandTest, UsersCanDeleteIsolatedApp) {
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  ASSERT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+              }),
+              IsInstallationOk());
+
+  EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
+              Pointee(Property("CanUserUninstallWebApp",
+                               &WebApp::CanUserUninstallWebApp, IsTrue())));
+}
+
 TEST_F(InstallIsolatedWebAppCommandTest,
        CreatesStoragePartitionBeforeUrlLoading) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
