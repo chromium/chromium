@@ -35,8 +35,8 @@ class StubArImageTransport : public ArImageTransport {
       : ArImageTransport(std::move(mailbox_bridge)) {}
 
   void Initialize(WebXrPresentationState*,
-                  base::OnceClosure callback) override {
-    std::move(callback).Run();
+                  XrInitStatusCallback callback) override {
+    std::move(callback).Run(true);
   }
 
   // TODO(lincolnfrog): test verify this somehow.

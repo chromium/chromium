@@ -103,7 +103,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
 
   // Replies to the pending mojo RequestSession request.
   void CallDeferredRequestSessionCallback(
-      absl::optional<ArCoreGlInitializeResult> arcore_initialization_result);
+      ArCoreGlInitializeStatus arcore_initialization_result);
 
   // Tells the GL thread to initialize a GL context and other resources,
   // using the supplied window as a drawing surface.
@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
 
   // Called when the GL thread's GL context initialization completes.
   void OnArCoreGlInitializationComplete(
-      absl::optional<ArCoreGlInitializeResult> arcore_initialization_result);
+      ArCoreGlInitializeStatus arcore_initialization_result);
 
   void OnCreateSessionCallback(
       mojom::XRRuntime::RequestSessionCallback deferred_callback,
@@ -171,6 +171,14 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
     // Trace ID of the requestSession() call that resulted in creating this
     // session state.
     uint64_t request_session_trace_id_;
+
+    // In case of driver bugs that need workarounds (see
+    // ArImageTransport::OnSurfaceBridgeReady), allow a one-time
+    // retry of session creation. This needs a copy of the original
+    // session creation options.
+    bool allow_retry_ = true;
+    mojom::XRRuntimeSessionOptionsPtr options_clone_for_retry_;
+    bool initiate_retry_ = false;
   };
 
   // This object is reset to initial values when ending a session. This helps

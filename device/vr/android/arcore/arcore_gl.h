@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "device/vr/android/arcore/ar_compositor_frame_sink.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -83,8 +84,15 @@ struct ArCoreGlInitializeResult {
   ~ArCoreGlInitializeResult();
 };
 
+enum class ArCoreGlInitializeError {
+  kFailure,
+  kRetryableFailure,
+};
+
+using ArCoreGlInitializeStatus =
+    base::expected<ArCoreGlInitializeResult, ArCoreGlInitializeError>;
 using ArCoreGlInitializeCallback =
-    base::OnceCallback<void(absl::optional<ArCoreGlInitializeResult>)>;
+    base::OnceCallback<void(ArCoreGlInitializeStatus)>;
 
 // All of this class's methods must be called on the same valid GL thread with
 // the exception of GetGlThreadTaskRunner() and GetWeakPtr().
@@ -214,7 +222,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
                               ui::WindowAndroid* root_window,
                               XrFrameSinkClient* xr_frame_sink_client,
                               device::DomOverlaySetup dom_setup);
-  void OnArImageTransportReady();
+  void OnArImageTransportReady(bool success);
   void OnArCompositorInitialized(bool initialized);
   void OnInitialized();
   bool IsOnGlThread() const;

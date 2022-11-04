@@ -35,6 +35,7 @@ class WebXrPresentationState;
 struct WebXrSharedBuffer;
 
 using XrFrameCallback = base::RepeatingCallback<void(const gfx::Transform&)>;
+using XrInitStatusCallback = base::OnceCallback<void(bool success)>;
 
 // This class handles transporting WebGL rendered output from the GPU process's
 // command buffer GL context to the local GL context, and compositing WebGL
@@ -61,7 +62,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
   // GL context via MailboxToSurfaceBridge, and the callback is called
   // once that's complete.
   virtual void Initialize(WebXrPresentationState* webxr,
-                          base::OnceClosure callback);
+                          XrInitStatusCallback callback);
 
   virtual GLuint GetCameraTextureId();
 
@@ -100,6 +101,12 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
   void ServerWaitForGpuFence(std::unique_ptr<gfx::GpuFence> gpu_fence);
 
  private:
+  // Used to disable UseSharedBuffer on platforms where the feature is available
+  // but unusable due to driver bugs. Must be mutable so that it can be switched
+  // to true persistently before retrying session creation, so it can't be
+  // constexpr or inline.
+  static bool disable_shared_buffer_;
+
   std::unique_ptr<WebXrSharedBuffer> CreateBuffer();
   // Returns true if the buffer was resized and its sync token updated.
   bool ResizeSharedBuffer(WebXrPresentationState* webxr,
@@ -107,7 +114,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
                           WebXrSharedBuffer* buffer);
   void ResizeSurface(const gfx::Size& size);
   bool IsOnGlThread() const;
-  void OnMailboxBridgeReady(base::OnceClosure callback);
+  void OnMailboxBridgeReady(XrInitStatusCallback callback);
   void OnFrameAvailable();
   std::unique_ptr<ArRenderer> ar_renderer_;
   // samplerExternalOES texture for the camera image.

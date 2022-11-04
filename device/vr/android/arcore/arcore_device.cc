@@ -87,7 +87,8 @@ ArCoreDevice::ArCoreDevice(
 
 ArCoreDevice::~ArCoreDevice() {
   // If there's still a pending session request, reject it.
-  CallDeferredRequestSessionCallback(absl::nullopt);
+  CallDeferredRequestSessionCallback(
+      base::unexpected(ArCoreGlInitializeError::kFailure));
 
   // Ensure that any active sessions are terminated. Terminating the GL thread
   // would normally do so via its session_shutdown_callback_, but that happens
@@ -110,6 +111,11 @@ void ArCoreDevice::RequestSession(
     mojom::XRRuntime::RequestSessionCallback callback) {
   DVLOG(1) << __func__;
   DCHECK(IsOnMainThread());
+
+  if (session_state_->allow_retry_) {
+    session_state_->options_clone_for_retry_ = options.Clone();
+  }
+
   DCHECK(options->mode == device::mojom::XRSessionMode::kImmersiveAr);
 
   if (HasExclusiveSession()) {
@@ -217,7 +223,31 @@ void ArCoreDevice::OnDrawingSurfaceTouch(bool is_primary,
 void ArCoreDevice::OnDrawingSurfaceDestroyed() {
   DVLOG(1) << __func__;
 
-  CallDeferredRequestSessionCallback(absl::nullopt);
+  if (session_state_->initiate_retry_) {
+    // If we get here, the drawing surface was destroyed intentionally in
+    // OnArCoreGlInitializationComplete due to a driver bug where we want to
+    // retry with workarounds applied.
+    DVLOG(1) << __func__ << ": initiating retry";
+
+    // Grab the options and callback before they are cleared by OnSessionEnded.
+    mojom::XRRuntimeSessionOptionsPtr options =
+        std::move(session_state_->options_clone_for_retry_);
+    mojom::XRRuntime::RequestSessionCallback callback =
+        std::move(session_state_->pending_request_session_callback_);
+
+    // Reset session_state_ back to defaults.
+    OnSessionEnded();
+
+    // Update the freshly-reset session state to not allow further retries. We
+    // don't want an infinite loop in case of logic errors.
+    session_state_->allow_retry_ = false;
+
+    RequestSession(std::move(options), std::move(callback));
+    return;
+  }
+
+  CallDeferredRequestSessionCallback(
+      base::unexpected(ArCoreGlInitializeError::kFailure));
 
   OnSessionEnded();
 }
@@ -278,7 +308,7 @@ void ArCoreDevice::OnSessionEnded() {
 }
 
 void ArCoreDevice::CallDeferredRequestSessionCallback(
-    absl::optional<ArCoreGlInitializeResult> initialize_result) {
+    ArCoreGlInitializeStatus initialize_result) {
   DVLOG(1) << __func__ << " success=" << initialize_result.has_value();
   DCHECK(IsOnMainThread());
 
@@ -290,7 +320,7 @@ void ArCoreDevice::CallDeferredRequestSessionCallback(
   mojom::XRRuntime::RequestSessionCallback deferred_callback =
       std::move(session_state_->pending_request_session_callback_);
 
-  if (!initialize_result) {
+  if (!initialize_result.has_value()) {
     TRACE_EVENT_WITH_FLOW0(
         "xr",
         "ArCoreDevice::CallDeferredRequestSessionCallback: GL initialization "
@@ -380,7 +410,8 @@ void ArCoreDevice::RequestArCoreGlInitialization(
 
   if (!arcore_session_utils_->EnsureLoaded()) {
     DLOG(ERROR) << "ARCore was not loaded properly.";
-    OnArCoreGlInitializationComplete(absl::nullopt);
+    OnArCoreGlInitializationComplete(
+        base::unexpected(ArCoreGlInitializeError::kFailure));
     return;
   }
 
@@ -412,21 +443,36 @@ void ArCoreDevice::RequestArCoreGlInitialization(
 }
 
 void ArCoreDevice::OnArCoreGlInitializationComplete(
-    absl::optional<ArCoreGlInitializeResult> arcore_initialization_result) {
+    ArCoreGlInitializeStatus arcore_initialization_result) {
   DVLOG(1) << __func__ << ": arcore_initialization_result.has_value()="
-           << arcore_initialization_result.has_value();
+           << arcore_initialization_result.has_value()
+           << " session_state_->allow_retry_=" << session_state_->allow_retry_;
   DCHECK(IsOnMainThread());
 
   session_state_->is_arcore_gl_initialized_ =
       arcore_initialization_result.has_value();
 
-  if (arcore_initialization_result) {
+  if (arcore_initialization_result.has_value()) {
     session_state_->enabled_features_ =
         arcore_initialization_result->enabled_features;
     session_state_->depth_configuration_ =
         arcore_initialization_result->depth_configuration;
     session_state_->frame_sink_id_ =
         arcore_initialization_result->frame_sink_id;
+    // Clear the cloned options now that we know we don't need a retry. The
+    // object size could be substantial, i.e. if it contains images for the
+    // image tracking feature.
+    session_state_->options_clone_for_retry_.reset();
+  } else if (arcore_initialization_result.error() ==
+                 ArCoreGlInitializeError::kRetryableFailure &&
+             session_state_->allow_retry_) {
+    session_state_->initiate_retry_ = true;
+    // Exit the current incomplete session, this will destroy the drawing
+    // surface.
+    arcore_session_utils_->EndSession();
+    // The retry will happen in OnDrawingSurfaceDestroyed, so skip calling
+    // the deferred callback.
+    return;
   } else {
     session_state_->enabled_features_ = {};
     session_state_->depth_configuration_ = absl::nullopt;
