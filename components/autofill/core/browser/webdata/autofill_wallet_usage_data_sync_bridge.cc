@@ -8,8 +8,11 @@
 
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/sync_metadata_store_change_list.h"
 
 namespace autofill {
 
@@ -51,15 +54,21 @@ AutofillWalletUsageDataSyncBridge::AutofillWalletUsageDataSyncBridge(
     : ModelTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend) {
   DCHECK(web_data_backend_);
+
+  LoadMetadata();
 }
 
-AutofillWalletUsageDataSyncBridge::~AutofillWalletUsageDataSyncBridge() =
-    default;
+AutofillWalletUsageDataSyncBridge::~AutofillWalletUsageDataSyncBridge() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletUsageDataSyncBridge::CreateMetadataChangeList() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
+      GetAutofillTable(), syncer::AUTOFILL_WALLET_USAGE,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 absl::optional<syncer::ModelError>
@@ -91,7 +100,7 @@ void AutofillWalletUsageDataSyncBridge::GetAllDataForDebugging(
 std::string AutofillWalletUsageDataSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
   DCHECK(entity_data.specifics.has_autofill_wallet_usage());
-  sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData
+  const sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData&
       virtual_card_usage_data = entity_data.specifics.autofill_wallet_usage()
                                     .virtual_card_usage_data();
 
@@ -114,6 +123,28 @@ std::string AutofillWalletUsageDataSyncBridge::GetStorageKey(
 void AutofillWalletUsageDataSyncBridge::ApplyStopSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   NOTIMPLEMENTED();
+}
+
+AutofillTable* AutofillWalletUsageDataSyncBridge::GetAutofillTable() {
+  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+}
+
+void AutofillWalletUsageDataSyncBridge::LoadMetadata() {
+  if (!web_data_backend_->GetDatabase() || !GetAutofillTable()) {
+    change_processor()->ReportError(
+        {FROM_HERE, "Failed to load Autofill table."});
+    return;
+  }
+
+  auto batch = std::make_unique<syncer::MetadataBatch>();
+  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_USAGE,
+                                              batch.get())) {
+    change_processor()->ReportError(
+        {FROM_HERE,
+         "Failed reading Autofill Wallet usage metadata from WebDatabase."});
+    return;
+  }
+  change_processor()->ModelReadyToSync(std::move(batch));
 }
 
 }  // namespace autofill

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -16,6 +17,7 @@
 
 namespace autofill {
 
+class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
 
@@ -62,9 +64,19 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
                                 delete_metadata_change_list) override;
 
  private:
-  // AutofillWalletUsageSyncBridge is owned by `web_data_backend_` through
-  // SupportsUserData, so it's guaranteed to outlive `this`.
+  // Returns the table associated with the |web_data_backend_|.
+  AutofillTable* GetAutofillTable();
+
+  // Synchronously load sync metadata from the autofill table and pass it to the
+  // processor so that it can start tracking changes.
+  void LoadMetadata();
+
+  // AutofillWalletUsageSyncBridge is owned by |web_data_backend_| through
+  // SupportsUserData, so it's guaranteed to outlive |this|.
   const raw_ptr<AutofillWebDataBackend> web_data_backend_;
+
+  // The bridge should be used on the same sequence where it is constructed.
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace autofill
