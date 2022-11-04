@@ -241,6 +241,47 @@ const std::vector<SearchConcept>& GetPrivacyGoogleChromeSearchConcepts() {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+const std::vector<SearchConcept>& GetPrivacyControlsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+    std::vector<SearchConcept> init_tags;
+
+    if (ash::features::IsCrosPrivacyHubEnabled()) {
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_PRIVACY_CONTROLS,
+                           mojom::kPrivacyHubSubpagePath,
+                           mojom::SearchResultIcon::kShield,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSubpage,
+                           {.subpage = mojom::Subpage::kPrivacyHub}});
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_CAMERA,
+                           mojom::kPrivacyHubSubpagePath,
+                           mojom::SearchResultIcon::kCamera,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSetting,
+                           {.setting = mojom::Setting::kCameraOnOff}});
+
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_MICROPHONE,
+                           mojom::kPrivacyHubSubpagePath,
+                           mojom::SearchResultIcon::kMicrophone,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSetting,
+                           {.setting = mojom::Setting::kMicrophoneOnOff}});
+    }
+
+    if (ash::features::IsCrosPrivacyHubV1Enabled()) {
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_GEOLOCATION,
+                           mojom::kPrivacyHubSubpagePath,
+                           mojom::SearchResultIcon::kGeolocation,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSetting,
+                           {.setting = mojom::Setting::kGeolocationOnOff}});
+    }
+
+    return init_tags;
+  }());
+
+  return *tags;
+}
+
 bool IsSecureDnsAvailable() {
   return
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -281,6 +322,10 @@ PrivacySection::PrivacySection(Profile* profile,
   // Conditionally adds search tags concepts based on the subset of smart
   // privacy functionality enabled.
   updater.AddSearchTags(GetSmartPrivacySearchConcepts());
+
+  // Adds search concepts for the contents in the Privacy controls page
+  // depending on the enabled flags.
+  updater.AddSearchTags(GetPrivacyControlsSearchConcepts());
 }
 
 PrivacySection::~PrivacySection() = default;

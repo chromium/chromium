@@ -979,6 +979,18 @@
   <message name="IDS_OS_SETTINGS_TAG_SMART_PRIVACY_QUICK_DIM" desc="Text for search result item which, when clicked, navigates the user to the smart privacy subpage with a toggle to enable/disable quick dim." translateable="false">
     Smart screen lock
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_PRIVACY_CONTROLS" desc="Text for search result item which, when clicked, navigates the user to the Privacy controls subpage.">
+    Privacy controls
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_CAMERA" desc="Text for search result item which, when clicked, navigates the user to Camera access settings.">
+    Camera access
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_GEOLOCATION" desc="Text for search result item which, when clicked, navigates the user to Location access settings.">
+    Location access
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MICROPHONE" desc="Text for search result item which, when clicked, navigates the user to Microphone access settings.">
+    Microphone access
+  </message>
 
   <!-- Languages and Input section. -->
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES" desc="Text for search result item which, when clicked, navigates the user to languages settings.">

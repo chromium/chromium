@@ -678,6 +678,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'cr:person';
       case SearchResultIcon.kBluetooth:
         return 'cr:bluetooth';
+      case SearchResultIcon.kCamera:
+        return 'os-settings:camera';
       case SearchResultIcon.kCellular:
         return 'os-settings:cellular';
       case SearchResultIcon.kChrome:
@@ -706,6 +708,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:folder-outline';
       case SearchResultIcon.kFullscreenMagnifier:
         return 'os-settings:fullscreen-magnifier';
+      case SearchResultIcon.kGeolocation:
+        return 'os-settings:geolocation';
       case SearchResultIcon.kGlobe:
         return 'os-settings:language';
       case SearchResultIcon.kGooglePlay:
@@ -724,6 +728,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'cr:search';
       case SearchResultIcon.kMessages:
         return 'os-settings:multidevice-messages';
+      case SearchResultIcon.kMicrophone:
+        return 'os-settings:microphone';
       case SearchResultIcon.kMouse:
         return 'os-settings:mouse';
       case SearchResultIcon.kNearbyShare:
