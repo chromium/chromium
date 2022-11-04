@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 #include "components/url_matcher/url_matcher.h"
 #include "net/base/hash_value.h"
 #include "net/http/transport_security_state.h"

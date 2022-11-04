@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/early_hints.mojom-forward.h"

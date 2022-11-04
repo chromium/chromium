@@ -5,8 +5,6 @@
 #ifndef REMOTING_PROTOCOL_SESSION_OPTIONS_PROVIDER_H_
 #define REMOTING_PROTOCOL_SESSION_OPTIONS_PROVIDER_H_
 
-#include "base/memory/ref_counted.h"
-
 namespace remoting {
 
 class SessionOptions;

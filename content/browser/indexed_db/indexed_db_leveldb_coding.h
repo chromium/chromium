@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "content/common/content_export.h"

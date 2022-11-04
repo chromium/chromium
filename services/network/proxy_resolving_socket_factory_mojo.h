@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_PROXY_RESOLVING_SOCKET_FACTORY_MOJO_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"

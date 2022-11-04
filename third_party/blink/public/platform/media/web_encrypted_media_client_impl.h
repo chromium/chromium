@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/media/key_system_config_selector.h"
 #include "third_party/blink/public/platform/web_common.h"

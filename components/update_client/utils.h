@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
 #include "components/update_client/update_client.h"
 
 class GURL;

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "chrome/common/extensions/api/notifications.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/message_center/public/cpp/notification_types.h"

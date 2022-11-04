@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "extensions/renderer/extension_throttle_entry.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"

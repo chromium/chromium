@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sessions/core/session_id.h"

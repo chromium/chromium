@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gl/gl_bindings.h"
 

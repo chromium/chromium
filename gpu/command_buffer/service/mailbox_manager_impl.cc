@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "gpu/command_buffer/service/texture_base.h"
 

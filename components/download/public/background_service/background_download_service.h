@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/task/download_task_types.h"

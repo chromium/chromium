@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "chromecast/browser/cast_web_view.h"
 
 namespace content {

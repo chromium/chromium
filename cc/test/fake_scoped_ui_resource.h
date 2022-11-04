@@ -5,7 +5,6 @@
 #ifndef CC_TEST_FAKE_SCOPED_UI_RESOURCE_H_
 #define CC_TEST_FAKE_SCOPED_UI_RESOURCE_H_
 
-#include "base/memory/ref_counted.h"
 #include "cc/resources/scoped_ui_resource.h"
 
 namespace cc {

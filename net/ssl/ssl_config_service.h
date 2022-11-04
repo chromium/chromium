@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "net/base/net_export.h"
 #include "net/ssl/ssl_config.h"

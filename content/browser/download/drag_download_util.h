@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
 #include "content/browser/download/drag_download_file.h"
 #include "ui/base/dragdrop/download_file_interface.h"
 

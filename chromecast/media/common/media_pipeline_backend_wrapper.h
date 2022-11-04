@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"

@@ -23,7 +23,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #if !defined(SANDBOX_FUZZ_TARGET)
 #include "base/win/windows_types.h"

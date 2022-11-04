@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
 #include "ipc/ipc_platform_file.h"

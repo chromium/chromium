@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"

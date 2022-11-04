@@ -5,7 +5,6 @@
 #ifndef NET_CERT_NSS_PROFILE_FILTER_CHROMEOS_H_
 #define NET_CERT_NSS_PROFILE_FILTER_CHROMEOS_H_
 
-#include "base/memory/ref_counted.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
 #include "net/cert/scoped_nss_types.h"

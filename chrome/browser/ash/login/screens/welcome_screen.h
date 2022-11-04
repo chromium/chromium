@@ -12,7 +12,6 @@
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 // TODO(https://crbug.com/1164001): forward declare LanguageSwitchResult

@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/memory/ref_counted.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_request_result_delegate_bridge.h"
 
 @protocol BrowserCoordinatorCommands;

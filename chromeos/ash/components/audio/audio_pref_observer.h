@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_PREF_OBSERVER_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 
 namespace ash {
 

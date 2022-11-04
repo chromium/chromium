@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/device/public/mojom/usb_device.mojom.h"

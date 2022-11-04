@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/content_verifier_delegate.h"

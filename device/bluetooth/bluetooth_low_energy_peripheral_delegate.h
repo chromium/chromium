@@ -7,7 +7,8 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 
-#include "base/memory/ref_counted.h"
+#include <memory>
+
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_IOS)

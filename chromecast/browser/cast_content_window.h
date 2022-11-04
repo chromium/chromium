@@ -6,7 +6,6 @@
 #define CHROMECAST_BROWSER_CAST_CONTENT_WINDOW_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromecast/browser/cast_web_contents.h"

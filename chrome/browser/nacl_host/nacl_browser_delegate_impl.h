@@ -13,7 +13,6 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/memory/ref_counted.h"
 #include "extensions/common/url_pattern.h"
 #endif
 

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/test/base/testing_profile.h"

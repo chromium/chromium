@@ -6,7 +6,6 @@
 #define REMOTING_PROTOCOL_CLIENT_CONTROL_DISPATCHER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/cursor_shape_stub.h"

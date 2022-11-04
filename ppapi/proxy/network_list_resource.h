@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/proxy/serialized_structs.h"

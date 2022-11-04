@@ -10,7 +10,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapper.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"

@@ -8,7 +8,6 @@
 #include <map>
 #include <utility>
 
-#include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"

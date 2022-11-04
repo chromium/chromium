@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/manifest.h"

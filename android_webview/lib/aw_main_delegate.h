@@ -9,7 +9,6 @@
 
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/common/aw_content_client.h"
-#include "base/memory/ref_counted.h"
 #include "content/public/app/content_main_delegate.h"
 
 namespace content {

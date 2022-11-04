@@ -12,7 +12,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/proxy_resolution/win/winhttp_status.h"

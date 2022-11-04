@@ -6,7 +6,6 @@
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_V8_BINDINGS_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"

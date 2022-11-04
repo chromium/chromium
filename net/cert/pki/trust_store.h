@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/cert_issuer_source.h"

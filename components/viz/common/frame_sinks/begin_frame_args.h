@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

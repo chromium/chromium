@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "components/value_store/value_store.h"
 #include "testing/gtest/include/gtest/gtest.h"

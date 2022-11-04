@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/memory/ref_counted.h"
-
 namespace autofill {
 class CreditCard;
 }  // namespace autofill

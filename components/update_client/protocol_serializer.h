@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
 #include "components/update_client/protocol_definition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

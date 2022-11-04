@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/decoder_buffer.h"

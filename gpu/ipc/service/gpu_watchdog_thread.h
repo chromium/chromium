@@ -7,7 +7,6 @@
 
 #include "base/atomicops.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_observer.h"

@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/net_export.h"

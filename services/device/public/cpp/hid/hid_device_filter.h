@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {

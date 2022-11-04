@@ -43,7 +43,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "net/cert/scoped_nss_types.h"
 
 typedef struct CERTCertificateStr CERTCertificate;

@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "components/cronet/cronet_context.h"
 #include "components/prefs/json_pref_store.h"

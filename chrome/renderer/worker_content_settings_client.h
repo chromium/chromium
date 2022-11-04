@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_WORKER_CONTENT_SETTINGS_CLIENT_H_
 #define CHROME_RENDERER_WORKER_CONTENT_SETTINGS_CLIENT_H_
 
-#include "base/memory/ref_counted.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/site_for_cookies.h"

@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/domain_reliability_export.h"
 #include "url/gurl.h"

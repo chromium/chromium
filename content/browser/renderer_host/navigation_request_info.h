@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_REQUEST_INFO_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_REQUEST_INFO_H_
 
-#include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"

@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_REQUIREMENTS_SERVICE_FACTORY_H_
 #define IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_REQUIREMENTS_SERVICE_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 

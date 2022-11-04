@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "storage/browser/file_system/async_file_util.h"

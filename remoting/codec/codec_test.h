@@ -7,8 +7,6 @@
 
 #include <list>
 
-#include "base/memory/ref_counted.h"
-
 namespace webrtc {
 class DesktopFrame;
 class DesktopSize;

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEEDBACK_CONTENT_FEEDBACK_UPLOADER_FACTORY_H_
 #define COMPONENTS_FEEDBACK_CONTENT_FEEDBACK_UPLOADER_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {

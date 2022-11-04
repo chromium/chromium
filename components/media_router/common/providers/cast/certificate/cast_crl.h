@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/cert/pki/parsed_certificate.h"
 

@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "google_apis/gcm/base/gcm_export.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
 

@@ -6,7 +6,6 @@
 #define STORAGE_BROWSER_DATABASE_DATABASE_QUOTA_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"

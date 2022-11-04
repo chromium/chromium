@@ -12,7 +12,6 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/guid.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"

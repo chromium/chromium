@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ENABLE_DEBUGGING_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ENABLE_DEBUGGING_SCREEN_HANDLER_H_
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 

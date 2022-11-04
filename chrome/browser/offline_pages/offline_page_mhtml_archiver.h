@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/offline_page_archiver.h"

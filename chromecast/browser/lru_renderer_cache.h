@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 

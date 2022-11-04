@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"

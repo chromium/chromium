@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/webdata/common/web_data_service_base.h"

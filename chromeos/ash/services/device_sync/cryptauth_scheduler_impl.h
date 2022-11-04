@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_handler.h"

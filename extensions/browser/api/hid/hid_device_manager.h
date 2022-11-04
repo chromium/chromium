@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"

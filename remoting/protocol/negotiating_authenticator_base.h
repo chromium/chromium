@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
 #include "remoting/protocol/authenticator.h"
 
 namespace jingle_xmpp {

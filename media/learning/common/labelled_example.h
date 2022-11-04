@@ -9,8 +9,8 @@
 #include <ostream>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 #include "media/learning/common/value.h"
 
 namespace media {

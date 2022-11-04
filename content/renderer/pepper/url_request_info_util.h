@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_URL_REQUEST_INFO_UTIL_H_
 #define CONTENT_RENDERER_PEPPER_URL_REQUEST_INFO_UTIL_H_
 
-#include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_instance.h"
 

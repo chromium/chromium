@@ -6,7 +6,6 @@
 #define MEDIA_FILTERS_AUDIO_TIMESTAMP_VALIDATOR_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder_config.h"

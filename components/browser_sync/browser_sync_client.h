@@ -6,7 +6,6 @@
 #define COMPONENTS_BROWSER_SYNC_BROWSER_SYNC_CLIENT_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/driver/sync_client.h"
 #include "components/sync/model/model_type_controller_delegate.h"

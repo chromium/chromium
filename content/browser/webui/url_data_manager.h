@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "content/common/content_export.h"

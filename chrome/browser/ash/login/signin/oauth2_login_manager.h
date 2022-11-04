@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_verifier.h"

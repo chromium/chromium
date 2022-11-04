@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_service.h"
 #include "net/cert/nss_cert_database.h"

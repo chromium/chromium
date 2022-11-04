@@ -6,7 +6,6 @@
 #define NET_CERT_INTERNAL_TRUST_STORE_WIN_H_
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/ref_counted.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/net_export.h"

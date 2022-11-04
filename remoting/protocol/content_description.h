@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "remoting/protocol/session_config.h"
 
 namespace jingle_xmpp {

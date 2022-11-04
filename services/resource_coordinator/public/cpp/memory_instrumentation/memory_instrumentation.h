@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"

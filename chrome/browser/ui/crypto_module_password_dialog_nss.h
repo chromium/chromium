@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/crypto_module_password_dialog.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/host_port_pair.h"

@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_pattern.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

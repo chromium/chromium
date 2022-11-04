@@ -6,7 +6,6 @@
 #define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_READER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 
 namespace net {
 class HttpByteRange;

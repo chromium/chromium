@@ -12,7 +12,6 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
 #include "components/storage_monitor/storage_monitor_win.h"
 
 namespace storage_monitor {

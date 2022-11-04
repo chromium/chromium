@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/memory/free_deleter.h"
-#include "base/memory/ref_counted.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"

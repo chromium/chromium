@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/url_pattern_set.h"
 

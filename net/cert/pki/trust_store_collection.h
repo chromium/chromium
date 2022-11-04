@@ -5,7 +5,6 @@
 #ifndef NET_CERT_PKI_TRUST_STORE_COLLECTION_H_
 #define NET_CERT_PKI_TRUST_STORE_COLLECTION_H_
 
-#include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/trust_store.h"
 

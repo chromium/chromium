@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_SIGNATURE_VERIFIER_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_SIGNATURE_VERIFIER_H_
 
-#include "base/memory/ref_counted.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_export.h"
 #include "net/cert/x509_certificate.h"

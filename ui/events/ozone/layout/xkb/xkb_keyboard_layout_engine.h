@@ -17,7 +17,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/task_runner.h"

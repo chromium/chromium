@@ -9,7 +9,6 @@
 #include <lib/fidl/cpp/interface_handle.h>
 #include <lib/zx/job.h>
 
-#include "base/memory/ref_counted.h"
 #include "base/threading/sequence_bound.h"
 #include "sandbox/policy/export.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"

@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/ref_counted.h"
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 

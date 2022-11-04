@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/base/process_types.h"
 #include "components/prefs/pref_name_set.h"

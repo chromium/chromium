@@ -10,7 +10,6 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/lru_cache.h"
-#include "base/memory/ref_counted.h"
 #include "base/numerics/safe_math.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_provider.h"

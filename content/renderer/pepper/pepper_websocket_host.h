@@ -10,7 +10,6 @@
 #include <memory>
 #include <queue>
 
-#include "base/memory/ref_counted.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/resource_message_params.h"

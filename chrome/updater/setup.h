@@ -6,7 +6,6 @@
 #define CHROME_UPDATER_SETUP_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {

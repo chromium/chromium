@@ -6,7 +6,6 @@
 #define SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_DISPATCHER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_tags.h"

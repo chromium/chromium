@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_MEDIA_CAPTURE_RECEIVER_MEDIA_TO_CROSAPI_ADAPTER_H_
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

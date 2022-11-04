@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
 #include "chrome/browser/ui/views/certificate_selector.h"
 #include "net/cert/x509_certificate.h"

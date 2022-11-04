@@ -6,7 +6,6 @@
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_LOADER_COMMAND_LINE_H_
 
 #include "base/command_line.h"
-#include "base/memory/ref_counted.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {

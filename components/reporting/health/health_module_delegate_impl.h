@@ -9,7 +9,6 @@
 #include <string>
 
 #include <base/files/file.h>
-#include <base/memory/ref_counted.h>
 #include <base/memory/weak_ptr.h>
 #include <base/sequence_checker.h>
 #include <base/thread_annotations.h>

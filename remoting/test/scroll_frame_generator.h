@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "remoting/protocol/input_event_timestamps.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"

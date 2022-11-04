@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
 #include "net/cookies/canonical_cookie.h"
 
 namespace net {

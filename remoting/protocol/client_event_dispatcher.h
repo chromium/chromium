@@ -5,7 +5,6 @@
 #ifndef REMOTING_PROTOCOL_CLIENT_EVENT_DISPATCHER_H_
 #define REMOTING_PROTOCOL_CLIENT_EVENT_DISPATCHER_H_
 
-#include "base/memory/ref_counted.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/input_stub.h"
 

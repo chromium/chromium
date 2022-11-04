@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/memory/ref_counted.h"
 
 namespace web {
 class CookieNotificationBridge;

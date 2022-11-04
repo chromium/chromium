@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 
 class GURL;

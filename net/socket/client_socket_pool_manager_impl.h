@@ -11,7 +11,6 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "net/base/net_export.h"

@@ -13,7 +13,6 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"

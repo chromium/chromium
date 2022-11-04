@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_STORAGE_STORAGE_API_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
 #include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
 #include "extensions/browser/api/storage/settings_namespace.h"

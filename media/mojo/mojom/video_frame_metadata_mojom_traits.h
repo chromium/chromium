@@ -5,7 +5,6 @@
 #ifndef MEDIA_MOJO_MOJOM_VIDEO_FRAME_METADATA_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_VIDEO_FRAME_METADATA_MOJOM_TRAITS_H_
 
-#include "base/memory/ref_counted.h"
 #include "media/base/ipc/media_param_traits_macros.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_transformation.h"
