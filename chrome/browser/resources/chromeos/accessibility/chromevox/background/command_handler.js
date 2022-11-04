@@ -1828,7 +1828,8 @@ export class CommandHandler extends CommandHandlerInterface {
 
   /** @private */
   toggleStickyMode_() {
-    ChromeVoxBackground.setPref('sticky', !ChromeVox.isStickyPrefOn, true);
+    ChromeVoxPrefs.instance.setAndAnnounceStickyPref(!ChromeVox.isStickyPrefOn);
+
     if (ChromeVoxState.instance.currentRange) {
       this.smartStickyMode_.onStickyModeCommand(
           ChromeVoxState.instance.currentRange);

@@ -14,6 +14,7 @@ import {Earcon} from '../common/abstract_earcons.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
 import {ChromeVoxBackground} from './classic_background.js';
+import {ChromeVoxPrefs} from './prefs.js';
 
 /** @implements {ChromeVoxStateObserver} */
 export class SmartStickyMode {
@@ -66,7 +67,7 @@ export class SmartStickyMode {
         Boolean(this.getEditableOrRelatedEditable_(node));
 
     // This toggler should not make any changes when the range isn't what we're
-    // lloking for and we haven't previously tracked any sticky mode state from
+    // looking for and we haven't previously tracked any sticky mode state from
     // the user.
     if (!shouldTurnOffStickyMode && !this.didTurnOffStickyMode_) {
       return;
@@ -88,13 +89,11 @@ export class SmartStickyMode {
       // Save the sticky state for restoration later.
       this.didTurnOffStickyMode_ = true;
       ChromeVox.earcons.playEarcon(Earcon.SMART_STICKY_MODE_OFF);
-      ChromeVoxBackground.setPref(
-          'sticky', false /* value */, true /* announce */);
+      ChromeVoxPrefs.instance.setAndAnnounceStickyPref(false);
     } else if (this.didTurnOffStickyMode_) {
       // Restore the previous sticky mode state.
       ChromeVox.earcons.playEarcon(Earcon.SMART_STICKY_MODE_ON);
-      ChromeVoxBackground.setPref(
-          'sticky', true /* value */, true /* announce */);
+      ChromeVoxPrefs.instance.setAndAnnounceStickyPref(true);
       this.didTurnOffStickyMode_ = false;
     }
   }

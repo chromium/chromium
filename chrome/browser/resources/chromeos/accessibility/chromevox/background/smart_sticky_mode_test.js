@@ -16,12 +16,10 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
     // Alphabetical based on file path.
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
-    await importModule(
-        'ChromeVoxBackground', '/chromevox/background/classic_background.js');
+    await importModule('ChromeVoxPrefs', '/chromevox/background/prefs.js');
     await importModule(
         'SmartStickyMode', '/chromevox/background/smart_sticky_mode.js');
     await importModule('CursorRange', '/common/cursors/range.js');
-
     this.ssm_ = new SmartStickyMode();
     // Deregister from actual range changes.
     ChromeVoxState.removeObserver(this.ssm_);
@@ -57,8 +55,7 @@ AX_TEST_F(
 
       // First, turn on sticky mode and try changing range to various parts of
       // the document.
-      ChromeVoxBackground.setPref(
-          'sticky', true /* value */, true /* announce */);
+      ChromeVoxPrefs.instance.setAndAnnounceStickyPref(true);
       this.assertDidTurnOffForNode(input);
       this.assertDidTurnOffForNode(textarea);
       this.assertDidNotTurnOffForNode(p);
@@ -83,8 +80,7 @@ AX_TEST_F(
     async function() {
       const root = await this.runWithLoadedTree(this.relationsDoc);
       const [p, input, textarea, contenteditable, ul1, ul2] = root.children;
-      ChromeVoxBackground.setPref(
-          'sticky', true /* value */, true /* announce */);
+      ChromeVoxPrefs.instance.setAndAnnounceStickyPref(true);
 
       // Mix in calls to turn on / off sticky mode while moving the range
       // around.
@@ -98,8 +94,7 @@ AX_TEST_F(
 
       // Make sure sticky mode is on again. This call doesn't impact our
       // instance of SmartStickyMode.
-      ChromeVoxBackground.setPref(
-          'sticky', true /* value */, true /* announce */);
+      ChromeVoxPrefs.instance.setAndAnnounceStickyPref(true);
 
       // Mix in more sticky mode user commands and move to related nodes.
       this.assertDidTurnOffForNode(contenteditable);

@@ -31,8 +31,6 @@ import {TtsBackground} from './tts_background.js';
  */
 export class ChromeVoxBackground {
   constructor() {
-    ChromeVoxBackground.readPrefs();
-
     this.addBridgeListener();
 
     // Build a regexp to match all allowed urls.
@@ -56,70 +54,6 @@ export class ChromeVoxBackground {
         InjectedScriptLoader.injectContentScript(tabs);
       }
     });
-  }
-
-  /**
-   * @param {string} pref
-   * @param {Object|boolean|number|string} value
-   * @param {boolean} announce
-   */
-  static setPref(pref, value, announce) {
-    if (pref === 'earcons') {
-      AbstractEarcons.enabled = Boolean(value);
-    } else if (pref === 'sticky' && announce) {
-      if (typeof (value) !== 'boolean') {
-        throw new Error('Unexpected sticky mode value ' + value);
-      }
-      chrome.accessibilityPrivate.setKeyboardListener(true, Boolean(value));
-      new Output()
-          .withInitialSpeechProperties(AbstractTts.PERSONALITY_ANNOTATION)
-          .withString(
-              value ? Msgs.getMsg('sticky_mode_enabled') :
-                      Msgs.getMsg('sticky_mode_disabled'))
-          .go();
-    } else if (pref === 'typingEcho' && announce) {
-      let announceStr = '';
-      switch (value) {
-        case TypingEcho.CHARACTER:
-          announceStr = Msgs.getMsg('character_echo');
-          break;
-        case TypingEcho.WORD:
-          announceStr = Msgs.getMsg('word_echo');
-          break;
-        case TypingEcho.CHARACTER_AND_WORD:
-          announceStr = Msgs.getMsg('character_and_word_echo');
-          break;
-        case TypingEcho.NONE:
-          announceStr = Msgs.getMsg('none_echo');
-          break;
-        default:
-          break;
-      }
-      if (announceStr) {
-        new Output()
-            .withInitialSpeechProperties(AbstractTts.PERSONALITY_ANNOTATION)
-            .withString(announceStr)
-            .go();
-      }
-    } else if (pref === 'brailleCaptions') {
-      BrailleCaptionsBackground.setActive(Boolean(value));
-    } else if (pref === 'position') {
-      ChromeVox.position =
-          /** @type {Object<string, constants.Point>} */ (JSON.parse(
-              /** @type {string} */ (value)));
-    }
-    ChromeVoxPrefs.instance.setPref(pref, value);
-    ChromeVoxBackground.readPrefs();
-  }
-
-  /**
-   * Read and apply preferences that affect the background context.
-   */
-  static readPrefs() {
-    const prefs = ChromeVoxPrefs.instance.getPrefs();
-    ChromeVoxEditableTextBase.useIBeamCursor =
-        (prefs['useIBeamCursor'] === 'true');
-    ChromeVox.isStickyPrefOn = (prefs['sticky'] === 'true');
   }
 
   /**

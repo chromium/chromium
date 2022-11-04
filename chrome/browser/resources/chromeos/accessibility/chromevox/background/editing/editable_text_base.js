@@ -710,8 +710,8 @@ export class ChromeVoxEditableTextBase {
  *
  * @type {boolean}
  */
-ChromeVoxEditableTextBase.useIBeamCursor = false;
-
+ChromeVoxEditableTextBase.useIBeamCursor =
+    localStorage['useIBeamCursor'] === String(true);
 
 /**
  * @type {boolean} Whether insertions (i.e. changes of greater than one

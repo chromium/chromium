@@ -5,14 +5,17 @@
 /**
  * @fileoverview Common page for reading and writing preferences from
  * the background context (background page or options page).
- *
  */
+import {AbstractTts} from '../common/abstract_tts.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
+import {Msgs} from '../common/msgs.js';
 
+import {ChromeVox} from './chromevox.js';
 import {ConsoleTts} from './console_tts.js';
 import {EventStreamLogger} from './logging/event_stream_logger.js';
 import {LogUrlWatcher} from './logging/log_url_watcher.js';
+import {Output} from './output/output.js';
 
 /**
  * This object has default values of preferences and contains the common
@@ -85,6 +88,23 @@ export class ChromeVoxPrefs {
       EventStreamLogger.instance.notifyEventStreamFilterChangedAll(value);
     }
     this.enableOrDisableLogUrlWatcher_();
+  }
+
+  /**
+   * Sets the value of the sticky mode pref, as well as updating the listeners
+   * and announcing.
+   * @param {boolean} value
+   */
+  setAndAnnounceStickyPref(value) {
+    chrome.accessibilityPrivate.setKeyboardListener(true, value);
+    new Output()
+        .withInitialSpeechProperties(AbstractTts.PERSONALITY_ANNOTATION)
+        .withString(
+            value ? Msgs.getMsg('sticky_mode_enabled') :
+                    Msgs.getMsg('sticky_mode_disabled'))
+        .go();
+    this.setPref('sticky', value);
+    ChromeVox.isStickyPrefOn = value;
   }
 
   enableOrDisableLogUrlWatcher_() {

@@ -46,7 +46,7 @@ ChromeVox.earcons = null;
  * either through the pref or due to being temporarily toggled on.
  * @type {boolean}
  */
-ChromeVox.isStickyPrefOn = false;
+ChromeVox.isStickyPrefOn = localStorage['sticky'] === String(true);
 /**
  * If set to true or false, this value overrides ChromeVox.isStickyPrefOn
  * temporarily - in order to temporarily enable sticky mode while doing
