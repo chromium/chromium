@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_completion_blocker.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
@@ -29,8 +30,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -46,14 +45,16 @@ namespace content {
 class DownloadManager;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace extensions {
 class CrxInstaller;
+class CrxInstallError;
 }
+#endif
 
 // This is the Chrome side helper for the download system.
 class ChromeDownloadManagerDelegate
     : public content::DownloadManagerDelegate,
-      public content::NotificationObserver,
       public DownloadTargetDeterminerDelegate,
       public content::DownloadManager::Observer {
  public:
@@ -266,10 +267,13 @@ class ChromeDownloadManagerDelegate
       const base::FilePath& suggested_path,
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback);
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Called when CrxInstaller in running_crx_installs_ finishes installation.
+  void OnInstallerDone(
+      const base::UnguessableToken& token,
+      content::DownloadOpenDelayedCallback callback,
+      const absl::optional<extensions::CrxInstallError>& error);
+#endif
 
   // Internal gateways for ShouldCompleteDownload().
   bool IsDownloadReadyForCompletion(
@@ -346,11 +350,9 @@ class ChromeDownloadManagerDelegate
   std::unique_ptr<DownloadPrefs> download_prefs_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Maps from pending extension installations to DownloadItem IDs.
-  typedef base::flat_map<extensions::CrxInstaller*,
-                         content::DownloadOpenDelayedCallback>
-      CrxInstallerMap;
-  CrxInstallerMap crx_installers_;
+  // CRX installs that are currently in progress.
+  std::map<base::UnguessableToken, scoped_refptr<extensions::CrxInstaller>>
+      running_crx_installs_;
 #endif
 
   // Outstanding callbacks to open file selection dialog.
@@ -358,8 +360,6 @@ class ChromeDownloadManagerDelegate
 
   // Whether a file picker dialog is showing.
   bool is_file_picker_showing_;
-
-  content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<ChromeDownloadManagerDelegate> weak_ptr_factory_{this};
 };

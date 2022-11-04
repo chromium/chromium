@@ -35,14 +35,6 @@ scoped_refptr<extensions::CrxInstaller> CreateCrxInstaller(
     Profile* profile,
     const download::DownloadItem& download_item);
 
-// Start installing a downloaded item item as a CRX (extension, theme, app,
-// ...).  The installer does work on the file thread, so the installation
-// is not complete when this function returns.  Returns the object managing
-// the installation.
-scoped_refptr<extensions::CrxInstaller> OpenChromeExtension(
-    Profile* profile,
-    const download::DownloadItem& download_item);
-
 // Returns true if this is an extension download. This also considers user
 // scripts to be extension downloads, since we convert those automatically.
 bool IsExtensionDownload(const download::DownloadItem& download_item);
@@ -55,6 +47,12 @@ bool IsTrustedExtensionDownload(Profile* profile,
 // for testing purposes.
 std::unique_ptr<base::AutoReset<bool>> OverrideOffstoreInstallAllowedForTesting(
     bool allowed);
+
+// Returns true if an offstore extension download should be allowed to proceed.
+// Takes into consideration what's set in
+// OverrideOffstoreInstallAllowedForTesting
+bool OffStoreInstallAllowedByPrefs(Profile* profile,
+                                   const download::DownloadItem& item);
 
 }  // namespace download_crx_util
 

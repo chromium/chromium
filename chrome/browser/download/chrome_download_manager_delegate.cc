@@ -80,7 +80,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/origin_util.h"
@@ -118,8 +117,8 @@
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/webstore_installer.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/user_script.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -135,6 +134,11 @@ using download::PathValidationResult;
 using safe_browsing::DownloadFileType;
 using safe_browsing::DownloadProtectionService;
 using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+using extensions::CrxInstaller;
+using extensions::CrxInstallError;
+#endif
 
 namespace {
 
@@ -732,16 +736,28 @@ bool ChromeDownloadManagerDelegate::ShouldOpenDownload(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (download_crx_util::IsExtensionDownload(*item) &&
       !extensions::WebstoreInstaller::GetAssociatedApproval(*item)) {
-    scoped_refptr<extensions::CrxInstaller> crx_installer =
-        download_crx_util::OpenChromeExtension(profile_, *item);
+    scoped_refptr<CrxInstaller> installer(
+        download_crx_util::CreateCrxInstaller(profile_, *item));
 
-    // CRX_INSTALLER_DONE will fire when the install completes.  At that
-    // time, Observe() will call the passed callback.
-    registrar_.Add(
-        this, extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-        content::Source<extensions::CrxInstaller>(crx_installer.get()));
+    if (download_crx_util::OffStoreInstallAllowedByPrefs(profile_, *item)) {
+      installer->set_off_store_install_allow_reason(
+          CrxInstaller::OffStoreInstallAllowedBecausePref);
+    }
 
-    crx_installers_[crx_installer.get()] = std::move(callback);
+    auto token = base::UnguessableToken::Create();
+    running_crx_installs_[token] = installer;
+
+    installer->AddInstallerCallback(base::BindOnce(
+        &ChromeDownloadManagerDelegate::OnInstallerDone,
+        weak_ptr_factory_.GetWeakPtr(), token, std::move(callback)));
+
+    if (extensions::UserScript::IsURLUserScript(item->GetURL(),
+                                                item->GetMimeType())) {
+      installer->InstallUserScript(item->GetFullPath(), item->GetURL());
+    } else {
+      installer->InstallCrx(item->GetFullPath());
+    }
+
     // The status text and percent complete indicator will change now
     // that we are installing a CRX.  Update observers so that they pick
     // up the change.
@@ -1475,24 +1491,23 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
 }
 #endif  // FULL_SAFE_BROWSING
 
-// content::NotificationObserver implementation.
-void ChromeDownloadManagerDelegate::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  DCHECK_EQ(extensions::NOTIFICATION_CRX_INSTALLER_DONE, type);
+void ChromeDownloadManagerDelegate::OnInstallerDone(
+    const base::UnguessableToken& token,
+    content::DownloadOpenDelayedCallback callback,
+    const absl::optional<CrxInstallError>& error) {
+  scoped_refptr<CrxInstaller> installer;
 
-  registrar_.Remove(this, extensions::NOTIFICATION_CRX_INSTALLER_DONE, source);
+  {
+    auto iter = running_crx_installs_.find(token);
+    DCHECK(iter != running_crx_installs_.end());
+    installer = iter->second;
+    running_crx_installs_.erase(iter);
+  }
 
-  scoped_refptr<extensions::CrxInstaller> installer =
-      content::Source<extensions::CrxInstaller>(source).ptr();
-  content::DownloadOpenDelayedCallback callback =
-      std::move(crx_installers_[installer.get()]);
-  crx_installers_.erase(installer.get());
   std::move(callback).Run(installer->did_handle_successfully());
-#endif
 }
+#endif
 
 void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
     uint32_t download_id,
