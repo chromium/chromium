@@ -141,7 +141,7 @@ async function main() {
       let writePromise;
       // A write to this file will be stuck forever.
       const fileEntry = await fileSystem.getFileEntry(
-          TestFileSystemProvider.FILE_BLOCKS_FOREVER,
+          TestFileSystemProvider.FILE_BLOCK_IO,
           {create: false, exclusive: false});
       const fileWriter = await createWriter(fileEntry);
       // Start a write request, wait for it to reach the provider.

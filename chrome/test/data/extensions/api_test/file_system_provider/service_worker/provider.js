@@ -99,19 +99,14 @@ export class TestFileSystemProvider {
       Entry.file(
           TestFileSystemProvider.FILE_FAIL, new Date(2014, 1, 25, 7, 36, 12),
           TestFileSystemProvider.INITIAL_TEXT),
-      // Read and write blocks indefinitely.
-      Entry.file(
-          TestFileSystemProvider.FILE_BLOCKS_FOREVER,
-          new Date(2014, 1, 26, 8, 37, 13),
-          TestFileSystemProvider.INITIAL_TEXT),
       // Open blocks until unblocked manually.
       Entry.file(
-          TestFileSystemProvider.FILE_STALL_OPEN,
+          TestFileSystemProvider.FILE_BLOCK_OPEN,
           new Date(2014, 1, 26, 8, 37, 13),
           TestFileSystemProvider.INITIAL_TEXT),
       // Read blocks until unblocked manually.
       Entry.file(
-          TestFileSystemProvider.FILE_STALL_READ,
+          TestFileSystemProvider.FILE_BLOCK_IO,
           new Date(2014, 1, 26, 8, 37, 13),
           TestFileSystemProvider.INITIAL_TEXT),
       // Read returns data in chunks.
@@ -822,7 +817,7 @@ export class TestFileSystemProvider {
     this.maxOpenedFiles =
         Math.max(this.maxOpenedFiles, Object.keys(this.openedFiles).length);
 
-    if (options.filePath === '/' + TestFileSystemProvider.FILE_STALL_OPEN) {
+    if (options.filePath === '/' + TestFileSystemProvider.FILE_BLOCK_OPEN) {
       this.stallRequest('onOpenFileRequested', options).then(onSuccess);
       return;
     }
@@ -978,12 +973,7 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_BLOCKS_FOREVER) {
-      // This simulates a very slow read.
-      return;
-    }
-
-    if (filePath === '/' + TestFileSystemProvider.FILE_STALL_READ) {
+    if (filePath === '/' + TestFileSystemProvider.FILE_BLOCK_IO) {
       // Block the read until it's unblocked.
       this.stallRequest('onReadFileRequested', options)
           .then(() => sendFileInChunks(entry));
@@ -1142,29 +1132,34 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_BLOCKS_FOREVER) {
-      // Do not call any callback to simulate a very slow network connection.
-      return;
-    }
-
     // Writing beyond the end of the file.
     if (options.offset > metadata.size) {
       onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
       return;
     }
 
-    // Create an array with enough space for new data.
-    const prevContents = textToBuffer(entry.contents || '');
-    const newLength = Math.max(
-        prevContents.byteLength, options.offset + options.data.byteLength);
-    const newContents = new Uint8Array(new ArrayBuffer(newLength));
-    // Write existing data and new data.
-    newContents.set(new Uint8Array(prevContents), 0);
-    newContents.set(new Uint8Array(options.data), options.offset);
-    // Save the new file as text.
-    entry.contents = new TextDecoder().decode(newContents);
-    metadata.size = newContents.length;
-    onSuccess();
+    const continueWrite = () => {
+      // Create an array with enough space for new data.
+      const prevContents = textToBuffer(entry.contents || '');
+      const newLength = Math.max(
+          prevContents.byteLength, options.offset + options.data.byteLength);
+      const newContents = new Uint8Array(new ArrayBuffer(newLength));
+      // Write existing data and new data.
+      newContents.set(new Uint8Array(prevContents), 0);
+      newContents.set(new Uint8Array(options.data), options.offset);
+      // Save the new file as text.
+      entry.contents = new TextDecoder().decode(newContents);
+      metadata.size = newContents.length;
+      onSuccess();
+    };
+
+    if (filePath === '/' + TestFileSystemProvider.FILE_BLOCK_IO) {
+      // Block the write until it's unblocked.
+      this.stallRequest('onWriteFileRequested', options).then(continueWrite);
+      return;
+    }
+
+    continueWrite();
   }
 
   /**
@@ -1248,23 +1243,16 @@ TestFileSystemProvider.FILE_DENIED = 'denied.txt';
  * @type {string}
  * @const
  */
-TestFileSystemProvider.FILE_STALL_OPEN = 'stall-open.txt';
+TestFileSystemProvider.FILE_BLOCK_OPEN = 'block-open.txt';
 
 /**
- * Read requests on this file are blocked until they are manually unblocked.
+ * Read and write requests on this file are blocked until they are manually
+ * unblocked.
  *
  * @type {string}
  * @const
  */
-TestFileSystemProvider.FILE_STALL_READ = 'stall-read.txt';
-
-/**
- * Reads and writes on this file never finish.
- *
- * @type {string}
- * @const
- */
-TestFileSystemProvider.FILE_BLOCKS_FOREVER = 'blocks-forever.txt';
+TestFileSystemProvider.FILE_BLOCK_IO = 'block-io.txt';
 
 /**
  * File reads return data normally (in multiple callbacks).

@@ -33,7 +33,7 @@ async function main() {
       const reads = [];
       for (let i = 0; i < N; i++) {
         const fileEntry = await fileSystem.getFileEntry(
-            TestFileSystemProvider.FILE_STALL_READ, {create: false});
+            TestFileSystemProvider.FILE_BLOCK_IO, {create: false});
         const file = await openFile(fileEntry);
         reads.push(readTextFromBlob(file));
       }
@@ -81,7 +81,7 @@ async function main() {
       await remoteProvider.resetState();
 
       const fileEntry = await fileSystem.getFileEntry(
-          TestFileSystemProvider.FILE_BLOCKS_FOREVER,
+          TestFileSystemProvider.FILE_BLOCK_IO,
           {create: false},
       );
       const file = await openFile(fileEntry);
@@ -108,7 +108,7 @@ async function main() {
       await remoteProvider.setHandlerEnabled('onAbortRequested', false);
 
       const fileEntry = await fileSystem.getFileEntry(
-          TestFileSystemProvider.FILE_BLOCKS_FOREVER,
+          TestFileSystemProvider.FILE_BLOCK_IO,
           {create: false, exclusive: false},
       );
       const file = await openFile(fileEntry);
@@ -137,7 +137,7 @@ async function main() {
 
       // Start reading two files, the first read should get stuck on open.
       const fileEntry1 = await fileSystem.getFileEntry(
-          TestFileSystemProvider.FILE_STALL_OPEN,
+          TestFileSystemProvider.FILE_BLOCK_OPEN,
           {create: false, exclusive: false},
       );
       const fileEntry2 = await fileSystem.getFileEntry(

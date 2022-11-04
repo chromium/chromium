@@ -15,7 +15,7 @@ async function main() {
       const fileSystem = await mountTestFileSystem({openedFilesLimit: 2});
       // Start a read so we have at least one file open.
       const fileEntry = await fileSystem.getFileEntry(
-          TestFileSystemProvider.FILE_BLOCKS_FOREVER, {create: false});
+          TestFileSystemProvider.FILE_BLOCK_IO, {create: false});
       const file = await openFile(fileEntry);
       startReadTextFromBlob(file);
       await remoteProvider.waitForEvent('onOpenFileRequested');
@@ -30,7 +30,7 @@ async function main() {
       chrome.test.assertEq(2, fsInfos[0].openedFilesLimit);
       chrome.test.assertEq(1, fsInfos[0].openedFiles.length);
       chrome.test.assertEq(
-          `/${TestFileSystemProvider.FILE_BLOCKS_FOREVER}`,
+          `/${TestFileSystemProvider.FILE_BLOCK_IO}`,
           fsInfos[0].openedFiles[0].filePath);
       chrome.test.assertEq(
           chrome.fileSystemProvider.OpenFileMode.READ,
@@ -45,7 +45,7 @@ async function main() {
       chrome.test.assertEq(2, fsInfo.openedFilesLimit);
       chrome.test.assertEq(1, fsInfo.openedFiles.length);
       chrome.test.assertEq(
-          `/${TestFileSystemProvider.FILE_BLOCKS_FOREVER}`,
+          `/${TestFileSystemProvider.FILE_BLOCK_IO}`,
           fsInfo.openedFiles[0].filePath);
       chrome.test.assertEq(
           chrome.fileSystemProvider.OpenFileMode.READ,
