@@ -2214,6 +2214,8 @@ source_set("browser") {
     "webid/fedcm_metrics.h",
     "webid/federated_auth_request_impl.cc",
     "webid/federated_auth_request_impl.h",
+    "webid/federated_auth_request_web_contents_data.cc",
+    "webid/federated_auth_request_web_contents_data.h",
     "webid/flags.cc",
     "webid/flags.h",
     "webid/idp_network_request_manager.cc",

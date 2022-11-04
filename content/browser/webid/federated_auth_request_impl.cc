@@ -4,8 +4,6 @@
 
 #include "content/browser/webid/federated_auth_request_impl.h"
 
-#include <random>
-
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/rand_util.h"
@@ -17,7 +15,9 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
+#include "content/browser/webid/federated_auth_request_web_contents_data.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -320,6 +320,14 @@ bool ShouldFailIfNotSignedInWithIdp(
   return false;
 }
 
+FederatedAuthRequestWebContentsData* GetWebContentsData(
+    RenderFrameHost* render_frame_host) {
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host);
+  FederatedAuthRequestWebContentsData::CreateForWebContents(web_contents);
+  return FederatedAuthRequestWebContentsData::FromWebContents(web_contents);
+}
+
 }  // namespace
 
 FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo() =
@@ -355,6 +363,14 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
                              TokenStatus::kUnhandledRequest,
                              /*should_delay_callback=*/false);
+  }
+  if (logout_callback_) {
+    // We do not complete the logout request, so unset the
+    // PendingWebIdentityRequest on the WebContents so that other frames in the
+    // same WebContents may still trigger new requests after the current
+    // RenderFrameHost is destroyed.
+    GetWebContentsData(&render_frame_host())
+        ->SetHasPendingWebIdentityRequest(false);
   }
 }
 
@@ -417,6 +433,14 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
+  if (!fedcm_metrics_) {
+    // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
+    fedcm_metrics_ = std::make_unique<FedCmMetrics>(
+        idp_ptrs[0]->config_url, render_frame_host().GetPageUkmSourceId(),
+        base::RandInt(1, 1 << 30),
+        /*is_disabled=*/idp_ptrs.size() > 1);
+  }
+
   if (HasPendingRequest()) {
     fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests);
     std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
@@ -425,6 +449,8 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   auth_request_callback_ = std::move(callback);
+  GetWebContentsData(&render_frame_host())
+      ->SetHasPendingWebIdentityRequest(true);
   network_manager_ = CreateNetworkManager();
   request_dialog_controller_ = CreateDialogController();
 
@@ -443,18 +469,6 @@ void FederatedAuthRequestImpl::RequestToken(
   // successful. Currently when multiple IDPs are specified, an accounts
   // dialog is shown only when the last IDP's request is successful.
   for (auto& idp_ptr : idp_ptrs) {
-    if (!fedcm_metrics_) {
-      // Generate a random int for the FedCM call, to be used by the UKM events.
-      std::random_device dev;
-      std::mt19937 rng(dev());
-      std::uniform_int_distribution<std::mt19937::result_type> uniform_dist(
-          1, 1 << 30);
-      // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
-      fedcm_metrics_ = std::make_unique<FedCmMetrics>(
-          idp_ptr->config_url, render_frame_host().GetPageUkmSourceId(),
-          uniform_dist(rng),
-          /*is_disabled=*/idp_ptrs.size() > 1);
-    }
     prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
     start_time_ = base::TimeTicks::Now();
 
@@ -545,6 +559,8 @@ void FederatedAuthRequestImpl::LogoutRps(
   DCHECK(logout_requests_.empty());
 
   logout_callback_ = std::move(callback);
+  GetWebContentsData(&render_frame_host())
+      ->SetHasPendingWebIdentityRequest(true);
 
   if (logout_requests.empty()) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
@@ -588,7 +604,10 @@ void FederatedAuthRequestImpl::LogoutRps(
 }
 
 bool FederatedAuthRequestImpl::HasPendingRequest() const {
-  return auth_request_callback_ || logout_callback_;
+  bool has_pending_request =
+      GetWebContentsData(&render_frame_host())->HasPendingWebIdentityRequest();
+  DCHECK(has_pending_request || (!auth_request_callback_ && !logout_callback_));
+  return has_pending_request;
 }
 
 GURL FederatedAuthRequestImpl::ResolveManifestUrl(const IdentityProvider& idp,
@@ -1248,6 +1267,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
   if (!auth_request_callback_)
     return;
 
+  GetWebContentsData(&render_frame_host())
+      ->SetHasPendingWebIdentityRequest(false);
   if (token_status)
     fedcm_metrics_->RecordRequestTokenStatus(*token_status);
 
@@ -1281,6 +1302,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
         FederatedAuthRequestResultToRequestTokenStatus(result);
     std::move(auth_request_callback_)
         .Run(status, selected_idp_config_url, id_token);
+    auth_request_callback_.Reset();
   } else {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -1365,8 +1387,12 @@ void FederatedAuthRequestImpl::CompleteLogoutRequest(
     blink::mojom::LogoutRpsStatus status) {
   network_manager_.reset();
   base::queue<blink::mojom::LogoutRpsRequestPtr>().swap(logout_requests_);
-  if (logout_callback_)
+  if (logout_callback_) {
     std::move(logout_callback_).Run(status);
+    logout_callback_.Reset();
+    GetWebContentsData(&render_frame_host())
+        ->SetHasPendingWebIdentityRequest(false);
+  }
 }
 
 std::unique_ptr<IdpNetworkRequestManager>
