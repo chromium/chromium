@@ -9,8 +9,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 MenuRunnerTestAPI::MenuRunnerTestAPI(MenuRunner* menu_runner)
     : menu_runner_(menu_runner) {}
@@ -22,5 +21,4 @@ void MenuRunnerTestAPI::SetMenuRunnerHandler(
   menu_runner_->SetRunnerHandler(std::move(menu_runner_handler));
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

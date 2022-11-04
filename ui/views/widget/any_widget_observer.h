@@ -190,7 +190,7 @@ class VIEWS_EXPORT NamedWidgetShownWaiter {
 
 class AnyWidgetPasskey {
  private:
-  AnyWidgetPasskey();
+  AnyWidgetPasskey();  // NOLINT
 
   // Add friend classes here that are allowed to use AnyWidgetObserver in
   // production code.

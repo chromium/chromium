@@ -11,8 +11,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography_provider.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // Helper to test LayoutProvider overrides.
 class TestLayoutProvider : public LayoutProvider, public TypographyProvider {
@@ -51,7 +50,6 @@ class TestLayoutProvider : public LayoutProvider, public TypographyProvider {
   int snapped_dialog_width_ = 0;
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_TEST_TEST_LAYOUT_PROVIDER_H_

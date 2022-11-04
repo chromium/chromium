@@ -12,8 +12,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 class ViewAXPlatformNodeDelegateAuraLinuxTest : public ViewsTestBase {
  public:
@@ -170,5 +169,4 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, IndexInParent) {
   EXPECT_EQ(-1, atk_object_get_index_in_parent(atk_object));
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

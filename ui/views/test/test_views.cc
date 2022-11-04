@@ -31,7 +31,7 @@ gfx::Size StaticSizedView::GetMaximumSize() const {
 }
 
 ProportionallySizedView::ProportionallySizedView(int factor)
-    : factor_(factor), preferred_width_(-1) {}
+    : factor_(factor) {}
 
 ProportionallySizedView::~ProportionallySizedView() = default;
 

@@ -7,12 +7,10 @@
 
 #include "ui/views/examples/examples_exit_code.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 ExamplesExitCode ExamplesMainProc(bool under_test = false);
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_EXAMPLES_MAIN_PROC_H_

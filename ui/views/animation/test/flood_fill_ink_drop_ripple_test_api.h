@@ -15,8 +15,7 @@ namespace ui {
 class LayerAnimator;
 }  // namespace ui
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // Test API to provide internal access to a FloodFillInkDropRipple.
 class FloodFillInkDropRippleTestApi : public InkDropRippleTestApi {
@@ -63,7 +62,6 @@ class FloodFillInkDropRippleTestApi : public InkDropRippleTestApi {
   }
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_ANIMATION_TEST_FLOOD_FILL_INK_DROP_RIPPLE_TEST_API_H_

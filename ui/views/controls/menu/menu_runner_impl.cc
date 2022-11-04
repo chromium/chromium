@@ -73,11 +73,8 @@ MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
 
 MenuRunnerImpl::MenuRunnerImpl(MenuItemView* menu)
     : menu_(menu),
-      running_(false),
-      delete_after_run_(false),
-      for_drop_(false),
-      controller_(nullptr),
-      owns_controller_(false) {}
+
+      controller_(nullptr) {}
 
 bool MenuRunnerImpl::IsRunning() const {
   return running_;

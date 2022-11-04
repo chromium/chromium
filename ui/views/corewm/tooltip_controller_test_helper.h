@@ -17,11 +17,7 @@ namespace aura {
 class Window;
 }
 
-namespace views {
-namespace corewm {
-
-
-namespace test {
+namespace views::corewm::test {
 
 // TooltipControllerTestHelper provides access to TooltipControllers private
 // state.
@@ -79,8 +75,6 @@ class TooltipTestView : public views::View {
   std::u16string tooltip_text_;
 };
 
-}  // namespace test
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm::test
 
 #endif  // UI_VIEWS_COREWM_TOOLTIP_CONTROLLER_TEST_HELPER_H_

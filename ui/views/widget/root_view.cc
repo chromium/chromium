@@ -35,8 +35,7 @@
 
 using DispatchDetails = ui::EventDispatchDetails;
 
-namespace views {
-namespace internal {
+namespace views::internal {
 
 namespace {
 
@@ -854,5 +853,4 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
 
 BEGIN_METADATA(RootView, View)
 END_METADATA
-}  // namespace internal
-}  // namespace views
+}  // namespace views::internal

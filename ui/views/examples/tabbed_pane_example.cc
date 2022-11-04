@@ -21,8 +21,7 @@
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 TabbedPaneExample::TabbedPaneExample()
     : ExampleBase(GetStringUTF8(IDS_TABBED_PANE_SELECT_LABEL).c_str()) {}
@@ -138,5 +137,4 @@ void TabbedPaneExample::SelectAt() {
     tabbed_pane_->SelectTabAt(1);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

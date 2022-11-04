@@ -123,7 +123,7 @@ class VIEWS_EXPORT DropHelper {
   raw_ptr<View> target_view_;
 
   // The deepest view under the current drop coordinate.
-  View* deepest_view_;
+  View* deepest_view_ = nullptr;
 };
 
 }  // namespace views

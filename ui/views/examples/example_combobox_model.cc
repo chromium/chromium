@@ -6,8 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 ExampleComboboxModel::ExampleComboboxModel(const char* const* strings,
                                            size_t count)
@@ -23,5 +22,4 @@ std::u16string ExampleComboboxModel::GetItemAt(size_t index) const {
   return base::ASCIIToUTF16(strings_[index]);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

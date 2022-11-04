@@ -12,8 +12,7 @@
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 SquareInkDropRippleTestApi::SquareInkDropRippleTestApi(
     SquareInkDropRipple* ink_drop_ripple)
@@ -48,5 +47,4 @@ SquareInkDropRippleTestApi::GetLayerAnimators() {
   return animators;
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

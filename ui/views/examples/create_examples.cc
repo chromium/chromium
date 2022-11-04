@@ -51,8 +51,7 @@
 #include "ui/views/examples/color_chooser_example.h"
 #endif
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 // Creates the default set of examples.
 ExampleVector CreateExamples(ExampleVector extra_examples) {
@@ -101,5 +100,4 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   return examples;
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

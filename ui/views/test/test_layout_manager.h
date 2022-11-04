@@ -8,8 +8,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // A stub layout manager that returns a specific preferred size and height for
 // width.
@@ -47,7 +46,6 @@ class TestLayoutManager : public LayoutManager {
   int invalidate_count_ = 0;
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_TEST_TEST_LAYOUT_MANAGER_H_

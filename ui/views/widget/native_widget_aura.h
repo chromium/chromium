@@ -249,7 +249,8 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   raw_ptr<aura::Window> window_;
 
   // See class documentation for Widget in widget.h for a note about ownership.
-  Widget::InitParams::Ownership ownership_;
+  Widget::InitParams::Ownership ownership_ =
+      Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
 
   ui::Cursor cursor_;
 

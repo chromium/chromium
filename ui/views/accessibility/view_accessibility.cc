@@ -59,10 +59,7 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
 #endif
 
 ViewAccessibility::ViewAccessibility(View* view)
-    : view_(view),
-      focused_virtual_child_(nullptr),
-      is_leaf_(false),
-      is_ignored_(false) {
+    : view_(view), focused_virtual_child_(nullptr) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (features::IsAccessibilityTreeForViewsEnabled()) {
     Widget* widget = view_->GetWidget();

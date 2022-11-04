@@ -81,8 +81,7 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_test_utils.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 const char16_t kHebrewLetterSamekh = 0x05E1;
 
@@ -4227,5 +4226,4 @@ TEST_F(TextfieldTest, ScrollCommands) {
       ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT));
 #endif
 }
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

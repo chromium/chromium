@@ -10,8 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget_observer.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // A Widget observer class used in the tests below to observe bubbles closing.
 class TestWidgetObserver : public WidgetObserver {
@@ -32,7 +31,6 @@ class TestWidgetObserver : public WidgetObserver {
   raw_ptr<Widget> widget_;
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_TEST_TEST_WIDGET_OBSERVER_H_

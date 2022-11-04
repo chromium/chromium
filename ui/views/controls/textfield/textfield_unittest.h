@@ -17,11 +17,9 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/test/views_test_base.h"
 
-namespace ui {
-namespace test {
+namespace ui::test {
 class EventGenerator;
-}
-}  // namespace ui
+}  // namespace ui::test
 
 namespace views {
 

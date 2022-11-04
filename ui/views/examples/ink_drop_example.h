@@ -10,8 +10,7 @@
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/examples/example_base.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class VIEWS_EXAMPLES_EXPORT InkDropExample : public ExampleBase {
  public:
@@ -36,7 +35,6 @@ class VIEWS_EXAMPLES_EXPORT InkDropExample : public ExampleBase {
   View* ink_drop_view_ = nullptr;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_INK_DROP_EXAMPLE_H_

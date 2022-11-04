@@ -23,8 +23,7 @@
 #include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class ThemeTrackingCheckbox : public views::Checkbox {
  public:
@@ -166,5 +165,4 @@ void ColoredDialogExample::CreateExampleView(views::View* container) {
   container->AddChildView(std::make_unique<ColoredDialogChooser>());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

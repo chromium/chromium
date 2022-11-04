@@ -7,9 +7,7 @@
 #include "ui/aura/window.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-namespace views {
-namespace corewm {
-namespace test {
+namespace views::corewm::test {
 
 TooltipControllerTestHelper::TooltipControllerTestHelper(
     TooltipController* controller)
@@ -78,6 +76,4 @@ std::u16string TooltipTestView::GetTooltipText(const gfx::Point& p) const {
   return tooltip_text_;
 }
 
-}  // namespace test
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm::test

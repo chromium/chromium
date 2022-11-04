@@ -4,8 +4,7 @@
 
 #include "ui/views/animation/test/ink_drop_ripple_test_api.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 InkDropRippleTestApi::InkDropRippleTestApi(InkDropRipple* ink_drop_ripple)
     : ui::test::MultiLayerAnimatorTestController(this),
@@ -17,5 +16,4 @@ std::vector<ui::LayerAnimator*> InkDropRippleTestApi::GetLayerAnimators() {
   return std::vector<ui::LayerAnimator*>();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

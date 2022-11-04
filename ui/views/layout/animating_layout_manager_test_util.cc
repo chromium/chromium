@@ -9,8 +9,7 @@
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/view.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 AnimatingLayoutManager* GetAnimatingLayoutManager(View* view) {
   return static_cast<AnimatingLayoutManager*>(view->GetLayoutManager());
@@ -35,5 +34,4 @@ void ReduceAnimationDuration(View* view) {
   ReduceAnimationDuration(GetAnimatingLayoutManager(view));
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

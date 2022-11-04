@@ -1327,7 +1327,7 @@ TEST_F(ViewTest, PaintInPromotedToLayer) {
 // A derived class for testing paint.
 class TestPaintView : public TestView {
  public:
-  TestPaintView() : canvas_bounds_(gfx::Rect()) {}
+  TestPaintView() = default;
   ~TestPaintView() override = default;
 
   void OnPaint(gfx::Canvas* canvas) override {
@@ -5154,8 +5154,7 @@ TEST_F(ViewTest, OnThemeChanged) {
 
 class TestEventHandler : public ui::EventHandler {
  public:
-  explicit TestEventHandler(TestView* view)
-      : view_(view), had_mouse_event_(false) {}
+  explicit TestEventHandler(TestView* view) : view_(view) {}
   ~TestEventHandler() override = default;
 
   void OnMouseEvent(ui::MouseEvent* event) override {
@@ -5165,7 +5164,7 @@ class TestEventHandler : public ui::EventHandler {
   }
 
   raw_ptr<TestView> view_;
-  bool had_mouse_event_;
+  bool had_mouse_event_ = false;
 };
 
 TEST_F(ViewTest, ScopedTargetHandlerReceivesEvents) {

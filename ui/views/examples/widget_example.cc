@@ -24,8 +24,7 @@
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 WidgetExample::WidgetExample()
     : ExampleBase(GetStringUTF8(IDS_WIDGET_SELECT_LABEL).c_str()) {}
@@ -114,5 +113,4 @@ void WidgetExample::ShowWidget(View* sender, Widget::InitParams::Type type) {
   widget->Show();
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

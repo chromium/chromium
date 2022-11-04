@@ -18,8 +18,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 SliderExample::SliderExample()
     : ExampleBase(l10n_util::GetStringUTF8(IDS_SLIDER_SELECT_LABEL).c_str()) {}
@@ -65,5 +64,4 @@ void SliderExample::SliderValueChanged(Slider* sender,
   label->SetText(base::ASCIIToUTF16(base::StringPrintf("%.3lf", value)));
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

@@ -20,8 +20,7 @@
 #include "ui/views/animation/test/square_ink_drop_ripple_test_api.h"
 #include "ui/views/animation/test/test_ink_drop_ripple_observer.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 const float kVisibleOpacity = 0.175f;
 
@@ -408,5 +407,4 @@ TEST_P(InkDropRippleTest, RipplePendingToActivatedObserverOrder) {
       {InkDropState::ACTION_PENDING, InkDropState::ACTIVATED}));
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

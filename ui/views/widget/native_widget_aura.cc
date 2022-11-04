@@ -125,8 +125,7 @@ bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
 
 NativeWidgetAura::NativeWidgetAura(internal::NativeWidgetDelegate* delegate)
     : delegate_(delegate->AsWidget()->GetWeakPtr()),
-      window_(new aura::Window(this, aura::client::WINDOW_TYPE_UNKNOWN)),
-      ownership_(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
+      window_(new aura::Window(this, aura::client::WINDOW_TYPE_UNKNOWN)) {
   aura::client::SetFocusChangeObserver(window_, this);
   wm::SetActivationChangeObserver(window_, this);
 }

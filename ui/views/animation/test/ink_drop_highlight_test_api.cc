@@ -10,8 +10,7 @@
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 InkDropHighlightTestApi::InkDropHighlightTestApi(
     InkDropHighlight* ink_drop_highlight)
@@ -30,5 +29,4 @@ gfx::Transform InkDropHighlightTestApi::CalculateTransform() {
   return ink_drop_highlight()->CalculateTransform();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

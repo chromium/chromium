@@ -89,8 +89,7 @@
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -114,8 +113,7 @@ std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  public:
   explicit TestBubbleDialogDelegateView(View* anchor)
-      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE),
-        reset_controls_called_(false) {}
+      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {}
   ~TestBubbleDialogDelegateView() override = default;
 
   bool ShouldShowCloseButton() const override {
@@ -123,7 +121,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     return true;
   }
 
-  mutable bool reset_controls_called_;
+  mutable bool reset_controls_called_ = false;
 };
 
 // Convenience to make constructing a GestureEvent simpler.
@@ -4559,8 +4557,7 @@ namespace {
 
 class FullscreenAwareFrame : public views::NonClientFrameView {
  public:
-  explicit FullscreenAwareFrame(views::Widget* widget)
-      : widget_(widget), fullscreen_layout_called_(false) {}
+  explicit FullscreenAwareFrame(views::Widget* widget) : widget_(widget) {}
 
   FullscreenAwareFrame(const FullscreenAwareFrame&) = delete;
   FullscreenAwareFrame& operator=(const FullscreenAwareFrame&) = delete;
@@ -4590,7 +4587,7 @@ class FullscreenAwareFrame : public views::NonClientFrameView {
 
  private:
   raw_ptr<views::Widget> widget_;
-  bool fullscreen_layout_called_;
+  bool fullscreen_layout_called_ = false;
 };
 
 }  // namespace
@@ -5519,5 +5516,4 @@ TEST_F(CompositingWidgetTest, Transparency_DesktopWidgetTranslucent) {
 
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

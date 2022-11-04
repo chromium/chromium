@@ -284,7 +284,8 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   raw_ptr<DesktopWindowTreeHost> desktop_window_tree_host_;
 
   // See class documentation for Widget in widget.h for a note about ownership.
-  Widget::InitParams::Ownership ownership_;
+  Widget::InitParams::Ownership ownership_ =
+      Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
 
   // Internal name.
   std::string name_;
@@ -313,7 +314,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   std::unique_ptr<wm::CompoundEventFilter> root_window_event_filter_;
 
   std::unique_ptr<DropHelper> drop_helper_;
-  int last_drop_operation_;
+  int last_drop_operation_ = ui::DragDropTypes::DRAG_NONE;
 
   std::unique_ptr<corewm::TooltipController> tooltip_controller_;
   std::unique_ptr<TooltipManagerAura> tooltip_manager_;
@@ -322,7 +323,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
   std::unique_ptr<wm::WindowModalityController> window_modality_controller_;
 
-  bool restore_focus_on_activate_;
+  bool restore_focus_on_activate_ = false;
 
   // This flag is used to ensure that the activation client correctly sees
   // whether this widget should receive activation when handling an activation
@@ -349,7 +350,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   std::unique_ptr<WindowReorderer> window_reorderer_;
 
   // See class documentation for Widget in widget.h for a note about type.
-  Widget::InitParams::Type widget_type_;
+  Widget::InitParams::Type widget_type_ = Widget::InitParams::TYPE_WINDOW;
 
   // See DesktopWindowTreeHost::ShouldUseDesktopNativeCursorManager().
   bool use_desktop_native_cursor_manager_ = false;

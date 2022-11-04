@@ -9,12 +9,10 @@ namespace ui_controls {
 class UIControlsAura;
 }
 
-namespace views {
-namespace test {
+namespace views::test {
 
 ui_controls::UIControlsAura* CreateUIControlsDesktopAuraOzone();
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_TEST_UI_CONTROLS_FACTORY_DESKTOP_AURA_OZONE_H_

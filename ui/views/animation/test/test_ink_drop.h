@@ -7,8 +7,7 @@
 
 #include "ui/views/animation/ink_drop.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // A InkDrop test double that tracks the last requested state changes.
 //
@@ -45,7 +44,6 @@ class TestInkDrop : public InkDrop {
   bool is_hovered_ = false;
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_H_

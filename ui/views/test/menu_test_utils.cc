@@ -14,8 +14,7 @@
 #include "ui/views/controls/menu/menu_closure_animation_mac.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // TestMenuDelegate -----------------------------------------------------------
 
@@ -115,5 +114,4 @@ void ReleaseRefTestViewsDelegate::ReleaseRef() {
     release_ref_callback_.Run();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

@@ -7,8 +7,7 @@
 
 #include "ui/views/examples/example_base.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class VIEWS_EXAMPLES_EXPORT LinkExample : public ExampleBase {
  public:
@@ -21,7 +20,6 @@ class VIEWS_EXAMPLES_EXPORT LinkExample : public ExampleBase {
   void CreateExampleView(View* container) override;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_LINK_EXAMPLE_H_

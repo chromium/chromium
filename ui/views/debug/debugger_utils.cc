@@ -10,8 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
-namespace views {
-namespace debug {
+namespace views::debug {
 
 namespace {
 
@@ -143,5 +142,4 @@ void PrintViewHierarchy(std::ostream* out,
   PrintViewHierarchyImpl(out, view, 0, verbose, depth, column_limit);
 }
 
-}  // namespace debug
-}  // namespace views
+}  // namespace views::debug

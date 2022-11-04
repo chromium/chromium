@@ -12,8 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/animation/ink_drop_animation_ended_reason.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // Context tracking helper that can be used with test implementations of
 // ink drop animation observers.
@@ -189,7 +188,6 @@ class TestInkDropAnimationObserverHelper {
       InkDropAnimationEndedReason::SUCCESS;
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_ANIMATION_OBSERVER_HELPER_H_

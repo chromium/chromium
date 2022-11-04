@@ -43,11 +43,7 @@ namespace {
 class WebViewTestWebContentsObserver : public content::WebContentsObserver {
  public:
   explicit WebViewTestWebContentsObserver(content::WebContents* web_contents)
-      : web_contents_(web_contents),
-        was_shown_(false),
-        shown_count_(0),
-        hidden_count_(0),
-        valid_root_while_shown_(true) {
+      : web_contents_(web_contents) {
     content::WebContentsObserver::Observe(web_contents);
   }
 
@@ -100,11 +96,11 @@ class WebViewTestWebContentsObserver : public content::WebContentsObserver {
 
  private:
   raw_ptr<content::WebContents> web_contents_;
-  bool was_shown_;
-  int32_t shown_count_;
-  int32_t hidden_count_;
+  bool was_shown_ = false;
+  int32_t shown_count_ = 0;
+  int32_t hidden_count_ = 0;
   // Set to true if the view containing the webcontents has a valid root window.
-  bool valid_root_while_shown_;
+  bool valid_root_while_shown_ = true;
 };
 
 // Fakes the fullscreen browser state reported to WebContents and WebView.

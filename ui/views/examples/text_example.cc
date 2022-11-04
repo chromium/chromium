@@ -25,8 +25,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -316,5 +315,4 @@ void TextExample::WeightComboboxChanged() {
   text_view_->SetWeight(kFontWeights[weight_cb_->GetSelectedIndex().value()]);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

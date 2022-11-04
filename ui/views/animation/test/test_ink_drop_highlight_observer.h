@@ -12,8 +12,7 @@
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/animation/test/test_ink_drop_animation_observer_helper.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // Simple InkDropHighlightObserver test double that tracks if
 // InkDropHighlightObserver methods are invoked and the parameters used for the
@@ -49,7 +48,6 @@ class TestInkDropHighlightObserver : public InkDropHighlightObserver,
   raw_ptr<InkDropHighlight> ink_drop_highlight_ = nullptr;
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_HIGHLIGHT_OBSERVER_H_

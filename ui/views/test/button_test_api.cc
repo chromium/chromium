@@ -6,12 +6,10 @@
 
 #include "ui/views/controls/button/button.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 void ButtonTestApi::NotifyClick(const ui::Event& event) {
   button_->NotifyClick(event);
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

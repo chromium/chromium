@@ -13,8 +13,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 FloodFillInkDropRippleTestApi::FloodFillInkDropRippleTestApi(
     FloodFillInkDropRipple* ink_drop_ripple)
@@ -55,5 +54,4 @@ FloodFillInkDropRippleTestApi::GetLayerAnimators() {
   return animators;
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

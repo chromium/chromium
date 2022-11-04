@@ -15,9 +15,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/views_export.h"
 
-namespace views {
-
-namespace internal {
+namespace views::internal {
 
 // A Label subclass that can be disabled. This is only used internally for
 // views::LabelButton.
@@ -52,8 +50,6 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
                               base::Unretained(this)));
 };
 
-}  // namespace internal
-
-}  // namespace views
+}  // namespace views::internal
 
 #endif  // UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_LABEL_H_

@@ -14,8 +14,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 TextareaExample::TextareaExample()
     : ExampleBase(l10n_util::GetStringUTF8(IDS_TEXTAREA_SELECT_LABEL).c_str()) {
@@ -37,5 +36,4 @@ void TextareaExample::CreateExampleView(View* container) {
   container->AddChildView(std::move(textarea));
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

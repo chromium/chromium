@@ -4,8 +4,7 @@
 
 #include "ui/views/test/test_layout_provider.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 TestLayoutProvider::TestLayoutProvider() = default;
 TestLayoutProvider::~TestLayoutProvider() = default;
@@ -48,5 +47,4 @@ ui::ResourceBundle::FontDetails TestLayoutProvider::GetFontDetails(
              : TypographyProvider::GetFontDetails(context, style);
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

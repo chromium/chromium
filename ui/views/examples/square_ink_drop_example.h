@@ -7,8 +7,7 @@
 
 #include "ui/views/examples/ink_drop_example.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class VIEWS_EXAMPLES_EXPORT SquareInkDropExample : public InkDropExample {
  public:
@@ -21,7 +20,6 @@ class VIEWS_EXAMPLES_EXPORT SquareInkDropExample : public InkDropExample {
   void CreateInkDrop() override;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_SQUARE_INK_DROP_EXAMPLE_H_

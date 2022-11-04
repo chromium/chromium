@@ -79,8 +79,7 @@
 #include "base/win/windows_version.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 namespace {
 
 using ::ui::mojom::DragOperation;
@@ -221,8 +220,7 @@ class GestureTestWidget : public Widget {
 class TestDragDropClient : public aura::client::DragDropClient {
  public:
   explicit TestDragDropClient(base::RepeatingClosure callback)
-      : start_drag_and_drop_callback_(std::move(callback)),
-        drag_in_progress_(false) {}
+      : start_drag_and_drop_callback_(std::move(callback)) {}
 
   TestDragDropClient(const TestDragDropClient&) = delete;
   TestDragDropClient& operator=(const TestDragDropClient&) = delete;
@@ -249,7 +247,7 @@ class TestDragDropClient : public aura::client::DragDropClient {
 
  private:
   base::RepeatingClosure start_drag_and_drop_callback_;
-  bool drag_in_progress_;
+  bool drag_in_progress_ = false;
 };
 
 DragOperation TestDragDropClient::StartDragAndDrop(
@@ -3359,5 +3357,4 @@ TEST_F(ExecuteCommandWithoutClosingMenuTest, OnReturnKey) {
             menu_item()->GetSubmenu()->GetMenuItemAt(0)->GetCommand());
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

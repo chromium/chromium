@@ -26,8 +26,7 @@
 #include "base/mac/mac_util.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 namespace {
 
 struct RootViewTestStateInit {
@@ -966,5 +965,4 @@ TEST_F(RootViewTest, DoubleClickHandledIffFirstClickHandled) {
   root_view->OnMouseReleased(released_event);
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

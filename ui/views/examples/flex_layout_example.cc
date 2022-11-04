@@ -25,8 +25,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 FlexLayoutExample::FlexLayoutExample() : LayoutExampleBase("Flex Layout") {}
 
@@ -132,5 +131,4 @@ void FlexLayoutExample::CrossAxisAlignmentChanged() {
   RefreshLayoutPanel(false);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

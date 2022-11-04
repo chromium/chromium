@@ -4,8 +4,7 @@
 
 #include "ui/views/test/capture_tracking_view.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 CaptureTrackingView::CaptureTrackingView() = default;
 
@@ -20,5 +19,4 @@ void CaptureTrackingView::OnMouseCaptureLost() {
   got_capture_lost_ = true;
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

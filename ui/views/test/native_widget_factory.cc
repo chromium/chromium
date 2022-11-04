@@ -20,8 +20,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 #if BUILDFLAG(IS_MAC)
 using PlatformNativeWidget = NativeWidgetMac;
@@ -59,5 +58,4 @@ NativeWidget* CreatePlatformDesktopNativeWidgetImpl(
 }
 #endif
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

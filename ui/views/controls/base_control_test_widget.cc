@@ -15,9 +15,7 @@
 #include "ui/display/screen.h"
 #endif
 
-namespace views {
-
-namespace test {
+namespace views::test {
 
 BaseControlTestWidget::BaseControlTestWidget() = default;
 BaseControlTestWidget::~BaseControlTestWidget() = default;
@@ -55,5 +53,4 @@ void BaseControlTestWidget::TearDown() {
 
 void BaseControlTestWidget::CreateWidgetContent(View* container) {}
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

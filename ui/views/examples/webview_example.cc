@@ -13,8 +13,7 @@
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/fill_layout.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 WebViewExample::WebViewExample(content::BrowserContext* browser_context)
     : ExampleBase(l10n_util::GetStringUTF8(IDS_WEBVIEW_SELECT_LABEL).c_str()),
@@ -40,5 +39,4 @@ bool WebViewExample::HandleKeyboardEvent(
       event, webview_->GetFocusManager());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

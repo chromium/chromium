@@ -14,8 +14,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 class InfoBubbleTest : public ViewsTestBase {
  public:
@@ -147,5 +146,4 @@ TEST_F(InfoBubbleTest, MetadataTest) {
   RunPendingMessages();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

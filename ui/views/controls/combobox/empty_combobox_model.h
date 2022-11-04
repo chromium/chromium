@@ -7,8 +7,7 @@
 
 #include "ui/base/models/combobox_model.h"
 
-namespace views {
-namespace internal {
+namespace views::internal {
 
 // An empty model for a combo box.
 class EmptyComboboxModel final : public ui::ComboboxModel {
@@ -24,7 +23,6 @@ class EmptyComboboxModel final : public ui::ComboboxModel {
   absl::optional<size_t> GetDefaultIndex() const override;
 };
 
-}  // namespace internal
-}  // namespace views
+}  // namespace views::internal
 
 #endif  // UI_VIEWS_CONTROLS_COMBOBOX_EMPTY_COMBOBOX_MODEL_H_

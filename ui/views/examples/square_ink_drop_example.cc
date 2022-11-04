@@ -13,8 +13,7 @@
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/view.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 SquareInkDropExample::SquareInkDropExample()
     : InkDropExample("Square Ink Drop") {}
@@ -35,5 +34,4 @@ void SquareInkDropExample::CreateInkDrop() {
   InkDrop::Install(ink_drop_view(), std::move(ink_drop_host));
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

@@ -112,7 +112,7 @@ void StyledLabel::AddStyleRange(const gfx::Range& range,
 
   // Insert the new range in sorted order.
   StyleRanges new_range;
-  new_range.push_front(StyleRange(range, style_info));
+  new_range.emplace_front(range, style_info);
   style_ranges_.merge(new_range);
 
   PreferredSizeChanged();

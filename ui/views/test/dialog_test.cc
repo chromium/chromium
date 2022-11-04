@@ -7,8 +7,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -31,5 +30,4 @@ void CancelDialog(Widget* widget) {
   waiter.Wait();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

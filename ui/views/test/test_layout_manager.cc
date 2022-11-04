@@ -4,8 +4,7 @@
 
 #include "ui/views/test/test_layout_manager.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 TestLayoutManager::TestLayoutManager() = default;
 
@@ -26,5 +25,4 @@ void TestLayoutManager::InvalidateLayout() {
   ++invalidate_count_;
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

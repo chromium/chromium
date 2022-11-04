@@ -96,13 +96,13 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   BubbleBorder::Arrow anchor_point_arrow_ = BubbleBorder::TOP_RIGHT;
 
   // Whether the mouse is inside this tooltip.
-  bool mouse_inside_;
+  bool mouse_inside_ = false;
 
   // A bubble shown on hover. Weak; owns itself. NULL while hiding.
   raw_ptr<InfoBubble> bubble_;
 
   // The width the tooltip prefers to be. Default is 0 (no preference).
-  int preferred_width_;
+  int preferred_width_ = 0;
 
   // A timer to delay showing |bubble_|.
   base::OneShotTimer show_timer_;

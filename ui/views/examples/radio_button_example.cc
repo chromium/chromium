@@ -22,8 +22,7 @@
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -69,5 +68,4 @@ void RadioButtonExample::StatusButtonPressed() {
               BoolToOnOff(radio_buttons_[2]->GetChecked()));
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

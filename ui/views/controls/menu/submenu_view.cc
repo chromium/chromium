@@ -46,13 +46,11 @@ SubmenuView::SubmenuView(MenuItemView* parent)
     : parent_menu_item_(parent),
       host_(nullptr),
       drop_item_(nullptr),
-      drop_position_(MenuDelegate::DropPosition::kNone),
+
       scroll_view_container_(nullptr),
-      max_minor_text_width_(0),
-      minimum_preferred_width_(0),
-      resize_open_menu_(false),
+
       scroll_animator_(new ScrollAnimator(this)),
-      roundoff_error_(0),
+
       prefix_selector_(this, this) {
   DCHECK(parent);
   // We'll delete ourselves, otherwise the ScrollView would delete us on close.

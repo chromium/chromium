@@ -13,8 +13,7 @@
 #include "ui/views/examples/examples_exit_code.h"
 #include "ui/views/widget/widget.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class ExamplesSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
  public:
@@ -34,7 +33,6 @@ class ExamplesSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
   ExamplesExitCode result_ = ExamplesExitCode::kNone;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_EXAMPLES_SKIA_GOLD_PIXEL_DIFF_H_

@@ -16,8 +16,7 @@
 #include "ui/views/animation/ink_drop_stub.h"
 #include "ui/views/animation/test/test_ink_drop_host.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // Enumeration of all the different InkDrop types.
 enum InkDropType { INK_DROP_STUB, INK_DROP_IMPL };
@@ -134,5 +133,4 @@ TEST_P(InkDropTest, TypicalSlowActivated) {
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop_->GetTargetInkDropState());
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

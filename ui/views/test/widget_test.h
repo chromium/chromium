@@ -275,7 +275,7 @@ class WidgetActivationWaiter : public WidgetObserver {
   // views::WidgetObserver override:
   void OnWidgetActivationChanged(Widget* widget, bool active) override;
 
-  bool observed_;
+  bool observed_ = false;
   bool active_;
 
   base::RunLoop run_loop_;

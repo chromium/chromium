@@ -15,8 +15,7 @@ namespace ui {
 class LayerAnimator;
 }  // namespace ui
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // Test API to provide internal access to a SquareInkDropRipple.
 class SquareInkDropRippleTestApi : public InkDropRippleTestApi {
@@ -59,7 +58,6 @@ class SquareInkDropRippleTestApi : public InkDropRippleTestApi {
   }
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_ANIMATION_TEST_SQUARE_INK_DROP_RIPPLE_TEST_API_H_

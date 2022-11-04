@@ -178,8 +178,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
 // DragDropDelegate which counts the number of each type of drag-drop event.
 class FakeDragDropDelegate : public aura::client::DragDropDelegate {
  public:
-  FakeDragDropDelegate()
-      : num_enters_(0), num_updates_(0), num_exits_(0), num_drops_(0) {}
+  FakeDragDropDelegate() = default;
 
   FakeDragDropDelegate(const FakeDragDropDelegate&) = delete;
   FakeDragDropDelegate& operator=(const FakeDragDropDelegate&) = delete;
@@ -229,10 +228,10 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
     output_drag_op = destination_operation_;
   }
 
-  int num_enters_;
-  int num_updates_;
-  int num_exits_;
-  int num_drops_;
+  int num_enters_ = 0;
+  int num_updates_ = 0;
+  int num_exits_ = 0;
+  int num_drops_ = 0;
   std::unique_ptr<ui::OSExchangeData> received_data_;
   DragOperation destination_operation_;
   int last_event_flags_ = ui::EF_NONE;

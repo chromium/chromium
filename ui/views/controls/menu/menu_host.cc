@@ -111,8 +111,7 @@ void TransferGesture(ui::GestureRecognizer* gesture_recognizer,
 ////////////////////////////////////////////////////////////////////////////////
 // MenuHost, public:
 
-MenuHost::MenuHost(SubmenuView* submenu)
-    : submenu_(submenu), destroying_(false), ignore_capture_lost_(false) {
+MenuHost::MenuHost(SubmenuView* submenu) : submenu_(submenu) {
   set_auto_release_capture(false);
 }
 

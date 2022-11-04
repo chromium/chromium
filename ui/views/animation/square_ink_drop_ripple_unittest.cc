@@ -20,8 +20,7 @@
 #include "ui/views/animation/test/test_ink_drop_ripple_observer.h"
 #include "ui/views/test/widget_test.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -288,5 +287,4 @@ TEST_F(SquareInkDropRippleCalculateTransformsTest, RippleIsPixelAligned) {
   widget->CloseNow();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

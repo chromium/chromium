@@ -9,8 +9,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/view.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 AXEventCounter::AXEventCounter(views::AXEventManager* event_manager) {
   tree_observation_.Observe(event_manager);
@@ -62,5 +61,4 @@ void AXEventCounter::WaitForEvent(ax::mojom::Event event_type) {
   run_loop_ = nullptr;
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

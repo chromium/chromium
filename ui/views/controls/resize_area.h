@@ -48,7 +48,7 @@ class VIEWS_EXPORT ResizeArea : public View {
   // The event's x-position at the start of the resize operation. The resize
   // area will move while being dragged, so |initial_position_| is represented
   // in screen coordinates so that we don't lose our bearings.
-  int initial_position_;
+  int initial_position_ = 0;
 };
 
 }  // namespace views

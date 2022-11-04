@@ -20,8 +20,7 @@
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 MessageBoxExample::MessageBoxExample()
     : ExampleBase(GetStringUTF8(IDS_MESSAGE_SELECT_LABEL).c_str()) {}
@@ -65,5 +64,4 @@ void MessageBoxExample::StatusButtonPressed() {
                 .c_str());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

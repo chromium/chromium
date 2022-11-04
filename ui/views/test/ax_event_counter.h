@@ -15,8 +15,7 @@
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/ax_event_observer.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // AXEventCounter provides a convenient way to count events registered by the
 // AXEventManager by their event type, and wait for events of a specific type.
@@ -57,7 +56,6 @@ class AXEventCounter : public views::AXEventObserver {
       tree_observation_{this};
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_TEST_AX_EVENT_COUNTER_H_

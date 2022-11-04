@@ -299,13 +299,11 @@ wm::CursorManager* DesktopNativeWidgetAura::cursor_manager_ = nullptr;
 DesktopNativeWidgetAura::DesktopNativeWidgetAura(
     internal::NativeWidgetDelegate* delegate)
     : desktop_window_tree_host_(nullptr),
-      ownership_(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET),
+
       content_window_(new aura::Window(this)),
       native_widget_delegate_(delegate->AsWidget()->GetWeakPtr()),
-      last_drop_operation_(ui::DragDropTypes::DRAG_NONE),
-      restore_focus_on_activate_(false),
-      cursor_(gfx::kNullCursor),
-      widget_type_(Widget::InitParams::TYPE_WINDOW) {
+
+      cursor_(gfx::kNullCursor) {
   aura::client::SetFocusChangeObserver(content_window_, this);
   wm::SetActivationChangeObserver(content_window_, this);
 }

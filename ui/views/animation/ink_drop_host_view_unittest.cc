@@ -29,8 +29,7 @@
 #include "ui/views/animation/test/test_ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 using InkDropMode = InkDropHostTestApi::InkDropMode;
 
 class TestViewWithInkDrop : public View {
@@ -360,5 +359,4 @@ TEST_F(InkDropHostViewClippingTest,
   EXPECT_TRUE(GetRootLayer()->clip_rect().IsEmpty());
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

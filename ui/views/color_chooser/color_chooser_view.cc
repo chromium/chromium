@@ -163,13 +163,13 @@ class HueView : public LocatedEventHandlerView {
   void OnPaint(gfx::Canvas* canvas) override;
 
   HueChangedCallback changed_callback_;
-  int level_;
+  int level_ = 0;
   SkColor background_color_;
   SkColor indicator_color_;
 };
 
 HueView::HueView(const HueChangedCallback& changed_callback)
-    : changed_callback_(changed_callback), level_(0) {}
+    : changed_callback_(changed_callback) {}
 
 void HueView::OnThemeChanged() {
   LocatedEventHandlerView::OnThemeChanged();
@@ -286,9 +286,9 @@ class SaturationValueView : public LocatedEventHandlerView {
   void UpdateMarkerColor();
 
   SaturationValueChangedCallback changed_callback_;
-  SkScalar hue_;
-  SkScalar saturation_;
-  SkScalar value_;
+  SkScalar hue_ = 0;
+  SkScalar saturation_ = 0;
+  SkScalar value_ = 0;
   gfx::Point marker_position_;
   SkColor marker_color_;
 };
@@ -296,9 +296,7 @@ class SaturationValueView : public LocatedEventHandlerView {
 SaturationValueView::SaturationValueView(
     const SaturationValueChangedCallback& changed_callback)
     : changed_callback_(changed_callback),
-      hue_(0),
-      saturation_(0),
-      value_(0),
+
       marker_color_(gfx::kPlaceholderColor) {
   SetBorder(CreateSolidBorder(kBorderWidth, gfx::kPlaceholderColor));
 }

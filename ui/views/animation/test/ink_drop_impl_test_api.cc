@@ -11,8 +11,7 @@
 #include "ui/views/animation/test/ink_drop_highlight_test_api.h"
 #include "ui/views/animation/test/ink_drop_ripple_test_api.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 //
 // AccessFactoryOnExitHighlightState
@@ -148,5 +147,4 @@ std::vector<ui::LayerAnimator*> InkDropImplTestApi::GetLayerAnimators() {
   return animators;
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

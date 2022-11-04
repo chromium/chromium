@@ -38,8 +38,7 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -1138,5 +1137,4 @@ TEST_F(AXViewTest, LayoutCalledInvalidateRootView) {
 }
 #endif
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

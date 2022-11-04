@@ -6,8 +6,7 @@
 
 #include "ui/views/animation/ink_drop_ripple.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 TestInkDropRippleObserver::TestInkDropRippleObserver() = default;
 
@@ -31,5 +30,4 @@ void TestInkDropRippleObserver::AnimationEnded(
   }
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

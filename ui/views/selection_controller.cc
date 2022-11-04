@@ -20,9 +20,7 @@
 namespace views {
 
 SelectionController::SelectionController(SelectionControllerDelegate* delegate)
-    : aggregated_clicks_(0),
-      delegate_(delegate),
-      handles_selection_clipboard_(false) {
+    : delegate_(delegate) {
   // If selection clipboard is used, update it on a text selection.
   if (ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {

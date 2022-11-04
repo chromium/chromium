@@ -14,8 +14,7 @@ namespace display {
 class Screen;
 }
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // Replaces the screen instance in Linux/Ozone (non-ChromeOS) tests.  Allows
 // aura tests to manually set the cursor screen point to be reported
@@ -44,7 +43,6 @@ class TestDesktopScreenOzone : public views::DesktopScreenOzone {
   gfx::Point cursor_screen_point_;
 };
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_TEST_TEST_DESKTOP_SCREEN_OZONE_H_

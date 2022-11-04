@@ -15,8 +15,7 @@
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/test/menu_runner_test_api.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 namespace {
 
 // An dummy implementation of MenuRunnerHandler to check if the dropdown menu is
@@ -64,5 +63,4 @@ ui::MenuModel* ComboboxTestApi::menu_model() {
   return combobox_->menu_model_.get();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

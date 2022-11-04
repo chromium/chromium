@@ -85,19 +85,19 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
   std::unique_ptr<MenuDelegate> empty_delegate_;
 
   // Are we in run waiting for it to return?
-  bool running_;
+  bool running_ = false;
 
   // Set if |running_| and Release() has been invoked.
-  bool delete_after_run_;
+  bool delete_after_run_ = false;
 
   // Are we running for a drop?
-  bool for_drop_;
+  bool for_drop_ = false;
 
   // The controller.
   base::WeakPtr<MenuController> controller_;
 
   // Do we own the controller?
-  bool owns_controller_;
+  bool owns_controller_ = false;
 
   // The timestamp of the event which closed the menu - or 0.
   base::TimeTicks closing_event_time_;

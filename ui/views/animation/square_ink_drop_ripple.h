@@ -149,7 +149,7 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
   void OnLayerAnimationSequenceScheduled(ui::LayerAnimationSequence* sequence);
 
   // The shape used for the ACTIVATED/DEACTIVATED states.
-  ActivatedShape activated_shape_;
+  ActivatedShape activated_shape_ = ActivatedShape::kRoundedRect;
 
   // Ink drop opacity when it is visible.
   float visible_opacity_;

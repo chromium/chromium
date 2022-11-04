@@ -19,8 +19,7 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -173,5 +172,4 @@ Widget::Widgets WidgetTest::GetAllWidgets() {
 // static
 void WidgetTest::WaitForSystemAppActivation() {}
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

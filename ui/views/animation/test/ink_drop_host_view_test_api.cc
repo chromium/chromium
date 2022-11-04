@@ -6,8 +6,7 @@
 
 #include <utility>
 
-namespace views {
-namespace test {
+namespace views::test {
 
 InkDropHostTestApi::InkDropHostTestApi(InkDropHost* ink_drop_host)
     : ink_drop_host_(ink_drop_host) {}
@@ -44,5 +43,4 @@ void InkDropHostTestApi::AnimateToState(InkDropState state,
   ink_drop_host_->AnimateToState(state, event);
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

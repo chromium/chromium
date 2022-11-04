@@ -8,15 +8,13 @@
 #include "build/build_config.h"
 #include "ui/views/views_export.h"
 
-namespace views {
-namespace switches {
+namespace views::switches {
 
 // Please keep alphabetized.
 VIEWS_EXPORT extern const char kDrawViewBoundsRects[];
 
 VIEWS_EXPORT extern const char kViewStackTraces[];
 
-}  // namespace switches
-}  // namespace views
+}  // namespace views::switches
 
 #endif  // UI_VIEWS_VIEWS_SWITCHES_H_

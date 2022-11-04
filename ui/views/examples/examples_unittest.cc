@@ -7,8 +7,7 @@
 #include "ui/views/examples/examples_exit_code.h"
 #include "ui/views/examples/examples_main_proc.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 TEST(ExamplesTest, TestViewsExamplesLaunches) {
   const ExamplesExitCode exit_code = ExamplesMainProc(true);
@@ -16,5 +15,4 @@ TEST(ExamplesTest, TestViewsExamplesLaunches) {
   EXPECT_EQ(ExamplesExitCode::kSucceeded, exit_code);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

@@ -9,8 +9,7 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner_impl.h"
 
-namespace views {
-namespace internal {
+namespace views::internal {
 
 MenuRunnerImplAdapter::MenuRunnerImplAdapter(
     ui::MenuModel* menu_model,
@@ -50,5 +49,4 @@ base::TimeTicks MenuRunnerImplAdapter::GetClosingEventTime() const {
 
 MenuRunnerImplAdapter::~MenuRunnerImplAdapter() = default;
 
-}  // namespace internal
-}  // namespace views
+}  // namespace views::internal

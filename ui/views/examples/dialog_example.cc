@@ -27,8 +27,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 namespace {
 
 constexpr size_t kFakeModeless = ui::MODAL_TYPE_SYSTEM + 1;
@@ -352,5 +351,4 @@ void DialogExample::OnPerformAction() {
     LogStatus("MODAL_TYPE_SYSTEM isn't supported on Mac.");
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

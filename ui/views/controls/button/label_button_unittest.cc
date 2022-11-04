@@ -231,17 +231,17 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
       bool preferred_size_is_sometimes_narrower_than_max = false;
       bool preferred_height_shrinks_as_max_width_grows = false;
 
-      for (size_t i = 0; i < std::size(text_cases); ++i) {
-        for (size_t j = 0; j < std::size(width_cases); ++j) {
+      for (const auto& text_case : text_cases) {
+        for (int width_case : width_cases) {
           const gfx::Size old_preferred_size = button_->GetPreferredSize();
 
-          button_->SetText(ASCIIToUTF16(text_cases[i]));
-          button_->SetMaxSize(gfx::Size(width_cases[j], 30));
+          button_->SetText(ASCIIToUTF16(text_case));
+          button_->SetMaxSize(gfx::Size(width_case, 30));
 
           const gfx::Size preferred_size = button_->GetPreferredSize();
-          EXPECT_LE(preferred_size.width(), width_cases[j]);
+          EXPECT_LE(preferred_size.width(), width_case);
 
-          if (preferred_size.width() < width_cases[j])
+          if (preferred_size.width() < width_case)
             preferred_size_is_sometimes_narrower_than_max = true;
 
           if (preferred_size.height() < old_preferred_size.height())

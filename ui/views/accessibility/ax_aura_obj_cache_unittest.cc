@@ -30,8 +30,7 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_delegate.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 namespace {
 
 // This class can be used as a deleter for std::unique_ptr<Widget>
@@ -382,5 +381,4 @@ TEST_F(AXAuraObjCacheTest, VirtualViews) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

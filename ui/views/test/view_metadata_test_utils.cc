@@ -9,8 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_types.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 void TestViewMetadata(View* view) {
   ui::metadata::ClassMetaData* meta_data = view->GetClassMetaData();
@@ -25,5 +24,4 @@ void TestViewMetadata(View* view) {
   }
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

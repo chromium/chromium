@@ -19,8 +19,7 @@
 #include "ui/views/animation/test/ink_drop_highlight_test_api.h"
 #include "ui/views/animation/test/test_ink_drop_highlight_observer.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 class InkDropHighlightTest : public testing::Test {
  public:
@@ -231,5 +230,4 @@ TEST_F(InkDropHighlightTest, TransformIsPixelAligned) {
   }
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

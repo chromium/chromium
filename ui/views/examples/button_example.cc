@@ -38,8 +38,7 @@ const char16_t kLongText[] =
     u"Really Really Really Really Really Long Button Text";
 }  // namespace
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 ButtonExample::ButtonExample() : ExampleBase("Button") {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
@@ -145,5 +144,4 @@ void ButtonExample::ImageButtonPressed() {
   PrintStatus("Image Button Pressed! count: %d", ++count_);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

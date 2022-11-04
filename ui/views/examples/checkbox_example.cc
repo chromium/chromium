@@ -13,8 +13,7 @@
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/layout/fill_layout.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 CheckboxExample::CheckboxExample() : ExampleBase("Checkbox") {}
 
@@ -31,5 +30,4 @@ void CheckboxExample::CreateExampleView(View* container) {
           .Build());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

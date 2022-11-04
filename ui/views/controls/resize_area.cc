@@ -13,8 +13,7 @@
 
 namespace views {
 
-ResizeArea::ResizeArea(ResizeAreaDelegate* delegate)
-    : delegate_(delegate), initial_position_(0) {}
+ResizeArea::ResizeArea(ResizeAreaDelegate* delegate) : delegate_(delegate) {}
 
 ResizeArea::~ResizeArea() = default;
 

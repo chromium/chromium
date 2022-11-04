@@ -15,8 +15,7 @@
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 ToggleButtonExample::ToggleButtonExample()
     : ExampleBase(
@@ -46,5 +45,4 @@ void ToggleButtonExample::CreateExampleView(View* container) {
   button->SetIsOn(true);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

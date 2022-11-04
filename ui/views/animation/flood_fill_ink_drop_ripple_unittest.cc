@@ -14,8 +14,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/test/flood_fill_ink_drop_ripple_test_api.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 TEST(FloodFillInkDropRippleTest, TransformedCenterPointForIrregularClipBounds) {
   const gfx::Size host_size(48, 50);
@@ -143,5 +142,4 @@ TEST(FloodFillInkDropRippleTest, TransformIsPixelAligned) {
   }
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

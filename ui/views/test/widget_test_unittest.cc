@@ -13,8 +13,7 @@
 #include "ui/aura/window.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 namespace {
 
 // Insert |widget| into |expected| and ensure it's reported by GetAllWidgets().
@@ -109,5 +108,4 @@ TEST_F(DesktopWidgetTestTest, GetAllWidgets) {
   ExpectClose(&expected, {frameless}, "frameless");
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

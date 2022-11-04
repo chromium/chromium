@@ -8,8 +8,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography_provider.h"
 
-namespace views {
-namespace style {
+namespace views::style {
 namespace {
 
 void ValidateContextAndStyle(int context, int style) {
@@ -43,5 +42,4 @@ int GetLineHeight(int context, int style) {
                                                                       style);
 }
 
-}  // namespace style
-}  // namespace views
+}  // namespace views::style

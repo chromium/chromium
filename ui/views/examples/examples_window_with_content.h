@@ -14,8 +14,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 // Shows a window with the views examples in it.
 VIEWS_EXAMPLES_WITH_CONTENT_EXPORT void ShowExamplesWindowWithContent(
@@ -23,7 +22,6 @@ VIEWS_EXAMPLES_WITH_CONTENT_EXPORT void ShowExamplesWindowWithContent(
     content::BrowserContext* browser_context,
     gfx::NativeWindow window_context);
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_EXAMPLES_WINDOW_WITH_CONTENT_H_

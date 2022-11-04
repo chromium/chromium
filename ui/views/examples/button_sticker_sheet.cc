@@ -15,8 +15,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/table_layout.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -105,5 +104,4 @@ void ButtonStickerSheet::CreateExampleView(View* container) {
                 MakeButtonsInState(Button::STATE_DISABLED));
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

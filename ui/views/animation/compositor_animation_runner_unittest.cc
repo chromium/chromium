@@ -13,8 +13,7 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/test/widget_test.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 namespace {
 constexpr base::TimeDelta kDuration = base::Milliseconds(100);
 }
@@ -197,5 +196,4 @@ TEST_F(CompositorAnimationRunnerDesktopTest, SwitchCompositor) {
 }
 #endif
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

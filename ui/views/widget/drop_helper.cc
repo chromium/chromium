@@ -33,7 +33,7 @@ base::RepeatingClosure* GetDragEnteredCallback() {
 }  // namespace
 
 DropHelper::DropHelper(View* root_view)
-    : root_view_(root_view), target_view_(nullptr), deepest_view_(nullptr) {}
+    : root_view_(root_view), target_view_(nullptr) {}
 
 DropHelper::~DropHelper() = default;
 

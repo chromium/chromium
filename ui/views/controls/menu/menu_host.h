@@ -114,10 +114,10 @@ class MenuHost : public Widget, public WidgetObserver {
   raw_ptr<SubmenuView, DanglingUntriaged> submenu_;
 
   // If true, DestroyMenuHost has been invoked.
-  bool destroying_;
+  bool destroying_ = false;
 
   // If true and capture is lost we don't notify the delegate.
-  bool ignore_capture_lost_;
+  bool ignore_capture_lost_ = false;
 
 #if !BUILDFLAG(IS_MAC)
   // Handles raw touch events at the moment.

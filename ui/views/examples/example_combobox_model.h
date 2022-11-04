@@ -8,8 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/combobox_model.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class ExampleComboboxModel : public ui::ComboboxModel {
  public:
@@ -29,7 +28,6 @@ class ExampleComboboxModel : public ui::ComboboxModel {
   const size_t count_;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_EXAMPLE_COMBOBOX_MODEL_H_

@@ -9,14 +9,12 @@
 #include "ui/views/examples/example_base.h"
 #include "ui/views/examples/views_examples_export.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 // Creates the default set of examples.
 ExampleVector VIEWS_EXAMPLES_EXPORT
 CreateExamples(ExampleVector extra_examples = ExampleVector());
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_CREATE_EXAMPLES_H_

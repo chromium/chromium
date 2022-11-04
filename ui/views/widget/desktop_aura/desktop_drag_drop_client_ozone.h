@@ -24,11 +24,9 @@
 #include "ui/platform_window/wm/wm_drop_handler.h"
 #include "ui/views/views_export.h"
 
-namespace aura {
-namespace client {
+namespace aura::client {
 class DragDropDelegate;
-}
-}  // namespace aura
+}  // namespace aura::client
 
 namespace ui {
 class DropTargetEvent;

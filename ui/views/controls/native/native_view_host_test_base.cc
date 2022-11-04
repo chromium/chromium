@@ -10,8 +10,7 @@
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // Testing wrapper of the NativeViewHost.
 class NativeViewHostTestBase::NativeViewHostTesting : public NativeViewHost {
@@ -91,5 +90,4 @@ NativeViewHostWrapper* NativeViewHostTestBase::GetNativeWrapper() {
   return host_->native_wrapper_.get();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

@@ -206,7 +206,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
       : controller_(controller),
         image_(GetCenterHandleImage()),
         is_cursor_handle_(is_cursor_handle),
-        draw_invisible_(false),
+
         widget_(new views::Widget) {
     // Create a widget to host EditingHandleView.
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
@@ -368,7 +368,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   // widget. We need this because we may want to stop showing the handle while
   // it is being dragged. Since it is being dragged, we cannot destroy the
   // handle.
-  bool draw_invisible_;
+  bool draw_invisible_ = false;
 
   // Owning widget.
   Widget* widget_ = nullptr;

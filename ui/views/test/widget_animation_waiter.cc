@@ -12,8 +12,7 @@
 
 namespace views {
 
-WidgetAnimationWaiter::WidgetAnimationWaiter(Widget* widget)
-    : target_bounds_(gfx::Rect()), widget_(widget) {
+WidgetAnimationWaiter::WidgetAnimationWaiter(Widget* widget) : widget_(widget) {
   widget->GetLayer()->GetAnimator()->AddObserver(this);
 }
 

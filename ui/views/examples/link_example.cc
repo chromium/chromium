@@ -19,8 +19,7 @@
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 LinkExample::LinkExample()
     : ExampleBase(GetStringUTF8(IDS_LINK_SELECT_LABEL).c_str()) {}
@@ -38,5 +37,4 @@ void LinkExample::CreateExampleView(View* container) {
   container->AddChildView(std::move(link));
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

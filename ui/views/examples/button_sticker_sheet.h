@@ -7,8 +7,7 @@
 
 #include "ui/views/examples/example_base.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 // An "example" that displays a sticker sheet of all the available material
 // design button styles. This example only looks right with `--secondary-ui-md`.
@@ -27,7 +26,6 @@ class VIEWS_EXAMPLES_EXPORT ButtonStickerSheet : public ExampleBase {
   void CreateExampleView(View* container) override;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_BUTTON_STICKER_SHEET_H_

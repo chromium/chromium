@@ -14,8 +14,7 @@
 #include "ui/snapshot/snapshot_aura.h"
 #endif
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 ExamplesSkiaGoldPixelDiff::ExamplesSkiaGoldPixelDiff() = default;
 ExamplesSkiaGoldPixelDiff::~ExamplesSkiaGoldPixelDiff() = default;
@@ -58,5 +57,4 @@ void ExamplesSkiaGoldPixelDiff::OnExamplesWindowShown(views::Widget* widget) {
   }
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

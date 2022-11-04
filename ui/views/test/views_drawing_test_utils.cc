@@ -10,8 +10,7 @@
 #include "ui/views/paint_info.h"
 #include "ui/views/view.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 SkBitmap PaintViewToBitmap(View* view) {
   SkBitmap bitmap;
@@ -24,5 +23,4 @@ SkBitmap PaintViewToBitmap(View* view) {
   return bitmap;
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

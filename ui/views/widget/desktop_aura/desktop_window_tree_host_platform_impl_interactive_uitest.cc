@@ -105,7 +105,7 @@ class FakeWmMoveResizeHandler : public ui::WmMoveResizeHandler {
  public:
   using SetBoundsCallback = base::RepeatingCallback<void(gfx::Rect)>;
   explicit FakeWmMoveResizeHandler(ui::PlatformWindow* window)
-      : platform_window_(window), hittest_(-1) {}
+      : platform_window_(window) {}
 
   FakeWmMoveResizeHandler(const FakeWmMoveResizeHandler&) = delete;
   FakeWmMoveResizeHandler& operator=(const FakeWmMoveResizeHandler&) = delete;

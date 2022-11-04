@@ -13,8 +13,7 @@
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace views {
-namespace debug {
+namespace views::debug {
 
 // This class acts as a "view" over the View class. This has been done to allow
 // debugger extensions to remnain resillient to structure and version changes in
@@ -48,7 +47,6 @@ void PrintViewHierarchy(std::ostream* out,
                         int depth = -1,
                         size_t column_limit = 240);
 
-}  // namespace debug
-}  // namespace views
+}  // namespace views::debug
 
 #endif  // UI_VIEWS_DEBUG_DEBUGGER_UTILS_H_

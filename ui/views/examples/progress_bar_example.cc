@@ -20,8 +20,7 @@
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 ProgressBarExample::ProgressBarExample()
     : ExampleBase(GetStringUTF8(IDS_PROGRESS_SELECT_LABEL).c_str()) {}
@@ -71,5 +70,4 @@ void ProgressBarExample::ButtonPressed(double step) {
   progress_bar_->SetValue(current_percent_);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

@@ -30,8 +30,7 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -787,5 +786,4 @@ TEST_F(AXVirtualViewTest, GetTargetForEvents) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

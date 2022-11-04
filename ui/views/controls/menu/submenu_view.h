@@ -213,19 +213,19 @@ class VIEWS_EXPORT SubmenuView : public View,
   raw_ptr<MenuItemView> drop_item_;
 
   // Position of the drop.
-  MenuDelegate::DropPosition drop_position_;
+  MenuDelegate::DropPosition drop_position_ = MenuDelegate::DropPosition::kNone;
 
   // Ancestor of the SubmenuView, lazily created.
   raw_ptr<MenuScrollViewContainer, DanglingUntriaged> scroll_view_container_;
 
   // See description above getter.
-  mutable int max_minor_text_width_;
+  mutable int max_minor_text_width_ = 0;
 
   // Minimum width returned in GetPreferredSize().
-  int minimum_preferred_width_;
+  int minimum_preferred_width_ = 0;
 
   // Reposition open menu when contained views change size.
-  bool resize_open_menu_;
+  bool resize_open_menu_ = false;
 
   // The submenu's scroll animator
   std::unique_ptr<ScrollAnimator> scroll_animator_;
@@ -234,7 +234,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   // OnScroll.
   // TODO(tdresser): This should be removed when raw pixel scrolling for views
   // is enabled. See crbug.com/329354.
-  float roundoff_error_;
+  float roundoff_error_ = 0;
 
   PrefixSelector prefix_selector_;
 };

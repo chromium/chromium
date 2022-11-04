@@ -65,7 +65,7 @@ class ProportionallySizedView : public View {
   int factor_;
 
   // The width used as the preferred size. -1 if not used.
-  int preferred_width_;
+  int preferred_width_ = -1;
 };
 
 // Class that closes the widget (which ends up deleting it immediately) when the

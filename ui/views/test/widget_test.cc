@@ -229,7 +229,7 @@ View* TestInitialFocusWidgetDelegate::GetInitiallyFocusedView() {
 }
 
 WidgetActivationWaiter::WidgetActivationWaiter(Widget* widget, bool active)
-    : observed_(false), active_(active) {
+    : active_(active) {
   if (active == widget->IsActive()) {
     observed_ = true;
     return;

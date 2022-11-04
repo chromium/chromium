@@ -6,8 +6,7 @@
 
 #include "ui/views/animation/ink_drop_highlight.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 TestInkDropHighlightObserver::TestInkDropHighlightObserver() = default;
 
@@ -22,5 +21,4 @@ void TestInkDropHighlightObserver::AnimationEnded(
   ObserverHelper::OnAnimationEnded(animation_type, reason);
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

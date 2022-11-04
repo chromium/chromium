@@ -7,8 +7,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
-namespace views {
-namespace features {
+namespace views::features {
 
 // Please keep alphabetized.
 
@@ -30,5 +29,4 @@ BASE_FEATURE(kWidgetLayering,
              "WidgetLayering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace features
-}  // namespace views
+}  // namespace views::features

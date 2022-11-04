@@ -16,8 +16,7 @@
 #include "ui/aura/window.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // A simple event observer that records the number of events.
 class TestEventObserver : public ui::EventObserver {
@@ -180,5 +179,4 @@ TEST_F(EventMonitorTest, TwoMonitors) {
   EXPECT_TRUE(deleter->DidDelete());
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

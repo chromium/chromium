@@ -21,8 +21,7 @@ namespace aura {
 class Window;
 }
 
-namespace views {
-namespace corewm {
+namespace views::corewm {
 
 namespace test {
 class TooltipControllerTestHelper;
@@ -130,7 +129,6 @@ class VIEWS_EXPORT TooltipStateManager {
   base::WeakPtrFactory<TooltipStateManager> weak_factory_{this};
 };
 
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm
 
 #endif  // UI_VIEWS_COREWM_TOOLTIP_STATE_MANAGER_H_

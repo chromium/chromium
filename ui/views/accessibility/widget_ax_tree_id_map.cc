@@ -9,9 +9,9 @@
 
 namespace views {
 
-WidgetAXTreeIDMap::WidgetAXTreeIDMap() {}
+WidgetAXTreeIDMap::WidgetAXTreeIDMap() = default;
 
-WidgetAXTreeIDMap::~WidgetAXTreeIDMap() {}
+WidgetAXTreeIDMap::~WidgetAXTreeIDMap() = default;
 
 // static
 WidgetAXTreeIDMap& WidgetAXTreeIDMap::GetInstance() {

@@ -45,8 +45,7 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 using DesktopNativeWidgetAuraTest = DesktopWidgetTest;
 
@@ -814,5 +813,4 @@ TEST_F(DesktopWidgetTest, CharMessagesAsKeyboardMessagesDoesNotCrash) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

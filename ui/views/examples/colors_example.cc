@@ -24,8 +24,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -189,5 +188,4 @@ void ColorsExample::CreateExampleView(View* container) {
   container->AddChildView(std::make_unique<AllColorsScrollView>());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

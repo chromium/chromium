@@ -13,8 +13,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -71,5 +70,4 @@ void ThrobberExample::CreateExampleView(View* container) {
   container->AddChildView(std::make_unique<ThrobberView>());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

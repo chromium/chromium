@@ -129,14 +129,14 @@ std::unique_ptr<Widget> CreateWidgetWithNativeWidget() {
 
 class DesktopWindowTreeHostPlatformTest : public ViewsTestBase {
  public:
-  DesktopWindowTreeHostPlatformTest() {}
+  DesktopWindowTreeHostPlatformTest() = default;
 
   DesktopWindowTreeHostPlatformTest(const DesktopWindowTreeHostPlatformTest&) =
       delete;
   DesktopWindowTreeHostPlatformTest& operator=(
       const DesktopWindowTreeHostPlatformTest&) = delete;
 
-  ~DesktopWindowTreeHostPlatformTest() override {}
+  ~DesktopWindowTreeHostPlatformTest() override = default;
 };
 
 TEST_F(DesktopWindowTreeHostPlatformTest, CallOnNativeWidgetDestroying) {

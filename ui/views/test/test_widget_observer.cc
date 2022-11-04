@@ -7,8 +7,7 @@
 #include "base/check_op.h"
 #include "ui/views/widget/widget.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 TestWidgetObserver::TestWidgetObserver(Widget* widget) : widget_(widget) {
   widget_->AddObserver(this);
@@ -25,5 +24,4 @@ void TestWidgetObserver::OnWidgetDestroying(Widget* widget) {
   widget_ = nullptr;
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

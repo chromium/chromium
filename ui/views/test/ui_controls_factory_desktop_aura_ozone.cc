@@ -28,8 +28,7 @@
 #include "ui/views/test/test_desktop_screen_ozone.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 namespace {
 
 using ui_controls::DOWN;
@@ -220,5 +219,4 @@ UIControlsAura* CreateUIControlsDesktopAuraOzone() {
   return new UIControlsDesktopOzone();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

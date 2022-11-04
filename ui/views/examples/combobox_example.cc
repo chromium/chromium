@@ -17,8 +17,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -84,5 +83,4 @@ void ComboboxExample::ValueChanged() {
                   .c_str());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

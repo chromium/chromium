@@ -34,8 +34,7 @@
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -167,5 +166,4 @@ void VectorExample::CreateExampleView(View* container) {
   container->AddChildView(std::make_unique<VectorIconGallery>());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
