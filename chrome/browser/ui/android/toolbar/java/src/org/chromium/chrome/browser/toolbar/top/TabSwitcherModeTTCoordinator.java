@@ -10,6 +10,7 @@ import android.view.ViewStub;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -258,7 +259,7 @@ class TabSwitcherModeTTCoordinator {
     }
 
     private boolean isNewTabVariationEnabled() {
-        return mIsGridTabSwitcherEnabled && ChromeFeatureList.isInitialized()
+        return mIsGridTabSwitcherEnabled && FeatureList.isInitialized()
                 && mIsIncognitoModeEnabledSupplier.getAsBoolean()
                 && !ChromeFeatureList
                             .getFieldTrialParamByFeature(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,

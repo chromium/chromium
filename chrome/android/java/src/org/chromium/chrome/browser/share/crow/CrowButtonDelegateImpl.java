@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.LocaleUtils;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -105,7 +106,7 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
         String customTabUrl = getUrlForWebFlow(pageUrl, canonicalUrl, isFollowing);
 
         // Experiment flag: open in standard new tab.
-        if (ChromeFeatureList.isInitialized()
+        if (FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON_LAUNCH_TAB)) {
             // TabLaunchType.FROM_LINK will allow back to navigate back to the
             // current tab.
@@ -141,7 +142,7 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     }
 
     public boolean isCrowEnabled() {
-        return isEnabledForLocaleAndCountry() && ChromeFeatureList.isInitialized()
+        return isEnabledForLocaleAndCountry() && FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON);
     }
 

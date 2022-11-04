@@ -18,6 +18,7 @@ import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -59,7 +60,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
      */
     public static FeedSwipeRefreshLayout create(
             @NonNull Activity activity, @IdRes int anchorViewId) {
-        if (!ChromeFeatureList.isInitialized()
+        if (!FeatureList.isInitialized()
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_INTERACTIVE_REFRESH)) {
             return null;
         }

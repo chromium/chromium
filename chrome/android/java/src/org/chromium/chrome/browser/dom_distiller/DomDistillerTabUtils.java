@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.dom_distiller;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -130,7 +131,7 @@ public class DomDistillerTabUtils {
      * @return True if it should.
      */
     public static boolean isCctMode() {
-        if (!ChromeFeatureList.isInitialized()) return false;
+        if (!FeatureList.isInitialized()) return false;
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READER_MODE_IN_CCT);
     }
 

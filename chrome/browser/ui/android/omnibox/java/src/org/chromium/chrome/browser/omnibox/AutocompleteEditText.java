@@ -24,6 +24,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -114,7 +115,7 @@ public class AutocompleteEditText
     private void ensureModel() {
         if (mModel != null) return;
 
-        if (!ChromeFeatureList.isInitialized()
+        if (!FeatureList.isInitialized()
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)) {
             Log.w(TAG, "Using spannable model...");
             mModel = new SpannableAutocompleteEditTextModel(this);

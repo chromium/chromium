@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.feed;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -106,7 +107,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void openCrow(String url) {
-        if (ChromeFeatureList.isInitialized()
+        if (FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON_LAUNCH_TAB)) {
             String tabUrl = mCrowButtonDelegate.getUrlForWebFlow(
                     new GURL(url), GURL.emptyGURL(), /*isFollowing=*/true);

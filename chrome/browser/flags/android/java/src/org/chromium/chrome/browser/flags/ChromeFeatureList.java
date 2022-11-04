@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.flags;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -31,35 +29,6 @@ public abstract class ChromeFeatureList {
     private ChromeFeatureList() {}
 
     /**
-     * @see FeatureList#setTestCanUseDefaultsForTesting
-     */
-    // TODO(crbug.com/1060097): Migrate callers to the FeatureList equivalent function.
-    @VisibleForTesting
-    public static void setTestCanUseDefaultsForTesting() {
-        FeatureList.setTestCanUseDefaultsForTesting();
-    }
-
-    /**
-     * @see FeatureList#resetTestCanUseDefaultsForTesting
-     */
-    // TODO(crbug.com/1060097): Migrate callers to the FeatureList equivalent function.
-    @VisibleForTesting
-    public static void resetTestCanUseDefaultsForTesting() {
-        FeatureList.resetTestCanUseDefaultsForTesting();
-    }
-
-    /**
-     * @return Whether the native FeatureList has been initialized. If this method returns false,
-     *         none of the methods in this class that require native access should be called (except
-     *         in tests if test features have been set).
-     */
-    // TODO(crbug.com/1060097): Migrate callers to the FeatureList equivalent function.
-    @Deprecated
-    public static boolean isInitialized() {
-        return FeatureList.isInitialized();
-    }
-
-    /**
      * Returns whether the specified feature is enabled or not in native.
      *
      * @param featureName The name of the feature to query.
@@ -79,8 +48,8 @@ public abstract class ChromeFeatureList {
      * Calling this has the side effect of bucketing this client, which may cause an experiment to
      * be marked as active.
      *
-     * Should be called only after native is loaded. If {@link #isInitialized()} return true, this
-     * method is safe to call.  In tests, this will return any values set through
+     * Should be called only after native is loaded. If {@link FeatureList#isInitialized()} returns
+     * true, this method is safe to call.  In tests, this will return any values set through
      * {@link FeatureList#setTestFeatures(Map)}, even before native is loaded.
      *
      * @param featureName The name of the feature to query.
