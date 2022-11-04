@@ -25,6 +25,7 @@ public class SuggestionsMetrics {
      * Anything beyond this will be reported in the overflow bucket.
      */
     private static final int MAX_SUGGEST_TILE_TYPE_POSITION = 15;
+    public static final int MAX_AUTOCOMPLETE_POSITION = 30;
 
     @IntDef({RefineActionUsage.NOT_USED, RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
             RefineActionUsage.SEARCH_WITH_PREFIX, RefineActionUsage.SEARCH_WITH_BOTH,
