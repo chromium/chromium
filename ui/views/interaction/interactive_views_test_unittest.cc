@@ -184,14 +184,11 @@ TEST_F(InteractiveViewsTestTest, NameChildViewByFilter) {
   EXPECT_CALL_IN_SCOPE(
       button2_callback_, Run,
       RunTestSequence(
-          NameChildView(kButtonsId, kViewName,
-                        base::BindRepeating([](const View* view) {
-                          // TODO(dfried): fix const-correctness of Views
-                          // metadata.
-                          auto* const button =
-                              AsViewClass<LabelButton>(const_cast<View*>(view));
-                          return button && button->GetText() == kButton2Caption;
-                        })),
+          NameChildView(
+              kButtonsId, kViewName, base::BindRepeating([](const View* view) {
+                const auto* const button = AsViewClass<LabelButton>(view);
+                return button && button->GetText() == kButton2Caption;
+              })),
           PressButton(kViewName, InputType::kKeyboard)));
 }
 
@@ -228,10 +225,7 @@ TEST_F(InteractiveViewsTestTest, NameChildViewFails) {
       RunTestSequence(
           NameChildView(
               kButtonsId, kViewName, base::BindRepeating([](const View* view) {
-                // TODO(dfried): fix const-correctness of Views
-                // metadata.
-                auto* const button =
-                    AsViewClass<LabelButton>(const_cast<View*>(view));
+                const auto* const button = AsViewClass<LabelButton>(view);
                 return button && button->GetText() ==
                                      u"This is not a valid button caption.";
               })),
