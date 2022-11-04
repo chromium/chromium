@@ -7,7 +7,24 @@
  * @fileoverview Polymer element for displaying material design update required.
  */
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_modal_dialog.m.js';
+
+import {sanitizeInnerHtml} from '//resources/ash/common/parse_html_subset.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+
+import {CheckingDownloadingUpdate} from './checking_downloading_update.m.js';
+
 
 /**
  * Possible UI states of the screen. Must be in the same order as
@@ -31,9 +48,8 @@ const UpdateRequiredUIState = {
  * @implements {MultiStepBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const UpdateRequiredBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
-    Polymer.Element);
+const UpdateRequiredBase = mixinBehaviors(
+    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
 
 /**
  * @typedef {{
@@ -51,7 +67,9 @@ class UpdateRequired extends UpdateRequiredBase {
     return 'update-required-card-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -89,20 +107,20 @@ class UpdateRequired extends UpdateRequiredBase {
   /** Overridden from LoginScreenBehavior. */
   // clang-format off
   get EXTERNAL_API() {
-    return ['setIsConnected',
-            'setUpdateProgressUnavailable',
-            'setUpdateProgressValue',
-            'setUpdateProgressMessage',
-            'setEstimatedTimeLeftVisible',
-            'setEstimatedTimeLeft',
-            'setUIState',
-            'setEnterpriseAndDeviceName',
-            'setEolMessage',
-            'setIsUserDataPresent',
-          ];
+    return [
+      'setIsConnected',
+      'setUpdateProgressUnavailable',
+      'setUpdateProgressValue',
+      'setUpdateProgressMessage',
+      'setEstimatedTimeLeftVisible',
+      'setEstimatedTimeLeft',
+      'setUIState',
+      'setEnterpriseAndDeviceName',
+      'setEolMessage',
+      'setIsUserDataPresent',
+    ];
   }
   // clang-format on
-
 
   ready() {
     super.ready();
@@ -261,9 +279,11 @@ class UpdateRequired extends UpdateRequiredBase {
    * @private
    */
   updateEolDeleteUsersDataMessage_() {
-    this.shadowRoot.querySelector('#deleteUsersDataMessage').innerHTML = this.i18nAdvanced(
-        'eolDeleteUsersDataMessage',
-        {substitutions: [loadTimeData.getString('deviceType')], attrs: ['id']});
+    this.shadowRoot.querySelector('#deleteUsersDataMessage').innerHTML =
+        this.i18nAdvanced('eolDeleteUsersDataMessage', {
+          substitutions: [loadTimeData.getString('deviceType')],
+          attrs: ['id'],
+        });
     const linkElement = this.shadowRoot.querySelector('#deleteDataLink');
     linkElement.setAttribute('is', 'action-link');
     linkElement.classList.add('oobe-local-link');
