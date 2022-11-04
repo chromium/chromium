@@ -283,7 +283,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   mojom::FrameLifecycleState ContextPauseState() const {
     return lifecycle_state_;
   }
-  bool IsContextFrozenOrPaused() const;
+  bool IsLoadDeferred() const;
 
   // Gets the next id in a circular sequence from 1 to 2^31-1.
   int CircularSequentialID();

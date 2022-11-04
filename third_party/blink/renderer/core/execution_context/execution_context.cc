@@ -347,7 +347,7 @@ LoaderFreezeMode ExecutionContext::GetLoaderFreezeMode() const {
   return LoaderFreezeMode::kNone;
 }
 
-bool ExecutionContext::IsContextFrozenOrPaused() const {
+bool ExecutionContext::IsLoadDeferred() const {
   return lifecycle_state_ == mojom::blink::FrameLifecycleState::kPaused ||
          lifecycle_state_ == mojom::blink::FrameLifecycleState::kFrozen;
 }

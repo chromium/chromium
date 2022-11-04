@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  let input = document.createElement("input");
-  input.id = "callback"
-  input.value += "called";
-  document.documentElement.appendChild(input);
+  // do nothing
 });
 
 if (window.location.host.indexOf('b.com') != -1) {
