@@ -211,7 +211,10 @@ suite('inputListTestSuite', function() {
         /*expectedMoveAppToTestingScreenCalled=*/ 1,
         provider.getMoveAppToTestingScreenCalled());
 
+    const fullscreenChangeEvent =
+        eventToPromise('fullscreenchange', touchscreenTester.shadowRoot);
     touchscreenTester.shadowRoot.dispatchEvent(new Event('fullscreenchange'));
+    await fullscreenChangeEvent;
     assertFalse(introDialog.open);
     assertEquals(
         /*expectedMoveAppBackToPreviousScreenCalled=*/ 1,

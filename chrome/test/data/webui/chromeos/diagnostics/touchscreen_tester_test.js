@@ -9,6 +9,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertTrue} from '../../chai_assert.js';
 import {MockController} from '../../mock_controller.js';
+import {eventToPromise} from '../../test_util.js';
 
 suite('touchscreenTesterTestSuite', function() {
   /** @type {?TouchscreenTesterElement} */
@@ -246,8 +247,10 @@ suite('touchscreenTesterTestSuite', function() {
             touch.identifier, expectedTouchPt, touch.force);
       }
 
-      const touchEvent = new TouchEvent(eventType, {changedTouches: [touch]});
-      canvas.dispatchEvent(touchEvent);
+      const touchEvent = eventToPromise(eventType, canvas);
+      canvas.dispatchEvent(
+          new TouchEvent(eventType, {changedTouches: [touch]}));
+      await touchEvent;
       mockController.verifyMocks();
     }
   });
