@@ -564,147 +564,35 @@ class CrosDisksClientImpl : public CrosDisksClient {
 
 std::ostream& operator<<(std::ostream& out, const MountType type) {
   switch (type) {
-#define PRINT_TYPE(s) \
-  case MountType::s:  \
+#define PRINT(s)        \
+  case MountType::k##s: \
     return out << #s;
-    PRINT_TYPE(kInvalid)
-    PRINT_TYPE(kDevice)
-    PRINT_TYPE(kArchive)
-    PRINT_TYPE(kNetworkStorage)
-#undef PRINT_TYPE
+    PRINT(Invalid)
+    PRINT(Device)
+    PRINT(Archive)
+    PRINT(NetworkStorage)
+#undef PRINT
   }
 
-  return out << std::underlying_type_t<MountType>(type);
-}
-
-std::ostream& operator<<(std::ostream& out, const DeviceType type) {
-  switch (type) {
-#define PRINT_TYPE(s) \
-  case DeviceType::s: \
-    return out << #s;
-    PRINT_TYPE(kUnknown)
-    PRINT_TYPE(kUSB)
-    PRINT_TYPE(kSD)
-    PRINT_TYPE(kOpticalDisc)
-    PRINT_TYPE(kMobile)
-    PRINT_TYPE(kDVD)
-#undef PRINT_TYPE
-  }
-
-  return out << std::underlying_type_t<DeviceType>(type);
-}
-
-std::ostream& operator<<(std::ostream& out, const MountError error) {
-  switch (error) {
-#define PRINT_ERROR(s) \
-  case MountError::s:  \
-    return out << #s;
-    PRINT_ERROR(kSuccess)
-    PRINT_ERROR(kUnknownError)
-    PRINT_ERROR(kInternalError)
-    PRINT_ERROR(kInvalidArgument)
-    PRINT_ERROR(kInvalidPath)
-    PRINT_ERROR(kPathAlreadyMounted)
-    PRINT_ERROR(kPathNotMounted)
-    PRINT_ERROR(kDirectoryCreationFailed)
-    PRINT_ERROR(kInvalidMountOptions)
-    PRINT_ERROR(kInvalidUnmountOptions)
-    PRINT_ERROR(kInsufficientPermissions)
-    PRINT_ERROR(kMountProgramNotFound)
-    PRINT_ERROR(kMountProgramFailed)
-    PRINT_ERROR(kInvalidDevicePath)
-    PRINT_ERROR(kUnknownFilesystem)
-    PRINT_ERROR(kUnsupportedFilesystem)
-    PRINT_ERROR(kInvalidArchive)
-    PRINT_ERROR(kNeedPassword)
-    PRINT_ERROR(kInProgress)
-    PRINT_ERROR(kCancelled)
-    PRINT_ERROR(kBusy)
-#undef PRINT_ERROR
-  }
-
-  return out << std::underlying_type_t<MountError>(error);
-}
-
-std::ostream& operator<<(std::ostream& out, const RenameError error) {
-  switch (error) {
-#define PRINT_ERROR(s) \
-  case RenameError::s: \
-    return out << #s;
-    PRINT_ERROR(kSuccess)
-    PRINT_ERROR(kUnknownError)
-    PRINT_ERROR(kInternalError)
-    PRINT_ERROR(kInvalidDevicePath)
-    PRINT_ERROR(kDeviceBeingRenamed)
-    PRINT_ERROR(kUnsupportedFilesystem)
-    PRINT_ERROR(kRenameProgramNotFound)
-    PRINT_ERROR(kRenameProgramFailed)
-    PRINT_ERROR(kDeviceNotAllowed)
-    PRINT_ERROR(kLongName)
-    PRINT_ERROR(kInvalidCharacter)
-#undef PRINT_ERROR
-  }
-
-  return out << std::underlying_type_t<RenameError>(error);
-}
-
-std::ostream& operator<<(std::ostream& out, const FormatError error) {
-  switch (error) {
-#define PRINT_ERROR(s) \
-  case FormatError::s: \
-    return out << #s;
-    PRINT_ERROR(kSuccess)
-    PRINT_ERROR(kUnknownError)
-    PRINT_ERROR(kInternalError)
-    PRINT_ERROR(kInvalidDevicePath)
-    PRINT_ERROR(kDeviceBeingFormatted)
-    PRINT_ERROR(kUnsupportedFilesystem)
-    PRINT_ERROR(kFormatProgramNotFound)
-    PRINT_ERROR(kFormatProgramFailed)
-    PRINT_ERROR(kDeviceNotAllowed)
-    PRINT_ERROR(kInvalidOptions)
-    PRINT_ERROR(kLongName)
-    PRINT_ERROR(kInvalidCharacter)
-#undef PRINT_ERROR
-  }
-
-  return out << std::underlying_type_t<FormatError>(error);
-}
-
-std::ostream& operator<<(std::ostream& out, const PartitionError error) {
-  switch (error) {
-#define PRINT_ERROR(s)    \
-  case PartitionError::s: \
-    return out << #s;
-    PRINT_ERROR(kSuccess)
-    PRINT_ERROR(kUnknownError)
-    PRINT_ERROR(kInternalError)
-    PRINT_ERROR(kInvalidDevicePath)
-    PRINT_ERROR(kDeviceBeingPartitioned)
-    PRINT_ERROR(kProgramNotFound)
-    PRINT_ERROR(kProgramFailed)
-    PRINT_ERROR(kDeviceNotAllowed)
-#undef PRINT_ERROR
-  }
-
-  return out << std::underlying_type_t<PartitionError>(error);
+  return out << "MountType(" << std::underlying_type_t<MountType>(type) << ")";
 }
 
 std::ostream& operator<<(std::ostream& out, const MountEventType event) {
   switch (event) {
-#define PRINT_ERROR(s)    \
-  case MountEventType::s: \
+#define PRINT(s)             \
+  case MountEventType::k##s: \
     return out << #s;
-    PRINT_ERROR(kDiskAdded)
-    PRINT_ERROR(kDiskRemoved)
-    PRINT_ERROR(kDiskChanged)
-    PRINT_ERROR(kDeviceAdded)
-    PRINT_ERROR(kDeviceRemoved)
-    PRINT_ERROR(kDeviceScanned)
-#undef PRINT_ERROR
+    PRINT(DiskAdded)
+    PRINT(DiskRemoved)
+    PRINT(DiskChanged)
+    PRINT(DeviceAdded)
+    PRINT(DeviceRemoved)
+    PRINT(DeviceScanned)
+#undef PRINT
   }
 
-  return out << std::underlying_type_t<MountEventType>(event);
+  return out << "MountEventType("
+             << std::underlying_type_t<MountEventType>(event) << ")";
 }
 
 std::ostream& operator<<(std::ostream& out, const MountPoint& entry) {
