@@ -149,7 +149,7 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
 
   parent.ApplyToScreen(screen_transform_->to_screen);
   if (node.FlattensInheritedTransform())
-    screen_transform_->to_screen.FlattenTo2d();
+    screen_transform_->to_screen.Flatten();
   if (node.IsIdentityOr2DTranslation()) {
     const auto& translation = node.Translation2D();
     screen_transform_->to_screen.Translate(translation.x(), translation.y());
@@ -158,7 +158,7 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
   }
 
   auto to_screen_flattened = screen_transform_->to_screen;
-  to_screen_flattened.FlattenTo2d();
+  to_screen_flattened.Flatten();
   screen_transform_->projection_from_screen_is_valid =
       to_screen_flattened.GetInverse(
           &screen_transform_->projection_from_screen);

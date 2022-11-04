@@ -96,7 +96,7 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     EXPECT_EQ(&plane_root, cache.plane_root());
     EXPECT_EQ(to_screen, cache.to_screen());
     auto projection_from_screen = to_screen;
-    projection_from_screen.FlattenTo2d();
+    projection_from_screen.Flatten();
     projection_from_screen = projection_from_screen.InverseOrIdentity();
     EXPECT_EQ(projection_from_screen, cache.projection_from_screen());
   }
@@ -124,7 +124,7 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     EXPECT_EQ(to_plane_root.InverseOrIdentity(), cache.from_plane_root());
     EXPECT_EQ(to_screen, cache.to_screen());
     auto projection_from_screen = to_screen;
-    projection_from_screen.FlattenTo2d();
+    projection_from_screen.Flatten();
     projection_from_screen = projection_from_screen.InverseOrIdentity();
     EXPECT_EQ(projection_from_screen, cache.projection_from_screen());
   }

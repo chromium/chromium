@@ -1556,7 +1556,7 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
       GetSampling(quad), draw_region);
 
   params.content_device_transform.PostConcat(target_to_device);
-  params.content_device_transform.FlattenTo2d();
+  params.content_device_transform.Flatten();
 
   // Respect per-quad setting overrides as highest priority setting
   if (!IsAAForcedOff(quad)) {
@@ -2891,7 +2891,7 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
           quad->shared_quad_state->clip_rect.value_or(current_draw_rect_);
       gfx::Transform transform =
           quad->shared_quad_state->quad_to_target_transform;
-      transform.FlattenTo2d();
+      transform.Flatten();
       if (!transform.IsInvertible()) {
         return rpdq_params;
       }
@@ -3386,7 +3386,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     // rect at z=0 in device space maps to some other z in local space.
     gfx::Transform flat_quad_to_target_transform(
         shared_quad_state->quad_to_target_transform);
-    flat_quad_to_target_transform.FlattenTo2d();
+    flat_quad_to_target_transform.Flatten();
     quad_to_target_transform_inverse =
         flat_quad_to_target_transform.GetCheckedInverse();
   }

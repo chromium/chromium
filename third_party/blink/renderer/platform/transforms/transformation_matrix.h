@@ -324,10 +324,9 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   [[nodiscard]] AffineTransform ToAffineTransform() const;
 
-  // Flatten into a 2-D transformation (non-invertable).
-  // Same as gfx::Transform::FlattenTo2d(); see the docs for that function for
+  // Same as gfx::Transform::Flatten(); see the docs for that function for
   // details and discussion.
-  void FlattenTo2d();
+  void Flatten();
 
   bool operator==(const TransformationMatrix& m2) const {
     return gfx::AllTrue((Col(0) == m2.Col(0)) & (Col(1) == m2.Col(1)) &

@@ -282,7 +282,7 @@ TEST(PropertyTreeTest, TransformsWithFlattening) {
   property_trees.ResetCachedData();
 
   gfx::Transform flattened_rotation_about_x = rotation_about_x;
-  flattened_rotation_about_x.FlattenTo2d();
+  flattened_rotation_about_x.Flatten();
 
   gfx::Transform to_target;
   property_trees.GetToTarget(child, effect_parent, &to_target);
@@ -458,7 +458,7 @@ TEST(PropertyTreeTest, FlatteningWhenDestinationHasOnlyFlatAncestors) {
   draw_property_utils::ComputeTransforms(&tree, ViewportPropertyIds());
 
   gfx::Transform flattened_rotation_about_x = rotation_about_x;
-  flattened_rotation_about_x.FlattenTo2d();
+  flattened_rotation_about_x.Flatten();
 
   gfx::Transform grand_child_to_parent;
   tree.CombineTransformsBetween(grand_child, parent, &grand_child_to_parent);

@@ -136,7 +136,7 @@ void TransformState::ApplyTransform(
 
   if (accumulate == kFlattenTransform) {
     if (force_accumulating_transform_) {
-      accumulated_transform_->FlattenTo2d();
+      accumulated_transform_->Flatten();
     } else {
       const TransformationMatrix* final_transform =
           accumulated_transform_ ? accumulated_transform_.get()

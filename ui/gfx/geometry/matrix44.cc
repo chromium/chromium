@@ -305,7 +305,7 @@ void Matrix44::MapScalars(double vec[4]) const {
                vec);
 }
 
-void Matrix44::FlattenTo2d() {
+void Matrix44::Flatten() {
   matrix_[0][2] = 0;
   matrix_[1][2] = 0;
   matrix_[3][2] = 0;

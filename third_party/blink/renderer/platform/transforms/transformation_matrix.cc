@@ -863,7 +863,7 @@ AffineTransform TransformationMatrix::ToAffineTransform() const {
                          matrix_[1][1], matrix_[3][0], matrix_[3][1]);
 }
 
-void TransformationMatrix::FlattenTo2d() {
+void TransformationMatrix::Flatten() {
   matrix_[2][0] = 0;
   matrix_[2][1] = 0;
   matrix_[0][2] = 0;

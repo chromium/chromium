@@ -273,7 +273,7 @@ void TransformTree::CombineTransformsBetween(int source_id,
     size_t index = source_to_destination_size - 1 - i;
     const TransformNode* node = Node(source_to_destination[index]);
     if (node->flattens_inherited_transform)
-      combined_transform.FlattenTo2d();
+      combined_transform.Flatten();
     combined_transform.PreConcat(node->to_parent);
   }
 
@@ -568,7 +568,7 @@ void TransformTree::UpdateScreenSpaceTransform(TransformNode* node,
   DCHECK(parent_node);
   gfx::Transform to_screen_space_transform = ToScreen(parent_node->id);
   if (node->flattens_inherited_transform)
-    to_screen_space_transform.FlattenTo2d();
+    to_screen_space_transform.Flatten();
   to_screen_space_transform.PreConcat(node->to_parent);
   node->ancestors_are_invertible = parent_node->ancestors_are_invertible;
   node->node_and_ancestors_are_flat =
@@ -1533,7 +1533,7 @@ gfx::Transform ScrollTree::ScreenSpaceTransform(int scroll_node_id) const {
   screen_space_transform.PostConcat(
       transform_tree.ToScreen(transform_node->id));
   if (scroll_node->should_flatten)
-    screen_space_transform.FlattenTo2d();
+    screen_space_transform.Flatten();
   return screen_space_transform;
 }
 

@@ -196,7 +196,7 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   TransformationMatrix matrix;
   destination_cache.ApplyProjectionFromScreen(matrix);
   source_cache.ApplyToScreen(matrix);
-  matrix.FlattenTo2d();
+  matrix.Flatten();
   return Translation2DOrMatrix(matrix);
 }
 

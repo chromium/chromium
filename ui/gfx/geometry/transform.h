@@ -373,7 +373,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   //    preserves the effect that any subsequent (multiplied from the right)
   //    transforms would have on z values.
   //
-  void FlattenTo2d();
+  void Flatten();
 
   // Returns true if the 3rd row and 3rd column are both (0, 0, 1, 0).
   bool IsFlat() const;

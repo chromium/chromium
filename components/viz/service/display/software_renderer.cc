@@ -275,7 +275,7 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
   gfx::Transform contents_device_transform = quad_rect_matrix;
   contents_device_transform.PostConcat(
       current_frame()->target_to_device_transform);
-  contents_device_transform.FlattenTo2d();
+  contents_device_transform.Flatten();
   SkMatrix sk_device_matrix =
       gfx::TransformToFlattenedSkMatrix(contents_device_transform);
   current_canvas_->setMatrix(sk_device_matrix);
@@ -807,7 +807,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   gfx::Transform contents_device_transform = quad_rect_matrix;
   contents_device_transform.PostConcat(
       current_frame()->target_to_device_transform);
-  contents_device_transform.FlattenTo2d();
+  contents_device_transform.Flatten();
 
   absl::optional<gfx::RRectF> backdrop_filter_bounds;
   gfx::Transform backdrop_filter_bounds_transform;

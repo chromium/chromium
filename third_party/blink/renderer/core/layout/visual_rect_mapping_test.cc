@@ -1015,7 +1015,7 @@ TEST_P(VisualRectMappingTest, ShouldAccountForPreserve3d) {
   PhysicalRect original_rect(0, 0, 100, 100);
   // Multiply both matrices together before flattening.
   TransformationMatrix matrix = container->Layer()->CurrentTransform();
-  matrix.FlattenTo2d();
+  matrix.Flatten();
   matrix *= target->Layer()->CurrentTransform();
   PhysicalRect output =
       PhysicalRect::EnclosingRect(matrix.MapRect(gfx::RectF(original_rect)));
@@ -1073,7 +1073,7 @@ TEST_P(VisualRectMappingTest, ShouldAccountForPerspective) {
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
   PhysicalRect original_rect(0, 0, 100, 100);
   TransformationMatrix matrix = container->Layer()->CurrentTransform();
-  matrix.FlattenTo2d();
+  matrix.Flatten();
   TransformationMatrix target_matrix;
   // getTransformfromContainter includes transform and perspective matrix
   // of the container.
@@ -1150,7 +1150,7 @@ TEST_P(VisualRectMappingTest, PerspectivePlusScroll) {
   TransformationMatrix transform;
   target->GetTransformFromContainer(
       container, target->OffsetFromContainer(container), transform);
-  transform.FlattenTo2d();
+  transform.Flatten();
 
   PhysicalRect output =
       PhysicalRect::EnclosingRect(transform.MapRect(gfx::RectF(originalRect)));

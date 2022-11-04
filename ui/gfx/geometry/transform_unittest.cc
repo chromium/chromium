@@ -2642,15 +2642,18 @@ TEST(XFormTest, Scale) {
   }
 }
 
-TEST(XFormTest, verifyFlattenTo2d) {
+TEST(XFormTest, Flatten) {
   Transform A;
   InitializeTestMatrix(&A);
+  EXPECT_FALSE(A.IsFlat());
 
-  A.FlattenTo2d();
+  A.Flatten();
   EXPECT_ROW1_EQ(10.0f, 14.0f, 0.0f, 22.0f, A);
   EXPECT_ROW2_EQ(11.0f, 15.0f, 0.0f, 23.0f, A);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, 0.0f, A);
   EXPECT_ROW4_EQ(13.0f, 17.0f, 0.0f, 25.0f, A);
+
+  EXPECT_TRUE(A.IsFlat());
 }
 
 TEST(XFormTest, IsFlat) {
@@ -3446,7 +3449,7 @@ TEST(XFormTest, ProjectPoint) {
   // inverse(flatten(inverse(t))).MapPoint().
   auto projection_transform = [](const Transform& t) {
     auto flat = t.GetCheckedInverse();
-    flat.FlattenTo2d();
+    flat.Flatten();
     return flat.GetCheckedInverse();
   };
 

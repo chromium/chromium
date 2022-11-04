@@ -343,9 +343,9 @@ TEST_P(GeometryMapperTest, NestedTransformsFlattening) {
   local_state.SetTransform(*transform2);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
-  rotate_transform.FlattenTo2d();
+  rotate_transform.Flatten();
   expected_transform = rotate_transform * inverse_rotate_transform;
-  expected_transform->FlattenTo2d();
+  expected_transform->Flatten();
   expected_transformed_rect = expected_transform->MapRect(input_rect);
   expected_visual_rect = FloatClipRect(expected_transformed_rect);
   expected_visual_rect.ClearIsTight();

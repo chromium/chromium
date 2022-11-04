@@ -600,10 +600,10 @@ void Transform::Transpose() {
     EnsureFullMatrix().Transpose();
 }
 
-void Transform::FlattenTo2d() {
+void Transform::Flatten() {
   if (LIKELY(!matrix_))
     return;
-  matrix_->FlattenTo2d();
+  matrix_->Flatten();
   DCHECK(IsFlat());
 }
 

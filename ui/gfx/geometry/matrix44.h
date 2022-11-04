@@ -181,7 +181,7 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   // Applies the matrix to the vector in place.
   void MapScalars(double vec[4]) const;
 
-  void FlattenTo2d();
+  void Flatten();
 
   absl::optional<DecomposedTransform> Decompose() const;
 
