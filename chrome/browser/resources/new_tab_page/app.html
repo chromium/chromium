@@ -8,6 +8,9 @@
     --ntp-module-border-radius: 5px;
     --ntp-protected-icon-background-color: transparent;
     --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
+    --ntp-module-menu-shadow:
+        var(--color-new-tab-page-menu-inner-shadow) 0 1px 2px 0,
+        var(--color-new-tab-page-menu-outer-shadow) 0 2px 6px 2px;
   }
 
   @media (min-width: 560px) {
@@ -328,7 +331,7 @@
         on-open-voice-search="onOpenVoiceSearch_" shown$="[[realboxShown_]]">
     </ntp-realbox>
     <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
-      <ntp-lens-upload-dialog id="lensUploadDialog" 
+      <ntp-lens-upload-dialog id="lensUploadDialog"
           on-close-lens-search="onCloseLensSearch_">
       </ntp-lens-upload-dialog>
     </template>

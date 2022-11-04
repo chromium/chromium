@@ -243,6 +243,14 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageLogoUnthemedDark] = {gfx::kGoogleGrey700};
   mixer[kColorNewTabPageLogoUnthemedLight] = {SkColorSetRGB(0xEE, 0xEE, 0xEE)};
 
+  // See GM2 spec (go/google-material) for shadow color and elevation details.
+  ui::ColorTransform menu_shadow_color = ui::SelectBasedOnDarkInput(
+      {kColorNewTabPageBackground}, SK_ColorBLACK, gfx::kGoogleGrey800);
+  mixer[kColorNewTabPageMenuInnerShadow] =
+      ui::SetAlpha(menu_shadow_color, /* 30% opacity */ 0.3 * SK_AlphaOPAQUE);
+  mixer[kColorNewTabPageMenuOuterShadow] =
+      ui::SetAlpha(menu_shadow_color, /* 15% opacity */ 0.15 * SK_AlphaOPAQUE);
+
   if (dark_mode) {
     mixer[kColorNewTabPageMostVisitedTileBackground] = {gfx::kGoogleGrey900};
   } else {
