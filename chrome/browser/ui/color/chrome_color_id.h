@@ -143,6 +143,8 @@
   E_CPONLY(kColorNewTabPageBorder) \
   E_CPONLY(kColorNewTabPageButtonBackground) \
   E_CPONLY(kColorNewTabPageButtonForeground) \
+  E_CPONLY(kColorNewTabPageCartModuleDiscountChipBackground) \
+  E_CPONLY(kColorNewTabPageCartModuleDiscountChipForeground) \
   E_CPONLY(kColorNewTabPageChipBackground) \
   E_CPONLY(kColorNewTabPageChipForeground) \
   E_CPONLY(kColorNewTabPageControlBackgroundHovered) \

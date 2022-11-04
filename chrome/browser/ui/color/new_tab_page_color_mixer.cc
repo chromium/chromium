@@ -115,6 +115,12 @@ void AddNewTabPageComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageButtonBackground] = SelectBasedOnWhiteNtpBackground(
       {ui::kColorFrameActive}, element_background_color);
   mixer[kColorNewTabPageButtonForeground] = themed_foreground_color;
+  mixer[kColorNewTabPageCartModuleDiscountChipBackground] =
+      SelectBasedOnDarkInput(element_background_color, gfx::kGoogleGrey800,
+                             gfx::kGoogleGreen050);
+  mixer[kColorNewTabPageCartModuleDiscountChipForeground] =
+      SelectBasedOnDarkInput(element_background_color, gfx::kGoogleGreen300,
+                             gfx::kGoogleGreen700);
   mixer[kColorNewTabPageControlBackgroundHovered] = SelectBasedOnDarkInput(
       element_background_color,
       ui::SetAlpha({gfx::kGoogleGrey200},
@@ -378,6 +384,10 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[kColorNewTabPageButtonBackground] = {
       kColorNewTabPageBackgroundOverride};
   mixer[kColorNewTabPageButtonForeground] = {accent_color};
+  mixer[kColorNewTabPageCartModuleDiscountChipBackground] = {
+      dark_mode ? gfx::kGoogleGrey800 : gfx::kGoogleGreen050};
+  mixer[kColorNewTabPageCartModuleDiscountChipForeground] = {
+      dark_mode ? gfx::kGoogleGreen300 : gfx::kGoogleGreen700};
   mixer[kColorNewTabPageChipBackground] = {accent_color};
   mixer[kColorNewTabPageChipForeground] = {kColorNewTabPageBackgroundOverride};
   mixer[kColorNewTabPageControlBackgroundHovered] =

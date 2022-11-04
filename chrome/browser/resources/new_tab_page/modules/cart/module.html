@@ -4,15 +4,17 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
-    --discount-chip-background: rgb(230, 244, 234);
-    --discount-chip-text-color: var(--google-green-700);
+    --discount-chip-background:
+        var(--color-new-tab-page-cart-module-discount-chip-background);
+    --discount-chip-text-color:
+        var(--color-new-tab-page-cart-module-discount-chip-foreground);
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
       --discount-chip-background: linear-gradient(0deg,
           rgba(129, 201, 149, 0.12), rgba(129, 201, 149, 0.12)), #202124;
-      --discount-chip-text-color: rgb(129,201,149);
+      --discount-chip-text-color: var(--google-green-300);
     }
   }
 
