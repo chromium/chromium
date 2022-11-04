@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
  * 'OobeFocusBehavior' is a special behavior which supports focus transferring
- * when new screen is shown.
+ * when a new screen is shown.
  */
 
 /** @polymerBehavior */
-/* #export */ const OobeFocusBehavior = {
+export const OobeFocusBehavior = {
   /**
    * @private
    * Focuses the element. As cr-input uses focusInput() instead of focus() due
@@ -43,13 +41,11 @@
       }
 
       focused = true;
-      Polymer.RenderStatus.afterNextRender(
-          this, () => this.focusOnElement_(focusedElements[i]));
+      afterNextRender(this, () => this.focusOnElement_(focusedElements[i]));
       break;
     }
     if (!focused && focusedElements.length > 0) {
-      Polymer.RenderStatus.afterNextRender(
-          this, () => this.focusOnElement_(focusedElements[0]));
+      afterNextRender(this, () => this.focusOnElement_(focusedElements[0]));
     }
 
     this.fire('show-dialog');
