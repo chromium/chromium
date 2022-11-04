@@ -37,6 +37,11 @@ TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
   if (!handle->IsInPrimaryMainFrame())
     return nullptr;
 
+  // Reloading the page should not cause the tab to change.
+  if (handle->GetReloadType() != content::ReloadType::NONE) {
+    return nullptr;
+  }
+
   content::WebContents* web_contents = handle->GetWebContents();
 
   WebAppProvider* provider = WebAppProvider::GetForWebContents(web_contents);

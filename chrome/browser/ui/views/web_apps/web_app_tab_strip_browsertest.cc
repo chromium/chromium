@@ -570,4 +570,42 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip->count(), 1);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DontCreateThrottleForReload) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+  content::WebContents* web_contents = tab_strip->GetActiveWebContents();
+
+  // Navigate home tab to different URL via a server redirect so that it doesn't
+  // open in a new tab.
+  GURL target_url =
+      embedded_test_server()->GetURL("/web_apps/get_manifest.html");
+  GURL redirect_url =
+      embedded_test_server()->GetURL("/server-redirect?" + target_url.spec());
+
+  // NavigateToURL() returns `false` because the final redirected URL does not
+  // match `redirect_url`. Separately ensure the navigation succeeded using a
+  // navigation observer.
+  content::TestNavigationObserver nav_observer(web_contents, 1);
+  EXPECT_FALSE(content::NavigateToURL(web_contents, redirect_url));
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+
+  // Check no new tab was opened.
+  EXPECT_EQ(tab_strip->count(), 1);
+
+  // Reload.
+  content::TestNavigationObserver reload_nav_observer(web_contents, 1);
+  chrome::Reload(app_browser, WindowOpenDisposition::CURRENT_TAB);
+  reload_nav_observer.Wait();
+
+  // Expect the reload did not cause a new tab to open.
+  EXPECT_EQ(target_url, reload_nav_observer.last_navigation_url());
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), target_url);
+}
+
 }  // namespace web_app
