@@ -3,18 +3,61 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/history_clusters/history_clusters_image_fetcher.h"
-#include <string>
 
 #include "base/i18n/case_conversion.h"
-#include "base/memory/ref_counted.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/search_provider.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
 namespace history_clusters {
+
+namespace {
+
+// Anonymous namespace factory based on LookalikeUrlServiceFactory.
+class HistoryClustersImageServiceFactory : public ProfileKeyedServiceFactory {
+ public:
+  static HistoryClustersImageFetcher* GetForProfile(Profile* profile) {
+    return static_cast<HistoryClustersImageFetcher*>(
+        GetInstance()->GetServiceForBrowserContext(profile,
+                                                   /*create=*/true));
+  }
+  static HistoryClustersImageServiceFactory* GetInstance() {
+    return base::Singleton<HistoryClustersImageServiceFactory>::get();
+  }
+
+  HistoryClustersImageServiceFactory(
+      const HistoryClustersImageServiceFactory&) = delete;
+  HistoryClustersImageServiceFactory& operator=(
+      const HistoryClustersImageServiceFactory&) = delete;
+
+ private:
+  friend struct base::DefaultSingletonTraits<
+      HistoryClustersImageServiceFactory>;
+
+  // HistoryClustersImageServiceFactory:
+  HistoryClustersImageServiceFactory()
+      : ProfileKeyedServiceFactory("HistoryClustersImageServiceFactory") {
+    DependsOn(SyncServiceFactory::GetInstance());
+  }
+
+  ~HistoryClustersImageServiceFactory() override = default;
+
+  // BrowserContextKeyedServiceFactory:
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* profile) const override {
+    return new HistoryClustersImageFetcher(static_cast<Profile*>(profile));
+  }
+};
+
+}  // namespace
 
 // A one-time use object that uses Suggest to get an image URL corresponding
 // to `search_query` and `entity_id`. This is a hacky temporary implementation,
@@ -90,14 +133,31 @@ class HistoryClustersImageFetcher::SuggestEntityImageURLFetcher
 };
 
 HistoryClustersImageFetcher::HistoryClustersImageFetcher(Profile* profile)
-    : profile_(profile), autocomplete_provider_client_(profile) {}
+    : profile_(profile),
+      autocomplete_provider_client_(profile),
+      url_consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
+                              NewPersonalizedDataCollectionConsentHelper(
+                                  SyncServiceFactory::GetForProfile(profile))) {
+}
 
 HistoryClustersImageFetcher::~HistoryClustersImageFetcher() = default;
 
-void HistoryClustersImageFetcher::FetchImageFor(
+// static
+HistoryClustersImageFetcher* HistoryClustersImageFetcher::Get(
+    Profile* profile) {
+  return HistoryClustersImageServiceFactory::GetForProfile(profile);
+}
+
+bool HistoryClustersImageFetcher::FetchImageFor(
     const std::u16string& search_query,
     const std::string& entity_id,
     ResultCallback callback) {
+  if (!GetConfig().images)
+    return false;
+
+  if (!url_consent_helper_ || !url_consent_helper_->IsEnabled())
+    return false;
+
   auto fetcher = std::make_unique<SuggestEntityImageURLFetcher>(
       profile_, &autocomplete_provider_client_, search_query, entity_id);
 
@@ -107,6 +167,7 @@ void HistoryClustersImageFetcher::FetchImageFor(
   fetcher_raw_ptr->Start(base::BindOnce(
       &HistoryClustersImageFetcher::OnImageFetched, weak_factory_.GetWeakPtr(),
       std::move(fetcher), std::move(callback)));
+  return true;
 }
 
 void HistoryClustersImageFetcher::OnImageFetched(

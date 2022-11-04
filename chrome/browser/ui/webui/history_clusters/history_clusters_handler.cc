@@ -309,10 +309,6 @@ HistoryClustersHandler::HistoryClustersHandler(
       SyncServiceFactory::GetForProfile(profile_);
   browsing_history_service_ = std::make_unique<history::BrowsingHistoryService>(
       this, local_history, sync_service);
-
-  if (GetConfig().images) {
-    image_fetcher_ = std::make_unique<HistoryClustersImageFetcher>(profile);
-  }
 }
 
 HistoryClustersHandler::~HistoryClustersHandler() = default;
@@ -513,29 +509,25 @@ void HistoryClustersHandler::OnGotClustersBatch(
     const std::vector<history::Cluster> clusters_batch,
     bool can_load_more,
     bool is_continuation) {
+  auto* image_fetcher = HistoryClustersImageFetcher::Get(GetProfile());
   // Kick off a bunch of image fetch requests if this feature is enabled.
-  if (image_fetcher_) {
-    DCHECK(GetConfig().images);
-
-    for (size_t i = 0; i < clusters_batch.size(); ++i) {
-      // Only Search-labelled clusters should query Suggest for images.
-      auto& cluster = clusters_batch[i];
-      if (cluster.label_source != history::Cluster::LabelSource::kSearch) {
-        continue;
-      }
-
-      if (!cluster.raw_label || cluster.raw_label->empty())
-        continue;
-
-      // TODO(tommycli): Populate this with the actual entity ID once available.
-      std::string entity_id;
-      size_t cluster_index =
-          query_clusters_state_->number_clusters_sent_to_page() + i;
-      image_fetcher_->FetchImageFor(
-          *cluster.raw_label, entity_id,
-          base::BindOnce(&HistoryClustersHandler::OnImageFetchedForCluster,
-                         weak_ptr_factory_.GetWeakPtr(), cluster_index));
+  for (size_t i = 0; i < clusters_batch.size(); ++i) {
+    auto& cluster = clusters_batch[i];
+    if (cluster.label_source != history::Cluster::LabelSource::kSearch) {
+      continue;
     }
+
+    if (!cluster.raw_label || cluster.raw_label->empty())
+      continue;
+
+    // TODO(tommycli): Populate this with the actual entity ID once available.
+    std::string entity_id;
+    size_t cluster_index =
+        query_clusters_state_->number_clusters_sent_to_page() + i;
+    image_fetcher->FetchImageFor(
+        *cluster.raw_label, entity_id,
+        base::BindOnce(&HistoryClustersHandler::OnImageFetchedForCluster,
+                       weak_ptr_factory_.GetWeakPtr(), cluster_index));
   }
 
   auto query_result =

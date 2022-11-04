@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
-#include "chrome/browser/history_clusters/history_clusters_image_fetcher.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -152,9 +151,6 @@ class HistoryClustersHandler : public mojom::PageHandler,
   // left an empty string is correct. Before the WebUI loads, this string is
   // also empty, and that's okay and desirable.
   std::string last_query_issued_;
-
-  // Used to fetch relevant images for clusters.
-  std::unique_ptr<HistoryClustersImageFetcher> image_fetcher_;
 
   base::WeakPtrFactory<HistoryClustersHandler> weak_ptr_factory_{this};
 };

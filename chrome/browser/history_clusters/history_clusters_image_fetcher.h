@@ -10,25 +10,34 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
 namespace history_clusters {
 
 // Used to get the image URL associated with a cluster. It doesn't actually
 // fetch the image, that's up to the UI to do.
-class HistoryClustersImageFetcher {
+// TODO(tommycli): Since it's a service now, rename to `EntityImageService`.
+class HistoryClustersImageFetcher : public KeyedService {
  public:
   using ResultCallback = base::OnceCallback<void(const GURL& image_url)>;
 
+  // This should only be called by the internal factory. Most callers should use
+  // the `Get()` method instead.
   explicit HistoryClustersImageFetcher(Profile* profile);
   HistoryClustersImageFetcher(const HistoryClustersImageFetcher&) = delete;
   HistoryClustersImageFetcher& operator=(const HistoryClustersImageFetcher&) =
       delete;
 
-  ~HistoryClustersImageFetcher();
+  ~HistoryClustersImageFetcher() override;
+
+  // Gets the fetcher associated with `profile`. Always succeeds.
+  static HistoryClustersImageFetcher* Get(Profile* profile);
 
   // Fetches an image appropriate for `search_query` and `entity_id`, returning
-  // the result asynchronously to `callback`.
-  void FetchImageFor(const std::u16string& search_query,
+  // the result asynchronously to `callback`. Returns false if we can't do it
+  // for configuration or privacy reasons.
+  bool FetchImageFor(const std::u16string& search_query,
                      const std::string& entity_id,
                      ResultCallback callback);
 
@@ -42,6 +51,9 @@ class HistoryClustersImageFetcher {
 
   Profile* const profile_;
   ChromeAutocompleteProviderClient autocomplete_provider_client_;
+
+  std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
+      url_consent_helper_;
 
   base::WeakPtrFactory<HistoryClustersImageFetcher> weak_factory_{this};
 };
