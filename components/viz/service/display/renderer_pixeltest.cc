@@ -4574,7 +4574,7 @@ TEST_P(GPURendererPixelTest, LinearGradientOnRenderPass) {
 
   gfx::RRectF rounded_corner_bounds(gfx::RectF(pass_rect), kCornerRadius);
   gfx::LinearGradient gradient_mask(330);
-  gradient_mask.AddStep(/*fraction=*/0, /*alpha=*/0);
+  gradient_mask.AddStep(/*percent=*/0, /*alpha=*/0);
   gradient_mask.AddStep(.5, 255);
   gradient_mask.AddStep(1, 255);
   SharedQuadState* pass_shared_state = CreateTestSharedQuadState(
@@ -4621,7 +4621,7 @@ TEST_P(GPURendererPixelTest, MultiLinearGradientOnRenderPass) {
   gfx::RRectF blue_rrect(gfx::RectF(blue_rect), kBlueCornerRadius);
   blue_rrect.Offset(blue_offset_from_target);
   gfx::LinearGradient blue_gradient(0);
-  blue_gradient.AddStep(/*fraction=*/0, /*alpha=*/255);
+  blue_gradient.AddStep(/*percent=*/0, /*alpha=*/255);
   blue_gradient.AddStep(1, 0);
 
   gfx::Transform quad_to_target_transform;
@@ -4643,7 +4643,7 @@ TEST_P(GPURendererPixelTest, MultiLinearGradientOnRenderPass) {
 
   gfx::RRectF rounded_corner_bounds(gfx::RectF(pass_rect), kCornerRadius);
   gfx::LinearGradient gradient_mask(-30);
-  gradient_mask.AddStep(/*fraction=*/0, /*alpha=*/0);
+  gradient_mask.AddStep(/*percent=*/0, /*alpha=*/0);
   gradient_mask.AddStep(.5, 255);
   gradient_mask.AddStep(1, 255);
   SharedQuadState* pass_shared_state = CreateTestSharedQuadState(

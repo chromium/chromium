@@ -9,6 +9,7 @@
 
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/ash_export.h"
+#include "ash/controls/gradient_layer_delegate.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -22,9 +23,7 @@
 #include "base/cancelable_callback.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
@@ -335,11 +334,10 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   float CalculateTargetOffsetAfterScroll(float start_offset,
                                          float scroll_distance) const;
 
-  // Updates the bounds of the gradient zone before/after the shelf
+  // Calculates the bounds of the gradient zone before/after the shelf
   // container.
-  void UpdateGradientMask();
-  void CalculateHorizontalGradient(gfx::LinearGradient* gradient_mask);
-  void CalculateVerticalGradient(gfx::LinearGradient* gradient_mask);
+  GradientLayerDelegate::FadeZone CalculateStartGradientZone() const;
+  GradientLayerDelegate::FadeZone CalculateEndGradientZone() const;
 
   // Updates the visibility of gradient zones.
   void UpdateGradientZoneState();
@@ -347,6 +345,10 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // Updates the gradient zone if the gradient zone's target bounds are
   // different from the actual values.
   void MaybeUpdateGradientZone();
+
+  void PaintGradientZone(
+      const GradientLayerDelegate::FadeZone& start_gradient_zone,
+      const GradientLayerDelegate::FadeZone& end_gradient_zone);
 
   bool ShouldApplyMaskLayerGradientZone() const;
 
@@ -508,6 +510,8 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   gfx::Vector2dF scroll_offset_before_main_axis_scrolling_;
   LayoutStrategy layout_strategy_before_main_axis_scrolling_ =
       kNotShowArrowButtons;
+
+  std::unique_ptr<GradientLayerDelegate> gradient_layer_delegate_;
 
   std::unique_ptr<views::FocusSearch> focus_search_;
 
