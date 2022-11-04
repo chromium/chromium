@@ -292,7 +292,7 @@
   which user clicks to indicate consent.
 -->
 
-<template is="dom-if" if="[[isModalDialog_]]">
+<template is="dom-if" if="[[isModalDialogWithoutTangibleSync_()]]">
   <template is="dom-if" if="[[!isSigninInterceptFre_]]">
     <div id="illustration-container">
       <div id="grey-banner"></div>
@@ -357,7 +357,7 @@
   </div>
 </template>
 
-<template is="dom-if" if="[[!isModalDialog_]]">
+<template is="dom-if" if="[[isWindowVersionWithoutTangibleSync_()]]">
   <div id="confirmationContainer">
     <div id="headerContainer">
       <div id="syncPromoBanner"></div>
@@ -408,4 +408,8 @@
       </div>
     </div>
   </div>
+</template>
+
+<template is="dom-if" if="[[isTangibleSync_]]">
+  Tangible Sync under construction.
 </template>

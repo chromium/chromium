@@ -64,6 +64,13 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         },
       },
 
+      isTangibleSync_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isTangibleSync');
+        },
+      },
+
       showEnterpriseBadge_: {
         type: Boolean,
         value: false,
@@ -75,6 +82,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private anyButtonClicked_: boolean;
   private isModalDialog_: boolean;
   private isSigninInterceptFre_: boolean;
+  private isTangibleSync_: boolean;
   private showEnterpriseBadge_: boolean;
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
@@ -143,6 +151,14 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private getSigninInterceptDesignClass_(isSigninInterceptFre: boolean):
       string {
     return isSigninInterceptFre ? 'signin-intercept-design' : '';
+  }
+
+  private isModalDialogWithoutTangibleSync_(): boolean {
+    return this.isModalDialog_ && !this.isTangibleSync_;
+  }
+
+  private isWindowVersionWithoutTangibleSync_(): boolean {
+    return !this.isModalDialog_ && !this.isTangibleSync_;
   }
 }
 

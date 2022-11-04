@@ -91,8 +91,9 @@ BASE_FEATURE(kForceDisableExtendedSyncPromos,
 BASE_FEATURE(kForceStartupSigninPromo,
              "ForceStartupSigninPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTangibleSync, "TangibleSync", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// Enables a new version of the sync confirmation UI.
+BASE_FEATURE(kTangibleSync, "TangibleSync", base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace switches

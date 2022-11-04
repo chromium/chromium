@@ -42,8 +42,9 @@ BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kEnableCbdSignOut);
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
-BASE_DECLARE_FEATURE(kTangibleSync);
 #endif
+
+BASE_DECLARE_FEATURE(kTangibleSync);
 
 }  // namespace switches
 

@@ -30,6 +30,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -78,6 +79,12 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
       g_browser_process->GetApplicationLocale(), &strings);
   source->AddLocalizedStrings(strings);
 
+  if (url.query().find("debug") != std::string::npos) {
+    // Not intended to be hooked to anything. The dialog will not initialize it
+    // so we force it here.
+    InitializeMessageHandlerWithBrowser(nullptr);
+  }
+
   content::WebUIDataSource::Add(profile_, source);
 }
 
@@ -113,11 +120,13 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   source->SetDefaultResource(
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_HTML);
 
+  bool isTangibleSync = base::FeatureList::IsEnabled(switches::kTangibleSync);
   source->AddBoolean("isModalDialog",
                      style == SyncConfirmationStyle::kDefaultModal ||
                          style == SyncConfirmationStyle::kSigninInterceptModal);
   source->AddBoolean("isSigninInterceptFre",
                      style == SyncConfirmationStyle::kSigninInterceptModal);
+  source->AddBoolean("isTangibleSync", isTangibleSync);
 
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
