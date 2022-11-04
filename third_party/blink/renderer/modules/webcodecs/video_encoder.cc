@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/async_destroy_video_encoder.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/limits.h"
 #include "media/base/mime_util.h"
 #include "media/base/offloading_video_encoder.h"
 #include "media/base/svc_scalability_mode.h"
@@ -159,22 +160,31 @@ bool IsAcceleratedConfigurationSupported(
 VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     const VideoEncoderConfig* config,
     ExceptionState& exception_state) {
-  constexpr int kMaxSupportedFrameSize = 8192;
   auto* result = MakeGarbageCollected<VideoEncoderTraits::ParsedConfig>();
 
   result->options.frame_size.set_height(config->height());
-  if (config->height() == 0 || config->height() > kMaxSupportedFrameSize) {
+  if (config->height() == 0 ||
+      config->height() > media::limits::kMaxDimension) {
     exception_state.ThrowTypeError(String::Format(
         "Invalid height; expected range from %d to %d, received %d.", 1,
-        kMaxSupportedFrameSize, config->height()));
+        media::limits::kMaxDimension, config->height()));
     return nullptr;
   }
 
   result->options.frame_size.set_width(config->width());
-  if (config->width() == 0 || config->width() > kMaxSupportedFrameSize) {
+  if (config->width() == 0 || config->width() > media::limits::kMaxDimension) {
     exception_state.ThrowTypeError(String::Format(
         "Invalid width; expected range from %d to %d, received %d.", 1,
-        kMaxSupportedFrameSize, config->width()));
+        media::limits::kMaxDimension, config->width()));
+    return nullptr;
+  }
+
+  if (config->width() * config->height() > media::limits::kMaxCanvas) {
+    exception_state.ThrowTypeError(String::Format(
+        "Invalid resolution; expected range from %d to %d, received %d (%d * "
+        "%d).",
+        1, media::limits::kMaxCanvas, config->width() * config->height(),
+        config->width(), config->height()));
     return nullptr;
   }
 
