@@ -8,7 +8,7 @@
 #include <queue>
 #include <vector>
 
-#include "chrome/browser/nearby_sharing/nearby_connection.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 
 class FakeNearbyConnection : public NearbyConnection {
  public:

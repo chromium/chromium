@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTIONS_MANAGER_H_
-#define CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTIONS_MANAGER_H_
+#ifndef CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTIONS_MANAGER_H_
+#define CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTIONS_MANAGER_H_
 
 #include <stdint.h>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
-#include "chrome/browser/nearby_sharing/nearby_connection.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -148,4 +148,4 @@ class NearbyConnectionsManager {
   virtual void UpgradeBandwidth(const std::string& endpoint_id) = 0;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTIONS_MANAGER_H_
+#endif  // CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTIONS_MANAGER_H_

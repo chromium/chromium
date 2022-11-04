@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_IMPL_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_IMPL_H_
 
-#include "chrome/browser/nearby_sharing/nearby_connection.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 
 #include <queue>
 #include <vector>

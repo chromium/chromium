@@ -8,7 +8,7 @@
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
-#include "chrome/browser/nearby_sharing/nearby_connection.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 
 namespace {

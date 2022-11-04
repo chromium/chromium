@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/nearby_sharing/share_target_info.h"
-#include "chrome/browser/nearby_sharing/nearby_connection.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 
 ShareTargetInfo::ShareTargetInfo() = default;
 

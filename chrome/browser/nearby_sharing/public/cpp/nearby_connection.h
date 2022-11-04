@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_H_
-#define CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_H_
+#ifndef CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTION_H_
+#define CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTION_H_
 
 #include <stdint.h>
 #include <vector>
@@ -40,4 +40,4 @@ class NearbyConnection {
   virtual void SetDisconnectionListener(base::OnceClosure listener) = 0;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_H_
+#endif  // CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTION_H_

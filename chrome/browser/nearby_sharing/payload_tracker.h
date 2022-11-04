@@ -9,7 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/attachment_info.h"
-#include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"

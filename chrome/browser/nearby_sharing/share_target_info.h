@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
-#include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/payload_tracker.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
