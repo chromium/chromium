@@ -148,10 +148,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 modelSelectorButtonVisible, modelSelectorButton.getOpacity(), resourceManager);
 
         boolean tabStripImprovementsEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
-        boolean showLeftTabStripFade =
-                !tabStripImprovementsEnabled || LocalizationUtils.isLayoutRtl();
-        boolean showRightTabStripFade =
-                !tabStripImprovementsEnabled || !LocalizationUtils.isLayoutRtl();
+        boolean showLeftTabStripFade = ChromeFeatureList.sTabStripRedesign.isEnabled()
+                || !tabStripImprovementsEnabled || LocalizationUtils.isLayoutRtl();
+        boolean showRightTabStripFade = ChromeFeatureList.sTabStripRedesign.isEnabled()
+                || !tabStripImprovementsEnabled || !LocalizationUtils.isLayoutRtl();
 
         int tab_strip_fade_short = tabStripImprovementsEnabled ? R.drawable.tab_strip_fade_short
                                                                : R.drawable.tab_strip_fade;
@@ -164,7 +164,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     ? tab_strip_fade_long
                     : tab_strip_fade_short;
             TabStripSceneLayerJni.get().updateTabStripLeftFade(mNativePtr, TabStripSceneLayer.this,
-                    leftFadeDrawable, layoutHelper.getLeftFadeOpacity(), resourceManager);
+                    leftFadeDrawable, layoutHelper.getLeftFadeOpacity(), resourceManager,
+                    layoutHelper.getBackgroundColor());
         }
 
         if (showRightTabStripFade) {
@@ -172,7 +173,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     ? tab_strip_fade_long
                     : tab_strip_fade_short;
             TabStripSceneLayerJni.get().updateTabStripRightFade(mNativePtr, TabStripSceneLayer.this,
-                    rightFadeDrawable, layoutHelper.getRightFadeOpacity(), resourceManager);
+                    rightFadeDrawable, layoutHelper.getRightFadeOpacity(), resourceManager,
+                    layoutHelper.getBackgroundColor());
         }
     }
 
@@ -222,9 +224,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int resourceId, float x, float y, float width, float height, boolean incognito,
                 boolean visible, float buttonAlpha, ResourceManager resourceManager);
         void updateTabStripLeftFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
-                int resourceId, float opacity, ResourceManager resourceManager);
+                int resourceId, float opacity, ResourceManager resourceManager,
+                @ColorInt int leftFadeColor);
         void updateTabStripRightFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
-                int resourceId, float opacity, ResourceManager resourceManager);
+                int resourceId, float opacity, ResourceManager resourceManager,
+                @ColorInt int rightFadeColor);
         void putStripTabLayer(long nativeTabStripSceneLayer, TabStripSceneLayer caller, int id,
                 int closeResourceId, int handleResourceId, int handleOutlineResourceId,
                 int closeTint, int handleTint, int handleOutlineTint, boolean foreground,

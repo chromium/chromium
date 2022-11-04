@@ -222,7 +222,8 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
     const JavaParamRef<jobject>& jobj,
     jint resource_id,
     jfloat opacity,
-    const JavaParamRef<jobject>& jresource_manager) {
+    const JavaParamRef<jobject>& jresource_manager,
+    jint left_fade_color) {
 
   // Hide layer if it's not visible.
   if (opacity == 0.f) {
@@ -233,8 +234,8 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
   // Set UI resource.
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
-  ui::Resource* fade_resource = resource_manager->GetResource(
-      ui::ANDROID_RESOURCE_TYPE_STATIC, resource_id);
+  ui::Resource* fade_resource = resource_manager->GetStaticResourceWithTint(
+        resource_id, left_fade_color);
   left_fade_->SetUIResourceId(fade_resource->ui_resource()->id());
 
   // The same resource is used for both left and right fade, so the
@@ -264,7 +265,8 @@ void TabStripSceneLayer::UpdateTabStripRightFade(
     const JavaParamRef<jobject>& jobj,
     jint resource_id,
     jfloat opacity,
-    const JavaParamRef<jobject>& jresource_manager) {
+    const JavaParamRef<jobject>& jresource_manager,
+    jint right_fade_color) {
 
   // Hide layer if it's not visible.
   if (opacity == 0.f) {
@@ -275,8 +277,8 @@ void TabStripSceneLayer::UpdateTabStripRightFade(
   // Set UI resource.
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
-  ui::Resource* fade_resource = resource_manager->GetResource(
-      ui::ANDROID_RESOURCE_TYPE_STATIC, resource_id);
+  ui::Resource* fade_resource = resource_manager->GetStaticResourceWithTint(
+        resource_id, right_fade_color);
   right_fade_->SetUIResourceId(fade_resource->ui_resource()->id());
 
   // Set opacity.

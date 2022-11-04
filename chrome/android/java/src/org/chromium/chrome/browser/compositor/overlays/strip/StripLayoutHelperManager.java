@@ -700,6 +700,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             }
             return ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_0);
         }
+        // This is the default color for tab strip and fades
         return Color.BLACK;
     }
 

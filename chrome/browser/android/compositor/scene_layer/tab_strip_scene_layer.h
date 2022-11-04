@@ -97,14 +97,16 @@ class TabStripSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& jobj,
       jint resource_id,
       jfloat opacity,
-      const base::android::JavaParamRef<jobject>& jresource_manager);
+      const base::android::JavaParamRef<jobject>& jresource_manager,
+      jint leftFadeColor);
 
   void UpdateTabStripRightFade(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
       jint resource_id,
       jfloat opacity,
-      const base::android::JavaParamRef<jobject>& jresource_manager);
+      const base::android::JavaParamRef<jobject>& jresource_manager,
+      jint rightFadeColor);
 
   void PutStripTabLayer(
       JNIEnv* env,
