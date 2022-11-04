@@ -89,11 +89,16 @@ void LeakDetectionDelegateHelper::ProcessResults() {
         form->password_value == password_) {
       PasswordStoreInterface& store =
           form->IsUsingAccountStore() ? *account_store_ : *profile_store_;
-      PasswordForm form_to_update = *form.get();
-      form_to_update.password_issues.insert_or_assign(
-          InsecureType::kLeaked,
-          InsecurityMetadata(base::Time::Now(), IsMuted(false)));
-      store.UpdateLogin(form_to_update);
+      // crbug.com/1381203: It's very important not to touch already leaked
+      // passwords. It overwrites the date and leads to performance problems as
+      // called in the loop.
+      if (!form->password_issues.contains(InsecureType::kLeaked)) {
+        PasswordForm form_to_update = *form.get();
+        form_to_update.password_issues.insert_or_assign(
+            InsecureType::kLeaked,
+            InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+        store.UpdateLogin(form_to_update);
+      }
       all_urls_with_leaked_credentials.push_back(form->url);
 
       if (are_urls_equivalent(form->url, url_)) {

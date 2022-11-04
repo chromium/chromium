@@ -103,9 +103,7 @@ class LeakDetectionDelegateHelperTest
         callback_.Get());
   }
 
-  void TearDown() override {
-    store_ = nullptr;
-  }
+  void TearDown() override { store_ = nullptr; }
 
   // Sets the |PasswordForm|s which are retrieve from the |PasswordStore|.
   void SetGetAutofillableLoginsConsumerInvocation(
@@ -262,6 +260,23 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   EXPECT_CALL(*store_, UpdateLogin(non_canonicalized_username));
+  InitiateGetCredentialLeakType();
+}
+
+// Credential with the same canonicalized username was marked as leaked before.
+// It's not touched again.
+TEST_F(LeakDetectionDelegateHelperTest, DontUpdateAlreadyLeakedCredentials) {
+  PasswordForm non_canonicalized_username = CreateForm(
+      kOtherOrigin, kLeakedUsernameNonCanonicalized, kLeakedPassword);
+  non_canonicalized_username.password_issues.insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  SetGetAutofillableLoginsConsumerInvocation({non_canonicalized_username});
+  SetOnShowLeakDetectionNotificationExpectation(
+      PasswordForm::Store::kNotSet, IsReused(true), HasChangeScript(false),
+      {GURL(kOtherOrigin)});
+
+  EXPECT_CALL(*store_, UpdateLogin).Times(0);
   InitiateGetCredentialLeakType();
 }
 
