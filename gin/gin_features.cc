@@ -150,4 +150,11 @@ BASE_FEATURE(kV8DelayMemoryReducer,
 const base::FeatureParam<base::TimeDelta> kV8MemoryReducerStartDelay{
     &kV8DelayMemoryReducer, "delay", base::Seconds(8)};
 
+// JavaScript language features.
+
+// Enables the Symbols-as-WeakMap-keys proposal.
+BASE_FEATURE(kJavaScriptSymbolAsWeakMapKey,
+             "JavaScriptSymbolAsWeakMapKey",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

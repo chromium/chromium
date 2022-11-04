@@ -343,6 +343,11 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                            "--no-slow-histograms");
   }
 
+  // JavaScript language features.
+  SetV8FlagsIfOverridden(features::kJavaScriptSymbolAsWeakMapKey,
+                         "--harmony-symbol-as-weakmap-key",
+                         "--no-harmony-symbol-as-weakmap-key");
+
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
   }
