@@ -21,6 +21,9 @@ using Topic = base::StrongAlias<class TopicTag, int>;
 enum class ApiCallerSource {
   // The API usage is from document.browsingTopics().
   kJavaScript,
+
+  // The API usage is from fetch(<url>, {browsingTopics: true}).
+  kFetch,
 };
 
 // Represents the different reasons why the topics API access is denied. These
