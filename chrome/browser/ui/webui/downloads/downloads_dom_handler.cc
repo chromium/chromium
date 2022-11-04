@@ -31,6 +31,7 @@
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/fileicon_source.h"
 #include "chrome/common/chrome_switches.h"
@@ -38,6 +39,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
@@ -180,6 +182,32 @@ void DownloadsDOMHandler::SaveDangerousRequiringGesture(const std::string& id) {
 
 void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_DISCARD_DANGEROUS);
+  download::DownloadItem* download = GetDownloadByStringId(id);
+  if (download) {
+    // If this download is no longer dangerous, is already canceled or
+    // completed, don't send any report.
+    // Only sends dangerous download discard report if :
+    // 1. Download is dangerous, and
+    // 2. Download is not canceled or completed, and
+    // 3. Download URL is not empty, and
+    // 4. User is not in incognito mode, and
+    // 5. The new CSBRR trigger feature is enabled.
+    if (download->IsDangerous() && !download->IsDone() &&
+        !download->GetURL().is_empty() &&
+        !GetMainNotifierManager()->GetBrowserContext()->IsOffTheRecord() &&
+        base::FeatureList::IsEnabled(
+            safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger)) {
+      safe_browsing::SafeBrowsingService* sb_service =
+          g_browser_process->safe_browsing_service();
+      if (sb_service) {
+        sb_service->SendDownloadReport(
+            download,
+            safe_browsing::ClientSafeBrowsingReportRequest::
+                DANGEROUS_DOWNLOAD_RECOVERY,
+            /*did_proceed=*/false, /*show_download_in_folder=*/absl::nullopt);
+      }
+    }
+  }
   RemoveDownloadInArgs(id);
 }
 
