@@ -110,9 +110,10 @@ GetBundlePathFromCommandLine(const base::CommandLine& command_line) {
 
   if (!base::PathExists(absolute_path) ||
       base::DirectoryExists(absolute_path)) {
-    return base::unexpected(base::StrCat(
-        {"Invalid path provided to --", switches::kInstallIsolatedWebAppFromUrl,
-         " flag: '", absolute_path.AsUTF8Unsafe(), "'"}));
+    return base::unexpected(
+        base::StrCat({"Invalid path provided to --",
+                      switches::kInstallIsolatedWebAppFromFile, " flag: '",
+                      absolute_path.AsUTF8Unsafe(), "'"}));
   }
 
   return IsolationData{IsolationData::DevModeBundle{.path = absolute_path}};
