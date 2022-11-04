@@ -42,7 +42,7 @@ template("android_wpt_finch_smoke_tests") {
     ]
     data_deps = [
       "//android_webview/proto:aw_variations_seed_proto",
-      "//chrome/test/chromedriver:chromedriver($host_toolchain)",
+      "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
       "//third_party/blink/tools:wpt_tests_android_isolate",
       "//third_party/catapult/devil:devil",
       "//ui/base:goldctl",

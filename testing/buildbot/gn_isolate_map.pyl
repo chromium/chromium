@@ -503,7 +503,7 @@
     "type": "console_test_launcher",
   },
   "chromedriver": {
-    "label": "//chrome/test/chromedriver:chromedriver",
+    "label": "//chrome/test/chromedriver:chromedriver_server",
     "type": "additional_compile_target",
   },
   "chromedriver_py_tests": {

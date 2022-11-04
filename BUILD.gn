@@ -1011,7 +1011,7 @@ if (is_chromeos_ash) {
     testonly = true
     data_deps = [
       "//chrome",
-      "//chrome/test/chromedriver",
+      "//chrome/test/chromedriver:chromedriver_server",
       "//components/chromeos_camera:jpeg_decode_accelerator_unittest",
       "//components/exo/wayland:wayland_client_integration_tests",
       "//components/exo/wayland:wayland_client_perftests",
@@ -1081,14 +1081,16 @@ if (!is_ios) {
       # On Fuchsia and non-Cast Android, ChromeDriver runs on the host, not the
       # device.
       if (!is_cast_android) {
-        deps = [ "//chrome/test/chromedriver:chromedriver($host_toolchain)" ]
+        deps = [
+          "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
+        ]
       }
       if (is_android && !is_cast_android) {
         deps += [ "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk" ]
       }
     } else if (!is_castos) {
       deps = [
-        "//chrome/test/chromedriver:chromedriver",
+        "//chrome/test/chromedriver:chromedriver_server",
         "//chrome/test/chromedriver:chromedriver_unittests",
         "//chrome/test/chromedriver:generate_chromedriver_license",
       ]
@@ -1143,7 +1145,7 @@ if (!is_ios) {
       ]
       data_deps = [
         "//chrome:chrome",
-        "//chrome/test/chromedriver",
+        "//chrome/test/chromedriver:chromedriver_server",
         "//testing:test_scripts_shared",
         "//third_party/catapult/third_party/typ",
       ]
@@ -1156,7 +1158,7 @@ if (!is_ios) {
       args = [ "--product=chrome" ]
       data_deps = [
         "//chrome:chrome",
-        "//chrome/test/chromedriver",
+        "//chrome/test/chromedriver:chromedriver_server",
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
     }

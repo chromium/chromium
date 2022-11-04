@@ -243,7 +243,7 @@ action("strip_chromedriver_binary") {
 
   prog_name = "${root_out_dir}/clang_x64/chromedriver"
 
-  deps = [ "//chrome/test/chromedriver:chromedriver($host_toolchain)" ]
+  deps = [ "//chrome/test/chromedriver:chromedriver_server($host_toolchain)" ]
   script = "//build/gn_run_binary.py"
   sources = [
     "//buildtools/third_party/eu-strip/bin/eu-strip",

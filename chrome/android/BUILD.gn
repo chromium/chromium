@@ -3552,7 +3552,7 @@ if (current_toolchain == default_toolchain) {
     ]
     data_deps = [
       ":chrome_public_apk",
-      "//chrome/test/chromedriver:chromedriver($host_toolchain)",
+      "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
       "//third_party/blink/tools:wpt_tests_android_isolate",
     ]
   }

@@ -11226,7 +11226,7 @@ if (is_linux || is_mac || is_win) {
 
     data_deps = [
       "//chrome",
-      "//chrome/test/chromedriver",
+      "//chrome/test/chromedriver:chromedriver_server",
       "//testing:test_scripts_shared",
       "//ui/base:goldctl",
     ]

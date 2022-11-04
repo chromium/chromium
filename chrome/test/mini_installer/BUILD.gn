@@ -60,7 +60,7 @@ if (is_win) {
     data_deps = [
       "//chrome/installer/mini_installer",
       "//chrome/installer/mini_installer:previous_version_mini_installer",
-      "//chrome/test/chromedriver",
+      "//chrome/test/chromedriver:chromedriver_server",
       "//testing:test_scripts_shared",
       "//third_party/catapult/third_party/typ",
     ]
@@ -84,7 +84,7 @@ if (is_win) {
       rebase_path("$root_out_dir/chromedriver.exe", root_build_dir),
     ]
     deps = [
-      "//chrome/test/chromedriver",
+      "//chrome/test/chromedriver:chromedriver_server",
       "//third_party/catapult/third_party/typ",
     ]
   }
