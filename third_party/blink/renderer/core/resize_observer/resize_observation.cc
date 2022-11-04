@@ -42,6 +42,10 @@ gfx::SizeF ComputeZoomAdjustedSVGBox(ResizeObserverBoxOptions box_option,
   }
 }
 
+// Set the initial observation size to something impossible so that the first
+// gather observation step always will pick up a new observation.
+constexpr LayoutSize kInitialObservationSize(-1, -1);
+
 }  // namespace
 
 ResizeObservation::ResizeObservation(Element* target,
@@ -49,7 +53,7 @@ ResizeObservation::ResizeObservation(Element* target,
                                      ResizeObserverBoxOptions observed_box)
     : target_(target),
       observer_(observer),
-      observation_size_(0, 0),
+      observation_size_(kInitialObservationSize),
       observed_box_(observed_box) {
   DCHECK(target_);
 }

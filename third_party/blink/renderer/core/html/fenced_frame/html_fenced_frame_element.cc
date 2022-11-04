@@ -776,6 +776,10 @@ void HTMLFencedFrameElement::ResizeObserverDelegate::OnResize(
 }
 
 void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
+  // If we don't have a delegate, then we won't have a frame, so no reason to
+  // freeze.
+  if (!frame_delegate_)
+    return;
   if (frozen_frame_size_.has_value() && !size_set_after_freeze_) {
     // Only log this once per fenced frame.
     RecordFencedFrameResizedAfterSizeFrozen();

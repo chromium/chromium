@@ -4474,14 +4474,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
     ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
 
     // Check that the inner size is what we expect.
-    // TODO(kojii|gtanzer): There is a known bug with the size 0,0,
-    // where the fenced frame can be resized once.
     int inner_width = EvalJs(nodeB, "innerWidth").ExtractInt();
     int inner_height = EvalJs(nodeB, "innerHeight").ExtractInt();
-    if (input_width == 0 && input_height == 0) {
-      output_width = 0;
-      output_height = 0;
-    }
     EXPECT_EQ(inner_width, output_width);
     EXPECT_EQ(inner_height, output_height);
 
@@ -4502,13 +4496,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
     ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
 
     // Check that the inner size hasn't changed.
-    // TODO(kojii|gtanzer): There is still a known bug with the size 0,0.
     inner_width = EvalJs(nodeB, "innerWidth").ExtractInt();
     inner_height = EvalJs(nodeB, "innerHeight").ExtractInt();
-    if (input_width == 0 && input_height == 0) {
-      output_width = new_width;
-      output_height = new_height;
-    }
     EXPECT_EQ(inner_width, output_width);
     EXPECT_EQ(inner_height, output_height);
   };

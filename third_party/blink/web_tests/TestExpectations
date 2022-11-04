@@ -3419,8 +3419,6 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/abort/servi
 crbug.com/626703 external/wpt/avif/animated-avif-timeout.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/resize-observer/notify.html [ Timeout ]
-crbug.com/626703 external/wpt/resize-observer/svg.html [ Timeout ]
 crbug.com/626703 [ Win11 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/api/redirect/redirect-upload.h2.any.sharedworker.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/infrastructure/server/http2-context.sub.h2.any.html [ Timeout ]
