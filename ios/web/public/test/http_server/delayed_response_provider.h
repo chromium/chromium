@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #import "ios/web/public/test/http_server/response_provider.h"
 
 namespace web {
@@ -16,10 +17,10 @@ namespace web {
 class DelayedResponseProvider : public ResponseProvider {
  public:
   // Creates a DelayedResponseProvider that delays the response from
-  // `delayed_provider` by `delay` seconds.
+  // `delayed_provider` by `delay`.
   DelayedResponseProvider(
       std::unique_ptr<web::ResponseProvider> delayed_provider,
-      double delay);
+      base::TimeDelta delay);
 
   DelayedResponseProvider(const DelayedResponseProvider&) = delete;
   DelayedResponseProvider& operator=(const DelayedResponseProvider&) = delete;
@@ -36,7 +37,7 @@ class DelayedResponseProvider : public ResponseProvider {
 
  private:
   std::unique_ptr<web::ResponseProvider> delayed_provider_;
-  double delay_;
+  const base::TimeDelta delay_;
 };
 
 }  // namespace web

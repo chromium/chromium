@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_metrics.h"
@@ -48,17 +49,17 @@ const char kURL2FirstWord[] = "Rugby";
 NSString* const kClearPageScript = @"document.body.innerHTML='';";
 
 // The delay to use to serve slow URLs.
-const CGFloat kSlowURLDelay = 3;
+constexpr base::TimeDelta kSlowURLDelay = base::Seconds(3);
 
 // The delay to use to wait for pate starting loading.
-const CGFloat kWaitForPageLoadTimeout = 3;
+constexpr base::TimeDelta kWaitForPageLoadTimeout = base::Seconds(3);
 
 // The delay to use to serve very slow URLS -- tests using this delay expect the
 // page to never load.
-const CGFloat kVerySlowURLDelay = 20;
+constexpr base::TimeDelta kVerySlowURLDelay = base::Seconds(20);
 
 // The delay to wait for an element to appear before tapping on it.
-const CGFloat kWaitElementTimeout = 3;
+constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(3);
 
 // Wait until `matcher` is accessible (not nil).
 void Wait(id<GREYMatcher> matcher, NSString* name) {

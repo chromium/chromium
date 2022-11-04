@@ -19,7 +19,7 @@ namespace web {
 
 DelayedResponseProvider::DelayedResponseProvider(
     std::unique_ptr<web::ResponseProvider> delayed_provider,
-    double delay)
+    base::TimeDelta delay)
     : web::ResponseProvider(),
       delayed_provider_(std::move(delayed_provider)),
       delay_(delay) {}
@@ -33,8 +33,7 @@ bool DelayedResponseProvider::CanHandleRequest(const Request& request) {
 std::unique_ptr<net::test_server::HttpResponse>
 DelayedResponseProvider::GetEmbeddedTestServerResponse(const Request& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-      std::make_unique<net::test_server::DelayedHttpResponse>(
-          base::Seconds(delay_)));
+      std::make_unique<net::test_server::DelayedHttpResponse>(delay_));
   http_response->set_content_type("text/html");
   http_response->set_content("Slow Page");
   return std::move(http_response);
