@@ -160,6 +160,26 @@ public final class MostVisitedTilesProcessorUnitTest {
     }
 
     @Test
+    public void testDecorations_navTileWithEmptyTitle_navTitleShouldBeUrlHost() {
+        List<ListItem> tileList =
+                populateTilePropertiesForTiles(0, new SuggestTile("", NAV_URL, false));
+        verify(mFaviconFetcher, times(1)).fetchFaviconWithBackoff(eq(NAV_URL), anyBoolean(), any());
+        mIconCallbackCaptor.getValue().onFaviconFetchComplete(mFaviconBitmap, 0);
+
+        // Since we "retrieved" an icon from LargeIconBridge, we should not generate a fallback.
+        assertEquals(1, tileList.size());
+        ListItem tileItem = tileList.get(0);
+        PropertyModel tileModel = tileItem.model;
+
+        assertEquals(NAV_URL.getHost(), tileModel.get(TileViewProperties.TITLE));
+        Drawable drawable = tileModel.get(TileViewProperties.ICON);
+        assertEquals(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileItem.type);
+        assertThat(drawable, instanceOf(BitmapDrawable.class));
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        assertEquals(mFaviconBitmap, bitmap);
+    }
+
+    @Test
     public void testInteractions_onClick() {
         List<ListItem> tileList = populateTilePropertiesForTiles(3,
                 new SuggestTile("search1", SEARCH_URL, true),

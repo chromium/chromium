@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -102,7 +103,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         for (int elementIndex = 0; elementIndex < tilesCount; elementIndex++) {
             final PropertyModel tileModel = new PropertyModel(TileViewProperties.ALL_KEYS);
             final SuggestTile tile = tiles.get(elementIndex);
-            final String title = tile.title;
+            // Use website host text when the website title is empty (for example: gmail.com).
+            final String title = TextUtils.isEmpty(tile.title) ? tile.url.getHost() : tile.title;
             final GURL url = tile.url;
             final boolean isSearch = tile.isSearch && mEnableOrganicRepeatableQueries;
             final int itemIndex = elementIndex;
