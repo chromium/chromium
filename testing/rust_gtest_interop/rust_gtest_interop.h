@@ -97,9 +97,9 @@ void rust_gtest_add_test(GtestFactoryFunction gtest_factory,
 //
 // SAFETY: This function makes copies of the strings so the pointers do not need
 // to outlive the function call.
-void rust_gtest_add_failure_at(const char* file,
+void rust_gtest_add_failure_at(const unsigned char* file,
                                int32_t line,
-                               const char* message);
+                               const unsigned char* message);
 
 }  // namespace rust_gtest_interop
 
