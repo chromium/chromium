@@ -31,6 +31,9 @@ enum TestLensProviderErrors : NSInteger {
 
 }
 
+using LensWebParamsCallback =
+    base::OnceCallback<void(web::NavigationManager::WebLoadParams)>;
+
 id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
   // Lens is not supported for tests.
   return nil;
@@ -53,6 +56,13 @@ web::NavigationManager::WebLoadParams GenerateLensLoadParamsForImage(
   // Lens is not supported for tests.
   NOTREACHED() << "Lens is not supported.";
   return web::NavigationManager::WebLoadParams({});
+}
+
+void GenerateLensLoadParamsForImageAsync(UIImage* image,
+                                         LensEntrypoint entry_point,
+                                         bool is_incognito,
+                                         LensWebParamsCallback completion) {
+  NOTREACHED() << "Lens is not supported.";
 }
 
 }  // namespace provider

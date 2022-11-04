@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/callback.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 @class LensConfiguration;
@@ -47,6 +48,11 @@ enum class LensEntrypoint;
 namespace ios {
 namespace provider {
 
+// Callback invoked when the web load params for a Lens query have been
+// generated.
+using LensWebParamsCallback =
+    base::OnceCallback<void(web::NavigationManager::WebLoadParams)>;
+
 // Returns a controller for the given configuration that can facilitate
 // communication with the downstream Lens controller.
 id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
@@ -63,6 +69,14 @@ web::NavigationManager::WebLoadParams GenerateLensLoadParamsForImage(
     UIImage* image,
     LensEntrypoint entry_point,
     bool is_incognito);
+
+// Generates web load params for a Lens image search for the given
+// 'image' and 'entry_point'. `completion` will be run on the main
+// thread.
+void GenerateLensLoadParamsForImageAsync(UIImage* image,
+                                         LensEntrypoint entry_point,
+                                         bool is_incognito,
+                                         LensWebParamsCallback completion);
 
 }  // namespace provider
 }  // namespace ios
