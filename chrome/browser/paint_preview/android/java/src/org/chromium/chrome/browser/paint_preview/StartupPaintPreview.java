@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.ExitCause;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -57,7 +56,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     private Supplier<Boolean> mIsOfflinePage;
 
     private static final int DEFAULT_INITIAL_REMOVE_DELAY_MS = 0;
-    private static final String INITIAL_REMOVE_DELAY_PARAM = "initial_remove_delay_ms";
     private static final int SNACKBAR_DURATION_MS = 8 * 1000;
 
     @IntDef({
@@ -229,16 +227,12 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
         if (mState != State.SHOWING) return;
 
-        long delayMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP, INITIAL_REMOVE_DELAY_PARAM,
-                DEFAULT_INITIAL_REMOVE_DELAY_MS);
         // Delay removing paint preview after didFirstVisuallyNonEmptyPaint and no user
         // interaction by |delayMs|. This is to account for 'heavy' pages that take a while
         // to finish painting and avoid having flickers when switching from paint preview
         // to the live page.
-        new Handler().postDelayed(() -> {
-            remove(ExitCause.TAB_FINISHED_LOADING);
-        }, delayMs);
+        new Handler().postDelayed(
+                () -> { remove(ExitCause.TAB_FINISHED_LOADING); }, DEFAULT_INITIAL_REMOVE_DELAY_MS);
     }
 
     @Override

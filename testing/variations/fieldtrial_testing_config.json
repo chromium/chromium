@@ -8123,24 +8123,6 @@
             ]
         }
     ],
-    "PaintPreviewShowOnStartup": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_NoSrp_20220719",
-                    "params": {
-                        "allow_srp": "false"
-                    },
-                    "enable_features": [
-                        "PaintPreviewShowOnStartup"
-                    ]
-                }
-            ]
-        }
-    ],
     "ParkableImages": [
         {
             "platforms": [

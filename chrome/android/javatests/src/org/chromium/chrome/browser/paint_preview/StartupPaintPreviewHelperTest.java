@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
@@ -36,7 +35,6 @@ import java.util.concurrent.ExecutionException;
  * {@link ChromeActivity}.
  */
 @RunWith(StartupPaintPreviewHelperTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @ParameterizedCommandLineFlags({
     @Switches("disable-features=" + ChromeFeatureList.START_SURFACE_ANDROID + ","

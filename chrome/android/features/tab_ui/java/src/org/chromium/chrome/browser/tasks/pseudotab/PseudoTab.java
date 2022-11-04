@@ -330,9 +330,9 @@ public class PseudoTab {
         return sActiveTabFromStateFile;
     }
 
+    @SuppressWarnings("AssertionSideEffect")
     private static void readAllPseudoTabsFromStateFile(Context context) {
-        assert ChromeFeatureList.sInstantStart.isEnabled()
-                || ChromeFeatureList.sPaintPreviewShowOnStartup.isEnabled();
+        assert ChromeFeatureList.sInstantStart.isEnabled();
         if (sReadStateFile) return;
         sReadStateFile = true;
 

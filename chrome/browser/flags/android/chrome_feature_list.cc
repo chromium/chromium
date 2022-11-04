@@ -343,7 +343,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kDnsOverHttps,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
-    &paint_preview::kPaintPreviewShowOnStartup,
     &language::kAppLanguagePrompt,
     &language::kAppLanguagePromptULP,
     &language::kDetailedLanguageSettings,

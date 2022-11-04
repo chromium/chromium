@@ -715,8 +715,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sOSKResizesVisualViewportByDefault =
             new CachedFlag(OSK_RESIZES_VISUAL_VIEWPORT, false);
     public static final CachedFlag sPaintPreviewDemo = new CachedFlag(PAINT_PREVIEW_DEMO, false);
-    public static final CachedFlag sPaintPreviewShowOnStartup =
-            new CachedFlag(PAINT_PREVIEW_SHOW_ON_STARTUP, false);
     public static final CachedFlag sPrefetchNotificationSchedulingIntegration =
             new CachedFlag(PREFETCH_NOTIFICATION_SCHEDULING_INTEGRATION, false);
     public static final CachedFlag sQueryTiles = new CachedFlag(QUERY_TILES, false);
