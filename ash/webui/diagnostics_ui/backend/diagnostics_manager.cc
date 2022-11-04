@@ -7,11 +7,11 @@
 #include <ui/aura/window.h>
 #include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
-#include "ash/webui/diagnostics_ui/backend/input_data_provider.h"
-#include "ash/webui/diagnostics_ui/backend/network_health_provider.h"
+#include "ash/webui/diagnostics_ui/backend/connectivity/network_health_provider.h"
+#include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
 #include "ash/webui/diagnostics_ui/backend/session_log_handler.h"
-#include "ash/webui/diagnostics_ui/backend/system_data_provider.h"
-#include "ash/webui/diagnostics_ui/backend/system_routine_controller.h"
+#include "ash/webui/diagnostics_ui/backend/system/system_data_provider.h"
+#include "ash/webui/diagnostics_ui/backend/system/system_routine_controller.h"
 
 namespace ash {
 namespace diagnostics {
