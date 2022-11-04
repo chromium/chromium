@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -1569,9 +1570,9 @@ TEST_F(CompositorFrameSinkSupportTest, ThrottleUnresponsiveClient) {
   support->SetNeedsBeginFrame(false);
 }
 
-// Verifies that when CompositorFrameSinkSupport has its |begin_frame_interval_|
-// set, any BeginFrame would be sent only after this interval has passed from
-// the time when the last BeginFrame was sent.
+// Verifies that when CompositorFrameSinkSupport has its
+// |begin_frame_interval_| set, any BeginFrame would be sent only after this
+// interval has passed from the time when the last BeginFrame was sent.
 TEST_F(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
   FakeExternalBeginFrameSource begin_frame_source(0.f, false);
 
@@ -1581,48 +1582,123 @@ TEST_F(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
   SurfaceId id(kAnotherArbitraryFrameSinkId, local_surface_id_);
   support->SetBeginFrameSource(&begin_frame_source);
   support->SetNeedsBeginFrame(true);
-  constexpr uint8_t fps = 5;
+  constexpr int fps = 5;
   constexpr base::TimeDelta throttled_interval = base::Seconds(1) / fps;
   support->ThrottleBeginFrame(throttled_interval);
 
   constexpr base::TimeDelta interval = BeginFrameArgs::DefaultInterval();
+  const int num_expected_skipped_frames =
+      (base::ClampRound<int>(interval.ToHz()) / fps) - 1;
   base::TimeTicks frame_time;
-  uint64_t sequence_number = 1;
+  int sequence_number = 1;
   int sent_frames = 0;
   BeginFrameArgs args;
-  uint64_t frames_throttled_since_last = 0;
+  int frames_throttled_since_last = 0;
   const base::TimeTicks end_time = frame_time + base::Seconds(2);
 
-  base::TimeTicks next_expected_begin_frame = frame_time;
   while (frame_time < end_time) {
     args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0,
                                           sequence_number++, frame_time);
-    if (frame_time < next_expected_begin_frame) {
-      EXPECT_CALL(mock_client, OnBeginFrame(_, _)).Times(0);
-      ++frames_throttled_since_last;
-    } else {
-      BeginFrameArgs expected_args(args);
-      expected_args.interval = throttled_interval;
-      expected_args.deadline =
-          frame_time + throttled_interval -
-          BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
-      expected_args.frames_throttled_since_last = frames_throttled_since_last;
-      frames_throttled_since_last = 0;
-      EXPECT_CALL(mock_client, OnBeginFrame(expected_args, _)).WillOnce([&]() {
-        support->SubmitCompositorFrame(local_surface_id_,
-                                       MakeDefaultCompositorFrame());
-        GetSurfaceForId(id)->MarkAsDrawn();
-        ++sent_frames;
-      });
-      next_expected_begin_frame = throttled_interval + frame_time;
-    }
+
+    BeginFrameArgs expected_args(args);
+    expected_args.interval = throttled_interval;
+    expected_args.deadline =
+        frame_time + throttled_interval -
+        BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
+    expected_args.frames_throttled_since_last = frames_throttled_since_last;
+    bool sent_frame = false;
+    ON_CALL(mock_client, OnBeginFrame(_, _))
+        .WillByDefault([&](const BeginFrameArgs& actual_args,
+                           const FrameTimingDetailsMap&) {
+          EXPECT_THAT(actual_args, Eq(expected_args));
+          support->SubmitCompositorFrame(local_surface_id_,
+                                         MakeDefaultCompositorFrame());
+          GetSurfaceForId(id)->MarkAsDrawn();
+          sent_frame = true;
+          ++sent_frames;
+          if (!frame_time.is_null()) {
+            EXPECT_THAT(frames_throttled_since_last,
+                        Eq(num_expected_skipped_frames));
+          }
+          frames_throttled_since_last = 0;
+        });
+
     begin_frame_source.TestOnBeginFrame(args);
     testing::Mock::VerifyAndClearExpectations(&mock_client);
 
+    if (!sent_frame) {
+      ++frames_throttled_since_last;
+    }
     frame_time += interval;
   }
-  // In total 10 frames should have been sent (5fps x 2 seconds).
-  EXPECT_EQ(sent_frames, 10);
+  // In total 11 frames should have been sent (5fps x 2 seconds) + 1 frame at
+  // time 0.
+  EXPECT_EQ(sent_frames, 11);
+  support->SetNeedsBeginFrame(false);
+}
+
+TEST_F(ThrottledBeginFrameCompositorFrameSinkSupportTest,
+       HandlesSmallErrorInBeginFrameTimes) {
+  FakeExternalBeginFrameSource begin_frame_source(0.f, false);
+
+  testing::NiceMock<MockCompositorFrameSinkClient> mock_client;
+  auto support = std::make_unique<CompositorFrameSinkSupport>(
+      &mock_client, &manager_, kAnotherArbitraryFrameSinkId,
+      /*is_root=*/true);
+  SurfaceId id(kAnotherArbitraryFrameSinkId, local_surface_id_);
+  support->SetBeginFrameSource(&begin_frame_source);
+  support->SetNeedsBeginFrame(true);
+  constexpr base::TimeDelta kNativeInterval = BeginFrameArgs::DefaultInterval();
+  constexpr base::TimeDelta kThrottledInterval = kNativeInterval * 2;
+  support->ThrottleBeginFrame(kThrottledInterval);
+  constexpr base::TimeDelta kEpsilon = base::Microseconds(2);
+
+  base::TimeTicks frame_time;
+  int sequence_number = 1;
+
+  auto submit_compositor_frame = [&]() {
+    support->SubmitCompositorFrame(local_surface_id_,
+                                   MakeDefaultCompositorFrame());
+    GetSurfaceForId(id)->MarkAsDrawn();
+  };
+
+  // T: 0 (Should always draw)
+  EXPECT_CALL(mock_client, OnBeginFrame(_, _))
+      .WillOnce(submit_compositor_frame);
+  begin_frame_source.TestOnBeginFrame(CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, 0, sequence_number++, frame_time));
+  testing::Mock::VerifyAndClearExpectations(&mock_client);
+
+  // T: 1 native interval
+  frame_time += kNativeInterval;
+  EXPECT_CALL(mock_client, OnBeginFrame(_, _)).Times(0);
+  begin_frame_source.TestOnBeginFrame(CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, 0, sequence_number++, frame_time));
+  testing::Mock::VerifyAndClearExpectations(&mock_client);
+
+  // T: 2 native intervals - epsilon
+  frame_time += (kNativeInterval - kEpsilon);
+  EXPECT_CALL(mock_client, OnBeginFrame(_, _))
+      .WillOnce(submit_compositor_frame);
+  begin_frame_source.TestOnBeginFrame(CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, 0, sequence_number++, frame_time));
+  testing::Mock::VerifyAndClearExpectations(&mock_client);
+
+  // T: 3 native intervals
+  frame_time += kNativeInterval;
+  EXPECT_CALL(mock_client, OnBeginFrame(_, _)).Times(0);
+  begin_frame_source.TestOnBeginFrame(CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, 0, sequence_number++, frame_time));
+  testing::Mock::VerifyAndClearExpectations(&mock_client);
+
+  // T: 4 native intervals + epsilon
+  frame_time += kNativeInterval + 2 * kEpsilon;
+  EXPECT_CALL(mock_client, OnBeginFrame(_, _))
+      .WillOnce(submit_compositor_frame);
+  begin_frame_source.TestOnBeginFrame(CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, 0, sequence_number++, frame_time));
+  testing::Mock::VerifyAndClearExpectations(&mock_client);
+
   support->SetNeedsBeginFrame(false);
 }
 

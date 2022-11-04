@@ -1141,8 +1141,30 @@ void CompositorFrameSinkSupport::CheckPendingSurfaces() {
 
 bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(
     base::TimeTicks frame_time) {
+  // It is not good enough to only check whether
+  // |time_since_last_frame| < |begin_frame_interval_|. There are 2 factors
+  // complicating this (examples assume a 30Hz throttled frame rate):
+  // 1) The precision of timing between frames is in microseconds, which
+  //    can result in error accumulation over several throttled frames. For
+  //    instance, on a 60Hz display, the first frame is produced at 0.016666
+  //    seconds, and the second at (0.016666 + 0.016666 = 0.033332) seconds.
+  //    base::Hertz(30) is 0.033333 seconds, so the second frame is considered
+  //    to have been produced too fast, and is therefore throttled.
+  // 2) Small system error in the frame timestamps (often on the order of a few
+  //    microseconds). For example, the first frame may be produced at 0.016662
+  //    seconds (instead of 0.016666), so the second frame's timestamp is
+  //    0.016662 + 0.016666 = 0.033328 and incorrectly gets throttled.
+  //
+  // To correct for this: Ceil the time since last frame to the nearest 100us.
+  // Building off the example above:
+  // Frame 1 time -> 0.016662 -> 0.0167 -> Throttle
+  // Frame 2 time -> 0.016662 + 0.016666 = 0.033328 -> 0.0334 -> Don't Throttle
+  static constexpr base::TimeDelta kFrameTimeQuantization =
+      base::Microseconds(100);
+  base::TimeDelta time_since_last_frame = frame_time - last_frame_time_;
   return begin_frame_interval_.is_positive() &&
-         (frame_time - last_frame_time_) < begin_frame_interval_;
+         time_since_last_frame.CeilToMultiple(kFrameTimeQuantization) <
+             begin_frame_interval_;
 }
 
 void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
