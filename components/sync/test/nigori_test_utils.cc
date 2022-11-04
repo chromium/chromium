@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/nigori_key_bag.h"
@@ -127,10 +128,6 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
                          &encoded_salt);
       nigori.set_custom_passphrase_key_derivation_salt(encoded_salt);
       break;
-    case KeyDerivationMethod::UNSUPPORTED:
-      ADD_FAILURE() << "Unsupported method in KeyParamsForTesting, cannot "
-                       "construct Nigori.";
-      break;
   }
 
   // Create the cryptographer, which encrypts with the key derived from
@@ -153,23 +150,25 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
 
 KeyDerivationParams InitCustomPassphraseKeyDerivationParamsFromNigori(
     const sync_pb::NigoriSpecifics& nigori) {
-  switch (ProtoKeyDerivationMethodToEnum(
-      nigori.custom_passphrase_key_derivation_method())) {
-    case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003: {
+  absl::optional<KeyDerivationMethod> key_derivation_method =
+      ProtoKeyDerivationMethodToEnum(
+          nigori.custom_passphrase_key_derivation_method());
+  if (!key_derivation_method.has_value()) {
+    // The test cannot pass since we wouldn't know how to decrypt data encrypted
+    // using an unsupported method.
+    ADD_FAILURE() << "Unsupported key derivation method encountered: "
+                  << nigori.custom_passphrase_key_derivation_method();
+    return KeyDerivationParams::CreateForPbkdf2();
+  }
+
+  switch (*key_derivation_method) {
+    case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
       return KeyDerivationParams::CreateForPbkdf2();
-    }
-    case KeyDerivationMethod::SCRYPT_8192_8_11: {
+    case KeyDerivationMethod::SCRYPT_8192_8_11:
       std::string decoded_salt;
       EXPECT_TRUE(base::Base64Decode(
           nigori.custom_passphrase_key_derivation_salt(), &decoded_salt));
       return KeyDerivationParams::CreateForScrypt(decoded_salt);
-    }
-    case KeyDerivationMethod::UNSUPPORTED:
-      // This test cannot pass since we wouldn't know how to decrypt data
-      // encrypted using an unsupported method.
-      ADD_FAILURE() << "Unsupported key derivation method encountered: "
-                    << nigori.custom_passphrase_key_derivation_method();
-      return KeyDerivationParams::CreateForPbkdf2();
   }
 }
 

@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -40,7 +41,7 @@ const char kNigoriNonUniqueName[] = "Nigori";
 // added.
 enum class KeyDerivationMethodStateForMetrics {
   NOT_SET = 0,
-  UNSUPPORTED = 1,
+  DEPRECATED_UNSUPPORTED = 1,
   PBKDF2_HMAC_SHA1_1003 = 2,
   SCRYPT_8192_8_11 = 3,
   kMaxValue = SCRYPT_8192_8_11
@@ -56,12 +57,10 @@ KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
       return KeyDerivationMethodStateForMetrics::PBKDF2_HMAC_SHA1_1003;
     case KeyDerivationMethod::SCRYPT_8192_8_11:
       return KeyDerivationMethodStateForMetrics::SCRYPT_8192_8_11;
-    case KeyDerivationMethod::UNSUPPORTED:
-      return KeyDerivationMethodStateForMetrics::UNSUPPORTED;
   }
 
   NOTREACHED();
-  return KeyDerivationMethodStateForMetrics::UNSUPPORTED;
+  return KeyDerivationMethodStateForMetrics::NOT_SET;
 }
 
 std::string GetScryptSaltFromSpecifics(
@@ -77,18 +76,22 @@ std::string GetScryptSaltFromSpecifics(
 
 KeyDerivationParams GetKeyDerivationParamsFromSpecifics(
     const sync_pb::NigoriSpecifics& specifics) {
-  switch (ProtoKeyDerivationMethodToEnum(
-      specifics.custom_passphrase_key_derivation_method())) {
+  absl::optional<KeyDerivationMethod> key_derivation_method =
+      ProtoKeyDerivationMethodToEnum(
+          specifics.custom_passphrase_key_derivation_method());
+  // Guaranteed by validations (e.g. SpecificsHasValidKeyDerivationParams()).
+  DCHECK(key_derivation_method);
+
+  switch (*key_derivation_method) {
     case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
       return KeyDerivationParams::CreateForPbkdf2();
     case KeyDerivationMethod::SCRYPT_8192_8_11:
       return KeyDerivationParams::CreateForScrypt(
           GetScryptSaltFromSpecifics(specifics));
-    case KeyDerivationMethod::UNSUPPORTED:
-      break;
   }
 
-  return KeyDerivationParams::CreateWithUnsupportedMethod();
+  NOTREACHED();
+  return KeyDerivationParams::CreateForPbkdf2();
 }
 
 // We need to apply base64 encoding before deriving Nigori keys because the
@@ -104,12 +107,15 @@ std::vector<std::string> Base64EncodeKeys(
 }
 
 bool SpecificsHasValidKeyDerivationParams(const NigoriSpecifics& specifics) {
-  switch (ProtoKeyDerivationMethodToEnum(
-      specifics.custom_passphrase_key_derivation_method())) {
-    case KeyDerivationMethod::UNSUPPORTED:
-      DLOG(ERROR) << "Unsupported key derivation method encountered: "
-                  << specifics.custom_passphrase_key_derivation_method();
-      return false;
+  absl::optional<KeyDerivationMethod> key_derivation_method =
+      ProtoKeyDerivationMethodToEnum(
+          specifics.custom_passphrase_key_derivation_method());
+  if (!key_derivation_method) {
+    DLOG(ERROR) << "Unsupported key derivation method encountered: "
+                << specifics.custom_passphrase_key_derivation_method();
+    return false;
+  }
+  switch (*key_derivation_method) {
     case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
       return true;
     case KeyDerivationMethod::SCRYPT_8192_8_11:
@@ -916,7 +922,7 @@ KeyDerivationParams NigoriSyncBridgeImpl::GetKeyDerivationParamsForPendingKeys()
   switch (state_.passphrase_type) {
     case NigoriSpecifics::UNKNOWN:
       NOTREACHED();
-      return KeyDerivationParams::CreateWithUnsupportedMethod();
+      return KeyDerivationParams::CreateForPbkdf2();
     case NigoriSpecifics::IMPLICIT_PASSPHRASE:
     case NigoriSpecifics::KEYSTORE_PASSPHRASE:
     case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:

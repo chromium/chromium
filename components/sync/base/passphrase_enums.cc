@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -72,7 +73,7 @@ sync_pb::NigoriSpecifics::PassphraseType EnumPassphraseTypeToProto(
   return sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE;
 }
 
-KeyDerivationMethod ProtoKeyDerivationMethodToEnum(
+absl::optional<KeyDerivationMethod> ProtoKeyDerivationMethodToEnum(
     ::google::protobuf::int32 method) {
   DCHECK_GE(method, 0);
 
@@ -89,7 +90,7 @@ KeyDerivationMethod ProtoKeyDerivationMethodToEnum(
 
   // We do not know about this value. It is likely a method added in a newer
   // version of Chrome.
-  return KeyDerivationMethod::UNSUPPORTED;
+  return absl::nullopt;
 }
 
 sync_pb::NigoriSpecifics::KeyDerivationMethod EnumKeyDerivationMethodToProto(
@@ -99,10 +100,6 @@ sync_pb::NigoriSpecifics::KeyDerivationMethod EnumKeyDerivationMethodToProto(
       return sync_pb::NigoriSpecifics::PBKDF2_HMAC_SHA1_1003;
     case KeyDerivationMethod::SCRYPT_8192_8_11:
       return sync_pb::NigoriSpecifics::SCRYPT_8192_8_11;
-    case KeyDerivationMethod::UNSUPPORTED:
-      // This value does not have a counterpart in the protocol proto enum,
-      // because it is just a client side abstraction.
-      break;
   }
 
   NOTREACHED();

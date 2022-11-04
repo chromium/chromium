@@ -10,10 +10,12 @@
 #include "base/notreached.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
 
@@ -32,18 +34,18 @@ CustomPassphraseKeyDerivationParamsToProto(const KeyDerivationParams& params) {
 
 KeyDerivationParams CustomPassphraseKeyDerivationParamsFromProto(
     const sync_pb::CustomPassphraseKeyDerivationParams& proto) {
-  switch (ProtoKeyDerivationMethodToEnum(
-      proto.custom_passphrase_key_derivation_method())) {
-    case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
+  switch (proto.custom_passphrase_key_derivation_method()) {
+    case sync_pb::NigoriSpecifics::UNSPECIFIED:
+      [[fallthrough]];
+    case sync_pb::NigoriSpecifics::PBKDF2_HMAC_SHA1_1003:
       return KeyDerivationParams::CreateForPbkdf2();
-    case KeyDerivationMethod::SCRYPT_8192_8_11:
+    case sync_pb::NigoriSpecifics::SCRYPT_8192_8_11:
       return KeyDerivationParams::CreateForScrypt(
           proto.custom_passphrase_key_derivation_salt());
-    case KeyDerivationMethod::UNSUPPORTED:
-      break;
   }
+
   NOTREACHED();
-  return KeyDerivationParams::CreateWithUnsupportedMethod();
+  return KeyDerivationParams::CreateForPbkdf2();
 }
 
 // |encrypted| must not be null.
@@ -91,7 +93,6 @@ void UpdateSpecificsFromKeyDerivationParams(
     sync_pb::NigoriSpecifics* specifics) {
   DCHECK_EQ(specifics->passphrase_type(),
             sync_pb::NigoriSpecifics::CUSTOM_PASSPHRASE);
-  DCHECK_NE(params.method(), KeyDerivationMethod::UNSUPPORTED);
   specifics->set_custom_passphrase_key_derivation_method(
       EnumKeyDerivationMethodToProto(params.method()));
   if (params.method() == KeyDerivationMethod::SCRYPT_8192_8_11) {

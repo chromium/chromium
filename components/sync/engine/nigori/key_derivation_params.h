@@ -22,7 +22,6 @@ class KeyDerivationParams {
  public:
   static KeyDerivationParams CreateForPbkdf2();
   static KeyDerivationParams CreateForScrypt(const std::string& salt);
-  static KeyDerivationParams CreateWithUnsupportedMethod();
 
   KeyDerivationMethod method() const { return method_; }
   const std::string& scrypt_salt() const;

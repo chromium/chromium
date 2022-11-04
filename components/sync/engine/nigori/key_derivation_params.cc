@@ -41,8 +41,4 @@ KeyDerivationParams KeyDerivationParams::CreateForScrypt(
   return {KeyDerivationMethod::SCRYPT_8192_8_11, salt};
 }
 
-KeyDerivationParams KeyDerivationParams::CreateWithUnsupportedMethod() {
-  return {KeyDerivationMethod::UNSUPPORTED, /*scrypt_salt_=*/""};
-}
-
 }  // namespace syncer

@@ -360,13 +360,6 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
               KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003);
   }
 
-  if (state_.passphrase_key_derivation_params.method() ==
-      KeyDerivationMethod::UNSUPPORTED) {
-    DLOG(ERROR) << "Cannot derive keys using an unsupported key derivation "
-                   "method. Rejecting passphrase.";
-    return false;
-  }
-
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
       state_.passphrase_key_derivation_params, passphrase);
   DCHECK(nigori);

@@ -5,6 +5,7 @@
 #include "components/sync/engine/sync_string_conversions.h"
 
 #include "base/notreached.h"
+#include "components/sync/base/passphrase_enums.h"
 
 #define ENUM_CASE(x) \
   case x:            \
@@ -35,17 +36,6 @@ const char* PassphraseTypeToString(PassphraseType type) {
 
   NOTREACHED();
   return "INVALID_PASSPHRASE_TYPE";
-}
-
-const char* KeyDerivationMethodToString(KeyDerivationMethod method) {
-  switch (method) {
-    ENUM_CASE(KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003);
-    ENUM_CASE(KeyDerivationMethod::SCRYPT_8192_8_11);
-    ENUM_CASE(KeyDerivationMethod::UNSUPPORTED);
-  }
-
-  NOTREACHED();
-  return "INVALID_KEY_DERIVATION_METHOD";
 }
 
 #undef ENUM_CASE

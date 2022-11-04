@@ -76,12 +76,10 @@ const char* GetHistogramSuffixForKeyDerivationMethod(
       return "Pbkdf2";
     case KeyDerivationMethod::SCRYPT_8192_8_11:
       return "Scrypt8192";
-    case KeyDerivationMethod::UNSUPPORTED:
-      break;
   }
 
   NOTREACHED();
-  return "Unsupported";
+  return "";
 }
 
 }  // namespace
@@ -349,8 +347,6 @@ std::unique_ptr<Nigori> Nigori::CreateByDerivationImpl(
       nigori->keys_.InitByDerivationUsingScrypt(
           key_derivation_params.scrypt_salt(), password);
       break;
-    case KeyDerivationMethod::UNSUPPORTED:
-      NOTREACHED();
   }
 
   UmaHistogramTimes(
