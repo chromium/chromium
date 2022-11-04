@@ -229,8 +229,6 @@ if (is_win || is_mac || is_linux) {
         "app/server/win/updater_legacy_idl.h",
         "app/server/win/wrl_classes.cc",
         "device_management/dm_storage_win.cc",
-        "ipc/update_service_proxy_win.cc",
-        "ipc/update_service_proxy_win.h",
         "policy/win/group_policy_manager.cc",
         "policy/win/group_policy_manager.h",
         "prefs_win.cc",
@@ -254,7 +252,6 @@ if (is_win || is_mac || is_linux) {
         "win/net/network_fetcher.h",
         "win/protocol_parser_xml.cc",
         "win/protocol_parser_xml.h",
-        "win/proxy_impl_base.h",
         "win/scoped_impersonation.cc",
         "win/scoped_impersonation.h",
         "win/setup/setup.cc",
@@ -524,7 +521,10 @@ if (is_win || is_mac || is_linux) {
 
     if (is_win) {
       sources += [
+        "ipc/update_service_proxy_win.cc",
+        "ipc/update_service_proxy_win.h",
         "util_win.cc",
+        "win/proxy_impl_base.h",
         "win/scoped_handle.h",
         "win/user_info.cc",
         "win/user_info.h",

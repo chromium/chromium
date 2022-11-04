@@ -28,14 +28,3 @@ updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
       base::SysWideToUTF8(install_static::InstallDetails::Get().update_ap());
   return req;
 }
-
-// TODO(crbug.com/1379115): Use the implementation from
-// chrome/updater/ipc/update_service_proxy_win.cc.
-namespace updater {
-scoped_refptr<UpdateService> CreateUpdateServiceProxy(
-    UpdaterScope updater_scope,
-    const base::TimeDelta& /*get_version_timeout*/) {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-}  // namespace updater
