@@ -76,6 +76,14 @@ export class StatsTable {
       const head = document.createElement('div');
       head.textContent = 'Stats Tables';
       container.appendChild(head);
+      const label = document.createElement('label');
+      label.innerText = 'Filter statistics by type including ';
+      container.appendChild(label);
+      const input = document.createElement('input');
+      input.placeholder = 'separate multiple values by `,`';
+      input.size = 25;
+      input.oninput = (e) => this.filterStats(e, container);
+      container.appendChild(input);
       peerConnectionElement.appendChild(container);
     }
     return container;
@@ -99,6 +107,7 @@ export class StatsTable {
     if (!table) {
       const container = this.ensureStatsTableContainer_(peerConnectionElement);
       const details = document.createElement('details');
+      details.attributes['data-statsType'] = report.type;
       container.appendChild(details);
 
       const summary = document.createElement('summary');
@@ -177,5 +186,28 @@ export class StatsTable {
         statsTable.parentElement.classList.remove(activeConnectionClass);
       }
     }
+  }
+
+  /**
+   * Apply a filter to the stats table
+   * @param event InputEvent from the filter input field.
+   * @param container stats table container element.
+   * @private
+   */
+  filterStats(event, container) {
+    const filter =  event.target.value;
+    const filters = filter.split(',');
+    container.childNodes.forEach(node => {
+      if (node.nodeName !== 'DETAILS') {
+        return;
+      }
+      const statsType = node.attributes['data-statsType'];
+      if (!filter || filters.includes(statsType) ||
+          filters.find(f => statsType.includes(f))) {
+        node.style.display = 'block';
+      } else {
+        node.style.display = 'none';
+      }
+    });
   }
 }
