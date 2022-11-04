@@ -200,6 +200,12 @@ suite('inputListTestSuite', function() {
       resolver.resolve();
     };
 
+    let eventTrackerRemoveAllCalled = 0;
+    touchscreenTester.getEventTracker().removeAll = () => {
+      eventTrackerRemoveAllCalled++;
+      resolver.resolve();
+    };
+
     const testButton = getCardByDeviceType('touchscreen')
                            .shadowRoot.querySelector('cr-button');
     assertTrue(!!testButton);
@@ -211,14 +217,17 @@ suite('inputListTestSuite', function() {
         /*expectedMoveAppToTestingScreenCalled=*/ 1,
         provider.getMoveAppToTestingScreenCalled());
 
-    const fullscreenChangeEvent =
-        eventToPromise('fullscreenchange', touchscreenTester.shadowRoot);
-    touchscreenTester.shadowRoot.dispatchEvent(new Event('fullscreenchange'));
+    const fullscreenChangeEvent = eventToPromise('fullscreenchange', document);
+    document.dispatchEvent(new Event('fullscreenchange'));
     await fullscreenChangeEvent;
+
     assertFalse(introDialog.open);
     assertEquals(
         /*expectedMoveAppBackToPreviousScreenCalled=*/ 1,
         provider.getMoveAppBackToPreviousScreenCalled());
+    assertEquals(
+        /*expectedEventTrackerRemoveAllCalled=*/ 1,
+        eventTrackerRemoveAllCalled);
   });
 
   test('TouchscreenTesterShowAndCloseInTabletMode', async () => {

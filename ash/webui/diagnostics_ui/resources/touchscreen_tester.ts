@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CanvasDrawingProvider} from './drawing_provider.js';
@@ -62,6 +63,9 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   // Indicates if the laptop is in tablet mode.
   private isTabletMode: boolean = false;
 
+  // Manages all event listeners.
+  private eventTracker: EventTracker = new EventTracker();
+
   private receiver_: TabletModeObserverReceiver|null = null;
 
   private inputDataProvider: InputDataProviderInterface =
@@ -82,11 +86,17 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   }
 
   /**
-   *
    * For testing only.
    */
   getIsTabletMode(): boolean {
     return this.isTabletMode;
+  }
+
+  /**
+   * For testing only.
+   */
+  getEventTracker(): EventTracker {
+    return this.eventTracker;
   }
 
   getDialog(dialogId: string): CrDialogElement {
@@ -110,40 +120,44 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     await introDialog.requestFullscreen();
     introDialog.showModal();
 
-    this.closeDialogWhenExitFullscreen();
-    this.exitTesterWhenVolumeUpButtonPressed();
+    this.addListeners();
   }
 
   /**
-   * When user presses 'Ecs' key, the tester will only exit the fullscreen
-   * mode. However, we want the tester to close when user has exited the
-   * fullscreen mode. Add a event listener to listen to the
-   * 'fullscreenchange' event to handle this case.
+   * Add various event listeners.
    */
-  private closeDialogWhenExitFullscreen(): void {
-    this.shadowRoot!.addEventListener('fullscreenchange', async (e: Event) => {
+  private addListeners(): void {
+    //  When user presses 'Esc' key, the tester will only exit the fullscreen
+    //  mode. However, we want the tester to close when user has exited the
+    //  fullscreen mode. Add a event listener to listen to the
+    //  'fullscreenchange' event to handle this case.
+    this.eventTracker.add(document, 'fullscreenchange', (e: Event) => {
       e.preventDefault();
       if (!document.fullscreenElement) {
-        this.getDialog(DialogType.INTRO).close();
-        this.getDialog(DialogType.CANVAS).close();
-        await this.inputDataProvider.moveAppBackToPreviousScreen();
-        if (this.receiver_) {
-          this.receiver_.$.close();
-        }
+        this.closeTester();
       }
     });
-  }
 
-  /**
-   * When in tablet mode, pressing volume up button will exit the tester.
-   */
-  private exitTesterWhenVolumeUpButtonPressed(): void {
-    window.addEventListener('keydown', (e: Event) => {
+    // When in tablet mode, pressing volume up button will exit the tester.
+    this.eventTracker.add(window, 'keydown', (e: Event) => {
       if ((e as KeyboardEvent).key === 'AudioVolumeUp' && this.isTabletMode) {
         // Exit fullscreen will trigger closing the tester.
         document.exitFullscreen();
       }
     });
+  }
+
+  /**
+   * Close touchscreen tester.
+   */
+  private async closeTester(): Promise<void> {
+    this.getDialog(DialogType.INTRO).close();
+    this.getDialog(DialogType.CANVAS).close();
+    await this.inputDataProvider.moveAppBackToPreviousScreen();
+    this.eventTracker.removeAll();
+    if (this.receiver_) {
+      this.receiver_.$.close();
+    }
   }
 
   /**
@@ -189,7 +203,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     for (const eventType
              of [TouchEventType.START, TouchEventType.MOVE,
                  TouchEventType.END]) {
-      canvas.addEventListener(eventType, (e: Event) => {
+      this.eventTracker.add(canvas, eventType, (e: Event) => {
         e.preventDefault();
         for (let i = 0; i < (e as TouchEvent).changedTouches.length; i++) {
           const currentTouch = (e as TouchEvent).changedTouches[i];
