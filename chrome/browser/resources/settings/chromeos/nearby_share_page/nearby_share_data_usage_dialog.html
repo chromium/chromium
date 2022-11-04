@@ -3,8 +3,8 @@
     --cr-dialog-width: 340px;
   }
 
-  h1 {
-    color: var(--cr-primary-text-color);
+  h2 {
+    color: var(--cros-primary-text-color);
     font-family: 'Google Sans';
     font-size: 16px;
     font-weight: normal;
@@ -48,9 +48,9 @@
   }
 </style>
 <cr-dialog id="dialog">
-  <h1 slot="title">
+  <h2 slot="title">
     $i18n{nearbyShareDataUsageDialogTitle}
-  </h1>
+  </h2>
   <div slot="body">
     <cr-radio-group selected="[[selectedDataUsage_(
         settings.dataUsage)]]">
