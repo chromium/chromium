@@ -4804,7 +4804,7 @@
             ],
             "experiments": [
                 {
-                    "name": "LowPriLoading_20220927",
+                    "name": "LowPriLoading_20221102",
                     "params": {
                         "low_pri_async_loading_cross_site_only": "true",
                         "low_pri_async_loading_feature_limit": "5s",
