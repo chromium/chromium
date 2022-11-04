@@ -453,6 +453,9 @@ extern const char kChromeCleanerLearnMoreURL[];
 
 // The URL for the Windows XP/Vista deprecation help center article.
 extern const char kWindowsXPVistaDeprecationURL[];
+
+// The URL for the Windows 7/8.1 deprecation help center article.
+extern const char kWindows78DeprecationURL[];
 #endif
 
 // "Learn more" URL for the one click signin infobar.

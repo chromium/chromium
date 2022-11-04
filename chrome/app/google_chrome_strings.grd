@@ -438,6 +438,21 @@ chromium_strings.grd. -->
           This computer will no longer receive Google Chrome updates because Windows XP and Windows Vista are no longer supported
         </message>
       </if>
+      <if expr="is_win">
+        <message name="IDS_WIN_7_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the computer they are using will soon be or is already unsupported.">
+                    To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 7.
+        </message>
+      </if>
+      <if expr="is_win">
+        <message name="IDS_WIN_8_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the computer they are using will soon be or is already unsupported.">
+                    To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.
+        </message>
+      </if>
+      <if expr="is_win">
+        <message name="IDS_WIN_8_1_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the computer they are using will soon be or is already unsupported.">
+                    To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.
+        </message>
+      </if>
       <if expr="is_linux">
         <message name="IDS_LINUX_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the OS version they are using is no longer supported.">
           Google Chrome may not function correctly because it is no longer supported on this Linux distribution

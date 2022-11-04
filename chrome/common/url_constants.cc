@@ -479,8 +479,10 @@ const char kChromeCleanerLearnMoreURL[] =
     "https://support.google.com/chrome/?p=chrome_cleanup_tool";
 
 const char kWindowsXPVistaDeprecationURL[] =
-    "https://chrome.blogspot.com/2015/11/"
-    "updates-to-chrome-platform-support.html";
+    "https://chrome.blogspot.com/2015/11/updates-to-chrome-platform-support.html";
+
+const char kWindows78DeprecationURL[] =
+    "https://support.google.com/chrome/?p=unsupported_windows";
 #endif  // BUILDFLAG(IS_WIN)
 
 const char kChromeSyncLearnMoreURL[] =
