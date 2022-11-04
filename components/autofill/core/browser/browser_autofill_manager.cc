@@ -61,6 +61,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/fast_checkout_delegate_impl.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -2552,72 +2553,26 @@ void BrowserAutofillManager::DisambiguateUploadTypes(FormStructure* form) {
     AutofillField* field = form->field(i);
     const ServerFieldTypeSet& upload_types = field->possible_types();
 
-    if (upload_types.size() == 2 && upload_types.contains(ADDRESS_HOME_LINE1) &&
-        upload_types.contains(ADDRESS_HOME_STREET_ADDRESS)) {
-      DisambiguateAddressUploadTypes(form, i);
-    }
-
     // In case for credit cards and names there are many other possibilities
     // because a field can be of type NAME_FULL, NAME_LAST,
     // NAME_LAST_FIRST/SECOND at the same time.
-    int credit_card_type_count = 0;
-    int name_type_count = 0;
+    // Also, a single line street address is ambiguous to address line 1.
+    // However, this case is handled on the server and here only the name
+    // disambiguation for address and credit card related name fields is
+    // performed.
 
-    bool undisambiuatable_types = false;
-    for (auto type : upload_types) {
-      switch (AutofillType(type).group()) {
-        case FieldTypeGroup::kCreditCard:
-          ++credit_card_type_count;
-          break;
-        case FieldTypeGroup::kName:
-          ++name_type_count;
-          break;
-        // If there is any other type left, do not disambiguate.
-        default:
-          undisambiuatable_types = true;
-      }
-      if (undisambiuatable_types)
-        break;
-    }
-    if (undisambiuatable_types)
-      continue;
-
-    if (credit_card_type_count == 1 && name_type_count >= 1)
+    // Disambiguation is only applicable if there is a mixture of one or more
+    // address related name fields and exactly one credit card related name
+    // field.
+    const size_t credit_card_type_count =
+        NumberOfPossibleFieldTypesInGroup(*field, FieldTypeGroup::kCreditCard);
+    const size_t name_type_count =
+        NumberOfPossibleFieldTypesInGroup(*field, FieldTypeGroup::kName);
+    if (upload_types.size() == (credit_card_type_count + name_type_count) &&
+        credit_card_type_count == 1 && name_type_count >= 1) {
       DisambiguateNameUploadTypes(form, i, upload_types);
+    }
   }
-}
-
-// static
-void BrowserAutofillManager::DisambiguateAddressUploadTypes(
-    FormStructure* form,
-    size_t current_index) {
-  // This happens when we have exactly two possible types, and the profile
-  // has only one address line. Therefore the address line one and the street
-  // address (the whole address) have the same value and match.
-
-  // If the field is followed by a field that is predicted to be an
-  // address line two and is empty, we can safely assume that this field
-  // is an address line one field. Otherwise it's a whole address field.
-
-  ServerFieldTypeSet matching_types;
-  ServerFieldTypeValidityStatesMap matching_types_validities;
-  AutofillField* field = form->field(current_index);
-
-  size_t next_index = current_index + 1;
-  if (next_index < form->field_count() &&
-      form->field(next_index)->Type().GetStorableType() == ADDRESS_HOME_LINE2 &&
-      form->field(next_index)->possible_types().count(EMPTY_TYPE)) {
-    matching_types.insert(ADDRESS_HOME_LINE1);
-    matching_types_validities[ADDRESS_HOME_LINE1] =
-        field->get_validities_for_possible_type(ADDRESS_HOME_LINE1);
-  } else {
-    matching_types.insert(ADDRESS_HOME_STREET_ADDRESS);
-    matching_types_validities[ADDRESS_HOME_STREET_ADDRESS] =
-        field->get_validities_for_possible_type(ADDRESS_HOME_STREET_ADDRESS);
-  }
-
-  field->set_possible_types(matching_types);
-  field->set_possible_types_validities(matching_types_validities);
 }
 
 // static

@@ -6383,11 +6383,16 @@ TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
         // It is possible that a field as two out of three
         // possible classifications: NAME_FULL, NAME_LAST,
         // NAME_LAST_FIRST/SECOND. Note, all cases contain NAME_LAST.
+        // Alternatively, if the street address contains only one line, the
+        // street address and the address line1 are identical resulting in a
+        // vote for each.
         if (possible_types.size() == 2) {
-          EXPECT_TRUE(possible_types.contains(NAME_LAST) &&
-                      (possible_types.contains(NAME_LAST_SECOND) ||
-                       possible_types.contains(NAME_LAST_FIRST) ||
-                       possible_types.contains(NAME_FULL)));
+          EXPECT_TRUE((possible_types.contains(NAME_LAST) &&
+                       (possible_types.contains(NAME_LAST_SECOND) ||
+                        possible_types.contains(NAME_LAST_FIRST) ||
+                        possible_types.contains(NAME_FULL))) ||
+                      (possible_types.contains(ADDRESS_HOME_LINE1) &&
+                       possible_types.contains(ADDRESS_HOME_STREET_ADDRESS)));
         } else if (possible_types.size() == 3) {
           // Or even all three.
           EXPECT_TRUE(possible_types.contains(NAME_FULL) &&

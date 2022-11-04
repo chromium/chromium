@@ -35,6 +35,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
@@ -1087,7 +1088,7 @@ void FormStructure::LogQualityMetrics(
 
     // Skip all remaining metrics if there wasn't a single possible field type
     // detected.
-    if (!FieldHasMeaningfulFieldTypes(*field))
+    if (!FieldHasMeaningfulPossibleFieldTypes(*field))
       continue;
 
     ++num_detected_field_types;

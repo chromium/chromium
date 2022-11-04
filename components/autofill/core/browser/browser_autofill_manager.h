@@ -621,10 +621,6 @@ class BrowserAutofillManager : public AutofillManager,
   // for fields with ambiguous upload types.
   static void DisambiguateUploadTypes(FormStructure* form);
 
-  // Disambiguates address field upload types.
-  static void DisambiguateAddressUploadTypes(FormStructure* form,
-                                             size_t current_index);
-
   // Disambiguates name field upload types.
   static void DisambiguateNameUploadTypes(
       FormStructure* form,
