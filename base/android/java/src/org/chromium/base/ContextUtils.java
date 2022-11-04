@@ -282,10 +282,14 @@ public class ContextUtils {
      * Note that older versions of Android do not enforce non-exported receivers, so you should
      * still not trust received Intents without some additional authentication mechanism. Note that
      * you generally cannot use Android permissions for this because embedded WebViews will only
-     * inherit the permissions of the embedding application.
+     * inherit the permissions of the embedding application. Consider using
+     * {@link org.chromium.base.IntentUtils#addTrustedIntentExtras} and
+     * {@link org.chromium.base.IntentUtils#isTrustedIntentFromSelf} to verify the Intent's sender.
      * <p>
      * Usually, when working with non-exported receivers, you should also make sure that any related
-     * Intents that you send are not broadcast to other apps.
+     * Intents that you send are not broadcast to other apps. This can be done using
+     * {@link Intent#setPackage} with {@link Context#getPackageName}, and must be done before
+     * calling {@link org.chromium.base.IntentUtils#addTrustedIntentExtras}.
      * <p>
      * You can unregister receivers using the normal {@link Context#unregisterReceiver} method.
      */

@@ -147,7 +147,6 @@ public class ShareHelper {
      * Receiver to record the chosen component when sharing an Intent.
      */
     public static class TargetChosenReceiver extends BroadcastReceiver implements IntentCallback {
-        private static final String EXTRA_RECEIVER_TOKEN = "receiver_token";
         private static final Object LOCK = new Object();
 
         private static String sTargetChosenReceiveAction;
@@ -187,7 +186,7 @@ public class ShareHelper {
 
             Intent intent = new Intent(sTargetChosenReceiveAction);
             intent.setPackage(packageName);
-            intent.putExtra(EXTRA_RECEIVER_TOKEN, sLastRegisteredReceiver.hashCode());
+            IntentUtils.addTrustedIntentExtras(intent);
             Activity activity = window.getActivity().get();
             final PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, intent,
                     PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
@@ -208,10 +207,7 @@ public class ShareHelper {
                 ContextUtils.getApplicationContext().unregisterReceiver(sLastRegisteredReceiver);
                 sLastRegisteredReceiver = null;
             }
-            if (!intent.hasExtra(EXTRA_RECEIVER_TOKEN)
-                    || intent.getIntExtra(EXTRA_RECEIVER_TOKEN, 0) != this.hashCode()) {
-                return;
-            }
+            if (!IntentUtils.isTrustedIntentFromSelf(intent)) return;
 
             ComponentName target = intent.getParcelableExtra(Intent.EXTRA_CHOSEN_COMPONENT);
             if (mCallback != null) {

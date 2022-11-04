@@ -34,6 +34,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -71,11 +72,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     // Used to determine the media controls state. (e.g. microphone on/off)
     private static final String CONTROL_STATE =
             "org.chromium.chrome.browser.media.PictureInPictureActivity.ControlState";
-
-    // Used to verify Pre-T that the broadcast sender was Chrome. This extra can be removed when the
-    // min supported version is Android T.
-    private static final String EXTRA_RECEIVER_TOKEN =
-            "org.chromium.chrome.browser.media.PictureInPictureActivity.ReceiverToken";
 
     // Use for passing unique window id to each PictureInPictureActivity instance.
     private static final String NATIVE_POINTER_KEY =
@@ -302,7 +298,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         private RemoteAction createRemoteAction(int requestCode, int action, int iconResourceId,
                 int titleResourceId, Boolean controlState) {
             Intent intent = new Intent(MEDIA_ACTION);
-            intent.putExtra(EXTRA_RECEIVER_TOKEN, mMediaSessionReceiver.hashCode());
+            intent.setPackage(getApplicationContext().getPackageName());
+            IntentUtils.addTrustedIntentExtras(intent);
             intent.putExtra(CONTROL_TYPE, action);
             intent.putExtra(NATIVE_POINTER_KEY, mNativeOverlayWindowAndroid);
             if (controlState != null) {
@@ -323,6 +320,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private class MediaSessionBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!IntentUtils.isTrustedIntentFromSelf(intent)) return;
+
             long nativeOverlayWindowAndroid = intent.getLongExtra(NATIVE_POINTER_KEY, 0);
             if (nativeOverlayWindowAndroid != mNativeOverlayWindowAndroid
                     || mNativeOverlayWindowAndroid == 0) {
@@ -330,10 +329,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             }
 
             if (intent.getAction() == null || !intent.getAction().equals(MEDIA_ACTION)) return;
-            if (!intent.hasExtra(EXTRA_RECEIVER_TOKEN)
-                    || intent.getIntExtra(EXTRA_RECEIVER_TOKEN, 0) != this.hashCode()) {
-                return;
-            }
 
             Boolean controlState = intent.hasExtra(CONTROL_STATE)
                     ? intent.getBooleanExtra(CONTROL_STATE, true)
