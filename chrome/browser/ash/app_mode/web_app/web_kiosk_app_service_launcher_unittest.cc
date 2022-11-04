@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -45,20 +45,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using ::base::test::RunClosure;
+using ::base::test::TestFuture;
 using ::testing::_;
+using ::testing::Invoke;
 using ::testing::Return;
 
 namespace ash {
-
 namespace {
 
-#define EXEC_AND_WAIT_FOR_CALL(exec, mock, method)                      \
-  ({                                                                    \
-    base::RunLoop loop;                                                 \
-    EXPECT_CALL(mock, method).WillOnce(RunClosure(loop.QuitClosure())); \
-    exec;                                                               \
-    loop.Run();                                                         \
+#define EXEC_AND_WAIT_FOR_CALL(exec, mock, method)    \
+  ({                                                  \
+    TestFuture<bool> waiter;                          \
+    EXPECT_CALL(mock, method).WillOnce(Invoke([&]() { \
+      waiter.SetValue(true);                          \
+    }));                                              \
+    exec;                                             \
+    EXPECT_TRUE(waiter.Wait());                       \
   })
 
 class MockAppLauncherDelegate : public WebKioskAppServiceLauncher::Delegate {
@@ -170,20 +172,17 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
 
     if (installed) {
       {
-        base::RunLoop loop;
+        TestFuture<const GURL&,
+                   web_app::ExternallyManagedAppManager::InstallResult>
+            install_result;
         web_app::ExternalInstallOptions install_options(
             GURL(kAppInstallUrl), web_app::UserDisplayMode::kStandalone,
             web_app::ExternalInstallSource::kKiosk);
-        externally_managed_app_manager().Install(
-            install_options,
-            base::BindLambdaForTesting(
-                [&loop](const GURL& install_url,
-                        web_app::ExternallyManagedAppManager::InstallResult
-                            result) {
-                  ASSERT_TRUE(webapps::IsSuccess(result.code));
-                  loop.Quit();
-                }));
-        loop.Run();
+
+        externally_managed_app_manager().Install(install_options,
+                                                 install_result.GetCallback());
+
+        ASSERT_TRUE(webapps::IsSuccess(install_result.Get<1>().code));
       }
 
       WebAppInstallInfo info;
