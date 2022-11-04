@@ -46,27 +46,44 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
 
   void SetUp() override {
     InteractiveViewsTest::SetUp();
+
+    // Set up the Views hierarchy to use for the tests.
+    auto contents =
+        Builder<FlexLayoutView>()
+            .CopyAddressTo(&contents_)
+            .SetProperty(kElementIdentifierKey, kContentsId)
+            .SetOrientation(LayoutOrientation::kVertical)
+            .AddChildren(
+                Builder<TabbedPane>()
+                    .CopyAddressTo(&tabs_)
+                    .SetProperty(kElementIdentifierKey, kTabbedPaneId)
+                    .AddTab(kTab1Title, std::make_unique<Label>(kTab1Contents))
+                    .AddTab(kTab2Title, std::make_unique<Label>(kTab2Contents))
+                    .AddTab(kTab3Title, std::make_unique<Label>(kTab3Contents)),
+                Builder<FlexLayoutView>()
+                    .CopyAddressTo(&buttons_)
+                    .SetProperty(kElementIdentifierKey, kButtonsId)
+                    .SetOrientation(LayoutOrientation::kHorizontal)
+                    .AddChildren(
+                        Builder<LabelButton>()
+                            .CopyAddressTo(&button1_)
+                            .SetProperty(kElementIdentifierKey, kButton1Id)
+                            .SetText(kButton1Caption)
+                            .SetCallback(button1_callback_.Get()),
+                        Builder<LabelButton>()
+                            .CopyAddressTo(&button2_)
+                            .SetText(kButton2Caption)
+                            .SetCallback(button2_callback_.Get())));
+
+    // Create and show the test widget.
     widget_ = CreateTestWidget();
-    contents_ = widget_->SetContentsView(std::make_unique<FlexLayoutView>());
-    contents_->SetProperty(kElementIdentifierKey, kContentsId);
-    contents_->SetOrientation(LayoutOrientation::kVertical);
-    tabs_ = contents_->AddChildView(std::make_unique<TabbedPane>());
-    tabs_->SetProperty(kElementIdentifierKey, kTabbedPaneId);
-    tabs_->AddTab(kTab1Title, std::make_unique<Label>(kTab1Contents));
-    tabs_->AddTab(kTab2Title, std::make_unique<Label>(kTab2Contents));
-    tabs_->AddTab(kTab3Title, std::make_unique<Label>(kTab3Contents));
-    buttons_ = contents_->AddChildView(std::make_unique<FlexLayoutView>());
-    buttons_->SetOrientation(LayoutOrientation::kHorizontal);
-    buttons_->SetProperty(kElementIdentifierKey, kButtonsId);
-    button1_ = buttons_->AddChildView(std::make_unique<LabelButton>(
-        button1_callback_.Get(), kButton1Caption));
-    button1_->SetProperty(kElementIdentifierKey, kButton1Id);
-    button2_ = buttons_->AddChildView(std::make_unique<LabelButton>(
-        button2_callback_.Get(), kButton2Caption));
+    widget_->SetContentsView(std::move(contents).Build());
     WidgetVisibleWaiter waiter(widget_.get());
     widget_->Show();
     waiter.Wait();
     widget_->LayoutRootViewIfNecessary();
+
+    // This is required before RunTestSequence() can be called.
     SetContextWidget(widget_.get());
   }
 

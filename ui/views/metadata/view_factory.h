@@ -408,6 +408,30 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return std::move(this->method_name(std::forward<Args>(args)...));         \
   }
 
+// Enables exposing a template or ambiguously-named method by providing an alias
+// that will be used on the Builder.
+//
+// Examples:
+//
+//   VIEW_BUILDER_METHOD_ALIAS(
+//       AddTab, AddTab<View>, StringPiece, unique_ptr<View>)
+//
+//   VIEW_BUILDER_METHOD_ALIAS(UnambiguousName, AmbiguousName, int)
+//
+#define VIEW_BUILDER_METHOD_ALIAS(builder_method, view_method, ...)           \
+  template <typename... Args>                                                 \
+  BuilderT& builder_method(Args&&... args)& {                                 \
+    auto caller = std::make_unique<::views::internal::ClassMethodCaller<      \
+        ViewClass_, decltype(&ViewClass_::view_method),                       \
+        &ViewClass_::view_method, __VA_ARGS__>>(std::forward<Args>(args)...); \
+    ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(caller)); \
+    return *static_cast<BuilderT*>(this);                                     \
+  }                                                                           \
+  template <typename... Args>                                                 \
+  BuilderT&& builder_method(Args&&... args)&& {                               \
+    return std::move(this->builder_method(std::forward<Args>(args)...));      \
+  }
+
 #define VIEW_BUILDER_VIEW_TYPE_PROPERTY(property_type, property_name)         \
   template <typename _View>                                                   \
   BuilderT& Set##property_name(_View&& view)& {                               \

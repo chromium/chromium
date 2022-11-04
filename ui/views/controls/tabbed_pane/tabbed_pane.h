@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -275,6 +276,15 @@ class TabStrip : public View, public gfx::AnimationDelegate {
   Coordinates animating_to_;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, TabbedPane, View)
+VIEW_BUILDER_METHOD_ALIAS(AddTab,
+                          AddTab<View>,
+                          const std::u16string&,
+                          std::unique_ptr<View>)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, TabbedPane)
 
 #endif  // UI_VIEWS_CONTROLS_TABBED_PANE_TABBED_PANE_H_
