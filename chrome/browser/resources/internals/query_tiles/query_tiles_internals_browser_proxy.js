@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 
 /**
  * @typedef {{
@@ -20,6 +19,9 @@ export let ServiceStatus;
  * }}
  */
 export let TileData;
+
+/** @type {?QueryTilesInternalsBrowserProxy} */
+let instance = null;
 
 /** @interface */
 export class QueryTilesInternalsBrowserProxy {
@@ -82,6 +84,9 @@ export class QueryTilesInternalsBrowserProxyImpl {
   setServerUrl(url) {
     chrome.send('setServerUrl', [url]);
   }
-}
 
-addSingletonGetter(QueryTilesInternalsBrowserProxyImpl);
+  /** @return {!QueryTilesInternalsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new QueryTilesInternalsBrowserProxyImpl());
+  }
+}

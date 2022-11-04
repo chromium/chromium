@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
+
+/** @type {?LensInternalsBrowserProxy} */
+let instance = null;
 
 /** @interface */
 export class LensInternalsBrowserProxy {
@@ -45,6 +47,9 @@ export class LensInternalsBrowserProxyImpl {
   stopDebugMode() {
     return sendWithPromise('stopDebugMode');
   }
-}
 
-addSingletonGetter(LensInternalsBrowserProxyImpl);
+  /** @return {!LensInternalsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new LensInternalsBrowserProxyImpl());
+  }
+}

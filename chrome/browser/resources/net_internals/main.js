@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
-
 import {BrowserBridge} from './browser_bridge.js';
 // <if expr="chromeos_ash">
 import {CrosView} from './chromeos_view.js';
@@ -16,6 +14,9 @@ import {SocketsView} from './sockets_view.js';
 import {TabSwitcherView} from './tab_switcher_view.js';
 import {hasTouchScreen} from './util.js';
 import {WindowView} from './view.js';
+
+/** @type {?MainView} */
+let instance = null;
 
 /**
  * This class is the root view object of the page.  It owns all the other
@@ -148,9 +149,11 @@ export class MainView extends WindowView {
       }
     }
   }
-}
 
-addSingletonGetter(MainView);
+  static getInstance() {
+    return instance || (instance = new MainView());
+  }
+}
 
 /**
  * Takes the current hash in form of "#tab&param1=value1&param2=value2&..."
