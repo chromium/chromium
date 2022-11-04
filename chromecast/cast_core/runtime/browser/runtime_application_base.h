@@ -11,8 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
+#include "components/cast_receiver/browser/public/content_window_controls.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
@@ -20,6 +20,7 @@
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace content {
+class WebContents;
 class WebUIControllerFactory;
 }  // namespace content
 
@@ -30,8 +31,9 @@ class MessagePortService;
 
 // This class is for sharing code between Web and streaming RuntimeApplication
 // implementations, including Load and Launch behavior.
-class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
-                               public CastContentWindow::Observer {
+class RuntimeApplicationBase
+    : public cast_receiver::RuntimeApplication,
+      public cast_receiver::ContentWindowControls::VisibilityChangeObserver {
  public:
   // This class defines a wrapper around any platform-specific communication
   // details required for functionality of a RuntimeApplicationBase instance.
@@ -67,10 +69,9 @@ class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
     // Returns the WebContents this application should use.
     virtual content::WebContents* GetWebContents() = 0;
 
-    // Returns the CastContentWindow associated with this application.
-    //
-    // TODO(crbug.com/1359559): Remove this function.
-    virtual CastContentWindow* GetCastContentWindow() = 0;
+    // Returns the window controls for this instance.
+    virtual cast_receiver::ContentWindowControls*
+    GetContentWindowControls() = 0;
   };
 
   ~RuntimeApplicationBase() override;
@@ -171,8 +172,11 @@ class RuntimeApplicationBase : public cast_receiver::RuntimeApplication,
   void OnPageLoaded();
 
  private:
-  // CastContentWindow::Observer implementation:
-  void OnVisibilityChange(VisibilityType visibility_type) override;
+  void SetWebVisibilityAndPaint(bool is_visible);
+
+  // ContentWindowControls::VisibilityChangeObserver implementation:
+  void OnWindowShown() override;
+  void OnWindowHidden() override;
 
   const std::string cast_session_id_;
   const cast::common::ApplicationConfig app_config_;

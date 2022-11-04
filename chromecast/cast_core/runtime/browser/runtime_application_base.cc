@@ -11,6 +11,7 @@
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/visibility_types.h"
 #include "chromecast/common/feature_constants.h"
+#include "content/public/browser/web_contents.h"
 
 namespace chromecast {
 namespace {
@@ -232,28 +233,29 @@ void RuntimeApplicationBase::LoadPage(const GURL& url) {
 
   // This needs to be called to get the PageState::LOADED event as it's fully
   // loaded.
-  cast_web_contents->SetWebVisibilityAndPaint(false);
+  SetWebVisibilityAndPaint(false);
 }
 
 void RuntimeApplicationBase::OnPageLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DLOG(INFO) << "Page loaded: " << *this;
 
-  DCHECK(delegate_->GetCastContentWindow());
-  delegate_->GetCastContentWindow()->AddObserver(this);
-  delegate_->GetCastContentWindow()->EnableTouchInput(
-      touch_input_ == cast::common::TouchInput::ENABLED);
+  auto* window_controls = delegate_->GetContentWindowControls();
+  DCHECK(window_controls);
+  window_controls->AddVisibilityChangeObserver(*this);
+  if (touch_input_ == cast::common::TouchInput::ENABLED) {
+    window_controls->EnableTouchInput();
+  } else {
+    window_controls->DisableTouchInput();
+  }
 
   // Create the window and show the web view.
   if (visibility_ == cast::common::Visibility::FULL_SCREEN) {
     LOG(INFO) << "Loading page in full screen: " << *this;
-    delegate_->GetCastContentWindow()->GrantScreenAccess();
-    delegate_->GetCastContentWindow()->CreateWindow(
-        mojom::ZOrder::APP, VisibilityPriority::STICKY_ACTIVITY);
+    window_controls->ShowWindow();
   } else {
     LOG(INFO) << "Loading page in background: " << *this;
-    delegate_->GetCastContentWindow()->CreateWindow(mojom::ZOrder::APP,
-                                                    VisibilityPriority::HIDDEN);
+    window_controls->HideWindow();
   }
 
   delegate().NotifyApplicationStarted();
@@ -325,21 +327,18 @@ void RuntimeApplicationBase::SetVisibility(
             << cast::common::Visibility::Type_Name(visibility_) << ", "
             << *this;
 
-  if (!delegate_->GetCastContentWindow()) {
+  auto* window_controls = delegate_->GetContentWindowControls();
+  if (!window_controls) {
     return;
   }
 
   switch (visibility_) {
     case cast::common::Visibility::FULL_SCREEN:
-      delegate_->GetCastContentWindow()->RequestVisibility(
-          VisibilityPriority::STICKY_ACTIVITY);
-      delegate_->GetCastContentWindow()->GrantScreenAccess();
+      window_controls->ShowWindow();
       break;
 
     case cast::common::Visibility::HIDDEN:
-      delegate_->GetCastContentWindow()->RequestVisibility(
-          VisibilityPriority::HIDDEN);
-      delegate_->GetCastContentWindow()->RevokeScreenAccess();
+      window_controls->HideWindow();
       break;
 
     default:
@@ -360,12 +359,16 @@ void RuntimeApplicationBase::SetTouchInput(
             << cast::common::TouchInput::Type_Name(touch_input_) << ", "
             << *this;
 
-  if (!delegate_->GetCastContentWindow()) {
+  auto* window_controls = delegate_->GetContentWindowControls();
+  if (!window_controls) {
     return;
   }
 
-  delegate_->GetCastContentWindow()->EnableTouchInput(
-      touch_input_ == cast::common::TouchInput::ENABLED);
+  if (touch_input_ == cast::common::TouchInput::ENABLED) {
+    window_controls->EnableTouchInput();
+  } else {
+    window_controls->DisableTouchInput();
+  }
 }
 
 bool RuntimeApplicationBase::IsApplicationRunning() const {
@@ -393,8 +396,9 @@ void RuntimeApplicationBase::StopApplication(
     cast_web_contents->ClosePage();
 
     // Check if window is still available as page might have been closed before.
-    if (delegate_->GetCastContentWindow()) {
-      delegate_->GetCastContentWindow()->RemoveObserver(this);
+    auto* window_controls = delegate_->GetContentWindowControls();
+    if (window_controls) {
+      window_controls->RemoveVisibilityChangeObserver(*this);
     }
   }
 
@@ -405,25 +409,31 @@ void RuntimeApplicationBase::StopApplication(
             << *this;
 }
 
-void RuntimeApplicationBase::OnVisibilityChange(
-    VisibilityType visibility_type) {
-  DCHECK(delegate_->GetWebContents());
-  auto* cast_web_contents =
-      CastWebContents::FromWebContents(delegate_->GetWebContents());
-  DCHECK(cast_web_contents);
-  switch (visibility_type) {
-    case VisibilityType::FULL_SCREEN:
-    case VisibilityType::PARTIAL_OUT:
-    case VisibilityType::TRANSIENTLY_HIDDEN:
-      LOG(INFO) << "Application is visible now: " << *this;
-      cast_web_contents->SetWebVisibilityAndPaint(true);
-      break;
-
-    default:
-      LOG(INFO) << "Application is hidden now: " << *this;
-      cast_web_contents->SetWebVisibilityAndPaint(false);
-      break;
+void RuntimeApplicationBase::SetWebVisibilityAndPaint(bool is_visible) {
+  auto* web_contents = delegate_->GetWebContents();
+  if (!web_contents) {
+    return;
   }
+
+  if (is_visible) {
+    web_contents->WasShown();
+  } else {
+    web_contents->WasHidden();
+  }
+
+  if (web_contents->GetVisibility() != content::Visibility::VISIBLE) {
+    // Since we are managing the visibility, we need to ensure pages are
+    // unfrozen in the event this occurred while in the background.
+    web_contents->SetPageFrozen(false);
+  }
+}
+
+void RuntimeApplicationBase::OnWindowShown() {
+  SetWebVisibilityAndPaint(true);
+}
+
+void RuntimeApplicationBase::OnWindowHidden() {
+  SetWebVisibilityAndPaint(false);
 }
 
 }  // namespace chromecast

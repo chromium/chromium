@@ -63,7 +63,7 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
   std::unique_ptr<content::WebUIControllerFactory> CreateWebUIControllerFactory(
       std::vector<std::string> hosts) override;
   content::WebContents* GetWebContents() override;
-  CastContentWindow* GetCastContentWindow() override;
+  cast_receiver::ContentWindowControls* GetContentWindowControls() override;
 
  private:
   // Creates the root CastWebView for this Cast session.
@@ -104,6 +104,11 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
   // The WebView associated with the window in which the Cast application is
   // displayed.
   CastWebView::Scoped cast_web_view_;
+
+  // Controls for window, as a wrapper around a CastContentWindow instance.
+  // NOTE: Must be declared after |cast_web_view_|.
+  std::unique_ptr<cast_receiver::ContentWindowControls>
+      content_window_controls_;
 
   absl::optional<cast::utils::GrpcServer> grpc_server_;
   absl::optional<cast::v2::CoreApplicationServiceStub> core_app_stub_;
