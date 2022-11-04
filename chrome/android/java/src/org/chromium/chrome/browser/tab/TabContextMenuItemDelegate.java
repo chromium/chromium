@@ -45,7 +45,6 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 /**
  * A default {@link ContextMenuItemDelegate} that supports the context menu functionality in Tab.
@@ -223,12 +222,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
-    public void onOpenInNewIncognitoTab(GURL url, Origin initiatorOrigin) {
+    public void onOpenInNewIncognitoTab(GURL url) {
         RecordUserAction.record("MobileNewTabOpened");
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-        loadUrlParams.setInitiatorOrigin(initiatorOrigin);
-        mTabModelSelector.openNewTab(
-                loadUrlParams, TabLaunchType.FROM_LONGPRESS_INCOGNITO, mTab, true);
+        mTabModelSelector.openNewTab(new LoadUrlParams(url.getSpec()),
+                TabLaunchType.FROM_LONGPRESS_INCOGNITO, mTab, true);
     }
 
     @Override

@@ -26,7 +26,6 @@
 #include "chrome/browser/android/metrics/uma_utils.h"
 #include "chrome/browser/android/tab_printer.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
-#include "chrome/browser/android/url_param_filter/cross_otr_observer_android.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
@@ -322,10 +321,6 @@ void TabAndroid::InitWebContents(
       base::TimeTicks::Now(),
       resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
           web_contents_.get()));
-
-  url_param_filter::MaybeCreateCrossOtrObserverForTabLaunchType(
-      web_contents_.get(),
-      static_cast<TabModel::TabLaunchType>(GetLaunchType()));
 
   SetWindowSessionID(session_window_id_);
 

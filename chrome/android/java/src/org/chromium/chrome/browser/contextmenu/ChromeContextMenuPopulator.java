@@ -72,7 +72,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -90,7 +89,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ExternalAuthUtils mExternalAuthUtils;
     private final ContextMenuParams mParams;
-    private final @Nullable Origin mInitiatingOrigin;
     private @Nullable UkmRecorder.Bridge mUkmRecorderBridge;
     private ContextMenuNativeDelegate mNativeDelegate;
     private static final String LENS_SEARCH_MENU_ITEM_KEY = "searchWithGoogleLensMenuItem";
@@ -326,13 +324,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         mExternalAuthUtils = externalAuthUtils;
         mContext = context;
         mParams = params;
-        if (itemDelegate.getWebContents() != null
-                && itemDelegate.getWebContents().getFocusedFrame() != null) {
-            mInitiatingOrigin =
-                    itemDelegate.getWebContents().getFocusedFrame().getLastCommittedOrigin();
-        } else {
-            mInitiatingOrigin = null;
-        }
         mNativeDelegate = nativeDelegate;
     }
 
@@ -608,7 +599,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             mItemDelegate.onOpenInNewTabInGroup(mParams.getUrl(), mParams.getReferrer());
         } else if (itemId == R.id.contextmenu_open_in_incognito_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_INCOGNITO_TAB);
-            mItemDelegate.onOpenInNewIncognitoTab(mParams.getUrl(), mInitiatingOrigin);
+            mItemDelegate.onOpenInNewIncognitoTab(mParams.getUrl());
         } else if (itemId == R.id.contextmenu_open_in_other_window) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_OTHER_WINDOW);
             mItemDelegate.onOpenInOtherWindow(mParams.getUrl(), mParams.getReferrer());

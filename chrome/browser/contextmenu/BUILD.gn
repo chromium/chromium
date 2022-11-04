@@ -30,7 +30,6 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
-    "//url:origin_java",
   ]
 }
 

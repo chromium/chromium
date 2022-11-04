@@ -2869,8 +2869,6 @@ static_library("browser") {
       "android/thin_webview/chrome_thin_webview_initializer.h",
       "android/trusted_cdn.cc",
       "android/trusted_cdn.h",
-      "android/url_param_filter/cross_otr_observer_android.cc",
-      "android/url_param_filter/cross_otr_observer_android.h",
       "android/usage_stats/notification_suspender.cc",
       "android/usage_stats/usage_stats_bridge.cc",
       "android/usage_stats/usage_stats_bridge.h",
