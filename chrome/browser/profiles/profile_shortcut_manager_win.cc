@@ -260,18 +260,15 @@ struct ChromeCommandLineFilter {
   }
 };
 
-// Get the file paths of desktop files and folders optionally filtered
-// by |filter|.
-std::set<base::FilePath> ListUserDesktopContents(
+// Get the file paths of files optionally filtered by `filter`.
+std::set<base::FilePath> ListDirContents(
+    const base::FilePath& start_dir,
+    bool recursive,
     const ChromeCommandLineFilter* filter) {
   std::set<base::FilePath> result;
 
-  base::FilePath user_shortcuts_directory;
-  if (!GetDesktopShortcutsDirectories(&user_shortcuts_directory, nullptr))
-    return result;
-
   base::FileEnumerator enumerator(
-      user_shortcuts_directory, false,
+      start_dir, recursive,
       base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
@@ -279,6 +276,25 @@ std::set<base::FilePath> ListUserDesktopContents(
       result.insert(path);
   }
   return result;
+}
+
+std::set<base::FilePath> ListUserDesktopContents(
+    const ChromeCommandLineFilter* filter) {
+  base::FilePath desktop_directory;
+  if (!GetDesktopShortcutsDirectories(&desktop_directory, nullptr))
+    return std::set<base::FilePath>();
+  return ListDirContents(desktop_directory, /*recursive=*/false, filter);
+}
+
+// Get the file paths of implicit apps sub-dirs filtered by `filter`.
+std::set<base::FilePath> ListImplicitAppContents(
+    const ChromeCommandLineFilter* filter) {
+  base::FilePath implicit_apps_path;
+  if (!base::PathService::Get(base::DIR_IMPLICIT_APP_SHORTCUTS,
+                              &implicit_apps_path)) {
+    return std::set<base::FilePath>();
+  }
+  return ListDirContents(implicit_apps_path, /*recursive=*/true, filter);
 }
 
 // Renames the given desktop shortcut and informs the shell of this change.
@@ -444,7 +460,8 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
     return;
   }
 
-  std::set<base::FilePath> desktop_contents = ListUserDesktopContents(nullptr);
+  std::set<base::FilePath> desktop_contents =
+      ListUserDesktopContents(/*filter=*/nullptr);
 
   const std::wstring command_line =
       profiles::internal::CreateProfileShortcutFlags(params.profile_path,
@@ -608,10 +625,12 @@ void UnpinAndDeleteDesktopShortcuts(
   const std::wstring command_line =
       profiles::internal::CreateProfileShortcutFlags(profile_path);
   ChromeCommandLineFilter filter(chrome_exe, command_line, false);
-  const std::set<base::FilePath> shortcuts = ListUserDesktopContents(&filter);
-  if (shortcuts.empty())
-    return;
-
+  std::set<base::FilePath> shortcuts = ListUserDesktopContents(&filter);
+  if (shortcuts.empty()) {
+    shortcuts = ListImplicitAppContents(&filter);
+    if (shortcuts.empty())
+      return;
+  }
   std::vector<base::FilePath> shortcuts_vector(shortcuts.begin(),
                                                shortcuts.end());
   // Unpinning is done out-of-process, which isn't allowed in unit tests.
