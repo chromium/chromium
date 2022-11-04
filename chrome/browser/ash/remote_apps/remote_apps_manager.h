@@ -212,10 +212,8 @@ class RemoteAppsManager
   // app has been observed.
   std::map<std::string, AddAppCallback> add_app_callback_map_;
   std::map<std::string, std::string> app_id_to_source_id_map_;
-  base::ScopedObservation<
-      app_list::AppListSyncableService,
-      app_list::AppListSyncableService::Observer,
-      &app_list::AppListSyncableService::AddObserverAndStart>
+  base::ScopedObservation<app_list::AppListSyncableService,
+                          app_list::AppListSyncableService::Observer>
       app_list_syncable_service_observation_{this};
   base::ScopedObservation<AppListModelUpdater, AppListModelUpdaterObserver>
       app_list_model_updater_observation_{this};

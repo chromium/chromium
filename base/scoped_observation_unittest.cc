@@ -6,13 +6,17 @@
 
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
+#include "base/scoped_observation_traits.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace {
 
-class TestSourceObserver {};
+class TestSourceObserver {
+ public:
+  virtual ~TestSourceObserver() = default;
+};
 
 class TestSource {
  public:
@@ -146,6 +150,107 @@ TEST(ScopedObservationTest, NonDefaultNames) {
     EXPECT_EQ(1u, s1.impl().num_observers());
     EXPECT_TRUE(s1.impl().HasObserver(&o1));
   }
+
+  EXPECT_EQ(0u, s1.impl().num_observers());
+}
+
+namespace {
+
+// A forward-declared test source.
+
+class TestSourceFwd;
+
+class ObservationHolder : public TestSourceObserver {
+ public:
+  // Declared but not defined since TestSourceFwd is not yet defined.
+  explicit ObservationHolder(TestSourceFwd* source);
+
+ private:
+  // ScopedObservation<> is instantiated with a forward-declared parameter.
+  ScopedObservation<TestSourceFwd, TestSourceObserver> obs_{this};
+};
+
+// TestSourceFwd gets an actual definition!
+class TestSourceFwd : public TestSource {};
+
+// Calling ScopedObservation::Observe() requires an actual definition rather
+// than just a forward declaration; make sure it compiles now that there is a
+// definition.
+ObservationHolder::ObservationHolder(TestSourceFwd* source) {
+  obs_.Observe(source);
+}
+
+}  // namespace
+
+TEST(ScopedObservationTest, ForwardDeclaredSource) {
+  TestSourceFwd s;
+  ASSERT_EQ(s.num_observers(), 0U);
+  {
+    ObservationHolder o(&s);
+    ASSERT_EQ(s.num_observers(), 1U);
+  }
+  ASSERT_EQ(s.num_observers(), 0U);
+}
+
+namespace {
+
+class TestSourceWithNonDefaultNamesFwd;
+
+class ObservationWithNonDefaultNamesHolder : public TestSourceObserver {
+ public:
+  // Declared but not defined since TestSourceWithNonDefaultNamesFwd is not yet
+  // defined.
+  explicit ObservationWithNonDefaultNamesHolder(
+      TestSourceWithNonDefaultNamesFwd* source);
+
+ private:
+  // ScopedObservation<> is instantiated with a forward-declared parameter.
+  ScopedObservation<TestSourceWithNonDefaultNamesFwd, TestSourceObserver> obs_{
+      this};
+};
+
+// TestSourceWithNonDefaultNamesFwd gets an actual definition!
+class TestSourceWithNonDefaultNamesFwd : public TestSourceWithNonDefaultNames {
+};
+
+}  // namespace
+
+// Now we define the corresponding traits. ScopedObserverTraits specializations
+// must be defined in base::, since that is where the primary template
+// definition lives.
+template <>
+struct ScopedObservationTraits<TestSourceWithNonDefaultNamesFwd,
+                               TestSourceObserver> {
+  static void AddObserver(TestSourceWithNonDefaultNamesFwd* source,
+                          TestSourceObserver* observer) {
+    source->AddFoo(observer);
+  }
+  static void RemoveObserver(TestSourceWithNonDefaultNamesFwd* source,
+                             TestSourceObserver* observer) {
+    source->RemoveFoo(observer);
+  }
+};
+
+namespace {
+
+// Calling ScopedObservation::Observe() requires an actual definition rather
+// than just a forward declaration; make sure it compiles now that there is
+// a definition.
+ObservationWithNonDefaultNamesHolder::ObservationWithNonDefaultNamesHolder(
+    TestSourceWithNonDefaultNamesFwd* source) {
+  obs_.Observe(source);
+}
+
+}  // namespace
+
+TEST(ScopedObservationTest, ForwardDeclaredSourceWithNonDefaultNames) {
+  TestSourceWithNonDefaultNamesFwd s;
+  ASSERT_EQ(s.impl().num_observers(), 0U);
+  {
+    ObservationWithNonDefaultNamesHolder o(&s);
+    ASSERT_EQ(s.impl().num_observers(), 1U);
+  }
+  ASSERT_EQ(s.impl().num_observers(), 0U);
 }
 
 }  // namespace base

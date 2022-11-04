@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/one_shot_event.h"
+#include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
@@ -461,5 +462,24 @@ class AppListSyncableService : public syncer::SyncableService,
 };
 
 }  // namespace app_list
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<app_list::AppListSyncableService,
+                               app_list::AppListSyncableService::Observer> {
+  static void AddObserver(
+      app_list::AppListSyncableService* source,
+      app_list::AppListSyncableService::Observer* observer) {
+    source->AddObserverAndStart(observer);
+  }
+  static void RemoveObserver(
+      app_list::AppListSyncableService* source,
+      app_list::AppListSyncableService::Observer* observer) {
+    source->RemoveObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_SYNCABLE_SERVICE_H_
