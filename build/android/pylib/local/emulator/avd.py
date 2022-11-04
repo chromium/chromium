@@ -828,7 +828,10 @@ class _AvdInstance:
       if debug_tags:
         emulator_cmd.extend(['-debug', debug_tags])
 
-      emulator_env = {}
+      emulator_env = {
+          # kill immediately when emulator hang.
+          'ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL': '0',
+      }
       if self._emulator_home:
         emulator_env['ANDROID_EMULATOR_HOME'] = self._emulator_home
       if 'DISPLAY' in os.environ:
@@ -867,11 +870,9 @@ class _AvdInstance:
         self._emulator_serial = timeout_retry.Run(
             listen_for_serial, timeout=30, retries=0, args=[sock])
         logging.info('%s started', self._emulator_serial)
-      except Exception as e:
-        self.Stop()
-        # avd.py is executed with python2.
-        # pylint: disable=W0707
-        raise AvdException('Emulator failed to start: %s' % str(e))
+      except Exception:
+        self.Stop(force=True)
+        raise
 
     # Set the system settings in "Start" here instead of setting in "Create"
     # because "Create" is used during AVD creation, and we want to avoid extra
@@ -881,14 +882,18 @@ class _AvdInstance:
       self.device.WaitUntilFullyBooted(timeout=120 if is_slow_start else 30)
       _EnsureSystemSettings(self.device)
 
-  def Stop(self):
-    """Stops the emulator process."""
+  def Stop(self, force=False):
+    """Stops the emulator process.
+
+    When "force" is True, we will call "terminate" on the emulator process,
+    which is recommended when emulator is not responding to adb commands.
+    """
     if self._emulator_proc:
       if self._emulator_proc.poll() is None:
-        if self.device:
-          self.device.adb.Emu('kill')
-        else:
+        if force or not self.device:
           self._emulator_proc.terminate()
+        else:
+          self.device.adb.Emu('kill')
         self._emulator_proc.wait()
       self._emulator_proc = None
       self._emulator_serial = None
