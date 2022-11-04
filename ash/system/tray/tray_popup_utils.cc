@@ -297,6 +297,8 @@ void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
 
 void TrayPopupUtils::UpdateCheckMarkVisibility(HoverHighlightView* container,
                                                bool visible) {
+  if (!container)
+    return;
   container->SetRightViewVisible(visible);
   container->SetAccessibilityState(
       visible ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX

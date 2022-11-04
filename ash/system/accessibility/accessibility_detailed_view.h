@@ -96,6 +96,22 @@ class ASH_EXPORT AccessibilityDetailedView
   HoverHighlightView* AddHighlightKeyboardFocusView(views::View* container);
   HoverHighlightView* AddStickyKeysView(views::View* container);
 
+  // Adds a HoverHighlightView to the scroll list and returns it. Configures
+  // the view based on the QsRevamp feature flag.
+  HoverHighlightView* AddScrollListFeatureItem(views::View* container,
+                                               const gfx::VectorIcon& icon,
+                                               const std::u16string& text,
+                                               bool checked,
+                                               bool enterprise_managed);
+
+  // Adds a HoverHighlightView with a toggle button on the right to the scroll
+  // list and returns it. Only used with QsRevamp.
+  HoverHighlightView* AddScrollListToggleItem(views::View* container,
+                                              const gfx::VectorIcon& icon,
+                                              const std::u16string& text,
+                                              bool checked,
+                                              bool enterprise_managed);
+
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaInstallError(speech::LanguageCode language_code,

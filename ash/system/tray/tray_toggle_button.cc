@@ -7,6 +7,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/utility/haptics_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -18,7 +19,7 @@
 namespace ash {
 
 TrayToggleButton::TrayToggleButton(PressedCallback callback,
-                                   int accessible_name_id)
+                                   absl::optional<int> accessible_name_id)
     : ToggleButton(std::move(callback)) {
   const gfx::Size toggle_size(GetPreferredSize());
   const int vertical_padding = (kMenuButtonSize - toggle_size.height()) / 2;
@@ -26,7 +27,8 @@ TrayToggleButton::TrayToggleButton(PressedCallback callback,
       (kTrayToggleButtonWidth - toggle_size.width()) / 2;
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
+  if (accessible_name_id.has_value())
+    SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id.value()));
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 }
 
