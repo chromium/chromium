@@ -111,6 +111,12 @@ class KidsManagementServiceTest : public ::testing::Test {
         std::string(email), ConsentLevel::kSignin);
   }
 
+  // Maps pending request at index to its url spec.
+  const std::string& GetPendingUrlSpec() {
+    return test_url_loader_factory_.GetPendingRequest(0)->request.url.spec();
+  }
+  bool HasPendingRequest() { return test_url_loader_factory_.NumPending() > 0; }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::
           MOCK_TIME};  // The test must run on Chrome_UIThread.
@@ -138,8 +144,9 @@ TEST_F(KidsManagementServiceTest, FetchesData) {
   under_test_->StartFetchFamilyMembers();
   ActivateValidAccessToken();
 
+  ASSERT_TRUE(HasPendingRequest());
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      under_test_->GetEndpointUrl(), response.SerializeAsString());
+      GetPendingUrlSpec(), response.SerializeAsString());
 
   ASSERT_EQ(under_test_->family_members().size(), std::size_t(1));
   EXPECT_EQ(under_test_->family_members().at(0).profile().display_name(),
@@ -160,8 +167,9 @@ TEST_F(KidsManagementServiceTest, SetsCustodians) {
 
   ActivateValidAccessToken();
 
+  ASSERT_TRUE(HasPendingRequest());
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      under_test_->GetEndpointUrl(), response.SerializeAsString());
+      GetPendingUrlSpec(), response.SerializeAsString());
 
   EXPECT_EQ(profile_->GetTestingPrefService()->GetString(
                 prefs::kSupervisedUserCustodianName),
@@ -182,8 +190,10 @@ TEST_F(KidsManagementServiceTest, SchedulesNextFetch) {
   under_test_->StartFetchFamilyMembers();
   EXPECT_FALSE(under_test_->IsPendingNextFetchFamilyMembers());
   ActivateValidAccessToken();
+
+  ASSERT_TRUE(HasPendingRequest());
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      under_test_->GetEndpointUrl(), response.SerializeAsString());
+      GetPendingUrlSpec(), response.SerializeAsString());
 
   EXPECT_TRUE(under_test_->IsPendingNextFetchFamilyMembers());
 }
@@ -195,8 +205,10 @@ TEST_F(KidsManagementServiceTest, PersistentErrorsAreNotRetried) {
   under_test_->StartFetchFamilyMembers();
   EXPECT_FALSE(under_test_->IsPendingNextFetchFamilyMembers());
   ActivateValidAccessToken();
+
+  ASSERT_TRUE(HasPendingRequest());
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      under_test_->GetEndpointUrl(), "garbage");
+      GetPendingUrlSpec(), "garbage");
 
   // Mocking time and FastForwardBy is impossible:
   // https://chromium.googlesource.com/chromium/src/+/master/docs/threading_and_tasks_testing.md#mock_time-in-browser-tests
@@ -245,8 +257,10 @@ TEST_F(KidsManagementServiceTest, TransientServerErrorsAreRetried) {
   EXPECT_FALSE(under_test_->IsPendingNextFetchFamilyMembers());
 
   ActivateValidAccessToken();
+
+  ASSERT_TRUE(HasPendingRequest());
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      under_test_->GetEndpointUrl(), /*content=*/"", net::HTTP_BAD_REQUEST);
+      GetPendingUrlSpec(), /*content=*/"", net::HTTP_BAD_REQUEST);
 
   // Mocking time and FastForwardBy is impossible:
   // https://chromium.googlesource.com/chromium/src/+/master/docs/threading_and_tasks_testing.md#mock_time-in-browser-tests

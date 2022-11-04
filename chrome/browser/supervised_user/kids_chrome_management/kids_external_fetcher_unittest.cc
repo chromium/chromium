@@ -7,12 +7,10 @@
 #include <memory>
 #include <string>
 
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
@@ -43,13 +41,6 @@ class KidsExternalFetcherTest : public Test {
   IdentityTestEnvironment identity_test_env_;
 };
 
-template <typename Message>
-Message ToProto(const std::string& input) {
-  Message response;
-  response.ParseFromString(input);
-  return response;
-}
-
 template <typename Request, typename Response>
 class Receiver {
  public:
@@ -71,7 +62,7 @@ class Receiver {
   base::expected<std::unique_ptr<Response>, KidsExternalFetcherStatus> result_;
 };
 
-TEST_F(KidsExternalFetcherTest, AcceptsProtocolBufferRequests) {
+TEST_F(KidsExternalFetcherTest, AcceptsRequests) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
   Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
@@ -80,7 +71,7 @@ TEST_F(KidsExternalFetcherTest, AcceptsProtocolBufferRequests) {
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), "http://example.com/",
+      test_url_loader_factory_.GetSafeWeakWrapper(), "http://example.com",
       BindOnce(&Receiver<ListFamilyMembersRequest,
                          ListFamilyMembersResponse>::Receive,
                base::Unretained(&receiver)));
@@ -89,16 +80,12 @@ TEST_F(KidsExternalFetcherTest, AcceptsProtocolBufferRequests) {
 
   TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
-  ASSERT_NE(nullptr, pending_request);
-  EXPECT_EQ(
-      ToProto<ListFamilyMembersRequest>(GetUploadData(pending_request->request))
-          .family_id(),
-      "mine");  // serialized proto.
-  EXPECT_EQ(pending_request->request.url, "http://example.com/");
-  EXPECT_EQ(pending_request->request.method, "POST");
+  EXPECT_EQ(pending_request->request.url,
+            "http://example.com/families/mine/members?alt=proto");
+  EXPECT_EQ(pending_request->request.method, "GET");
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "http://example.com/", response.SerializeAsString());
+      pending_request->request.url.spec(), response.SerializeAsString());
 
   ASSERT_TRUE(receiver.GetResult().has_value());
   EXPECT_EQ(receiver.GetResult().value()->self_obfuscated_gaia_id(), "gaia_id");
@@ -143,16 +130,13 @@ TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
   TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_NE(nullptr, pending_request);
-  EXPECT_EQ(
-      ToProto<ListFamilyMembersRequest>(GetUploadData(pending_request->request))
-          .family_id(),
-      "mine");  // serialized proto.
-  EXPECT_EQ(pending_request->request.url, "http://example.com/");
-  EXPECT_EQ(pending_request->request.method, "POST");
+  EXPECT_EQ(pending_request->request.url,
+            "http://example.com/families/mine/members?alt=proto");
+  EXPECT_EQ(pending_request->request.method, "GET");
 
   std::string malformed_value("garbage");  // Not a valid marshaled proto.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "http://example.com/", malformed_value);
+      pending_request->request.url.spec(), malformed_value);
   EXPECT_FALSE(receiver.GetResult().has_value());
   EXPECT_EQ(receiver.GetResult().error().state(),
             KidsExternalFetcherStatus::State::INVALID_RESPONSE);
@@ -176,15 +160,13 @@ TEST_F(KidsExternalFetcherTest, HandlesServerError) {
   TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_NE(nullptr, pending_request);
-  EXPECT_EQ(
-      ToProto<ListFamilyMembersRequest>(GetUploadData(pending_request->request))
-          .family_id(),
-      "mine");  // serialized proto.
-  EXPECT_EQ(pending_request->request.url, "http://example.com/");
-  EXPECT_EQ(pending_request->request.method, "POST");
+  EXPECT_EQ(pending_request->request.url,
+            "http://example.com/families/mine/members?alt=proto");
+  EXPECT_EQ(pending_request->request.method, "GET");
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "http://example.com/", /*content=*/"", net::HTTP_BAD_REQUEST);
+      pending_request->request.url.spec(), /*content=*/"",
+      net::HTTP_BAD_REQUEST);
   EXPECT_FALSE(receiver.GetResult().has_value());
   EXPECT_EQ(receiver.GetResult().error().state(),
             KidsExternalFetcherStatus::State::HTTP_ERROR);

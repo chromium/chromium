@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
@@ -59,7 +60,7 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   std::unique_ptr<ResourceRequest> resource_request =
       std::make_unique<ResourceRequest>();
   resource_request->url = url;
-  resource_request->method = "POST";
+  resource_request->method = "GET";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
@@ -71,17 +72,33 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   simple_url_loader->SetRetryOptions(
       kNumFamilyInfoFetcherRetries,
       network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
-  simple_url_loader->AttachStringForUpload(std::string(payload),
-                                           "application/x-protobuf");
   return simple_url_loader;
+}
+
+// Determines the response type. See go/system-parameters to verity list of
+// possible One Platform system params.
+const std::string& GetSystemParameters() {
+  static const base::NoDestructor<std::string> nonce("alt=proto");
+  return *nonce;
+}
+
+// Controls what endpoint to call for given Request.
+template <typename Request>
+const std::string& GetPathForRequest(const Request& request);
+
+template <>
+const std::string& GetPathForRequest(const ListFamilyMembersRequest& request) {
+  static const base::NoDestructor<std::string> nonce("families/mine/members?" +
+                                                     GetSystemParameters());
+  return *nonce;
 }
 
 template <typename Request>
 net::NetworkTrafficAnnotationTag GetDefaultNetworkTrafficAnnotationTag();
 
 template <>
-net::NetworkTrafficAnnotationTag GetDefaultNetworkTrafficAnnotationTag<
-    kids_chrome_management::ListFamilyMembersRequest>() {
+net::NetworkTrafficAnnotationTag
+GetDefaultNetworkTrafficAnnotationTag<ListFamilyMembersRequest>() {
   return net::DefineNetworkTrafficAnnotation(
       "kids_chrome_management_list_family_members", R"(
         semantics {
@@ -140,7 +157,7 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
  private:
   void StartRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      GURL gurl,
+      GURL endpoint,
       Request request,
       Callback callback,
       base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
@@ -160,7 +177,8 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
         GetDefaultNetworkTrafficAnnotationTag<Request>();
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
         InitializeSimpleUrlLoader(request.SerializeAsString(), token_value,
-                                  gurl, traffic_annotation);
+                                  endpoint.Resolve(GetPathForRequest(request)),
+                                  traffic_annotation);
 
     auto* simple_url_loader_ptr = simple_url_loader.get();
     simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
