@@ -171,6 +171,10 @@ void FocusRing::SetHaloInset(float halo_inset) {
   OnPropertyChanged(&halo_inset_, PropertyEffects::kPropertyEffectsPaint);
 }
 
+bool FocusRing::ShouldPaintForTesting() {
+  return ShouldPaint();
+}
+
 void FocusRing::Layout() {
   // The focus ring handles its own sizing, which is simply to fill the parent
   // and extend a little beyond its borders.
@@ -229,12 +233,7 @@ void FocusRing::ViewHierarchyChanged(
 }
 
 void FocusRing::OnPaint(gfx::Canvas* canvas) {
-  // TODO(pbos): Reevaluate if this can turn into a DCHECK, e.g. we should
-  // never paint if there's no parent focus.
-  if (has_focus_predicate_) {
-    if (!(*has_focus_predicate_)(parent()))
-      return;
-  } else if (!parent()->HasFocus()) {
+  if (!ShouldPaint()) {
     return;
   }
 
@@ -342,6 +341,13 @@ void FocusRing::RefreshLayer() {
   } else {
     DestroyLayer();
   }
+}
+
+bool FocusRing::ShouldPaint() {
+  // TODO(pbos): Reevaluate if this can turn into a DCHECK, e.g. we should
+  // never paint if there's no parent focus.
+  return (has_focus_predicate_ && (*has_focus_predicate_)(parent())) ||
+         parent()->HasFocus();
 }
 
 SkRRect FocusRing::RingRectFromPathRect(const SkRect& rect) const {

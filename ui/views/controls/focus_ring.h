@@ -86,6 +86,8 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   void SetHaloThickness(float halo_thickness);
   void SetHaloInset(float halo_inset);
 
+  bool ShouldPaintForTesting();
+
   // View:
   void Layout() override;
   void ViewHierarchyChanged(
@@ -105,6 +107,8 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   SkRRect GetRingRoundRect() const;
 
   void RefreshLayer();
+
+  bool ShouldPaint();
 
   // Translates the provided SkRect or SkRRect, which is in the parent's
   // coordinate system, into this view's coordinate system, then insets it

@@ -7,8 +7,10 @@
 #include <string>
 
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
@@ -22,6 +24,25 @@ LinkFragment::LinkFragment(const std::u16string& title,
   // Connect to the previous fragment if it exists.
   if (other_fragment)
     Connect(other_fragment);
+
+  views::FocusRing::Install(this);
+  views::FocusRing::Get(this)->SetHasFocusPredicate([](View* view) -> bool {
+    auto* v = views::AsViewClass<LinkFragment>(view);
+    DCHECK(v);
+    if (v->HasFocus())
+      return true;
+
+    // Iterate through the loop of fragments until reaching the current fragment
+    // to see if any of them are focused. If so, this fragment will also be
+    // focused.
+    for (LinkFragment* current_fragment = v->next_fragment_;
+         current_fragment != v;
+         current_fragment = current_fragment->next_fragment_) {
+      if (current_fragment->HasFocus())
+        return true;
+    }
+    return false;
+  });
 }
 
 LinkFragment::~LinkFragment() {
@@ -74,10 +95,12 @@ void LinkFragment::RecalculateFont() {
       fragment->SchedulePaint();
     };
     MaybeUpdateStyle(this);
+    views::FocusRing::Get(this)->SchedulePaint();
     for (LinkFragment* current_fragment = next_fragment_;
          current_fragment != this;
          current_fragment = current_fragment->next_fragment_) {
       MaybeUpdateStyle(current_fragment);
+      views::FocusRing::Get(current_fragment)->SchedulePaint();
     }
   }
 }

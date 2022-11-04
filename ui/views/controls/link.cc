@@ -19,6 +19,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/platform_style.h"
 
 namespace views {
@@ -33,6 +34,8 @@ Link::Link(const std::u16string& title, int text_context, int text_style)
   // Label() indirectly calls SetText(), but at that point our virtual override
   // will not be reached.  Call it explicitly here to configure focus.
   SetText(GetText());
+
+  views::FocusRing::Install(this);
 }
 
 Link::~Link() = default;

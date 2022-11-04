@@ -18,6 +18,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/base_control_test_widget.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -115,6 +116,23 @@ TEST_F(LinkTest, TestUnderlineOnHover) {
   event_generator()->MoveMouseTo(off_link);
   EXPECT_FALSE(link()->IsMouseHovered());
   EXPECT_FALSE(link_underlined());
+}
+
+// Tests that focusing and unfocusing a link keeps the underline and adds
+// focus ring.
+TEST_F(LinkTest, TestUnderlineAndFocusRingOnFocus) {
+  const auto link_underlined = [link = link()]() {
+    return !!(link->font_list().GetFontStyle() & gfx::Font::UNDERLINE);
+  };
+
+  // A non-focused link should be underlined and not have a focus ring.
+  EXPECT_TRUE(link_underlined());
+  EXPECT_FALSE(views::FocusRing::Get(link())->ShouldPaintForTesting());
+
+  // A focused link should be underlined and it should have a focus ring.
+  link()->RequestFocus();
+  EXPECT_TRUE(link_underlined());
+  EXPECT_TRUE(views::FocusRing::Get(link())->ShouldPaintForTesting());
 }
 
 }  // namespace views
