@@ -279,12 +279,12 @@ LONG RegKey::GetValueNameAt(DWORD index, std::wstring* name) const {
 }
 
 LONG RegKey::DeleteKey(const wchar_t* name) {
-  DCHECK(key_);
   DCHECK(name);
-  HKEY subkey = nullptr;
 
   // Verify the key exists before attempting delete to replicate previous
   // behavior.
+  // `RegOpenKeyEx()` will return an error if `key_` is invalid.
+  HKEY subkey = nullptr;
   LONG result =
       RegOpenKeyEx(key_, name, 0, READ_CONTROL | wow64access_, &subkey);
   if (result != ERROR_SUCCESS)
@@ -295,9 +295,9 @@ LONG RegKey::DeleteKey(const wchar_t* name) {
 }
 
 LONG RegKey::DeleteEmptyKey(const wchar_t* name) {
-  DCHECK(key_);
   DCHECK(name);
 
+  // `RegOpenKeyEx()` will return an error if `key_` is invalid.
   HKEY target_key = nullptr;
   LONG result =
       RegOpenKeyEx(key_, name, 0, KEY_READ | wow64access_, &target_key);
@@ -322,7 +322,7 @@ LONG RegKey::DeleteEmptyKey(const wchar_t* name) {
 }
 
 LONG RegKey::DeleteValue(const wchar_t* value_name) {
-  DCHECK(key_);
+  // `RegDeleteValue()` will return an error if `key_` is invalid.
   LONG result = RegDeleteValue(key_, value_name);
   return result;
 }

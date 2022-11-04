@@ -472,6 +472,18 @@ TEST_F(RegistryTest, TestMoveAssign) {
   EXPECT_EQ(foo, 1U);
 }
 
+// Verify that either the platform, or the API-integration, causes deletion
+// attempts via an invalid handle to fail with the expected error code.
+TEST_F(RegistryTest, DeleteWithInvalidRegKey) {
+  RegKey key;
+
+  static const wchar_t kFooName[] = L"foo";
+
+  EXPECT_EQ(key.DeleteKey(kFooName), ERROR_INVALID_HANDLE);
+  EXPECT_EQ(key.DeleteEmptyKey(kFooName), ERROR_INVALID_HANDLE);
+  EXPECT_EQ(key.DeleteValue(kFooName), ERROR_INVALID_HANDLE);
+}
+
 // A test harness for tests that use HKLM to test WoW redirection and such.
 // TODO(https://crbug.com/377917): The tests here that write to the registry are
 // disabled because they need work to handle parallel runs of different tests.
