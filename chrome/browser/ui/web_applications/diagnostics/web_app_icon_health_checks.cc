@@ -35,10 +35,6 @@ base::WeakPtr<WebAppIconHealthChecks> WebAppIconHealthChecks::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void WebAppIconHealthChecks::Shutdown() {
-  running_diagnostics_.clear();
-}
-
 void WebAppIconHealthChecks::OnWebAppWillBeUninstalled(const AppId& app_id) {
   if (running_diagnostics_.erase(app_id) > 0)
     run_complete_callback_.Run();

@@ -30,8 +30,6 @@ class WebAppIconHealthChecks : public WebAppInstallManagerObserver {
 
   base::WeakPtr<WebAppIconHealthChecks> GetWeakPtr();
 
-  void Shutdown();
-
   // WebAppInstallManagerObserver:
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
