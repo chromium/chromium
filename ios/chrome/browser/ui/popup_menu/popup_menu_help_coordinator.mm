@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/util/util_swift.h"
@@ -163,6 +164,7 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
 - (void)popupMenuIPHDidDismissWithSnoozeAction:
     (feature_engagement::Tracker::SnoozeAction)snoozeAction {
   [self trackerIPHDidDismissWithSnoozeAction:snoozeAction];
+  [self.UIUpdater updateUIForIPHDismissed];
   self.popupMenuBubblePresenter = nil;
 }
 
@@ -207,6 +209,7 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         [weakSelf presentPopupMenuBubbleAtAnchorPoint:anchorPoint];
+        [weakSelf.UIUpdater updateUIForIPHDisplayed:PopupMenuTypeToolsMenu];
       }),
       kMenuTipDelay);
 }

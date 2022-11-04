@@ -26,13 +26,22 @@ const CGFloat kSpotlightHeight = 36.0f;
 
 - (void)setDimmed:(BOOL)dimmed {
   [super setDimmed:dimmed];
-
-  self.spotlightView.hidden = dimmed && !self.spotlighted;
+  [self updateSpotlightViewHiddenState];
 }
 
 - (void)setSpotlighted:(BOOL)spotlighted {
   [super setSpotlighted:spotlighted];
-  self.spotlightView.hidden = !spotlighted && self.dimmed;
+  [self updateSpotlightViewHiddenState];
+}
+
+- (void)setIphHighlighted:(BOOL)iphHighlighted {
+  [super setIphHighlighted:iphHighlighted];
+  [self updateSpotlightViewHiddenState];
+}
+
+- (void)updateSpotlightViewHiddenState {
+  self.spotlightView.hidden =
+      self.dimmed && !self.spotlighted && !self.iphHighlighted;
 }
 
 #pragma mark - Subclassing

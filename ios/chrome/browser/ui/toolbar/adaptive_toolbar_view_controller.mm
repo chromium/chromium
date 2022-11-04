@@ -325,6 +325,40 @@ const base::TimeDelta kToobarSlideInAnimationDuration = base::Milliseconds(500);
   }
 }
 
+- (void)updateUIForIPHDisplayed:(PopupMenuType)popupType {
+  ToolbarButton* selectedButton = nil;
+  switch (popupType) {
+    case PopupMenuTypeNavigationForward:
+      selectedButton = self.view.forwardButton;
+      break;
+    case PopupMenuTypeNavigationBackward:
+      selectedButton = self.view.backButton;
+      break;
+    case PopupMenuTypeNewTab:
+      selectedButton = self.view.openNewTabButton;
+      break;
+    case PopupMenuTypeTabGrid:
+      selectedButton = self.view.tabGridButton;
+      break;
+    case PopupMenuTypeToolsMenu:
+      selectedButton = self.view.toolsMenuButton;
+      break;
+    case PopupMenuTypeTabStripTabGrid:
+      // ignore
+      break;
+  }
+
+  selectedButton.iphHighlighted = YES;
+}
+
+- (void)updateUIForIPHDismissed {
+  self.view.backButton.iphHighlighted = NO;
+  self.view.forwardButton.iphHighlighted = NO;
+  self.view.openNewTabButton.iphHighlighted = NO;
+  self.view.tabGridButton.iphHighlighted = NO;
+  self.view.toolsMenuButton.iphHighlighted = NO;
+}
+
 #pragma mark - Accessibility
 
 // Callback called when the voice over value is changed.

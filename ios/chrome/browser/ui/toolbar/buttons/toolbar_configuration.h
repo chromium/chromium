@@ -37,11 +37,17 @@
 // if the button has a custom style.
 @property(nonatomic, readonly) UIColor* buttonsTintColorHighlighted;
 
+// Tint color of the buttons when they are highlighted for an IPH;
+@property(nonatomic, readonly) UIColor* buttonsTintColorIPHHighlighted;
+
 // Color for the spotlight view's background.
 @property(nonatomic, readonly) UIColor* buttonsSpotlightColor;
 
 // Color for the spotlight view's background when the toolbar is dimmed.
 @property(nonatomic, readonly) UIColor* dimmedButtonsSpotlightColor;
+
+// Color for the background view when the button is highlighted for an IPH.
+@property(nonatomic, readonly) UIColor* buttonsIPHHighlightColor;
 
 // Used as Omnibox background color when focused.
 // Used only in Updated Popup treatment 2.

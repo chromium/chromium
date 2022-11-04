@@ -101,4 +101,16 @@
   }
 }
 
+- (void)updateUIForIPHDisplayed:(PopupMenuType)popupType {
+  for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
+    [coordinator.popupMenuUIUpdater updateUIForIPHDisplayed:popupType];
+  }
+}
+
+- (void)updateUIForIPHDismissed {
+  for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
+    [coordinator.popupMenuUIUpdater updateUIForIPHDismissed];
+  }
+}
+
 @end

@@ -36,6 +36,9 @@
 // Whether this button is spotlighted, having a light gray background. This
 // state should not be used in the same time as the selected state.
 @property(nonatomic, assign) BOOL spotlighted;
+// Whether this button is highlighted for an IPH, having a blue background. This
+// color will override the spotlighted background color.
+@property(nonatomic, assign) BOOL iphHighlighted;
 // View used to display the view used for the spotlight effect.
 @property(nonatomic, strong) UIView* spotlightView;
 // Whether this button is dimmed. When the button is dimmed, its tintColor is

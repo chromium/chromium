@@ -8,12 +8,16 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 @class OverflowMenuUIConfiguration;
+@protocol PopupMenuUIUpdating;
 
 // Coordinator for the popup menu help feature, educating users about the new
 // menu
 @interface PopupMenuHelpCoordinator : ChromeCoordinator
 
 @property(nonatomic, weak) OverflowMenuUIConfiguration* uiConfiguration;
+
+// UI updater.
+@property(nonatomic, weak) id<PopupMenuUIUpdating> UIUpdater;
 
 - (void)showPopupMenuButtonIPH;
 

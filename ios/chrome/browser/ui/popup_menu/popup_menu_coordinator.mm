@@ -163,6 +163,7 @@ enum class IOSOverflowMenuActionType {
   self.popupMenuHelpCoordinator = [[PopupMenuHelpCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];
+  self.popupMenuHelpCoordinator.UIUpdater = self.UIUpdater;
   [self.popupMenuHelpCoordinator start];
 }
 

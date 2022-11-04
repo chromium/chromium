@@ -41,6 +41,14 @@
   self.menuDisplayed = NO;
 }
 
+- (void)updateUIForIPHDisplayed:(PopupMenuType)popupType {
+  // No-op.
+}
+
+- (void)updateUIForIPHDismissed {
+  // No-op.
+}
+
 @end
 
 class PopupMenuCoordinatorTest : public PlatformTest {
