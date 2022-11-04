@@ -68,16 +68,13 @@ TEST_F(LayoutBlockTest, WidthAvailableToChildrenChanged) {
 TEST_F(LayoutBlockTest, OverflowWithTransformAndPerspective) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='width: 100px; height: 100px; overflow: scroll;
-        perspective: 200px;'>
+        perspective: 100px;'>
       <div style='transform: rotateY(-45deg); width: 140px; height: 100px'>
       </div>
     </div>
   )HTML");
   auto* scroller = GetLayoutBoxByElementId("target");
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(140.0, scroller->LayoutOverflowRect().Width().ToFloat());
-  else
-    EXPECT_EQ(119.5, scroller->LayoutOverflowRect().Width().ToFloat());
+  EXPECT_EQ(187.625, scroller->LayoutOverflowRect().Width().ToFloat());
 }
 
 TEST_F(LayoutBlockTest, NestedInlineVisualOverflow) {

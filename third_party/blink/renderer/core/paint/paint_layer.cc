@@ -332,8 +332,6 @@ void PaintLayer::UpdateTransformationMatrix() {
         ComputedStyle::kIncludeTransformOrigin,
         ComputedStyle::kIncludeMotionPath,
         ComputedStyle::kIncludeIndependentTransformProperties);
-    if (!box->GetDocument().GetSettings()->GetAcceleratedCompositingEnabled())
-      transform->MakeAffine();
   }
 }
 

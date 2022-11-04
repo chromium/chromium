@@ -842,22 +842,6 @@ bool TransformationMatrix::InverseWithDouble4Cols(Double4& c0,
   return true;
 }
 
-void TransformationMatrix::MakeAffine() {
-  matrix_[0][2] = 0;
-  matrix_[0][3] = 0;
-
-  matrix_[1][2] = 0;
-  matrix_[1][3] = 0;
-
-  matrix_[2][0] = 0;
-  matrix_[2][1] = 0;
-  matrix_[2][2] = 1;
-  matrix_[2][3] = 0;
-
-  matrix_[3][2] = 0;
-  matrix_[3][3] = 1;
-}
-
 AffineTransform TransformationMatrix::ToAffineTransform() const {
   return AffineTransform(matrix_[0][0], matrix_[0][1], matrix_[1][0],
                          matrix_[1][1], matrix_[3][0], matrix_[3][1]);

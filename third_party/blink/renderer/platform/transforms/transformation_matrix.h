@@ -319,9 +319,6 @@ class PLATFORM_EXPORT TransformationMatrix {
   bool IsAffine() const { return IsFlat() && !HasPerspective(); }
   bool Is2dTransform() const { return IsAffine(); }
 
-  // Throw away the non-affine parts of the matrix (lossy!)
-  void MakeAffine();
-
   [[nodiscard]] AffineTransform ToAffineTransform() const;
 
   // Same as gfx::Transform::Flatten(); see the docs for that function for
