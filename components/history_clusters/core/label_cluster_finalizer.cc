@@ -18,6 +18,8 @@
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using LabelSource = history::Cluster::LabelSource;
+
 namespace history_clusters {
 
 LabelClusterFinalizer::LabelClusterFinalizer(
@@ -30,6 +32,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   float max_label_score = -1;
   absl::optional<std::u16string> current_highest_scoring_label;
   absl::optional<std::u16string> current_highest_scoring_label_unquoted;
+  LabelSource label_source = LabelSource::kUnknown;
 
   // First try finding search terms to use as the cluster label.
   for (const auto& visit : cluster.visits) {
@@ -41,6 +44,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
           IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS,
           *current_highest_scoring_label_unquoted);
       max_label_score = visit.score;
+      label_source = LabelSource::kSearch;
     }
   }
 
@@ -66,6 +70,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
               base::UTF8ToUTF16(entity_metadata_it->second.human_readable_name);
           current_highest_scoring_label_unquoted =
               current_highest_scoring_label;
+          label_source = LabelSource::kContentDerivedEntity;
         }
         entity_to_score[entity.id] = new_score;
       }
@@ -84,6 +89,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
         current_highest_scoring_label = host;
         current_highest_scoring_label_unquoted = current_highest_scoring_label;
         max_label_score = hostname_score;
+        label_source = LabelSource::kHostname;
       }
     }
 
@@ -99,6 +105,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   if (current_highest_scoring_label) {
     cluster.label = *current_highest_scoring_label;
     cluster.raw_label = *current_highest_scoring_label_unquoted;
+    cluster.label_source = label_source;
   }
 }
 

@@ -518,17 +518,19 @@ void HistoryClustersHandler::OnGotClustersBatch(
     DCHECK(GetConfig().images);
 
     for (size_t i = 0; i < clusters_batch.size(); ++i) {
-      size_t cluster_index =
-          query_clusters_state_->number_clusters_sent_to_page() + i;
-
-      // TODO(tommycli): We should really filter this to only request it for
-      // Search-labelled clusters.
+      // Only Search-labelled clusters should query Suggest for images.
       auto& cluster = clusters_batch[i];
+      if (cluster.label_source != history::Cluster::LabelSource::kSearch) {
+        continue;
+      }
+
       if (!cluster.raw_label || cluster.raw_label->empty())
         continue;
 
       // TODO(tommycli): Populate this with the actual entity ID once available.
       std::string entity_id;
+      size_t cluster_index =
+          query_clusters_state_->number_clusters_sent_to_page() + i;
       image_fetcher_->FetchImageFor(
           *cluster.raw_label, entity_id,
           base::BindOnce(&HistoryClustersHandler::OnImageFetchedForCluster,

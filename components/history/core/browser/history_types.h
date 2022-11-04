@@ -956,6 +956,14 @@ struct ClusterKeywordData {
 // A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and
 // `should_show_on_prominent_ui_surfaces`).
 struct Cluster {
+  // Values are not persisted and can be freely changed.
+  enum class LabelSource {
+    kUnknown,
+    kSearch,
+    kContentDerivedEntity,
+    kHostname,
+  };
+
   Cluster();
   Cluster(int64_t cluster_id,
           const std::vector<ClusterVisit>& visits,
@@ -993,6 +1001,9 @@ struct Cluster {
   // The value of label with any leading or trailing quotation indicators
   // removed.
   absl::optional<std::u16string> raw_label;
+
+  // Where the label came from. Determines in which ways we can use `raw_label`.
+  LabelSource label_source = LabelSource::kUnknown;
 
   // The positions within the label that match the search query, if it exists.
   // This depends on the user's search query, and should not be persisted.
