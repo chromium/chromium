@@ -5,8 +5,6 @@
 #import "ios/chrome/app/startup/ios_chrome_main_delegate.h"
 
 #import "base/logging.h"
-#import "components/component_updater/component_updater_paths.h"
-#import "ios/chrome/browser/paths/paths.h"
 #import "third_party/skia/include/core/SkGraphics.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -22,15 +20,6 @@ void IOSChromeMainDelegate::BasicStartupComplete() {
   // however web does not have a dependency on skia, so it is done as part of
   // Chrome initialisation on iOS.
   SkGraphics::Init();
-
-  // Initialize the Chrome path provider.
-  ios::RegisterPathProvider();
-
-  // Register the component updater path provider.
-  // Bundled components are not supported on ios, so DIR_USER_DATA is passed
-  // for all three arguments.
-  component_updater::RegisterPathProvider(
-      ios::DIR_USER_DATA, ios::DIR_USER_DATA, ios::DIR_USER_DATA);
 
   // Upstream wires up log file handling here based on flags; for now that's
   // not supported, and this is called just to handle vlog levels and patterns.

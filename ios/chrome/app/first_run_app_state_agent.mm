@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
@@ -82,18 +81,6 @@
 }
 
 #pragma mark - AppStateObserver
-
-- (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)nextInitStage {
-  if (nextInitStage != InitStageNormalUI) {
-    return;
-  }
-
-  // Determine whether the app has to go through startup at first run before
-  // starting the UI initialization to make the information available on time.
-  self.appState.startupInformation.isFirstRun =
-      ShouldPresentFirstRunExperience();
-}
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {

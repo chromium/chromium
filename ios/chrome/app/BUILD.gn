@@ -564,10 +564,12 @@ source_set("main") {
   deps = [
     ":app_internal",
     "//base",
+    "//components/component_updater",
     "//components/crash/core/common",
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/paths",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/primes:primes_api",
   ]

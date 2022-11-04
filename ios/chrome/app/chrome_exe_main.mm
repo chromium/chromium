@@ -7,9 +7,11 @@
 #import "base/at_exit.h"
 #import "base/debug/crash_logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/component_updater/component_updater_paths.h"
 #import "ios/chrome/app/startup/ios_chrome_main.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/chrome/browser/paths/paths.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -67,6 +69,17 @@ int RunUIApplicationMain(int argc, char* argv[]) {
   }
 }
 
+void RegisterPathProviders() {
+  @autoreleasepool {
+    ios::RegisterPathProvider();
+
+    // Bundled components are not supported on ios, so DIR_USER_DATA is passed
+    // for all three arguments.
+    component_updater::RegisterPathProvider(
+        ios::DIR_USER_DATA, ios::DIR_USER_DATA, ios::DIR_USER_DATA);
+  }
+}
+
 }  // namespace
 
 int main(int argc, char* argv[]) {
@@ -100,6 +113,9 @@ int main(int argc, char* argv[]) {
 
   // Always ignore SIGPIPE.  We check the return value of write().
   CHECK_NE(SIG_ERR, signal(SIGPIPE, SIG_IGN));
+
+  // Register Chrome path providers.
+  RegisterPathProviders();
 
   return RunUIApplicationMain(argc, argv);
 }

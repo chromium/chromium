@@ -9,6 +9,7 @@
 #import "components/variations/service/variations_service_utils.h"
 #import "components/variations/variations_seed_store.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -22,16 +23,14 @@ namespace {
 // The NSUserDefault key to store the time the last seed is fetched.
 NSString* kLastVariationsSeedFetchTimeKey = @"kLastVariationsSeedFetchTime";
 
-// Returns the time the last seed is fetched.
-base::Time GetLastVariationsSeedFetchTime() {
-  double date = [[NSUserDefaults standardUserDefaults]
+// Record Variations.SeedFreshness metric according whether there is a seed in
+// the variations seed store fetched by a previous run, and if there is, whether
+// it is expired.
+// TODO(crbug.com/1380164): Implement this method.
+void RecordSeedFreshness() {
+  double timestamp = [[NSUserDefaults standardUserDefaults]
       doubleForKey:kLastVariationsSeedFetchTimeKey];
-  return base::Time::FromDoubleT(date);
-}
-
-// TODO(crbug.com/1380164): Look at Variations.SeedFreshness metric to see the
-// percentages of launches that has no seed/unexpired seed/expired seed.
-void RecordSeedFreshness(base::Time time) {
+  base::Time time = base::Time::FromDoubleT(timestamp);
   if (time.is_null()) {
     // TODO(crbug.com/1380164): Seed doesn't exist. Log metric.
   } else if (variations::HasSeedExpiredSinceTime(time)) {
@@ -64,8 +63,6 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 @interface VariationsAppStateAgent () {
   // Caches the previous activation level.
   SceneActivationLevel _previousActivationLevel;
-  // Whether this is the first run of the app since installation.
-  BOOL _firstRun;
   // Whether the variations seed has been fetched.
   BOOL _seedFetched;
   // Whether the extended launch screen is shown.
@@ -81,14 +78,8 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
   if (self) {
     _previousActivationLevel = SceneActivationLevelUnattached;
     _seedFetched = NO;
-    _firstRun = NO;
     _extendedLaunchScreenShown = NO;
-    base::Time lastFetchTime = GetLastVariationsSeedFetchTime();
-    if (lastFetchTime.is_null()) {
-      // No seed in storage, implying first run of the app since installation.
-      _firstRun = YES;
-    }
-    RecordSeedFreshness(lastFetchTime);
+    RecordSeedFreshness();
     if ([self shouldFetchVariationsSeed]) {
       // TODO(crbug.com/1372180): start seed fetch and a timeout timer.
     }
@@ -145,7 +136,8 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 
 // Returns whether the variations seed should be fetched.
 - (BOOL)shouldFetchVariationsSeed {
-  return _firstRun && [self shouldTurnOnFeature];
+  return self.appState.startupInformation.isFirstRun &&
+         [self shouldTurnOnFeature];
 }
 
 // TODO(crbug.com/1372180): Replace this method by actual method that sets up a

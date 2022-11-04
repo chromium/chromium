@@ -9,6 +9,7 @@
 #import "base/time/time.h"
 #import "components/variations/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -22,23 +23,6 @@
 
 namespace {
 NSString* kLastVariationsSeedFetchTimeKey = @"kLastVariationsSeedFetchTime";
-
-// Simulate the existance for an unexpired seed from previous run.
-void SimulateUnexpiredSeed() {
-  [[NSUserDefaults standardUserDefaults]
-      setDouble:base::Time::NowFromSystemTime().ToDoubleT()
-         forKey:kLastVariationsSeedFetchTimeKey];
-}
-
-// Simulate the existance for an expired seed from previous run.
-void SimulateExpiredSeed() {
-  // Set the offset past zero so that it's not treated as a null value.
-  base::Time distantPast = base::Time::UnixEpoch() + base::Days(1);
-  [[NSUserDefaults standardUserDefaults]
-      setDouble:distantPast.ToDoubleT()
-         forKey:kLastVariationsSeedFetchTimeKey];
-}
-
 }  // namespace
 
 // TODO(crbug.com/1372180): Expose delegate methods.
@@ -88,6 +72,10 @@ class VariationsAppStateAgentTest : public PlatformTest {
 // InitStageVariationsSeed after seed is fetched, and that the metric for first
 // run would be logged.
 TEST_F(VariationsAppStateAgentTest, EnableSeedFetchOnFirstRun) {
+  // Simulate first run.
+  id first_run_startup = OCMProtocolMock(@protocol(StartupInformation));
+  OCMStub([first_run_startup isFirstRun]).andReturn(YES);
+  OCMStub([mock_app_state_ startupInformation]).andReturn(first_run_startup);
   // Set up app init stage to be tested and agent and set expectations.
   OCMStub([mock_app_state_ initStage]).andReturn(InitStageVariationsSeed);
   OCMStub([mock_app_state_ queueTransitionToNextInitStage])
@@ -102,66 +90,46 @@ TEST_F(VariationsAppStateAgentTest, EnableSeedFetchOnFirstRun) {
   [agent appState:mock_app_state_
       didTransitionFromInitStage:GetPreviousStage(InitStageVariationsSeed)];
   EXPECT_OCMOCK_VERIFY(mock_app_state_);
-  // TODO(crbug.com/1380164): Test that first run metric is logged.
 }
 
 // Tests that the agent immediately transitions to the next stage from
-// InitStageVariationsSeed when the seed should not be fetched, and that the
-// metric for unexpired seed would be logged.
-TEST_F(VariationsAppStateAgentTest,
-       DisableSeedFetchOnNonFirstRunWithUnexpiredSeed) {
+// InitStageVariationsSeed when app is not in first run.
+TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnNonFirstRun) {
   // Set up app init stage to be tested and agent and set expectations.
   OCMStub([mock_app_state_ initStage]).andReturn(InitStageVariationsSeed);
   OCMExpect([mock_app_state_ queueTransitionToNextInitStage]);
   //  Execute.
-  SimulateUnexpiredSeed();
   VariationsAppStateAgent* agent =
       [[VariationsAppStateAgentForTesting alloc] init];
   [agent setAppState:mock_app_state_];
   [agent appState:mock_app_state_
       didTransitionFromInitStage:GetPreviousStage(InitStageVariationsSeed)];
   EXPECT_OCMOCK_VERIFY(mock_app_state_);
-  // TODO(crbug.com/1380164): Test that unexpired seed metric is logged.
-}
-
-// Tests that the agent immediately transitions to the next stage from
-// InitStageVariationsSeed when the seed should not be fetched, and that the
-// metric for expired seed would be logged.
-TEST_F(VariationsAppStateAgentTest,
-       DisableSeedFetchOnNonFirstRunWithExpiredSeed) {
-  // Set up app init stage to be tested and agent and set expectations.
-  OCMStub([mock_app_state_ initStage]).andReturn(InitStageVariationsSeed);
-  OCMExpect([mock_app_state_ queueTransitionToNextInitStage]);
-  //  Execute.
-  SimulateExpiredSeed();
-  VariationsAppStateAgent* agent =
-      [[VariationsAppStateAgentForTesting alloc] init];
-  [agent setAppState:mock_app_state_];
-  [agent appState:mock_app_state_
-      didTransitionFromInitStage:GetPreviousStage(InitStageVariationsSeed)];
-  EXPECT_OCMOCK_VERIFY(mock_app_state_);
-  // TODO(crbug.com/1380164): Test that expired seed metric is logged.
 }
 
 // Tests that the fetch time from last launch will be saved when the app goes to
 // background.
 TEST_F(VariationsAppStateAgentTest, SavesLastSeedFetchTimeOnBackgrounding) {
-  base::Time lastFetchTime = base::Time::Now();
+  base::Time last_fetch_time = base::Time::Now();
   // Set up app init stage to be tested and agent and set expectations.
   OCMStub([mock_app_state_ initStage]).andReturn(InitStageBrowserObjectsForUI);
   VariationsAppStateAgent* agent =
       [[VariationsAppStateAgentForTesting alloc] init];
   [agent setAppState:mock_app_state_];
+  [agent sceneState:scene_state_
+      transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
   local_state_.Get()->SetTime(variations::prefs::kVariationsLastFetchTime,
-                              lastFetchTime);
+                              last_fetch_time);
   //  Simulate backgrounding and launch again.
   [agent sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelBackground];
   [mock_app_state_ stopMocking];
   OCMStub([mock_app_state_ initStage]).andReturn(InitStageVariationsSeed);
   agent = [[VariationsAppStateAgentForTesting alloc] init];
-  [agent setAppState:mock_app_state_];
-  [agent appState:mock_app_state_
-      didTransitionFromInitStage:GetPreviousStage(InitStageVariationsSeed)];
-  EXPECT_OCMOCK_VERIFY(mock_app_state_);
+  double stored_value = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:kLastVariationsSeedFetchTimeKey];
+  EXPECT_EQ(base::Time::FromDoubleT(stored_value), last_fetch_time);
+  // TODO(crbug.com/1380164): Test freshness logging.
 }
+
+// TODO(crbug.com/1380164): Test freshness logging.
