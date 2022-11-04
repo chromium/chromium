@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+PRESUBMIT_VERSION = '2.0.0'
 USE_PYTHON3 = True
 
 import os
@@ -32,10 +33,6 @@ def RunOtherPresubmit(function_name, input_api, output_api):
   exec(presubmit_content, global_vars)
   return global_vars[function_name](input_api, output_api)
 
-def CheckChangeOnUpload(input_api, output_api):
-  return RunOtherPresubmit("CheckChangeOnUpload", input_api, output_api)
+def CheckPolicyTestCases(input_api, output_api):
+  return RunOtherPresubmit("CheckPolicyTestCases", input_api, output_api)
 
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  return RunOtherPresubmit("CheckChangeOnCommit", input_api, output_api)

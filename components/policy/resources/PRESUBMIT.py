@@ -23,6 +23,8 @@ import pyyaml
 
 _CACHED_FILES = {}
 
+_TEST_CASES_DEPOT_PATH = os.path.join(
+      'chrome', 'test', 'data', 'policy', 'policy_test_cases.json')
 _PRESUBMIT_PATH = os.path.join(
       'components', 'policy', 'resources', 'PRESUBMIT.py')
 _POLICIES_YAML_PATH = os.path.join(
@@ -139,19 +141,27 @@ def _CheckPolicyTemplatesSyntax(input_api, output_api, legacy_policy_template):
   return []
 
 
-def _CheckPolicyTestCases(input_api, output_api, policies):
+def CheckPolicyTestCases(input_api, output_api):
+  '''Verifies that the all defined policies have a test case.
+  This is ran when policy_test_cases.json, policies.yaml or this PRESUBMIT.py
+  file are modified.
+  '''
+  results = []
+  if _SkipPresubmitChecks(
+      input_api,
+      [_TEST_CASES_DEPOT_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
+    return results
+
   # Read list of policies in chrome/test/data/policy/policy_test_cases.json.
   root = input_api.change.RepositoryRoot()
-  test_cases_depot_path = input_api.os_path.join(
-       'chrome', 'test', 'data', 'policy', 'policy_test_cases.json')
-  policy_test_cases_file = input_api.os_path.join(
-      root, test_cases_depot_path)
-  with open(policy_test_cases_file, encoding='utf-8') as f:
+  with open(os.path.join(root, _TEST_CASES_DEPOT_PATH), encoding='utf-8') as f:
     test_names = input_api.json.load(f).keys()
   tested_policies = frozenset(name.partition('.')[0]
                               for name in test_names
                               if name[:2] != '--')
-  policy_names = frozenset(policy['name'] for policy in policies)
+  policies_yaml = _LoadYamlFile(root, _POLICIES_YAML_PATH)
+  policies = policies_yaml['policies']
+  policy_names = frozenset(name for name in policies.values() if name)
 
   # Finally check if any policies are missing.
   missing = policy_names - tested_policies
@@ -172,7 +182,7 @@ def _CheckPolicyTestCases(input_api, output_api, policies):
       input_api.canned_checks.CheckChangeHasNoTabs(
           input_api,
           output_api,
-          source_file_filter=lambda x: x.LocalPath() == test_cases_depot_path))
+          source_file_filter=lambda x: x.LocalPath() == _TEST_CASES_DEPOT_PATH))
 
   return results
 
@@ -298,9 +308,6 @@ def _CommonChecks(input_api, output_api):
                                         'templates')
   device_policy_proto_path = input_api.os_path.join(
       root, 'components', 'policy', 'proto', 'chrome_device_policy.proto')
-  # policies in chrome/test/data/policy/policy_test_cases.json.
-  test_cases_path = input_api.os_path.join(
-      root, 'chrome', 'test', 'data', 'policy', 'policy_test_cases.json')
   syntax_check_path = input_api.os_path.join(
       root, 'components', 'policy', 'tools',
       'syntax_check_policy_template_json.py')
@@ -311,13 +318,10 @@ def _CommonChecks(input_api, output_api):
     for f in affected_files)
   device_policy_proto_changed = any(
     f.AbsoluteLocalPath() == device_policy_proto_path for f in affected_files)
-  tests_changed = any(f.AbsoluteLocalPath() == test_cases_path
-    for f in affected_files)
   syntax_check_changed = any(f.AbsoluteLocalPath() == syntax_check_path
     for f in affected_files)
 
-  if (template_changed or device_policy_proto_changed or tests_changed or
-      syntax_check_changed):
+  if (template_changed or device_policy_proto_changed or syntax_check_changed):
     try:
       template_data = GetPolicyTemplates()
     except:
@@ -325,15 +329,9 @@ def _CommonChecks(input_api, output_api):
         output_api.PresubmitError('Unable to load the policy templates.'))
       return results
 
-    policies = [policy
-                for policy in template_data['policy_definitions']
-                if policy['type'] != 'group']
-
     if template_changed or syntax_check_changed:
       results.extend(_CheckMissingPlaceholders(input_api, output_api,
           template_data))
-    if template_changed or tests_changed:
-      results.extend(_CheckPolicyTestCases(input_api, output_api, policies))
     # chrome_device_policy.proto is hand crafted. When it is changed, we need
     # to check if it still corresponds to policy_templates.json.
     if template_changed or device_policy_proto_changed or syntax_check_changed:
