@@ -36,6 +36,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -70,6 +71,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
@@ -188,9 +190,12 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_Review"));
       break;
+    case DownloadCommands::PLATFORM_OPEN:
+      base::RecordAction(
+          UserMetricsAction("DownloadNotification.Button_PlatformOpen"));
+      return;
     // Not actually displayed in notification, so should never be reached.
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-    case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::RETRY:
@@ -794,11 +799,37 @@ DownloadItemNotification::GetExtraActions() const {
       actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
       if (!notification_->image().IsEmpty())
         actions->push_back(DownloadCommands::COPY_TO_CLIPBOARD);
+      if (IsGalleryAppPdfEditNotificationEligible())
+        actions->push_back(DownloadCommands::PLATFORM_OPEN);
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
       NOTREACHED();
   }
   return actions;
+}
+
+bool DownloadItemNotification::IsGalleryAppPdfEditNotificationEligible() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!ash::features::IsGalleryAppPdfEditNotificationEnabled())
+    return false;
+
+  DownloadCommands download_commands(item_->GetWeakPtr());
+  if (!download_commands.IsDownloadPdf())
+    return false;
+
+  file_manager::file_tasks::TaskDescriptor task_descriptor;
+  if (!file_manager::file_tasks::GetDefaultTaskFromPrefs(
+          *(profile_->GetPrefs()), "application/pdf", "pdf",
+          &task_descriptor)) {
+    // GetDefaultTaskFromPrefs returns false if no default app is specified. If
+    // no default app is specified, a pdf will be opened with Gallery app.
+    return true;
+  }
+
+  return task_descriptor.app_id == web_app::kMediaAppId;
+#else
+  return false;
+#endif
 }
 
 std::u16string DownloadItemNotification::GetTitle() const {
@@ -907,8 +938,15 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::REVIEW:
       id = IDS_REVIEW_DOWNLOAD;
       break;
-    case DownloadCommands::ALWAYS_OPEN_TYPE:
     case DownloadCommands::PLATFORM_OPEN:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      return base::UTF8ToUTF16(
+          ash::features::kGalleryAppPdfEditNotificationText.Get());
+#else
+      NOTREACHED();
+      return std::u16string();
+#endif
+    case DownloadCommands::ALWAYS_OPEN_TYPE:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::RETRY:
@@ -917,7 +955,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
       NOTREACHED();
       return std::u16string();
   }
-  CHECK(id != -1);
+  CHECK_NE(id, -1);
   return l10n_util::GetStringUTF16(id);
 }
 

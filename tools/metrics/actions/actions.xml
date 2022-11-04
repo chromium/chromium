@@ -8141,10 +8141,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DownloadNotification.Button_PlatformOpen">
-  <obsolete>It was discovered in June 2022 that this was dead code.</obsolete>
   <owner>yoshiki@chromium.org</owner>
   <description>
-    User pushes &quot;Open&quot; button on download notification.
+    User pushes a button to open a file on download notification. This is
+    currently used only for GalleryAppEditPdfNotification.
   </description>
 </action>
 
