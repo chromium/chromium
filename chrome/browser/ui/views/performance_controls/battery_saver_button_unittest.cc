@@ -66,7 +66,7 @@ class BatterySaverButtonTest : public TestWithBrowserView {
 TEST_F(BatterySaverButtonTest, ShouldButtonShowTest) {
   const BatterySaverButton* battery_saver_button =
       browser_view()->toolbar()->battery_saver_button();
-  EXPECT_NE(battery_saver_button, nullptr);
+  ASSERT_NE(battery_saver_button, nullptr);
 
   SetBatterySaverModeEnabled(false);
   EXPECT_FALSE(battery_saver_button->GetVisible());
@@ -95,10 +95,10 @@ TEST_F(BatterySaverButtonTest, TooltipAccessibilityTextTest) {
 TEST_F(BatterySaverButtonTest, ShowAndHideBubbleOnButtonPressTest) {
   BatterySaverButton* battery_saver_button =
       browser_view()->toolbar()->battery_saver_button();
-  EXPECT_NE(battery_saver_button, nullptr);
+  ASSERT_NE(battery_saver_button, nullptr);
 
   SetBatterySaverModeEnabled(true);
-  EXPECT_TRUE(battery_saver_button->GetVisible());
+  ASSERT_TRUE(battery_saver_button->GetVisible());
 
   EXPECT_FALSE(battery_saver_button->IsBubbleShowing());
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -118,10 +118,10 @@ TEST_F(BatterySaverButtonTest, ShowAndHideBubbleOnButtonPressTest) {
 TEST_F(BatterySaverButtonTest, DismissBubbleWhenModeDeactivatedTest) {
   BatterySaverButton* battery_saver_button =
       browser_view()->toolbar()->battery_saver_button();
-  EXPECT_NE(battery_saver_button, nullptr);
+  ASSERT_NE(battery_saver_button, nullptr);
 
   SetBatterySaverModeEnabled(true);
-  EXPECT_TRUE(battery_saver_button->GetVisible());
+  ASSERT_TRUE(battery_saver_button->GetVisible());
 
   EXPECT_FALSE(battery_saver_button->IsBubbleShowing());
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -143,7 +143,7 @@ TEST_F(BatterySaverButtonTest, DismissBubbleWhenModeDeactivatedTest) {
 TEST_F(BatterySaverButtonTest, ElementIdentifierTest) {
   const views::View* battery_saver_button_view =
       browser_view()->toolbar()->battery_saver_button();
-  EXPECT_NE(battery_saver_button_view, nullptr);
+  ASSERT_NE(battery_saver_button_view, nullptr);
 
   const views::View* matched_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
@@ -155,10 +155,10 @@ TEST_F(BatterySaverButtonTest, ElementIdentifierTest) {
 TEST_F(BatterySaverButtonTest, LogMetricsOnDialogDismissTest) {
   BatterySaverButton* battery_saver_button =
       browser_view()->toolbar()->battery_saver_button();
-  EXPECT_NE(battery_saver_button, nullptr);
+  ASSERT_NE(battery_saver_button, nullptr);
 
   SetBatterySaverModeEnabled(true);
-  EXPECT_TRUE(battery_saver_button->GetVisible());
+  ASSERT_TRUE(battery_saver_button->GetVisible());
 
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
@@ -177,10 +177,10 @@ TEST_F(BatterySaverButtonTest, LogMetricsOnDialogDismissTest) {
 TEST_F(BatterySaverButtonTest, LogMetricsOnTurnOffNowTest) {
   BatterySaverButton* battery_saver_button =
       browser_view()->toolbar()->battery_saver_button();
-  EXPECT_NE(battery_saver_button, nullptr);
+  ASSERT_NE(battery_saver_button, nullptr);
 
   SetBatterySaverModeEnabled(true);
-  EXPECT_TRUE(battery_saver_button->GetVisible());
+  ASSERT_TRUE(battery_saver_button->GetVisible());
 
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
@@ -190,7 +190,7 @@ TEST_F(BatterySaverButtonTest, LogMetricsOnTurnOffNowTest) {
 
   views::BubbleDialogModelHost* const bubble_dialog_host =
       battery_saver_button->GetBubble();
-  EXPECT_TRUE(bubble_dialog_host);
+  ASSERT_NE(bubble_dialog_host, nullptr);
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(
       bubble_dialog_host->GetWidget());

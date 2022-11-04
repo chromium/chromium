@@ -48,12 +48,6 @@ class HighEfficiencyChipView : public PageActionIconView,
   std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
-  const raw_ptr<Browser> browser_;
-  base::OneShotTimer timer_;
-  raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
-  PrefChangeRegistrar registrar_;
-  bool is_high_efficiency_mode_enabled_ = false;
-
   void MaybeShowIPH();
   void OnIPHClosed();
 
@@ -61,6 +55,11 @@ class HighEfficiencyChipView : public PageActionIconView,
   // currently enabled.
   void OnPrefChanged();
 
+  const raw_ptr<Browser> browser_;
+  base::OneShotTimer timer_;
+  raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
+  PrefChangeRegistrar registrar_;
+  bool is_high_efficiency_mode_enabled_ = false;
   base::WeakPtrFactory<HighEfficiencyChipView> weak_ptr_factory_{this};
 };
 
