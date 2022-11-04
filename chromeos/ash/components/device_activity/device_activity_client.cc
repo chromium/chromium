@@ -13,10 +13,12 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace ash::device_activity {
 
@@ -229,15 +231,13 @@ DeviceActivityClient::DeviceActivityClient(
   report_timer_->Start(FROM_HERE, kTimeToRepeat, this,
                        &DeviceActivityClient::ReportingTriggeredByTimer);
 
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
   DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
 }
 
 DeviceActivityClient::~DeviceActivityClient() {
   RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
                                        kDeviceActivityClientDestructor);
-
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
 }
 
 base::RepeatingTimer* DeviceActivityClient::GetReportTimer() {
@@ -257,6 +257,10 @@ void DeviceActivityClient::DefaultNetworkChanged(const NetworkState* network) {
     OnNetworkOnline();
   else
     OnNetworkOffline();
+}
+
+void DeviceActivityClient::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 DeviceActivityClient::State DeviceActivityClient::GetState() const {

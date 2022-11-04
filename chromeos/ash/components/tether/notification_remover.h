@@ -10,10 +10,10 @@
 #include "chromeos/ash/components/tether/host_scan_cache.h"
 
 namespace ash {
-
 class NetworkStateHandler;
+}  // namespace ash
 
-namespace tether {
+namespace ash::tether {
 
 class NotificationPresenter;
 
@@ -41,6 +41,7 @@ class NotificationRemover : public HostScanCache::Observer,
 
   // NetworkStateHandlerObserver:
   void NetworkConnectionStateChanged(const NetworkState* network) override;
+  void OnShuttingDown() override;
 
   // ActiveHost::Observer:
   void OnActiveHostChanged(
@@ -48,13 +49,14 @@ class NotificationRemover : public HostScanCache::Observer,
 
  private:
   NetworkStateHandler* network_state_handler_;
+
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
+
   NotificationPresenter* notification_presenter_;
   HostScanCache* host_scan_cache_;
   ActiveHost* active_host_;
 };
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_NOTIFICATION_REMOVER_H_

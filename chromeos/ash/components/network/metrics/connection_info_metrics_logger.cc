@@ -38,8 +38,6 @@ bool ConnectionInfoMetricsLogger::ConnectionInfo::operator==(
 ConnectionInfoMetricsLogger::ConnectionInfoMetricsLogger() = default;
 
 ConnectionInfoMetricsLogger::~ConnectionInfoMetricsLogger() {
-  if (network_state_handler_)
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
   if (network_connection_handler_)
     network_connection_handler_->RemoveObserver(this);
 }
@@ -54,7 +52,7 @@ void ConnectionInfoMetricsLogger::Init(
 
   if (network_state_handler) {
     network_state_handler_ = network_state_handler;
-    network_state_handler_->AddObserver(this, FROM_HERE);
+    network_state_handler_observer_.Observe(network_state_handler_);
     NetworkListChanged();
   }
 }
@@ -93,6 +91,10 @@ void ConnectionInfoMetricsLogger::NetworkListChanged() {
 void ConnectionInfoMetricsLogger::NetworkConnectionStateChanged(
     const NetworkState* network) {
   UpdateConnectionInfo(network);
+}
+
+void ConnectionInfoMetricsLogger::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 void ConnectionInfoMetricsLogger::ConnectSucceeded(

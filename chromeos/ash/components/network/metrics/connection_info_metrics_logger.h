@@ -90,6 +90,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
   // NetworkStateHandlerObserver::
   void NetworkListChanged() override;
   void NetworkConnectionStateChanged(const NetworkState* network) override;
+  void OnShuttingDown() override;
 
   // NetworkConnectionObserver::
   void ConnectSucceeded(const std::string& service_path) override;
@@ -110,6 +111,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
 
   NetworkStateHandler* network_state_handler_ = nullptr;
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
+
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
   // Stores connection information for all networks.
   base::flat_map<std::string, ConnectionInfo> guid_to_connection_info_;

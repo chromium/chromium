@@ -7,9 +7,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/tether/notification_presenter.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 NotificationRemover::NotificationRemover(
     NetworkStateHandler* network_state_handler,
@@ -20,7 +18,7 @@ NotificationRemover::NotificationRemover(
       notification_presenter_(notification_presenter),
       host_scan_cache_(host_scan_cache),
       active_host_(active_host) {
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
   host_scan_cache_->AddObserver(this);
   active_host_->AddObserver(this);
 }
@@ -28,7 +26,6 @@ NotificationRemover::NotificationRemover(
 NotificationRemover::~NotificationRemover() {
   active_host_->RemoveObserver(this);
   host_scan_cache_->RemoveObserver(this);
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
 
   // When the Tether component is shut down, "Available Hotspot", "Setup
   // Required", and "Connection Failed" notifications should be removed. The
@@ -54,6 +51,10 @@ void NotificationRemover::NetworkConnectionStateChanged(
     notification_presenter_->RemovePotentialHotspotNotification();
 }
 
+void NotificationRemover::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
+}
+
 void NotificationRemover::OnActiveHostChanged(
     const ActiveHost::ActiveHostChangeInfo& active_host_change_info) {
   if (active_host_change_info.new_status !=
@@ -61,6 +62,4 @@ void NotificationRemover::OnActiveHostChanged(
     notification_presenter_->RemovePotentialHotspotNotification();
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

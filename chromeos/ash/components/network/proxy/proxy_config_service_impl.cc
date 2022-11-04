@@ -77,17 +77,12 @@ ProxyConfigServiceImpl::ProxyConfigServiceImpl(
     // Register for changes to the default network.
     NetworkStateHandler* state_handler =
         NetworkHandler::Get()->network_state_handler();
-    state_handler->AddObserver(this, FROM_HERE);
+    network_state_handler_observer_.Observe(state_handler);
     DefaultNetworkChanged(state_handler->DefaultNetwork());
   }
 }
 
-ProxyConfigServiceImpl::~ProxyConfigServiceImpl() {
-  if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
-  }
-}
+ProxyConfigServiceImpl::~ProxyConfigServiceImpl() = default;
 
 void ProxyConfigServiceImpl::OnProxyConfigChanged(
     ProxyPrefs::ConfigState config_state,
@@ -122,8 +117,7 @@ void ProxyConfigServiceImpl::DefaultNetworkChanged(
 void ProxyConfigServiceImpl::OnShuttingDown() {
   // Ownership of this class is complicated. Stop observing NetworkStateHandler
   // when the class shuts down.
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
+  network_state_handler_observer_.Reset();
 }
 
 // static

@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
-#include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/sync_wifi/network_eligibility_checker.h"
@@ -118,7 +117,7 @@ SyncedNetworkMetricsLogger::SyncedNetworkMetricsLogger(
 
   if (network_state_handler) {
     network_state_handler_ = network_state_handler;
-    network_state_handler_->AddObserver(this, FROM_HERE);
+    network_state_handler_observer_.Observe(network_state_handler_);
   }
 
   if (network_connection_handler) {
@@ -139,10 +138,8 @@ SyncedNetworkMetricsLogger::~SyncedNetworkMetricsLogger() {
 }
 
 void SyncedNetworkMetricsLogger::OnShuttingDown() {
-  if (network_state_handler_) {
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
-    network_state_handler_ = nullptr;
-  }
+  network_state_handler_observer_.Reset();
+  network_state_handler_ = nullptr;
 
   if (network_connection_handler_) {
     network_connection_handler_->RemoveObserver(this);

@@ -13,15 +13,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
-#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
@@ -56,14 +53,13 @@ HostScanSchedulerImpl::HostScanSchedulerImpl(
       clock_(base::DefaultClock::GetInstance()),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
       is_screen_locked_(session_manager_->IsScreenLocked()) {
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
   host_scanner_->AddObserver(this);
   session_manager_->AddObserver(this);
 }
 
 HostScanSchedulerImpl::~HostScanSchedulerImpl() {
   network_state_handler_->SetTetherScanState(false);
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
   host_scanner_->RemoveObserver(this);
   session_manager_->RemoveObserver(this);
 
@@ -117,6 +113,10 @@ void HostScanSchedulerImpl::DefaultNetworkChanged(const NetworkState* network) {
 void HostScanSchedulerImpl::ScanRequested(const NetworkTypePattern& type) {
   if (NetworkTypePattern::Tether().MatchesPattern(type))
     AttemptScan();
+}
+
+void HostScanSchedulerImpl::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 void HostScanSchedulerImpl::ScanFinished() {
@@ -209,6 +209,4 @@ void HostScanSchedulerImpl::LogHostScanBatchMetric() {
                   << batch_duration.InSeconds() << " seconds.";
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

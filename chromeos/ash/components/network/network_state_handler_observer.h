@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 
 namespace ash {
 
 class DeviceState;
+class NetworkStateHandler;
 
 // Observer class for all network state changes, including changes to
 // active (connecting or connected) services.
@@ -91,11 +93,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandlerObserver {
   virtual void OnShuttingDown();
 };
 
+using NetworkStateHandlerScopedObservation =
+    base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>;
+
 }  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 namespace chromeos {
 using ::ash::NetworkStateHandlerObserver;
-}
+using ::ash::NetworkStateHandlerScopedObservation;
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_HANDLER_OBSERVER_H_

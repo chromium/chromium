@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
-#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_request_sender.h"
@@ -19,9 +18,7 @@
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
 #include "chromeos/ash/components/tether/tether_session_completion_logger.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 TetherNetworkDisconnectionHandler::TetherNetworkDisconnectionHandler(
     ActiveHost* active_host,
@@ -35,12 +32,11 @@ TetherNetworkDisconnectionHandler::TetherNetworkDisconnectionHandler(
       disconnect_tethering_request_sender_(disconnect_tethering_request_sender),
       tether_session_completion_logger_(tether_session_completion_logger),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 }
 
-TetherNetworkDisconnectionHandler::~TetherNetworkDisconnectionHandler() {
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
-}
+TetherNetworkDisconnectionHandler::~TetherNetworkDisconnectionHandler() =
+    default;
 
 void TetherNetworkDisconnectionHandler::NetworkConnectionStateChanged(
     const NetworkState* network) {
@@ -60,6 +56,10 @@ void TetherNetworkDisconnectionHandler::NetworkConnectionStateChanged(
                                     HandleActiveWifiNetworkDisconnection,
                                 weak_ptr_factory_.GetWeakPtr(), network->guid(),
                                 network->path()));
+}
+
+void TetherNetworkDisconnectionHandler::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 void TetherNetworkDisconnectionHandler::HandleActiveWifiNetworkDisconnection(
@@ -94,6 +94,4 @@ void TetherNetworkDisconnectionHandler::SetTaskRunnerForTesting(
   task_runner_ = test_task_runner;
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

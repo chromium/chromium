@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -18,9 +17,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-
-namespace device_sync {
+namespace ash::device_sync {
 
 namespace {
 
@@ -171,10 +168,7 @@ CryptAuthSchedulerImpl::CryptAuthSchedulerImpl(
   InitializePendingRequest(RequestType::kDeviceSync);
 }
 
-CryptAuthSchedulerImpl::~CryptAuthSchedulerImpl() {
-  if (network_state_handler_)
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
-}
+CryptAuthSchedulerImpl::~CryptAuthSchedulerImpl() = default;
 
 // static
 std::string CryptAuthSchedulerImpl::GetLastAttemptTimePrefName(
@@ -294,13 +288,15 @@ void CryptAuthSchedulerImpl::DefaultNetworkChanged(
 
 void CryptAuthSchedulerImpl::OnShuttingDown() {
   DCHECK(network_state_handler_);
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
+  network_state_handler_observer_.Reset();
   network_state_handler_ = nullptr;
 }
 
 void CryptAuthSchedulerImpl::OnSchedulingStarted(RequestType request_type) {
-  if (!network_state_handler_->HasObserver(this))
-    network_state_handler_->AddObserver(this, FROM_HERE);
+  if (!network_state_handler_observer_.IsObserving()) {
+    DCHECK(network_state_handler_);
+    network_state_handler_observer_.Observe(network_state_handler_);
+  }
 
   ScheduleNextRequest(request_type);
 }
@@ -579,6 +575,4 @@ void CryptAuthSchedulerImpl::OnTimerFired(RequestType request_type) {
   }
 }
 
-}  // namespace device_sync
-
-}  // namespace ash
+}  // namespace ash::device_sync

@@ -47,6 +47,7 @@ class TetherNetworkDisconnectionHandler : public NetworkStateHandlerObserver {
 
   // NetworkStateHandlerObserver:
   void NetworkConnectionStateChanged(const NetworkState* network) override;
+  void OnShuttingDown() override;
 
  private:
   friend class TetherNetworkDisconnectionHandlerTest;
@@ -59,6 +60,9 @@ class TetherNetworkDisconnectionHandler : public NetworkStateHandlerObserver {
 
   ActiveHost* active_host_;
   NetworkStateHandler* network_state_handler_;
+
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
+
   NetworkConfigurationRemover* network_configuration_remover_;
   DisconnectTetheringRequestSender* disconnect_tethering_request_sender_;
   TetherSessionCompletionLogger* tether_session_completion_logger_;
@@ -69,7 +73,6 @@ class TetherNetworkDisconnectionHandler : public NetworkStateHandlerObserver {
 };
 
 }  // namespace tether
-
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_NETWORK_DISCONNECTION_HANDLER_H_

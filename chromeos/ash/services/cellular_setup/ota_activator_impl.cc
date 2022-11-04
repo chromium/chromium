@@ -150,7 +150,7 @@ const NetworkState* OtaActivatorImpl::GetCellularNetworkState() const {
 }
 
 void OtaActivatorImpl::StartActivation() {
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 
   // If |activation_delegate_| becomes disconnected, the activation request is
   // considered canceled.
@@ -194,7 +194,7 @@ void OtaActivatorImpl::AttemptNextActivationStep() {
 void OtaActivatorImpl::FinishActivationAttempt(
     mojom::ActivationResult activation_result) {
   DCHECK(network_state_handler_);
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
+  network_state_handler_observer_.Reset();
   network_state_handler_ = nullptr;
 
   NET_LOG(EVENT) << "Finished attempt with result " << activation_result << ".";

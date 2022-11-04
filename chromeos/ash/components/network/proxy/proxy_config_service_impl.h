@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -18,6 +17,7 @@
 namespace ash {
 
 class NetworkState;
+class NetworkStateHandler;
 
 // Implementation of proxy config service for chromeos that:
 // - extends PrefProxyConfigTrackerImpl (and so lives and runs entirely on UI
@@ -101,6 +101,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProxyConfigServiceImpl
 
   // Not owned.
   PrefService* local_state_prefs_;
+
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
   base::WeakPtrFactory<ProxyConfigServiceImpl> pointer_factory_{this};
 };

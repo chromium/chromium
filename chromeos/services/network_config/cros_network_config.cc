@@ -2449,8 +2449,6 @@ CrosNetworkConfig::CrosNetworkConfig(
 }
 
 CrosNetworkConfig::~CrosNetworkConfig() {
-  if (network_state_handler_ && network_state_handler_->HasObserver(this))
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
   if (network_certificate_handler_ &&
       network_certificate_handler_->HasObserver(this)) {
     network_certificate_handler_->RemoveObserver(this);
@@ -2471,8 +2469,9 @@ void CrosNetworkConfig::BindReceiver(
 
 void CrosNetworkConfig::AddObserver(
     mojo::PendingRemote<mojom::CrosNetworkConfigObserver> observer) {
-  if (!network_state_handler_->HasObserver(this))
-    network_state_handler_->AddObserver(this, FROM_HERE);
+  if (!network_state_handler_observer_.IsObserving()) {
+    network_state_handler_observer_.Observe(network_state_handler_);
+  }
   if (network_certificate_handler_ &&
       !network_certificate_handler_->HasObserver(this)) {
     network_certificate_handler_->AddObserver(this);
@@ -3675,8 +3674,7 @@ void CrosNetworkConfig::NetworkConnectionStateChanged(
 }
 
 void CrosNetworkConfig::OnShuttingDown() {
-  if (network_state_handler_->HasObserver(this))
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
+  network_state_handler_observer_.Reset();
   network_state_handler_ = nullptr;
 }
 

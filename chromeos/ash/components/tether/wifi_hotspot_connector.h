@@ -58,6 +58,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   void DeviceListChanged() override;
   void NetworkPropertiesUpdated(const NetworkState* network) override;
   void DevicePropertiesUpdated(const DeviceState* device) override;
+  void OnShuttingDown() override;
 
  private:
   friend class WifiHotspotConnectorTest;
@@ -78,6 +79,9 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
                       scoped_refptr<base::TaskRunner> test_task_runner);
 
   NetworkStateHandler* network_state_handler_;
+
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
+
   NetworkConnect* network_connect_;
   std::unique_ptr<base::OneShotTimer> timer_;
   base::Clock* clock_;

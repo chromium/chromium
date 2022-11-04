@@ -165,6 +165,8 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
   // rescheduled when connectivity is restored.
   void OnTimerFired(RequestType request_type);
 
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
+
   PrefService* pref_service_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
   base::Clock* clock_ = nullptr;
@@ -183,7 +185,6 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
 };
 
 }  // namespace device_sync
-
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_SCHEDULER_IMPL_H_

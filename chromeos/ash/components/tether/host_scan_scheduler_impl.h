@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -58,6 +57,7 @@ class HostScanSchedulerImpl : public HostScanScheduler,
   // NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const NetworkState* network) override;
   void ScanRequested(const NetworkTypePattern& type) override;
+  void OnShuttingDown() override;
 
   // HostScanner::Observer:
   void ScanFinished() override;
@@ -79,6 +79,9 @@ class HostScanSchedulerImpl : public HostScanScheduler,
       scoped_refptr<base::TaskRunner> test_task_runner);
 
   NetworkStateHandler* network_state_handler_;
+
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
+
   HostScanner* host_scanner_;
   session_manager::SessionManager* session_manager_;
 

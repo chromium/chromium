@@ -21,10 +21,10 @@
 
 namespace ash {
 
-class NetworkState;
-class NetworkStateHandler;
 class NetworkActivationHandler;
 class NetworkConnectionHandler;
+class NetworkState;
+class NetworkStateHandler;
 
 namespace cellular_setup {
 
@@ -131,6 +131,8 @@ class OtaActivatorImpl : public OtaActivator,
   NetworkStateHandler* network_state_handler_;
   NetworkConnectionHandler* network_connection_handler_;
   NetworkActivationHandler* network_activation_handler_;
+
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
   State state_ = State::kNotYetStarted;
   absl::optional<mojom::CarrierPortalStatus> last_carrier_portal_status_;

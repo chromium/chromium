@@ -59,6 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ESimPolicyLoginMetricsLogger
 
   // NetworkStateHandlerObserver::
   void DeviceListChanged() override;
+  void OnShuttingDown() override;
 
   void SetIsEnterpriseManaged(bool is_enterprise_managed);
 
@@ -94,6 +95,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ESimPolicyLoginMetricsLogger
   NetworkStateHandler* network_state_handler_ = nullptr;
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
       nullptr;
+
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
   // A timer to wait for cellular initialization. This is useful
   // to avoid tracking intermediate states when cellular network is

@@ -17,8 +17,6 @@
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -28,11 +26,10 @@
 
 namespace ash {
 class CellularESimProfileHandler;
-}
+class NetworkStateHandler;
+}  // namespace ash
 
-namespace chromeos {
-
-namespace network_config {
+namespace chromeos::network_config {
 
 class CrosNetworkConfig : public mojom::CrosNetworkConfig,
                           public NetworkStateHandlerObserver,
@@ -189,9 +186,12 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
 
   const std::string& GetServicePathFromGuid(const std::string& guid);
 
-  NetworkStateHandler* network_state_handler_;    // Unowned
-  NetworkDeviceHandler* network_device_handler_;  // Unowned
-  CellularInhibitor* cellular_inhibitor_;         // Unowned
+  NetworkStateHandler* network_state_handler_;  // Unowned
+
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
+
+  NetworkDeviceHandler* network_device_handler_;                    // Unowned
+  CellularInhibitor* cellular_inhibitor_;                           // Unowned
   ash::CellularESimProfileHandler* cellular_esim_profile_handler_;  // Unowned
   ManagedNetworkConfigurationHandler*
       network_configuration_handler_;                       // Unowned
@@ -218,7 +218,6 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   base::WeakPtrFactory<CrosNetworkConfig> weak_factory_{this};
 };
 
-}  // namespace network_config
-}  // namespace chromeos
+}  // namespace chromeos::network_config
 
 #endif  // CHROMEOS_SERVICES_NETWORK_CONFIG_CROS_NETWORK_CONFIG_H_

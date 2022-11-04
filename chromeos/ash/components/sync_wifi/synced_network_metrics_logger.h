@@ -135,6 +135,8 @@ class SyncedNetworkMetricsLogger : public NetworkConnectionObserver,
   NetworkStateHandler* network_state_handler_ = nullptr;
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
 
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
+
   // Contains the guids of networks which are currently connecting.
   base::flat_set<std::string> connecting_guids_;
 
