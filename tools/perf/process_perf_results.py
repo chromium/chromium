@@ -122,6 +122,17 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
   #TODO(crbug.com/1072729): log this in top level
   logging.info('upload_results_to_perf_dashboard: %s.' % args)
 
+  # Duplicate part of the results upload to staging.
+  if configuration_name == 'linux-perf-fyi' and name == 'system_health.common_desktop':
+    try:
+      RESULTS_URL_STAGE = 'https://chromeperf-stage.uc.r.appspot.com'
+      staging_args = [(s if s != RESULTS_URL else RESULTS_URL_STAGE)
+                      for s in args]
+      result = upload_results_to_perf_dashboard.main(staging_args)
+      logging.info('Uploaded results to staging. Return value: %d', result)
+    except Exception as e:
+      logging.info('Failed to upload results to staging: %s', str(e))
+
   return upload_results_to_perf_dashboard.main(args)
 
 def _is_histogram(json_file):
