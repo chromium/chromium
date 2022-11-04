@@ -28,7 +28,6 @@ struct PreviousWin {
   string ad_json;
 };
 
-
 // Degree to which k-anonymity is enforced.
 enum KAnonymityBidMode {
   kNone,   // k-anonymity is ignored.
@@ -106,6 +105,17 @@ struct BidderWorkletBid {
   mojo_base.mojom.TimeDelta bid_duration;
 };
 
+struct BidderWorklerKAnonBidSameAsNonEnforced {};
+
+// Represents result of applying k-anonymity enforcement to a bidder worklet.
+// The resulting bid can be the same as without enforcement, or a different one.
+// Using BidderWorklerKAnonBidSameAsNonEnforced is a performance optimization;
+// it's semantically correct (but wasteful) to use a BidderWorkletBid instead.
+union BidderWorkletKAnonEnforcedBid {
+  BidderWorklerKAnonBidSameAsNonEnforced? same_as_non_enforced; // value unused.
+  BidderWorkletBid bid;
+};
+
 // An optional double value. GenerateBid() returns them as values its
 // `update_priority_signals_overrides` map. Since Mojo doesn't support optional
 // primitive types, this struct is needed to handle passing them. Don't need to
@@ -153,17 +163,18 @@ interface GenerateBidClient {
   // Arguments:
   //
   // `bid` If the worklet is successfully loaded and chooses to bid in the
-  //  auction, contains information about the bid. Null otherwise.
+  //  auction, contains information about the bid with no k-anonymity
+  //  restriction. Null otherwise.
   //
-  // `alternate_bid` If k-anonymity is enforced, and `alternate_bid` is
-  //  non-null, it contains a non-k-anon-bid that would have won without the
-  //  enforcement.
+  // `kanon_bid` If `kanon_mode` is not kNone, `kanon_bid` is the bid made
+  // under requirement of k-anonymous results. This can be the same as `bid`, a
+  // different bid, or null if the bidder will not bid under this restriction.
   //
-  //  If k-anonymity is simulated, if `alternate_bid` is non-null it contains
-  //  a k-anon bid that would have been the winner rather than (non-kanon) `bid`
-  //  had enforcement actually been happening.
+  // If `kanon_mode` is kNone, this is always null.
   //
-  //  If k-anonymity is off, this is always null.
+  // The following all arguments correspond to the execution (among those that
+  // produced `bid` and `kanon_bid`) that will end up shown to the user if it
+  // wins per `kanon_mode` passed to GenerateBid.
   //
   // `bidding_signals_data_version` The value of the Data-Version header served
   //  with the trusted bidding signals.
@@ -204,7 +215,7 @@ interface GenerateBidClient {
   //  errors from failing to load the worklet script.
   OnGenerateBidComplete(
       BidderWorkletBid? bid,
-      BidderWorkletBid? alternate_bid,
+      BidderWorkletKAnonEnforcedBid? kanon_bid,
       uint32 bidding_signals_data_version,
       bool has_bidding_signals_data_version,
       url.mojom.Url? debug_loss_report_url,

@@ -128,7 +128,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
 
   using GenerateBidCallback = base::OnceCallback<void(
       mojom::BidderWorkletBidPtr bid,
-      mojom::BidderWorkletBidPtr alternate_bid,
+      mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
       uint32_t data_version,
       bool has_data_version,
       const absl::optional<GURL>& debug_loss_report_url,
@@ -178,8 +178,8 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
   static GenerateBidCallback GenerateBidNeverInvokedCallback() {
     return base::BindOnce(
         [](mojom::BidderWorkletBidPtr bid,
-           mojom::BidderWorkletBidPtr alternate_bid, uint32_t data_version,
-           bool has_data_version,
+           mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
+           uint32_t data_version, bool has_data_version,
            const absl::optional<GURL>& debug_loss_report_url,
            const absl::optional<GURL>& debug_win_report_url,
            double set_priority, bool has_set_priority,
@@ -211,7 +211,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
 
   void OnGenerateBidComplete(
       mojom::BidderWorkletBidPtr bid,
-      mojom::BidderWorkletBidPtr alternate_bid,
+      mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
       uint32_t data_version,
       bool has_data_version,
       const absl::optional<GURL>& debug_loss_report_url,
@@ -227,7 +227,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
     EXPECT_TRUE(on_bidding_signals_received_invoked_);
 
     std::move(generate_bid_callback_)
-        .Run(std::move(bid), std::move(alternate_bid), data_version,
+        .Run(std::move(bid), std::move(kanon_bid), data_version,
              has_data_version, debug_loss_report_url, debug_win_report_url,
              set_priority, has_set_priority,
              std::move(update_priority_signals_overrides),
@@ -618,7 +618,7 @@ class BidderWorkletTest : public testing::Test {
 
   void GenerateBidCallback(
       mojom::BidderWorkletBidPtr bid,
-      mojom::BidderWorkletBidPtr alternate_bid,
+      mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
       uint32_t data_version,
       bool has_data_version,
       const absl::optional<GURL>& debug_loss_report_url,
@@ -637,7 +637,7 @@ class BidderWorkletTest : public testing::Test {
     if (has_set_priority)
       maybe_set_priority = set_priority;
     bid_ = std::move(bid);
-    alternate_bid_ = std::move(alternate_bid);
+    kanon_bid_ = std::move(kanon_bid);
     data_version_ = maybe_data_version;
     bid_debug_loss_report_url_ = debug_loss_report_url;
     bid_debug_win_report_url_ = debug_win_report_url;
@@ -753,7 +753,7 @@ class BidderWorkletTest : public testing::Test {
 
   // Values passed to the GenerateBidCallback().
   mojom::BidderWorkletBidPtr bid_;
-  mojom::BidderWorkletBidPtr alternate_bid_;
+  mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid_;
   absl::optional<GURL> bid_debug_loss_report_url_;
   absl::optional<GURL> bid_debug_win_report_url_;
   absl::optional<double> set_priority_;
@@ -1849,7 +1849,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
           GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
                   mojom::BidderWorkletBidPtr bid,
-                  mojom::BidderWorkletBidPtr alternate_bid,
+                  mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
                   uint32_t data_version, bool has_data_version,
                   const absl::optional<GURL>& debug_loss_report_url,
                   const absl::optional<GURL>& debug_win_report_url,
@@ -1863,7 +1863,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
                 EXPECT_EQ(bid_value, bid->bid);
                 EXPECT_EQ(base::NumberToString(bid_value), bid->ad);
                 EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
-                EXPECT_FALSE(alternate_bid);
+                EXPECT_FALSE(kanon_bid);
                 EXPECT_FALSE(has_data_version);
                 EXPECT_TRUE(errors.empty());
                 ++num_generate_bid_calls;
@@ -1949,8 +1949,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
-                mojom::BidderWorkletBidPtr alternate_bid, uint32_t data_version,
-                bool has_data_version,
+                mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
+                uint32_t data_version, bool has_data_version,
                 const absl::optional<GURL>& debug_loss_report_url,
                 const absl::optional<GURL>& debug_win_report_url,
                 double set_priority, bool has_set_priority,
@@ -1962,7 +1962,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
-              EXPECT_FALSE(alternate_bid);
+              EXPECT_FALSE(kanon_bid);
               EXPECT_EQ(10u, data_version);
               EXPECT_TRUE(has_data_version);
               EXPECT_TRUE(errors.empty());
@@ -2057,8 +2057,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
-                mojom::BidderWorkletBidPtr alternate_bid, uint32_t data_version,
-                bool has_data_version,
+                mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
+                uint32_t data_version, bool has_data_version,
                 const absl::optional<GURL>& debug_loss_report_url,
                 const absl::optional<GURL>& debug_win_report_url,
                 double set_priority, bool has_set_priority,
@@ -2070,7 +2070,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
-              EXPECT_FALSE(alternate_bid);
+              EXPECT_FALSE(kanon_bid);
               EXPECT_EQ(42u, data_version);
               EXPECT_TRUE(has_data_version);
               EXPECT_TRUE(errors.empty());
@@ -2171,8 +2171,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
-                mojom::BidderWorkletBidPtr alternate_bid, uint32_t data_version,
-                bool has_data_version,
+                mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
+                uint32_t data_version, bool has_data_version,
                 const absl::optional<GURL>& debug_loss_report_url,
                 const absl::optional<GURL>& debug_win_report_url,
                 double set_priority, bool has_set_priority,
@@ -2183,7 +2183,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
-              EXPECT_FALSE(alternate_bid);
+              EXPECT_FALSE(kanon_bid);
               EXPECT_EQ(22u, data_version);
               EXPECT_TRUE(has_data_version);
               EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
@@ -2264,8 +2264,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
-                mojom::BidderWorkletBidPtr alternate_bid, uint32_t data_version,
-                bool has_data_version,
+                mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
+                uint32_t data_version, bool has_data_version,
                 const absl::optional<GURL>& debug_loss_report_url,
                 const absl::optional<GURL>& debug_win_report_url,
                 double set_priority, bool has_set_priority,
@@ -2277,7 +2277,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
-              EXPECT_FALSE(alternate_bid);
+              EXPECT_FALSE(kanon_bid);
               EXPECT_EQ(i, data_version);
               EXPECT_TRUE(has_data_version);
               EXPECT_TRUE(errors.empty());
@@ -5471,9 +5471,11 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
   RunGenerateBidWithReturnValueExpectingResult(
       "",
       /*expected_bid=*/mojom::BidderWorkletBidPtr());
-  EXPECT_FALSE(alternate_bid_);
+  EXPECT_FALSE(kanon_bid_);
 
-  // Sole bid is unauthorized. No alternative is generated.
+  // Sole bid is unauthorized. The non-enforced bid is there, kanon-bid isn't.
+  // Since this is simulation mode, set_priority and errors should come from the
+  // unrestricted run.
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
@@ -5486,7 +5488,7 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/11);
-  ASSERT_FALSE(alternate_bid_);
+  ASSERT_FALSE(kanon_bid_);
 
   // Now authorize it.
   ads_kanon_.emplace(GURL("https://response.test/"), true);
@@ -5502,13 +5504,15 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/11);
-  EXPECT_FALSE(alternate_bid_);
+  ASSERT_TRUE(kanon_bid_);
+  EXPECT_TRUE(kanon_bid_->is_same_as_non_enforced());
 
   // Add a second ad, not authorized yet, with script that it will try it
-  // if it's in the ad vector. Since this is simulation, it will get returned,
-  // but also the one authorized one will be used for alternative.
+  // if it's in the ad vector.
   interest_group_ads_.emplace_back(GURL("https://response2.test/"),
                                    /*metadata=*/absl::nullopt);
+  // Non-enforced bid will be 2. Since this is simulated mode, other things are
+  // from the same run, so expected_set_priority is 12.
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:interestGroup.ads.length,
@@ -5522,11 +5526,12 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/12);
-  ASSERT_TRUE(alternate_bid_);
-  EXPECT_EQ(alternate_bid_->ad, R"(["ad"])");
-  EXPECT_EQ(alternate_bid_->bid, 1);
-  EXPECT_EQ(alternate_bid_->render_url, GURL("https://response.test/"));
-  EXPECT_EQ(12, set_priority_);
+  // k-anon-enforced bid will be 1.
+  ASSERT_TRUE(kanon_bid_);
+  ASSERT_FALSE(kanon_bid_->is_same_as_non_enforced());
+  EXPECT_EQ(kanon_bid_->get_bid()->ad, R"(["ad"])");
+  EXPECT_EQ(kanon_bid_->get_bid()->bid, 1);
+  EXPECT_EQ(kanon_bid_->get_bid()->render_url, GURL("https://response.test/"));
 
   // Authorize it.
   ads_kanon_.emplace(GURL("https://response2.test/"), true);
@@ -5543,7 +5548,8 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/12);
-  EXPECT_FALSE(alternate_bid_);
+  ASSERT_TRUE(kanon_bid_);
+  EXPECT_TRUE(kanon_bid_->is_same_as_non_enforced());
 }
 
 TEST_F(BidderWorkletTest, KAnonEnforce) {
@@ -5557,14 +5563,19 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
   RunGenerateBidWithReturnValueExpectingResult(
       "",
       /*expected_bid=*/mojom::BidderWorkletBidPtr());
-  EXPECT_FALSE(alternate_bid_);
+  EXPECT_FALSE(kanon_bid_);
 
-  // Sole bid is unauthorized.
+  // Sole bid is unauthorized. The non-enforced bid is there, kanon-bid isn't.
+  // Since this is enforcement mode, set_priority and errors should come from
+  // the restricted run.
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
           kSideEffectScript),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bid=*/
+      mojom::BidderWorkletBid::New(
+          R"(["ad"])", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bid render URL 'https://response.test/'"
@@ -5572,10 +5583,7 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/10);
-  ASSERT_TRUE(alternate_bid_);
-  EXPECT_EQ(alternate_bid_->ad, R"(["ad"])");
-  EXPECT_EQ(alternate_bid_->bid, 1);
-  EXPECT_EQ(alternate_bid_->render_url, GURL("https://response.test/"));
+  ASSERT_FALSE(kanon_bid_);
 
   // Now authorize it.
   ads_kanon_.emplace(GURL("https://response.test/"), true);
@@ -5591,29 +5599,34 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/11);
-  EXPECT_FALSE(alternate_bid_);
+  ASSERT_TRUE(kanon_bid_);
+  EXPECT_TRUE(kanon_bid_->is_same_as_non_enforced());
 
   // Add a second ad, not authorized yet, with script that it will try it
   // if it's in the ad vector.
   interest_group_ads_.emplace_back(GURL("https://response2.test/"),
                                    /*metadata=*/absl::nullopt);
+  // Non-enforced bid will be 2. Since this is enforced mode, other things are
+  // from the restricted run, so expected_set_priority is 11.
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:interestGroup.ads.length,
           render:interestGroup.ads[interestGroup.ads.length - 1].renderUrl})",
           kSideEffectScript),
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 1, GURL("https://response.test/"),
+          R"(["ad"])", 2, GURL("https://response2.test/"),
           /*ad_components=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/11);
-  ASSERT_TRUE(alternate_bid_);
-  EXPECT_EQ(alternate_bid_->ad, R"(["ad"])");
-  EXPECT_EQ(alternate_bid_->bid, 2);
-  EXPECT_EQ(alternate_bid_->render_url, GURL("https://response2.test/"));
+  // k-anon-enforced bid will be 1.
+  ASSERT_TRUE(kanon_bid_);
+  ASSERT_FALSE(kanon_bid_->is_same_as_non_enforced());
+  EXPECT_EQ(kanon_bid_->get_bid()->ad, R"(["ad"])");
+  EXPECT_EQ(kanon_bid_->get_bid()->bid, 1);
+  EXPECT_EQ(kanon_bid_->get_bid()->render_url, GURL("https://response.test/"));
 
   // Authorize it.
   ads_kanon_.emplace(GURL("https://response2.test/"), true);
@@ -5630,7 +5643,8 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/12);
-  EXPECT_FALSE(alternate_bid_);
+  ASSERT_TRUE(kanon_bid_);
+  EXPECT_TRUE(kanon_bid_->is_same_as_non_enforced());
 }
 
 TEST(BidderWorklerTest, IsKAnonURL) {

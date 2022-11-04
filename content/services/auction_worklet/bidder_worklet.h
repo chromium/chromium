@@ -228,7 +228,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     // must be invoked on the main sequence, and passed to the V8State.
     using GenerateBidCallbackInternal = base::OnceCallback<void(
         mojom::BidderWorkletBidPtr bid,
-        mojom::BidderWorkletBidPtr alternate_bid,
+        mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
         absl::optional<uint32_t> bidding_signals_data_version,
         absl::optional<GURL> debug_loss_report_url,
         absl::optional<GURL> debug_win_report_url,
@@ -412,7 +412,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
   void DeliverBidCallbackOnUserThread(
       GenerateBidTaskList::iterator task,
       mojom::BidderWorkletBidPtr bid,
-      mojom::BidderWorkletBidPtr alternate_bid,
+      mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
       absl::optional<uint32_t> bidding_signals_data_version,
       absl::optional<GURL> debug_loss_report_url,
       absl::optional<GURL> debug_win_report_url,

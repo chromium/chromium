@@ -566,57 +566,62 @@ void BidderWorklet::V8State::GenerateBid(
     return;
   }
 
-  mojom::BidderWorkletBidPtr bid;
-  mojom::BidderWorkletBidPtr alternate_bid;
+  mojom::BidderWorkletBidPtr bid = std::move(result->bid);
+  mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid;
 
-  if (kanon_mode != mojom::KAnonymityBidMode::kNone &&
-      !IsKAnon(bidder_worklet_non_shared_params.get(), result->bid)) {
-    // Main run got a non-k-anon result, and we care about k-anonymity. Re-run
-    // the bidder with non-k-anon ads hidden.
-    absl::optional<SingleGenerateBidResult> restricted_result =
-        GenerateSingleBid(
-            bidder_worklet_non_shared_params, interest_group_join_origin,
-            base::OptionalToPtr(auction_signals_json),
-            base::OptionalToPtr(per_buyer_signals_json), per_buyer_timeout,
-            browser_signal_seller_origin,
-            base::OptionalToPtr(browser_signal_top_level_seller_origin),
-            bidding_browser_signals, auction_start_time,
-            trusted_bidding_signals_result, trace_id,
-            /*restrict_to_kanon_ads=*/true);
-
-    if (kanon_mode == mojom::KAnonymityBidMode::kEnforce) {
-      // We are enforcing the k-anonymity, so the restricted result is our main
-      // result, and the unrestricted first run is the alternate ad.
-      alternate_bid = std::move(result->bid);
-      result = std::move(restricted_result);
-      if (!result.has_value()) {
-        PostErrorBidCallbackToUserThread(std::move(callback));
-        return;
-      }
-      bid = std::move(result->bid);
+  // No need for `kanon_bid` if not doing anything with k-anon, or if bidding
+  // fails w/o the restriction.  This assumes it follows it won't succeed with
+  // k-anon restriction, but if we don't we will have to re-run every rejected
+  // bid, which is unreasonable.
+  if (kanon_mode != mojom::KAnonymityBidMode::kNone && bid) {
+    if (IsKAnon(bidder_worklet_non_shared_params.get(), bid)) {
+      // Result is already k-anon so it's the same for both runs.
+      kanon_bid =
+          mojom::BidderWorkletKAnonEnforcedBid::NewSameAsNonEnforced(nullptr);
     } else {
-      DCHECK_EQ(kanon_mode, mojom::KAnonymityBidMode::kSimulate);
-      // We are collecting metrics on k-anonymity only, so we don't want to
-      // change the result of normal run, but we still collect the anonymized
-      // as an alternative, so we can collect metrics.
-      bid = std::move(result->bid);
-      if (restricted_result.has_value())
-        alternate_bid = std::move(restricted_result->bid);
+      // Main run got a non-k-anon result, and we care about k-anonymity. Re-run
+      // the bidder with non-k-anon ads hidden.
+      absl::optional<SingleGenerateBidResult> restricted_result =
+          GenerateSingleBid(
+              bidder_worklet_non_shared_params, interest_group_join_origin,
+              base::OptionalToPtr(auction_signals_json),
+              base::OptionalToPtr(per_buyer_signals_json), per_buyer_timeout,
+              browser_signal_seller_origin,
+              base::OptionalToPtr(browser_signal_top_level_seller_origin),
+              bidding_browser_signals, auction_start_time,
+              trusted_bidding_signals_result, trace_id,
+              /*restrict_to_kanon_ads=*/true);
+      if (restricted_result.has_value() && restricted_result->bid) {
+        kanon_bid = mojom::BidderWorkletKAnonEnforcedBid::NewBid(
+            std::move(restricted_result->bid));
+      }
+
+      if (kanon_mode == mojom::KAnonymityBidMode::kEnforce) {
+        // We are enforcing the k-anonymity, so the restricted result is the one
+        // to use for reporting, etc., and needs to succeed.
+        if (!restricted_result.has_value()) {
+          PostErrorBidCallbackToUserThread(std::move(callback));
+          return;
+        }
+        result = std::move(restricted_result);
+      } else {
+        DCHECK_EQ(kanon_mode, mojom::KAnonymityBidMode::kSimulate);
+        // Here, `result` is already what we want for reporting, etc., so
+        // nothing actually to do in this case.
+      }
     }
-  } else {
-    bid = std::move(result->bid);
   }
 
   user_thread_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          std::move(callback), std::move(bid), std::move(alternate_bid),
-          std::move(result->bidding_signals_data_version),
-          std::move(result->debug_loss_report_url),
-          std::move(result->debug_win_report_url),
-          std::move(result->set_priority),
-          std::move(result->update_priority_signals_overrides),
-          std::move(result->pa_requests), std::move(result->error_msgs)));
+      base::BindOnce(std::move(callback), std::move(bid), std::move(kanon_bid),
+                     std::move(result->bidding_signals_data_version),
+                     std::move(result->debug_loss_report_url),
+                     std::move(result->debug_win_report_url),
+                     std::move(result->set_priority),
+                     std::move(result->update_priority_signals_overrides),
+                     std::move(result->pa_requests),
+                     std::move(result->error_msgs)));
 }
 
 absl::optional<BidderWorklet::V8State::SingleGenerateBidResult>
@@ -939,7 +944,7 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
       FROM_HERE,
       base::BindOnce(
           std::move(callback), mojom::BidderWorkletBidPtr(),
-          mojom::BidderWorkletBidPtr(),
+          mojom::BidderWorkletKAnonEnforcedBidPtr(),
           /*bidding_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt,
@@ -1209,7 +1214,7 @@ void BidderWorklet::RunReportWin(ReportWinTaskList::iterator task) {
 void BidderWorklet::DeliverBidCallbackOnUserThread(
     GenerateBidTaskList::iterator task,
     mojom::BidderWorkletBidPtr bid,
-    mojom::BidderWorkletBidPtr alternate_bid,
+    mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
     absl::optional<uint32_t> bidding_signals_data_version,
     absl::optional<GURL> debug_loss_report_url,
     absl::optional<GURL> debug_win_report_url,
@@ -1227,7 +1232,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
         std::move(task->trusted_bidding_signals_error_msg).value());
   }
   task->generate_bid_client->OnGenerateBidComplete(
-      std::move(bid), std::move(alternate_bid),
+      std::move(bid), std::move(kanon_bid),
       bidding_signals_data_version.value_or(0),
       bidding_signals_data_version.has_value(), debug_loss_report_url,
       debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),

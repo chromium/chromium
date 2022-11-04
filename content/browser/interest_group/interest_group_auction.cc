@@ -322,7 +322,7 @@ class InterestGroupAuction::BuyerHelper
 
   void OnGenerateBidComplete(
       auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
-      auction_worklet::mojom::BidderWorkletBidPtr alternate_bid,
+      auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_kanon_bid,
       uint32_t bidding_signals_data_version,
       bool has_bidding_signals_data_version,
       const absl::optional<GURL>& debug_loss_report_url,
