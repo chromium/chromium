@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>View transitions: ensure correct style inheritance for pseudo tree</title>
+<link rel="help" href="https://github.com/WICG/view-transitions">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+::page-transition {
+  background-color: red;
+}
+
+::page-transition-container(*) {
+  background-color: inherit;
+  color: blue;
+}
+
+::page-transition-image-wrapper(*) {
+  color: inherit;
+  overflow-x: clip;
+}
+
+::page-transition-outgoing-image(*), ::page-transition-incoming-image(*) {
+  overflow-x: inherit;
+}
+</style>
+
+<script>
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+    let transition = document.startViewTransition();
+    transition.ready.then(() => {
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition").backgroundColor, "rgb(255, 0, 0)", ":page-transition");
+
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").backgroundColor, "rgb(255, 0, 0)", "container");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").color, "rgb(0, 0, 255)", "container");
+
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").color, "rgb(0, 0, 255)", "wrapper");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").overflowX, "clip", "wrapper");
+
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(root)").overflowX, "clip", "outgoing");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-incoming-image(root)").overflowX, "clip", "incoming");
+    });
+    await transition.finished;
+    resolve();
+  });
+}, "style inheritance of pseudo elements");
+</script>
