@@ -835,7 +835,7 @@ BASE_FEATURE(kExoLinuxDmabufV3,
 // e.g. available KMS hardware planes.
 BASE_FEATURE(kExoLinuxDmabufV4,
              "ExoLinuxDmabufV4",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable or disable use of ordinal (unaccelerated) motion by Exo clients.
 BASE_FEATURE(kExoOrdinalMotion,
