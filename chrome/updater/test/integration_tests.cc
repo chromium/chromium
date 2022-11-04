@@ -19,6 +19,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -124,6 +125,7 @@ class IntegrationTest : public ::testing::Test {
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
 
   void Uninstall() {
+    EXPECT_TRUE(WaitForUpdaterExit());
     PrintLog();
     CopyLog();
     test_commands_->Uninstall();
