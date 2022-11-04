@@ -1621,8 +1621,6 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   } else {
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted);
-    UMA_HISTOGRAM_COUNTS_100("PasswordManager.CleanedUpPasswords",
-                             forms_to_be_deleted.size());
   }
 #endif
 

@@ -1226,7 +1226,6 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   complete_form.in_store = PasswordForm::Store::kProfileStore;
   incomplete_form.in_store = PasswordForm::Store::kProfileStore;
 
-
   // Both still exist now.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(2U, result.size());
@@ -2120,16 +2119,10 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
 
 // Check histograms.
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
-  histogram_tester.ExpectUniqueSample("PasswordManager.CleanedUpPasswords", 2,
-                                      1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue",
       metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted,
       1);
-#else
-  EXPECT_TRUE(
-      histogram_tester.GetAllSamples("PasswordManager.CleanedUpPasswords")
-          .empty());
 #endif
 }
 
@@ -2162,9 +2155,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {
   EXPECT_EQ(DatabaseCleanupResult::kEncryptionUnavailable,
             db.DeleteUndecryptableLogins());
 
-  EXPECT_TRUE(
-      histogram_tester.GetAllSamples("PasswordManager.CleanedUpPasswords")
-          .empty());
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue",
       metrics_util::DeleteCorruptedPasswordsResult::kEncryptionUnavailable, 1);

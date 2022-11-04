@@ -1047,18 +1047,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.CleanedUpPasswords" units="units"
-    expires_after="2022-12-05">
-  <owner>vasilii@chromium.org</owner>
-  <owner>src/components/password_manager/OWNERS</owner>
-  <summary>
-    Collects positive number of undecryptable passwords that were successfully
-    deleted when syncing was enabled. Recorded for sync users for each profile
-    if there is at least one password deleted when merging logins from Sync and
-    local database.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.CompromisedCredentials2.{Issue}"
     units="credentials" expires_after="M110">
   <owner>vasilii@chromium.org</owner>
@@ -2443,7 +2431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStoreInitResult" enum="BooleanSuccess"
-    expires_after="M110">
+    expires_after="2023-07-30">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
