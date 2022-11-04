@@ -174,6 +174,7 @@ class _TargetHost(object):
             stderr=subprocess.PIPE)
 
     def run_test_component(self, url, cmd_line):
+        # TODO(crbug.com/1381116): migrate off of `ffx test run` when possible
         return self._ffx_session.test_run(self._target.GetFfxTarget(), url,
                                           cmd_line)
 
