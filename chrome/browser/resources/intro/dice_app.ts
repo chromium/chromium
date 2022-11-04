@@ -81,7 +81,7 @@ export class IntroAppElement extends IntroAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
     this.addResizeObserver_();
-    this.setupViewManager_();
+    this.setupViewManager_(new URLSearchParams(window.location.search));
   }
 
   override disconnectedCallback() {
@@ -89,8 +89,7 @@ export class IntroAppElement extends IntroAppElementBase {
     this.resizeObserver_!.disconnect();
   }
 
-  private async setupViewManager_() {
-    const queryParams = new URLSearchParams(window.location.search);
+  private async setupViewManager_(queryParams: URLSearchParams) {
     if (!queryParams.has('noAnimations')) {
       this.$.viewManager.switchView('splash', 'fade-in', 'fade-out');
 
@@ -117,6 +116,10 @@ export class IntroAppElement extends IntroAppElementBase {
           'division-line', safeZone.scrollHeight > safeZone.clientHeight);
     });
     this.resizeObserver_.observe(safeZone);
+  }
+
+  async setupViewManagerForTest(queryParams: URLSearchParams) {
+    await (this.setupViewManager_(queryParams));
   }
 }
 
