@@ -66,6 +66,7 @@ TEST_F(FaviconWebStateDispatcherTest, ReturnWebState) {
 
   dispatcher.ReturnWebState(std::move(web_state));
 
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(0.5, condition));
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Milliseconds(500), condition));
 }
 }  // namespace reading_list
