@@ -8,20 +8,24 @@ declare_args() {
   # resources).
   is_chrome_branded = false
 
-  # Whether to enable the Chrome for Testing (CfT) branding flavor. False means
-  # to follow `is_chrome_branded`, true means to select CfT, which implies
-  # `is_chrome_branded = True` with some overrides on top.
+  # Whether to enable the Chrome for Testing (CfT) branding flavor. This flag
+  # is not compatible with `is_chrome_branded`, therefore both of them cannot
+  # be simultaneously enabled.
   #
   # Note: CfT is not intended to be used as a test runner to run tests in this
   # repository.
   #
-  # Design doc: https://goo.gle/chrome-for-testing
+  # Design document: https://goo.gle/chrome-for-testing
   is_chrome_for_testing_branded = false
 
   # Set to true to enable settings for high end Android devices, typically
   # enhancing speed at the expense of resources such as binary sizes and memory.
   is_high_end_android = false
 }
+
+assert(
+    !is_chrome_for_testing_branded || !is_chrome_branded,
+    "Chrome for Testing (`is_chrome_for_testing_branded`) requires Chromium flavor (`is_chrome_branded = False`)")
 
 declare_args() {
   # Refers to the subdirectory for branding in various places including
@@ -30,9 +34,7 @@ declare_args() {
   # `branding_path_product` must not contain slashes.
   if (is_chrome_for_testing_branded) {
     branding_path_component = "google_chrome/google_chrome_for_testing"
-
-    # CfT effectively uses the same branding as google_chrome, modulo icon assets.
-    branding_path_product = "google_chrome"
+    branding_path_product = "chromium"
   } else if (is_chrome_branded) {
     branding_path_component = "google_chrome"
     branding_path_product = "google_chrome"
