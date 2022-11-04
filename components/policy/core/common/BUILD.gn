@@ -30,6 +30,36 @@ source_set("policy_namespace_internal") {
   ]
 }
 
+source_set("util") {
+  sources = [
+    "cloud/cloud_policy_util.cc",
+    "cloud/cloud_policy_util.h",
+  ]
+
+  configs += [ "//components/policy:component_implementation" ]
+
+  public_deps = [
+    ":common_constants",
+    "//components/policy/proto",
+    "//components/version_info",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//components/user_manager" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup:startup" ]
+  }
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/system" ]
+  }
+}
+
 source_set("internal") {
   visibility = [ "//components/policy/*" ]
 
@@ -65,8 +95,6 @@ source_set("internal") {
     "cloud/cloud_policy_service.h",
     "cloud/cloud_policy_store.cc",
     "cloud/cloud_policy_store.h",
-    "cloud/cloud_policy_util.cc",
-    "cloud/cloud_policy_util.h",
     "cloud/cloud_policy_validator.cc",
     "cloud/cloud_policy_validator.h",
     "cloud/component_cloud_policy_service.cc",
@@ -179,6 +207,7 @@ source_set("internal") {
   public_deps = [
     ":common_constants",
     ":policy_namespace",
+    ":util",
     "//components/policy:generated",
     "//components/policy/proto",
     "//components/reporting/proto:record_constants",

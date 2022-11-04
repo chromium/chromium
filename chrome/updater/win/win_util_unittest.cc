@@ -186,7 +186,10 @@ TEST(WinUtil, GetOSVersion) {
   // Compare to the version from `::GetVersionEx`.
   OSVERSIONINFOEX os = {};
   os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   EXPECT_TRUE(::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&os)));
+#pragma clang diagnostic pop
 
   EXPECT_EQ(rtl_os_version->dwOSVersionInfoSize, os.dwOSVersionInfoSize);
   EXPECT_EQ(rtl_os_version->dwMajorVersion, os.dwMajorVersion);

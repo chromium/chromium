@@ -148,7 +148,11 @@ TEST(PersistedDataTest, LastOSVersion) {
 
   OSVERSIONINFOEX os = {};
   os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   EXPECT_TRUE(::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&os)));
+#pragma clang diagnostic pop
 
   EXPECT_EQ(metadata_os.dwOSVersionInfoSize, os.dwOSVersionInfoSize);
   EXPECT_EQ(metadata_os.dwMajorVersion, os.dwMajorVersion);
