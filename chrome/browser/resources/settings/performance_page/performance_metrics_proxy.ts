@@ -11,6 +11,9 @@ export enum BatterySaverModeState {
   ENABLED_BELOW_THRESHOLD = 1,
   ENABLED_ON_BATTERY = 2,
   ENABLED = 3,
+
+  // Must be last.
+  COUNT = 4,
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -19,11 +22,9 @@ export enum HighEfficiencyModeExceptionListAction {
   ADD = 0,
   EDIT = 1,
   REMOVE = 2,
-}
 
-function getNumericEnumLength(e: Object) {
-  // numeric enums have reverse mapping when compiled to js, so must divide by 2
-  return Object.keys(e).length / 2;
+  // Must be last.
+  COUNT = 3,
 }
 
 export interface PerformanceMetricsProxy {
@@ -37,7 +38,7 @@ export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
   recordBatterySaverModeChanged(state: BatterySaverModeState) {
     chrome.metricsPrivate.recordEnumerationValue(
         'PerformanceControls.BatterySaver.SettingsChangeMode', state,
-        getNumericEnumLength(BatterySaverModeState));
+        BatterySaverModeState.COUNT);
   }
 
   recordHighEfficiencyModeChanged(enabled: boolean): void {
@@ -48,7 +49,7 @@ export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
   recordExceptionListAction(action: HighEfficiencyModeExceptionListAction) {
     chrome.metricsPrivate.recordEnumerationValue(
         'PerformanceControls.HighEfficiency.SettingsChangeExceptionList',
-        action, getNumericEnumLength(HighEfficiencyModeExceptionListAction));
+        action, HighEfficiencyModeExceptionListAction.COUNT);
   }
 
   static getInstance(): PerformanceMetricsProxy {
