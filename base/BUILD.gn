@@ -4752,6 +4752,11 @@ fuzzer_test("string_tokenizer_fuzzer") {
   deps = [ "//base" ]
 }
 
+fuzzer_test("substring_set_matcher_fuzzer") {
+  sources = [ "substring_set_matcher/substring_set_matcher_fuzzer.cc" ]
+  deps = [ "//base" ]
+}
+
 fuzzer_test("time_delta_from_string_fuzzer") {
   sources = [ "time/time_delta_from_string_fuzzer.cc" ]
   deps = [ "//base" ]
