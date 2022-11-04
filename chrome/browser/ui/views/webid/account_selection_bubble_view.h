@@ -35,6 +35,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Used to observe changes to the account selection bubble.
   class Observer {
    public:
+    enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
+
     // Called when the user either selects the account from the multi-account
     // chooser or clicks the "continue" button.
     // Takes `account` as well as `idp_data` since passing `account_id` is
@@ -45,7 +47,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
         const IdentityProviderDisplayData& idp_data) = 0;
 
     // Called when the user clicks "privacy policy" or "terms of service" link.
-    virtual void OnLinkClicked(const GURL& url) = 0;
+    virtual void OnLinkClicked(LinkType link_type, const GURL& url) = 0;
 
     // Called when the user clicks "back" button.
     virtual void OnBackButtonClicked() = 0;

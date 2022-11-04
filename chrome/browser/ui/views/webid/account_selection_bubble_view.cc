@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/weak_ptr.h"
@@ -660,17 +662,21 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   int disclosure_resource_id = SelectDisclosureTextResourceId(
       client_data.privacy_policy_url, client_data.terms_of_service_url);
 
-  // The order that the links are added to `link_urls` should match the order of
+  // The order that the links are added to `link_data` should match the order of
   // the links in `disclosure_resource_id`.
-  std::vector<GURL> link_urls;
-  if (!client_data.privacy_policy_url.is_empty())
-    link_urls.push_back(client_data.privacy_policy_url);
-  if (!client_data.terms_of_service_url.is_empty())
-    link_urls.push_back(client_data.terms_of_service_url);
+  std::vector<std::pair<Observer::LinkType, GURL>> link_data;
+  if (!client_data.privacy_policy_url.is_empty()) {
+    link_data.emplace_back(Observer::LinkType::PRIVACY_POLICY,
+                           client_data.privacy_policy_url);
+  }
+  if (!client_data.terms_of_service_url.is_empty()) {
+    link_data.emplace_back(Observer::LinkType::TERMS_OF_SERVICE,
+                           client_data.terms_of_service_url);
+  }
 
   // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
   std::vector<std::u16string> replacements = {idp_data.idp_etld_plus_one_};
-  replacements.insert(replacements.end(), link_urls.size() * 2,
+  replacements.insert(replacements.end(), link_data.size() * 2,
                       std::u16string());
 
   std::vector<size_t> offsets;
@@ -679,11 +685,12 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   disclosure_label->SetText(disclosure_text);
 
   size_t offset_index = 1u;
-  for (const GURL& link_url : link_urls) {
+  for (const std::pair<Observer::LinkType, GURL>& link_data_item : link_data) {
     disclosure_label->AddStyleRange(
         gfx::Range(offsets[offset_index], offsets[offset_index + 1]),
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &Observer::OnLinkClicked, base::Unretained(observer_), link_url)));
+            &Observer::OnLinkClicked, base::Unretained(observer_),
+            link_data_item.first, link_data_item.second)));
     offset_index += 2;
   }
 

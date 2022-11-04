@@ -184,7 +184,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
                                                   idp_data);
 }
 
-void FedCmAccountSelectionView::OnLinkClicked(const GURL& url) {
+void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
+                                              const GURL& url) {
   Browser* browser =
       chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
   TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -192,6 +193,16 @@ void FedCmAccountSelectionView::OnLinkClicked(const GURL& url) {
   DCHECK(tab_strip_model);
   // Add a tab for the URL at the end of the tab strip, in the foreground.
   tab_strip_model->delegate()->AddTabAt(url, -1, true);
+
+  switch (link_type) {
+    case LinkType::TERMS_OF_SERVICE:
+      UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.TermsOfServiceClicked", true);
+      break;
+
+    case LinkType::PRIVACY_POLICY:
+      UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
+      break;
+  }
 }
 
 void FedCmAccountSelectionView::OnBackButtonClicked() {

@@ -83,7 +83,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionBubbleView::Observer:
   void OnAccountSelected(const Account& account,
                          const IdentityProviderDisplayData& idp_data) override;
-  void OnLinkClicked(const GURL& url) override;
+  void OnLinkClicked(LinkType link_type, const GURL& url) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked() override;
 
