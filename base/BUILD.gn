@@ -4752,6 +4752,11 @@ fuzzer_test("string_number_conversions_fuzzer") {
   deps = [ "//base" ]
 }
 
+fuzzer_test("string_pattern_fuzzer") {
+  sources = [ "strings/pattern_fuzzer.cc" ]
+  deps = [ "//base" ]
+}
+
 fuzzer_test("string_tokenizer_fuzzer") {
   sources = [ "strings/string_tokenizer_fuzzer.cc" ]
   deps = [ "//base" ]
