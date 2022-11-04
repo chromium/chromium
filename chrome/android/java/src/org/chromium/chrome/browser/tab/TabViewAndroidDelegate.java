@@ -14,7 +14,6 @@ import android.view.DragEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -62,7 +61,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
 
             boolean supportDropInChrome = ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_DROP_IN_CHROME, false);
-            if (VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 DragAndDropBrowserDelegate browserDelegate =
                         new DragAndDropBrowserDelegateImpl(mTab, supportDropInChrome);
                 getDragAndDropDelegate().setDragAndDropBrowserDelegate(browserDelegate);
@@ -193,7 +192,6 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         }
 
         @Override
-        @RequiresApi(Build.VERSION_CODES.N)
         public DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent) {
             Activity activity = ContextUtils.activityFromContext(mTab.getContext());
             if (activity == null) {

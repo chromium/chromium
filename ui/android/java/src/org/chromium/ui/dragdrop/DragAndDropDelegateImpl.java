@@ -14,7 +14,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
@@ -31,7 +30,6 @@ import android.widget.ImageView;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
@@ -100,7 +98,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
      * @see ViewAndroidDelegate#startDragAndDrop(Bitmap, DropDataAndroid)
      */
     @Override
-    @RequiresApi(api = VERSION_CODES.N)
     public boolean startDragAndDrop(@NonNull View containerView, @NonNull Bitmap shadowImage,
             @NonNull DropDataAndroid dropData) {
         // Drag and drop is disabled when gesture related a11y service is enabled.
@@ -229,7 +226,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         }
     }
 
-    @RequiresApi(api = VERSION_CODES.N)
     protected int buildFlags(DropDataAndroid dropData) {
         if (dropData.isPlainText()) {
             return View.DRAG_FLAG_GLOBAL;
@@ -372,9 +368,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             return;
         }
         // TODO(shuyng): Read image data in background thread.
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            dragAndDropPermissions.release();
-        }
+        dragAndDropPermissions.release();
     }
 
     private void onDragEnd(DragEvent dragEndEvent) {

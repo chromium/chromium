@@ -18,7 +18,6 @@ import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 
@@ -251,11 +250,11 @@ public class ViewAndroidDelegate {
      * @param shadowImage The shadow image for the dragged text.
      * @param dropData The drop data presenting the drag target.
      */
-    @SuppressWarnings("deprecation")
-    @RequiresApi(Build.VERSION_CODES.N)
     @CalledByNative
     private boolean startDragAndDrop(Bitmap shadowImage, DropDataAndroid dropData) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) return false;
+        // Only enabled on Android O+ to mitigate known issue for drag and drop in Android system.
+        // See b/245614280.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) return false;
 
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null) return false;
