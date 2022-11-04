@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 7.4.0-alpha05" type="baseline" client="" dependencies="true" name="" variant="all" version="7.4.0-alpha05">
+<issues format="6" by="lint 8.0.0-alpha06" type="baseline" client="" dependencies="true" name="" variant="all" version="8.0.0-alpha06">
 
     <issue
         id="LintError"
-        message="../../components/cronet/android/lint-baseline.xml (relative to /usr/local/google/home/wnwen/z1/src/out/Cronet) does not exist"
+        message="../../components/cronet/android/lint-baseline.xml (relative to /usr/local/google/code/clankium/src/out/Lint-Default) does not exist"
         errorLine1="  &lt;baseline file=&quot;../../components/cronet/android/lint-baseline.xml&quot;/>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -18,8 +18,8 @@
         errorLine1="@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH) // TrafficStats only available on ICS"
         errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/components/cronet/android/java/src/org/chromium/net/impl/JavaUrlRequest.java"
-            line="50"
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/JavaUrlRequest.java"
+            line="54"
             column="1"/>
     </issue>
 
@@ -29,7 +29,7 @@
         errorLine1="        assert calledOnValidThread();"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java"
+            file="../../components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java"
             line="100"
             column="16"/>
     </issue>
@@ -40,7 +40,7 @@
         errorLine1="        assert calledOnValidThread();"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java"
+            file="../../components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java"
             line="143"
             column="16"/>
     </issue>
