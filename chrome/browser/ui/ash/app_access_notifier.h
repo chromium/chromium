@@ -58,8 +58,10 @@ class AppAccessNotifier
 
   // Get the app short name of the app with `app_id`.
   static absl::optional<std::u16string> GetAppShortNameFromAppId(
-      std::string app_id,
-      apps::AppRegistryCache* registry_cache);
+      std::string app_id);
+
+  // Launch the native settings page of the app with `app_id`.
+  static void LaunchAppSettings(const std::string& app_id);
 
  protected:
   // Returns the active user's account ID if we have an active user, an empty
@@ -78,12 +80,8 @@ class AppAccessNotifier
   // account ID.
   apps::AppCapabilityAccessCache* GetActiveUserAppCapabilityAccessCache();
 
-  // Returns the "short name" of the registered app to most recently attempt to
-  // access the microphone, or an empty (optional) string if none exists. Used
-  // for the microphone mute notification.
-  absl::optional<std::u16string> GetMostRecentAppAccessingMicrophone(
-      apps::AppCapabilityAccessCache* capability_cache,
-      apps::AppRegistryCache* registry_cache);
+  // Get the current active instance of AppRegistryCache.
+  static apps::AppRegistryCache* GetActiveUserAppRegistryCache();
 
   // List of IDs of apps that have attempted to use the microphone, in order of
   // most-recently-launched.

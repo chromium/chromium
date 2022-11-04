@@ -3721,6 +3721,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PrivacyIndicators.AppAccessUpdate.Type" enum="AppType"
+    expires_after="2023-09-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the type of the app that change the status of camera/microphone
+    access. Emitted when there is any change in the status of camera/microphone
+    access.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PrivacyIndicators.LaunchSettings" enum="AppType"
+    expires_after="2023-09-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the type of the app that associate with the privacy indicators
+    notification whose settings button is clicked. Emitted when the user click
+    on the settings button of that notification.
+  </summary>
+</histogram>
+
 <histogram name="Ash.PrivacyIndicators.NumberOfAppsAccessingCamera"
     units="count" expires_after="2023-09-19">
   <owner>leandre@chromium.org</owner>

@@ -10,6 +10,8 @@
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -32,18 +34,6 @@ apps::AppCapabilityAccessCache* GetAppCapabilityAccessCache(
     AccountId account_id) {
   return apps::AppCapabilityAccessCacheWrapper::Get()
       .GetAppCapabilityAccessCache(account_id);
-}
-
-apps::AppRegistryCache* GetActiveUserAppRegistryCache() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile ||
-      !apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return nullptr;
-  }
-
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  return &proxy->AppRegistryCache();
 }
 
 absl::optional<std::u16string> MapAppIdToShortName(
@@ -72,18 +62,6 @@ void LaunchApp(const std::string& app_id) {
   // TODO(crbug/1351250): Finish this function.
 }
 
-// Launch the native settings page of the app with `app_id`.
-void LaunchAppSettings(const std::string& app_id) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile ||
-      !apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return;
-  }
-
-  apps::AppServiceProxyFactory::GetForProfile(profile)->OpenNativeSettings(
-      app_id);
-}
-
 }  // namespace
 
 AppAccessNotifier::AppAccessNotifier() {
@@ -108,9 +86,13 @@ absl::optional<std::u16string> AppAccessNotifier::GetAppAccessingMicrophone() {
   // A reg_cache and/or cap_cache of value nullptr is possible if we have
   // no active user, e.g. the login screen, so we test and return nullopt
   // in that case instead of using DCHECK().
-  if (!reg_cache || !cap_cache)
+  if (!reg_cache || !cap_cache ||
+      mic_using_app_ids[active_user_account_id_].empty()) {
     return absl::nullopt;
-  return GetMostRecentAppAccessingMicrophone(cap_cache, reg_cache);
+  }
+
+  return MapAppIdToShortName(mic_using_app_ids[active_user_account_id_].front(),
+                             cap_cache, reg_cache);
 }
 
 void AppAccessNotifier::OnCapabilityAccessUpdate(
@@ -124,16 +106,23 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     auto app_id = update.AppId();
 
     auto launch_app = base::BindRepeating(&LaunchApp, app_id);
-    auto launch_settings = base::BindRepeating(&LaunchAppSettings, app_id);
+    auto launch_settings =
+        base::BindRepeating(&AppAccessNotifier::LaunchAppSettings, app_id);
     ash::ModifyPrivacyIndicatorsNotification(
-        app_id,
-        GetAppShortNameFromAppId(app_id, GetActiveUserAppRegistryCache()),
-        is_camera_used, is_microphone_used,
+        app_id, GetAppShortNameFromAppId(app_id), is_camera_used,
+        is_microphone_used,
         base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(
             launch_app, launch_settings));
 
     ash::UpdatePrivacyIndicatorsView(app_id, is_camera_used,
                                      is_microphone_used);
+
+    auto* registry_cache = GetActiveUserAppRegistryCache();
+    if (registry_cache) {
+      base::UmaHistogramEnumeration(
+          "Ash.PrivacyIndicators.AppAccessUpdate.Type",
+          registry_cache->GetAppType(app_id));
+    }
   }
 
   if (is_microphone_used) {
@@ -173,9 +162,9 @@ void AppAccessNotifier::ActiveUserChanged(user_manager::User* active_user) {
 
 // static
 absl::optional<std::u16string> AppAccessNotifier::GetAppShortNameFromAppId(
-    std::string app_id,
-    apps::AppRegistryCache* registry_cache) {
+    std::string app_id) {
   absl::optional<std::u16string> name;
+  auto* registry_cache = GetActiveUserAppRegistryCache();
   if (!registry_cache)
     return name;
 
@@ -184,6 +173,24 @@ absl::optional<std::u16string> AppAccessNotifier::GetAppShortNameFromAppId(
       name = base::UTF8ToUTF16(update.ShortName());
   });
   return name;
+}
+
+// static
+void AppAccessNotifier::LaunchAppSettings(const std::string& app_id) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile ||
+      !apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return;
+  }
+
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OpenNativeSettings(
+      app_id);
+
+  auto* registry_cache = GetActiveUserAppRegistryCache();
+  if (registry_cache) {
+    base::UmaHistogramEnumeration("Ash.PrivacyIndicators.LaunchSettings",
+                                  registry_cache->GetAppType(app_id));
+  }
 }
 
 AccountId AppAccessNotifier::GetActiveUserAccountId() {
@@ -212,18 +219,21 @@ void AppAccessNotifier::CheckActiveUserChanged() {
   }
 }
 
-apps::AppCapabilityAccessCache*
-AppAccessNotifier::GetActiveUserAppCapabilityAccessCache() {
-  return GetAppCapabilityAccessCache(GetActiveUserAccountId());
+// static
+apps::AppRegistryCache* AppAccessNotifier::GetActiveUserAppRegistryCache() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile ||
+      !apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return nullptr;
+  }
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  return &proxy->AppRegistryCache();
 }
 
-absl::optional<std::u16string>
-AppAccessNotifier::GetMostRecentAppAccessingMicrophone(
-    apps::AppCapabilityAccessCache* capability_cache,
-    apps::AppRegistryCache* registry_cache) {
-  if (mic_using_app_ids[active_user_account_id_].empty())
-    return absl::nullopt;
-
-  return MapAppIdToShortName(mic_using_app_ids[active_user_account_id_].front(),
-                             capability_cache, registry_cache);
+apps::AppCapabilityAccessCache*
+AppAccessNotifier::GetActiveUserAppCapabilityAccessCache() {
+  return apps::AppCapabilityAccessCacheWrapper::Get()
+      .GetAppCapabilityAccessCache(GetActiveUserAccountId());
 }

@@ -14,7 +14,11 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
@@ -24,14 +28,19 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/features.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/message_center/message_center.h"
 
 namespace {
+
+constexpr char kPrivacyIndicatorsAppTypeHistogramName[] =
+    "Ash.PrivacyIndicators.AppAccessUpdate.Type";
+constexpr char kPrivacyIndicatorsLaunchSettingsHistogramName[] =
+    "Ash.PrivacyIndicators.LaunchSettings";
 
 // Check the visibility of privacy indicators in all displays.
 void ExpectPrivacyIndicatorsVisible(bool visible) {
@@ -69,13 +78,16 @@ class TestAppAccessNotifier : public AppAccessNotifier {
 
 class AppAccessNotifierBaseTest : public testing::Test {
  public:
-  AppAccessNotifierBaseTest() = default;
+  AppAccessNotifierBaseTest()
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   AppAccessNotifierBaseTest(const AppAccessNotifierBaseTest&) = delete;
   AppAccessNotifierBaseTest& operator=(const AppAccessNotifierBaseTest&) =
       delete;
   ~AppAccessNotifierBaseTest() override = default;
 
   void SetUp() override {
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+
     // Setting ash prefs for testing multi-display.
     ash::RegisterLocalStatePrefs(local_state_.registry(), /*for_test=*/true);
 
@@ -83,23 +95,28 @@ class AppAccessNotifierBaseTest : public testing::Test {
     params.local_state = &local_state_;
     ash_test_helper_.SetUp(std::move(params));
 
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     fake_user_manager_ = fake_user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 
-    microphone_mute_notification_delegate_ =
-        std::make_unique<TestAppAccessNotifier>();
+    app_access_notifier_ = std::make_unique<TestAppAccessNotifier>();
 
     SetupPrimaryUser();
   }
 
   void TearDown() override {
-    microphone_mute_notification_delegate_.reset();
+    app_access_notifier_.reset();
     ash_test_helper_.TearDown();
   }
 
   void SetupPrimaryUser() {
+    auto* primary_profile = testing_profile_manager_.CreateTestingProfile(
+        account_id_primary_user_.GetUserEmail());
+    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        account_id_primary_user_, false, user_manager::USER_TYPE_REGULAR,
+        primary_profile);
+
     registry_cache_primary_user_.SetAccountId(account_id_primary_user_);
     apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(
         account_id_primary_user_, &registry_cache_primary_user_);
@@ -107,11 +124,17 @@ class AppAccessNotifierBaseTest : public testing::Test {
         account_id_primary_user_);
     apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
         account_id_primary_user_, &capability_access_cache_primary_user_);
-    microphone_mute_notification_delegate_->SetFakeActiveUserAccountId(
-        account_id_primary_user_);
+
+    SetActiveUserAccountId(/*is_primary=*/true);
   }
 
   void SetupSecondaryUser() {
+    auto* secondary_profile = testing_profile_manager_.CreateTestingProfile(
+        account_id_secondary_user_.GetUserEmail());
+    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        account_id_secondary_user_, false, user_manager::USER_TYPE_REGULAR,
+        secondary_profile);
+
     registry_cache_secondary_user_.SetAccountId(account_id_secondary_user_);
     apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(
         account_id_secondary_user_, &registry_cache_secondary_user_);
@@ -119,28 +142,18 @@ class AppAccessNotifierBaseTest : public testing::Test {
         account_id_secondary_user_);
     apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
         account_id_secondary_user_, &capability_access_cache_secondary_user_);
-    microphone_mute_notification_delegate_->SetFakeActiveUserAccountId(
-        account_id_secondary_user_);
+
+    SetActiveUserAccountId(/*is_primary=*/false);
   }
 
   absl::optional<std::u16string> GetAppAccessingMicrophone() {
-    apps::AppCapabilityAccessCache* cap_cache =
-        (microphone_mute_notification_delegate_->GetActiveUserAccountId() ==
-         account_id_primary_user_)
-            ? &capability_access_cache_primary_user_
-            : &capability_access_cache_secondary_user_;
-    apps::AppRegistryCache* reg_cache =
-        (microphone_mute_notification_delegate_->GetActiveUserAccountId() ==
-         account_id_primary_user_)
-            ? &registry_cache_primary_user_
-            : &registry_cache_secondary_user_;
-    return microphone_mute_notification_delegate_
-        ->GetMostRecentAppAccessingMicrophone(cap_cache, reg_cache);
+    return app_access_notifier_->GetAppAccessingMicrophone();
   }
 
-  static apps::AppPtr MakeApp(const std::string app_id, const char* name) {
-    apps::AppPtr app =
-        std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
+  static apps::AppPtr MakeApp(const std::string app_id,
+                              const char* name,
+                              apps::AppType app_type) {
+    apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
     app->name = name;
     app->short_name = name;
     return app;
@@ -156,22 +169,19 @@ class AppAccessNotifierBaseTest : public testing::Test {
     return access;
   }
 
-  void LaunchAppUsingCameraOrMicrophone(const std::string id,
-                                        const char* name,
-                                        bool use_camera,
-                                        bool use_microphone) {
-    bool is_primary_user =
-        (microphone_mute_notification_delegate_->GetActiveUserAccountId() ==
-         account_id_primary_user_);
-    apps::AppRegistryCache* reg_cache = is_primary_user
-                                            ? &registry_cache_primary_user_
-                                            : &registry_cache_secondary_user_;
+  void LaunchAppUsingCameraOrMicrophone(
+      const std::string id,
+      const char* name,
+      bool use_camera,
+      bool use_microphone,
+      apps::AppType app_type = apps::AppType::kChromeApp) {
+    apps::AppRegistryCache* reg_cache =
+        app_access_notifier_->GetActiveUserAppRegistryCache();
     apps::AppCapabilityAccessCache* cap_cache =
-        is_primary_user ? &capability_access_cache_primary_user_
-                        : &capability_access_cache_secondary_user_;
+        app_access_notifier_->GetActiveUserAppCapabilityAccessCache();
 
     std::vector<apps::AppPtr> registry_deltas;
-    registry_deltas.push_back(MakeApp(id, name));
+    registry_deltas.push_back(MakeApp(id, name, app_type));
     reg_cache->OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
                       /*should_notify_initialized=*/false);
 
@@ -181,30 +191,37 @@ class AppAccessNotifierBaseTest : public testing::Test {
     cap_cache->OnCapabilityAccesses(std::move(capability_access_deltas));
   }
 
-  void SetActiveUserAccountId(AccountId id) {
-    microphone_mute_notification_delegate_->SetFakeActiveUserAccountId(id);
+  // Set the active account, whether to use the primary or secondary fake user
+  // account.
+  void SetActiveUserAccountId(bool is_primary) {
+    auto id =
+        is_primary ? account_id_primary_user_ : account_id_secondary_user_;
+    app_access_notifier_->SetFakeActiveUserAccountId(id);
+
+    fake_user_manager_->LoginUser(id);
+    fake_user_manager_->SwitchActiveUser(id);
   }
 
-  const std::string kPrimaryProfileName = "primary_profile";
   const AccountId account_id_primary_user_ =
-      AccountId::FromUserEmail(kPrimaryProfileName);
-  const std::string kSecondaryProfileName = "secondary_profile";
+      AccountId::FromUserEmail("primary_profile");
   const AccountId account_id_secondary_user_ =
-      AccountId::FromUserEmail(kSecondaryProfileName);
+      AccountId::FromUserEmail("secondary_profile");
 
-  std::unique_ptr<TestAppAccessNotifier> microphone_mute_notification_delegate_;
+  std::unique_ptr<TestAppAccessNotifier> app_access_notifier_;
 
   apps::AppRegistryCache registry_cache_primary_user_;
   apps::AppCapabilityAccessCache capability_access_cache_primary_user_;
   apps::AppRegistryCache registry_cache_secondary_user_;
   apps::AppCapabilityAccessCache capability_access_cache_secondary_user_;
 
-  user_manager::FakeUserManager* fake_user_manager_ = nullptr;
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   // This instance is needed for setting up `ash_test_helper_`.
   // See //docs/threading_and_tasks_testing.md.
   content::BrowserTaskEnvironment task_environment_;
+
+  TestingProfileManager testing_profile_manager_;
 
   // Use this for testing multi-display.
   TestingPrefServiceSimple local_state_;
@@ -334,7 +351,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
   SetupSecondaryUser();
 
   // Primary user is the active user.
-  SetActiveUserAccountId(account_id_primary_user_);
+  SetActiveUserAccountId(/*is_primary=*/true);
 
   // Primary user launches a mic-using app.
   LaunchAppUsingCameraOrMicrophone("id_primary_user", "name_primary_user",
@@ -347,7 +364,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
   EXPECT_EQ(app_name, u"name_primary_user");
 
   // Secondary user is now the primary user.
-  SetActiveUserAccountId(account_id_secondary_user_);
+  SetActiveUserAccountId(/*is_primary=*/false);
 
   // Secondary user launches a mic-using app.
   LaunchAppUsingCameraOrMicrophone("id_secondary_user", "name_secondary_user",
@@ -361,7 +378,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
 
   // Switch back to the primary user and "kill" the app it was running, no app
   // name to show.
-  SetActiveUserAccountId(account_id_primary_user_);
+  SetActiveUserAccountId(/*is_primary=*/true);
   LaunchAppUsingCameraOrMicrophone("id_primary_user", "name_primary_user",
                                    /*use_camera=*/false,
                                    /*use_microphone=*/false);
@@ -370,7 +387,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
 
   // Now switch back to the secondary user, verify that the same app as before
   // shows up in the notification.
-  SetActiveUserAccountId(account_id_secondary_user_);
+  SetActiveUserAccountId(/*is_primary=*/false);
   app_name = GetAppAccessingMicrophone();
   EXPECT_TRUE(app_name.has_value());
   EXPECT_EQ(app_name, u"name_secondary_user");
@@ -389,7 +406,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
   SetupSecondaryUser();
 
   // Primary user is the active user.
-  SetActiveUserAccountId(account_id_primary_user_);
+  SetActiveUserAccountId(/*is_primary=*/true);
 
   // Primary user launches a mic-using app.
   LaunchAppUsingCameraOrMicrophone("id_primary_user", "name_primary_user",
@@ -412,7 +429,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
   EXPECT_EQ(app_name, u"name_primary_user_another_app");
 
   // Secondary user is now the primary user.
-  SetActiveUserAccountId(account_id_secondary_user_);
+  SetActiveUserAccountId(/*is_primary=*/false);
 
   // Secondary user launches a mic-using app.
   LaunchAppUsingCameraOrMicrophone("id_secondary_user", "name_secondary_user",
@@ -435,7 +452,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
   EXPECT_EQ(app_name, u"name_secondary_user_another_app");
 
   // Switch back to the primary user.
-  SetActiveUserAccountId(account_id_primary_user_);
+  SetActiveUserAccountId(/*is_primary=*/true);
 
   // App we just launched should show up in the notification.
   app_name = GetAppAccessingMicrophone();
@@ -448,9 +465,7 @@ TEST_P(AppAccessNotifierParameterizedTest, GetShortNameFromAppId) {
   const std::string id = "test_app_id";
   LaunchAppUsingCameraOrMicrophone(id, "test_app_name", /*use_camera=*/false,
                                    /*use_microphone=*/true);
-  EXPECT_EQ(AppAccessNotifier::GetAppShortNameFromAppId(
-                id, &registry_cache_primary_user_),
-            u"test_app_name");
+  EXPECT_EQ(AppAccessNotifier::GetAppShortNameFromAppId(id), u"test_app_name");
 }
 
 TEST_F(AppAccessNotifierPrivacyIndicatorTest, AppAccessNotification) {
@@ -511,4 +526,56 @@ TEST_F(AppAccessNotifierPrivacyIndicatorTest, PrivacyIndicatorsVisibility) {
                                    /*use_camera=*/false,
                                    /*use_microphone=*/true);
   ExpectPrivacyIndicatorsVisible(/*visible=*/true);
+}
+
+TEST_F(AppAccessNotifierPrivacyIndicatorTest, RecordAppType) {
+  base::HistogramTester histograms;
+  LaunchAppUsingCameraOrMicrophone("test_app_id1", "test_app_name",
+                                   /*use_camera=*/true,
+                                   /*use_microphone=*/false,
+                                   /*app_type=*/apps::AppType::kArc);
+  histograms.ExpectBucketCount(kPrivacyIndicatorsAppTypeHistogramName,
+                               apps::AppType::kArc, 1);
+
+  LaunchAppUsingCameraOrMicrophone("test_app_id2", "test_app_name",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/true,
+                                   /*app_type=*/apps::AppType::kChromeApp);
+  histograms.ExpectBucketCount(kPrivacyIndicatorsAppTypeHistogramName,
+                               apps::AppType::kChromeApp, 1);
+
+  LaunchAppUsingCameraOrMicrophone("test_app_id3", "test_app_name",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/false,
+                                   /*app_type=*/apps::AppType::kChromeApp);
+  histograms.ExpectBucketCount(kPrivacyIndicatorsAppTypeHistogramName,
+                               apps::AppType::kChromeApp, 2);
+
+  LaunchAppUsingCameraOrMicrophone("test_app_id4", "test_app_name",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/true,
+                                   /*app_type=*/apps::AppType::kSystemWeb);
+  histograms.ExpectBucketCount(kPrivacyIndicatorsAppTypeHistogramName,
+                               apps::AppType::kSystemWeb, 1);
+}
+
+TEST_F(AppAccessNotifierPrivacyIndicatorTest, RecordLaunchSettings) {
+  // Make sure histograms with app type is being recorded after launching
+  // settings.
+  base::HistogramTester histograms;
+  LaunchAppUsingCameraOrMicrophone("test_app_id1", "test_app_name",
+                                   /*use_camera=*/true,
+                                   /*use_microphone=*/false,
+                                   /*app_type=*/apps::AppType::kArc);
+  AppAccessNotifier::LaunchAppSettings("test_app_id1");
+  histograms.ExpectBucketCount(kPrivacyIndicatorsLaunchSettingsHistogramName,
+                               apps::AppType::kArc, 1);
+
+  LaunchAppUsingCameraOrMicrophone("test_app_id2", "test_app_name",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/true,
+                                   /*app_type=*/apps::AppType::kChromeApp);
+  AppAccessNotifier::LaunchAppSettings("test_app_id2");
+  histograms.ExpectBucketCount(kPrivacyIndicatorsLaunchSettingsHistogramName,
+                               apps::AppType::kChromeApp, 1);
 }
