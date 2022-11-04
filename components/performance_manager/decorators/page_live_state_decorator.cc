@@ -374,12 +374,9 @@ base::Value PageLiveStateDecorator::DescribePageNodeData(
 
 void PageLiveStateDecorator::OnMainFrameUrlChanged(const PageNode* page_node) {
   // Get the content settings from the main thread.
-  delegate_.AsyncCall(&Delegate::GetContentSettingsForUrl)
-      .WithArgs(page_node->GetContentsProxy(), page_node->GetMainFrameUrl())
-      .Then(base::BindOnce(&PageLiveStateDecorator::OnContentSettingsReceived,
-                           weak_factory_.GetWeakPtr(),
-                           PageNodeImpl::FromNode(page_node)->GetWeakPtr(),
-                           page_node->GetMainFrameUrl()));
+  // TODO(crbug.com/1292183): Start fetching content settings again when
+  // PostTaskAndReply from the PM sequence to the UI thread stops being an issue
+  // at shutdown.
 }
 
 void PageLiveStateDecorator::OnContentSettingsReceived(

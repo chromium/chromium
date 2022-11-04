@@ -308,7 +308,7 @@ TEST_F(PageLiveStateDecoratorTest, OnIsActiveTabChanged) {
       TestPageLiveStateObserver::ObserverFunction::kOnIsActiveTabChanged);
 }
 
-TEST_F(PageLiveStateDecoratorTest, OnContentSettingsChanged) {
+TEST_F(PageLiveStateDecoratorTest, DISABLED_OnContentSettingsChanged) {
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
 
@@ -379,7 +379,7 @@ TEST_F(PageLiveStateDecoratorTest, OnContentSettingsChanged) {
       TestPageLiveStateObserver::ObserverFunction::kOnContentSettingsChanged);
 }
 
-TEST_F(PageLiveStateDecoratorTest, GetContentSettingsOnNavigation) {
+TEST_F(PageLiveStateDecoratorTest, DISABLED_GetContentSettingsOnNavigation) {
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   {
