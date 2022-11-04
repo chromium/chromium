@@ -11,6 +11,9 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_page_handler.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,6 +22,16 @@
 class Profile;
 
 namespace ash {
+
+class EmojiUI;
+
+// WebUIConfig for chrome://emoji-picker
+class EmojiUIConfig : public content::DefaultWebUIConfig<EmojiUI> {
+ public:
+  EmojiUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIEmojiPickerHost) {}
+};
 
 class EmojiUI : public ui::MojoBubbleWebUIController,
                 public emoji_picker::mojom::PageHandlerFactory {

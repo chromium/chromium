@@ -1079,9 +1079,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<ash::ArcPowerControlUI>;
     }
   }
-  if (url.host_piece() == chrome::kChromeUIEmojiPickerHost) {
-    return &NewWebUI<ash::EmojiUI>;
-  }
   if (url.host_piece() == ash::eche_app::kChromeUIEcheAppHost &&
       base::FeatureList::IsEnabled(ash::features::kEcheSWA)) {
     return &NewWebUI<ash::eche_app::EcheAppUI>;
