@@ -84,11 +84,3 @@ void IPCDataSource::ReadDone(uint8_t* destination,
   base::ranges::copy(data, destination);
   std::move(callback).Run(data.size());
 }
-
-bool IPCDataSource::PassedTimingAllowOriginCheck() {
-  // The mojo ipc channel doesn't support this yet, so cautiously return false,
-  // for now.
-  // TODO(crbug/1377053): Rework this method to be asynchronous, if possible,
-  // so that the mojo interface can be queried.
-  return false;
-}

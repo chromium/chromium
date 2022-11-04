@@ -62,9 +62,4 @@ bool MemoryDataSource::IsStreaming() {
 
 void MemoryDataSource::SetBitrate(int bitrate) {}
 
-bool MemoryDataSource::PassedTimingAllowOriginCheck() {
-  // There are no HTTP responses, so this can safely return true.
-  return true;
-}
-
 }  // namespace media
