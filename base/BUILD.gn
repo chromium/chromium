@@ -4732,6 +4732,11 @@ if (is_mac) {
   }
 }
 
+fuzzer_test("command_line_fuzzer") {
+  sources = [ "command_line_fuzzer.cc" ]
+  deps = [ "//base" ]
+}
+
 fuzzer_test("escape_fuzzer") {
   sources = [ "strings/escape_fuzzer.cc" ]
   deps = [ "//base" ]
