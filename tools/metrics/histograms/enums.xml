@@ -57329,11 +57329,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
   <int value="3" label="Unexpected lock state"/>
 </enum>
 
-<enum name="LoginConsumerWhitelist">
-  <int value="0" label="ANY_USER_ALLOWED">Any user can sign in</int>
-  <int value="1" label="ONLY_WHITELISTED_ALLOWED">Whitelisted users only</int>
-</enum>
-
 <!--
 Values in LoginCustomFlags are:  value=(uint32_t)MD5(label).
 

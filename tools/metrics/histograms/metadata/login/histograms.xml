@@ -106,17 +106,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Login.ConsumerNewUsersAllowed" enum="LoginConsumerWhitelist"
-    expires_after="M77">
-  <owner>cmasone@chromium.org</owner>
-  <owner>sumit@chromium.org</owner>
-  <summary>
-    Chrome OS histogram tracking, per consumer sign-in, whether the device owner
-    is allowing arbitrary accounts to be used on the device, or only those on a
-    specific whitelist.
-  </summary>
-</histogram>
-
 <histogram name="Login.CustomFlags" enum="LoginCustomFlags"
     expires_after="never">
 <!-- expires-never: monitors 'black screen on login' user experience. -->
