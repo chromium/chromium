@@ -36,6 +36,13 @@ BeginFrameProvider::BeginFrameProvider(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Animation.Worker")) {}
 
+BeginFrameProvider::~BeginFrameProvider() {
+  // Avoid destroying power mode voters at non-deterministic points, as their
+  // vote will affect the arbiter's behavior.
+  if (recordreplay::AreEventsDisallowed())
+    animation_power_mode_voter_.release();
+}
+
 void BeginFrameProvider::ResetCompositorFrameSink() {
   compositor_frame_sink_.reset();
   efs_receiver_.reset();

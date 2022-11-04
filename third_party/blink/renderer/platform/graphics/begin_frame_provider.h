@@ -76,7 +76,7 @@ class PLATFORM_EXPORT BeginFrameProvider
 
   void Trace(Visitor*) const;
 
-  ~BeginFrameProvider() override = default;
+  ~BeginFrameProvider() override;
 
  private:
   void OnMojoConnectionError(uint32_t custom_reason,
