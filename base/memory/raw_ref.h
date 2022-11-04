@@ -300,7 +300,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
 
 // CTAD deduction guide.
 template <class T>
-raw_ref(T) -> raw_ref<T>;
+raw_ref(T&) -> raw_ref<T>;
+template <class T>
+raw_ref(const T&) -> raw_ref<const T>;
 
 // Template helpers for working with raw_ref<T>.
 template <typename T>
