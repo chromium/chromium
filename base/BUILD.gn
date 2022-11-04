@@ -4688,6 +4688,11 @@ fuzzer_test("base64_encode_fuzzer") {
   deps = [ "//base" ]
 }
 
+fuzzer_test("base64url_fuzzer") {
+  sources = [ "base64url_fuzzer.cc" ]
+  deps = [ "//base" ]
+}
+
 fuzzer_test("base_json_correctness_fuzzer") {
   sources = [ "json/json_correctness_fuzzer.cc" ]
   deps = [ ":base" ]
