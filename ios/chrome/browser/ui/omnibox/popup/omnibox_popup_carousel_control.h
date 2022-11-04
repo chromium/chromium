@@ -20,6 +20,9 @@
 
 @end
 
+// Full width of a OmniboxPopupCarouselControl.
+extern const CGFloat kOmniboxPopupCarouselControlWidth;
+
 // View inside the OmniboxCarouselCell that displays the icon and text of
 // `CarouselItem`.
 @interface OmniboxPopupCarouselControl

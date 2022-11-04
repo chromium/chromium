@@ -96,6 +96,9 @@ CAGradientLayer* CarouselBackgroundGradientLayer() {
 
 }  // namespace
 
+const CGFloat kOmniboxPopupCarouselControlWidth =
+    kBackgroundViewSize + 2 * kBackgroundViewMargin;
+
 @interface OmniboxPopupCarouselControl ()
 
 // View containing the background.

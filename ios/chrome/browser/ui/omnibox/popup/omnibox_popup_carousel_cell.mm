@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -21,8 +22,8 @@ namespace {
 const NSUInteger kCarouselCapacity = 10;
 // Margin of the StackView.
 const CGFloat kStackMargin = 8.0f;
-// Space between items in the StackView.
-const CGFloat kStackSpacing = 6.0f;
+// Minimum spacing between items in the StackView.
+const CGFloat kMinStackSpacing = 6.0f;
 
 // Horizontal UIScrollView used in OmniboxPopupCarouselCell.
 UIScrollView* CarouselScrollView() {
@@ -42,7 +43,7 @@ UIStackView* CarouselStackView() {
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.alignment = UIStackViewAlignmentTop;
   stackView.distribution = UIStackViewDistributionEqualSpacing;
-  stackView.spacing = kStackSpacing;
+  stackView.spacing = kMinStackSpacing;
   stackView.backgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   return stackView;
@@ -60,6 +61,16 @@ UIStackView* CarouselStackView() {
 @property(nonatomic, strong, readonly)
     NSArray<OmniboxPopupCarouselControl*>* visibleControls;
 
+#pragma mark Dynamic Spacing
+// Number of that that can be fully visible. Apply dynamic spacing only when the
+// number of tiles exceeds `visibleTilesCapacity`.
+@property(nonatomic, assign) NSInteger visibleTilesCapacity;
+// Spacing between tiles to have half a tile visible on the trailing edge,
+// indicating a scrollable view.
+@property(nonatomic, assign) CGFloat dynamicSpacing;
+// Caches the view width to compute dynamic spacing only when it changes.
+@property(nonatomic, assign) CGFloat viewWidth;
+
 @end
 
 @implementation OmniboxPopupCarouselCell
@@ -70,6 +81,7 @@ UIStackView* CarouselStackView() {
   if (self) {
     _scrollView = CarouselScrollView();
     _suggestionsStackView = CarouselStackView();
+    _viewWidth = 0;
     self.isAccessibilityElement = NO;
     self.contentView.isAccessibilityElement = NO;
     for (NSUInteger i = 0; i < kCarouselCapacity; ++i) {
@@ -91,6 +103,14 @@ UIStackView* CarouselStackView() {
   if (self.window) {
     [self.scrollView flashScrollIndicators];
   }
+}
+
+- (void)layoutSubviews {
+  if (self.viewWidth != self.bounds.size.width) {
+    self.viewWidth = self.bounds.size.width;
+    [self updateDynamicSpacing];
+  }
+  [super layoutSubviews];
 }
 
 - (void)addContentSubviews {
@@ -149,6 +169,14 @@ UIStackView* CarouselStackView() {
     [control setCarouselItem:item];
     control.hidden = !item;
     control.menuProvider = self.menuProvider;
+  }
+  if (base::FeatureList::IsEnabled(kOmniboxCarouselDynamicSpacing)) {
+    if (static_cast<NSInteger>(carouselItems.count) >
+        self.visibleTilesCapacity) {
+      self.suggestionsStackView.spacing = self.dynamicSpacing;
+    } else {
+      self.suggestionsStackView.spacing = kMinStackSpacing;
+    }
   }
 }
 
@@ -298,7 +326,7 @@ UIStackView* CarouselStackView() {
   CGRect frameInScrollViewCoordinates = [control convertRect:control.bounds
                                                       toView:self.scrollView];
   CGRect frameWithPadding =
-      CGRectInset(frameInScrollViewCoordinates, -kStackSpacing * 2, 0);
+      CGRectInset(frameInScrollViewCoordinates, -kMinStackSpacing * 2, 0);
   [self.scrollView scrollRectToVisible:frameWithPadding animated:NO];
 }
 
@@ -319,6 +347,23 @@ UIStackView* CarouselStackView() {
     }
   }
   return nil;
+}
+
+// Updates `dynamicSpacing` and `visibleTilesCapacity` for carousel dynamic
+// spacing.
+- (void)updateDynamicSpacing {
+  CGFloat availableWidth = self.bounds.size.width - 2 * kStackMargin;
+  CGFloat tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing / 2;
+
+  CGFloat maxVisibleTiles = availableWidth / tileWidth;
+  CGFloat nearestHalfTile = maxVisibleTiles - 0.5;
+  CGFloat nbFullTiles = floor(nearestHalfTile);
+  CGFloat percentageOfTileToFill = nearestHalfTile - nbFullTiles;
+  CGFloat extraSpaceToFill = percentageOfTileToFill * tileWidth;
+  CGFloat extraSpacingPerTile = extraSpaceToFill / nbFullTiles;
+
+  self.dynamicSpacing = extraSpacingPerTile + kMinStackSpacing;
+  self.visibleTilesCapacity = nbFullTiles;
 }
 
 @end
