@@ -69,6 +69,11 @@ extern const base::Feature kUseLoadSimulatedRequestForOfflinePage;
 // Feature flag that enable web page detected intents annotations.
 extern const base::Feature kEnableWebPageAnnotations;
 
+// When enabled, CRWWebViewScrollViewProxy's `scrollEnabled` state is not
+// restored if the new instance already has the same `scrollEnabled` state as
+// the old one.
+extern const base::Feature kScrollViewProxyScrollEnabledWorkaround;
+
 // When true, user control for camera and/or microphone access should be
 // enabled.
 bool IsMediaPermissionsControlEnabled();

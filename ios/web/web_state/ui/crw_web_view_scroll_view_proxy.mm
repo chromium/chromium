@@ -259,7 +259,20 @@ static int gAnyContext = 0;
   // be accessed via -asUIScrollView, so they should be preserved as well.
 
   // UIScrollView properties.
-  newScrollView.scrollEnabled = oldScrollView.scrollEnabled;
+  if (base::FeatureList::IsEnabled(
+          web::features::kScrollViewProxyScrollEnabledWorkaround)) {
+    if (newScrollView.scrollEnabled != oldScrollView.scrollEnabled) {
+      // Don't update scrollEnabled if it is the same value as it creates issues
+      // with clobbering state in WebKit, since the getter and setter in WebKit
+      // are not symmetric. The setter sets state about whether the WKWebView
+      // embedder wants to disable scrolling, while the getter and used value
+      // also account for whether the main-frame is scrollable (e.g., due to the
+      // size of its content relative to the viewport). See crbug.com/1375837.
+      newScrollView.scrollEnabled = oldScrollView.scrollEnabled;
+    }
+  } else {
+    newScrollView.scrollEnabled = oldScrollView.scrollEnabled;
+  }
   newScrollView.directionalLockEnabled = oldScrollView.directionalLockEnabled;
   newScrollView.pagingEnabled = oldScrollView.pagingEnabled;
   newScrollView.scrollsToTop = oldScrollView.scrollsToTop;

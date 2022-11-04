@@ -56,6 +56,9 @@ const base::Feature kUseLoadSimulatedRequestForOfflinePage{
 const base::Feature kEnableWebPageAnnotations{
     "EnableWebPageAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kScrollViewProxyScrollEnabledWorkaround{
+    "ScrollViewProxyScrollEnabledWorkaround", base::FEATURE_ENABLED_BY_DEFAULT};
+
 bool IsMediaPermissionsControlEnabled() {
   if (@available(iOS 15, *)) {
     return base::FeatureList::IsEnabled(kMediaPermissionsControl);
