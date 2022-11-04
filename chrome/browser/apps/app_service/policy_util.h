@@ -29,22 +29,22 @@ class Profile;
 namespace apps_util {
 
 // Checks whether |policy_id| specifies an app of supported type.
-bool IsSupportedAppTypePolicyId(const std::string& policy_id);
+bool IsSupportedAppTypePolicyId(base::StringPiece policy_id);
 
 // Checks whether |policy_id| specifies a Chrome App.
-bool IsChromeAppPolicyId(const std::string& policy_id);
+bool IsChromeAppPolicyId(base::StringPiece policy_id);
 
 // Checks whether |policy_id| specifies an Arc App.
-bool IsArcAppPolicyId(const std::string& policy_id);
+bool IsArcAppPolicyId(base::StringPiece policy_id);
 
 // Checks whether |policy_id| specifies a Web App.
-bool IsWebAppPolicyId(const std::string& policy_id);
+bool IsWebAppPolicyId(base::StringPiece policy_id);
 
 // Checks whether |policy_id| specifies a System Web App.
-bool IsSystemWebAppPolicyId(const std::string& policy_id);
+bool IsSystemWebAppPolicyId(base::StringPiece policy_id);
 
 // Checks whether |policy_id| specifies a Preinstalled Web App.
-bool IsPreinstalledWebAppPolicyId(const std::string& policy_id);
+bool IsPreinstalledWebAppPolicyId(base::StringPiece policy_id);
 
 // Transforms the provided |raw_policy_id| if necessary.
 // For Web Apps, converts it to GURL and returns the spec().

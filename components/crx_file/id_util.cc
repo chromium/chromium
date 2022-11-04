@@ -32,8 +32,7 @@ static void ConvertHexadecimalToIDAlphabet(std::string* id) {
 
 }  // namespace
 
-namespace crx_file {
-namespace id_util {
+namespace crx_file::id_util {
 
 // First 16 bytes of SHA256 hashed public key.
 const size_t kIdSize = 16;
@@ -87,13 +86,13 @@ base::FilePath MaybeNormalizePath(const base::FilePath& path) {
 #endif
 }
 
-bool IdIsValid(const std::string& id) {
+bool IdIsValid(base::StringPiece id) {
   // Verify that the id is legal.
   if (id.size() != (crx_file::id_util::kIdSize * 2))
     return false;
 
-  for (size_t i = 0; i < id.size(); i++) {
-    const char ch = base::ToLowerASCII(id[i]);
+  for (char ch : id) {
+    ch = base::ToLowerASCII(ch);
     if (ch < 'a' || ch > 'p')
       return false;
   }
@@ -101,5 +100,4 @@ bool IdIsValid(const std::string& id) {
   return true;
 }
 
-}  // namespace id_util
-}  // namespace crx_file
+}  // namespace crx_file::id_util

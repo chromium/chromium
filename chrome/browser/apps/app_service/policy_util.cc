@@ -92,31 +92,31 @@ absl::optional<base::StringPiece> LookupPolicyIdByMappedValue(
 
 namespace apps_util {
 
-bool IsSupportedAppTypePolicyId(const std::string& policy_id) {
+bool IsSupportedAppTypePolicyId(base::StringPiece policy_id) {
   return IsChromeAppPolicyId(policy_id) || IsArcAppPolicyId(policy_id) ||
          IsWebAppPolicyId(policy_id) || IsSystemWebAppPolicyId(policy_id) ||
          IsPreinstalledWebAppPolicyId(policy_id);
 }
 
-bool IsChromeAppPolicyId(const std::string& policy_id) {
+bool IsChromeAppPolicyId(base::StringPiece policy_id) {
   return crx_file::id_util::IdIsValid(policy_id);
 }
 
-bool IsArcAppPolicyId(const std::string& policy_id) {
-  return policy_id.find('.') != std::string::npos &&
+bool IsArcAppPolicyId(base::StringPiece policy_id) {
+  return policy_id.find('.') != base::StringPiece::npos &&
          !IsWebAppPolicyId(policy_id);
 }
 
-bool IsWebAppPolicyId(const std::string& policy_id) {
+bool IsWebAppPolicyId(base::StringPiece policy_id) {
   return GURL{policy_id}.is_valid();
 }
 
-bool IsSystemWebAppPolicyId(const std::string& policy_id) {
+bool IsSystemWebAppPolicyId(base::StringPiece policy_id) {
   return LookupMappedValueByPolicyId(kSystemWebAppsMapping, policy_id)
       .has_value();
 }
 
-bool IsPreinstalledWebAppPolicyId(const std::string& policy_id) {
+bool IsPreinstalledWebAppPolicyId(base::StringPiece policy_id) {
   return LookupMappedValueByPolicyId(kPreinstalledWebAppsMapping, policy_id)
       .has_value();
 }
