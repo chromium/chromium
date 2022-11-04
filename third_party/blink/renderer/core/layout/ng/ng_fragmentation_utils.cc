@@ -933,11 +933,10 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     if (refuse_break_before)
       return true;
     if (appeal_inside >= appeal_before) {
-      if (flex_column_break_info &&
-          (!flex_column_break_info->early_break ||
-           appeal_inside >=
-               flex_column_break_info->early_break->BreakAppeal())) {
-        return true;
+      if (flex_column_break_info) {
+        if (!flex_column_break_info->early_break ||
+            appeal_inside >= flex_column_break_info->early_break->BreakAppeal())
+          return true;
       } else if (!builder || !builder->HasEarlyBreak() ||
                  appeal_inside >= builder->EarlyBreak().BreakAppeal()) {
         return true;
