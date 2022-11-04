@@ -40,7 +40,8 @@ GEN('#include "content/public/test/browser_test.h"');
   ['SpinnerPage', 'bluetooth/bluetooth_spinner_page_test.js'],
  ].forEach(test => registerTest('Bluetooth', 'bluetooth-pairing', ...test));
 
-[['CrPolicyNetworkBehaviorMojo', 'network/cr_policy_network_behavior_mojo_tests.js'],
+[['ApnList', 'network/apn_list_test.js'],
+ ['CrPolicyNetworkBehaviorMojo', 'network/cr_policy_network_behavior_mojo_tests.js'],
  ['CrPolicyNetworkIndicatorMojo', 'network/cr_policy_network_indicator_mojo_tests.js'],
  ['NetworkApnlist', 'network/network_apnlist_test.js'],
  ['NetworkChooseMobile', 'network/network_choose_mobile_test.js'],
@@ -92,7 +93,7 @@ GEN('#include "content/public/test/browser_test.h"');
 ].forEach(test => registerTest('CellularSetup', 'os-settings', ...test));
 // clang-format on
 
-function registerTest(componentName, webuiHost, testName, module, caseName) {
+function registerTest(componentName, webuiHost, testName, module) {
   const className = `${componentName}${testName}TestV3`;
   this[className] = class extends PolymerTest {
     /** @override */

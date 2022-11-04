@@ -1,0 +1,17 @@
+<style include="network-shared">
+  #apnDescription {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-inline-end: 40px;
+    min-height: var(--cr-section-min-height);
+    padding: 0 var(--cr-section-padding);
+  }
+</style>
+<div id="apnDescription">
+  <localized-link
+      localized-string="[[i18nAdvanced('apnSettingsDescriptionWithLink')]]"
+      on-link-clicked="onLearnMoreClicked_">
+  </localized-link>
+</div>

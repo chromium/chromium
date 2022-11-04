@@ -30,7 +30,8 @@ suite('ApnSubpageTest', function() {
     });
   });
 
-  test('Base Test', async function() {
+  test('Check if APN list exists', async function() {
     assertTrue(!!apnSubpage);
+    assertTrue(!!apnSubpage.shadowRoot.querySelector('apn-list'));
   });
 });
