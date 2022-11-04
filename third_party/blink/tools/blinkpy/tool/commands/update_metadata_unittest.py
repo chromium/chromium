@@ -358,6 +358,30 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             'ERROR: Please commit or reset these files to continue.\n',
         ])
 
+    def test_execute_warn_absent_tests(self):
+        url = 'https://cr.dev/123/wptreport.json?token=abc'
+        self.tool.web.urls[url] = json.dumps({
+            'run_info': {},
+            'results': [{
+                'test': '/new-test-on-tot.html',
+                'subtests': [],
+                'status': 'PASS',
+            }],
+        }).encode()
+        with self._patch_builtins():
+            exit_code = self.command.main(['fail.html'])
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Processing wptrunner report (1/1)\n',
+            'WARNING: Some builders have results for tests that are absent '
+            'from your local checkout.\n',
+            'WARNING: To update metadata for these tests, please rebase-update '
+            'on tip-of-tree.\n',
+            "INFO: Updated 'fail.html' (1/1)\n",
+            'INFO: Staged 0 metadata files.\n',
+        ])
+
     def test_gather_reports(self):
         local_report = {
             'run_info': {

@@ -103,7 +103,8 @@ class BuildResolver:
         build_statuses.update(
             self._build_statuses_from_responses(
                 self._git_cl.bb_client.execute_batch()))
-        self.log_builds(build_statuses)
+        if build_statuses:
+            self.log_builds(build_statuses)
         if self.TRIGGERED in build_statuses.values():
             raise UnresolvedBuildException(
                 'Once all pending try jobs have finished, '

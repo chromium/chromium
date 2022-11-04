@@ -20,6 +20,7 @@ from typing import (
     Literal,
     Mapping,
     Optional,
+    Set,
 )
 
 from blinkpy.common import path_finder
@@ -36,7 +37,7 @@ from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
 from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
-from manifest import manifest
+from manifest import manifest as wptmanifest
 from wptrunner import metadata, testloader, wpttest
 from wptrunner.wptmanifest.backends import conditional
 
@@ -50,7 +51,7 @@ class TestPaths:
     url_base: Optional[str]
 
 
-ManifestMap = Mapping[manifest.Manifest, TestPaths]
+ManifestMap = Mapping[wptmanifest.Manifest, TestPaths]
 
 
 class UpdateMetadata(Command):
@@ -161,8 +162,11 @@ class UpdateMetadata(Command):
             with contextlib.ExitStack() as stack:
                 stack.enter_context(self._trace('Updated metadata'))
                 stack.enter_context(self._io_pool)
-                updater.collect_results(
+                tests_from_builders = updater.collect_results(
                     self.gather_reports(build_statuses, options.reports or []))
+                if not options.only_changed_tests:
+                    self._check_for_tests_absent_locally(
+                        manifests, tests_from_builders)
                 self.remove_orphaned_metadata(manifests,
                                               dry_run=options.dry_run)
                 self.update_and_stage(updater,
@@ -269,6 +273,34 @@ class UpdateMetadata(Command):
                 log=_log.error)
             raise UpdateAbortError('Please commit or reset these files '
                                    'to continue.')
+
+    def _check_for_tests_absent_locally(self, manifests: ManifestMap,
+                                        tests_from_builders: Set[str]):
+        """Warn if some builds contain results for tests absent locally.
+
+        In practice, most users will only update metadata for tests modified in
+        the same change. For this reason, avoid aborting or prompting the user
+        to continue, which could be too disruptive.
+        """
+        tests_present_locally = set()
+        item_types = [
+            item_type for item_type in wptmanifest.item_classes
+            if item_type != 'support'
+        ]
+        for manifest in manifests:
+            tests_present_locally.update(
+                test.id for _, _, tests in manifest.itertypes(*item_types)
+                for test in tests)
+        tests_absent_locally = tests_from_builders - tests_present_locally
+        if tests_absent_locally:
+            _log.warning(
+                'Some builders have results for tests that are absent '
+                'from your local checkout.')
+            _log.warning('To update metadata for these tests, '
+                         'please rebase-update on tip-of-tree.')
+            _log.debug('Absent tests:')
+            for test_id in sorted(tests_absent_locally):
+                _log.debug('  %s', test_id)
 
     def _log_metadata_paths(self,
                             message: str,
@@ -461,11 +493,17 @@ class MetadataUpdater:
                 manifest.itertypes = itertypes
         return cls(test_files, **options)
 
-    def collect_results(self, reports: Iterable[io.TextIOBase]):
+    def collect_results(self, reports: Iterable[io.TextIOBase]) -> Set[str]:
         """Parse and record test results."""
         updater = metadata.ExpectedUpdater(self._test_files)
+        test_ids = set()
         for report in reports:
-            updater.update_from_log(report)
+            for retry_report in map(json.loads, report):
+                test_ids.update(result['test']
+                                for result in retry_report['results']
+                                if 'test' in result)
+                updater.update_from_wptreport_log(retry_report)
+        return test_ids
 
     def test_files_to_update(self) -> List[metadata.TestFileData]:
         test_files = {
