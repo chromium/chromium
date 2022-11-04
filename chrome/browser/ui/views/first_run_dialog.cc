@@ -38,7 +38,7 @@ void ShowFirstRunDialog() {
   // Don't show first run dialog when running in headless mode since this
   // would effectively block the UI because there is no one to interact with
   // the dialog.
-  if (headless::IsChromeNativeHeadless())
+  if (headless::IsHeadlessMode())
     return;
 
 #if BUILDFLAG(IS_MAC)

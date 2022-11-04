@@ -416,7 +416,7 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
   if (initial_prefs.get()) {
     // Don't show EULA when running in headless mode since this would
     // effectively block the UI because there is no one to accept it.
-    if (!headless::IsChromeNativeHeadless() &&
+    if (!headless::IsHeadlessMode() &&
         !internal::ShowPostInstallEULAIfNeeded(initial_prefs.get())) {
       return EULA_EXIT_NOW;
     }
