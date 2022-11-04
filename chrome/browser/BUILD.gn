@@ -2646,8 +2646,6 @@ static_library("browser") {
       "android/devtools_manager_delegate_android.h",
       "android/devtools_server.cc",
       "android/devtools_server.h",
-      "android/document/document_web_contents_delegate.cc",
-      "android/document/document_web_contents_delegate.h",
       "android/dom_distiller/distiller_ui_handle_android.cc",
       "android/dom_distiller/distiller_ui_handle_android.h",
       "android/explore_sites/block_site_task.cc",

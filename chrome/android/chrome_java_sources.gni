@@ -521,7 +521,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/display_cutout/ActivityDisplayCutoutModeSupplier.java",
   "java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
   "java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
-  "java/src/org/chromium/chrome/browser/document/DocumentWebContentsDelegate.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/DistilledPagePrefsView.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerServiceFactory.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerTabUtils.java",
