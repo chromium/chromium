@@ -30,6 +30,10 @@ class Origin;
 
 namespace android_webview {
 
+namespace prefs {
+extern const char kClientHintsCachedPerOriginMap[];
+}  // namespace prefs
+
 class AwClientHintsControllerDelegate
     : public content::ClientHintsControllerDelegate {
  public:

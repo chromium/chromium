@@ -7,10 +7,12 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "base/notreached.h"
+#include "base/values.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -18,6 +20,11 @@
 #include "url/origin.h"
 
 namespace android_webview {
+
+namespace prefs {
+const char kClientHintsCachedPerOriginMap[] =
+    "aw_client_hints_cached_per_origin_map";
+}  // namespace prefs
 
 AwClientHintsControllerDelegate::AwClientHintsControllerDelegate(
     PrefService* pref_service)
@@ -89,8 +96,34 @@ void AwClientHintsControllerDelegate::PersistClientHints(
     const url::Origin& primary_origin,
     content::RenderFrameHost* parent_rfh,
     const std::vector<network::mojom::WebClientHintsType>& client_hints) {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
+  // Ensure this origin can have hints stored and check the number of hints.
+  const GURL primary_url = primary_origin.GetURL();
+  if (!primary_url.is_valid() ||
+      !network::IsUrlPotentiallyTrustworthy(primary_url)) {
+    return;
+  }
+  if (!IsJavaScriptAllowed(primary_url, parent_rfh))
+    return;
+  if (client_hints.size() >
+      (static_cast<size_t>(network::mojom::WebClientHintsType::kMaxValue) +
+       1)) {
+    return;
+  }
+
+  // Assemble and store the list if no issues.
+  base::Value::List client_hints_list;
+  client_hints_list.reserve(client_hints.size());
+  for (const auto& entry : client_hints) {
+    client_hints_list.Append(static_cast<int>(entry));
+  }
+  base::Value::Dict ch_per_origin;
+  if (pref_service_->HasPrefPath(prefs::kClientHintsCachedPerOriginMap)) {
+    ch_per_origin =
+        pref_service_->GetDict(prefs::kClientHintsCachedPerOriginMap).Clone();
+  }
+  ch_per_origin.Set(primary_origin.Serialize(), std::move(client_hints_list));
+  pref_service_->SetDict(prefs::kClientHintsCachedPerOriginMap,
+                         std::move(ch_per_origin));
 }
 
 void AwClientHintsControllerDelegate::SetAdditionalClientHints(

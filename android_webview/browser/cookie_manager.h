@@ -243,6 +243,12 @@ class CookieManager {
                                           bool can_change_schemes);
   void MigrateCookieStorePath();
 
+  // The client hint cache should be cleared if cookies are cleared, but if
+  // cookies are cleared before the browser starts we need a way flag the
+  // need to clear them later.
+  void ClearClientHintsCachedPerOriginMapIfNeeded();
+  bool should_clear_client_hints_cached_per_origin_map_{false};
+
   base::FilePath cookie_store_path_;
 
   // This protects the following bool, as it's used on multiple threads.

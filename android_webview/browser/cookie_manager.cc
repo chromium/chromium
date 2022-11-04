@@ -11,8 +11,10 @@
 #include <vector>
 
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser_jni_headers/AwCookieManager_jni.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "base/android/build_info.h"
 #include "base/android/callback_android.h"
@@ -22,6 +24,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -35,6 +38,9 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_store_factory.h"
 #include "net/cookies/canonical_cookie.h"
@@ -393,6 +399,10 @@ void CookieManager::SwapMojoCookieManagerAsync(
   DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
   mojo_cookie_manager_.Bind(std::move(cookie_manager_remote));
   setting_new_mojo_cookie_manager_ = false;
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CookieManager::ClearClientHintsCachedPerOriginMapIfNeeded,
+                     base::Unretained(this)));
   std::move(complete).Run();  // unblock content initialization
   RunPendingCookieTasks();
 }
@@ -615,7 +625,14 @@ void CookieManager::RemoveAllCookiesSync(JNIEnv* env,
 
 void CookieManager::RemoveAllCookiesHelper(
     base::OnceCallback<void(bool)> callback) {
+  // Clear client hints preferences when all cookies are cleared.
+  should_clear_client_hints_cached_per_origin_map_ = true;
   if (GetMojoCookieManager()) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CookieManager::ClearClientHintsCachedPerOriginMapIfNeeded,
+            base::Unretained(this)));
     // An empty filter matches all cookies.
     auto match_all_cookies = network::mojom::CookieDeletionFilter::New();
     GetMojoCookieManager()->DeleteCookies(
@@ -623,6 +640,7 @@ void CookieManager::RemoveAllCookiesHelper(
         base::BindOnce(&CookieManager::RemoveCookiesCompleted,
                        base::Unretained(this), std::move(callback)));
   } else {
+    // TODO(crbug.com/921655): Support clearing client hints here as well.
     GetCookieStore()->DeleteAllAsync(
         base::BindOnce(&CookieManager::RemoveCookiesCompleted,
                        base::Unretained(this), std::move(callback)));
@@ -727,6 +745,21 @@ void CookieManager::SetAllowFileSchemeCookiesCompleted(
     allow_file_scheme_cookies_ = allow;
   }
   std::move(complete).Run();
+}
+
+void CookieManager::ClearClientHintsCachedPerOriginMapIfNeeded() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // If we had a client hint cache clear pending, we should do it as soon as we
+  // next check and see that the browser has been started.
+  if (should_clear_client_hints_cached_per_origin_map_ &&
+      base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewClientHintsControllerDelegate) &&
+      AwBrowserContext::GetDefault() &&
+      AwBrowserContext::GetDefault()->GetPrefService()) {
+    AwBrowserContext::GetDefault()->GetPrefService()->SetDict(
+        prefs::kClientHintsCachedPerOriginMap, base::Value::Dict());
+    should_clear_client_hints_cached_per_origin_map_ = false;
+  }
 }
 
 static jlong JNI_AwCookieManager_GetDefaultCookieManager(JNIEnv* env) {

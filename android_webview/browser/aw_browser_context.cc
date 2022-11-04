@@ -280,6 +280,10 @@ void AwBrowserContext::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(autofill::prefs::kAutofillCreditCardEnabled,
                                 false);
 
+  // This contains a map from a given origin to the client hint headers
+  // requested to be sent next time that origin is loaded.
+  registry->RegisterDictionaryPref(prefs::kClientHintsCachedPerOriginMap);
+
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
 #endif
@@ -297,6 +301,8 @@ void AwBrowserContext::CreateUserPrefService() {
   // Persisted to avoid having to provision MediaDrm every time the
   // application tries to play protected content after restart.
   persistent_prefs.insert(cdm::prefs::kMediaDrmStorage);
+  // Persisted to ensure client hints can be sent on next page load.
+  persistent_prefs.insert(prefs::kClientHintsCachedPerOriginMap);
 
   pref_service_factory.set_user_prefs(base::MakeRefCounted<SegregatedPrefStore>(
       base::MakeRefCounted<InMemoryPrefStore>(),

@@ -60,9 +60,17 @@ TEST_F(AwClientHintsControllerDelegateTest, GetUserAgentMetadata) {
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, PersistClientHints) {
-  // TODO(crbug.com/921655): Actually test function once implemented.
   client_hints_controller_delegate_->PersistClientHints(url::Origin(), nullptr,
                                                         {});
+  client_hints_controller_delegate_->PersistClientHints(
+      url::Origin::Create(GURL("https://example.com")), nullptr, {});
+  client_hints_controller_delegate_->PersistClientHints(
+      url::Origin(), nullptr,
+      {network::mojom::WebClientHintsType::kDeviceMemory});
+  client_hints_controller_delegate_->PersistClientHints(
+      url::Origin::Create(GURL("https://example.com")), nullptr,
+      {network::mojom::WebClientHintsType::kDeviceMemory});
+  // TODO(crbug.com/921655): Test with GetAllowedClientHintsFromSource
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, SetAdditionalClientHints) {
