@@ -34,8 +34,6 @@
 
 namespace {
 
-#pragma mark - KeyCommandsProvider Tests with Keyboard Shortcuts Menu enabled
-
 class KeyCommandsProviderTest : public PlatformTest {
  protected:
   KeyCommandsProviderTest() {
@@ -45,9 +43,6 @@ class KeyCommandsProviderTest : public PlatformTest {
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kKeyboardShortcutsMenu},
-        /*disabled_features=*/{});
     provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
   }
   ~KeyCommandsProviderTest() override {}
@@ -62,11 +57,23 @@ class KeyCommandsProviderTest : public PlatformTest {
         web_state_list_->GetWebStateAt(insertedIndex));
   }
 
-  void ExpectUMA(NSString* selector, const std::string& user_action) {
+  void CloseWebState(int index) {
+    web_state_list_->CloseWebStateAt(
+        0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+  }
+
+  bool CanPerform(NSString* action, id sender) {
+    return [provider_ canPerformAction:NSSelectorFromString(action)
+                            withSender:sender];
+  }
+
+  bool CanPerform(NSString* action) { return CanPerform(action, nil); }
+
+  void ExpectUMA(NSString* action, const std::string& user_action) {
     ASSERT_EQ(user_action_tester_.GetActionCount(user_action), 0);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    [provider_ performSelector:NSSelectorFromString(selector)];
+    [provider_ performSelector:NSSelectorFromString(action)];
 #pragma clang diagnostic pop
     EXPECT_EQ(user_action_tester_.GetActionCount(user_action), 1);
   }
@@ -76,7 +83,6 @@ class KeyCommandsProviderTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   WebStateList* web_state_list_;
   SceneState* scene_state_;
-  base::test::ScopedFeatureList feature_list_;
   base::UserActionTester user_action_tester_;
   KeyCommandsProvider* provider_;
 };
@@ -106,9 +112,177 @@ TEST_F(KeyCommandsProviderTest, NextResponderReset) {
   EXPECT_EQ(provider_.nextResponder, nil);
 }
 
-// Checks that KeyCommandsProvider returns key commands.
-TEST_F(KeyCommandsProviderTest, ReturnsKeyCommands) {
+// Checks that KeyCommandsProvider returns key commands when the Keyboard
+// Shortcuts Menu feature is enabled.
+TEST_F(KeyCommandsProviderTest, ReturnsKeyCommands_MenuEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kKeyboardShortcutsMenu},
+      /*disabled_features=*/{});
+
   EXPECT_NE(0u, provider_.keyCommands.count);
+}
+
+// Checks that KeyCommandsProvider returns key commands when the Keyboard
+// Shortcuts Menu feature is disabled.
+TEST_F(KeyCommandsProviderTest, ReturnsKeyCommands_MenuDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kKeyboardShortcutsMenu});
+
+  EXPECT_NE(0u, provider_.keyCommands.count);
+}
+
+// Checks whether KeyCommandsProvider can perform the actions that are always
+// available.
+TEST_F(KeyCommandsProviderTest, CanPerform_AlwaysAvailableActions) {
+  EXPECT_TRUE(CanPerform(@"keyCommand_openNewTab"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_openNewRegularTab"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_openNewIncognitoTab"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_openNewWindow"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_openNewIncognitoWindow"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_reopenLastClosedTab"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_showSettings"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_reportAnIssue"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_addToReadingList"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_showReadingList"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_goToTabGrid"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_clearBrowsingData"));
+}
+
+// Checks whether KeyCommandsProvider can perform the actions that are only
+// available when there are tabs.
+TEST_F(KeyCommandsProviderTest, CanPerform_TabsActions) {
+  // No tabs.
+  ASSERT_EQ(web_state_list_->count(), 0);
+  NSArray<NSString*>* actions = @[
+    @"keyCommand_openLocation",  @"keyCommand_closeTab",
+    @"keyCommand_showNextTab",   @"keyCommand_showPreviousTab",
+    @"keyCommand_showBookmarks", @"keyCommand_addToBookmarks",
+    @"keyCommand_reload",        @"keyCommand_back",
+    @"keyCommand_forward",       @"keyCommand_showHistory",
+    @"keyCommand_voiceSearch",   @"keyCommand_stop",
+    @"keyCommand_showHelp",      @"keyCommand_showDownloads",
+    @"keyCommand_showFirstTab",  @"keyCommand_showTab2",
+    @"keyCommand_showTab3",      @"keyCommand_showTab4",
+    @"keyCommand_showTab5",      @"keyCommand_showTab6",
+    @"keyCommand_showTab7",      @"keyCommand_showTab8",
+    @"keyCommand_showLastTab",
+  ];
+  for (NSString* action in actions) {
+    EXPECT_FALSE(CanPerform(action));
+  }
+
+  // Open a tab.
+  InsertNewWebState(0);
+  for (NSString* action in actions) {
+    EXPECT_TRUE(CanPerform(action));
+  }
+
+  // Close the tab.
+  CloseWebState(0);
+  for (NSString* action in actions) {
+    EXPECT_FALSE(CanPerform(action));
+  }
+}
+
+// Checks whether KeyCommandsProvider can perform the actions that are only
+// available when there are tabs and Find in Page is available.
+TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
+  // No tabs.
+  ASSERT_EQ(web_state_list_->count(), 0);
+  NSArray<NSString*>* actions = @[
+    @"keyCommand_find",
+    @"keyCommand_findNext",
+    @"keyCommand_findPrevious",
+  ];
+  for (NSString* action in actions) {
+    EXPECT_FALSE(CanPerform(action));
+  }
+
+  // Open a tab.
+  web::FakeWebState* web_state = InsertNewWebState(0);
+  web::FindInPageManagerImpl::CreateForWebState(web_state);
+  FindTabHelper::CreateForWebState(web_state);
+
+  // No Find in Page.
+  web_state->SetContentIsHTML(false);
+  for (NSString* action in actions) {
+    EXPECT_FALSE(CanPerform(action));
+  }
+
+  // Can Find in Page.
+  web_state->SetContentIsHTML(true);
+  for (NSString* action in actions) {
+    EXPECT_TRUE(CanPerform(action));
+  }
+
+  // Close the tab.
+  CloseWebState(0);
+  for (NSString* action in actions) {
+    EXPECT_FALSE(CanPerform(action));
+  }
+}
+
+// Checks whether KeyCommandsProvider can perform the actions that are only
+// available when there are tabs and text is being edited.
+TEST_F(KeyCommandsProviderTest, CanPerform_EditingTextActions) {
+  // back_2 and forward_2 conflict with text editing commands, so they should be
+  // ignored.
+  UIKeyCommand* back_2 = UIKeyCommand.cr_back_2;
+  UIKeyCommand* forward_2 = UIKeyCommand.cr_forward_2;
+  // No tabs.
+  ASSERT_EQ(web_state_list_->count(), 0);
+
+  EXPECT_FALSE(CanPerform(@"keyCommand_back"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_forward"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_back", back_2));
+  EXPECT_FALSE(CanPerform(@"keyCommand_forward", forward_2));
+
+  // Add one.
+  InsertNewWebState(0);
+
+  EXPECT_TRUE(CanPerform(@"keyCommand_back"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_forward"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_back", back_2));
+  EXPECT_TRUE(CanPerform(@"keyCommand_forward", forward_2));
+
+  // Focus a text field.
+  UITextField* textField = [[UITextField alloc] init];
+  [GetAnyKeyWindow() addSubview:textField];
+  [textField becomeFirstResponder];
+
+  EXPECT_TRUE(CanPerform(@"keyCommand_back"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_forward"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_back", back_2));
+  EXPECT_FALSE(CanPerform(@"keyCommand_forward", forward_2));
+
+  // Reset the first responder.
+  [textField resignFirstResponder];
+
+  EXPECT_TRUE(CanPerform(@"keyCommand_back"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_forward"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_back", back_2));
+  EXPECT_TRUE(CanPerform(@"keyCommand_forward", forward_2));
+
+  // Close the tab.
+  CloseWebState(0);
+
+  EXPECT_FALSE(CanPerform(@"keyCommand_back"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_forward"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_back", back_2));
+  EXPECT_FALSE(CanPerform(@"keyCommand_forward", forward_2));
+}
+
+// Checks whether KeyCommandsProvider can perform the actions that are only
+// available when canDismissModals is ON.
+TEST_F(KeyCommandsProviderTest, CanPerform_CanDismissModalsActions) {
+  ASSERT_FALSE(provider_.canDismissModals);
+  EXPECT_FALSE(CanPerform(@"keyCommand_close"));
+
+  provider_.canDismissModals = YES;
+  EXPECT_TRUE(CanPerform(@"keyCommand_close"));
 }
 
 // Checks that KeyCommandsProvider implements the following actions.
@@ -195,7 +369,6 @@ TEST_F(KeyCommandsProviderTest, Metrics) {
   ExpectUMA(@"keyCommand_showTab8", "MobileKeyCommandShowTab8");
   ExpectUMA(@"keyCommand_showLastTab", "MobileKeyCommandShowLastTab");
   ExpectUMA(@"keyCommand_reportAnIssue", "MobileKeyCommandReportAnIssue");
-  ;
   ExpectUMA(@"keyCommand_addToReadingList", "MobileKeyCommandAddToReadingList");
   ExpectUMA(@"keyCommand_showReadingList", "MobileKeyCommandShowReadingList");
   ExpectUMA(@"keyCommand_goToTabGrid", "MobileKeyCommandGoToTabGrid");
@@ -256,160 +429,6 @@ TEST_F(KeyCommandsProviderTest, AddToReadingList_AddURL) {
   [provider_ keyCommand_addToReadingList];
 
   [handler verify];
-}
-
-#pragma mark - KeyCommandsProvider Tests with Keyboard Shortcuts Menu disabled
-
-class NoMenuKeyCommandsProviderTest : public PlatformTest {
- protected:
-  NoMenuKeyCommandsProviderTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    web_state_list_ = browser_->GetWebStateList();
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{kKeyboardShortcutsMenu});
-  }
-  ~NoMenuKeyCommandsProviderTest() override {}
-
-  web::FakeWebState* InsertNewWebState(int index) {
-    auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state_.get());
-    int insertedIndex = web_state_list_->InsertWebState(
-        index, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
-    return static_cast<web::FakeWebState*>(
-        web_state_list_->GetWebStateAt(insertedIndex));
-  }
-
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<TestBrowser> browser_;
-  WebStateList* web_state_list_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(NoMenuKeyCommandsProviderTest, NoTabs_ReturnsObjects) {
-  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-     FindInPageCommands>
-      dispatcher = nil;
-
-  KeyCommandsProvider* provider =
-      [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
-  provider.dispatcher = dispatcher;
-
-  // No tabs.
-  EXPECT_EQ(web_state_list_->count(), 0);
-
-  EXPECT_NE(0u, provider.keyCommands.count);
-}
-
-TEST_F(NoMenuKeyCommandsProviderTest, ReturnsKeyCommandsObjects) {
-  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-     FindInPageCommands>
-      dispatcher = nil;
-
-  KeyCommandsProvider* provider =
-      [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
-  provider.dispatcher = dispatcher;
-
-  // No tabs.
-  EXPECT_EQ(web_state_list_->count(), 0);
-
-  for (id element in provider.keyCommands) {
-    EXPECT_TRUE([element isKindOfClass:[UIKeyCommand class]]);
-  }
-}
-
-TEST_F(NoMenuKeyCommandsProviderTest, MoreKeyboardCommandsWhenTabs) {
-  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-     FindInPageCommands>
-      dispatcher = nil;
-
-  KeyCommandsProvider* provider =
-      [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
-  provider.dispatcher = dispatcher;
-
-  // No tabs.
-  EXPECT_EQ(web_state_list_->count(), 0);
-
-  NSUInteger numberOfKeyCommandsWithoutTabs = provider.keyCommands.count;
-
-  InsertNewWebState(0);
-
-  // Tabs.
-  EXPECT_EQ(web_state_list_->count(), 1);
-  NSUInteger numberOfKeyCommandsWithTabs = provider.keyCommands.count;
-
-  EXPECT_GT(numberOfKeyCommandsWithTabs, numberOfKeyCommandsWithoutTabs);
-}
-
-TEST_F(NoMenuKeyCommandsProviderTest, LessKeyCommandsWhenTabsAndEditingText) {
-  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-     FindInPageCommands>
-      dispatcher = nil;
-
-  KeyCommandsProvider* provider =
-      [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
-  provider.dispatcher = dispatcher;
-
-  // No tabs.
-  EXPECT_EQ(web_state_list_->count(), 0);
-
-  InsertNewWebState(0);
-
-  // Tabs.
-  EXPECT_EQ(web_state_list_->count(), 1);
-
-  // Not editing text.
-  NSUInteger numberOfKeyCommandsWhenNotEditingText = provider.keyCommands.count;
-
-  // Focus a text field.
-  UITextField* textField = [[UITextField alloc] init];
-  [GetAnyKeyWindow() addSubview:textField];
-  [textField becomeFirstResponder];
-
-  // Editing text.
-  NSUInteger numberOfKeyCommandsWhenEditingText = provider.keyCommands.count;
-
-  EXPECT_LT(numberOfKeyCommandsWhenEditingText,
-            numberOfKeyCommandsWhenNotEditingText);
-
-  // Reset the first responder.
-  [textField resignFirstResponder];
-}
-
-TEST_F(NoMenuKeyCommandsProviderTest,
-       MoreKeyboardCommandsWhenFindInPageAvailable) {
-  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-     FindInPageCommands>
-      dispatcher = nil;
-
-  KeyCommandsProvider* provider =
-      [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
-  provider.dispatcher = dispatcher;
-
-  // No tabs.
-  EXPECT_EQ(web_state_list_->count(), 0);
-
-  web::FakeWebState* web_state = InsertNewWebState(0);
-  web::FindInPageManagerImpl::CreateForWebState(web_state);
-  FindTabHelper::CreateForWebState(web_state);
-
-  // Tabs.
-  EXPECT_EQ(web_state_list_->count(), 1);
-
-  // No Find in Page.
-  web_state->SetContentIsHTML(false);
-  NSUInteger numberOfKeyCommandsWithoutFIP = provider.keyCommands.count;
-
-  // Can Find in Page.
-  web_state->SetContentIsHTML(true);
-  NSUInteger numberOfKeyCommandsWithFIP = provider.keyCommands.count;
-
-  EXPECT_GT(numberOfKeyCommandsWithFIP, numberOfKeyCommandsWithoutFIP);
 }
 
 }  // namespace

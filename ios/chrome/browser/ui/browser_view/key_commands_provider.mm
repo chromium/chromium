@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 
+#import <objc/runtime.h>
+
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
@@ -120,38 +122,13 @@ using base::UserMetricsAction;
       UIKeyCommand.cr_reportAnIssue_2,
     ];
   } else {
-    return [self noKeyboardShortcutsMenuKeyCommands];
-  }
-}
-
-// Returns the set of key commands supported when the KeyboardShortcutsMenu
-// feature is not enabled.
-- (NSArray<UIKeyCommand*>*)noKeyboardShortcutsMenuKeyCommands {
-  DCHECK(!IsKeyboardShortcutsMenuEnabled());
-
-  NSMutableArray<UIKeyCommand*>* keyCommands = [NSMutableArray array];
-
-  // List the commands that always appear in the HUD. They appear in the HUD
-  // since they have titles.
-  [keyCommands addObjectsFromArray:@[
-    UIKeyCommand.cr_openNewTab,
-    UIKeyCommand.cr_openNewIncognitoTab,
-    UIKeyCommand.cr_reopenLastClosedTab,
-  ]];
-
-  // List the commands that only appear when there is at least a tab. When they
-  // appear, they are in the HUD since they have titles.
-  const BOOL hasTabs = self.tabsCount > 0;
-  if (hasTabs) {
-    if (self.findInPageAvailable) {
-      [keyCommands addObjectsFromArray:@[
-        UIKeyCommand.cr_find,
-        UIKeyCommand.cr_findNext,
-        UIKeyCommand.cr_findPrevious,
-      ]];
-    }
-
-    [keyCommands addObjectsFromArray:@[
+    return @[
+      UIKeyCommand.cr_openNewTab,
+      UIKeyCommand.cr_openNewIncognitoTab,
+      UIKeyCommand.cr_reopenLastClosedTab,
+      UIKeyCommand.cr_find,
+      UIKeyCommand.cr_findNext,
+      UIKeyCommand.cr_findPrevious,
       UIKeyCommand.cr_openLocation,
       UIKeyCommand.cr_closeTab,
       UIKeyCommand.cr_showNextTab,
@@ -165,37 +142,13 @@ using base::UserMetricsAction;
       UIKeyCommand.cr_reload,
       UIKeyCommand.cr_back,
       UIKeyCommand.cr_forward,
-    ]];
-
-    // Since cmd+left and cmd+right are valid system shortcuts when editing
-    // text, register those only if text is not being edited.
-    if (!self.editingText) {
-      [keyCommands addObjectsFromArray:@[
-        UIKeyCommand.cr_back_2,
-        UIKeyCommand.cr_forward_2,
-      ]];
-    }
-
-    [keyCommands addObjectsFromArray:@[
+      UIKeyCommand.cr_back_2,
+      UIKeyCommand.cr_forward_2,
       UIKeyCommand.cr_showHistory,
       UIKeyCommand.cr_voiceSearch,
-    ]];
-  }
-
-  if (self.canDismissModals) {
-    [keyCommands addObject:UIKeyCommand.cr_close];
-  }
-
-  // List the commands that don't appear in the HUD but are always present.
-  [keyCommands addObjectsFromArray:@[
-    UIKeyCommand.cr_openNewRegularTab,
-    UIKeyCommand.cr_showSettings,
-  ]];
-
-  // List the commands that don't appear in the HUD and only appear when there
-  // is at least a tab.
-  if (hasTabs) {
-    [keyCommands addObjectsFromArray:@[
+      UIKeyCommand.cr_close,
+      UIKeyCommand.cr_openNewRegularTab,
+      UIKeyCommand.cr_showSettings,
       UIKeyCommand.cr_stop,
       UIKeyCommand.cr_showHelp,
       UIKeyCommand.cr_showDownloads,
@@ -209,10 +162,53 @@ using base::UserMetricsAction;
       UIKeyCommand.cr_showTab7,
       UIKeyCommand.cr_showTab8,
       UIKeyCommand.cr_showLastTab,
-    ]];
+    ];
   }
+}
 
-  return keyCommands;
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  if (sel_isEqual(action, @selector(keyCommand_back)) ||
+      sel_isEqual(action, @selector(keyCommand_forward))) {
+    // Since cmd+left and cmd+right are valid system shortcuts when editing
+    // text, register those only if text is not being edited.
+    if ([sender isEqual:UIKeyCommand.cr_back_2] ||
+        [sender isEqual:UIKeyCommand.cr_forward_2]) {
+      return self.tabsCount > 0 && !self.editingText;
+    }
+    return self.tabsCount > 0;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_openLocation)) ||
+      sel_isEqual(action, @selector(keyCommand_closeTab)) ||
+      sel_isEqual(action, @selector(keyCommand_showNextTab)) ||
+      sel_isEqual(action, @selector(keyCommand_showPreviousTab)) ||
+      sel_isEqual(action, @selector(keyCommand_showBookmarks)) ||
+      sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
+      sel_isEqual(action, @selector(keyCommand_reload)) ||
+      sel_isEqual(action, @selector(keyCommand_showHistory)) ||
+      sel_isEqual(action, @selector(keyCommand_voiceSearch)) ||
+      sel_isEqual(action, @selector(keyCommand_stop)) ||
+      sel_isEqual(action, @selector(keyCommand_showHelp)) ||
+      sel_isEqual(action, @selector(keyCommand_showDownloads)) ||
+      sel_isEqual(action, @selector(keyCommand_showFirstTab)) ||
+      sel_isEqual(action, @selector(keyCommand_showTab2)) ||
+      sel_isEqual(action, @selector(keyCommand_showTab3)) ||
+      sel_isEqual(action, @selector(keyCommand_showTab4)) ||
+      sel_isEqual(action, @selector(keyCommand_showTab5)) ||
+      sel_isEqual(action, @selector(keyCommand_showTab6)) ||
+      sel_isEqual(action, @selector(keyCommand_showTab7)) ||
+      sel_isEqual(action, @selector(keyCommand_showTab8)) ||
+      sel_isEqual(action, @selector(keyCommand_showLastTab))) {
+    return self.tabsCount > 0;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_find)) ||
+      sel_isEqual(action, @selector(keyCommand_findNext)) ||
+      sel_isEqual(action, @selector(keyCommand_findPrevious))) {
+    return self.tabsCount > 0 && self.findInPageAvailable;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_close))) {
+    return self.canDismissModals;
+  }
+  return [super canPerformAction:action withSender:sender];
 }
 
 #pragma mark - Key Command Actions
