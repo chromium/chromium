@@ -313,7 +313,14 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
     return;
 
   // Elements appear on the page in the order they are added.
-  if (collector->IsReportingActivityTimes() ||
+  bool report_device_peripherals = false;
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePeripherals,
+                                            &report_device_peripherals);
+  bool report_audio_status = false;
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceAudioStatus,
+                                            &report_audio_status);
+  if (collector->IsReportingActivityTimes() || report_device_peripherals ||
+      report_audio_status ||
       profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
     AddDeviceReportingElement(report_sources, kManagementReportActivityTimes,
                               DeviceReportingType::kDeviceActivity);
@@ -346,9 +353,6 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
                               DeviceReportingType::kLogs);
   }
 
-  bool report_audio_status = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceAudioStatus,
-                                            &report_audio_status);
   if (report_audio_status) {
     AddDeviceReportingElement(report_sources,
                               kManagementReportDeviceAudioStatus,
@@ -364,9 +368,6 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
                               DeviceReportingType::kDevice);
   }
 
-  bool report_device_peripherals = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePeripherals,
-                                            &report_device_peripherals);
   if (report_device_peripherals) {
     AddDeviceReportingElement(report_sources,
                               kManagementReportDevicePeripherals,

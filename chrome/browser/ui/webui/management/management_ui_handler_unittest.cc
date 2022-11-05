@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -342,6 +343,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     bool report_crash_info;
     bool report_app_info_and_activity;
     bool report_dlp_events;
+    bool report_audio_status;
+    bool report_device_peripherals;
     bool upload_enabled;
     bool printing_send_username_and_filename;
     bool crostini_report_usage;
@@ -365,6 +368,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     setup_config_.report_crash_info = default_value;
     setup_config_.report_app_info_and_activity = default_value;
     setup_config_.report_dlp_events = default_value;
+    setup_config_.report_audio_status = default_value;
+    setup_config_.report_device_peripherals = default_value;
     setup_config_.upload_enabled = default_value;
     setup_config_.printing_send_username_and_filename = default_value;
     setup_config_.crostini_report_usage = default_value;
@@ -426,6 +431,11 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         ash::CrosSettingsProvider::TRUSTED);
     settings_.device_settings()->SetBoolean(ash::kSystemLogUploadEnabled,
                                             GetTestConfig().upload_enabled);
+    settings_.device_settings()->SetBoolean(
+        ash::kReportDeviceAudioStatus, GetTestConfig().report_audio_status);
+    settings_.device_settings()->SetBoolean(
+        ash::kReportDevicePeripherals,
+        GetTestConfig().report_device_peripherals);
     profile_->GetPrefs()->SetBoolean(
         prefs::kPrintingSendUsernameAndFilenameEnabled,
         GetTestConfig().printing_send_username_and_filename);
@@ -1006,6 +1016,8 @@ TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
       {kManagementReportNetworkData, "device"},
+      {kManagementReportDeviceAudioStatus, "device"},
+      {kManagementReportDevicePeripherals, "peripherals"},
       {kManagementReportHardwareData, "device statistics"},
       {kManagementReportCrashReports, "crash report"},
       {kManagementReportAppInfoAndActivity, "app info and activity"},
@@ -1029,6 +1041,8 @@ TEST_F(ManagementUIHandlerTests,
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
       {kManagementReportNetworkData, "device"},
+      {kManagementReportDeviceAudioStatus, "device"},
+      {kManagementReportDevicePeripherals, "peripherals"},
       {kManagementReportHardwareData, "device statistics"},
       {kManagementReportCrashReports, "crash report"},
       {kManagementReportAppInfoAndActivity, "app info and activity"},
@@ -1078,6 +1092,28 @@ TEST_F(ManagementUIHandlerTests,
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
       {kManagementReportNetworkData, "device"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests, ReportDeviceAudioStatusEnabled) {
+  ResetTestConfig(false);
+  GetTestConfig().report_audio_status = true;
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementReportActivityTimes, "device activity"},
+      {kManagementReportDeviceAudioStatus, "device"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests, ReportDevicePeripheralsEnabled) {
+  ResetTestConfig(false);
+  GetTestConfig().report_device_peripherals = true;
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementReportActivityTimes, "device activity"},
+      {kManagementReportDevicePeripherals, "peripherals"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }
