@@ -20,6 +20,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store_util.h"
@@ -115,11 +116,13 @@ class PasswordStoreAndroidBackend
     JobReturnHandler(LoginsOrErrorReply callback,
                      PasswordStoreBackendMetricsRecorder metrics_recorder,
                      base::TimeDelta delay,
-                     PasswordStoreOperation operation);
+                     PasswordStoreOperation operation,
+                     base::OnceClosure crash_dump_callback);
     JobReturnHandler(PasswordChangesOrErrorReply callback,
                      PasswordStoreBackendMetricsRecorder metrics_recorder,
                      base::TimeDelta delay,
-                     PasswordStoreOperation operation);
+                     PasswordStoreOperation operation,
+                     base::OnceClosure crash_dump_callback);
     JobReturnHandler(JobReturnHandler&&);
     JobReturnHandler& operator=(JobReturnHandler&&) = delete;
     ~JobReturnHandler();
@@ -136,6 +139,8 @@ class PasswordStoreAndroidBackend
 
     void RecordMetrics(absl::optional<AndroidBackendError> error) const;
     base::TimeDelta GetElapsedTimeSinceStart() const;
+    // TODO(crbug.com/1324588): Remove after disabling crash dumps.
+    void SendCrashDump();
 
     base::TimeDelta GetDelay();
     PasswordStoreOperation GetOperation();
@@ -146,6 +151,7 @@ class PasswordStoreAndroidBackend
     PasswordStoreBackendMetricsRecorder metrics_recorder_;
     base::TimeDelta delay_;
     PasswordStoreOperation operation_;
+    base::OnceClosure crash_dump_callback_;
   };
 
   using JobId = PasswordStoreAndroidBackendBridge::JobId;
@@ -238,6 +244,8 @@ class PasswordStoreAndroidBackend
   void OnError(PasswordStoreAndroidBackendBridge::JobId job_id,
                AndroidBackendError error) override;
 
+  // TODO(crbug.com/1324588): Remove signon_realm and origin after disabling
+  // crash dumps.
   template <typename Callback>
   // Calling this method can be delayed in the case when a retry is scheduled.
   // Since the retry logic implements exponential backoff the duration of the
@@ -248,7 +256,12 @@ class PasswordStoreAndroidBackend
                    Callback callback,
                    MetricInfix metric_infix,
                    PasswordStoreOperation operation,
-                   base::TimeDelta delay);
+                   base::TimeDelta delay,
+                   absl::optional<std::string> signon_realm = absl::nullopt,
+                   absl::optional<std::string> origin = absl::nullopt,
+                   absl::optional<bool> is_username_empty = absl::nullopt,
+                   absl::optional<bool> is_blocklisted = absl::nullopt,
+                   absl::optional<PasswordForm::Scheme> scheme = absl::nullopt);
   absl::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
 
   // Gets logins matching |form|.
