@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -29,7 +30,7 @@ class StorageModule : public StorageModuleInterface {
       UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       scoped_refptr<EncryptionModuleInterface> encryption_module,
       scoped_refptr<CompressionModule> compression_module,
-      base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
+      base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)>
           callback);
 
   StorageModule(const StorageModule& other) = delete;

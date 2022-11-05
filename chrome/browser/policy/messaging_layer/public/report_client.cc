@@ -72,7 +72,20 @@ void ReportingClient::CreateLocalStorageModule(
           .set_directory(local_reporting_path)
           .set_signature_verification_public_key(verification_key),
       std::move(async_start_upload_cb), EncryptionModule::Create(),
-      CompressionModule::Create(512, compression_algorithm), std::move(cb));
+      CompressionModule::Create(512, compression_algorithm),
+      // Callback wrapper changes result type from `StorageModule` to
+      // `StorageModuleInterface`.
+      base::BindOnce(
+          [](base::OnceCallback<void(
+                 StatusOr<scoped_refptr<StorageModuleInterface>>)> cb,
+             StatusOr<scoped_refptr<StorageModule>> result) {
+            if (!result.ok()) {
+              std::move(cb).Run(result.status());
+              return;
+            }
+            std::move(cb).Run(result.ValueOrDie());
+          },
+          std::move(cb)));
 }
 
 // static

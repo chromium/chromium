@@ -6,9 +6,10 @@
 #define COMPONENTS_REPORTING_STORAGE_TEST_STORAGE_MODULE_H_
 
 #include "base/callback.h"
+#include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/storage/storage_module.h"
+#include "components/reporting/storage/storage_module_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -16,7 +17,7 @@
 namespace reporting {
 namespace test {
 
-class TestStorageModuleStrict : public StorageModule {
+class TestStorageModuleStrict : public StorageModuleInterface {
  public:
   // As opposed to the production |StorageModule|, test module does not need to
   // call factory method - it is created directly by constructor.
@@ -30,15 +31,6 @@ class TestStorageModuleStrict : public StorageModule {
   MOCK_METHOD(void,
               Flush,
               (Priority priority, FlushCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              ReportSuccess,
-              (SequenceInformation sequence_information, bool force),
-              (override));
-  MOCK_METHOD(void,
-              UpdateEncryptionKey,
-              (SignedEncryptionInfo signed_encryption_key),
               (override));
 
   const Record& record() const;

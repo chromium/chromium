@@ -59,8 +59,7 @@ void StorageModule::Create(
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
     scoped_refptr<EncryptionModuleInterface> encryption_module,
     scoped_refptr<CompressionModule> compression_module,
-    base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
-        callback) {
+    base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)> callback) {
   scoped_refptr<StorageModule> instance =
       // Cannot base::MakeRefCounted, since constructor is protected.
       base::WrapRefCounted(new StorageModule());
@@ -68,8 +67,8 @@ void StorageModule::Create(
       options, async_start_upload_cb, encryption_module, compression_module,
       base::BindOnce(
           [](scoped_refptr<StorageModule> instance,
-             base::OnceCallback<void(
-                 StatusOr<scoped_refptr<StorageModuleInterface>>)> callback,
+             base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)>
+                 callback,
              StatusOr<scoped_refptr<Storage>> storage) {
             if (!storage.ok()) {
               std::move(callback).Run(storage.status());

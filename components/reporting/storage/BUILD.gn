@@ -153,13 +153,9 @@ static_library("test_support") {
     "test_storage_module.h",
   ]
   public_deps = [
-    ":storage",
-    ":storage_configuration",
-    ":storage_module",
-    ":storage_queue",
+    ":storage_module_interface",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
-    "//components/reporting/storage:storage_module_interface",
     "//components/reporting/util:status",
   ]
   deps = [
