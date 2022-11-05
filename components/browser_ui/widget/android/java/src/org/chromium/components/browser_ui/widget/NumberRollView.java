@@ -9,7 +9,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
-import android.util.Property;
+import android.util.FloatProperty;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -36,10 +36,10 @@ public class NumberRollView extends FrameLayout {
      * {@link NumberRollView#setNumberRoll(float)} and {@link NumberRollView#getNumberRoll()}
      * methods.
      */
-    public static final Property<NumberRollView, Float> NUMBER_PROPERTY =
-            new Property<NumberRollView, Float>(Float.class, "") {
+    public static final FloatProperty<NumberRollView> NUMBER_PROPERTY =
+            new FloatProperty<NumberRollView>("") {
                 @Override
-                public void set(NumberRollView view, Float value) {
+                public void setValue(NumberRollView view, float value) {
                     view.setNumberRoll(value);
                 }
 

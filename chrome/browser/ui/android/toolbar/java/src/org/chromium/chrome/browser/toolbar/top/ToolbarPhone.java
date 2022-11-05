@@ -25,7 +25,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Property;
+import android.util.FloatProperty;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -275,15 +275,15 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
 
-    private final Property<ToolbarPhone, Float> mUrlFocusChangeFractionProperty =
-            new Property<ToolbarPhone, Float>(Float.class, "") {
+    private final FloatProperty<ToolbarPhone> mUrlFocusChangeFractionProperty =
+            new FloatProperty<ToolbarPhone>("") {
                 @Override
                 public Float get(ToolbarPhone object) {
                     return object.mUrlFocusChangeFraction;
                 }
 
                 @Override
-                public void set(ToolbarPhone object, Float value) {
+                public void setValue(ToolbarPhone object, float value) {
                     setUrlFocusChangeFraction(value);
                 }
             };

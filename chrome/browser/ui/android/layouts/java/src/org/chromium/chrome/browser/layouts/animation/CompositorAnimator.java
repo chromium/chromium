@@ -10,6 +10,7 @@ import android.animation.Animator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.provider.Settings;
+import android.util.FloatProperty;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;

@@ -15,7 +15,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Property;
+import android.util.FloatProperty;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -63,15 +63,15 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     private Delegate mDelegate;
 
-    private final Property<LogoView, Float> mTransitionProperty =
-            new Property<LogoView, Float>(Float.class, "") {
+    private final FloatProperty<LogoView> mTransitionProperty =
+            new FloatProperty<LogoView>("") {
                 @Override
                 public Float get(LogoView logoView) {
                     return logoView.mTransitionAmount;
                 }
 
                 @Override
-                public void set(LogoView logoView, Float amount) {
+                public void setValue(LogoView logoView, float amount) {
                     assert amount >= 0f;
                     assert amount <= 1f;
                     if (logoView.mTransitionAmount != amount) {

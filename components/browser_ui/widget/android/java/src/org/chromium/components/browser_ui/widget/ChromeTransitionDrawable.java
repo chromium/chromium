@@ -14,7 +14,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.support.annotation.NonNull;
-import android.util.Property;
+import android.util.IntProperty;
 
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
@@ -61,16 +61,15 @@ public class ChromeTransitionDrawable extends LayerDrawable {
         }
     }
 
-    private final Property<ChromeTransitionDrawable, Integer> mTransitionProgressProperty =
-            new Property<ChromeTransitionDrawable, Integer>(
-                    Integer.class, "ChromeTransitionDrawableProgress") {
+    private final IntProperty<ChromeTransitionDrawable> mTransitionProgressProperty =
+            new IntProperty<ChromeTransitionDrawable>("ChromeTransitionDrawableProgress") {
                 @Override
                 public Integer get(ChromeTransitionDrawable target) {
                     return target.mProgress;
                 }
 
                 @Override
-                public void set(ChromeTransitionDrawable target, Integer value) {
+                public void setValue(ChromeTransitionDrawable target, int value) {
                     target.setProgress(value);
                 }
             };

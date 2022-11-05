@@ -5,7 +5,7 @@
 package org.chromium.ui.modelutil;
 
 import android.animation.ObjectAnimator;
-import android.util.Property;
+import android.util.FloatProperty;
 
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 
@@ -28,11 +28,11 @@ public class PropertyModelAnimatorFactory {
         return ObjectAnimator.ofFloat(model, customProperty, targetValue);
     }
 
-    private static class PropertyModelFloatProp extends Property<PropertyModel, Float> {
+    private static class PropertyModelFloatProp extends FloatProperty<PropertyModel> {
         final WritableFloatPropertyKey mKey;
 
         public PropertyModelFloatProp(WritableFloatPropertyKey key) {
-            super(Float.class, key.toString());
+            super(key.toString());
             mKey = key;
         }
 
@@ -42,7 +42,7 @@ public class PropertyModelAnimatorFactory {
         }
 
         @Override
-        public void set(PropertyModel model, Float value) {
+        public void setValue(PropertyModel model, float value) {
             model.set(mKey, value);
         }
     }

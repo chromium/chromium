@@ -230,6 +230,14 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
           'base/android/java/src/org/chromium/base/ContextUtils.java',
       ),
     ),
+    BanRule(
+      r'/(?:extends|new)\s*(?:android.util.)?Property<[A-Za-z.]+,\s*(?:Integer|Float)>',
+      (
+       'Do not use Property<..., Integer|Float>, but use FloatProperty or '
+       'IntProperty because it will avoid unnecessary autoboxing of '
+       'primitives.',
+      ),
+    ),
 )
 
 _BANNED_OBJC_FUNCTIONS : Sequence[BanRule] = (

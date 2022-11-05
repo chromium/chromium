@@ -24,7 +24,6 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   deps = [
-    "third_party/float_property:java",
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",

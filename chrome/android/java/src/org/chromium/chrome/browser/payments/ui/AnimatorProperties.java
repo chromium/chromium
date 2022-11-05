@@ -5,24 +5,21 @@
 package org.chromium.chrome.browser.payments.ui;
 
 import android.graphics.drawable.Drawable;
-import android.util.Property;
+import android.util.IntProperty;
 
 /**
- * Holds different {@link Property} types that can be used with ObjectAnimators.
+ * Holds different {@link android.util.Property} types that can be used with ObjectAnimators.
  */
 class AnimatorProperties {
-    static final Property<Drawable, Integer> DRAWABLE_ALPHA_PROPERTY =
-            new Property<Drawable, Integer>(Integer.class, "alpha") {
+    static final IntProperty<Drawable> DRAWABLE_ALPHA_PROPERTY =
+            new IntProperty<Drawable>("alpha") {
                 @Override
                 public Integer get(Drawable d) {
-                    // getAlpha() is only exposed on drawable in API 19+, so we rely on animations
-                    // always setting the starting and ending values instead of relying on this
-                    // property.
-                    return 0;
+                    return d.getAlpha();
                 }
 
                 @Override
-                public void set(Drawable d, Integer alpha) {
+                public void setValue(Drawable d, int alpha) {
                     d.setAlpha(alpha);
                 }
             };

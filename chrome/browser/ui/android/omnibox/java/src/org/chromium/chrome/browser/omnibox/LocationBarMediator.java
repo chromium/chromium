@@ -12,7 +12,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.text.TextUtils;
-import android.util.Property;
+import android.util.FloatProperty;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -119,28 +119,28 @@ class LocationBarMediator
         void recordNavigationOnNtp(String url, int transition);
     }
 
-    private final Property<LocationBarMediator, Float> mUrlFocusChangeFractionProperty =
-            new Property<LocationBarMediator, Float>(Float.class, "") {
+    private final FloatProperty<LocationBarMediator> mUrlFocusChangeFractionProperty =
+            new FloatProperty<LocationBarMediator>("") {
                 @Override
                 public Float get(LocationBarMediator object) {
                     return mUrlFocusChangeFraction;
                 }
 
                 @Override
-                public void set(LocationBarMediator object, Float value) {
+                public void setValue(LocationBarMediator object, float value) {
                     setUrlFocusChangeFraction(value);
                 }
             };
 
-    private final Property<LocationBarMediator, Float> mWidthChangeFractionPropertyTablet =
-            new Property<LocationBarMediator, Float>(Float.class, "") {
+    private final FloatProperty<LocationBarMediator> mWidthChangeFractionPropertyTablet =
+            new FloatProperty<LocationBarMediator>("") {
                 @Override
                 public Float get(LocationBarMediator object) {
                     return ((LocationBarTablet) mLocationBarLayout).getWidthChangeFraction();
                 }
 
                 @Override
-                public void set(LocationBarMediator object, Float value) {
+                public void setValue(LocationBarMediator object, float value) {
                     ((LocationBarTablet) mLocationBarLayout).setWidthChangeAnimationFraction(value);
                 }
             };
