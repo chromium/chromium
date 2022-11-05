@@ -54,11 +54,25 @@ class CoreTabHelper : public content::WebContentsObserver,
   // |is_side_panel_enabled_for_feature| is true and if the search engine
   // supports opening requests in side panel, then the request will open in the
   // side panel instead of a new tab.
+  // TODO (b/257281671): remove when /screenshot is cleaned up
   void SearchWithLens(gfx::Image image,
                       const gfx::Size& image_original_size,
                       lens::EntryPoint entry_point,
                       bool is_region_search_request,
                       bool is_side_panel_enabled_for_feature);
+
+  // Open the Lens experience for an image. Used for sending the bitmap selected
+  // via Lens Region Search. |image_original_size| is specified in case of
+  // resizing that happens prior to passing the image to |CoreTabHelper|. If
+  // |is_side_panel_enabled_for_feature| is true and if the search engine
+  // supports opening requests in side panel, then the request will open in the
+  // side panel instead of a new tab.
+  void SearchWithLens(gfx::Image image,
+                      const gfx::Size& image_original_size,
+                      lens::EntryPoint entry_point,
+                      bool is_region_search_request,
+                      bool is_side_panel_enabled_for_feature,
+                      std::vector<lens::mojom::LatencyLogPtr> log_data);
 
   // Perform an image search for the image that triggered the context menu.  The
   // |src_url| is passed to the search request and is not used directly to fetch
@@ -147,7 +161,8 @@ class CoreTabHelper : public content::WebContentsObserver,
   void SearchByImageImpl(const gfx::Image& image,
                          const gfx::Size& image_original_size,
                          const std::string& additional_query_params,
-                         bool use_side_panel);
+                         bool use_side_panel,
+                         std::vector<lens::mojom::LatencyLogPtr> log_data);
 
   // The time when we started to create the new tab page.  This time is from
   // before we created this WebContents.

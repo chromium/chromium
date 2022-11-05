@@ -64,6 +64,9 @@ class LensRegionSearchController : public content::WebContentsObserver {
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  // Check if the image need to downscale.
+  static bool NeedsDownscale(gfx::Image image);
+
   // The function handling the metrics recording and resizing that happens when
   // the capture has been completed.
   void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
