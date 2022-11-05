@@ -19,6 +19,8 @@
 #include "chromeos/ash/services/secure_channel/ble_synchronizer_base.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace ash::secure_channel {
@@ -106,6 +108,10 @@ void BleScannerImpl::UpdateDiscoveryStatus() {
 }
 
 bool BleScannerImpl::IsDiscoverySessionActive() {
+  if (floss::features::IsFlossEnabled()) {
+    return le_scan_session_.get() != nullptr;
+  }
+
   ResetDiscoverySessionIfNotActive();
   return discovery_session_.get() != nullptr;
 }
@@ -135,6 +141,15 @@ void BleScannerImpl::EnsureDiscoverySessionActive() {
     return;
 
   is_initializing_discovery_session_ = true;
+
+  if (floss::features::IsFlossEnabled()) {
+    // TODO(b/217274013): Filters are currently being ignored in Floss. When
+    // filters are implemented, a filter can be added for
+    // kAdvertisingServiceUuid.
+    le_scan_session_ = adapter_->StartLowEnergyScanSession(
+        /*filter=*/nullptr, weak_ptr_factory_.GetWeakPtr());
+    return;
+  }
 
   ble_synchronizer_->StartDiscoverySession(
       base::BindOnce(&BleScannerImpl::OnDiscoverySessionStarted,
@@ -166,6 +181,12 @@ void BleScannerImpl::EnsureDiscoverySessionNotActive() {
   if (!IsDiscoverySessionActive() || is_stopping_discovery_session_)
     return;
 
+  if (floss::features::IsFlossEnabled()) {
+    if (le_scan_session_)
+      le_scan_session_.reset();
+    return;
+  }
+
   is_stopping_discovery_session_ = true;
 
   ble_synchronizer_->StopDiscoverySession(
@@ -189,6 +210,46 @@ void BleScannerImpl::OnDiscoverySessionStopped() {
 void BleScannerImpl::OnStopDiscoverySessionError() {
   is_stopping_discovery_session_ = false;
   PA_LOG(ERROR) << "Error stopping discovery session.";
+  UpdateDiscoveryStatus();
+}
+
+void BleScannerImpl::OnDeviceFound(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {
+  // This can be left empty since Floss will also invoke
+  // DeviceAdvertisementReceived when it receives a scan result.
+}
+
+void BleScannerImpl::OnDeviceLost(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {
+  // This can be left empty since there is nothing to do when
+  // a device is no longer in range.
+}
+
+void BleScannerImpl::OnSessionStarted(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+        error_code) {
+  is_initializing_discovery_session_ = false;
+
+  if (error_code) {
+    PA_LOG(ERROR) << "LE scan session failed to start, error_code = "
+                  << static_cast<int>(error_code.value());
+    if (le_scan_session_)
+      le_scan_session_.reset();
+  } else {
+    PA_LOG(INFO) << "Started LE scan session successfully.";
+  }
+
+  UpdateDiscoveryStatus();
+}
+
+void BleScannerImpl::OnSessionInvalidated(
+    device::BluetoothLowEnergyScanSession* scan_session) {
+  PA_LOG(INFO) << "LE scan session was invalidated";
+  if (le_scan_session_)
+    le_scan_session_.reset();
   UpdateDiscoveryStatus();
 }
 
