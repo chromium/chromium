@@ -574,6 +574,16 @@
     'enabled': True,
     'identifier': 'DEDEDE_RELEASE_STABLE',
   },
+  'CROS_EVE_PUBLIC_LKGM': {
+    'skylab': {
+      'cros_board': 'eve',
+      'cros_chrome_version': '109.0.5367.0',
+      'cros_img': 'eve-public/R109-15222.0.0',
+      'bucket': 'chromiumos-image-archive',
+    },
+    'enabled': True,
+    'identifier': 'EVE_PUBLIC_LKGM',
+  },
   'CROS_EVE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'eve',

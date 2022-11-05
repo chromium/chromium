@@ -3271,6 +3271,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'lacros_device_or_vm_tests_fyi',
+          'skylab_tests': 'lacros_amd64_generic_rel_skylab',
         },
         'os_type': 'chromeos'
       },
