@@ -117,7 +117,7 @@ struct MEDIA_EXPORT XMediaTag {
   // A human-readable description of this rendition.
   ResolvedSourceString name;
 
-  // A stable identifier for URI of this rendition within a multivariant
+  // A stable identifier for the URI of this rendition within a multivariant
   // playlist. All renditions with the same URI SHOULD use the same
   // stable-rendition-id.
   absl::optional<types::StableId> stable_rendition_id;

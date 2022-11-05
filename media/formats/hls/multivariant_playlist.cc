@@ -8,8 +8,11 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
+#include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
@@ -24,6 +27,29 @@
 #include "url/gurl.h"
 
 namespace media::hls {
+
+namespace {
+
+// Helper for either getting or creating a rendition group, given an ID.
+// This allows referencing rendition groups before they've been created.
+template <typename T>
+T* GetOrCreateRenditionGroup(
+    base::PassKey<MultivariantPlaylist> pass_key,
+    base::flat_map<base::StringPiece, scoped_refptr<T>>& groups,
+    base::StringPiece id) {
+  auto iter = groups.find(id);
+
+  // If the group wasn't found, create it.
+  if (iter == groups.end()) {
+    auto group =
+        base::MakeRefCounted<AudioRenditionGroup>(pass_key, std::string(id));
+    iter = groups.insert(std::make_pair(id, std::move(group))).first;
+  }
+
+  return iter->second.get();
+}
+
+}  // namespace
 
 MultivariantPlaylist::~MultivariantPlaylist() = default;
 
@@ -60,6 +86,8 @@ MultivariantPlaylist::Parse(base::StringPiece source,
   VariableDictionary::SubstitutionBuffer sub_buffer;
   absl::optional<XStreamInfTag> inf_tag;
   std::vector<VariantStream> variants;
+  base::flat_map<base::StringPiece, scoped_refptr<AudioRenditionGroup>>
+      audio_rendition_groups;
 
   // Get variants out of the playlist
   while (true) {
@@ -115,7 +143,38 @@ MultivariantPlaylist::Parse(base::StringPiece source,
           break;
         }
         case MultivariantPlaylistTagName::kXMedia: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-MEDIA tag
+          auto result =
+              XMediaTag::Parse(*tag, common_state.variable_dict, sub_buffer);
+          if (!result.has_value()) {
+            return std::move(result).error();
+          }
+          auto media_tag = std::move(result).value();
+
+          switch (media_tag.type) {
+            case MediaType::kAudio: {
+              auto* group = GetOrCreateRenditionGroup(
+                  {}, audio_rendition_groups, media_tag.group_id.Str());
+              auto rendition_result =
+                  group->AddRendition(base::PassKey<MultivariantPlaylist>(),
+                                      std::move(media_tag), uri);
+              if (!rendition_result.has_value()) {
+                return std::move(rendition_result).error();
+              }
+              break;
+            }
+            case MediaType::kVideo: {
+              // TODO(crbug.com/1266991): Support alternate video renditions
+              break;
+            }
+            case MediaType::kSubtitles: {
+              // TODO(crbug.com/1266991): Support subtitle renditions
+              break;
+            }
+            case MediaType::kClosedCaptions: {
+              // TODO(crbug.com/1266991): Support closed captions renditions
+              break;
+            }
+          }
           break;
         }
         case MultivariantPlaylistTagName::kXSessionData: {
@@ -156,10 +215,16 @@ MultivariantPlaylist::Parse(base::StringPiece source,
       return ParseStatusCode::kVariantMissingStreamInfTag;
     }
 
+    scoped_refptr<AudioRenditionGroup> audio_renditions;
+    if (inf_tag->audio.has_value()) {
+      audio_renditions = GetOrCreateRenditionGroup({}, audio_rendition_groups,
+                                                   inf_tag->audio->Str());
+    }
+
     variants.emplace_back(std::move(variant_uri), inf_tag->bandwidth,
                           inf_tag->average_bandwidth, inf_tag->score,
                           std::move(inf_tag->codecs), inf_tag->resolution,
-                          inf_tag->frame_rate);
+                          inf_tag->frame_rate, std::move(audio_renditions));
 
     // Reset per-variant tags
     inf_tag.reset();
@@ -172,6 +237,16 @@ MultivariantPlaylist::Parse(base::StringPiece source,
   // Version must match what was expected.
   if (!common_state.CheckVersion(version)) {
     return ParseStatusCode::kPlaylistHasVersionMismatch;
+  }
+
+  // Ensure that each rendition group has at least one rendition
+  // If there were none, then a variant stream referenced a group that does not
+  // exist. The inverse (a rendition group that was not referenced by any
+  // variant) is not considered an error.
+  for (const auto& group : audio_rendition_groups) {
+    if (group.second->GetRenditions().empty()) {
+      return ParseStatusCode::kRenditionGroupDoesNotExist;
+    }
   }
 
   return base::MakeRefCounted<MultivariantPlaylist>(

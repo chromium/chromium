@@ -6,6 +6,7 @@
 
 #include "media/formats/hls/multivariant_playlist_test_builder.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -276,6 +277,120 @@ TEST(HlsMultivariantPlaylistTest, XStreamInfTag) {
   builder.ExpectVariant(HasResolution, absl::nullopt);
   builder.ExpectVariant(HasFrameRate, 59.94);
   builder.ExpectOk();
+}
+
+TEST(HlsMultivariantPlaylistTest, XMediaTag) {
+  MultivariantPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+
+  // Invalid EXT-X-MEDIA tags should cause the playlist to be rejected
+  auto fork = builder;
+  fork.AppendLine("#EXT-X-MEDIA");
+  fork.ExpectError(ParseStatusCode::kMalformedTag);
+  fork = builder;
+  fork.AppendLine("#EXT-X-MEDIA:TYPE=AUDIO");
+  fork.ExpectError(ParseStatusCode::kMalformedTag);
+
+  // Rendition group ids that are referenced by EXT-X-STREAM-INF tags but not by
+  // EXT-X-MEDIA tags should result in an error.
+  fork = builder;
+  fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,AUDIO=\"foo\"");
+  fork.AppendLine("playlist.m3u8");
+  fork.ExpectError(ParseStatusCode::kRenditionGroupDoesNotExist);
+
+  // ... But not the other way around
+  fork = builder;
+  fork.AppendLine(
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI=\"english."
+      "m3u8\"");
+  fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100");
+  fork.AppendLine("playlist.m3u8");
+  fork.ExpectAdditionalVariant();
+  fork.ExpectVariant(HasAudioRenditionGroup, absl::nullopt);
+  fork.ExpectOk();
+
+  // Rendition groups may be referenced by EXT-X-STREAM-INF and EXT-X-MEDIA tags
+  // in any order.
+  fork = builder;
+  fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,AUDIO=\"foo\"");
+  fork.AppendLine("playlist.m3u8");
+  fork.ExpectAdditionalVariant();
+  fork.ExpectVariant(HasAudioRenditionGroup, "foo");
+  fork.AppendLine(
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI=\"english."
+      "m3u8\"");
+  fork.ExpectAudioRendition("foo", "English", RenditionHasUri,
+                            GURL("http://localhost/english.m3u8"));
+  fork.ExpectAudioRendition("foo", "English", HasLanguage, absl::nullopt);
+  fork.ExpectAudioRendition("foo", "English", HasAssociatedLanguage,
+                            absl::nullopt);
+  fork.ExpectAudioRendition("foo", "English", MayAutoSelect, false);
+  fork.ExpectAudioRendition("foo", "English", HasStableRenditionId,
+                            absl::nullopt);
+  fork.ExpectAudioRenditionGroup("foo", HasDefaultRendition, absl::nullopt);
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine(
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI=\"english."
+      "m3u8\"");
+  fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,AUDIO=\"foo\"");
+  fork.AppendLine("playlist.m3u8");
+  fork.ExpectAdditionalVariant();
+  fork.ExpectVariant(HasAudioRenditionGroup, "foo");
+  fork.ExpectAudioRendition("foo", "English", RenditionHasUri,
+                            GURL("http://localhost/english.m3u8"));
+  fork.ExpectAudioRendition("foo", "English", HasLanguage, absl::nullopt);
+  fork.ExpectAudioRendition("foo", "English", HasAssociatedLanguage,
+                            absl::nullopt);
+  fork.ExpectAudioRendition("foo", "English", MayAutoSelect, false);
+  fork.ExpectAudioRendition("foo", "English", HasStableRenditionId,
+                            absl::nullopt);
+  fork.ExpectAudioRenditionGroup("foo", HasDefaultRendition, absl::nullopt);
+  fork.ExpectOk();
+
+  // Two EXT-X-MEDIA tags in the same group may not have the same name
+  fork = builder;
+  fork.AppendLine(
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI=\"english."
+      "m3u8\"");
+  fork.AppendLine(
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI="
+      "\"english2.m3u8\"");
+  fork.ExpectError(ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames);
+
+  // .. Unless they are in different groups
+  fork = builder;
+  fork.AppendLine(
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI=\"english."
+      "m3u8\"");
+  fork.AppendLine(
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"bar\",NAME=\"English\",URI="
+      "\"english2.m3u8\"");
+  fork.ExpectOk();
+
+  // Despite what the spec says, multiple renditions in the same group
+  // frequently have DEFAULT=YES, so we allow that. Only the first to appear is
+  // considered the default.
+  fork = builder;
+  fork.AppendLine(
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI=\"english."
+      "m3u8\",DEFAULT=YES");
+  fork.AppendLine(
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"Spanish\",URI=\"spanish."
+      "m3u8\",DEFAULT=YES");
+  fork.ExpectAudioRenditionGroup("foo", HasDefaultRendition, "English");
+  fork.ExpectAudioRendition("foo", "English", RenditionHasUri,
+                            GURL("http://localhost/english.m3u8"));
+  fork.ExpectAudioRendition("foo", "English", MayAutoSelect, true);
+  fork.ExpectAudioRendition("foo", "Spanish", RenditionHasUri,
+                            GURL("http://localhost/spanish.m3u8"));
+  fork.ExpectAudioRendition("foo", "Spanish", MayAutoSelect, true);
+  fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,AUDIO=\"foo\"");
+  fork.AppendLine("stream1.m3u8");
+  fork.ExpectAdditionalVariant();
+  fork.ExpectVariant(HasAudioRenditionGroup, "foo");
+  fork.ExpectOk();
 }
 
 }  // namespace media::hls

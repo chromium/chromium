@@ -59,6 +59,9 @@ enum class ParseStatusCode : StatusCodeType {
   kPartHoldBackDistanceTooLow,
   kPartInfTagWithoutPartHoldBack,
   kPlaylistHasUnexpectedDeltaUpdate,
+  kRenditionGroupHasMultipleDefaultRenditions,
+  kRenditionGroupHasDuplicateRenditionNames,
+  kRenditionGroupDoesNotExist,
 };
 
 struct ParseStatusTraits {

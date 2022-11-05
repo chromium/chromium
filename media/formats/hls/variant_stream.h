@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_HLS_VARIANT_STREAM_H_
 #define MEDIA_FORMATS_HLS_VARIANT_STREAM_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/types.h"
@@ -12,6 +13,8 @@
 #include "url/gurl.h"
 
 namespace media::hls {
+
+class AudioRenditionGroup;
 
 class MEDIA_EXPORT VariantStream {
  public:
@@ -21,12 +24,13 @@ class MEDIA_EXPORT VariantStream {
                 absl::optional<types::DecimalFloatingPoint> score,
                 absl::optional<std::vector<std::string>> codecs,
                 absl::optional<types::DecimalResolution> resolution,
-                absl::optional<types::DecimalFloatingPoint> frame_rate);
+                absl::optional<types::DecimalFloatingPoint> frame_rate,
+                scoped_refptr<AudioRenditionGroup> audio_renditions);
   VariantStream(const VariantStream&) = delete;
   VariantStream(VariantStream&&);
   ~VariantStream();
   VariantStream& operator=(const VariantStream&) = delete;
-  VariantStream& operator=(VariantStream&&);
+  VariantStream& operator=(VariantStream&&) = delete;
 
   // The URI of the rendition provided by the playlist for clients that do not
   // support multiple renditions.
@@ -93,6 +97,12 @@ class MEDIA_EXPORT VariantStream {
     return frame_rate_;
   }
 
+  // Returns the audio rendition group that should be used when playing this
+  // variant.
+  const scoped_refptr<AudioRenditionGroup>& GetAudioRenditionGroup() const {
+    return audio_rendition_group_;
+  }
+
  private:
   GURL primary_rendition_uri_;
   types::DecimalInteger bandwidth_;
@@ -101,6 +111,7 @@ class MEDIA_EXPORT VariantStream {
   absl::optional<std::vector<std::string>> codecs_;
   absl::optional<types::DecimalResolution> resolution_;
   absl::optional<types::DecimalFloatingPoint> frame_rate_;
+  scoped_refptr<AudioRenditionGroup> audio_rendition_group_;
 };
 
 }  // namespace media::hls

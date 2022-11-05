@@ -192,6 +192,8 @@ source_set("formats") {
 
   # TODO(https://crbug.com/1266991): These should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
+    "hls/audio_rendition.cc",
+    "hls/audio_rendition.h",
     "hls/items.cc",
     "hls/items.h",
     "hls/media_playlist.cc",

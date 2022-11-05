@@ -62,6 +62,9 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kPartHoldBackDistanceTooLow);
     PARSE_STATUS_CODE_CASE(kPartInfTagWithoutPartHoldBack);
     PARSE_STATUS_CODE_CASE(kPlaylistHasUnexpectedDeltaUpdate);
+    PARSE_STATUS_CODE_CASE(kRenditionGroupHasMultipleDefaultRenditions);
+    PARSE_STATUS_CODE_CASE(kRenditionGroupHasDuplicateRenditionNames);
+    PARSE_STATUS_CODE_CASE(kRenditionGroupDoesNotExist);
   }
 
   NOTREACHED();

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/strings/string_piece.h"
+#include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/playlist_test_builder.h"
 #include "media/formats/hls/types.h"
@@ -47,6 +48,33 @@ class MultivariantPlaylistTestBuilder
         std::move(fn), std::move(arg), std::move(location)));
   }
 
+  // Adds a new expectation for the audio rendition group identified by `id`.
+  // The test will fail if the group does not exist, or is unreferenced by
+  // any variant.
+  template <typename Fn, typename Arg>
+  void ExpectAudioRenditionGroup(
+      std::string id,
+      Fn fn,
+      Arg arg,
+      base::Location from = base::Location::Current()) {
+    ExpectRenditionGroup(audio_rendition_group_expectations_, std::move(id),
+                         std::move(fn), std::move(arg), std::move(from));
+  }
+
+  // Adds a new expectation for the audio rendition identified by `group_id` and
+  // `name`. The test will fail if the rendition does not exist, or its group is
+  // unreferenced by any variant.
+  template <typename Fn, typename Arg>
+  void ExpectAudioRendition(std::string group_id,
+                            std::string name,
+                            Fn fn,
+                            Arg arg,
+                            base::Location from = base::Location::Current()) {
+    ExpectRendition(audio_rendition_expectations_, std::move(group_id),
+                    std::move(name), std::move(fn), std::move(arg),
+                    std::move(from));
+  }
+
   void ExpectOk(const base::Location& from = base::Location::Current()) const {
     PlaylistTestBuilder::ExpectOk(from);
   }
@@ -70,9 +98,56 @@ class MultivariantPlaylistTestBuilder
         expectations;
   };
 
+  template <typename T>
+  struct RenditionGroupExpectation {
+    base::Location from;
+    std::string id;
+    base::RepeatingCallback<void(const base::Location&, const T&)> func;
+  };
+
+  template <typename T>
+  struct RenditionExpectation {
+    base::Location from;
+    std::string group_id;
+    std::string name;
+    base::RepeatingCallback<void(const base::Location&, const T&)> func;
+  };
+
+  template <typename Expectation, typename Fn, typename Arg>
+  void ExpectRenditionGroup(std::vector<Expectation>& type_expectations,
+                            std::string id,
+                            Fn fn,
+                            Arg arg,
+                            base::Location from) {
+    type_expectations.push_back(Expectation{
+        .from = from,
+        .id = std::move(id),
+        .func = base::BindRepeating(std::move(fn), std::move(arg)),
+    });
+  }
+
+  template <typename Expectation, typename Fn, typename Arg>
+  void ExpectRendition(std::vector<Expectation>& type_expectations,
+                       std::string group_id,
+                       std::string name,
+                       Fn fn,
+                       Arg arg,
+                       base::Location from) {
+    type_expectations.push_back(Expectation{
+        .from = from,
+        .group_id = std::move(group_id),
+        .name = std::move(name),
+        .func = base::BindRepeating(std::move(fn), std::move(arg)),
+    });
+  }
+
   void VerifyExpectations(const MultivariantPlaylist& playlist,
                           const base::Location& from) const override;
 
+  std::vector<RenditionGroupExpectation<AudioRenditionGroup>>
+      audio_rendition_group_expectations_;
+  std::vector<RenditionExpectation<AudioRendition>>
+      audio_rendition_expectations_;
   std::vector<VariantExpectations> variant_expectations_;
 };
 
@@ -141,6 +216,67 @@ inline void HasFrameRate(absl::optional<types::DecimalFloatingPoint> frame_rate,
   if (frame_rate.has_value()) {
     EXPECT_DOUBLE_EQ(variant.GetFrameRate().value(), frame_rate.value())
         << from.ToString();
+  }
+}
+
+// Checks that the audio rendition group associated with the latest variant has
+// the given `group_id`.
+inline void HasAudioRenditionGroup(absl::optional<std::string> group_id,
+                                   const base::Location& from,
+                                   const VariantStream& variant) {
+  if (variant.GetAudioRenditionGroup()) {
+    EXPECT_EQ(variant.GetAudioRenditionGroup()->GetId(), group_id)
+        << from.ToString();
+  } else {
+    EXPECT_EQ(absl::nullopt, group_id) << from.ToString();
+  }
+}
+
+// Checks that the audio rendition has the given URI.
+inline void RenditionHasUri(absl::optional<GURL> uri,
+                            const base::Location& from,
+                            const AudioRendition& rendition) {
+  EXPECT_EQ(rendition.GetUri(), uri) << from.ToString();
+}
+
+// Checks that the audio rendition has the given language.
+inline void HasLanguage(absl::optional<std::string> language,
+                        const base::Location& from,
+                        const AudioRendition& rendition) {
+  EXPECT_EQ(rendition.GetLanguage(), language) << from.ToString();
+}
+
+// Checks that the audio rendition has the given associated language.
+inline void HasAssociatedLanguage(absl::optional<std::string> language,
+                                  const base::Location& from,
+                                  const AudioRendition& rendition) {
+  EXPECT_EQ(rendition.GetAssociatedLanguage(), language) << from.ToString();
+}
+
+// Checks that the audio rendition has the given StableId.
+inline void HasStableRenditionId(absl::optional<types::StableId> id,
+                                 const base::Location& from,
+                                 const AudioRendition& rendition) {
+  EXPECT_EQ(rendition.GetStableRenditionId(), id) << from.ToString();
+}
+
+// Checks that the audio rendition may be autoselected (AUTOSELECT=YES or
+// DEFAULT=YES).
+inline void MayAutoSelect(bool value,
+                          const base::Location& from,
+                          const AudioRendition& rendition) {
+  EXPECT_EQ(rendition.MayAutoSelect(), value) << from.ToString();
+}
+
+// Checks that the audio rendition group has a default rendition with the given
+// name (or `absl::nullopt` for no default rendition).
+inline void HasDefaultRendition(absl::optional<std::string> name,
+                                const base::Location& from,
+                                const AudioRenditionGroup& group) {
+  if (group.GetDefaultRendition()) {
+    EXPECT_EQ(group.GetDefaultRendition()->GetName(), name) << from.ToString();
+  } else {
+    EXPECT_EQ(absl::nullopt, name) << from.ToString();
   }
 }
 

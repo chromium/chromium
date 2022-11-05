@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/location.h"
+#include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/variant_stream.h"
 
@@ -58,6 +59,47 @@ void MultivariantPlaylistTestBuilder::VerifyExpectations(
     for (const auto& expectation : expectations.expectations) {
       expectation.Run(variant);
     }
+  }
+
+  // Validate rendition group expectations
+  // Begin by constructing a table of group_id -> group
+  base::flat_map<std::string, scoped_refptr<AudioRenditionGroup>>
+      audio_rendition_groups;
+  for (const auto& variant : playlist.GetVariants()) {
+    const auto& group = variant.GetAudioRenditionGroup();
+    if (group == nullptr) {
+      continue;
+    }
+
+    auto iter = audio_rendition_groups.find(group->GetId());
+    if (iter != audio_rendition_groups.end()) {
+      // The same ID should always refer to the same group.
+      DCHECK(iter->second.get() == group.get());
+    } else {
+      audio_rendition_groups.insert(std::make_pair(group->GetId(), group));
+    }
+  }
+
+  // Check expectations against these groups
+  for (const auto& expectation : audio_rendition_group_expectations_) {
+    const auto iter = audio_rendition_groups.find(expectation.id);
+    EXPECT_NE(iter, audio_rendition_groups.end())
+        << expectation.from.ToString();
+    expectation.func.Run(expectation.from, *iter->second);
+  }
+
+  // Check rendition expectations
+  for (const auto& expectation : audio_rendition_expectations_) {
+    const auto group_iter = audio_rendition_groups.find(expectation.group_id);
+    ASSERT_NE(group_iter, audio_rendition_groups.end())
+        << expectation.from.ToString();
+    const auto& group = *group_iter->second;
+
+    const auto rendition_iter = base::ranges::find(
+        group.GetRenditions(), expectation.name, &AudioRendition::GetName);
+    ASSERT_NE(rendition_iter, group.GetRenditions().end())
+        << expectation.from.ToString();
+    expectation.func.Run(expectation.from, *rendition_iter);
   }
 }
 
