@@ -75,6 +75,12 @@ class CertBuilder {
   static std::unique_ptr<CertBuilder> FromStaticCertFile(
       const base::FilePath& cert_and_key_file);
 
+  // Creates a simple chain of CertBuilders with no AIA or CrlDistributionPoint
+  // extensions, and leaf having a subjectAltName of www.example.com.
+  // The chain is returned in leaf-first order.
+  static std::vector<std::unique_ptr<CertBuilder>> CreateSimpleChain(
+      size_t chain_length);
+
   // Creates a simple leaf->intermediate->root chain of CertBuilders with no AIA
   // or CrlDistributionPoint extensions, and leaf having a subjectAltName of
   // www.example.com.
@@ -130,6 +136,13 @@ class CertBuilder {
   // Sets the basicConstraints extension. |path_len| may be negative to
   // indicate the pathLenConstraint should be omitted.
   void SetBasicConstraints(bool is_ca, int path_len);
+
+  // Sets the nameConstraints extension. |permitted_dns_names| lists permitted
+  // dnsName subtrees. |excluded_dns_names| lists excluded dnsName subtrees. If
+  // both lists are empty the extension is removed.
+  void SetNameConstraintsDnsNames(
+      const std::vector<std::string>& permitted_dns_names,
+      const std::vector<std::string>& excluded_dns_names);
 
   // Sets an AIA extension with a single caIssuers access method.
   void SetCaIssuersUrl(const GURL& url);
