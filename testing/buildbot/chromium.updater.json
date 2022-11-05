@@ -625,7 +625,8 @@
         "args": [
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--exclude-paths-from-win-defender"
         ],
         "merge": {
           "args": [],
@@ -732,7 +733,8 @@
         "args": [
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--exclude-paths-from-win-defender"
         ],
         "merge": {
           "args": [],
