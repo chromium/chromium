@@ -219,7 +219,7 @@ public class PriceDropNotificationManagerTest {
             assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
             assertEquals(ContextUtils.getApplicationContext().getPackageName(),
                     intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
-            assertEquals(ChromeChannelDefinitions.ChannelId.PRICE_DROP,
+            assertEquals(ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT,
                     intent.getStringExtra(Settings.EXTRA_CHANNEL_ID));
         }
         assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags());

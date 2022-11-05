@@ -361,7 +361,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
         if (channel != null) return;
         new ChannelsInitializer(mNotificationManager, ChromeChannelDefinitions.getInstance(),
                 mContext.getResources())
-                .ensureInitialized(ChromeChannelDefinitions.ChannelId.PRICE_DROP);
+                .ensureInitialized(ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
     }
 
     @Override
@@ -384,8 +384,8 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             if (areAppNotificationsEnabled()) {
                 intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
                 intent.putExtra(Settings.EXTRA_APP_PACKAGE, mContext.getPackageName());
-                intent.putExtra(
-                        Settings.EXTRA_CHANNEL_ID, ChromeChannelDefinitions.ChannelId.PRICE_DROP);
+                intent.putExtra(Settings.EXTRA_CHANNEL_ID,
+                        ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
             } else {
                 intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
                 intent.putExtra(Settings.EXTRA_APP_PACKAGE, mContext.getPackageName());
@@ -404,7 +404,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     @RequiresApi(Build.VERSION_CODES.O)
     public NotificationChannel getNotificationChannel() {
         return mNotificationManager.getNotificationChannel(
-                ChromeChannelDefinitions.ChannelId.PRICE_DROP);
+                ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
     }
 
     /**
@@ -436,7 +436,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     @RequiresApi(Build.VERSION_CODES.O)
     public void deleteChannelForTesting() {
         mNotificationManager.deleteNotificationChannel(
-                ChromeChannelDefinitions.ChannelId.PRICE_DROP);
+                ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
     }
 
     @Override

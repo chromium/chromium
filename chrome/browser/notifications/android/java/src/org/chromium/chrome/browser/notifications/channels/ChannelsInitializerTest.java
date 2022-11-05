@@ -350,6 +350,24 @@ public class ChannelsInitializerTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
+    public void testEnsureInitialized_priceDropDefaultChannel() {
+        mChannelsInitializer.ensureInitialized(
+                ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
+
+        assertThat(getChannelsIgnoringDefault(), hasSize(1));
+        NotificationChannel channel = getChannelsIgnoringDefault().get(0);
+        assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT));
+        assertThat(channel.getName().toString(),
+                is(mContext.getString(
+                        org.chromium.chrome.R.string.notification_category_price_drop)));
+        assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_DEFAULT));
+        assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
+    }
+
+    @Test
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_securityKeyChannel() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.SECURITY_KEY);
 
