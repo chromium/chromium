@@ -30,6 +30,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -55,6 +56,7 @@ namespace {
 
 const DWORD kFileShareAll =
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+const wchar_t kDefaultTempDirPrefix[] = L"ChromiumTemp";
 
 // Returns the Win32 last error code or ERROR_SUCCESS if the last error code is
 // ERROR_FILE_NOT_FOUND or ERROR_PATH_NOT_FOUND. This is useful in cases where
@@ -620,15 +622,33 @@ bool CreateTemporaryDirInDir(const FilePath& base_dir,
   return false;
 }
 
+// The directory is created under %ProgramFiles% for security reasons if the
+// caller is admin. Since only admin can write to %ProgramFiles%, this avoids
+// attacks from lower privilege processes.
+//
+// If unable to create a dir under %ProgramFiles%, the dir is created under
+// %TEMP%. The reasons for not being able to create a dir under %ProgramFiles%
+// could be because we are unable to resolve `DIR_PROGRAM_FILES`, say due to
+// registry redirection, or unable to create a directory due to %ProgramFiles%
+// being read-only or having atypical ACLs.
 bool CreateNewTempDirectory(const FilePath::StringType& prefix,
                             FilePath* new_temp_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  FilePath system_temp_dir;
-  if (!GetTempDir(&system_temp_dir))
+  DCHECK(new_temp_path);
+
+  FilePath parent_dir;
+  if (::IsUserAnAdmin() && PathService::Get(DIR_PROGRAM_FILES, &parent_dir) &&
+      CreateTemporaryDirInDir(parent_dir,
+                              prefix.empty() ? kDefaultTempDirPrefix : prefix,
+                              new_temp_path)) {
+    return true;
+  }
+
+  if (!GetTempDir(&parent_dir))
     return false;
 
-  return CreateTemporaryDirInDir(system_temp_dir, prefix, new_temp_path);
+  return CreateTemporaryDirInDir(parent_dir, prefix, new_temp_path);
 }
 
 bool CreateDirectoryAndGetError(const FilePath& full_path,

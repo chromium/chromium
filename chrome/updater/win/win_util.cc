@@ -909,8 +909,8 @@ bool EnableProcessHeapMetadataProtection() {
 
 absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
   base::FilePath temp_dir;
-  if (!update_client::CreateSecureTempDirectory(
-          FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING), &temp_dir)) {
+  if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING),
+                                    &temp_dir)) {
     return absl::nullopt;
   }
 

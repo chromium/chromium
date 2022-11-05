@@ -80,7 +80,7 @@ bool ComponentUnpacker::Verify() {
 bool ComponentUnpacker::BeginUnzipping() {
   // Mind the reference to non-const type, passed as an argument below.
   base::FilePath& destination = is_delta_ ? unpack_diff_path_ : unpack_path_;
-  if (!CreateSecureTempDirectory(
+  if (!base::CreateNewTempDirectory(
           FILE_PATH_LITERAL("chrome_ComponentUnpacker_BeginUnzipping"),
           &destination)) {
     VLOG(1) << "Unable to create temporary directory for unpacking.";
@@ -107,7 +107,7 @@ void ComponentUnpacker::EndUnzipping(bool result) {
 void ComponentUnpacker::BeginPatching() {
   if (is_delta_) {  // Package is a diff package.
     // Use a different temp directory for the patch output files.
-    if (!CreateSecureTempDirectory(
+    if (!base::CreateNewTempDirectory(
             FILE_PATH_LITERAL("chrome_ComponentUnpacker_BeginPatching"),
             &unpack_path_)) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(

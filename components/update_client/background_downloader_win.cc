@@ -739,7 +739,8 @@ HRESULT BackgroundDownloader::InitializeNewJob(
     const ComPtr<IBackgroundCopyJob>& job,
     const GURL& url) {
   base::FilePath tempdir;
-  if (!CreateSecureTempDirectory(FILE_PATH_LITERAL("chrome_BITS_"), &tempdir))
+  if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL("chrome_BITS_"),
+                                    &tempdir))
     return E_FAIL;
 
   const std::wstring filename(base::SysUTF8ToWide(url.ExtractFileName()));

@@ -54,6 +54,7 @@
 #include "base/test/launcher/test_launcher_tracer.h"
 #include "base/test/launcher/test_results_tracker.h"
 #include "base/test/scoped_logging_settings.h"
+#include "base/test/test_file_util.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -876,7 +877,7 @@ void TestRunner::LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
   // this directory will also contain one subdirectory per child for that
   // child's process-wide temp dir.
   base::FilePath task_temp_dir;
-  CHECK(CreateNewTempDirectory(FilePath::StringType(), &task_temp_dir));
+  CHECK(CreateTemporaryDirInDir(GetTempDirForTesting(), {}, &task_temp_dir));
   bool post_to_current_runner = true;
   size_t batch_size = (batch_size_ == 0) ? tests_to_run_.size() : batch_size_;
 

@@ -173,23 +173,6 @@ base::Value ReadManifest(const base::FilePath& unpack_path) {
   return base::Value::FromUniquePtrValue(std::move(root));
 }
 
-bool CreateSecureTempDirectory(const base::FilePath::StringType& prefix,
-                               base::FilePath* temp_dir) {
-  DCHECK(temp_dir);
-
-#if BUILDFLAG(IS_WIN)
-  const int path_key =
-      ::IsUserAnAdmin() ? int{base::DIR_PROGRAM_FILES} : int{base::DIR_TEMP};
-#else   // BUILDFLAG(IS_WIN)
-  const int path_key = base::DIR_TEMP;
-#endif  // BUILDFLAG(IS_WIN)
-
-  base::FilePath parent_dir;
-  return base::PathService::Get(path_key, &parent_dir)
-             ? base::CreateTemporaryDirInDir(parent_dir, prefix, temp_dir)
-             : false;
-}
-
 std::string GetArchitecture() {
 #if BUILDFLAG(IS_WIN)
   const base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();

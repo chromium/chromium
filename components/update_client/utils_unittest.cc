@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -210,10 +211,10 @@ TEST(UpdateClientUtils, ToInstallerResult) {
   EXPECT_EQ(20000, result4.extended_error);
 }
 
-TEST(UpdateClientUtils, CreateSecureTempDirectory) {
+TEST(UpdateClientUtils, BaseCreateNewTempDirectory) {
   base::FilePath temp_dir;
-  EXPECT_TRUE(
-      CreateSecureTempDirectory(FILE_PATH_LITERAL("update_client"), &temp_dir));
+  EXPECT_TRUE(base::CreateNewTempDirectory(FILE_PATH_LITERAL("update_client"),
+                                           &temp_dir));
 
   base::ScopedTempDir temp_dir_owner;
   EXPECT_TRUE(temp_dir_owner.Set(temp_dir));

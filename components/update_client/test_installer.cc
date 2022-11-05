@@ -83,7 +83,7 @@ bool ReadOnlyTestInstaller::GetInstalledFile(const std::string& file,
 }
 
 VersionedTestInstaller::VersionedTestInstaller() {
-  CreateSecureTempDirectory(FILE_PATH_LITERAL("TEST_"), &install_directory_);
+  base::CreateNewTempDirectory(FILE_PATH_LITERAL("TEST_"), &install_directory_);
 }
 
 VersionedTestInstaller::~VersionedTestInstaller() {

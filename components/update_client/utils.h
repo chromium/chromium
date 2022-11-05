@@ -97,11 +97,6 @@ CrxInstaller::Result ToInstallerResult(const T& error, int extended_error = 0) {
       extended_error);
 }
 
-// Creates a unique temporary directory. For Windows, the directory is created
-// under %ProgramFiles% if the caller is admin, so it is secure.
-bool CreateSecureTempDirectory(const base::FilePath::StringType& prefix,
-                               base::FilePath* temp_dir);
-
 // Returns a string representation of the processor architecture. Uses
 // `base::win::OSInfo::IsWowX86OnARM64` and
 // `base::win::OSInfo::IsWowAMD64OnARM64` if available on Windows (more

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_file_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -225,7 +227,14 @@ IN_PROC_BROWSER_TEST_F(MojoFileSystemAccessBrowserTest, CanResolveFilePath) {
   // Create a test file.
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
-  ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
+
+  // Create a scoped directory under %TEMP% instead of using
+  // `base::ScopedTempDir::CreateUniqueTempDir`.
+  // `base::ScopedTempDir::CreateUniqueTempDir` creates a path under
+  // %ProgramFiles% on Windows when running as Admin, which is a blocked path
+  // (`kBlockedPaths`). This can fail some of the tests.
+  ASSERT_TRUE(temp_directory.CreateUniqueTempDirUnderPath(
+      base::GetTempDirForTesting()));
   base::FilePath temp_file;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_directory.GetPath(), &temp_file));

@@ -64,8 +64,8 @@ using base::FilePath;
 // there was an error creating the copy.
 bool MakeTestFile(const FilePath& from_path, FilePath* to_path) {
   FilePath temp_dir;
-  bool result =
-      CreateSecureTempDirectory(FILE_PATH_LITERAL("update_client"), &temp_dir);
+  bool result = base::CreateNewTempDirectory(FILE_PATH_LITERAL("update_client"),
+                                             &temp_dir);
   if (!result)
     return false;
 

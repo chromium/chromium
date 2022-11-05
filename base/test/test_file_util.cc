@@ -81,6 +81,12 @@ bool EvictFileFromSystemCacheWithRetry(const FilePath& path) {
   return false;
 }
 
+FilePath GetTempDirForTesting() {
+  FilePath path;
+  CHECK(GetTempDir(&path));
+  return path;
+}
+
 FilePath CreateUniqueTempDirectoryScopedToTest() {
   ScopedAllowBlockingForTesting allow_blocking;
   FilePath path;

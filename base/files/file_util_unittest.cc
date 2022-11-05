@@ -2718,6 +2718,15 @@ TEST_F(FileUtilTest, CreateNewTempDirectoryTest) {
   FilePath temp_dir;
   ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
   EXPECT_TRUE(PathExists(temp_dir));
+
+#if BUILDFLAG(IS_WIN)
+  FilePath expected_parent_dir;
+  EXPECT_TRUE(PathService::Get(
+      ::IsUserAnAdmin() ? int{DIR_PROGRAM_FILES} : int{DIR_TEMP},
+      &expected_parent_dir));
+  EXPECT_TRUE(expected_parent_dir.IsParent(temp_dir));
+#endif  // BUILDFLAG(IS_WIN)
+
   EXPECT_TRUE(DeleteFile(temp_dir));
 }
 

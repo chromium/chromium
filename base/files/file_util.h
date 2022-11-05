@@ -367,6 +367,12 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
 // the format of prefixyyyy.
 // NOTE: prefix is ignored in the POSIX implementation.
 // If success, return true and output the full path of the directory created.
+//
+// For Windows, this directory is usually created in a secure location under
+// %ProgramFiles% if the caller is admin. This is because the default %TEMP%
+// folder for Windows is insecure, since low privilege users can get the path of
+// folders under %TEMP% after creation and are able to create subfolders and
+// files within these folders which can lead to privilege escalation.
 BASE_EXPORT bool CreateNewTempDirectory(const FilePath::StringType& prefix,
                                         FilePath* new_temp_path);
 
