@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS call click() on host with delegatesFocus, all tabindex=0
-PASS call click() on slotted element in delegatesFocus shadow tree, all tabindex=0
-PASS click on the host with delegatesFocus with another host with delegatesFocus and a focusable child
-FAIL click on the host with delegatesFocus with another host with no delegatesFocus and a focusable child assert_equals: expected Element node <input></input> but got Element node <span></span>
-PASS click on the host with no delegatesFocus with another host with delegatesFocus and a focusable child
-PASS click on the host with no delegatesFocus with another host with no delegatesFocus and a focusable child
-Harness: the test ran to completion.
-

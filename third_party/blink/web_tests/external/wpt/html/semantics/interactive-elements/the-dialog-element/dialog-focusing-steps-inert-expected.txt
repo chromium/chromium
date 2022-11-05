@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL dialog.show(): focusing steps should not change focus when dialog is inert assert_equals: dialog.show(): focusing steps should not change focus when dialog is inert expected Element node <input id="outer-input"></input> but got Element node <body>
-<input id="outer-input">
-<dialog inert="" open="">...
-PASS dialog.showModal(): focusing steps should apply focus fixup rule when dialog is inert
-Harness: the test ran to completion.
-

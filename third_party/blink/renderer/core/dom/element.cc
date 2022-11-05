@@ -4725,7 +4725,7 @@ bool Element::DelegatesFocus() const {
 }
 
 // https://html.spec.whatwg.org/C/#get-the-focusable-area
-Element* Element::GetFocusableArea() const {
+Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
   DCHECK(!IsFocusable());
   // TODO(crbug.com/1018619): Support AREA -> IMG delegation.
   if (!DelegatesFocus())
@@ -4733,40 +4733,37 @@ Element* Element::GetFocusableArea() const {
   Document& doc = GetDocument();
   UseCounter::Count(doc, WebFeature::kDelegateFocus);
 
-  // TODO(https://github.com/w3c/webcomponents/issues/840): We'd like to
-  // standardize this behavior.
   Element* focused_element = doc.FocusedElement();
   if (focused_element && IsShadowIncludingInclusiveAncestorOf(*focused_element))
     return focused_element;
 
-  // Slide the focus to its inner node.
-  return FocusController::FindFocusableElementInShadowHost(*this);
+  DCHECK(AuthorShadowRoot());
+  if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
+    return GetFocusDelegate(in_descendant_traversal);
+  } else {
+    return FocusController::FindFocusableElementInShadowHost(*this);
+  }
 }
 
-// https://html.spec.whatwg.org/C/#autofocus-delegate
-// TODO(https://crbug.com/383230): use this more broadly, including in
-// FocusController::FindFocusableElementInShadowHost() which will at that time
-// probably be renamed to "focus delegate".
-Element* Element::GetAutofocusDelegate() const {
-  for (Node& node : NodeTraversal::DescendantsOf(*this)) {
-    auto* element = DynamicTo<Element>(node);
-    if (!element)
-      continue;
+Element* Element::GetFocusDelegate(bool in_descendant_traversal) const {
+  ShadowRoot* shadowroot = AuthorShadowRoot();
+  if (shadowroot && !shadowroot->delegatesFocus())
+    return nullptr;
 
-    if (!element->IsAutofocusable())
-      continue;
+  const ContainerNode* where_to_look = this;
+  if (shadowroot)
+    where_to_look = shadowroot;
 
-    Element* focusable_area =
-        element->IsFocusable() ? element : element->GetFocusableArea();
-    if (!focusable_area)
-      continue;
+  if (Element* autofocus_delegate = where_to_look->GetAutofocusDelegate())
+    return autofocus_delegate;
 
-    // Step checking click-focusability and focus trigger omitted for now; it
-    // may be needed as part of https://crbug.com/383230.
-
-    return focusable_area;
+  for (Element& descendant : ElementTraversal::DescendantsOf(*where_to_look)) {
+    if (descendant.IsFocusable())
+      return &descendant;
+    if (Element* focusable_area =
+            descendant.GetFocusableArea(/*in_descendant_traversal=*/true))
+      return focusable_area;
   }
-
   return nullptr;
 }
 

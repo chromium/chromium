@@ -743,8 +743,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns true if this is a shadow host, and its ShadowRoot has
   // delegatesFocus flag.
   bool DelegatesFocus() const;
-  Element* GetFocusableArea() const;
-  Element* GetAutofocusDelegate() const;
+  // in_descendant_traversal is used in GetFocusableArea and GetFocusDelegate to
+  // indicate that GetFocusDelegate is currently iterating over all descendants
+  // in a DOM subtree. Since GetFocusDelegate calls GetFocusableArea and
+  // GetFocusableArea calls GetFocusDelegate, this allows us to skip redundant
+  // recursive calls to the same descendants.
+  Element* GetFocusableArea(bool in_descendant_traversal = false) const;
+  Element* GetFocusDelegate(bool in_descendant_traversal = false) const;
   // Element focus function called through IDL (i.e. element.focus() in JS)
   // Delegates to Focus() with focus type set to kScript
   void focusForBindings(const FocusOptions*);
