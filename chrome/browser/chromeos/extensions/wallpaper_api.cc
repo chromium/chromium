@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -17,8 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"

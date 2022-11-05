@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_impl.h"

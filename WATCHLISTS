@@ -1984,8 +1984,8 @@
                   '|ui/wm/core/ime'
     },
     'textinput_chromeos': {
-      'filepath': 'chrome/browser/ash/input_method/'\
-                  '|chrome/browser/chromeos/extensions/input_method'\
+      'filepath': 'chrome/browser/ash/extensions/input_method'\
+                  '|chrome/browser/ash/input_method/'\
                   '|chrome/browser/extensions/api/input_ime'\
                   '|chrome/browser/resources/chromeos/keyboard/' \
                   'chromeos/.*(language|keyboard)'\

@@ -8,8 +8,8 @@
 
 #include "ash/public/cpp/media_controller.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/extensions/media_player_api.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"

@@ -54,7 +54,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/extensions/install_limiter.h"
+#include "chrome/browser/ash/extensions/install_limiter.h"
 #endif
 
 namespace extensions {

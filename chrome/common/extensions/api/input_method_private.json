@@ -6,7 +6,7 @@
   {
     "namespace": "inputMethodPrivate",
     "compiler_options": {
-      "implemented_in": "chrome/browser/chromeos/extensions/input_method_api.h"
+      "implemented_in": "chrome/browser/ash/extensions/input_method_api.h"
     },
     "description": "none",
     "types": [

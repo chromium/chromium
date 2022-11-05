@@ -5,7 +5,7 @@
 // Use the <code>chrome.loginScreenUi</code> API to show and hide custom
 // login UI.
 [platforms=("chromeos"),
- implemented_in="chrome/browser/chromeos/extensions/login_screen/login_screen_ui/login_screen_ui_api.h"]
+ implemented_in="chrome/browser/ash/extensions/login_screen_ui/login_screen_ui_api.h"]
 namespace loginScreenUi {
 
   dictionary ShowOptions {

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 
-#include "chrome/browser/chromeos/extensions/gfx_utils.h"
+#include "chrome/browser/ash/extensions/gfx_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "extensions/browser/extension_registry.h"

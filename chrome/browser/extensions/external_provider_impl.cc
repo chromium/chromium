@@ -63,6 +63,7 @@
 #include "ash/constants/ash_paths.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/customization/customization_document.h"
+#include "chrome/browser/ash/extensions/signin_screen_extensions_external_loader.h"
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -70,7 +71,6 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
-#include "chrome/browser/chromeos/extensions/signin_screen_extensions_external_loader.h"
 #include "extensions/common/constants.h"
 #else
 #include "chrome/browser/extensions/preinstalled_apps.h"

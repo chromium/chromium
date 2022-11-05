@@ -4,7 +4,7 @@
 
 // The <code>chrome.speechRecognitionPrivate</code> API allows internal
 // extensions to use either network-based or on-device speech recognition.
-[platforms=("chromeos"), implemented_in="chrome/browser/chromeos/extensions/speech/speech_recognition_private_api.h"]
+[platforms=("chromeos"), implemented_in="chrome/browser/ash/extensions/speech/speech_recognition_private_api.h"]
 
 namespace speechRecognitionPrivate {
   // Possible types of speech recognition.

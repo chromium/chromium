@@ -11,7 +11,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/extensions/input_method_api.h"
+#include "chrome/browser/ash/extensions/input_method_api.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/common/extensions/api/input_method_private.h"
 #include "content/public/browser/browser_context.h"

@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.usersPrivate</code> API to manage users.
 [platforms=("chromeos"),
- implemented_in="chrome/browser/chromeos/extensions/users_private/users_private_api.h"]
+ implemented_in="chrome/browser/ash/extensions/users_private/users_private_api.h"]
 namespace usersPrivate {
 
   dictionary User {
