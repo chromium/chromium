@@ -76,7 +76,7 @@ void LockScreenValueStoreMigratorImpl::StartMigrationForExtension(
 void LockScreenValueStoreMigratorImpl::OnGotItemsForExtension(
     const ExtensionId& extension_id,
     OperationResult result,
-    std::unique_ptr<base::DictionaryValue> items) {
+    base::Value::Dict items) {
   if (!IsMigratingExtensionData(extension_id))
     return;
 
@@ -86,7 +86,7 @@ void LockScreenValueStoreMigratorImpl::OnGotItemsForExtension(
     return;
   }
 
-  for (const auto item : items->GetDict()) {
+  for (const auto item : items) {
     migration_items_[extension_id].pending.emplace_back(
         std::make_unique<DataItem>(item.first, extension_id, context_,
                                    source_store_cache_, task_runner_,

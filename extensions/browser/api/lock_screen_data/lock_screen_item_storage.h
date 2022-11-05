@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "extensions/browser/api/lock_screen_data/data_item.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -234,7 +235,7 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
   void OnGotExtensionItems(const std::string& extension_id,
                            const base::TimeTicks& start_time,
                            OperationResult result,
-                           std::unique_ptr<base::DictionaryValue> items);
+                           base::Value::Dict items);
 
   // Callback for registration operation of a newly created data item - it adds
   // the item to the cached data item state, and invoked the callback.

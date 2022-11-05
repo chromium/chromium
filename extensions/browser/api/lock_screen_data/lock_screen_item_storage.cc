@@ -537,7 +537,7 @@ void LockScreenItemStorage::OnGotExtensionItems(
     const std::string& extension_id,
     const base::TimeTicks& start_time,
     OperationResult result,
-    std::unique_ptr<base::DictionaryValue> items) {
+    base::Value::Dict items) {
   ExtensionDataMap::iterator data = data_item_cache_.find(extension_id);
   if (data == data_item_cache_.end() ||
       data->second.state != CachedExtensionData::State::kLoading) {
@@ -560,7 +560,7 @@ void LockScreenItemStorage::OnGotExtensionItems(
   }
 
   if (result == OperationResult::kSuccess) {
-    for (const auto item : items->GetDict()) {
+    for (const auto item : items) {
       std::unique_ptr<DataItem> data_item = CreateDataItem(
           item.first, extension_id, context_, value_store_cache_.get(),
           task_runner_.get(), crypto_key_);

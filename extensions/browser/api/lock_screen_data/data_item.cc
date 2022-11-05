@@ -95,11 +95,11 @@ bool IsItemRegistered(ValueStore* store, const std::string& item_id) {
 // |value| - on success, set to the dictionary containing registered data items.
 //     Note that the dictionary will not contain data item content.
 void GetRegisteredItems(OperationResult* result,
-                        base::DictionaryValue* values,
+                        base::Value::Dict* dict,
                         ValueStore* store) {
   ValueStore::ReadResult read = store->Get(kStoreKeyRegisteredItems);
 
-  values->DictClear();
+  dict->clear();
 
   if (!read.status().ok()) {
     *result = OperationResult::kFailed;
@@ -118,14 +118,13 @@ void GetRegisteredItems(OperationResult* result,
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> items_dict =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(std::move(*registered_items)));
+  if (!registered_items->is_dict()) {
+    *result = OperationResult::kFailed;
+    return;
+  }
 
-  *result =
-      items_dict.get() ? OperationResult::kSuccess : OperationResult::kFailed;
-  if (items_dict)
-    values->Swap(items_dict.get());
+  *dict = std::move(registered_items->GetDict());
+  *result = OperationResult::kSuccess;
 }
 
 // Registers a data item with ID |item_id| in value store |store|.
@@ -143,22 +142,22 @@ void RegisterItem(OperationResult* result,
   if (!registered_items)
     registered_items = base::Value(base::Value::Type::DICTIONARY);
 
-  std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(std::move(*registered_items)));
-  if (!dict) {
+  if (!registered_items->is_dict()) {
     *result = OperationResult::kFailed;
     return;
   }
 
-  if (dict->FindKey(item_id)) {
+  base::Value::Dict dict = std::move(registered_items->GetDict());
+  if (dict.Find(item_id)) {
     *result = OperationResult::kAlreadyRegistered;
     return;
   }
 
-  dict->SetKey(item_id, base::Value(base::Value::Type::DICTIONARY));
+  dict.Set(item_id, base::Value::Dict());
 
   ValueStore::WriteResult write =
-      store->Set(ValueStore::DEFAULTS, kStoreKeyRegisteredItems, *dict);
+      store->Set(ValueStore::DEFAULTS, kStoreKeyRegisteredItems,
+                 base::Value(std::move(dict)));
   *result = write.status().ok() ? OperationResult::kSuccess
                                 : OperationResult::kFailed;
 }
@@ -266,8 +265,8 @@ void DeleteImpl(OperationResult* result,
 
 void OnGetRegisteredValues(DataItem::RegisteredValuesCallback callback,
                            std::unique_ptr<OperationResult> result,
-                           std::unique_ptr<base::DictionaryValue> values) {
-  std::move(callback).Run(*result, std::move(values));
+                           std::unique_ptr<base::Value::Dict> dict) {
+  std::move(callback).Run(*result, std::move(*dict));
 }
 
 }  // namespace
@@ -283,26 +282,26 @@ void DataItem::GetRegisteredValuesForExtension(
       ExtensionRegistry::Get(context)->GetExtensionById(
           extension_id, ExtensionRegistry::ENABLED);
   if (!extension) {
-    std::move(callback).Run(OperationResult::kUnknownExtension, nullptr);
+    std::move(callback).Run(OperationResult::kUnknownExtension,
+                            base::Value::Dict());
     return;
   }
 
   std::unique_ptr<OperationResult> result =
       std::make_unique<OperationResult>(OperationResult::kFailed);
   OperationResult* result_ptr = result.get();
-  std::unique_ptr<base::DictionaryValue> values =
-      std::make_unique<base::DictionaryValue>();
-  base::DictionaryValue* values_ptr = values.get();
+  std::unique_ptr<base::Value::Dict> dict =
+      std::make_unique<base::Value::Dict>();
+  base::Value::Dict* dict_ptr = dict.get();
 
   task_runner->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(
-          &ValueStoreCache::RunWithValueStoreForExtension,
-          base::Unretained(value_store_cache),
-          base::BindOnce(&GetRegisteredItems, result_ptr, values_ptr),
-          extension),
+      base::BindOnce(&ValueStoreCache::RunWithValueStoreForExtension,
+                     base::Unretained(value_store_cache),
+                     base::BindOnce(&GetRegisteredItems, result_ptr, dict_ptr),
+                     extension),
       base::BindOnce(&OnGetRegisteredValues, std::move(callback),
-                     std::move(result), std::move(values)));
+                     std::move(result), std::move(dict)));
 }
 
 // static

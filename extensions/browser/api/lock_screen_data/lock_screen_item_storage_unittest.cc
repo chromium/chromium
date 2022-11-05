@@ -186,18 +186,17 @@ class ItemRegistry {
   void RunCallback(DataItem::RegisteredValuesCallback callback) {
     std::move(callback).Run(
         fail_ ? OperationResult::kFailed : OperationResult::kSuccess,
-        ItemsToValue());
+        ItemsToDict());
   }
 
-  std::unique_ptr<base::DictionaryValue> ItemsToValue() {
+  base::Value::Dict ItemsToDict() {
     if (fail_)
-      return nullptr;
+      return base::Value::Dict();
 
-    std::unique_ptr<base::DictionaryValue> result =
-        std::make_unique<base::DictionaryValue>();
+    base::Value::Dict result;
 
     for (const std::string& item_id : items_)
-      result->SetKey(item_id, base::Value(base::Value::Type::DICTIONARY));
+      result.Set(item_id, base::Value::Dict());
 
     return result;
   }
@@ -747,7 +746,8 @@ class LockScreenItemStorageTest : public ExtensionsTest {
   void GetRegisteredItems(const std::string& extension_id,
                           DataItem::RegisteredValuesCallback callback) {
     if (extension()->id() != extension_id) {
-      std::move(callback).Run(OperationResult::kUnknownExtension, nullptr);
+      std::move(callback).Run(OperationResult::kUnknownExtension,
+                              base::Value::Dict());
       return;
     }
     item_registry_->HandleGetRequest(std::move(callback));

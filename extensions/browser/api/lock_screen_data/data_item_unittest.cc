@@ -66,14 +66,13 @@ void ReadCallback(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
-void GetRegisteredItemsCallback(
-    base::OnceClosure callback,
-    OperationResult* result_out,
-    std::unique_ptr<base::DictionaryValue>* value_out,
-    OperationResult result,
-    std::unique_ptr<base::DictionaryValue> value) {
+void GetRegisteredItemsCallback(base::OnceClosure callback,
+                                OperationResult* result_out,
+                                base::Value::Dict* dict_out,
+                                OperationResult result,
+                                base::Value::Dict dict) {
   *result_out = result;
-  *value_out = std::move(value);
+  *dict_out = std::move(dict);
   std::move(callback).Run();
 }
 
@@ -256,21 +255,21 @@ class DataItemTest : public testing::Test {
   OperationResult GetRegisteredItemIds(const std::string& extension_id,
                                        std::set<std::string>* items) {
     OperationResult result = OperationResult::kFailed;
-    std::unique_ptr<base::DictionaryValue> items_value;
+    base::Value::Dict items_dict;
 
     base::RunLoop run_loop;
     DataItem::GetRegisteredValuesForExtension(
         context_.get(), value_store_cache_.get(), task_runner_.get(),
         extension_id,
         base::BindOnce(&GetRegisteredItemsCallback, run_loop.QuitClosure(),
-                       &result, &items_value));
+                       &result, &items_dict));
     run_loop.Run();
 
     if (result != OperationResult::kSuccess)
       return result;
 
     items->clear();
-    for (const auto item : items_value->GetDict()) {
+    for (const auto item : items_dict) {
       EXPECT_EQ(0u, items->count(item.first));
       items->insert(item.first);
     }
