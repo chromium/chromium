@@ -2683,7 +2683,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private int getAdditionalOffsetForNTP() {
-        return getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding)
+        return getResources().getDimensionPixelSize(mShouldShowModernizeVisualUpdate
+                               ? R.dimen.location_bar_start_padding_modern
+                               : R.dimen.location_bar_start_padding)
                 - getResources().getDimensionPixelSize(R.dimen.fake_search_box_lateral_padding);
     }
 

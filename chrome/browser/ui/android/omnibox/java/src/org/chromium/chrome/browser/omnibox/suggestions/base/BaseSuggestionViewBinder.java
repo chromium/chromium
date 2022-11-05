@@ -24,6 +24,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
@@ -170,8 +171,19 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         if (sds != null) {
             final Resources res = rciv.getContext().getResources();
+            boolean showModernizeVisualUpdate =
+                    OmniboxFeatures.shouldShowModernizeVisualUpdate(rciv.getContext());
+            int iconWidthPx = res.getDimensionPixelSize(showModernizeVisualUpdate
+                            ? R.dimen.omnibox_suggestion_icon_area_size_modern
+                            : R.dimen.omnibox_suggestion_icon_area_size);
+
+            rciv.setLayoutParams(new SimpleHorizontalLayoutView.LayoutParams(
+                    iconWidthPx, ViewGroup.LayoutParams.WRAP_CONTENT));
+
             final int paddingStart = res.getDimensionPixelSize(sds.isLarge
                             ? R.dimen.omnibox_suggestion_36dp_icon_margin_start
+                            : showModernizeVisualUpdate
+                            ? R.dimen.omnibox_suggestion_24dp_icon_margin_start_modern
                             : R.dimen.omnibox_suggestion_24dp_icon_margin_start);
             final int paddingEnd = res.getDimensionPixelSize(sds.isLarge
                             ? R.dimen.omnibox_suggestion_36dp_icon_margin_end
