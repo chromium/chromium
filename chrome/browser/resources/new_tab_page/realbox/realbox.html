@@ -24,17 +24,16 @@
   }
 
   :host([match-searchbox]) {
-    --ntp-realbox-height: 46px;
     box-shadow: none;
   }
 
   :host([match-searchbox]:not([matches-are-visible]):hover) {
+    border: 1px solid transparent;
     box-shadow: var(--ntp-realbox-shadow);
   }
 
   :host([match-searchbox]:not([is-dark]):not([matches-are-visible]):not(:hover)) {
     border: 1px solid var(--color-realbox-border);
-    height: calc(var(--ntp-realbox-height) - 2px);
   }
 
   #inputWrapper {
