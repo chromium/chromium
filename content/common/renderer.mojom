@@ -13,6 +13,7 @@ import "services/network/public/mojom/network_types.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
+import "third_party/blink/public/mojom/conversions/attribution_reporting.mojom";
 import "ui/color/color_id.mojom";
 
 struct UpdateScrollbarThemeParams {
@@ -161,6 +162,11 @@ interface Renderer {
   // TODO(crbug.com/1206150): We need a specification for this restriction.
   SetIsIsolatedContext(bool value);
 
+  // Set the OS-level support for Attribution Reporting indicating whether
+  // OS-level attribution is enabled.
+  SetOsSupportForAttributionReporting(
+      blink.mojom.AttributionOsSupport os_support);
+
   // Initialize renderer user agent string, user agent metadata and CORS exempt
   // header list on renderer startup.
   //
@@ -179,9 +185,13 @@ interface Renderer {
   //
   // |cors_exempt_header_list| sets the CORS exempt header list for sanity
   // checking (e.g. DCHECKs).
+  //
+  // |attribution_os_support| sets the OS-level support for Attribution
+  // Reporting.
   InitializeRenderer(string user_agent,
                      string full_user_agent,
                      string reduced_user_agent,
                      blink.mojom.UserAgentMetadata metadata,
-                     array<string> cors_exempt_header_list);
+                     array<string> cors_exempt_header_list,
+                     blink.mojom.AttributionOsSupport attribution_os_support);
 };

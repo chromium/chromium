@@ -55,6 +55,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -62,6 +63,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -70,6 +72,9 @@ namespace {
 
 using ScopedUseInMemoryStorageForTesting =
     ::content::AttributionManagerImpl::ScopedUseInMemoryStorageForTesting;
+
+using ScopedOsSupportForTesting =
+    ::content::AttributionManagerImpl::ScopedOsSupportForTesting;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -344,6 +349,20 @@ ScopedUseInMemoryStorageForTesting::~ScopedUseInMemoryStorageForTesting() {
   g_run_in_memory = previous_;
 }
 
+ScopedOsSupportForTesting::ScopedOsSupportForTesting(
+    blink::mojom::AttributionOsSupport os_support)
+    : previous_(AttributionManagerImpl::g_os_support_) {
+  AttributionManagerImpl::SetOsSupportForTesting(os_support);
+}
+
+ScopedOsSupportForTesting::~ScopedOsSupportForTesting() {
+  AttributionManagerImpl::SetOsSupportForTesting(previous_);
+}
+
+// static
+blink::mojom::AttributionOsSupport AttributionManagerImpl::g_os_support_ =
+    blink::mojom::AttributionOsSupport::kDisabled;
+
 // static
 std::unique_ptr<AttributionManagerImpl>
 AttributionManagerImpl::CreateWithNewDbForTesting(
@@ -388,6 +407,17 @@ AttributionManagerImpl::CreateForTesting(
       std::move(cookie_checker), std::move(report_sender),
       /*data_host_manager=*/nullptr,
       /*os_level_manager=*/nullptr));
+}
+
+// static
+void AttributionManagerImpl::SetOsSupportForTesting(
+    blink::mojom::AttributionOsSupport os_support) {
+  g_os_support_ = os_support;
+
+  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
+       !it.IsAtEnd(); it.Advance()) {
+    it.GetCurrentValue()->SetOsSupportForAttributionReporting(g_os_support_);
+  }
 }
 
 AttributionManagerImpl::AttributionManagerImpl(

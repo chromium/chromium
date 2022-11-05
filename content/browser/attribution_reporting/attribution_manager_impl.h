@@ -28,6 +28,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 
 namespace base {
 class FilePath;
@@ -84,6 +85,22 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
     const bool previous_;
   };
 
+  class CONTENT_EXPORT ScopedOsSupportForTesting {
+   public:
+    explicit ScopedOsSupportForTesting(blink::mojom::AttributionOsSupport);
+    ~ScopedOsSupportForTesting();
+
+    ScopedOsSupportForTesting(const ScopedOsSupportForTesting&) = delete;
+    ScopedOsSupportForTesting& operator=(const ScopedOsSupportForTesting&) =
+        delete;
+
+    ScopedOsSupportForTesting(ScopedOsSupportForTesting&&) = delete;
+    ScopedOsSupportForTesting& operator=(ScopedOsSupportForTesting&&) = delete;
+
+   private:
+    const blink::mojom::AttributionOsSupport previous_;
+  };
+
   static std::unique_ptr<AttributionManagerImpl> CreateForTesting(
       const base::FilePath& user_data_directory,
       size_t max_pending_events,
@@ -97,6 +114,12 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+
+  // Returns whether OS-level attribution is enabled. `kDisabled` is returned
+  // before the result is returned from the underlying platform (e.g. Android).
+  static blink::mojom::AttributionOsSupport GetOsSupport() {
+    return g_os_support_;
+  }
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
@@ -137,6 +160,13 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
  private:
   friend class AttributionManagerImplTest;
+
+  static void SetOsSupportForTesting(
+      blink::mojom::AttributionOsSupport os_support);
+
+  // TODO(crbug.com/1373536): The OS-level support should be derived from the
+  // underlying platform (e.g. Android).
+  static blink::mojom::AttributionOsSupport g_os_support_;
 
   using ReportSentCallback = AttributionReportSender::ReportSentCallback;
   using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;

@@ -12,6 +12,7 @@
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
 
 namespace base {
 class Time;
@@ -37,6 +38,8 @@ class WebContents;
 class AttributionManager {
  public:
   static AttributionManager* FromWebContents(WebContents* web_contents);
+
+  static blink::mojom::AttributionOsSupport GetOsSupport();
 
   virtual ~AttributionManager() = default;
 

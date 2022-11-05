@@ -95,6 +95,8 @@ class MockRenderThread : public RenderThread {
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
       override;
+  blink::mojom::AttributionOsSupport GetOsSupportForAttributionReporting()
+      override;
 
   // Returns a new, unique routing ID that can be assigned to the next view,
   // widget, or frame.

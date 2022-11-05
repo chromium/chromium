@@ -20,9 +20,11 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
@@ -427,8 +429,8 @@ AtomicString AttributionSrcLoader::GetSupportHeader() const {
 }
 
 bool AttributionSrcLoader::HasOsSupport() const {
-  // TODO(crbug.com/1373536): Implement this method properly.
-  return false;
+  return Platform::Current()->GetOsSupportForAttributionReporting() ==
+         mojom::blink::AttributionOsSupport::kEnabled;
 }
 
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(

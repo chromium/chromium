@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
@@ -328,6 +329,11 @@ void MockRenderThread::OnCreateWindow(
 
 void MockRenderThread::ReleaseAllWebViews() {
   page_broadcasts_.clear();
+}
+
+blink::mojom::AttributionOsSupport
+MockRenderThread::GetOsSupportForAttributionReporting() {
+  return blink::mojom::AttributionOsSupport::kDisabled;
 }
 
 }  // namespace content

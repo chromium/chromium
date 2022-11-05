@@ -35,6 +35,7 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/client_hints/client_hints.h"
@@ -161,6 +162,7 @@
 #include "third_party/blink/public/common/security/address_space_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
@@ -468,10 +470,10 @@ void AddAdditionalRequestHeaders(
 
     if (base::FeatureList::IsEnabled(
             blink::features::kAttributionReportingCrossAppWeb)) {
-      // TODO(crbug.com/1373536): Populate `support_os` properly.
-      bool support_os = false;
+      bool has_os_support = AttributionManager::GetOsSupport() ==
+                            blink::mojom::AttributionOsSupport::kEnabled;
       headers->SetHeader("Attribution-Reporting-Support",
-                         support_os ? "web, os" : "web");
+                         has_os_support ? "web, os" : "web");
     }
   }
 }

@@ -921,7 +921,8 @@ void RenderThreadImpl::InitializeRenderer(
     const std::string& full_user_agent,
     const std::string& reduced_user_agent,
     const blink::UserAgentMetadata& user_agent_metadata,
-    const std::vector<std::string>& cors_exempt_header_list) {
+    const std::vector<std::string>& cors_exempt_header_list,
+    blink::mojom::AttributionOsSupport attribution_os_support) {
   DCHECK(user_agent_.IsNull());
   DCHECK(reduced_user_agent_.IsNull());
   DCHECK(full_user_agent_.IsNull());
@@ -932,6 +933,7 @@ void RenderThreadImpl::InitializeRenderer(
   reduced_user_agent_ = WebString::FromUTF8(reduced_user_agent);
   user_agent_metadata_ = user_agent_metadata;
   cors_exempt_header_list_ = cors_exempt_header_list;
+  attribution_os_support_ = attribution_os_support;
 }
 
 void RenderThreadImpl::RegisterSchemes() {
@@ -1774,6 +1776,16 @@ void RenderThreadImpl::SetRenderingColorSpace(
 gfx::ColorSpace RenderThreadImpl::GetRenderingColorSpace() {
   DCHECK(IsMainThread());
   return rendering_color_space_;
+}
+
+blink::mojom::AttributionOsSupport
+RenderThreadImpl::GetOsSupportForAttributionReporting() {
+  return attribution_os_support_;
+}
+
+void RenderThreadImpl::SetOsSupportForAttributionReporting(
+    blink::mojom::AttributionOsSupport attribution_os_support) {
+  attribution_os_support_ = attribution_os_support;
 }
 
 }  // namespace content

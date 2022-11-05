@@ -55,6 +55,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_rail_mode_observer.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
@@ -191,6 +192,8 @@ class CONTENT_EXPORT RenderThreadImpl
   const blink::UserAgentMetadata& GetUserAgentMetadata() override;
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
+      override;
+  blink::mojom::AttributionOsSupport GetOsSupportForAttributionReporting()
       override;
 
   // IPC::Listener implementation via ChildThreadImpl:
@@ -425,7 +428,8 @@ class CONTENT_EXPORT RenderThreadImpl
       const std::string& full_user_agent,
       const std::string& reduced_user_agent,
       const blink::UserAgentMetadata& user_agent_metadata,
-      const std::vector<std::string>& cors_exempt_header_list) override;
+      const std::vector<std::string>& cors_exempt_header_list,
+      blink::mojom::AttributionOsSupport attribution_os_support) override;
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
   void OnSystemColorsChanged(int32_t aqua_color_variant,
@@ -443,6 +447,8 @@ class CONTENT_EXPORT RenderThreadImpl
 #endif
   void SetIsCrossOriginIsolated(bool value) override;
   void SetIsIsolatedContext(bool value) override;
+  void SetOsSupportForAttributionReporting(
+      blink::mojom::AttributionOsSupport os_support) override;
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
@@ -486,6 +492,8 @@ class CONTENT_EXPORT RenderThreadImpl
   blink::WebString full_user_agent_;
   blink::WebString reduced_user_agent_;
   blink::UserAgentMetadata user_agent_metadata_;
+
+  blink::mojom::AttributionOsSupport attribution_os_support_;
 
   // Sticky once true, indicates that compositing is done without Gpu, so
   // resources given to the compositor or to the viz service should be
