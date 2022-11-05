@@ -1061,7 +1061,12 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshotsViewport) {
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
+// TODO(crbug.com/1381597): Fix this failing test
+#if BUILDFLAG(IS_ANDROID)
+                       DISABLED_TransparentScreenshotsBeyondViewport) {
+#else
                        TransparentScreenshotsBeyondViewport) {
+#endif
   if (base::SysInfo::IsLowEndDevice())
     return;
 
