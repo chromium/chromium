@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, SafeBrowsingInteractions, SafetyCheckInteractions} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -11,6 +11,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     super([
       'recordAction',
       'recordSafetyCheckInteractionHistogram',
+      'recordSafetyCheckNotificationsListCountHistogram',
+      'recordSafetyCheckNotificationsModuleInteractionsHistogram',
       'recordSettingsPageHistogram',
       'recordSafeBrowsingInteractionHistogram',
       'recordPrivacyGuideNextNavigationHistogram',
@@ -25,6 +27,18 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
     this.methodCalled('recordSafetyCheckInteractionHistogram', interaction);
+  }
+
+  recordSafetyCheckNotificationsListCountHistogram(suggestions: number) {
+    this.methodCalled(
+        'recordSafetyCheckNotificationsListCountHistogram', suggestions);
+  }
+
+  recordSafetyCheckNotificationsModuleInteractionsHistogram(
+      interaction: SafetyCheckNotificationsModuleInteractions) {
+    this.methodCalled(
+        'recordSafetyCheckNotificationsModuleInteractionHistogram',
+        interaction);
   }
 
   recordSettingsPageHistogram(interaction: PrivacyElementInteractions) {

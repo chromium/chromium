@@ -87631,6 +87631,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="BLOCKLISTED_REENABLED_ALL_BY_ADMIN"/>
 </enum>
 
+<enum name="SafetyCheckNotificationsModuleInteractions">
+  <int value="0" label="Block"/>
+  <int value="1" label="Block all"/>
+  <int value="2" label="Ignore"/>
+  <int value="3" label="Minimize"/>
+  <int value="4" label="Reset"/>
+  <int value="5" label="Undo block"/>
+  <int value="6" label="Undo ignore"/>
+  <int value="7" label="Undo reset"/>
+</enum>
+
 <enum name="SafetyCheckPasswordsStatus">
   <int value="0" label="CHECKING"/>
   <int value="1" label="SAFE"/>

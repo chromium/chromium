@@ -65,6 +65,28 @@ export enum SafetyCheckInteractions {
 }
 
 /**
+ * Contains all safety check notifications module interactions.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SafetyCheckNotificationsModuleInteractions enum
+ * in histograms/enums.xml
+ */
+export enum SafetyCheckNotificationsModuleInteractions {
+  BLOCK = 0,
+  BLOCK_ALL = 1,
+  IGNORE = 2,
+  MINIMIZE = 3,
+  RESET = 4,
+  UNDO_BLOCK = 5,
+  UNDO_IGNORE = 6,
+  UNDO_RESET = 7,
+  // Leave this at the end.
+  COUNT = 8,
+}
+
+/**
  * Contains all safe browsing interactions.
  *
  * These values are persisted to logs. Entries should not be renumbered and
@@ -155,6 +177,19 @@ export interface MetricsBrowserProxy {
       void;
 
   /**
+   * Helper function that calls recordHistogram for
+   * Settings.SafetyCheck.NotificationsListCount histogram.
+   */
+  recordSafetyCheckNotificationsListCountHistogram(suggestions: number): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * SafetyCheck.NotificationsModule.Interactions histogram
+   */
+  recordSafetyCheckNotificationsModuleInteractionsHistogram(
+      interaction: SafetyCheckNotificationsModuleInteractions): void;
+
+  /**
    * Helper function that calls recordHistogram for the
    * SettingsPage.PrivacyElementInteractions histogram
    */
@@ -199,6 +234,22 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.SafetyCheck.Interactions',
       interaction,
       SafetyCheckInteractions.COUNT,
+    ]);
+  }
+
+  recordSafetyCheckNotificationsListCountHistogram(suggestions: number) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyCheck.NotificationsListCount',
+      suggestions, 3999 /*max value for Notification suggestions*/,
+    ]);
+  }
+
+  recordSafetyCheckNotificationsModuleInteractionsHistogram(
+      interaction: SafetyCheckNotificationsModuleInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'SafetyCheck.NotificationsModule.Interactions',
+      interaction,
+      SafetyCheckNotificationsModuleInteractions.COUNT,
     ]);
   }
 
