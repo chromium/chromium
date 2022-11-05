@@ -5,7 +5,7 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_PENDING_CAST_COMPONENT_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_PENDING_CAST_COMPONENT_H_
 
-#include <fuchsia/sys/cpp/fidl.h>
+#include <fuchsia/component/runner/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_request.h>
 #include <memory>
 
@@ -37,11 +37,12 @@ class PendingCastComponent {
     virtual void CancelPendingComponent(PendingCastComponent* component) = 0;
   };
 
-  PendingCastComponent(Delegate* delegate,
-                       std::unique_ptr<base::StartupContext> startup_context,
-                       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                           controller_request,
-                       base::StringPiece app_id);
+  PendingCastComponent(
+      Delegate* delegate,
+      std::unique_ptr<base::StartupContext> startup_context,
+      fidl::InterfaceRequest<fuchsia::component::runner::ComponentController>
+          controller_request,
+      base::StringPiece app_id);
   ~PendingCastComponent();
 
   PendingCastComponent(const PendingCastComponent&) = delete;

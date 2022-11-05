@@ -5,7 +5,7 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_CAST_RUNNER_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_CAST_RUNNER_H_
 
-#include <fuchsia/sys/cpp/fidl.h>
+#include <fuchsia/component/runner/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <memory>
 #include <set>
@@ -27,8 +27,8 @@ class FilteredServiceDirectory;
 
 class WebInstanceHost;
 
-// sys::Runner which instantiates Cast activities specified via cast/casts URIs.
-class CastRunner final : public fuchsia::sys::Runner,
+// ComponentRunner that runs Cast activities specified via cast/casts URIs.
+class CastRunner final : public fuchsia::component::runner::ComponentRunner,
                          public chromium::cast::DataReset,
                          public PendingCastComponent::Delegate {
  public:
@@ -45,11 +45,11 @@ class CastRunner final : public fuchsia::sys::Runner,
   CastRunner(const CastRunner&) = delete;
   CastRunner& operator=(const CastRunner&) = delete;
 
-  // fuchsia::sys::Runner implementation.
-  void StartComponent(fuchsia::sys::Package package,
-                      fuchsia::sys::StartupInfo startup_info,
-                      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                          controller_request) override;
+  // fuchsia::component::runner::ComponentRunner implementation.
+  void Start(
+      fuchsia::component::runner::ComponentStartInfo start_info,
+      fidl::InterfaceRequest<fuchsia::component::runner::ComponentController>
+          controller) override;
 
   // chromium::cast::DataReset implementation.
   void DeletePersistentData(DeletePersistentDataCallback callback) override;
@@ -101,7 +101,7 @@ class CastRunner final : public fuchsia::sys::Runner,
   void StartComponentInternal(
       const GURL& url,
       std::unique_ptr<base::StartupContext> startup_context,
-      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+      fidl::InterfaceRequest<fuchsia::component::runner::ComponentController>
           controller_request);
 
   // Moves all data persisted by the main Context to a staging directory,

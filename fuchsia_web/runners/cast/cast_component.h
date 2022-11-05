@@ -30,8 +30,10 @@ class AgentManager;
 FORWARD_DECLARE_TEST(HeadlessCastRunnerIntegrationTest, Headless);
 
 // A specialization of WebComponent which adds Cast-specific services.
-class CastComponent final : public WebComponent,
-                            public base::MessagePumpFuchsia::ZxHandleWatcher {
+class CastComponent final
+    : public WebComponent,
+      public fuchsia::component::runner::ComponentController,
+      public base::MessagePumpFuchsia::ZxHandleWatcher {
  public:
   struct Params {
     Params();
@@ -44,7 +46,7 @@ class CastComponent final : public WebComponent,
 
     // Parameters populated directly from the StartComponent() arguments.
     std::unique_ptr<base::StartupContext> startup_context;
-    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+    fidl::InterfaceRequest<fuchsia::component::runner::ComponentController>
         controller_request;
 
     // Parameters initialized synchronously.
@@ -109,6 +111,10 @@ class CastComponent final : public WebComponent,
                              fuchsia::ui::views::ViewRef view_ref) override;
   void CreateView2(fuchsia::ui::app::CreateView2Args view_args) override;
 
+  // fuchsia::component::runner::ComponentController implementation.
+  void Kill() override;
+  void Stop() override;
+
   // base::MessagePumpFuchsia::ZxHandleWatcher implementation.
   // Called when the headless "view" token is disconnected.
   void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) override;
@@ -127,6 +133,11 @@ class CastComponent final : public WebComponent,
   chromium::cast::ApplicationContextPtr application_context_;
   fuchsia::web::FrameMediaSettings media_settings_;
   zx::eventpair headless_view_token_;
+
+  // Used by the Component Framework to control the component's lifetime.
+  fidl::Binding<fuchsia::component::runner::ComponentController>
+      component_controller_{this};
+
   base::MessagePumpForIO::ZxHandleWatchController headless_disconnect_watch_;
 };
 

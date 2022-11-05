@@ -76,7 +76,7 @@ CastComponent::CastComponent(base::StringPiece debug_name,
     : WebComponent(debug_name,
                    runner,
                    std::move(params.startup_context),
-                   std::move(params.controller_request)),
+                   nullptr),
       is_headless_(is_headless),
       agent_manager_(std::move(params.agent_manager)),
       application_config_(std::move(params.application_config)),
@@ -88,6 +88,7 @@ CastComponent::CastComponent(base::StringPiece debug_name,
       media_settings_(std::move(params.media_settings.value())),
       headless_disconnect_watch_(FROM_HERE) {
   base::AutoReset<bool> constructor_active_reset(&constructor_active_, true);
+  component_controller_.Bind(std::move(params.controller_request));
 }
 
 CastComponent::~CastComponent() = default;
@@ -287,6 +288,15 @@ void CastComponent::CreateView2(fuchsia::ui::app::CreateView2Args view_args) {
   }
 
   WebComponent::CreateView2(std::move(view_args));
+}
+
+void CastComponent::Kill() {
+  // Signal normal termination, since the caller requested it.
+  DestroyComponent(ZX_OK, fuchsia::sys::TerminationReason::EXITED);
+}
+
+void CastComponent::Stop() {
+  Kill();
 }
 
 void CastComponent::OnZxHandleSignalled(zx_handle_t handle,

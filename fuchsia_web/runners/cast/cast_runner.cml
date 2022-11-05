@@ -22,7 +22,24 @@
         "fuchsia.web.Debug",
         "fuchsia.web.FrameHost",
       ]
-    }
+    },
+    {
+      resolver: "cast-resolver",
+      path: "/svc/fuchsia.component.resolution.Resolver",
+    },
+    {
+      runner: "cast-runner",
+      path: "/svc/fuchsia.component.runner.ComponentRunner",
+    },
+
+    // Used to host services provided by CFv1 and Modular, to offer to Cast
+    // activities under the cast-runner.
+    {
+      directory: "svc_for_cfv2",
+      rights: [ "rw*" ],
+      path: "/svc_for_cfv2",
+    },
+
   ],
   expose: [
     {
@@ -33,7 +50,15 @@
         "fuchsia.web.FrameHost",
       ],
       from: "self",
-    }
+    },
+    {
+      resolver: "cast-resolver",
+      from: "self",
+    },
+    {
+      runner: "cast-runner",
+      from: "self",
+    },
   ],
   use: [
     {
@@ -99,8 +124,42 @@
       availability: "optional"
     },
     {
+      protocol: "fuchsia.component.Realm",
+      from: "framework",
+    },
+    {
       storage: "cache",
       path: "/cache",
     },
-  ]
+  ],
+
+  // Sections used to host Cast activities for the fuchsia.sys.Runner.
+  collections: [
+    {
+      name: "v1-activities",
+      durability: "transient",
+      allowed_offers: "static_and_dynamic",
+      environment: "#cast-capable-env",
+    },
+  ],
+  environments: [
+    {
+      name: "cast-capable-env",
+      extends: "none",
+      __stop_timeout_ms: 10000,
+      resolvers: [
+        {
+          resolver: "cast-resolver",
+          from: "self",
+          scheme: "cast",
+	},
+      ],
+      runners: [
+        {
+          runner: "cast-runner",
+          from: "self",
+        },
+      ],
+   },
+  ],
 }

@@ -57,7 +57,7 @@ class AgentManager {
                                    base::StringPiece interface,
                                    zx::channel request);
 
-  fuchsia::modular::ComponentContextPtr component_context_;
+  const fuchsia::modular::ComponentContextPtr component_context_;
 
   // Cache of resources for Agents which we're actively using. All |agents_|
   // are kept alive until the AgentManager is torn down, for now.

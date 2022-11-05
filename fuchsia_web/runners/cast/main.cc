@@ -27,8 +27,10 @@
 #include "components/fuchsia_component_support/inspect.h"
 #include "fuchsia_web/common/fuchsia_dir_scheme.h"
 #include "fuchsia_web/common/init_logging.h"
+#include "fuchsia_web/runners/cast/cast_resolver.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_runner_switches.h"
+#include "fuchsia_web/runners/cast/cast_runner_v1.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -127,14 +129,24 @@ int main(int argc, char** argv) {
   sys::OutgoingDirectory* const outgoing_directory =
       base::ComponentContextForProcess()->outgoing().get();
 
-  // Publish the fuchsia.sys.Runner implementation for Cast applications.
+  // Publish the fuchsia.component.resolution.Resolver for the cast: scheme.
+  CastResolver resolver;
+  const base::ScopedServiceBinding<fuchsia::component::resolution::Resolver>
+      resolver_binding(outgoing_directory, &resolver);
+
+  // Publish the fuchsia.component.runner.ComponentRunner for Cast apps.
   WebInstanceHost web_instance_host;
   const bool enable_headless =
       command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||
       GetConfigBool(kHeadlessConfigKey);
   CastRunner runner(&web_instance_host, enable_headless);
-  const base::ScopedServiceBinding<fuchsia::sys::Runner> runner_binding(
-      outgoing_directory, &runner);
+  const base::ScopedServiceBinding<fuchsia::component::runner::ComponentRunner>
+      runner_binding(outgoing_directory, &runner);
+
+  // Publish the legacy fuchsia.sys.Runner implementation for Cast applications.
+  CastRunnerV1 runner_v1;
+  const base::ScopedServiceBinding<fuchsia::sys::Runner> runner_v1_binding(
+      outgoing_directory, &runner_v1);
 
   // Publish the associated DataReset service for the instance.
   const base::ScopedServiceBinding<chromium::cast::DataReset>

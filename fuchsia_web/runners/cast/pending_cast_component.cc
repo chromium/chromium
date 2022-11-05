@@ -13,7 +13,7 @@
 PendingCastComponent::PendingCastComponent(
     Delegate* delegate,
     std::unique_ptr<base::StartupContext> startup_context,
-    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+    fidl::InterfaceRequest<fuchsia::component::runner::ComponentController>
         controller_request,
     base::StringPiece app_id)
     : delegate_(delegate), app_id_(app_id) {

@@ -59,10 +59,14 @@ source_set("cast_runner_core") {
     "cast/application_controller_impl.h",
     "cast/cast_component.cc",
     "cast/cast_component.h",
+    "cast/cast_resolver.cc",
+    "cast/cast_resolver.h",
     "cast/cast_runner.cc",
     "cast/cast_runner.h",
     "cast/cast_runner_switches.cc",
     "cast/cast_runner_switches.h",
+    "cast/cast_runner_v1.cc",
+    "cast/cast_runner_v1.h",
     "cast/cast_streaming.cc",
     "cast/cast_streaming.h",
     "cast/named_message_port_connector_fuchsia.cc",
@@ -80,6 +84,7 @@ source_set("cast_runner_core") {
     "//components/fuchsia_component_support",
     "//fuchsia_web/cast_streaming",
     "//fuchsia_web/runners/common/modular",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.decl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.diagnostics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
@@ -92,6 +97,8 @@ source_set("cast_runner_core") {
   public_deps = [
     ":common",
     "./cast/fidl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.resolution",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.runner",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
 
