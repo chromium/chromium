@@ -7708,7 +7708,7 @@ crbug.com/1347831 http/tests/devtools/indexeddb/track-valid-origin.js [ Skip ]
 crbug.com/1347831 http/tests/devtools/indexeddb/upgrade-events.js [ Skip ]
 
 # Test times out on Linux MSAN
-crbug.com/1381545 [ Linux ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Timeout Pass ]
+crbug.com/1381545 [ Linux ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Pass Timeout ]
 
 # Sheriff 2022-10-20
 crbug.com/1376822 [ Win11 ] external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-intrinsic-width-height.html [ Failure ]

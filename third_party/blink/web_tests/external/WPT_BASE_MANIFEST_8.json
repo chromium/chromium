@@ -17032,6 +17032,32 @@
        {}
       ]
      ],
+     "animations-print.html": [
+      "8839fd971e09a8cd245665cef8d01ba5bb766db6",
+      [
+       null,
+       [
+        [
+         "/css/printing/animations-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "animations-shadow-print.html": [
+      "0e80e9c45c5a284f745a176fe94e2dc28fe7522e",
+      [
+       null,
+       [
+        [
+         "/css/printing/animations-shadow-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "background-image-print.html": [
       "8d294107406e902bae7b368a8e34100221cea2d2",
       [
@@ -17069,6 +17095,19 @@
         [
          "/css/reference/blank.html",
          "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "existing-transition-in-media-print.tentative.html": [
+      "3b83bdd5b08a58ae72ba2d794d1bc9e73977c7ed",
+      [
+       null,
+       [
+        [
+         "/css/printing/transition-in-media-print-ref.html",
+         "=="
         ]
        ],
        {}
@@ -17129,6 +17168,45 @@
         [
          "/css/reference/blank.html",
          "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "paused-animations-print.html": [
+      "03ef1bab3c3430891ed9f37ca913c1339d36e682",
+      [
+       null,
+       [
+        [
+         "/css/printing/paused-animations-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-animations-print.html": [
+      "40585ba2c489459d77c6ddb080ca6bbe36ebb7ea",
+      [
+       null,
+       [
+        [
+         "/css/printing/pseudo-animations-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transition-in-media-print.tentative.html": [
+      "54bac1f48124a27689dc2f614003d462fe2dd477",
+      [
+       null,
+       [
+        [
+         "/css/printing/transition-in-media-print-ref.html",
+         "=="
         ]
        ],
        {}
@@ -82896,6 +82974,32 @@
        {}
       ]
      ],
+     "break-between-avoid-013.html": [
+      "236b99e94eeca13930127066150968933030b531",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "break-between-avoid-014.html": [
+      "91da7644835f5010ff0585f271930b9718e6ebc7",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "break-between-force-000.html": [
       "9bccf7395e5a83f52bd743cb6021577a85833b5e",
       [
@@ -84082,6 +84186,45 @@
       ],
       "multi-line-column-flex-fragmentation-050.html": [
        "b0467d5b80501113d638d3262f994a9b95e13020",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-051.html": [
+       "f886bcc7bee0ff742e559f698b60aba8c5cdf165",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-052.html": [
+       "9496418e857391718041d52ad19c2b9545068877",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-053.html": [
+       "aa1f1debce968a181563154c9c7f83adfef64eed",
        [
         null,
         [
@@ -86319,6 +86462,19 @@
      ],
      "float-010.html": [
       "68eef4a6d26c96b0bca43d4ae1fa3b8ad74eddb2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "float-012.html": [
+      "6896817443d5f3eefdf1a0aa8181d15e0906efe7",
       [
        null,
        [
@@ -317263,6 +317419,14 @@
      }
     },
     "printing": {
+     "animations-print-ref.html": [
+      "8830913084c3b934bdf7ee2beb6b71358df038ec",
+      []
+     ],
+     "animations-shadow-print-ref.html": [
+      "60daae78bf0c5eddf11325a97a973be8b1012e25",
+      []
+     ],
      "background-image-print-ref.html": [
       "305aa2fce2f490ef161c803558cc7a17bf7aa117",
       []
@@ -317281,6 +317445,18 @@
      ],
      "page-overflow-crash-print.html.ini": [
       "99ba67507cfa6b4973f308bb22f7ff0a6efe12de",
+      []
+     ],
+     "paused-animations-print-ref.html": [
+      "c22ecd174585100fd5faae8402f5a6e141b8264e",
+      []
+     ],
+     "pseudo-animations-print-ref.html": [
+      "07107d1db7845f9d2186b558753818444d410318",
+      []
+     ],
+     "transition-in-media-print-ref.html": [
+      "2f25c06131e9372512e23ab9ff8428c594f74391",
       []
      ]
     },
@@ -343553,16 +343729,8 @@
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
         []
        ],
-       "dialog-focus-shadow-expected.txt": [
-        "a3f268e6e0187a5c4a52cce5894ac9152f3d2ad1",
-        []
-       ],
        "dialog-focus-shadow.html.ini": [
         "00b2942953480a7f98370498e74516d99e19c117",
-        []
-       ],
-       "dialog-focusing-steps-inert-expected.txt": [
-        "64ea5844df5ab957cb8c06489bcd385076a2fee3",
         []
        ],
        "dialog-focusing-steps-inert.html.ini": [
@@ -347219,10 +347387,6 @@
      ],
      "consumption-sameorigin.html.ini": [
       "b2a167a89c97f5f374c2e53fcd953b863fd8ab00",
-      []
-     ],
-     "detached-iframe-expected.txt": [
-      "85517729f6814a7c041a1e30d80aba7b6d46af4e",
       []
      ],
      "navigation-state-reset-crossorigin.sub.html.ini": [
@@ -363943,24 +364107,12 @@
      []
     ],
     "focus": {
-     "click-focus-delegatesFocus-click-expected.txt": [
-      "4a77e1a9036a0b67830c0947a99d346f7c9c0c09",
-      []
-     ],
      "click-focus-delegatesFocus-click.html.ini": [
       "88970163b70b81607b742105866461bb27ead003",
       []
      ],
-     "focus-autofocus-expected.txt": [
-      "f61743f965bbb068618c3c138b16c678b576a9be",
-      []
-     ],
      "focus-autofocus.html.ini": [
       "361f67855eb94fb8179927e649a70881f19a26f3",
-      []
-     ],
-     "focus-method-delegatesFocus-expected.txt": [
-      "361c14d641c734975e7789d123d52868cae6abd5",
       []
      ],
      "focus-method-delegatesFocus.html.ini": [
@@ -371284,6 +371436,18 @@
       ]
      },
      "the-audiocontext-interface": {
+      "audiocontext-sinkid-constructor.https-expected.txt": [
+       "70271656172eace13ebcc27373007073d4e2202d",
+       []
+      ],
+      "audiocontext-sinkid-setsinkid.https-expected.txt": [
+       "10768f3b8d2ee43666fb667173ea929d0dc4d32e",
+       []
+      ],
+      "audiocontext-sinkid-state-change.https-expected.txt": [
+       "42b00f675d7dd9c86d6ccd8057192b5d5abf683d",
+       []
+      ],
       "audiocontext-suspend-resume-close.html.ini": [
        "01ee1e3a6fd4abf65d17bd46c1fd9e4294bd4cd0",
        []
@@ -373547,7 +373711,7 @@
      []
     ],
     "supported-stats-expected.txt": [
-     "20f579d987325f9459ed590a26893da5c1fc0736",
+     "0081ee1940acf5e92626d3e338016d2c9cdbc99d",
      []
     ],
     "supported-stats.html.ini": [
@@ -434730,6 +434894,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "toggle-trigger-focus.tentative.html": [
+      "bc93ba3631bd348848d621b00c43f41a412d358d",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "toggle-trigger-multiple.tentative.html": [
@@ -522748,7 +522921,7 @@
         ]
        ],
        "dialog-focus-shadow.html": [
-        "b4c7590ba2e6f49aaf6eca9a67ccce42292a307a",
+        "e9ea15516e271198c4c1b293ff659d9396705acd",
         [
          null,
          {}
@@ -523301,7 +523474,7 @@
        ]
       ],
       "popover-attribute-basic.tentative.html": [
-       "ebfba69c5a6d43fc7803c5bee6c754d77926ad2b",
+       "3bf3905dac3f7b607b9089a1508ef86faf25b62e",
        [
         null,
         {}
@@ -574609,7 +574782,7 @@
       ]
      ],
      "update-import-scripts.https.html": [
-      "2274fe9de16ef45784ac96f326e32a4c4473d914",
+      "a2df529e90dfd31a75afdac093a5dd1b74d00134",
       [
        null,
        {}
@@ -596951,6 +597124,27 @@
       ],
       "audiocontext-not-fully-active.html": [
        "e4f6001eda3e295b69b6989680e04bd67412f7a6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "audiocontext-sinkid-constructor.https.html": [
+       "2dedd6cd36d2874325e0a991ac7fc45d4a6632be",
+       [
+        null,
+        {}
+       ]
+      ],
+      "audiocontext-sinkid-setsinkid.https.html": [
+       "e895acaede322bda845a92896f58784bdcf71b3a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "audiocontext-sinkid-state-change.https.html": [
+       "c22f69c18da72bf88b06b29148072c1b84769bbf",
        [
         null,
         {}
