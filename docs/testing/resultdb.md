@@ -11,9 +11,6 @@ the results of the bots. (For example, if a test's JSON say that there was a
 failure but this isn't similarly reflected in ResultDB, then the build _will not
 fail._
 
-However, the JSON output can still have an indirect effect on builds. See
-[below](#uses-of-the-legacy-json) for more details.
-
 ## ResultDB API & ResultSink
 
 All test harnesses are responsible for uploading their results to ResultDB. This
@@ -88,20 +85,6 @@ output format, and a `gtest_tests` test will have result_adapter added using the
 that test. Additionally, a custom `result_format` can be specified for a test to
 overwrite the expected format of the JSON: [example].
 
-## Uses of the legacy JSON
-
-Although the JSON output of tests don't have an immediate effect on builds,
-they can still impact pass/fail decisions. This happens during the exoneration
-phase of the build which determines if a test failure was introduced by the
-CL-under-test or if the failure is also present on ToT. This is accomplished by
-an RPC to [FindIt], which is a service that tracks failures across bots. Rather
-than using ResultDB, FindIt uses the [legacy test results app] as its source of
-truth for test results, and this app uses the results in a test's JSON.
-Consequently, the JSON output of tests can still have an effect on builds, just
-in an indirect way.
-
-Migration/replacement [efforts] for this phase of the build are underway.
-
 [public source]: https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/
 [Google internal documentation]: http://shortn/_bTdqm8VDXz
 [internal documentation]: http://shortn/_zAbl5fa84c
@@ -116,6 +99,3 @@ Migration/replacement [efforts] for this phase of the build are underway.
 [//testing/buildbot/]: https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/
 [mixin]: https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/mixins.pyl;drc=d0985a69618056e95d64b48803ca90e3ae6a6c77;l=453
 [example]: https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/test_suites.pyl;drc=9ef43df31342fb0fc854de5233b7170039028bc1;l=1499
-[FindIt]: https://chromium.googlesource.com/infra/infra/+/main/appengine/findit/README.md
-[efforts]: https://crbug.com/1243747
-[legacy test results app]: https://test-results.appspot.com/
