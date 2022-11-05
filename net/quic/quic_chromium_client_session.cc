@@ -1848,7 +1848,12 @@ void QuicChromiumClientSession::OnConnectionClosed(
         "Net.QuicMultiPort.NumMultiPortFailureWhenPathNotDegrading",
         multi_port_stats
             ->num_multi_port_probe_failures_when_path_not_degrading);
-    if (multi_port_stats->num_path_degrading > 0) {
+    size_t total_multi_port_probe_failures =
+        multi_port_stats
+            ->num_multi_port_probe_failures_when_path_not_degrading +
+        multi_port_stats->num_multi_port_probe_failures_when_path_degrading;
+    if (multi_port_stats->num_path_degrading > 0 &&
+        total_multi_port_probe_failures > 0) {
       base::UmaHistogramSparse(
           "Net.QuicMultiPort.AltPortRttWhenPathDegradingVsGeneral",
           static_cast<int>(
@@ -1865,11 +1870,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
           static_cast<int>(
               multi_port_stats
                   ->num_multi_port_probe_failures_when_path_degrading *
-              100 /
-              (multi_port_stats
-                   ->num_multi_port_probe_failures_when_path_not_degrading +
-               multi_port_stats
-                   ->num_multi_port_probe_failures_when_path_degrading)));
+              100 / total_multi_port_probe_failures));
     }
   }
 
