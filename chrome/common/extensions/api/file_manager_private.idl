@@ -44,7 +44,7 @@
 // code, there exists an additional layer, in file_manager_private_internal.idl,
 // that provides translation from or to W3C Entry objects.
 [platforms=("chromeos"),
- implemented_in="chrome/browser/chromeos/extensions/file_manager/file_manager_private_api_functions.h"]
+ implemented_in="chrome/browser/ash/extensions/file_manager/file_manager_private_api_functions.h"]
 namespace fileManagerPrivate {
 // Type of the mounted volume.
 enum VolumeType { drive, downloads, removable, archive, provided, mtp,

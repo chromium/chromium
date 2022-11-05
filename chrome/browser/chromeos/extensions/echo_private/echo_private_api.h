@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/ash/notifications/echo_dialog_listener.h"
 #include "extensions/browser/extension_function.h"
 
 class PrefRegistrySimple;

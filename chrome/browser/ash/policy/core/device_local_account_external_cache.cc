@@ -14,9 +14,9 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
+#include "chrome/browser/ash/extensions/external_cache_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
-#include "chrome/browser/chromeos/extensions/external_cache_impl.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

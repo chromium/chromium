@@ -6,11 +6,4 @@ include_rules = [
   # once that is done.
   "+ash",
   "+chrome/browser/ash",
-
-  # TODO(tfarina): Get rid of this dependency. crbug.com/125846.
-  # DO NOT ADD ANY MORE ITEMS TO THE LIST BELOW!
-  "!chrome/browser/ui/views/select_file_dialog_extension.h",
-  # DO NOT ADD ANY MORE ITEMS TO THE ABOVE LIST!
-
-  "+third_party/ced",
 ]

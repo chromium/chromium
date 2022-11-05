@@ -1100,9 +1100,9 @@
     },
     'filesapp': {
       'filepath': 'chrome/browser/ash/drive|' \
+                  'chrome/browser/ash/extensions/file_manager|' \
                   'chrome/browser/ash/file_manager|' \
                   'chrome/browser/ash/file_system_provider|' \
-                  'chrome/browser/chromeos/extensions/file_manager|' \
                   'chrome/browser/chromeos/extensions/file_system_provider|' \
                   'chrome/browser/drive|' \
                   'chrome/test/data/extensions/api_test/file_system_provider|' \

@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
+#include "chrome/browser/ash/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"

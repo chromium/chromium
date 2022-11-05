@@ -20,7 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
+#include "chrome/browser/ash/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"

@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/file_system_provider/notification_manager_interface.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -30,7 +29,6 @@ namespace extensions {
 namespace {
 
 using ash::file_system_provider::MountContext;
-using ash::file_system_provider::NotificationManagerInterface;
 using ash::file_system_provider::Observer;
 using ash::file_system_provider::ProvidedFileSystemInfo;
 using ash::file_system_provider::ProvidedFileSystemInterface;

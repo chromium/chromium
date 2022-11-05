@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/extensions/external_cache.h"
+#include "chrome/browser/ash/extensions/external_cache.h"
 
 namespace chromeos {
 

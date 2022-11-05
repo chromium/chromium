@@ -13,14 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
-#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
-#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
-#include "chrome/browser/ash/file_system_provider/request_manager.h"
-#include "chrome/browser/ash/file_system_provider/request_value.h"
-#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
@@ -28,19 +20,10 @@
 #include "storage/browser/file_system/watcher_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/common/webui_url_constants.h"
 #endif
-
-using ash::file_system_provider::MountOptions;
-using ash::file_system_provider::OpenedFiles;
-using ash::file_system_provider::ProvidedFileSystemInfo;
-using ash::file_system_provider::ProvidedFileSystemInterface;
-using ash::file_system_provider::ProvidedFileSystemObserver;
-using ash::file_system_provider::ProviderId;
-using ash::file_system_provider::RequestValue;
-using ash::file_system_provider::Service;
-using ash::file_system_provider::Watchers;
 
 namespace extensions {
 namespace {

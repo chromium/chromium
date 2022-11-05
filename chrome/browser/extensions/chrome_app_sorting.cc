@@ -29,7 +29,7 @@
 #include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/extensions/default_app_order.h"
+#include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #endif
 

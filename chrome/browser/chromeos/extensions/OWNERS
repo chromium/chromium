@@ -3,12 +3,6 @@ file://extensions/OWNERS
 # Additional ChromeOS-specific reviewers
 tbarzic@chromium.org
 
-per-file default_app*=jshikaram@chromium.org
-per-file default_app*=tsergeant@chromium.org
-
-# For backup
-per-file default_app*=dominickn@chromium.org
-
 per-file *wallpaper*=file://ash/wallpaper/OWNERS
 
 # input method related reviewers.

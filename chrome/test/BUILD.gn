@@ -3218,14 +3218,14 @@ if (!is_android) {
         sources += [
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
           "../browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
-          "../browser/chromeos/extensions/accessibility_features_apitest.cc",
+          "../browser/ash/extensions/accessibility_features_apitest.cc",
+          "../browser/ash/extensions/autotest_private/autotest_private_apitest.cc",
+          "../browser/ash/extensions/default_keyboard_extension_browser_test.cc",
+          "../browser/ash/extensions/default_keyboard_extension_browser_test.h",
+          "../browser/ash/extensions/file_manager/file_manager_private_apitest.cc",
           "../browser/chromeos/extensions/action_handlers/action_handlers_apitest.cc",
-          "../browser/chromeos/extensions/autotest_private/autotest_private_apitest.cc",
           "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_ash_browsertest.cc",
-          "../browser/chromeos/extensions/default_keyboard_extension_browser_test.cc",
-          "../browser/chromeos/extensions/default_keyboard_extension_browser_test.h",
           "../browser/chromeos/extensions/echo_private/echo_private_apitest.cc",
-          "../browser/chromeos/extensions/file_manager/file_manager_private_apitest.cc",
           "../browser/chromeos/extensions/file_system_provider/file_system_provider_apitest.cc",
           "../browser/chromeos/extensions/incoming_native_messaging_apitest.cc",
           "../browser/chromeos/extensions/info_private_apitest.cc",
@@ -8223,8 +8223,8 @@ test("unit_tests") {
 
     if (is_chromeos) {
       sources += [
+        "../browser/ash/extensions/desk_api/desk_api_extension_manager_unittest.cc",
         "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
-        "../browser/chromeos/extensions/desk_api/desk_api_extension_manager_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_state/login_state_api_unittest.cc",
         "../browser/chromeos/reporting/network/network_bandwidth_sampler_unittest.cc",
@@ -8239,11 +8239,11 @@ test("unit_tests") {
 
     if (is_chromeos_ash) {
       sources += [
+        "../browser/ash/extensions/extensions_permissions_tracker_unittest.cc",
         "../browser/ash/login/easy_unlock/easy_unlock_auth_attempt_unittest.cc",
         "../browser/ash/login/easy_unlock/easy_unlock_notification_controller_unittest.cc",
         "../browser/ash/login/easy_unlock/easy_unlock_service_regular_unittest.cc",
         "../browser/ash/login/easy_unlock/smartlock_feature_usage_metrics_unittest.cc",
-        "../browser/chromeos/extensions/extensions_permissions_tracker_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",

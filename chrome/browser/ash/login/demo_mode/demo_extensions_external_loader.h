@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/chromeos/extensions/external_cache.h"
-#include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
+#include "chrome/browser/ash/extensions/external_cache.h"
+#include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/extensions/external_loader.h"
 
 class Profile;
