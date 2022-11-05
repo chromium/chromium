@@ -3855,11 +3855,10 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
     if (share_target.has_attachments() &&
         share_target.file_attachments.size()) {
       // For file payloads, the |PayloadTracker| callback for updates is
-      // |OnTransferUpdate| which will set status |kComplete| and progress at
-      // 100% if payload reading is successful.
+      // |OnTransferUpdate| which will set status |kComplete| if payload reading
+      // is successful.
       const bool files_read_success =
-          ((metadata.status() == TransferMetadata::Status::kComplete) &&
-           metadata.progress() == 100.0);
+          (metadata.status() == TransferMetadata::Status::kComplete);
       RecordNearbySharePayloadFileOperationMetrics(profile_, share_target,
                                                    PayloadFileOperation::kRead,
                                                    files_read_success);
