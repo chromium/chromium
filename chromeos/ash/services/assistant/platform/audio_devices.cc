@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/assistant/platform/audio_devices.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -160,10 +161,7 @@ class AudioDevices::ScopedCrasAudioHandlerObserver
   AudioDevices* const parent_;
   // Owned by |AssistantManagerServiceImpl|.
   CrasAudioHandler* const cras_audio_handler_;
-  base::ScopedObservation<CrasAudioHandler,
-                          CrasAudioHandler::AudioObserver,
-                          &CrasAudioHandler::AddAudioObserver,
-                          &CrasAudioHandler::RemoveAudioObserver>
+  base::ScopedObservation<CrasAudioHandler, CrasAudioHandler::AudioObserver>
       scoped_observer_{this};
 };
 

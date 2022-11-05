@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 namespace ash::assistant {
@@ -84,5 +85,22 @@ namespace chromeos::assistant {
 using ::ash::assistant::AppListEventSubscriber;
 using ::ash::assistant::DeviceActions;
 }  // namespace chromeos::assistant
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::assistant::DeviceActions,
+                               ash::assistant::AppListEventSubscriber> {
+  static void AddObserver(ash::assistant::DeviceActions* source,
+                          ash::assistant::AppListEventSubscriber* observer) {
+    source->AddAndFireAppListEventSubscriber(observer);
+  }
+  static void RemoveObserver(ash::assistant::DeviceActions* source,
+                             ash::assistant::AppListEventSubscriber* observer) {
+    source->RemoveAppListEventSubscriber(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_DEVICE_ACTIONS_H_

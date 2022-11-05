@@ -65,7 +65,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
   // Observes available audio devices and will set device-id/hotword-device-id
   // accordingly.
   AudioDevices audio_devices_;
-  AudioDevices::ScopedObservation audio_devices_observation_{this};
+  base::ScopedObservation<AudioDevices, AudioDevices::Observer>
+      audio_devices_observation_{this};
 
   base::WeakPtrFactory<AudioInputHostImpl> weak_factory_{this};
 };

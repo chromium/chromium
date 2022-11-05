@@ -49,10 +49,7 @@ class DesktopScreenOzoneLinux : public DesktopScreenOzone,
     }
   }
 
-  base::ScopedObservation<ui::LinuxUi,
-                          DeviceScaleFactorObserver,
-                          &ui::LinuxUi::AddDeviceScaleFactorObserver,
-                          &ui::LinuxUi::RemoveDeviceScaleFactorObserver>
+  base::ScopedObservation<ui::LinuxUi, DeviceScaleFactorObserver>
       display_scale_factor_observer_{this};
 };
 

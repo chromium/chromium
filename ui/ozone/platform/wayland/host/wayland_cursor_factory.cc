@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "ui/base/cursor/platform_cursor.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"

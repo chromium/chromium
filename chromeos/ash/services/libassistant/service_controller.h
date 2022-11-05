@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
@@ -94,12 +94,25 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   base::WeakPtrFactory<ServiceController> weak_factory_{this};
 };
 
-using ScopedAssistantClientObserver = base::ScopedObservation<
-    ServiceController,
-    AssistantClientObserver,
-    &ServiceController::AddAndFireAssistantClientObserver,
-    &ServiceController::RemoveAssistantClientObserver>;
-
 }  // namespace ash::libassistant
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::libassistant::ServiceController,
+                               ash::libassistant::AssistantClientObserver> {
+  static void AddObserver(
+      ash::libassistant::ServiceController* source,
+      ash::libassistant::AssistantClientObserver* observer) {
+    source->AddAndFireAssistantClientObserver(observer);
+  }
+  static void RemoveObserver(
+      ash::libassistant::ServiceController* source,
+      ash::libassistant::AssistantClientObserver* observer) {
+    source->RemoveAssistantClientObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_SERVICE_CONTROLLER_H_

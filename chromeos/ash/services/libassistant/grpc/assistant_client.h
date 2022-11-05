@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/scoped_observation_traits.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
@@ -243,5 +244,28 @@ class AssistantClient {
 namespace chromeos::libassistant {
 using ::ash::libassistant::AssistantClient;
 }
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<
+    ash::libassistant::AssistantClient,
+    ash::libassistant::GrpcServicesObserver<
+        ::assistant::api::OnSpeakerIdEnrollmentEventRequest>> {
+  static void AddObserver(
+      ash::libassistant::AssistantClient* source,
+      ash::libassistant::GrpcServicesObserver<
+          ::assistant::api::OnSpeakerIdEnrollmentEventRequest>* observer) {
+    source->AddSpeakerIdEnrollmentEventObserver(observer);
+  }
+  static void RemoveObserver(
+      ash::libassistant::AssistantClient* source,
+      ash::libassistant::GrpcServicesObserver<
+          ::assistant::api::OnSpeakerIdEnrollmentEventRequest>* observer) {
+    source->RemoveSpeakerIdEnrollmentEventObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_H_

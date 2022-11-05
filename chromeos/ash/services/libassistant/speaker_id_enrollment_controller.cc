@@ -152,9 +152,7 @@ class SpeakerIdEnrollmentController::EnrollmentSession
   bool done_ = false;
   base::ScopedObservation<
       AssistantClient,
-      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>,
-      &AssistantClient::AddSpeakerIdEnrollmentEventObserver,
-      &AssistantClient::RemoveSpeakerIdEnrollmentEventObserver>
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>>
       scoped_assistant_client_observation_{this};
   base::WeakPtrFactory<EnrollmentSession> weak_factory_{this};
 };

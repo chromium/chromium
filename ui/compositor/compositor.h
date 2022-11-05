@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/scoped_observation_traits.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -65,7 +66,7 @@ class LayerTreeDebugState;
 class LayerTreeFrameSink;
 class LayerTreeSettings;
 class TaskGraphRunner;
-}
+}  // namespace cc
 
 namespace gfx {
 namespace mojom {
@@ -74,7 +75,7 @@ class DelegatedInkPointRenderer;
 struct PresentationFeedback;
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace gpu {
 class GpuMemoryBufferManager;
@@ -581,5 +582,22 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 };
 
 }  // namespace ui
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ui::Compositor,
+                               ui::CompositorAnimationObserver> {
+  static void AddObserver(ui::Compositor* source,
+                          ui::CompositorAnimationObserver* observer) {
+    source->AddAnimationObserver(observer);
+  }
+  static void RemoveObserver(ui::Compositor* source,
+                             ui::CompositorAnimationObserver* observer) {
+    source->RemoveAnimationObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // UI_COMPOSITOR_COMPOSITOR_H_

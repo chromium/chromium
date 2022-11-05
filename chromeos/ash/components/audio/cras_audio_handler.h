@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
@@ -847,5 +848,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 namespace chromeos {
 using ::ash::CrasAudioHandler;
 }
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::CrasAudioHandler,
+                               ash::CrasAudioHandler::AudioObserver> {
+  static void AddObserver(ash::CrasAudioHandler* source,
+                          ash::CrasAudioHandler::AudioObserver* observer) {
+    source->AddAudioObserver(observer);
+  }
+  static void RemoveObserver(ash::CrasAudioHandler* source,
+                             ash::CrasAudioHandler::AudioObserver* observer) {
+    source->RemoveAudioObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_CRAS_AUDIO_HANDLER_H_

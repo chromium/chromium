@@ -155,10 +155,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
 };
 
 using ScopedAssistantInteractionSubscriber =
-    base::ScopedObservation<Assistant,
-                            AssistantInteractionSubscriber,
-                            &Assistant::AddAssistantInteractionSubscriber,
-                            &Assistant::RemoveAssistantInteractionSubscriber>;
+    base::ScopedObservation<Assistant, AssistantInteractionSubscriber>;
 
 // Main interface between browser and |ash::assistant::Service|.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantService {
@@ -188,5 +185,24 @@ using ::ash::assistant::Assistant;
 using ::ash::assistant::AssistantInteractionSubscriber;
 using ::ash::assistant::AssistantService;
 }  // namespace chromeos::assistant
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::assistant::Assistant,
+                               ash::assistant::AssistantInteractionSubscriber> {
+  static void AddObserver(
+      ash::assistant::Assistant* source,
+      ash::assistant::AssistantInteractionSubscriber* observer) {
+    source->AddAssistantInteractionSubscriber(observer);
+  }
+  static void RemoveObserver(
+      ash::assistant::Assistant* source,
+      ash::assistant::AssistantInteractionSubscriber* observer) {
+    source->RemoveAssistantInteractionSubscriber(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_SERVICE_H_

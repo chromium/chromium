@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -287,5 +288,45 @@ class LinuxUiAndTheme : public LinuxUi, public LinuxUiTheme {
 };
 
 }  // namespace ui
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ui::LinuxUi, ui::CursorThemeManagerObserver> {
+  static void AddObserver(ui::LinuxUi* source,
+                          ui::CursorThemeManagerObserver* observer) {
+    source->AddCursorThemeObserver(observer);
+  }
+  static void RemoveObserver(ui::LinuxUi* source,
+                             ui::CursorThemeManagerObserver* observer) {
+    source->RemoveCursorThemeObserver(observer);
+  }
+};
+
+template <>
+struct ScopedObservationTraits<ui::LinuxUi, ui::DeviceScaleFactorObserver> {
+  static void AddObserver(ui::LinuxUi* source,
+                          ui::DeviceScaleFactorObserver* observer) {
+    source->AddDeviceScaleFactorObserver(observer);
+  }
+  static void RemoveObserver(ui::LinuxUi* source,
+                             ui::DeviceScaleFactorObserver* observer) {
+    source->RemoveDeviceScaleFactorObserver(observer);
+  }
+};
+
+template <>
+struct ScopedObservationTraits<ui::LinuxUi, ui::WindowButtonOrderObserver> {
+  static void AddObserver(ui::LinuxUi* source,
+                          ui::WindowButtonOrderObserver* observer) {
+    source->AddWindowButtonOrderObserver(observer);
+  }
+  static void RemoveObserver(ui::LinuxUi* source,
+                             ui::WindowButtonOrderObserver* observer) {
+    source->RemoveWindowButtonOrderObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // UI_LINUX_LINUX_UI_H_

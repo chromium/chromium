@@ -273,10 +273,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   libassistant::mojom::BootupConfigPtr bootup_config_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  base::ScopedObservation<DeviceActions,
-                          AppListEventSubscriber,
-                          &DeviceActions::AddAndFireAppListEventSubscriber,
-                          &DeviceActions::RemoveAppListEventSubscriber>
+  base::ScopedObservation<DeviceActions, AppListEventSubscriber>
       scoped_app_list_event_subscriber_{this};
   base::ObserverList<AssistantManagerService::StateObserver> state_observers_;
 

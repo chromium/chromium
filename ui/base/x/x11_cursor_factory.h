@@ -16,13 +16,13 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/linux/linux_ui.h"
-#endif
-
 namespace ui {
 class X11Cursor;
 class XCursorLoader;
+
+#if BUILDFLAG(IS_LINUX)
+class LinuxUi;
+#endif
 
 // CursorFactory implementation for X11 cursors.
 class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
@@ -60,10 +60,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
   std::map<mojom::CursorType, scoped_refptr<X11Cursor>> default_cursors_;
 
 #if BUILDFLAG(IS_LINUX)
-  base::ScopedObservation<LinuxUi,
-                          CursorThemeManagerObserver,
-                          &LinuxUi::AddCursorThemeObserver,
-                          &LinuxUi::RemoveCursorThemeObserver>
+  base::ScopedObservation<LinuxUi, CursorThemeManagerObserver>
       cursor_theme_observation_{this};
 #endif
 };

@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -53,12 +53,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
   // devices.
   void SetAudioDevicesForTest(const AudioDeviceList& audio_devices);
 
-  using ScopedObservation =
-      base::ScopedObservation<AudioDevices,
-                              Observer,
-                              &AudioDevices::AddAndFireObserver,
-                              &AudioDevices::RemoveObserver>;
-
  private:
   class ScopedCrasAudioHandlerObserver;
   class HotwordModelUpdater;
@@ -89,5 +83,22 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
 
 }  // namespace assistant
 }  // namespace ash
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::assistant::AudioDevices,
+                               ash::assistant::AudioDevices::Observer> {
+  static void AddObserver(ash::assistant::AudioDevices* source,
+                          ash::assistant::AudioDevices::Observer* observer) {
+    source->AddAndFireObserver(observer);
+  }
+  static void RemoveObserver(ash::assistant::AudioDevices* source,
+                             ash::assistant::AudioDevices::Observer* observer) {
+    source->RemoveObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_DEVICES_H_
