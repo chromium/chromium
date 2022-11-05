@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom-forward.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"

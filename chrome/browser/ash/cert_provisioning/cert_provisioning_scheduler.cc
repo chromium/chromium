@@ -34,8 +34,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace cert_provisioning {
+namespace ash::cert_provisioning {
 
 namespace {
 
@@ -765,5 +764,4 @@ void CertProvisioningSchedulerImpl::NotifyObserversVisibleStateChanged() {
   observers_.Notify();
 }
 
-}  // namespace cert_provisioning
-}  // namespace ash
+}  // namespace ash::cert_provisioning

@@ -10,19 +10,14 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/common/extensions/api/vpn_provider.h"
-#include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
-#include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
-#include "chromeos/ash/components/network/network_profile_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
@@ -31,10 +26,13 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+namespace ash {
+class NetworkConfigurationHandler;
+class NetworkStateHandler;
+}  // namespace ash
+
 namespace base {
-
 class Value;
-
 }  // namespace base
 
 namespace chromeos {
@@ -55,7 +53,7 @@ class VpnProvidersObserver
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     virtual void OnVpnExtensionsChanged(
         base::flat_set<std::string> vpn_extensions) = 0;

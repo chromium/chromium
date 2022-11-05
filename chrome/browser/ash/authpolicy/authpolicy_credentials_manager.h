@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/dbus/authpolicy/active_directory_info.pb.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -24,7 +23,7 @@ class Profile;
 
 namespace authpolicy {
 class ActiveDirectoryUserStatus;
-}
+}  // namespace authpolicy
 
 namespace base {
 template <typename T>
@@ -33,9 +32,11 @@ struct DefaultSingletonTraits;
 
 namespace dbus {
 class Signal;
-}
+}  // namespace dbus
 
 namespace ash {
+
+class NetworkStateHandler;
 
 // A service responsible for tracking user credential status. Created for each
 // Active Directory user profile.

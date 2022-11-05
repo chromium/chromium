@@ -16,12 +16,12 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
+class NetworkStateHandler;
 class UpdateRequiredNotification;
 }  // namespace ash
 

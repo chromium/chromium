@@ -35,8 +35,6 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -44,9 +42,14 @@
 
 class Profile;
 
+namespace ash {
+class NetworkState;
+class NetworkStateHandler;
+}  // namespace ash
+
 namespace guest_os {
 class GuestOsStabilityMonitor;
-}
+}  // namespace guest_os
 
 namespace crostini {
 

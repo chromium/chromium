@@ -12,11 +12,13 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/system/statistics_provider.h"
+
+namespace ash {
+class NetworkState;
+class NetworkStateHandler;
+}  // namespace ash
 
 namespace policy {
 

@@ -15,17 +15,16 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/network/network_handler_callbacks.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 namespace base {
 class DictionaryValue;
-}
+}  // namespace base
 
 namespace ash {
 
 class NetworkState;
+class NetworkStateHandler;
 class TestMobileActivator;
 
 // This class performs mobile plan activation process.
@@ -110,8 +109,8 @@ class MobileActivator : public NetworkStateHandlerObserver {
                                           ActivationError error) = 0;
 
    protected:
-    Observer() {}
-    virtual ~Observer() {}
+    Observer() = default;
+    virtual ~Observer() = default;
   };
 
   MobileActivator(const MobileActivator&) = delete;

@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/login/login_state/login_state.h"

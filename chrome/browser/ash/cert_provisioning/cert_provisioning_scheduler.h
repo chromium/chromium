@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -32,6 +31,9 @@ class CloudPolicyClient;
 }  // namespace policy
 
 namespace ash {
+
+class NetworkStateHandler;
+
 namespace cert_provisioning {
 
 class CertProvisioningWorker;

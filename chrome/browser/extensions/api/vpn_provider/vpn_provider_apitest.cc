@@ -36,7 +36,7 @@
 #include "chromeos/ash/components/dbus/shill/fake_shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
-#include "chromeos/ash/components/network/network_profile_handler.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #endif
 

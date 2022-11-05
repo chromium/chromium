@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"

@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,13 +18,15 @@
 
 namespace crosapi::mojom {
 class NetworkChangeObserver;
-}
+}  // namespace crosapi::mojom
 
 namespace net {
 class NetworkChangeNotifierPosix;
-}
+}  // namespace net
 
 namespace ash {
+
+class NetworkStateHandler;
 
 // This class listens to Shill for network change events and notifies both
 // the local NetworkChangeNotifierPosix, and the network service via
@@ -34,7 +35,7 @@ class NetworkChangeManagerClient
     : public chromeos::PowerManagerClient::Observer,
       public NetworkStateHandlerObserver {
  public:
-  NetworkChangeManagerClient(
+  explicit NetworkChangeManagerClient(
       net::NetworkChangeNotifierPosix* network_change_notifier);
 
   NetworkChangeManagerClient(const NetworkChangeManagerClient&) = delete;

@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "content/public/browser/notification_service.h"
 #include "net/http/http_status_code.h"

@@ -17,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
@@ -31,12 +30,13 @@ namespace network {
 class SharedURLLoaderFactory;
 namespace mojom {
 class URLLoaderFactory;
-}
+}  // namespace mojom
 }  // namespace network
 
 namespace ash {
 
 class NetworkState;
+class NetworkStateHandler;
 
 // This class does the following:
 // 1. Provides an interface to enable captive portal detection (once the

@@ -33,11 +33,9 @@ class PrefRegistrySyncable;
 
 namespace ash {
 
-class NetworkStateHandler;
-
 namespace secure_channel {
 class SecureChannelClient;
-}
+}  // namespace secure_channel
 
 namespace tether {
 

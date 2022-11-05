@@ -12,6 +12,9 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 

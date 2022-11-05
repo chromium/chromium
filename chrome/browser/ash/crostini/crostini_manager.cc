@@ -69,6 +69,7 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/prefs/pref_service.h"

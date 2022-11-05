@@ -16,12 +16,13 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 
 namespace ash {
+
+class NetworkStateHandler;
 
 // Controls network selection screen shown during OOBE.
 class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {

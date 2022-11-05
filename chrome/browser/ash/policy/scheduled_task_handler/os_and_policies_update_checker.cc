@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/policy_service.h"
 

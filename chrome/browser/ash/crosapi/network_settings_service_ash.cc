@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "components/prefs/pref_change_registrar.h"

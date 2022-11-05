@@ -26,7 +26,9 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/session_manager/core/session_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -199,7 +201,7 @@ void NetworkPortalNotificationController::PortalStateChanged(
   // displayed with the same portal_state.
   if (network->guid() == last_network_guid_ &&
       portal_state == last_portal_state_) {
-        return;
+    return;
   }
   last_network_guid_ = network->guid();
   last_portal_state_ = portal_state;

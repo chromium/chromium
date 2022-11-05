@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/vector_icons/vector_icons.h"
