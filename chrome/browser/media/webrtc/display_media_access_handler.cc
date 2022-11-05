@@ -33,6 +33,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -53,14 +54,6 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents) {
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
-
-// When navigator.mediaDevices.getDisplayMedia() is called, a media picker
-// is shown to the user, offering a selection of possible sources.
-// If this feature is enabled, the order is: tabs / windows / screens
-// If this feature is disabled, the order is: screens / windows / tabs
-BASE_FEATURE(kNewGetDisplayMediaPickerOrder,
-             "NewGetDisplayMediaPickerOrder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -305,7 +298,8 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
                    DesktopMediaList::Type::kWebContents,
                    DesktopMediaList::Type::kWindow,
                    DesktopMediaList::Type::kScreen};
-  } else if (base::FeatureList::IsEnabled(kNewGetDisplayMediaPickerOrder) ||
+  } else if (base::FeatureList::IsEnabled(
+                 blink::features::kNewGetDisplayMediaPickerOrder) ||
              content::desktop_capture::CanUsePipeWire()) {
     // 1. The new order is tabs-windows-screens, and is applied so long as the
     // killswitch is not engaged.

@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -407,9 +408,16 @@ ScriptPromise MediaDevices::getDisplayMedia(
     capture_controller->SetIsBound(true);
   }
 
+  MediaStreamConstraints* const constraints = ToMediaStreamConstraints(options);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kNewGetDisplayMediaPickerOrder) &&
+      !options->hasSelfBrowserSurface() &&
+      (!options->hasPreferCurrentTab() || !options->preferCurrentTab())) {
+    constraints->setSelfBrowserSurface("exclude");
+  }
+
   return SendUserMediaRequest(script_state, UserMediaRequestType::kDisplayMedia,
-                              ToMediaStreamConstraints(options),
-                              exception_state);
+                              constraints, exception_state);
 }
 
 void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,

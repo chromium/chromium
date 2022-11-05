@@ -86,7 +86,10 @@ async function startCapture() {
   }
 
   try {
-    const stream = await navigator.mediaDevices.getDisplayMedia();
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      selfBrowserSurface: "include"
+    });
     [track] = stream.getVideoTracks();
     window.domAutomationController.send(`${role}-capture-success`);
   } catch (e) {
@@ -111,7 +114,10 @@ async function startSecondCapture(targetFrame) {
   }
 
   try {
-    const stream = await navigator.mediaDevices.getDisplayMedia();
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      selfBrowserSurface: "include"
+    });
     [otherCaptureTrack] = stream.getVideoTracks();
     window.domAutomationController.send(`${role}-second-capture-success`);
   } catch (e) {

@@ -48,6 +48,9 @@
 
 namespace {
 
+using base::test::FeatureRef;
+using blink::features::kNewGetDisplayMediaPickerOrder;
+
 static const char kMainHtmlPage[] = "/webrtc/webrtc_getdisplaymedia_test.html";
 static const char kMainHtmlFileName[] = "webrtc_getdisplaymedia_test.html";
 static const char kSameOriginRenamedTitle[] = "Renamed Same Origin Tab";
@@ -67,16 +70,35 @@ enum class GetDisplayMediaVariant : int {
 };
 
 struct TestConfigForPicker {
-  bool should_prefer_current_tab_;
+  TestConfigForPicker(bool new_picker_order,
+                      bool should_prefer_current_tab,
+                      bool accept_this_tab_capture)
+      : new_picker_order(new_picker_order),
+        should_prefer_current_tab(should_prefer_current_tab),
+        accept_this_tab_capture(accept_this_tab_capture) {}
+
+  explicit TestConfigForPicker(std::tuple<bool, bool, bool> input_tuple)
+      : TestConfigForPicker(std::get<0>(input_tuple),
+                            std::get<1>(input_tuple),
+                            std::get<2>(input_tuple)) {}
+
+  // The new order is tabs/windows/screens.
+  // The old order is screens/windows/tabs.
+  bool new_picker_order;
+
+  // If true, specify {preferCurrentTab: true}.
+  // Otherwise, either don't specify it, or set it to false.
+  bool should_prefer_current_tab;
+
   // |accept_this_tab_capture| is only applicable if
-  // |should_prefer_current_tab_| is set to true. Then, setting
+  // |should_prefer_current_tab| is set to true. Then, setting
   // |accept_this_tab_capture| to true accepts the current tab, and
   // |accept_this_tab_capture| set to false implies dismissing the media picker.
   bool accept_this_tab_capture;
 };
 
 struct TestConfigForFakeUI {
-  bool should_prefer_current_tab_;
+  bool should_prefer_current_tab;
   const char* display_surface;
 };
 
@@ -179,9 +201,24 @@ class WebRtcScreenCaptureBrowserTest : public WebRtcTestBase {
 
   void SetUpInProcessBrowserTestFixture() override {
     DetectErrorsInJavaScript();
+    feature_list_.InitWithFeatures(EnabledFeatures(), DisabledFeatures());
   }
 
+  virtual bool IsNewMediaPickerOrderEnabled() const = 0;
+
   virtual bool PreferCurrentTab() const = 0;
+
+  virtual std::vector<FeatureRef> EnabledFeatures() const {
+    return IsNewMediaPickerOrderEnabled()
+               ? std::vector<FeatureRef>{kNewGetDisplayMediaPickerOrder}
+               : std::vector<FeatureRef>{};
+  }
+
+  virtual std::vector<FeatureRef> DisabledFeatures() const {
+    return IsNewMediaPickerOrderEnabled()
+               ? std::vector<FeatureRef>{}
+               : std::vector<FeatureRef>{kNewGetDisplayMediaPickerOrder};
+  }
 
   std::string GetConstraints(bool video,
                              bool audio,
@@ -199,20 +236,23 @@ class WebRtcScreenCaptureBrowserTest : public WebRtcTestBase {
         PreferCurrentTab() ? "true" : "false",
         select_all_screens_property.c_str());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Top level test for getDisplayMedia().
 // Pops picker UI and shares by default.
 class WebRtcScreenCaptureBrowserTestWithPicker
     : public WebRtcScreenCaptureBrowserTest,
-      public testing::WithParamInterface<TestConfigForPicker> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   WebRtcScreenCaptureBrowserTestWithPicker() : test_config_(GetParam()) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    if (test_config_.should_prefer_current_tab_) {
+    if (test_config_.should_prefer_current_tab) {
       command_line->AppendSwitch(test_config_.accept_this_tab_capture
                                      ? switches::kThisTabCaptureAutoAccept
                                      : switches::kThisTabCaptureAutoReject);
@@ -227,12 +267,23 @@ class WebRtcScreenCaptureBrowserTestWithPicker
     }
   }
 
+  bool IsNewMediaPickerOrderEnabled() const override {
+    return test_config_.new_picker_order;
+  }
+
   bool PreferCurrentTab() const override {
-    return test_config_.should_prefer_current_tab_;
+    return test_config_.should_prefer_current_tab;
   }
 
   const TestConfigForPicker test_config_;
 };
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebRtcScreenCaptureBrowserTestWithPicker,
+                         testing::Combine(
+                             /*new_picker_order=*/testing::Bool(),
+                             /*should_prefer_current_tab=*/testing::Bool(),
+                             /*accept_this_tab_capture=*/testing::Bool()));
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
 #if BUILDFLAG(IS_WIN)
@@ -242,6 +293,11 @@ class WebRtcScreenCaptureBrowserTestWithPicker
 #endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        MAYBE_ScreenCaptureVideo) {
+  if (!test_config_.should_prefer_current_tab &&
+      !test_config_.accept_this_tab_capture) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
@@ -250,13 +306,19 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                          /*video=*/true, /*audio=*/false,
                          /*select_all_screens=*/
                          SelectAllScreens::kUndefined),
-                     /*is_fake_ui=*/false, test_config_.accept_this_tab_capture,
+                     /*is_fake_ui=*/false,
+                     /*expect_success=*/test_config_.accept_this_tab_capture,
                      /*is_tab_capture=*/PreferCurrentTab());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        ScreenCaptureVideoWithDlp) {
+  if (!test_config_.should_prefer_current_tab &&
+      !test_config_.accept_this_tab_capture) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   policy::DlpContentManagerTestHelper helper;
@@ -266,7 +328,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                          /*video=*/true, /*audio=*/false,
                          /*select_all_screens=*/
                          SelectAllScreens::kUndefined),
-                     /*is_fake_ui=*/false, test_config_.accept_this_tab_capture,
+                     /*is_fake_ui=*/false,
+                     /*expect_success=*/test_config_.accept_this_tab_capture,
                      /*is_tab_capture=*/PreferCurrentTab());
 
   if (!test_config_.accept_this_tab_capture) {
@@ -316,6 +379,11 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 #endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        MAYBE_ScreenCaptureVideoAndAudio) {
+  if (!test_config_.should_prefer_current_tab &&
+      !test_config_.accept_this_tab_capture) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
@@ -324,19 +392,10 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                          /*video=*/true, /*audio=*/true,
                          /*select_all_screens=*/
                          SelectAllScreens::kUndefined),
-                     /*is_fake_ui=*/false, test_config_.accept_this_tab_capture,
+                     /*is_fake_ui=*/false,
+                     /*expect_success=*/test_config_.accept_this_tab_capture,
                      /*is_tab_capture=*/PreferCurrentTab());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebRtcScreenCaptureBrowserTestWithPicker,
-    testing::Values(TestConfigForPicker{/*should_prefer_current_tab_=*/false,
-                                        /*accept_this_tab_capture=*/true},
-                    TestConfigForPicker{/*should_prefer_current_tab_=*/true,
-                                        /*accept_this_tab_capture=*/true},
-                    TestConfigForPicker{/*should_prefer_current_tab_=*/true,
-                                        /*accept_this_tab_capture=*/false}));
 
 // Top level test for getDisplayMedia().
 // Skips picker UI and uses fake device with specified type.
@@ -357,8 +416,10 @@ class WebRtcScreenCaptureBrowserTestWithFakeUI
                            test_config_.display_surface));
   }
 
+  bool IsNewMediaPickerOrderEnabled() const override { return false; }
+
   bool PreferCurrentTab() const override {
-    return test_config_.should_prefer_current_tab_;
+    return test_config_.should_prefer_current_tab;
   }
 
  protected:
@@ -420,10 +481,10 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   const int kMaxFrameRate = 6;
   const std::string constraints = base::StringPrintf(
       "{video: {width: {max: %d}, frameRate: {max: %d}}, "
-      "should_prefer_current_tab_: "
+      "should_prefer_current_tab: "
       "%s}",
       kMaxWidth, kMaxFrameRate,
-      test_config_.should_prefer_current_tab_ ? "true" : "false");
+      test_config_.should_prefer_current_tab ? "true" : "false");
   RunGetDisplayMedia(tab, constraints,
                      /*is_fake_ui=*/true, /*expect_success=*/true,
                      /*is_tab_capture=*/PreferCurrentTab());
@@ -441,23 +502,23 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcScreenCaptureBrowserTestWithFakeUI,
-    testing::Values(TestConfigForFakeUI{/*should_prefer_current_tab_=*/false,
+    testing::Values(TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
                                         /*display_surface=*/"monitor"},
-                    TestConfigForFakeUI{/*should_prefer_current_tab_=*/false,
+                    TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
                                         /*display_surface=*/"window"},
-                    TestConfigForFakeUI{/*should_prefer_current_tab_=*/false,
+                    TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
                                         /*display_surface=*/"browser"},
-                    TestConfigForFakeUI{/*should_prefer_current_tab_=*/true,
+                    TestConfigForFakeUI{/*should_prefer_current_tab=*/true,
                                         /*display_surface=*/"browser"}));
 
 class WebRtcScreenCapturePermissionPolicyBrowserTest
     : public WebRtcScreenCaptureBrowserTest,
       public testing::WithParamInterface<
-          std::pair<GetDisplayMediaVariant, bool>> {
+          std::tuple<GetDisplayMediaVariant, bool>> {
  public:
   WebRtcScreenCapturePermissionPolicyBrowserTest()
-      : tested_variant_(GetParam().first),
-        allowlisted_by_policy_(GetParam().second) {}
+      : tested_variant_(std::get<0>(GetParam())),
+        allowlisted_by_policy_(std::get<1>(GetParam())) {}
 
   ~WebRtcScreenCapturePermissionPolicyBrowserTest() override = default;
 
@@ -468,28 +529,31 @@ class WebRtcScreenCapturePermissionPolicyBrowserTest
         switches::kAutoSelectTabCaptureSourceByTitle, kMainHtmlTitle);
   }
 
+  bool IsNewMediaPickerOrderEnabled() const override { return false; }
+
   bool PreferCurrentTab() const override {
     return tested_variant_ == GetDisplayMediaVariant::kPreferCurrentTab;
+  }
+
+  // This test suite focuses on permission policies, not on the order.
+  // TODO(crbug.com/1358278): Refactor test to assume the new order,
+  // by employing a second tab that can be captured.
+  std::vector<FeatureRef> EnabledFeatures() const override { return {}; }
+  std::vector<FeatureRef> DisabledFeatures() const override {
+    return {kNewGetDisplayMediaPickerOrder};
   }
 
  protected:
   const GetDisplayMediaVariant tested_variant_;
   const bool allowlisted_by_policy_;
-
- private:
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcScreenCapturePermissionPolicyBrowserTest,
-    testing::Values(std::make_pair(GetDisplayMediaVariant::kStandard,
-                                   /*allowlisted_by_policy=*/false),
-                    std::make_pair(GetDisplayMediaVariant::kStandard,
-                                   /*allowlisted_by_policy=*/true),
-                    std::make_pair(GetDisplayMediaVariant::kPreferCurrentTab,
-                                   /*allowlisted_by_policy=*/false),
-                    std::make_pair(GetDisplayMediaVariant::kPreferCurrentTab,
-                                   /*allowlisted_by_policy=*/true)));
+    testing::Combine(testing::Values(GetDisplayMediaVariant::kStandard,
+                                     GetDisplayMediaVariant::kPreferCurrentTab),
+                     /*allowlisted_by_policy=*/testing::Bool()));
 
 // Flaky on Win bots http://crbug.com/1264805
 #if BUILDFLAG(IS_WIN)
@@ -589,6 +653,8 @@ class WebRtcSameOriginPolicyBrowserTest
     : public WebRtcScreenCaptureBrowserTest {
  public:
   ~WebRtcSameOriginPolicyBrowserTest() override = default;
+
+  bool IsNewMediaPickerOrderEnabled() const override { return false; }
 
   bool PreferCurrentTab() const override { return false; }
 
@@ -1058,13 +1124,16 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
 
 class GetDisplayMediaSelfBrowserSurfaceBrowserTest
     : public WebRtcTestBase,
-      public testing::WithParamInterface<std::string> {
+      public testing::WithParamInterface<std::tuple<bool, std::string>> {
  public:
   GetDisplayMediaSelfBrowserSurfaceBrowserTest()
-      : self_browser_surface_(GetParam()) {}
+      : new_picker_order_(std::get<0>(GetParam())),
+        self_browser_surface_(std::get<1>(GetParam())) {}
 
   void SetUpInProcessBrowserTestFixture() override {
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+
+    feature_list_.InitWithFeatures(EnabledFeatures(), DisabledFeatures());
 
     DetectErrorsInJavaScript();
 
@@ -1075,11 +1144,12 @@ class GetDisplayMediaSelfBrowserSurfaceBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kMainHtmlTitle);
   }
 
-  std::string GetConstraints(bool prefer_current_tab = false) const {
+  std::string GetConstraints(bool prefer_current_tab = false) {
     std::vector<std::string> constraints = {"video: true"};
     if (!self_browser_surface_.empty()) {
       constraints.push_back(base::StringPrintf("selfBrowserSurface: \"%s\"",
@@ -1088,22 +1158,52 @@ class GetDisplayMediaSelfBrowserSurfaceBrowserTest
     if (prefer_current_tab) {
       constraints.push_back("preferCurrentTab: true");
     }
+    prefer_current_tab_ = prefer_current_tab;
     return "{" + base::JoinString(constraints, ",") + "}";
   }
 
   bool IsSelfBrowserSurfaceExclude() const {
+    if (new_picker_order_ && self_browser_surface_ == "" &&
+        !prefer_current_tab_) {
+      // Special case - when using the new order, selfBrowserSurface
+      // defaults to "exclude", unless {preferCurrentTab: true} is specified.
+      return true;
+    }
     return self_browser_surface_ == "exclude";
   }
 
+  std::vector<FeatureRef> EnabledFeatures() const {
+    return new_picker_order_
+               ? std::vector<FeatureRef>{kNewGetDisplayMediaPickerOrder}
+               : std::vector<FeatureRef>{};
+  }
+
+  std::vector<FeatureRef> DisabledFeatures() const {
+    return new_picker_order_
+               ? std::vector<FeatureRef>{}
+               : std::vector<FeatureRef>{kNewGetDisplayMediaPickerOrder};
+  }
+
  protected:
+  // The new order is tabs/windows/screens.
+  // The old order is screens/windows/tabs.
+  const bool new_picker_order_;
+
   // If empty, the constraint is unused. Otherwise, the value is either
   // "include" or "exclude"
   const std::string self_browser_surface_;
+
+  // Whether {preferCurrentTab: true} will be specified by the test.
+  bool prefer_current_tab_ = false;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         GetDisplayMediaSelfBrowserSurfaceBrowserTest,
-                         testing::Values("", "include", "exclude"));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GetDisplayMediaSelfBrowserSurfaceBrowserTest,
+    testing::Combine(testing::Bool(),
+                     testing::Values("", "include", "exclude")));
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
                        SelfBrowserSurfaceChangesCapturedTab) {
@@ -1174,6 +1274,8 @@ class WebRtcScreenCaptureSelectAllScreensTest
         base::StringPrintf("display-media-type=%s",
                            test_config_.display_surface));
   }
+
+  bool IsNewMediaPickerOrderEnabled() const override { return false; }
 
   bool PreferCurrentTab() const override { return false; }
 
