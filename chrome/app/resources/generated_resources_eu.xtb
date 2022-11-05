@@ -1505,7 +1505,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2352810082280059586">Pantaila blokeatuko oharrak <ph name="LOCK_SCREEN_APP_NAME" /> aplikazioan gordetzen dira automatikoki. Azken oharra geldituko da pantaila blokeatuan.</translation>
 <translation id="2353297238722298836">Kamera eta mikrofonoa erabil daitezke</translation>
 <translation id="2355314311311231464">Ezin izan da hornitu, ezin izan direlako berreskuratu kontuaren xehetasunak. Saiatu berriro. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
-<translation id="2355604387869345912">Aktibatu Konexioa bizkor partekatzeko eginbidea</translation>
+<translation id="2355604387869345912">Aktibatu konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="2356070529366658676">Galdetu</translation>
 <translation id="2357330829548294574">Kendu <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Webguneek JavaScript erabil dezakete</translation>
@@ -1859,7 +1859,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2704184184447774363">Microsoft dokumentu-sinatzea</translation>
 <translation id="2704606927547763573">Kopiatuta</translation>
 <translation id="270516211545221798">Ukipen-panelaren abiadura</translation>
-<translation id="2705736684557713153">Joan pantailaren behealdera eta aktibatu Konexioa bizkor partekatzeko eginbidea, halakorik agertzen bada. Agertzen ez bada, dagoeneko prest duzu dena.</translation>
+<translation id="2705736684557713153">Joan pantailaren behealdera eta aktibatu konexioa bizkor partekatzeko eginbidea, halakorik agertzen bada. Agertzen ez bada, dagoeneko prest duzu dena.</translation>
 <translation id="2707024448553392710">Osagaiak deskargatzen</translation>
 <translation id="270921614578699633">Batez bestekoa</translation>
 <translation id="2709516037105925701">Betetze automatikoa</translation>
@@ -4688,7 +4688,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (eguneratze bat erabilgarri dago)</translation>
 <translation id="542948651837270806">Trusted Platform Module firmwarearen eguneratze bat instalatu behar da. Ikusi <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Zabalera osoko karaktere-bihurketa</translation>
-<translation id="5430931332414098647">Konexioa bizkor partekatzeko eginbidea</translation>
+<translation id="5430931332414098647">Konexioa bizkor partekatzea</translation>
 <translation id="5431318178759467895">Kolorez</translation>
 <translation id="543338862236136125">Editatu pasahitza</translation>
 <translation id="5434065355175441495">PKCS #1 RSA enkriptatzea</translation>
@@ -5611,7 +5611,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Atzo egin zen segurtasun-egiaztapena}other{Duela {NUM_DAYS} egun egin zen segurtasun-egiaztapena}}</translation>
 <translation id="6312638141433622592">Eskaini artikuluak irakurgailu moduan erakusteko aukera, halakorik onartzen bada</translation>
 <translation id="6313641880021325787">IRTEN EB MODUTIK</translation>
-<translation id="6313950457058510656">Desaktibatu Konexioa bizkor partekatzeko eginbidea</translation>
+<translation id="6313950457058510656">Desaktibatu konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="6314819609899340042">Behar bezala gaitu dituzu <ph name="IDS_SHORT_PRODUCT_NAME" /> gailuko arazketa-eginbideak.</translation>
 <translation id="6315493146179903667">Eraman guztiak aurrealdera</translation>
 <translation id="6316432269411143858">Google Chrome OS-ren Baldintzen edukia</translation>
@@ -6269,7 +6269,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6939815295902433669">Berrikusi gailuaren softwarea</translation>
 <translation id="694168622559714949">Administratzaileak hizkuntza bat lehenetsi du eta ezin da aldatu.</translation>
 <translation id="6941937518557314510"><ph name="HOST_NAME" /> ostalarian zure ziurtagiriarekin autentifikatzeko, hasi saioa <ph name="TOKEN_NAME" /> zerbitzuan.</translation>
-<translation id="6943060957016121200">Gaitu Konexioa bizkor partekatzeko eginbidea</translation>
+<translation id="6943060957016121200">Gaitu konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="6943176775188458830">Utzi inprimatzea bertan behera</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> gailutik deskonektatuta</translation>
 <translation id="6945221475159498467">Hautatu</translation>
@@ -6318,7 +6318,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6981553172137913845">Sarea modu pribatuan arakatzeko, sakatu hiru puntuen ikonoa duen menua eta ireki ezkutuko moduko leiho bat</translation>
 <translation id="6981761993313539853">Ziurtatu Bluetooth bidezko gailua gertu eta parekatzeko moduan dagoela. Parekatu gailu fidagarriekin soilik. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
-<translation id="6983507711977005608">Deskonektatu Konexioa bizkor partekatzeko eginbidearen sarea</translation>
+<translation id="6983507711977005608">Deskonektatu konexioa bizkor partekatzeko eginbidearen sarea</translation>
 <translation id="6983783921975806247">Erregistratutako OIDa</translation>
 <translation id="6984299437918708277">Aukeratu saioa hasteko pantailan erakutsi beharreko irudia</translation>
 <translation id="6985235333261347343">Gakoak berreskuratzeko Microsoft agentea</translation>
@@ -7153,7 +7153,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="778330624322499012">Ezin izan da kargatu <ph name="PLUGIN_NAME" /></translation>
 <translation id="7784067724422331729">Fitxategia blokeatu da ordenagailuan dituzun segurtasun-ezarpenen ondorioz</translation>
 <translation id="7784796923038949829">Ezin dira irakurri edo aldatu webguneko datuak</translation>
-<translation id="778480864305029524">Konexioa bizkor partekatzeko eginbidea erabiltzeko, aktibatu Google Play Services-en jakinarazpenak.</translation>
+<translation id="778480864305029524">Konexioa bizkor partekatzeko, aktibatu Google Play Services-en jakinarazpenak.</translation>
 <translation id="7785471469930192436">Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko</translation>
 <translation id="7786889348652477777">Kar&amp;gatu berriro aplikazioa</translation>
 <translation id="7787308148023287649">Erakutsi beste pantaila batean</translation>
@@ -7930,7 +7930,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Gehitu hizkuntzak</translation>
 <translation id="8528962588711550376">Saioa hasten.</translation>
-<translation id="8529925957403338845">Ezin izan da konektatu Konexioa bizkor partekatzeko eginbidearekin</translation>
+<translation id="8529925957403338845">Ezin izan da konektatu konexioa bizkor partekatzeko eginbidearekin</translation>
 <translation id="8531701051932785007">Arakatze seguru hobetua desaktibatuta dago</translation>
 <translation id="8534656636775144800">Arazo bat izan da domeinuan sartzen saiatzean. Saiatu berriro.</translation>
 <translation id="8535005006684281994">Netscape ziurtagiria berritzeko URLa</translation>
@@ -8512,7 +8512,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9076821103818989526">Alboko panela</translation>
 <translation id="9076977315710973122">SMB bidez partekatzea</translation>
 <translation id="9078193189520575214">Aldaketak aplikatzen…</translation>
-<translation id="9078316009970372699">Desgaitu Konexioa bizkor partekatzeko eginbidea</translation>
+<translation id="9078316009970372699">Desgaitu konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="9078842827190780028">Ikusi emaitza gehiago alboko panelean</translation>
 <translation id="9079267182985899251">Laster ez da onartuko aukera hau. Fitxa bat bistaratzeko, erabili <ph name="GOOGLE_MEET" />.</translation>
 <translation id="9080971985541434310">interesak estimatzen ditu - Chrome-k zure interesak estima ditzake</translation>
