@@ -100,9 +100,9 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
+    ":generate_css_wrapper_files",
     ":generate_html_wrapper_files",
     ":generate_mojom_webui",
-    ":generate_web_component_css_wrapper_files",
     ":preprocess",
     ":preprocess_gen_web_component_files",
     "//ash/webui/common/resources:generate_definitions",
@@ -152,7 +152,7 @@ html_to_wrapper("generate_html_wrapper_files") {
   out_folder = "$target_gen_dir/$preprocessed_ts_folder"
 }
 
-css_to_wrapper("generate_web_component_css_wrapper_files") {
+css_to_wrapper("generate_css_wrapper_files") {
   deps = [ ":preprocess" ]
   in_files = css_files
   in_folder = "$target_gen_dir/$preprocessed_ts_folder"
