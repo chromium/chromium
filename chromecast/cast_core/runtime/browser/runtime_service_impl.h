@@ -77,15 +77,15 @@ class RuntimeServiceImpl final
   void OnApplicationLoaded(
       std::string session_id,
       cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
-      cast_receiver::Status success);
+      cast_receiver::Status status);
   void OnApplicationLaunching(
       std::string session_id,
       cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
-      cast_receiver::Status success);
+      cast_receiver::Status status);
   void OnApplicationStopping(
       std::string session_id,
       cast::runtime::RuntimeServiceHandler::StopApplication::Reactor* reactor,
-      cast_receiver::Status success);
+      cast_receiver::Status status);
   void SendHeartbeat();
   void OnHeartbeatSent(
       cast::utils::GrpcStatusOr<

@@ -34,7 +34,7 @@ class CoreCastService : public shell::CastServiceSimple {
 
   // CastServiceSimple overrides:
   void StartInternal() override {
-    if (!app_dispatcher_->Start()) {
+    if (!app_dispatcher_->Start().ok()) {
       base::Process::TerminateCurrentProcessImmediately(1);
     }
   }

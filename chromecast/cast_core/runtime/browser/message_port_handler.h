@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast/message_port/message_port.h"
+#include "components/cast_receiver/common/public/status.h"
 #include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
@@ -41,7 +42,7 @@ class MessagePortHandler final
 
   // Handles a message incoming from the gRPC API.  Returns true if it was able
   // to be handled successfully, false otherwise.
-  bool HandleMessage(const cast::web::Message& message);
+  cast_receiver::Status HandleMessage(const cast::web::Message& message);
 
  private:
   enum class CloseError {

@@ -42,10 +42,12 @@ MessagePortHandler::MessagePortHandler(
 
 MessagePortHandler::~MessagePortHandler() = default;
 
-bool MessagePortHandler::HandleMessage(const cast::web::Message& message) {
+cast_receiver::Status MessagePortHandler::HandleMessage(
+    const cast::web::Message& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!message_port_) {
-    return false;
+    return cast_receiver::Status(cast_receiver::StatusCode::kFailedPrecondition,
+                                 "Invalid MessagePort");
   }
 
   switch (message.message_type_case()) {
@@ -62,7 +64,7 @@ bool MessagePortHandler::HandleMessage(const cast::web::Message& message) {
           ForwardNextMessage();
         }
       }
-      return true;
+      return cast_receiver::OkStatus();
     }
     case cast::web::Message::kRequest: {
       DLOG_CHANNEL(INFO) << "Received request: " << message.request().data();
@@ -86,22 +88,25 @@ bool MessagePortHandler::HandleMessage(const cast::web::Message& message) {
       bool result = message_port_->PostMessageWithTransferables(
           message.request().data(), std::move(ports));
       SendResponse(result);
-      return true;
+      return cast_receiver::OkStatus();
     }
     case cast::web::Message::kResponse: {
       if (!is_awaiting_response_) {
         LOG(FATAL) << "Received response while not expecting one.";
-        return false;
+        return cast_receiver::Status(
+            cast_receiver::StatusCode::kUnknown,
+            "Received response while not expecting one");
       }
       message_timeout_callback_.Cancel();
       is_awaiting_response_ = false;
       if (!pending_messages_.empty() && !has_outstanding_request_) {
         ForwardNextMessage();
       }
-      return true;
+      return cast_receiver::OkStatus();
     }
     default:
-      return false;
+      return cast_receiver::Status(cast_receiver::StatusCode::kInvalidArgument,
+                                   "Invalid cast::web::Message");
   }
 }
 

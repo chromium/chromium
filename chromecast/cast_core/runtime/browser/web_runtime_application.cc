@@ -36,7 +36,7 @@ bool WebRuntimeApplication::OnMessagePortMessage(cast::web::Message message) {
   if (!bindings_manager_) {
     return false;
   }
-  return bindings_manager_->HandleMessage(std::move(message));
+  return bindings_manager_->HandleMessage(std::move(message)).ok();
 }
 
 void WebRuntimeApplication::Launch(StatusCallback callback) {
@@ -56,7 +56,7 @@ void WebRuntimeApplication::Launch(StatusCallback callback) {
                      weak_factory_.GetWeakPtr())));
 
   // Signal that application is launching.
-  std::move(callback).Run(true);
+  std::move(callback).Run(cast_receiver::OkStatus());
 }
 
 bool WebRuntimeApplication::IsStreamingApplication() const {
@@ -115,11 +115,11 @@ void WebRuntimeApplication::MediaStoppedPlaying(
 }
 
 void WebRuntimeApplication::OnAllBindingsReceived(
-    bool success,
+    cast_receiver::Status status,
     std::vector<std::string> bindings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!success) {
-    LOG(ERROR) << "Failed to get all bindings";
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to get all bindings: " << status;
     StopApplication(cast::common::StopReason::RUNTIME_ERROR, net::ERR_FAILED);
     return;
   }

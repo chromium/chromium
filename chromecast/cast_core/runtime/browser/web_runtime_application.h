@@ -27,7 +27,8 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
   ~WebRuntimeApplication() override;
 
  private:
-  void OnAllBindingsReceived(bool success, std::vector<std::string> bindings);
+  void OnAllBindingsReceived(cast_receiver::Status status,
+                             std::vector<std::string> bindings);
 
   // RuntimeApplicationBase implementation:
   void Launch(StatusCallback callback) override;

@@ -79,13 +79,13 @@ void RuntimeApplicationBase::Load(StatusCallback callback) {
   }
 
   LOG(INFO) << "Loaded application: " << *this;
-  std::move(callback).Run(true);
+  std::move(callback).Run(cast_receiver::OkStatus());
 }
 
 void RuntimeApplicationBase::Stop(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopApplication(cast::common::StopReason::USER_REQUEST, /*net_error_code=*/0);
-  std::move(callback).Run(true);
+  std::move(callback).Run(cast_receiver::OkStatus());
 }
 
 base::Value RuntimeApplicationBase::GetRendererFeatures() const {

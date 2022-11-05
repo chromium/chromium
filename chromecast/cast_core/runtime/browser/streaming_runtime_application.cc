@@ -51,7 +51,7 @@ bool StreamingRuntimeApplication::OnMessagePortMessage(
   if (!message_port_service_) {
     return false;
   }
-  return message_port_service_->HandleMessage(std::move(message));
+  return message_port_service_->HandleMessage(std::move(message)).ok();
 }
 
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
@@ -108,7 +108,7 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
       cast_streaming::GetCastStreamingMediaSourceUrl().spec().c_str())));
 
   // Signal that application is launching.
-  std::move(callback).Run(true);
+  std::move(callback).Run(cast_receiver::OkStatus());
 }
 
 void StreamingRuntimeApplication::StopApplication(

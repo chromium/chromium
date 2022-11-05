@@ -3,5 +3,7 @@
 # found in the LICENSE file.
 
 source_set("common") {
+  deps = [ "//base" ]
   public = [ "public/status.h" ]
+  sources = [ "status.cc" ]
 }

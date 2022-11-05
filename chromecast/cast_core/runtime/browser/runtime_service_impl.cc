@@ -89,7 +89,7 @@ cast_receiver::Status RuntimeServiceImpl::Start() {
   grpc_server_->Start(runtime_service_endpoint_);
 
   LOG(INFO) << "Runtime service started";
-  return true;
+  return cast_receiver::OkStatus();
 }
 
 cast_receiver::Status RuntimeServiceImpl::Stop() {
@@ -116,7 +116,7 @@ cast_receiver::Status RuntimeServiceImpl::Stop() {
   }
 
   LOG(INFO) << "Runtime service stopped";
-  return true;
+  return cast_receiver::OkStatus();
 }
 
 std::unique_ptr<CastEventBuilder> RuntimeServiceImpl::CreateEventBuilder() {
@@ -300,7 +300,7 @@ void RuntimeServiceImpl::HandleStopMetricsRecorder(
 void RuntimeServiceImpl::OnApplicationLoaded(
     std::string session_id,
     cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
-    cast_receiver::Status success) {
+    cast_receiver::Status status) {
   if (!GetApplication(session_id)) {
     LOG(ERROR) << "Application doesn't exist anymore: session_id="
                << session_id;
@@ -309,7 +309,7 @@ void RuntimeServiceImpl::OnApplicationLoaded(
     return;
   }
 
-  if (!success) {
+  if (!status.ok()) {
     reactor->Write(
         grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to load application"));
     return;
@@ -323,7 +323,7 @@ void RuntimeServiceImpl::OnApplicationLoaded(
 void RuntimeServiceImpl::OnApplicationLaunching(
     std::string session_id,
     cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
-    cast_receiver::Status success) {
+    cast_receiver::Status status) {
   if (!GetApplication(session_id)) {
     LOG(ERROR) << "Application doesn't exist anymore: session_id="
                << session_id;
@@ -332,7 +332,7 @@ void RuntimeServiceImpl::OnApplicationLaunching(
     return;
   }
 
-  if (!success) {
+  if (!status.ok()) {
     reactor->Write(grpc::Status(grpc::StatusCode::UNKNOWN,
                                 "Failed to launch application"));
     return;
@@ -344,7 +344,7 @@ void RuntimeServiceImpl::OnApplicationLaunching(
 void RuntimeServiceImpl::OnApplicationStopping(
     std::string session_id,
     cast::runtime::RuntimeServiceHandler::StopApplication::Reactor* reactor,
-    cast_receiver::Status success) {
+    cast_receiver::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto platform_app = DestroyApplication(session_id);

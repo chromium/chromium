@@ -104,7 +104,9 @@ void RuntimeApplicationServiceImpl::Load(
   DCHECK(!grpc_server_);
 
   if (request.runtime_application_service_info().grpc_endpoint().empty()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        cast_receiver::Status(cast_receiver::StatusCode::kInvalidArgument,
+                              "RuntimeApplication service info missing"));
     return;
   }
 
@@ -166,12 +168,16 @@ void RuntimeApplicationServiceImpl::Launch(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (request.core_application_service_info().grpc_endpoint().empty()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        cast_receiver::Status(cast_receiver::StatusCode::kInvalidArgument,
+                              "CoreApplication service info missing"));
     return;
   }
 
   if (request.cast_media_service_info().grpc_endpoint().empty()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        cast_receiver::Status(cast_receiver::StatusCode::kInvalidArgument,
+                              "CastMedia service info missing"));
     return;
   }
 
@@ -409,7 +415,10 @@ void RuntimeApplicationServiceImpl::OnAllBindingsReceived(
     cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!response_or.ok()) {
-    std::move(callback).Run(false, std::vector<std::string>());
+    std::move(callback).Run(
+        cast_receiver::Status(cast_receiver::StatusCode::kCancelled,
+                              "Bad GrpcStatus: " + response_or.ToString()),
+        std::vector<std::string>());
     return;
   }
 
@@ -420,7 +429,7 @@ void RuntimeApplicationServiceImpl::OnAllBindingsReceived(
     bindings.emplace_back(response.bindings(i).before_load_script());
   }
 
-  std::move(callback).Run(true, std::move(bindings));
+  std::move(callback).Run(cast_receiver::OkStatus(), std::move(bindings));
 }
 
 }  // namespace chromecast
