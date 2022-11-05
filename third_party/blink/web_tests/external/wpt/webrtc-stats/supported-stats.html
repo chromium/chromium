@@ -50,6 +50,12 @@ function isPropertyTestable(type, property) {
   // List of properties which are not testable by this test.
   // When adding something to this list, please explain why.
   const untestablePropertiesByType = {
+    'candidate-pair': [
+      'availableIncomingBitrate', // requires REMB, no TWCC.
+    ],
+    'certificate': [
+      'issuerCertificateId', // we only use self-signed certificates.
+    ],
     'local-candidate': [
       'url', // requires a STUN/TURN server.
       'relayProtocol', // requires a TURN server.
