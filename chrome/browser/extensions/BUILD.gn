@@ -14,6 +14,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(enable_extensions)
 
@@ -1445,4 +1446,19 @@ static_library("test_support") {
   if (is_chromeos_ash) {
     deps += [ "//components/user_manager:test_support" ]
   }
+}
+
+fuzzer_test("extension_management_internal_fuzzer") {
+  sources = [ "extension_management_internal_fuzzer.cc" ]
+  deps = [
+    ":extensions",
+    "//base",
+
+    # While //c/b/extensions should've been sufficient, there are cyclic
+    # dependencies that require us linking against the whole //c/b.
+    "//chrome/browser",
+
+    # Pull test-specific stubs for symbols needed by //c/b.
+    "//chrome/test:test_support",
+  ]
 }
