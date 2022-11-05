@@ -271,13 +271,10 @@ void StartProvisioning(
   DVLOG(1) << __func__;
 
   if (provisioning_result_cb_for_testing) {
-    // MediaDrm can't provision an origin ID during unittests, so create a new
-    // origin ID and pretend it was provisioned or not depending on the result
-    // from |provisioning_result_cb_for_testing|.
-    std::move(callback).Run(
-        provisioning_result_cb_for_testing.Run()
-            ? absl::make_optional(base::UnguessableToken::Create())
-            : absl::nullopt);
+    // MediaDrm can't provision an origin ID during unittests, so use
+    // |provisioning_result_cb_for_testing| to generate one (or not, depending
+    // on the test case).
+    std::move(callback).Run(provisioning_result_cb_for_testing.Run());
     return;
   }
 

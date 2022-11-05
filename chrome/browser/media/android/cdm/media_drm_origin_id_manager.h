@@ -45,7 +45,7 @@ class MediaDrmOriginIdManager : public KeyedService {
   using ProvisionedOriginIdCB =
       base::OnceCallback<void(GetOriginIdStatus status,
                               const MediaDrmOriginId& origin_id)>;
-  using ProvisioningResultCB = base::RepeatingCallback<bool()>;
+  using ProvisioningResultCB = base::RepeatingCallback<MediaDrmOriginId()>;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
