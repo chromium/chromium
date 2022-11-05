@@ -293,11 +293,21 @@ class GEOMETRY_SKIA_EXPORT Transform {
            matrix_.rc(2, 2) > 0.0;
   }
 
+  // Returns true if the matrix is 2d scale or translation, and if it has scale,
+  // the scale proportionally scales up in x and y directions. This function
+  // allows rare false-negatives.
+  bool Is2dProportionalUpscaleAndOr2dTranslation() const;
+
   // Returns true if the matrix is identity or, if the matrix consists only
   // of a translation whose components can be represented as integers. Returns
   // false if the translation contains a fractional component or is too large to
   // fit in an integer.
   bool IsIdentityOrIntegerTranslation() const;
+  bool IsIdentityOrInteger2dTranslation() const;
+
+  // Returns whether this matrix can transform a z=0 plane to something
+  // containing points where z != 0. This is primarily intended for metrics.
+  bool Creates3d() const;
 
   // Returns true if the matrix has only x and y scaling components, including
   // identity.
@@ -355,6 +365,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Transposes this transform in place.
   void Transpose();
 
+  // Changes the transform to apply as if the origin were at (x, y, z).
+  void ApplyTransformOrigin(float x, float y, float z);
+
   // Changes the transform to:
   //     scale3d(z, z, z) * mat * scale3d(1/z, 1/z, 1/z)
   // Useful for mapping zoomed points to their zoomed transformed result:
@@ -386,6 +399,10 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns the x and y translation components of the matrix, clamped with
   // ClampFloatGeometry().
   Vector2dF To2dTranslation() const;
+
+  // Returns the x, y and z translation components of the matrix, clampe with
+  // ClampFloatGeometry().
+  Vector3dF To3dTranslation() const;
 
   // Returns the x and y scale components of the matrix, clamped with
   // ClampFloatGeometry().

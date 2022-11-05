@@ -362,6 +362,19 @@ bool Transform::IsApproximatelyIdentityOrIntegerTranslation(
   return true;
 }
 
+bool Transform::Is2dProportionalUpscaleAndOr2dTranslation() const {
+  if (LIKELY(!full_matrix_)) {
+    return axis_2d_.scale().x() >= 1 &&
+           axis_2d_.scale().x() == axis_2d_.scale().y();
+  }
+
+  return matrix_.IsScaleOrTranslation() &&
+         // Check proportional upscale.
+         matrix_.rc(0, 0) >= 1 && matrix_.rc(1, 1) == matrix_.rc(0, 0) &&
+         // Check no scale/translation in z axis.
+         matrix_.rc(2, 2) == 1 && matrix_.rc(2, 3) == 0;
+}
+
 bool Transform::IsIdentityOrIntegerTranslation() const {
   if (!IsIdentityOrTranslation())
     return false;
@@ -381,6 +394,17 @@ bool Transform::IsIdentityOrIntegerTranslation() const {
       return false;
   }
   return true;
+}
+
+bool Transform::IsIdentityOrInteger2dTranslation() const {
+  return IsIdentityOrIntegerTranslation() && rc(2, 3) == 0;
+}
+
+bool Transform::Creates3d() const {
+  if (LIKELY(!full_matrix_))
+    return false;
+  return matrix_.rc(2, 0) != 0 || matrix_.rc(2, 1) != 0 ||
+         matrix_.rc(2, 3) != 0;
 }
 
 bool Transform::IsBackFaceVisible() const {
@@ -556,6 +580,11 @@ void Transform::Transpose() {
     EnsureFullMatrix().Transpose();
 }
 
+void Transform::ApplyTransformOrigin(float x, float y, float z) {
+  PostTranslate3d(x, y, z);
+  Translate3d(-x, -y, -z);
+}
+
 void Transform::Zoom(float zoom_factor) {
   if (LIKELY(!full_matrix_)) {
     axis_2d_.Zoom(zoom_factor);
@@ -585,6 +614,16 @@ Vector2dF Transform::To2dTranslation() const {
   }
   return Vector2dF(ClampFloatGeometry(matrix_.rc(0, 3)),
                    ClampFloatGeometry(matrix_.rc(1, 3)));
+}
+
+Vector3dF Transform::To3dTranslation() const {
+  if (LIKELY(!full_matrix_)) {
+    return Vector3dF(ClampFloatGeometry(axis_2d_.translation().x()),
+                     ClampFloatGeometry(axis_2d_.translation().y()), 0);
+  }
+  return Vector3dF(ClampFloatGeometry(matrix_.rc(0, 3)),
+                   ClampFloatGeometry(matrix_.rc(1, 3)),
+                   ClampFloatGeometry(matrix_.rc(2, 3)));
 }
 
 Vector2dF Transform::To2dScale() const {

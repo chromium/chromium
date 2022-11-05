@@ -1353,6 +1353,21 @@ TEST(XFormTest, IntegerTranslation) {
   EXPECT_FALSE(transform.IsIdentityOrIntegerTranslation());
 }
 
+TEST(XFormTest, Integer2dTranslation) {
+  EXPECT_TRUE(Transform().IsIdentityOrInteger2dTranslation());
+  EXPECT_TRUE(
+      Transform::MakeTranslation(1, 2).IsIdentityOrInteger2dTranslation());
+  EXPECT_FALSE(Transform::MakeTranslation(1.00001, 2)
+                   .IsIdentityOrInteger2dTranslation());
+  EXPECT_FALSE(Transform::MakeTranslation(1, 2.00002)
+                   .IsIdentityOrInteger2dTranslation());
+  EXPECT_FALSE(
+      Transform::Make90degRotation().IsIdentityOrInteger2dTranslation());
+  Transform transform;
+  transform.Translate3d(1, 2, 3);
+  EXPECT_FALSE(transform.IsIdentityOrInteger2dTranslation());
+}
+
 TEST(XFormTest, Inverse) {
   {
     Transform identity;
@@ -2950,10 +2965,22 @@ TEST(XFormTest, To2dTranslation) {
   Vector2dF translation(3.f, 7.f);
   Transform transform;
   transform.Translate(translation.x(), translation.y() + 1);
-  EXPECT_NE(translation.ToString(), transform.To2dTranslation().ToString());
+  EXPECT_NE(translation, transform.To2dTranslation());
   transform.MakeIdentity();
   transform.Translate(translation.x(), translation.y());
-  EXPECT_EQ(translation.ToString(), transform.To2dTranslation().ToString());
+  transform.set_rc(1, 1, 100);
+  EXPECT_EQ(translation, transform.To2dTranslation());
+}
+
+TEST(XFormTest, To3dTranslation) {
+  Transform transform;
+  EXPECT_EQ(gfx::Vector3dF(), transform.To3dTranslation());
+  transform.Translate(10, 20);
+  EXPECT_EQ(gfx::Vector3dF(10, 20, 0), transform.To3dTranslation());
+  transform.Translate3d(20, -60, -10);
+  EXPECT_EQ(gfx::Vector3dF(30, -40, -10), transform.To3dTranslation());
+  transform.set_rc(1, 1, 100);
+  EXPECT_EQ(gfx::Vector3dF(30, -40, -10), transform.To3dTranslation());
 }
 
 TEST(XFormTest, MapRect) {
@@ -3397,6 +3424,9 @@ TEST(XFormTest, ClampOutput) {
       EXPECT_TRUE(is_valid_vector2(v2)) << v2.ToString();
       v2 = m.To2dScale();
       EXPECT_TRUE(is_valid_vector2(v2)) << v2.ToString();
+
+      v3 = m.To3dTranslation();
+      EXPECT_TRUE(is_valid_vector3(v3)) << v3.ToString();
     };
 
     test(Transform::ColMajor(mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv,
@@ -3556,6 +3586,80 @@ TEST(XFormTest, ToString) {
       "perspective: -6.66667e-21 -1 +2 +1\n"
       "quaternion: -0.582925 +0.603592 +0.518949 +0.162997\n",
       transform.ToDecomposedString());
+}
+
+TEST(XFormTest, Is2dProportionalUpscaleAndOr2dTranslation) {
+  Transform transform;
+  EXPECT_TRUE(transform.Is2dProportionalUpscaleAndOr2dTranslation());
+
+  transform.MakeIdentity();
+  transform.Translate(10, 0);
+  EXPECT_TRUE(transform.Is2dProportionalUpscaleAndOr2dTranslation());
+
+  transform.MakeIdentity();
+  transform.Scale(1.3);
+  EXPECT_TRUE(transform.Is2dProportionalUpscaleAndOr2dTranslation());
+
+  transform.MakeIdentity();
+  transform.Translate(0, -20);
+  transform.Scale(1.7);
+  EXPECT_TRUE(transform.Is2dProportionalUpscaleAndOr2dTranslation());
+
+  transform.MakeIdentity();
+  transform.Scale(0.99);
+  EXPECT_FALSE(transform.Is2dProportionalUpscaleAndOr2dTranslation());
+
+  transform.MakeIdentity();
+  transform.Translate3d(0, 0, 1);
+  EXPECT_FALSE(transform.Is2dProportionalUpscaleAndOr2dTranslation());
+
+  transform.MakeIdentity();
+  transform.Rotate(40);
+  EXPECT_FALSE(transform.Is2dProportionalUpscaleAndOr2dTranslation());
+
+  transform.MakeIdentity();
+  transform.SkewX(30);
+  EXPECT_FALSE(transform.Is2dProportionalUpscaleAndOr2dTranslation());
+}
+
+TEST(XFormTest, Creates3d) {
+  EXPECT_FALSE(Transform().Creates3d());
+  EXPECT_FALSE(Transform::MakeTranslation(1, 2).Creates3d());
+
+  Transform transform;
+  transform.ApplyPerspectiveDepth(100);
+  EXPECT_FALSE(transform.Creates3d());
+  transform.Scale3d(2, 3, 4);
+  EXPECT_FALSE(transform.Creates3d());
+  transform.Translate3d(1, 2, 3);
+  EXPECT_TRUE(transform.Creates3d());
+
+  transform.MakeIdentity();
+  transform.RotateAboutYAxis(20);
+  EXPECT_TRUE(transform.Creates3d());
+}
+
+TEST(XFormTest, ApplyTransformOrigin) {
+  // (0,0,0) is a fixed point of this scale.
+  // (1,1,1) should be scaled appropriately.
+  Transform transform;
+  transform.Scale3d(2, 3, 4);
+  EXPECT_EQ(Point3F(0, 0, 0), transform.MapPoint(Point3F(0, 0, 0)));
+  EXPECT_EQ(Point3F(2, 3, -4), transform.MapPoint(Point3F(1, 1, -1)));
+
+  // With the transform origin applied, (1,2,3) is the fixed point.
+  // (0,0,0) should be scaled according to its distance from (1,2,3).
+  transform.ApplyTransformOrigin(1, 2, 3);
+  EXPECT_EQ(Point3F(1, 2, 3), transform.MapPoint(Point3F(1, 2, 3)));
+  EXPECT_EQ(Point3F(-1, -4, -9), transform.MapPoint(Point3F(0, 0, 0)));
+
+  InitializeTestMatrix(&transform);
+  Vector3dF origin(5.f, 6.f, 7.f);
+  Transform with_origin = transform;
+  Point3F p(41.f, 43.f, 47.f);
+  with_origin.ApplyTransformOrigin(origin.x(), origin.y(), origin.z());
+  EXPECT_POINT3F_EQ(transform.MapPoint(p - origin) + origin,
+                    with_origin.MapPoint(p));
 }
 
 TEST(XFormTest, Zoom) {
