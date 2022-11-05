@@ -2972,24 +2972,17 @@ void HistoryBackend::URLsNoLongerBookmarked(const std::set<GURL>& urls) {
 }
 
 void HistoryBackend::DatabaseErrorCallback(int error, sql::Statement* stmt) {
-  // TODO(https://crbug.com/1321483): Remove this top block after we've debugged
-  // the problematic SQL statement, and have restored considering SQLITE_ERROR
-  // as catastrophic.
-  constexpr char kHistoryDatabaseSqliteErrorUma[] =
-      "History.DatabaseSqliteError";
-  if (sql::ToSqliteResultCode(error) == sql::SqliteResultCode::kError) {
-    diagnostics_string_ = db_->GetDiagnosticInfo(error, stmt, &diagnostics_);
-    TRACE_EVENT_INSTANT(
-        "history", "HistoryBackend::DatabaseErrorCallback",
-        perfetto::protos::pbzero::ChromeTrackEvent::kSqlDiagnostics,
-        diagnostics_);
+  // Collect Perfetto traces of any database errors, catastrophic or not, so
+  // we can detect wrong SQL statements in the wild.
+  diagnostics_string_ = db_->GetDiagnosticInfo(error, stmt, &diagnostics_);
+  TRACE_EVENT_INSTANT(
+      "history", "HistoryBackend::DatabaseErrorCallback",
+      perfetto::protos::pbzero::ChromeTrackEvent::kSqlDiagnostics,
+      diagnostics_);
 
-    // Record UMA at the end because we want to use PREEMPTIVE_TRACING_MODE.
-    sql::UmaHistogramSqliteResult(kHistoryDatabaseSqliteErrorUma, error);
-  } else if (!scheduled_kill_db_ && sql::IsErrorCatastrophic(error)) {
+  // Raze the database for catastrophic errors.
+  if (!scheduled_kill_db_ && sql::IsErrorCatastrophic(error)) {
     scheduled_kill_db_ = true;
-
-    diagnostics_string_ = db_->GetDiagnosticInfo(error, stmt, &diagnostics_);
 
     // Don't just do the close/delete here, as we are being called by `db` and
     // that seems dangerous.
@@ -3000,9 +2993,10 @@ void HistoryBackend::DatabaseErrorCallback(int error, sql::Statement* stmt) {
     // (then it can be cleared immediately).
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&HistoryBackend::KillHistoryDatabase, this));
-
-    sql::UmaHistogramSqliteResult(kHistoryDatabaseSqliteErrorUma, error);
   }
+
+  // Record UMA at the end because we want to use PREEMPTIVE_TRACING_MODE.
+  sql::UmaHistogramSqliteResult("History.DatabaseSqliteError", error);
 }
 
 void HistoryBackend::KillHistoryDatabase() {
