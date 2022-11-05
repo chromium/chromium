@@ -753,7 +753,8 @@ class WebViewFinchTestCase(FinchTestCase):
       '--chrome-version', '-V', type=str,
       help='Chrome version to install with the WebView installer tool')
     installer_tool_group.add_argument(
-      '--channel', '-c', help='Channel build of WebView to install')
+      '--channel', '-c', help='Channel build of WebView to install',
+      choices=['dev', 'canary', 'beta', 'stable'], default=None)
     installer_tool_group.add_argument(
       '--milestone', '-M', help='Milestone build of WebView to install')
 
@@ -812,17 +813,21 @@ class WebViewFinchTestCase(FinchTestCase):
     try:
       cmd = [self.options.webview_installer_tool, '-vvv',
              '--product', self.product_name()]
-      assert self.options.chrome_version or self.options.milestone, (
-        'The --chrome-version or --milestone arguments must be used when '
-        'installing WebView with the WebView installer tool')
+      assert (self.options.chrome_version or
+              self.options.milestone or self.options.channel), (
+          'The --chrome-version, --milestone or --channel arguments must be '
+          'used when installing WebView with the WebView installer tool')
+      assert not(self.options.chrome_version and self.options.milestone), (
+          'The --chrome-version and --milestone arguments cannot be '
+          'used together')
 
       if self.options.chrome_version:
         cmd.extend(['--chrome-version', self.options.chrome_version])
-      else:
+      elif self.options.milestone:
         cmd.extend(['--milestone', self.options.milestone])
 
       if self.options.channel:
-        cmd.extend(['-c', self.options.channel])
+        cmd.extend(['--channel', self.options.channel])
       exit_code = subprocess.call(cmd)
       assert exit_code == 0, (
           'The WebView installer tool failed to install WebView')
