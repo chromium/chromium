@@ -193,8 +193,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowMultitaskMenu) {
 
   TabletModeMultitaskMenu* multitask_menu = GetMultitaskMenu();
   ASSERT_TRUE(multitask_menu);
-  ASSERT_TRUE(
-      multitask_menu->multitask_menu_widget()->GetContentsView()->GetVisible());
+  ASSERT_TRUE(multitask_menu->widget()->GetContentsView()->GetVisible());
 
   // Tests that a regular window that can be snapped and floated has all
   // buttons.
@@ -207,7 +206,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowMultitaskMenu) {
   EXPECT_TRUE(multitask_menu_view->float_button_for_testing());
 
   // Verify that the menu is horizontally centered.
-  EXPECT_EQ(multitask_menu->multitask_menu_widget()
+  EXPECT_EQ(multitask_menu->widget()
                 ->GetContentsView()
                 ->GetBoundsInScreen()
                 .CenterPoint()
@@ -372,8 +371,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
           ->tablet_mode_multitask_menu_event_handler_for_testing();
   auto* multitask_menu = event_handler->multitask_menu_for_testing();
   ASSERT_TRUE(multitask_menu);
-  ASSERT_TRUE(
-      multitask_menu->multitask_menu_widget()->GetContentsView()->GetVisible());
+  ASSERT_TRUE(multitask_menu->widget()->GetContentsView()->GetVisible());
 
   EnterOverview();
 
@@ -416,7 +414,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ButtonFunctionality) {
   auto* multitask_menu = GetMultitaskMenu();
   ASSERT_TRUE(multitask_menu);
   EXPECT_EQ(window->GetBoundsInScreen().CenterPoint().x(),
-            multitask_menu->multitask_menu_widget()
+            multitask_menu->widget()
                 ->GetContentsView()
                 ->GetBoundsInScreen()
                 .CenterPoint()

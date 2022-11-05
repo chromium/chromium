@@ -49,7 +49,7 @@ void TabletModeMultitaskMenuEventHandler::OnMouseEvent(ui::MouseEvent* event) {
 
   // Close the multitask menu if it is the target and we have a upwards scroll.
   if (y_offset > 0.f && multitask_menu_ &&
-      target == multitask_menu_->multitask_menu_widget()->GetNativeWindow()) {
+      target == multitask_menu_->widget()->GetNativeWindow()) {
     multitask_menu_->AnimateClose();
     return;
   }
@@ -96,8 +96,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
   // If no drag is in process and the menu is open, only handle events inside
   // the menu.
   if (!is_drag_to_open_ && multitask_menu_ &&
-      !gfx::RectF(
-           multitask_menu_->multitask_menu_widget()->GetWindowBoundsInScreen())
+      !gfx::RectF(multitask_menu_->widget()->GetWindowBoundsInScreen())
            .Contains(screen_location)) {
     return;
   }
