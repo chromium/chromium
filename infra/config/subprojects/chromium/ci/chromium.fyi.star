@@ -1684,6 +1684,7 @@ fyi_coverage_builder(
     triggered_by = [],
     use_java_coverage = True,
     export_coverage_to_zoss = True,
+    generate_blame_list = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 

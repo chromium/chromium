@@ -230,7 +230,8 @@ def _code_coverage_property(
         use_javascript_coverage,
         coverage_exclude_sources,
         coverage_test_types,
-        export_coverage_to_zoss):
+        export_coverage_to_zoss,
+        generate_blame_list):
     code_coverage = {}
 
     coverage_gs_bucket = defaults.get_value(
@@ -275,6 +276,13 @@ def _code_coverage_property(
     )
     if export_coverage_to_zoss:
         code_coverage["export_coverage_to_zoss"] = export_coverage_to_zoss
+
+    generate_blame_list = defaults.get_value(
+        "generate_blame_list",
+        generate_blame_list,
+    )
+    if generate_blame_list:
+        code_coverage["generate_blame_list"] = generate_blame_list
 
     return code_coverage or None
 
@@ -377,6 +385,7 @@ defaults = args.defaults(
     coverage_exclude_sources = None,
     coverage_test_types = None,
     export_coverage_to_zoss = False,
+    generate_blame_list = False,
     resultdb_enable = True,
     resultdb_bigquery_exports = [],
     resultdb_index_by_timestamp = False,
@@ -441,6 +450,7 @@ def builder(
         coverage_exclude_sources = args.DEFAULT,
         coverage_test_types = args.DEFAULT,
         export_coverage_to_zoss = args.DEFAULT,
+        generate_blame_list = args.DEFAULT,
         resultdb_enable = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
         resultdb_index_by_timestamp = args.DEFAULT,
@@ -595,7 +605,11 @@ def builder(
         export_coverage_to_zoss: a boolean indicating if the raw coverage data
             be exported zoss(and eventually in code search) in code_coverage
             recipe module. Will be copied to '$build/code_coverage' property
-            if set. Be default, considered False.
+            if set. By default, considered False.
+        generate_blame_list: a boolean indicating if blame list data for
+            files whose coverage is known gets generated and exported to GCS.
+            Will be copied to '$build/code_coverage' property if set.
+            By default considered False.
         resultdb_bigquery_exports: a list of resultdb.export_test_results(...)
             specifying parameters for exporting test results to BigQuery. By
             default, do not export.
@@ -766,6 +780,7 @@ def builder(
         coverage_exclude_sources = coverage_exclude_sources,
         coverage_test_types = coverage_test_types,
         export_coverage_to_zoss = export_coverage_to_zoss,
+        generate_blame_list = generate_blame_list,
     )
     if code_coverage != None:
         properties["$build/code_coverage"] = code_coverage
