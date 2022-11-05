@@ -1413,6 +1413,7 @@
 <translation id="4606870351894164739">Remarquable</translation>
 <translation id="4607603470419975064">Bouton Afficher les astuces de Chrome, appuyez sur Entrée pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4607608436550361748">Afficher les astuces de Chrome</translation>
+<translation id="4610279718074907952">Ce site fait partie d'un groupe défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
 <translation id="4617273035598175554">Logiciels de graphisme et d'animation</translation>
 <translation id="4622292761762557753">Transférer quand même</translation>
 <translation id="4627675673814409125">Cette politique ne peut pas être réglée au niveau du profil Chrome et elle sera ignorée.</translation>
@@ -2388,6 +2389,7 @@
 <translation id="7130775116821607281">Téléversement bloqué</translation>
 <translation id="7132939140423847331">Votre administrateur a interdit la copie de ces données.</translation>
 <translation id="7135130955892390533">Afficher l’état</translation>
+<translation id="7136009930065337683">En savoir plus à propos de la navigation privée</translation>
 <translation id="7138472120740807366">Mode de livraison rapide</translation>
 <translation id="7139892792842608322">Plateau principal</translation>
 <translation id="714064300541049402">Décalage X de l'image côté 2</translation>

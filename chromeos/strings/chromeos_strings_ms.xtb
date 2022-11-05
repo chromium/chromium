@@ -220,6 +220,7 @@
 <translation id="315116470104423982">Data mudah alih</translation>
 <translation id="3156846309055100599">Mengimbas halaman <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Portal terbolot dikesan</translation>
+<translation id="3160172848211257835">Hantar <ph name="BEGIN_LINK1" />maklumat sistem &amp; apl<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Letakkan dokumen anda di atas pengimbas</translation>
 <translation id="3188257591659621405">Fail saya</translation>
 <translation id="319101249942218879">Imej avatar ditukar</translation>
@@ -332,6 +333,7 @@
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
 <translation id="4333390807948134856">Kekunci <ph name="KEY_NAME" /> ditekan</translation>
+<translation id="435692326371619097">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dan Internet. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menyambung...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -582,6 +584,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6575134580692778371">Tidak dikonfigurasi</translation>
 <translation id="6579509898032828423">Guna foto ini</translation>
 <translation id="6596816719288285829">Alamat IP</translation>
+<translation id="6599673642868607614">Terima kasih atas maklum balas anda. Maklum balas anda membantu kami meningkatkan pengalaman Chromebook dan akan disemak oleh pasukan kami. Oleh sebab kami menerima jumlah laporan yang banyak, kami tidak akan dapat menghantar balasan.</translation>
 <translation id="6618744767048954150">Berjalan</translation>
 <translation id="6620487321149975369">Tugas cetak akan dipaparkan dalam sejarah melainkan dialih keluar secara manual</translation>
 <translation id="6624819909909965616">Tidak dapat memuat naik fail yang lebih besar daripada 10 MB</translation>
@@ -690,6 +693,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7762130827864645708">Penukaran kata laluan anda berjaya. Sila gunakan kata laluan baharu mulai sekarang.</translation>
 <translation id="7763470514545477072">Padanan akhiran domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
+<translation id="7778717409420828014">Maklum balas anda membantu kami meningkatkan pengalaman Chromebook dan akan disemak oleh pasukan kami. Oleh sebab kami menerima jumlah laporan yang banyak, kami tidak akan dapat menghantar balasan.</translation>
 <translation id="7784116172884276937">Tiada pelayan DNS disediakan</translation>
 <translation id="779591286616261875">Hantar laporan baharu</translation>
 <translation id="7799817062559422778">Mod cerah</translation>

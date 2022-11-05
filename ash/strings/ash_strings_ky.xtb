@@ -484,6 +484,7 @@
 <translation id="3633097874324966332">Түзмөктү туташтыруу үчүн Bluetooth'дун жөндөөлөрүн ачыңыз</translation>
 <translation id="3638400994746983214">Купуялык экранын өчүрүү/күйгүзүү. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Жаңыртуунун мөөнөтү бүттү</translation>
+<translation id="3659444876902283058">(Күн <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Болжол менен <ph name="TIME_LEFT" /> калды (<ph name="PERCENTAGE" />%).
 Түзмөгүңүздү электр кубатына туташтырыңыз.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Башкарылган колдонуучу</translation>
@@ -1268,6 +1269,7 @@
 <translation id="8052898407431791827">Буферге көчүрүлдү</translation>
 <translation id="8054466585765276473">Батареянын убакыты эсептелүүдө.</translation>
 <translation id="8083540854303889870">Кийинкиге сакталды</translation>
+<translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> башталат</translation>
 <translation id="8091387634532529612">Автоматтык жаңыртуулар</translation>
 <translation id="8098591350844501178">Экранды <ph name="RECEIVER_NAME" /> түзмөгүнө чыгарууну токтотуу</translation>
 <translation id="8113423164597455979">Бүт колд. күйүк</translation>
@@ -1380,6 +1382,7 @@
 <translation id="8703634754197148428">Жаздырып баштаңыз. Жаздыруу башталгандан кийин Alt + Shift + L баскычтарынын айкалышын колдонуп, текчеге өтүп, жаздырууну токтотуу баскычын издеңиз</translation>
 <translation id="8721053961083920564">Үндү өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Экрандагыны толугу менен сүрөткө тартып алуу</translation>
+<translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> бүтөт</translation>
 <translation id="8734991477317290293">Ал сырсөзүңүздү тергенде баскан баскычтарды билип алууга аракет кылышы мүмкүн</translation>
 <translation id="8735678380411481005">Баскычтоптун жарыгынын түсү</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,

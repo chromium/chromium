@@ -220,6 +220,7 @@
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3156846309055100599">Pagina <ph name="PAGE_NUMBER" /> scannen…</translation>
 <translation id="315738237743207937">Captive portal waargenomen</translation>
+<translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Systeem- en app-gegevens<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />statistieken<ph name="END_LINK2" /> sturen</translation>
 <translation id="3170673040743561620">Leg je document op de scanner</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="319101249942218879">Avatar-afbeelding gewijzigd</translation>
@@ -582,6 +583,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6575134580692778371">Niet geconfigureerd</translation>
 <translation id="6579509898032828423">Deze foto gebruiken</translation>
 <translation id="6596816719288285829">IP-adres</translation>
+<translation id="6599673642868607614">Bedankt voor je feedback. Met jouw feedback kunnen we de functionaliteit van de Chromebook verbeteren. Je feedback wordt beoordeeld door ons team. Vanwege het grote aantal rapporten kunnen we je geen antwoord sturen.</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
 <translation id="6620487321149975369">Afdruktaken zie je in de geschiedenis, tenzij ze handmatig worden verwijderd</translation>
 <translation id="6624819909909965616">Je kunt geen bestanden uploaden die groter zijn dan 10 MB</translation>
@@ -690,6 +692,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7762130827864645708">Je wachtwoord is gewijzigd. Gebruik vanaf nu je nieuwe wachtwoord.</translation>
 <translation id="7763470514545477072">Overeenkomst voor domeinextensie</translation>
 <translation id="7769672763586021400">Model-ID</translation>
+<translation id="7778717409420828014">Met jouw feedback kunnen we de functionaliteit van de Chromebook verbeteren. Je feedback wordt beoordeeld door ons team. Vanwege het grote aantal rapporten kunnen we je geen antwoord sturen.</translation>
 <translation id="7784116172884276937">Er zijn geen DNS-servers ingesteld</translation>
 <translation id="779591286616261875">Nieuw rapport sturen</translation>
 <translation id="7799817062559422778">Lichte modus</translation>

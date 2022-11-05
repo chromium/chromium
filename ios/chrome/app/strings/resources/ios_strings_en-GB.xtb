@@ -572,6 +572,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5489208564673669003">To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Block all cookies (not recommended)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h ago</translation>
+<translation id="5520466080178053306">Tap Password Manager and then tap Add</translation>
 <translation id="5525095647255982834">To send this tab to another device, sign in to Chrome there.</translation>
 <translation id="5525269841082836315">Create passphrase</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> found</translation>
@@ -883,6 +884,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7726702057919861819">Menu → History → Clear browsing data</translation>
 <translation id="7738120385185846461">Report an issue…</translation>
 <translation id="7741325291586284254">New incognito tab page</translation>
+<translation id="7744394900930577716">Passwords in other apps</translation>
 <translation id="7756478488453921771">Menu → Settings → Payment methods</translation>
 <translation id="7765158879357617694">Move</translation>
 <translation id="7772032839648071052">Confirm passphrase</translation>
@@ -947,6 +949,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
 <translation id="8132598642024322408">Now <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">Password Sync isn't working</translation>
+<translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> accounts</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Translate page</translation>
 <translation id="8205564605687841303">Cancel</translation>
@@ -1059,6 +1062,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9081058212938299310">Update password for <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">To sync and personalise across devices, turn on sync.</translation>
 <translation id="9087108903408689779">Chrome suggested password:</translation>
+<translation id="9093271241977565440">At the top of the screen, tap the search icon</translation>
 <translation id="9094033019050270033">Update password</translation>
 <translation id="9097506547406246598">Can't unfollow. Something went wrong.</translation>
 <translation id="9100610230175265781">Passphrase required</translation>

@@ -220,6 +220,7 @@
 <translation id="315116470104423982">Mobil internet</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi...</translation>
 <translation id="315738237743207937">Kirish portali aniqlandi</translation>
+<translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Tizim va ilova axboroti<ph name="END_LINK1" /> hamda <ph name="BEGIN_LINK2" />statistikasini<ph name="END_LINK2" /> yuborish</translation>
 <translation id="3170673040743561620">Hujjatni skanerga joylang</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
 <translation id="319101249942218879">Avatar rasmi oʻzgardi</translation>
@@ -304,6 +305,7 @@
 <translation id="4044093238444069296">Shlyuz bilan ulanish imkonsiz</translation>
 <translation id="4046123991198612571">Keyingi musiqa</translation>
 <translation id="404928562651467259">Diqqat!</translation>
+<translation id="4060260348856573701">Yangi APN</translation>
 <translation id="4093865285251893588">Profil rasmi</translation>
 <translation id="409427325554347132">Test tafsilotlarini saqlash</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> nomli albomni tanlang</translation>
@@ -582,6 +584,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6575134580692778371">Sozlanmagan</translation>
 <translation id="6579509898032828423">Bu rasmdan foydalanish</translation>
 <translation id="6596816719288285829">IP manzil</translation>
+<translation id="6599673642868607614">Fikr-mulohazangiz uchun rahmat! Fikr-mulohazalaringiz Chromebook xizmatini yaxshilashga yordam beradi va jamoamiz tomonidan tekshiriladi. Murojaatlar soni juda koʻpligi uchun har biriga javob qaytara olmaymiz.</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
 <translation id="6620487321149975369">Chop etish vazifalari mustaqil olib tashlanmagucha tarix sahifasida chiqadi</translation>
 <translation id="6624819909909965616">10MBdan katta hajmli fayllar yuklanmaydi</translation>
@@ -603,6 +606,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6766275201586212568">DNS manzil ajratilmadi</translation>
 <translation id="6768237774506518020">DNS manzil ajratilmasligi juda yuqori</translation>
 <translation id="6791471867139427246">klaviatura chirogʻi rangi</translation>
+<translation id="6793680441750437230">Klaviaturada istalgan tugmani bosing. Birdaniga 4 tagacha tugmani bosish mumkin. Muloqot oynasini yopish uchun Alt+Esc tugmalarini bosing.</translation>
 <translation id="680983167891198932">Kalit</translation>
 <translation id="6816797338148849397">Tanlovga aloqador axborot mavjud. Uni ochish uchun tepaga strelkani bosing.</translation>
 <translation id="6853312040151791195">Quvvat sarflanishi tezligi</translation>
@@ -690,6 +694,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7762130827864645708">Parolingiz oʻzgartirildi. Endi yangi paroldan foydalaning.</translation>
 <translation id="7763470514545477072">Domen kengaytmasi topildi</translation>
 <translation id="7769672763586021400">Model identifikatori</translation>
+<translation id="7778717409420828014">Fikr-mulohazalaringiz Chromebook xizmatini yaxshilashga yordam beradi va jamoamiz tomonidan tekshiriladi. Murojaatlar soni juda koʻpligi uchun har biriga javob qaytara olmaymiz.</translation>
 <translation id="7784116172884276937">DNS serverlar sozlanmagan</translation>
 <translation id="779591286616261875">Yangi hisobot yuborish</translation>
 <translation id="7799817062559422778">Kunduzgi rejim</translation>
