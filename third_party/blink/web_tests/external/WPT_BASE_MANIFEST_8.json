@@ -483903,6 +483903,20 @@
          {}
         ]
        ],
+       "javascript-url-no-beforeunload.window.js": [
+        "47e8f11797dcaabc269414109082c89b201401ad",
+        [
+         "html/browsers/browsing-the-web/navigating-across-documents/javascript-url-no-beforeunload.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "../resources/helpers.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "javascript-url-query-fragment-components.html": [
         "eced9646e5a8e5fb43b23c0f79e7982c15a445ea",
         [
