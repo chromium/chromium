@@ -3464,6 +3464,8 @@ enum WebFeature {
   kWindowProxyCrossOriginAccessFromOtherPageTop = 4143,
   kWindowProxyCrossOriginAccessFromOtherPageWindow = 4144,
   kPrivateNetworkAccessFetchedWorkerScript = 4145,
+  // The items above roughly this point are available in the M99 branch.
+
   kFrameNameContainsBrace = 4146,
   kFrameNameContainsNewline = 4147,
   kAbortSignalThrowIfAborted = 4148,
@@ -3496,6 +3498,8 @@ enum WebFeature {
   kMediaCapabilitiesEncodingInfoWebrtc = 4175,
   kUsbDeviceForget = 4176,
   kPartitionedCookies = 4177,
+  // The items above roughly this point are available in the M100 branch.
+
   kSecureContextIncorrectForSharedWorker = 4178,
   kV8FunctionPrototypeArguments = 4179,
   kV8FunctionPrototypeCaller = 4180,
@@ -3507,6 +3511,8 @@ enum WebFeature {
   kPressureObserver_TakeRecords = 4186,
   kPrivacySandboxAdsAPIs = 4187,
   kFledge = 4188,
+  // The items above roughly this point are available in the M101 branch.
+
   kElementShowPopover = 4189,
   kElementHidePopover = 4190,
   kValidPopoverAttribute = 4191,
@@ -3530,6 +3536,8 @@ enum WebFeature {
   kOBSOLETE_LegacyConstraintGoogCpuOveruseDetection = 4209,
   kAudioContextOutputLatency = 4210,
   kV8Window_QueryLocalFonts_Method = 4211,
+  // The items above roughly this point are available in the M102 branch.
+
   kCSSAtRuleScope = 4212,
   kOBSOLETE_DeferredShapingDisabledByPositioned = 4213,
   kCapabilityDelegationOfFullscreenRequest = 4214,
@@ -3546,6 +3554,8 @@ enum WebFeature {
   kFedCmLogout = 4225,
   kFedCmLogoutRps = 4226,
   kV8Navigator_DeprecatedReplaceInURN_Method = 4227,
+  // The items above roughly this point are available in the M103 branch.
+
   kWebAppBorderless = 4228,
   kPaymentInstruments = 4229,
   kV8PaymentInstruments_Clear_Method = 4230,
@@ -3602,6 +3612,8 @@ enum WebFeature {
   kV8PendingBeacon_Deactivate_Method = 4281,
   kOBSOLETE_kV8PendingBeacon_SetData_Method = 4282,
   kV8PendingBeacon_SendNow_Method = 4283,
+  // The items above roughly this point are available in the M104 branch.
+
   kTabSharingBarSwitchToCapturer = 4284,
   kTabSharingBarSwitchToCapturee = 4285,
   kAutomaticLazyAds = 4286,
@@ -3648,12 +3660,16 @@ enum WebFeature {
   kV8PendingPostBeacon_SetData_Method = 4327,
   kContentVisibilityAutoStateChangedHandlerRegistered = 4328,
   kReplacedElementPaintedWithLargeOverflow = 4329,
+  // The items above roughly this point are available in the M105 branch.
+
   kFlexboxAbsPosJustifyContent = 4330,
   kMultipleFetchHandlersInServiceWorker = 4331,
   kStorageAccessAPI_requestStorageAccessForOrigin_Method = 4332,
   kPrivateAggregationApiAll = 4333,
   kPrivateAggregationApiFledge = 4334,
   kPrivateAggregationApiSharedStorage = 4335,
+  // The items above roughly this point are available in the M106 branch.
+
   kDeferredShaping2ReshapedByComputedStyle = 4336,
   kDeferredShaping2ReshapedByDomContentLoaded = 4337,
   kDeferredShaping2ReshapedByFcp = 4338,
@@ -3681,6 +3697,8 @@ enum WebFeature {
   kDestructiveDocumentWriteAfterModuleScript = 4360,
   kCSSAtSupportsDropInvalidWhileForgivingParsing = 4361,
   kPermissionsPolicyUnload = 4362,
+  // The items above roughly this point are available in the M107 branch.
+
   kServiceWorkerSkippedForSubresourceLoad = 4363,
   kClientHintsPrefersReducedMotion = 4364,
   kWakeLockAcquireScreenLockWithoutActivation = 4365,
@@ -3702,6 +3720,9 @@ enum WebFeature {
   kViewportDependentLazyLoadedImageWithoutSizesAttribute = 4381,
   kV8MediaStreamTrack_ApplyConstraints_Method = 4382,
   kViewTransition = 4383,
+  // The items above roughly this point are available in the M108 branch.
+
+  kElementTogglePopover = 4384,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

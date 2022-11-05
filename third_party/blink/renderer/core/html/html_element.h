@@ -219,6 +219,7 @@ class CORE_EXPORT HTMLElement : public Element {
   bool HasPopoverAttribute() const;
   PopoverValueType PopoverType() const;
   bool popoverOpen() const;
+  void togglePopover(ExceptionState& exception_state);
   void showPopover(ExceptionState& exception_state);
   void hidePopover(ExceptionState& exception_state);
   void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,

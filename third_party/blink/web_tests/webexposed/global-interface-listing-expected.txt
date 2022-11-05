@@ -3368,6 +3368,7 @@ interface HTMLElement : Element
     method focus
     method hidePopover
     method showPopover
+    method togglePopover
     setter accessKey
     setter autocapitalize
     setter autofocus

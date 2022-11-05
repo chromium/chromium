@@ -1239,6 +1239,26 @@ bool HTMLElement::popoverOpen() const {
   return false;
 }
 
+void HTMLElement::togglePopover(ExceptionState& exception_state) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+      GetDocument().GetExecutionContext()));
+  if (!HasPopoverAttribute()) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Not supported on elements that do not have a valid value for the "
+        "'popover' attribute");
+  } else if (!isConnected()) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Invalid disconnected popover elements");
+  }
+  if (popoverOpen()) {
+    hidePopover(exception_state);
+  } else {
+    showPopover(exception_state);
+  }
+}
+
 // Showing a popover happens in phases, to facilitate animations and
 // transitions:
 // 1. Move the popover to the top layer, stop matching `:closed`, and
