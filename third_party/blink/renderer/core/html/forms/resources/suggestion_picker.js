@@ -181,7 +181,8 @@ class SuggestionPicker extends Picker {
       this.containerElement_.style.overflowY = 'scroll';
     }
     const windowRect = adjustWindowRect(
-        desiredWindowWidth, desiredWindowHeight, desiredWindowWidth, 0);
+        desiredWindowWidth, desiredWindowHeight, desiredWindowWidth, 0,
+        /*allowOverlapWithAnchor=*/ false);
     this.containerElement_.style.height =
         windowRect.height / zoom - ListBorder - ListPadding + 'px';
     setWindowRect(windowRect);

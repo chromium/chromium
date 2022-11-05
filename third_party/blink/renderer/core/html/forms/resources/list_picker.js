@@ -263,7 +263,7 @@ class ListPicker extends Picker {
         this.config_.anchorRectInScreen.width * scale, desiredWindowWidth);
     let windowRect = adjustWindowRect(
         desiredWindowWidth / scale, desiredWindowHeight / scale,
-        elementOffsetWidth / scale, 0);
+        elementOffsetWidth / scale, 0, /*allowOverlapWithAnchor=*/ false);
     // If the available screen space is smaller than maxHeight, we will get
     // an unexpected scrollbar.
     if (!expectingScrollbar && windowRect.height < noScrollHeight / scale) {

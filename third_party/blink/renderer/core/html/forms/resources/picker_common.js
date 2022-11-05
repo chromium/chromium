@@ -110,22 +110,24 @@ class Rectangle {
 function resizeWindow(width, height) {
   const zoom = global.params.zoomFactor ? global.params.zoomFactor : 1;
   setWindowRect(adjustWindowRect(
-      width * zoom, height * zoom, width * zoom, height * zoom));
+      width * zoom, height * zoom, width * zoom, height * zoom,
+      /*allowOverlapWithAnchor=*/ true));
 }
 
 /**
  * @param {!number} width in DIP
  * @param {!number} height in DIP
- * @param {?number} minWidth in DIP
- * @param {?number} minHeight in DIP
+ * @param {!number} minWidth in DIP
+ * @param {!number} minHeight in DIP
+ * @param {!boolean} allowOverlapWithAnchor Whether the window should be
+ *                                          allowed to overlap with the inline
+ *                                          anchor rect if there isn't
+ *                                          sufficient horizontal/vertical
+ *                                          space.
  * @return {!Rectangle} Adjusted rectangle in DIP
  */
-function adjustWindowRect(width, height, minWidth, minHeight) {
-  if (typeof minWidth !== 'number')
-    minWidth = 0;
-  if (typeof minHeight !== 'number')
-    minHeight = 0;
-
+function adjustWindowRect(
+    width, height, minWidth, minHeight, allowOverlapWithAnchor) {
   const windowRect = new Rectangle(0, 0, Math.ceil(width), Math.ceil(height));
 
   if (!global.params.anchorRectInScreen)
@@ -136,8 +138,11 @@ function adjustWindowRect(width, height, minWidth, minHeight) {
       window.screen.availLeft, window.screen.availTop, window.screen.availWidth,
       window.screen.availHeight);
 
-  _adjustWindowRectVertically(windowRect, availRect, anchorRect, minHeight);
-  _adjustWindowRectHorizontally(windowRect, availRect, anchorRect, minWidth);
+  _adjustWindowRectVertically(
+      windowRect, availRect, anchorRect, minHeight, allowOverlapWithAnchor);
+  _adjustWindowRectHorizontally(
+      windowRect, availRect, anchorRect, minWidth, minHeight,
+      allowOverlapWithAnchor);
 
   return windowRect;
 }
@@ -145,8 +150,7 @@ function adjustWindowRect(width, height, minWidth, minHeight) {
 /**
  * Arguments are DIPs.
  */
-function _adjustWindowRectVertically(
-    windowRect, availRect, anchorRect, minHeight) {
+function _getAvailableVerticalSpace(availRect, anchorRect, minHeight) {
   let availableSpaceAbove = anchorRect.y - availRect.y;
   availableSpaceAbove =
       Math.max(0, Math.min(availRect.height, availableSpaceAbove));
@@ -155,7 +159,45 @@ function _adjustWindowRectVertically(
   availableSpaceBelow =
       Math.max(0, Math.min(availRect.height, availableSpaceBelow));
 
-  if (windowRect.height > availableSpaceBelow &&
+  return {availableSpaceAbove, availableSpaceBelow};
+}
+
+/**
+ * Arguments are DIPs.
+ */
+function _isOverlappingAnchorVertically(
+    availRect, anchorRect, minHeight, allowOverlapWithAnchor) {
+  let {availableSpaceAbove, availableSpaceBelow} =
+      _getAvailableVerticalSpace(availRect, anchorRect, minHeight);
+
+  return (
+      allowOverlapWithAnchor && minHeight > availableSpaceAbove &&
+      minHeight > availableSpaceBelow);
+}
+
+/**
+ * Arguments are DIPs.
+ */
+function _adjustWindowRectVertically(
+    windowRect, availRect, anchorRect, minHeight, allowOverlapWithAnchor) {
+  let {availableSpaceAbove, availableSpaceBelow} =
+      _getAvailableVerticalSpace(availRect, anchorRect, minHeight);
+
+  if (_isOverlappingAnchorVertically(
+          availRect, anchorRect, minHeight, allowOverlapWithAnchor)) {
+    windowRect.height = minHeight;
+    // If there isn't room to fit either fully above or fully below the anchor,
+    // position the window as far down as possible...
+    if (minHeight <= availRect.height) {
+      windowRect.y = availRect.maxY - minHeight;
+    } else {
+      // ...except if the window is asking for more height than the screen
+      // has, in which case align the top of the window to the top of the screen
+      // and let the bottom overflow.
+      windowRect.y = availRect.y;
+    }
+  } else if (
+      windowRect.height > availableSpaceBelow &&
       availableSpaceBelow < availableSpaceAbove) {
     windowRect.height = Math.min(windowRect.height, availableSpaceAbove);
     windowRect.height = Math.max(windowRect.height, minHeight);
@@ -171,16 +213,37 @@ function _adjustWindowRectVertically(
  * Arguments are DIPs.
  */
 function _adjustWindowRectHorizontally(
-    windowRect, availRect, anchorRect, minWidth) {
+    windowRect, availRect, anchorRect, minWidth, minHeight,
+    allowOverlapWithAnchor) {
   windowRect.width = Math.min(windowRect.width, availRect.width);
   windowRect.width = Math.max(windowRect.width, minWidth);
-  windowRect.x = anchorRect.x;
-  // If we are getting clipped, we want to switch alignment to the right side
-  // of the anchor rect as long as doing so will make the popup not clipped.
-  const rightAlignedX = windowRect.x + anchorRect.width - windowRect.width;
-  if (rightAlignedX >= availRect.x &&
-      (windowRect.maxX > availRect.maxX || global.params.isRTL))
-    windowRect.x = rightAlignedX;
+
+  const isOverlappingAnchorVertically = _isOverlappingAnchorVertically(
+      availRect, anchorRect, minHeight, allowOverlapWithAnchor);
+  const isEnoughSpaceRightOfAnchor =
+      anchorRect.maxX + windowRect.width < availRect.maxX;
+  const isEnoughSpaceLeftOfAnchor =
+      availRect.x + windowRect.width < anchorRect.x;
+
+  if (isOverlappingAnchorVertically && isEnoughSpaceRightOfAnchor &&
+      !(global.params.isRTL && isEnoughSpaceLeftOfAnchor)) {
+    // Show the window to the right of the anchor so that the anchor isn't obscured
+    // due to overlapping in the vertical direction.
+    windowRect.x = anchorRect.maxX;
+  } else if (isOverlappingAnchorVertically && isEnoughSpaceLeftOfAnchor) {
+    // Show the window to the left of the anchor so that the anchor isn't obscured
+    // due to overlapping in the vertical direction.
+    windowRect.x = anchorRect.x - windowRect.width;
+  } else {
+    // Show the window over/under the anchor, rather than to the side.
+    windowRect.x = anchorRect.x;
+    // If we are getting clipped, we want to switch alignment to the right side
+    // of the anchor rect as long as doing so will make the popup not clipped.
+    const rightAlignedX = windowRect.x + anchorRect.width - windowRect.width;
+    if (rightAlignedX >= availRect.x &&
+        (windowRect.maxX > availRect.maxX || global.params.isRTL))
+      windowRect.x = rightAlignedX;
+  }
 }
 
 /**
