@@ -55,6 +55,8 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
     // This method is never called unless `ENABLE_PRINT_PREVIEW`.
     virtual void OnPrintPreview(const content::RenderFrameHost* rfh) {}
+
+    virtual void OnCompositeCompletion() {}
   };
 
   PrintViewManagerBase(const PrintViewManagerBase&) = delete;
@@ -216,6 +218,13 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
   // Cancels the print job.
   void NavigationStopped() override;
+
+  // Implementation without callbacks.
+  bool OnComposePdfDoneImpl(const gfx::Size& page_size,
+                            const gfx::Rect& content_area,
+                            const gfx::Point& physical_offsets,
+                            mojom::PrintCompositor::Status status,
+                            base::ReadOnlySharedMemoryRegion region);
 
   // IPC message handlers for service.
   void OnComposePdfDone(const gfx::Size& page_size,

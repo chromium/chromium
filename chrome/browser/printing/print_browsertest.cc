@@ -103,8 +103,8 @@ using OnDidCreatePrintJobCallback =
     base::RepeatingCallback<void(PrintJob* print_job)>;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-using OnUseDefaultSettingsCallback = base::RepeatingCallback<void()>;
-using OnGetSettingsWithUICallback = base::RepeatingCallback<void()>;
+using OnUseDefaultSettingsCallback = base::RepeatingClosure;
+using OnGetSettingsWithUICallback = base::RepeatingClosure;
 
 using ErrorCheckCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
@@ -2389,8 +2389,10 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
 };
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
-class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
-                                                public PrintJob::Observer {
+class SystemAccessProcessPrintBrowserTestBase
+    : public PrintBrowserTest,
+      public PrintJob::Observer,
+      public PrintViewManagerBase::Observer {
  public:
   SystemAccessProcessPrintBrowserTestBase() = default;
   ~SystemAccessProcessPrintBrowserTestBase() override = default;
@@ -2489,6 +2491,13 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
     ASSERT_EQ(print_job_construction_count(), print_job_destruction_count());
   }
 
+  // PrintViewManagerBase::Observer:
+  void OnCompositeCompletion() override {
+    ++did_composite_completion_count_;
+    CheckForQuit();
+  }
+
+  // PrintJob::Observer:
   void OnDestruction() override {
     ++print_job_destruction_count_;
     CheckForQuit();
@@ -2500,13 +2509,14 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
   }
 
   void SetUpPrintViewManager(content::WebContents* web_contents) {
-    web_contents->SetUserData(
-        PrintViewManager::UserDataKey(),
-        std::make_unique<TestPrintViewManager>(
-            web_contents,
-            base::BindRepeating(
-                &SystemAccessProcessPrintBrowserTestBase::OnCreatedPrintJob,
-                base::Unretained(this))));
+    auto manager = std::make_unique<TestPrintViewManager>(
+        web_contents,
+        base::BindRepeating(
+            &SystemAccessProcessPrintBrowserTestBase::OnCreatedPrintJob,
+            base::Unretained(this)));
+    manager->AddObserver(*this);
+    web_contents->SetUserData(PrintViewManager::UserDataKey(),
+                              std::move(manager));
   }
 
   void PrintAfterPreviewIsReadyAndLoaded() {
@@ -2632,6 +2642,9 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
   int print_job_destruction_count() const {
     return print_job_destruction_count_;
   }
+  int did_composite_completion_count() const {
+    return did_composite_completion_count_;
+  }
 
  private:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -2750,6 +2763,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
   raw_ptr<PrintJob, DanglingUntriaged> print_job_ = nullptr;
   bool reset_errors_after_check_ = true;
+  int did_composite_completion_count_ = 0;
   mojom::ResultCode use_default_settings_result_ = mojom::ResultCode::kFailed;
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   mojom::ResultCode ask_user_for_settings_result_ = mojom::ResultCode::kFailed;
@@ -3276,25 +3290,26 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   // 1.  Get the default settings.
   // 2.  Ask the user for settings.
   // 3.  A print job is started.
-  // 4.  The document is rendered.
-  // 5.  Receive document done notification.
-  // 6.  Wait for the one print job to be destroyed, to ensure printing
+  // 4.  The print compositor will complete generating the document.
+  // 5.  The document is rendered.
+  // 6.  Receive document done notification.
+  // 8.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
-  SetNumExpectedMessages(/*num=*/6);
+  SetNumExpectedMessages(/*num=*/7);
 #else
   // The expected events for this are:
-  // 1.  Get the default settings.
-  // 2.  Ask the user for settings.  Due to issues with displaying a system
-  //     dialog from the utility process, there is no callback to capture the
-  //     request for user supplied settings.
-  // 3.  A print job is started.
+  // 1.  Get the default settings.  Ask the user for settings; due to issues
+  //     with displaying a system dialog from the utility process, there is no
+  //     callback to capture the request for user supplied settings.
+  // 2.  A print job is started.
+  // 3.  The print compositor will complete generating the document.
   // 4.  The document is rendered.
   // 5.  Receive document done notification.
   // 6.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
   // TODO(crbug.com/1374188)  Update this expectation once
   // `AskUserForSettings()` is able to be pushed OOP for Linux.
-  SetNumExpectedMessages(/*num=*/5);
+  SetNumExpectedMessages(/*num=*/6);
 #endif
 
   StartBasicPrint(web_contents);
@@ -3322,6 +3337,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(did_composite_completion_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
@@ -3360,6 +3376,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
   EXPECT_TRUE(did_use_default_settings());
   EXPECT_TRUE(did_get_settings_with_ui());
   EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(did_composite_completion_count(), 0);
   EXPECT_EQ(print_job_destruction_count(), 0);
 
   // `PrintBackendService` should never be used when printing in-browser.
@@ -3392,7 +3409,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     //     this notice directly.  This does cause an error dialog to be shown.
     // 4.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
-    SetNumExpectedMessages(/*num=*/4);
+    // 5.  The print compositor will have started to generate the document.
+    //     Wait until that is known to have completed, to ensure printing
+    //     finished cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/5);
   } else {
     // The expected events for this are:
     // 1.  Gets default settings.
@@ -3401,7 +3421,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     // 4.  An error dialog is shown.
     // 5.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
-    SetNumExpectedMessages(/*num=*/5);
+    // 6.  The print compositor will have started to generate the document.
+    //     Wait until that is known to have completed, to ensure printing
+    //     finished cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/6);
   }
 
   StartBasicPrint(web_contents);
@@ -3410,6 +3433,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(did_composite_completion_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
@@ -3453,6 +3477,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kCanceled);
   EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(did_composite_completion_count(), 0);
   EXPECT_EQ(print_job_construction_count(), 0);
 }
 
@@ -3516,6 +3541,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kFailed);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(did_composite_completion_count(), 0);
   EXPECT_EQ(print_job_construction_count(), 0);
 }
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)

@@ -449,6 +449,31 @@ bool PrintViewManagerBase::PrintJobHasDocument(int cookie) {
   return document && document->cookie() == cookie;
 }
 
+bool PrintViewManagerBase::OnComposePdfDoneImpl(
+    const gfx::Size& page_size,
+    const gfx::Rect& content_area,
+    const gfx::Point& physical_offsets,
+    mojom::PrintCompositor::Status status,
+    base::ReadOnlySharedMemoryRegion region) {
+  if (status != mojom::PrintCompositor::Status::kSuccess) {
+    DLOG(ERROR) << "Compositing pdf failed with error " << status;
+    return false;
+  }
+
+  if (!print_job_->document())
+    return false;
+
+  DCHECK(region.IsValid());
+  DCHECK(LooksLikePdf(region.Map().GetMemoryAsSpan<char>()));
+  scoped_refptr<base::RefCountedSharedMemoryMapping> data =
+      base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region);
+  if (!data)
+    return false;
+
+  PrintDocument(data, page_size, content_area, physical_offsets);
+  return true;
+}
+
 void PrintViewManagerBase::OnComposePdfDone(
     const gfx::Size& page_size,
     const gfx::Rect& content_area,
@@ -457,28 +482,13 @@ void PrintViewManagerBase::OnComposePdfDone(
     mojom::PrintCompositor::Status status,
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (status != mojom::PrintCompositor::Status::kSuccess) {
-    DLOG(ERROR) << "Compositing pdf failed with error " << status;
-    std::move(callback).Run(false);
-    return;
-  }
 
-  if (!print_job_->document()) {
-    std::move(callback).Run(false);
-    return;
-  }
+  bool success = OnComposePdfDoneImpl(page_size, content_area, physical_offsets,
+                                      status, std::move(region));
+  std::move(callback).Run(success);
 
-  DCHECK(region.IsValid());
-  DCHECK(LooksLikePdf(region.Map().GetMemoryAsSpan<char>()));
-  scoped_refptr<base::RefCountedSharedMemoryMapping> data =
-      base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region);
-  if (!data) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  PrintDocument(data, page_size, content_area, physical_offsets);
-  std::move(callback).Run(true);
+  for (auto& observer : observers_)
+    observer.OnCompositeCompletion();
 }
 
 void PrintViewManagerBase::DidPrintDocument(
