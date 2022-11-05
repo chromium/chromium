@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -47,9 +48,12 @@ class TestInitializerSupplier
 
 // Verifies that color providers endure for each call to GetColorProviderFor().
 TEST_F(ColorProviderManagerTest, Persistence) {
+  base::HistogramTester histogram_tester;
   ColorProvider* provider = GetLightNormalColorProvider();
   ASSERT_NE(nullptr, provider);
   EXPECT_EQ(provider, GetLightNormalColorProvider());
+  histogram_tester.ExpectTotalCount(
+      "Views.Browser.TimeSpentInitializingColorProvider", 1);
 }
 
 // Verifies that the initializer is called for each newly created color
@@ -61,9 +65,12 @@ TEST_F(ColorProviderManagerTest, SetInitializer) {
             provider->AddMixer()[kColorTest0] = {SK_ColorBLUE};
           }));
 
+  base::HistogramTester histogram_tester;
   ColorProvider* provider = GetLightNormalColorProvider();
   ASSERT_NE(nullptr, provider);
   EXPECT_EQ(SK_ColorBLUE, provider->GetColor(kColorTest0));
+  histogram_tester.ExpectTotalCount(
+      "Views.Browser.TimeSpentInitializingColorProvider", 1);
 }
 
 // Verifies resetting the manager clears the provider. This is useful to keep
@@ -74,12 +81,16 @@ TEST_F(ColorProviderManagerTest, Reset) {
           [](ColorProvider* provider, const ColorProviderManager::Key&) {
             provider->AddMixer()[kColorTest0] = {SK_ColorBLUE};
           }));
+
+  base::HistogramTester histogram_tester;
   ColorProvider* provider = GetLightNormalColorProvider();
   ASSERT_NE(nullptr, provider);
   EXPECT_EQ(SK_ColorBLUE, provider->GetColor(kColorTest0));
   ColorProviderManager::ResetForTesting();
   EXPECT_EQ(gfx::kPlaceholderColor,
             GetLightNormalColorProvider()->GetColor(kColorTest0));
+  histogram_tester.ExpectTotalCount(
+      "Views.Browser.TimeSpentInitializingColorProvider", 2);
 }
 
 TEST_F(ColorProviderManagerTest, LookupWithDeletedMember) {

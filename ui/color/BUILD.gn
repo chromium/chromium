@@ -13,6 +13,7 @@ source_set("color_headers") {
     "color_id.h",
     "color_id_macros.inc",
     "color_id_map_macros.inc",
+    "color_metrics.h",
     "color_mixer.h",
     "color_provider.h",
     "color_provider_manager.h",
@@ -41,6 +42,7 @@ component("color_switches") {
 
 component("color") {
   sources = [
+    "color_metrics.cc",
     "color_mixer.cc",
     "color_provider.cc",
     "color_provider_source.cc",

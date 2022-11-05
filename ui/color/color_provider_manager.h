@@ -153,6 +153,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
   // Returns a color provider for |key|, creating one if necessary.
   ColorProvider* GetColorProviderFor(Key key);
 
+  size_t num_providers_initialized() const {
+    return num_providers_initialized_;
+  }
+
  protected:
   ColorProviderManager();
   virtual ~ColorProviderManager();
@@ -165,6 +169,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
   std::vector<base::CallbackListSubscription> initializer_subscriptions_;
 
   base::flat_map<Key, std::unique_ptr<ColorProvider>> color_providers_;
+
+  // Tracks the number of ColorProviders constructed and initialized by the
+  // manager for metrics purposes.
+  size_t num_providers_initialized_ = 0;
 };
 
 }  // namespace ui

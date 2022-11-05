@@ -10,8 +10,10 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_metrics.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
 
@@ -22,9 +24,6 @@
 namespace ui {
 
 namespace {
-
-// Estimated upper limit of what we should record for cache size.
-constexpr int kCacheHistogramMax = 100;
 
 class GlobalManager : public ColorProviderManager {
  public:
@@ -139,15 +138,19 @@ void ColorProviderManager::AppendColorProviderInitializer(
 ColorProvider* ColorProviderManager::GetColorProviderFor(Key key) {
   auto iter = color_providers_.find(key);
   if (iter == color_providers_.end()) {
+    base::ElapsedTimer timer;
+
     auto provider = std::make_unique<ColorProvider>();
     DCHECK(initializer_list_);
     if (!initializer_list_->empty())
       initializer_list_->Notify(provider.get(), key);
 
     provider->GenerateColorMap();
+    RecordTimeSpentInitializingColorProvider(timer.Elapsed());
+    ++num_providers_initialized_;
+
     iter = color_providers_.emplace(key, std::move(provider)).first;
-    base::UmaHistogramExactLinear("Views.ColorProviderCacheSize",
-                                  color_providers_.size(), kCacheHistogramMax);
+    RecordColorProviderCacheSize(color_providers_.size());
   }
   ColorProvider* provider = iter->second.get();
   DCHECK(provider);
