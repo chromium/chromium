@@ -68,7 +68,12 @@ class MEDIA_EXPORT DataSource {
   // Values of |bitrate| <= 0 are invalid and should be ignored.
   virtual void SetBitrate(int bitrate) = 0;
 
-  // Assume fully bufferred by default.
+  // If there is a MultiBuffer associated with this data source, then defer to
+  // it. This will return false if any HTTP response so far has failed the TAO
+  // check.
+  virtual bool PassedTimingAllowOriginCheck() = 0;
+
+  // Assume fully buffered by default.
   virtual bool AssumeFullyBuffered() const;
 
   // By default this just returns GetSize().
