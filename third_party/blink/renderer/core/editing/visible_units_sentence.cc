@@ -204,6 +204,8 @@ PositionInFlatTree NextSentencePositionInternal(
 PositionInFlatTreeWithAffinity EndOfSentence(
     const PositionInFlatTree& start,
     SentenceTrailingSpaceBehavior space_behavior) {
+  if (start.IsNull())
+    return PositionInFlatTreeWithAffinity();
   const PositionInFlatTree result =
       EndOfSentenceInternal(start, space_behavior);
   return AdjustForwardPositionToAvoidCrossingEditingBoundaries(
@@ -262,6 +264,8 @@ EphemeralRange ExpandRangeToSentenceBoundary(const EphemeralRange& range) {
 // ----
 
 PositionInFlatTree NextSentencePosition(const PositionInFlatTree& start) {
+  if (start.IsNull())
+    return start;
   const PositionInFlatTree result = NextSentencePositionInternal(start);
   return AdjustForwardPositionToAvoidCrossingEditingBoundaries(
              PositionInFlatTreeWithAffinity(result), start)

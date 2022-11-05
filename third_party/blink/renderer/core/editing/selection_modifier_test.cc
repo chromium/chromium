@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -465,6 +466,32 @@ TEST_F(SelectionModifierTest, OptgroupAndTable) {
   Element* label = shadow_root->getElementById("optgroup-label");
   EXPECT_EQ(Position(label, 0), selection.Base());
   EXPECT_EQ(Position(shadow_root, 1), selection.Extent());
+}
+
+TEST_F(SelectionModifierTest, EditableVideo) {
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("a^<video contenteditable> </video>|");
+  GetFrame().GetSettings()->SetEditingBehaviorType(
+      mojom::EditingBehavior::kEditingUnixBehavior);
+  for (SelectionModifyDirection direction :
+       {SelectionModifyDirection::kBackward, SelectionModifyDirection::kForward,
+        SelectionModifyDirection::kLeft, SelectionModifyDirection::kRight}) {
+    for (TextGranularity granularity :
+         {TextGranularity::kCharacter, TextGranularity::kWord,
+          TextGranularity::kSentence, TextGranularity::kLine,
+          TextGranularity::kParagraph, TextGranularity::kSentenceBoundary,
+          TextGranularity::kLineBoundary, TextGranularity::kParagraphBoundary,
+          TextGranularity::kDocumentBoundary}) {
+      SelectionModifier modifier(GetFrame(), selection);
+      // We should not crash here. See http://crbug.com/1376218
+      modifier.Modify(SelectionModifyAlteration::kMove, direction, granularity);
+      EXPECT_EQ("a|<video contenteditable> </video>",
+                GetSelectionTextFromBody(modifier.Selection().AsSelection()))
+          << "Direction " << (int)direction << ", granularity "
+          << (int)granularity;
+      ;
+    }
+  }
 }
 
 }  // namespace blink
