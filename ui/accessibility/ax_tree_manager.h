@@ -113,7 +113,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   void OnAtomicUpdateFinished(
       AXTree* tree,
       bool root_changed,
-      const std::vector<AXTreeObserver::Change>& changes) override {}
+      const std::vector<AXTreeObserver::Change>& changes) override;
 
  protected:
   AXTreeManager();

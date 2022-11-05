@@ -256,6 +256,15 @@ void AXTreeManager::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
     FireGeneratedEvent(AXEventGenerator::Event::MENU_POPUP_END, node);
 }
 
+void AXTreeManager::OnAtomicUpdateFinished(
+    AXTree* tree,
+    bool root_changed,
+    const std::vector<AXTreeObserver::Change>& changes) {
+  DCHECK_EQ(ax_tree(), tree);
+  if (root_changed)
+    connected_to_parent_tree_node_ = false;
+}
+
 AXTreeManager* AXTreeManager::GetParentManager() const {
   AXTreeID parent_tree_id = GetParentTreeID();
   if (parent_tree_id == ui::AXTreeIDUnknown())

@@ -1552,10 +1552,7 @@ void BrowserAccessibilityManager::OnAtomicUpdateFinished(
     ui::AXTree* tree,
     bool root_changed,
     const std::vector<ui::AXTreeObserver::Change>& changes) {
-  DCHECK_EQ(ax_tree(), tree);
-  if (root_changed)
-    connected_to_parent_tree_node_ = false;
-
+  AXTreeManager::OnAtomicUpdateFinished(tree, root_changed, changes);
   // Calls OnDataChanged on newly created, reparented or changed nodes.
   for (const auto& change : changes) {
     ui::AXNode* node = change.node;
