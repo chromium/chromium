@@ -25,15 +25,19 @@ namespace ash {
 
 namespace {
 
-mojom::AcceleratorInfoPtr AcceleratorInfoToMojom(
-    const AcceleratorInfo& accelerator) {
+mojom::AcceleratorInfoPtr CreateAcceleratorInfo(
+    const ui::Accelerator& accelerator,
+    bool locked,
+    bool has_key_event,
+    mojom::AcceleratorType type,
+    mojom::AcceleratorState state) {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
-  info_mojom->accelerator = accelerator.accelerator;
-  info_mojom->key_display = accelerator.key_display;
-  info_mojom->has_key_event = accelerator.has_key_event;
-  info_mojom->type = accelerator.type;
-  info_mojom->state = accelerator.state;
-  info_mojom->locked = accelerator.locked;
+  info_mojom->accelerator = accelerator;
+  info_mojom->key_display = KeycodeToKeyString(accelerator.key_code());
+  info_mojom->locked = locked;
+  info_mojom->has_key_event = has_key_event;
+  info_mojom->type = type;
+  info_mojom->state = state;
 
   return info_mojom;
 }
@@ -149,25 +153,7 @@ void AcceleratorConfigurationProvider::UpdateKeyboards() {
 void AcceleratorConfigurationProvider::OnAcceleratorsUpdated(
     mojom::AcceleratorSource source,
     const ActionIdToAcceleratorsMap& mapping) {
-  accelerator_infos_.clear();
-  id_to_accelerator_info_.clear();
-
-  for (const auto& [action_id, accelerators] : mapping) {
-    for (const auto& accelerator : accelerators) {
-      mojom::AcceleratorType type = GetAcceleratorType(accelerator);
-
-      // |locked| and and |has_key_event| are both default to true now.
-      // For |locked|, ash accelerators should not be locked when customization
-      // is allowed. For |has_key_event|, we need to determine its state based
-      // off of a keyboard device id.
-      AcceleratorInfo info(type, accelerator,
-                           KeycodeToKeyString(accelerator.key_code()),
-                           /*has_key_event=*/true,
-                           /*locked=*/true);
-      accelerator_infos_.push_back(info);
-      id_to_accelerator_info_[action_id].push_back(info);
-    }
-  }
+  accelerators_mapping_[source] = mapping;
   NotifyAcceleratorsUpdated();
 }
 
@@ -181,23 +167,27 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
 AcceleratorConfigurationProvider::AcceleratorConfigurationMap
 AcceleratorConfigurationProvider::CreateConfigurationMap() {
   AcceleratorConfigurationMap accelerator_config;
-
-  base::flat_map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
-      accelerators_mojom;
-  // TODO(jimmyxgong): Currently only handling Ash case, need to also include
-  // other accelerator sources.
-  for (const auto& [action_id, accelerators] : id_to_accelerator_info_) {
-    std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
-    infos_mojom.reserve(accelerators.size());
-    for (const auto& accelerator : accelerators) {
-      infos_mojom.push_back(AcceleratorInfoToMojom(accelerator));
+  // For each source, create a mapping between <ActionId, AcceleratorInfoPtr>.
+  for (const auto& [source, id_to_accelerators] : accelerators_mapping_) {
+    base::flat_map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
+        accelerators_mojom;
+    for (const auto& [action_id, accelerators] : id_to_accelerators) {
+      std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
+      for (const auto& accelerator : accelerators) {
+        // |locked| and and |has_key_event| are both default to true now.
+        // For |locked|, ash accelerators should not be locked when
+        // customization is allowed. For |has_key_event|, we need to determine
+        // its state based off of a keyboard device id.
+        mojom::AcceleratorInfoPtr info = CreateAcceleratorInfo(
+            accelerator, /*locked=*/true,
+            /*has_key_event=*/true, GetAcceleratorType(accelerator),
+            mojom::AcceleratorState::kEnabled);
+        infos_mojom.push_back(std::move(info));
+      }
+      accelerators_mojom.emplace(action_id, std::move(infos_mojom));
     }
-    accelerators_mojom.emplace(action_id, std::move(infos_mojom));
+    accelerator_config.emplace(source, std::move(accelerators_mojom));
   }
-
-  accelerator_config.emplace(mojom::AcceleratorSource::kAsh,
-                             std::move(accelerators_mojom));
-
   return accelerator_config;
 }
 

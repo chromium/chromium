@@ -27,6 +27,9 @@ class AcceleratorConfigurationProvider
       base::flat_map<mojom::AcceleratorSource,
                      base::flat_map<AcceleratorActionId,
                                     std::vector<mojom::AcceleratorInfoPtr>>>;
+  using AcceleratorSourceMap = base::flat_map<
+      mojom::AcceleratorSource,
+      std::map<AcceleratorActionId, std::vector<ui::Accelerator>>>;
 
   AcceleratorConfigurationProvider();
   AcceleratorConfigurationProvider(const AcceleratorConfigurationProvider&) =
@@ -34,10 +37,6 @@ class AcceleratorConfigurationProvider
   AcceleratorConfigurationProvider& operator=(
       const AcceleratorConfigurationProvider&) = delete;
   ~AcceleratorConfigurationProvider() override;
-
-  const std::vector<AcceleratorInfo>& GetAllAcceleratorInfos() {
-    return accelerator_infos_;
-  }
 
   // shortcut_customization::mojom::AcceleratorConfigurationProvider:
   void IsMutable(ash::mojom::AcceleratorSource source,
@@ -67,16 +66,16 @@ class AcceleratorConfigurationProvider
 
   void UpdateKeyboards();
 
-  void NotifyAcceleratorsUpdated();
-
   AcceleratorConfigurationMap CreateConfigurationMap();
 
-  std::vector<AcceleratorInfo> accelerator_infos_;
+  void NotifyAcceleratorsUpdated();
 
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 
-  std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
+  std::map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
       id_to_accelerator_info_;
+
+  AcceleratorSourceMap accelerators_mapping_;
 
   // Stores all connected keyboards.
   std::vector<ui::InputDevice> connected_keyboards_;
