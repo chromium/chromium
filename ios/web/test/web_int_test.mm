@@ -131,13 +131,14 @@ bool WebIntTest::LoadWithParams(
 
 void WebIntTest::RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
                                             NSSet* websiteDataTypes) {
-  __block bool data_removed = false;
+  base::RunLoop run_loop;
+  __block base::OnceClosure quit_closure = run_loop.QuitClosure();
 
   ProceduralBlock remove_data = ^{
     [data_store removeDataOfTypes:websiteDataTypes
-                    modifiedSince:[NSDate distantPast]
+                    modifiedSince:NSDate.distantPast
                 completionHandler:^{
-                  data_removed = true;
+                  std::move(quit_closure).Run();
                 }];
   };
 
@@ -158,10 +159,7 @@ void WebIntTest::RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
     remove_data();
   }
 
-  EXPECT_TRUE(
-      WaitUntilConditionOrTimeout(kWaitForClearBrowsingDataTimeout * 2, ^{
-        return data_removed;
-      }));
+  run_loop.Run();
 }
 
 NSInteger WebIntTest::GetIndexOfNavigationItem(
