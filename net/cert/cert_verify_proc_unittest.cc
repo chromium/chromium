@@ -4314,6 +4314,20 @@ class CertVerifyProcConstraintsTest : public CertVerifyProcInternalTest {
     return ERR_CERT_INVALID;
   }
 
+  int ExpectedRootExpiredError() {
+    if (VerifyProcTypeIsBuiltin() ||
+        verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+      return OK;
+    }
+    return ERR_CERT_DATE_INVALID;
+  }
+
+  int ExpectedIntermediateExpiredError() {
+    if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID)
+      return ERR_CERT_AUTHORITY_INVALID;
+    return ERR_CERT_DATE_INVALID;
+  }
+
   std::vector<std::unique_ptr<CertBuilder>> chain_;
 };
 
@@ -4408,6 +4422,34 @@ TEST_P(CertVerifyProcConstraintsTest, NameConstraintsMatchingIntermediate) {
       /*excluded_dns_names=*/{});
 
   EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTest, ValidityExpiredRoot) {
+  chain_[3]->SetValidity(base::Time::Now() - base::Days(14),
+                         base::Time::Now() - base::Days(7));
+
+  EXPECT_THAT(Verify(), IsError(ExpectedRootExpiredError()));
+}
+
+TEST_P(CertVerifyProcConstraintsTest, ValidityNotYetValidRoot) {
+  chain_[3]->SetValidity(base::Time::Now() + base::Days(7),
+                         base::Time::Now() + base::Days(14));
+
+  EXPECT_THAT(Verify(), IsError(ExpectedRootExpiredError()));
+}
+
+TEST_P(CertVerifyProcConstraintsTest, ValidityExpiredIntermediate) {
+  chain_[2]->SetValidity(base::Time::Now() - base::Days(14),
+                         base::Time::Now() - base::Days(7));
+
+  EXPECT_THAT(Verify(), IsError(ExpectedIntermediateExpiredError()));
+}
+
+TEST_P(CertVerifyProcConstraintsTest, ValidityNotYetValidIntermediate) {
+  chain_[2]->SetValidity(base::Time::Now() + base::Days(7),
+                         base::Time::Now() + base::Days(14));
+
+  EXPECT_THAT(Verify(), IsError(ExpectedIntermediateExpiredError()));
 }
 
 TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
