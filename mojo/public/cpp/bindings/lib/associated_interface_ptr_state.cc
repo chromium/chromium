@@ -4,6 +4,11 @@
 
 #include "mojo/public/cpp/bindings/lib/associated_interface_ptr_state.h"
 
+#include <stdint.h>
+
+#include <utility>
+
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 
 namespace mojo {
@@ -70,7 +75,8 @@ void AssociatedInterfacePtrStateBase::Bind(
   // The version is only queried from the client so the value passed here
   // will not be used.
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
-      std::move(handle), nullptr, std::move(validator), false,
+      std::move(handle), nullptr, std::move(validator),
+      /*sync_method_ordinals=*/base::span<const uint32_t>(),
       GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner)), 0u,
       interface_name, method_info_callback, method_name_callback);
 }

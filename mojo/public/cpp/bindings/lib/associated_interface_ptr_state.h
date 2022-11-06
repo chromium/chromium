@@ -141,6 +141,10 @@ class AssociatedInterfacePtrState : public AssociatedInterfacePtrStateBase {
     return info;
   }
 
+  InterfaceEndpointClient* endpoint_client_for_test() {
+    return endpoint_client();
+  }
+
  private:
   std::unique_ptr<Proxy> proxy_;
 };

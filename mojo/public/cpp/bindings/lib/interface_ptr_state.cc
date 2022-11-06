@@ -4,6 +4,11 @@
 
 #include "mojo/public/cpp/bindings/lib/interface_ptr_state.h"
 
+#include <stdint.h>
+
+#include <utility>
+
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 
 namespace mojo {
@@ -100,7 +105,9 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
                                     interface_name);
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), nullptr,
-      std::move(payload_validator), false, std::move(runner_),
+      std::move(payload_validator),
+      /* sync_method_ordinals= */ base::span<const uint32_t>(),
+      std::move(runner_),
       // The version is only queried from the client so the value passed here
       // will not be used.
       0u, interface_name, method_info_callback, method_name_callback);

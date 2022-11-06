@@ -107,7 +107,7 @@ void BindingStateBase::BindInternal(
     const char* interface_name,
     std::unique_ptr<MessageReceiver> request_validator,
     bool passes_associated_kinds,
-    bool has_sync_methods,
+    base::span<const uint32_t> sync_method_ordinals,
     MessageReceiverWithResponderStatus* stub,
     uint32_t interface_version,
     MessageToMethodInfoCallback method_info_callback,
@@ -121,7 +121,7 @@ void BindingStateBase::BindInternal(
   MultiplexRouter::Config config =
       passes_associated_kinds
           ? MultiplexRouter::MULTI_INTERFACE
-          : (has_sync_methods
+          : (!sync_method_ordinals.empty()
                  ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
                  : MultiplexRouter::SINGLE_INTERFACE);
   router_ = MultiplexRouter::CreateAndStartReceiving(
@@ -131,7 +131,7 @@ void BindingStateBase::BindInternal(
 
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), stub,
-      std::move(request_validator), has_sync_methods,
+      std::move(request_validator), sync_method_ordinals,
       std::move(sequenced_runner), interface_version, interface_name,
       method_info_callback, method_name_callback);
   endpoint_client_->SetIdleTrackingEnabledCallback(

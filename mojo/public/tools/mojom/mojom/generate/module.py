@@ -1729,11 +1729,8 @@ def MethodPassesInterfaces(method):
   return _AnyMethodParameterRecursive(method, IsInterfaceKind)
 
 
-def HasSyncMethods(interface):
-  for method in interface.methods:
-    if method.sync:
-      return True
-  return False
+def GetSyncMethodOrdinals(interface):
+  return [method.ordinal for method in interface.methods if method.sync]
 
 
 def HasUninterruptableMethods(interface):

@@ -49,3 +49,20 @@ interface Ponger {
 interface SyncService {
   [Sync] SyncCall() => ();
 };
+
+interface NoSync {
+  Method() => ();
+
+  BindNoSync(pending_associated_receiver<NoSync> no_sync);
+  BindOneSync(pending_associated_receiver<OneSync> one_sync);
+};
+
+interface OneSync {
+  Method() => ();
+
+  [Sync]
+  SyncMethod() => ();
+
+  BindNoSync(pending_associated_receiver<NoSync> no_sync);
+  BindOneSync(pending_associated_receiver<OneSync> one_sync);
+};
