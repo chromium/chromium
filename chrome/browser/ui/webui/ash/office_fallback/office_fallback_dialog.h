@@ -49,6 +49,7 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
                        const std::u16string& task_title,
                        DialogChoiceCallback callback);
   std::string GetDialogArgs() const override;
+  void GetDialogSize(gfx::Size* size) const override;
   bool ShouldShowCloseButton() const override;
 
  private:

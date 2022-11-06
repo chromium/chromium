@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {DialogChoice} from './office_fallback.mojom-webui.js';
@@ -45,10 +43,6 @@ export class OfficeFallbackElement extends HTMLElement {
 
   $<T extends HTMLElement>(query: string): T {
     return this.root.querySelector(query)!;
-  }
-
-  get dialog(): CrDialogElement {
-    return this.$('cr-dialog') as CrDialogElement;
   }
 
   get proxy() {
@@ -107,43 +101,49 @@ export class OfficeFallbackElement extends HTMLElement {
     const template = document.createElement('template');
     template.innerHTML = getTemplate() as string;
     const fragment = template.content;
-    const titleElement =
-        fragment.querySelector('div[slot="title"]')! as HTMLElement;
-    const fallbackMessageElement =
-        fragment.querySelector('#fallback-message')! as HTMLElement;
+    const titleElement = fragment.querySelector('#title')! as HTMLElement;
+    const reasonMessageElement =
+        fragment.querySelector('#reason-message')! as HTMLElement;
+    const optionsMessageElement =
+        fragment.querySelector('#options-message')! as HTMLElement;
 
-    // TODO(cassycc): Replace with UX chosen text.
-    // TODO(b/242685536): When multi-file selection is defined, implement
+    // TODO(cassycc): replace with UX chosen text.
+    // TODO(b/242685536) When multi-file selection is defined, implement
     // `fileNamesDisplayed` appropriately. Currently, fileNames is a singleton
     // array.
     // TODO(cassycc): Handle long file name(s).
     // TODO(cassycc): Translate the text based on the device's language.
     const fileNamesDisplayed =
         this.fileNames.map(name => `"${name}"`).join(', ');
+    optionsMessageElement.innerText = `Choose "Try again", or choose \
+          "Open in offline editor" to use limited view and editing options.`;
     switch (this.fallbackReason) {
       case FallbackReason.OFFLINE:
         titleElement.innerText =
             `Can't open ${fileNamesDisplayed} when offline`;
-        fallbackMessageElement.innerText =
+        reasonMessageElement.innerText =
             `The application ${this.taskTitle} isn’t available offline.`;
+        optionsMessageElement.innerText =
+            `Check your internet connection and choose "Try again", or choose \
+            "Open in offline editor" to use limited view and editing options.`;
         break;
       case FallbackReason.DRIVE_UNAVAILABLE:
         titleElement.innerText =
             `Can't open ${fileNamesDisplayed} when Drive is not available`;
-        fallbackMessageElement.innerText =
+        reasonMessageElement.innerText =
             `The application ${this.taskTitle} requires Drive to be \
             available.`;
         break;
       case FallbackReason.ONEDRIVE_UNAVAILABLE:
         titleElement.innerText =
             `Can't open ${fileNamesDisplayed} when OneDrive is not available`;
-        fallbackMessageElement.innerText =
+        reasonMessageElement.innerText =
             `The application ${this.taskTitle} requires OneDrive \
           to be available.`;
         break;
       case FallbackReason.ERROR_OPENING_WEB:
         titleElement.innerText = `Can't open the URL for ${fileNamesDisplayed}`;
-        fallbackMessageElement.innerText =
+        reasonMessageElement.innerText =
             `The application ${this.taskTitle} requires OneDrive \
           to be available.`;
         break;

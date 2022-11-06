@@ -10,6 +10,14 @@
 #include "base/json/json_writer.h"
 #include "chrome/common/webui_url_constants.h"
 
+namespace {
+
+// Width/height of the Fallback dialog as found with the inspector tool.
+const int kWidth = 496;
+const int kHeight = 198;
+
+}  // namespace
+
 namespace ash::office_fallback {
 
 // static
@@ -94,6 +102,10 @@ std::string OfficeFallbackDialog::GetDialogArgs() const {
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;
+}
+
+void OfficeFallbackDialog::GetDialogSize(gfx::Size* size) const {
+  size->SetSize(kWidth, kHeight);
 }
 
 bool OfficeFallbackDialog::ShouldShowCloseButton() const {
