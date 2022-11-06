@@ -190,7 +190,6 @@ class CertBuilder {
 
   // Sets the certificatePolicies extension with the specified policyIdentifier
   // OIDs, which must be specified in dotted string notation (e.g. "1.2.3.4").
-  // If |policy_oids| is empty, the extension will be removed.
   void SetCertificatePolicies(const std::vector<std::string>& policy_oids);
 
   // Sets the PolicyConstraints extension. If both |require_explicit_policy|

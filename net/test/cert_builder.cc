@@ -739,11 +739,6 @@ void CertBuilder::SetCertificatePolicies(
   //                                 PolicyQualifierInfo OPTIONAL }
   //
   //    CertPolicyId ::= OBJECT IDENTIFIER
-  if (policy_oids.empty()) {
-    EraseExtension(der::Input(kCertificatePoliciesOid));
-    return;
-  }
-
   bssl::ScopedCBB cbb;
   CBB certificate_policies;
   ASSERT_TRUE(CBB_init(cbb.get(), 64));
@@ -793,8 +788,7 @@ void CertBuilder::SetPolicyConstraints(
                                              der::ContextSpecificPrimitive(1)));
   }
 
-  SetExtension(der::Input(kPolicyConstraintsOid), FinishCBB(cbb.get()),
-               /*critical=*/true);
+  SetExtension(der::Input(kPolicyConstraintsOid), FinishCBB(cbb.get()));
 }
 
 void CertBuilder::SetValidity(base::Time not_before, base::Time not_after) {
