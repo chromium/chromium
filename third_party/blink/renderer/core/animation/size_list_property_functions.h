@@ -12,6 +12,7 @@
 namespace blink {
 
 class ComputedStyle;
+class ComputedStyleBuilder;
 class CSSProperty;
 
 using SizeList = Vector<FillSize, 1>;
@@ -23,7 +24,9 @@ class SizeListPropertyFunctions {
   static SizeList GetInitialSizeList(const CSSProperty&,
                                      const ComputedStyle& initial_style);
   static SizeList GetSizeList(const CSSProperty&, const ComputedStyle&);
-  static void SetSizeList(const CSSProperty&, ComputedStyle&, const SizeList&);
+  static void SetSizeList(const CSSProperty&,
+                          ComputedStyleBuilder&,
+                          const SizeList&);
 };
 
 }  // namespace blink

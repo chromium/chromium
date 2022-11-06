@@ -26,14 +26,14 @@ const FillLayer* GetFillLayerForPosition(const CSSProperty& property,
 }
 
 FillLayer* AccessFillLayerForPosition(const CSSProperty& property,
-                                      ComputedStyle& style) {
+                                      ComputedStyleBuilder& builder) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kBackgroundPositionX:
     case CSSPropertyID::kBackgroundPositionY:
-      return &style.AccessBackgroundLayers();
+      return &builder.AccessBackgroundLayers();
     case CSSPropertyID::kWebkitMaskPositionX:
     case CSSPropertyID::kWebkitMaskPositionY:
-      return &style.AccessMaskLayers();
+      return &builder.AccessMaskLayers();
     default:
       NOTREACHED();
       return nullptr;
@@ -247,7 +247,7 @@ void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
     case CSSPropertyID::kBackgroundPositionY:
     case CSSPropertyID::kWebkitMaskPositionX:
     case CSSPropertyID::kWebkitMaskPositionY: {
-      FillLayer* fill_layer = AccessFillLayerForPosition(property, style);
+      FillLayer* fill_layer = AccessFillLayerForPosition(property, builder);
       FillLayer* prev = nullptr;
       FillLayerMethods fill_layer_methods(property);
       for (wtf_size_t i = 0; i < length_list.size(); i++) {

@@ -1839,21 +1839,6 @@ LineLogicalSide ComputedStyle::GetTextEmphasisLineLogicalSide() const {
   return IsLeft(position) ? LineLogicalSide::kOver : LineLogicalSide::kUnder;
 }
 
-CSSAnimationData& ComputedStyle::AccessAnimations() {
-  std::unique_ptr<CSSAnimationData>& animations = MutableAnimationsInternal();
-  if (!animations)
-    animations = std::make_unique<CSSAnimationData>();
-  return *animations;
-}
-
-CSSTransitionData& ComputedStyle::AccessTransitions() {
-  std::unique_ptr<CSSTransitionData>& transitions =
-      MutableTransitionsInternal();
-  if (!transitions)
-    transitions = std::make_unique<CSSTransitionData>();
-  return *transitions;
-}
-
 FontBaseline ComputedStyle::GetFontBaseline() const {
   // CssDominantBaseline() always returns kAuto for non-SVG elements,
   // and never returns kUseScript, kNoChange, and kResetSize.
@@ -2625,15 +2610,6 @@ bool ComputedStyle::ShadowListHasCurrentColor(const ShadowList* shadow_list) {
                               });
 }
 
-void ComputedStyle::ClearBackgroundImage() {
-  FillLayer* curr_child = &AccessBackgroundLayers();
-  curr_child->SetImage(
-      FillLayer::InitialFillImage(EFillLayerType::kBackground));
-  for (curr_child = curr_child->Next(); curr_child;
-       curr_child = curr_child->Next())
-    curr_child->ClearImage();
-}
-
 const AtomicString& ComputedStyle::ListStyleStringValue() const {
   if (!ListStyleType() || !ListStyleType()->IsString())
     return g_null_atom;
@@ -2762,6 +2738,15 @@ void ComputedStyle::SetUsedColorScheme(
       (force_dark && !prefers_dark);
 
   SetColorSchemeForced(forced_scheme);
+}
+
+void ComputedStyleBuilder::ClearBackgroundImage() {
+  FillLayer* curr_child = &AccessBackgroundLayers();
+  curr_child->SetImage(
+      FillLayer::InitialFillImage(EFillLayerType::kBackground));
+  for (curr_child = curr_child->Next(); curr_child;
+       curr_child = curr_child->Next())
+    curr_child->ClearImage();
 }
 
 bool ComputedStyleBuilder::SetEffectiveZoom(float f) {

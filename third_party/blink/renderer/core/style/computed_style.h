@@ -1004,7 +1004,6 @@ class ComputedStyle : public ComputedStyleBase,
                                    bool is_inherited_property) const;
 
   // Animations.
-  CORE_EXPORT CSSAnimationData& AccessAnimations();
   const CSSAnimationData* Animations() const {
     return AnimationsInternal().get();
   }
@@ -1013,7 +1012,6 @@ class ComputedStyle : public ComputedStyleBase,
   const CSSTransitionData* Transitions() const {
     return TransitionsInternal().get();
   }
-  CORE_EXPORT CSSTransitionData& AccessTransitions();
 
   // Callback selectors.
   void AddCallbackSelector(const String& selector);
@@ -1086,16 +1084,9 @@ class ComputedStyle : public ComputedStyleBase,
            MaskBoxImageInternal().HasImage();
   }
   StyleImage* MaskImage() const { return MaskInternal().GetImage(); }
-  FillLayer& AccessMaskLayers() { return MutableMaskInternal(); }
   const FillLayer& MaskLayers() const { return MaskInternal(); }
   const NinePieceImage& MaskBoxImage() const { return MaskBoxImageInternal(); }
   bool MaskBoxImageSlicesFill() const { return MaskBoxImageInternal().Fill(); }
-  void AdjustMaskLayers() {
-    if (MaskLayers().Next()) {
-      AccessMaskLayers().CullEmptyLayers();
-      AccessMaskLayers().FillUnsetProperties();
-    }
-  }
   void SetMaskBoxImage(const NinePieceImage& b) { SetMaskBoxImageInternal(b); }
   void SetMaskBoxImageSlicesFill(bool fill) {
     MutableMaskBoxImageInternal().SetFill(fill);
@@ -2259,14 +2250,7 @@ class ComputedStyle : public ComputedStyleBase,
   LayoutRectOutsets BoxDecorationOutsets() const;
 
   // Background utility functions.
-  FillLayer& AccessBackgroundLayers() { return MutableBackgroundInternal(); }
   const FillLayer& BackgroundLayers() const { return BackgroundInternal(); }
-  void AdjustBackgroundLayers() {
-    if (BackgroundLayers().Next()) {
-      AccessBackgroundLayers().CullEmptyLayers();
-      AccessBackgroundLayers().FillUnsetProperties();
-    }
-  }
   bool HasBackgroundRelatedColorReferencingCurrentColor() const {
     if (BackgroundColor().IsCurrentColor() ||
         InternalVisitedBackgroundColor().IsCurrentColor() ||
@@ -2682,8 +2666,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   bool ShouldForceColor(const StyleColor& unforced_color) const;
 
-  void ClearBackgroundImage();
-
   FRIEND_TEST_ALL_PREFIXES(
       ComputedStyleTest,
       UpdatePropertySpecificDifferencesRespectsTransformAnimation);
@@ -2787,6 +2769,17 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 #endif  // DCHECK_IS_ON()
 
+  // animations
+  const CSSAnimationData* Animations() const {
+    return AnimationsInternal().get();
+  }
+  CORE_EXPORT CSSAnimationData& AccessAnimations() {
+    std::unique_ptr<CSSAnimationData>& animations = MutableAnimationsInternal();
+    if (!animations)
+      animations = std::make_unique<CSSAnimationData>();
+    return *animations;
+  }
+
   // backdrop-filter
   FilterOperations& MutableBackdropFilter() {
     DCHECK(BackdropFilterInternal().Get());
@@ -2797,6 +2790,16 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     if (BackdropFilterInternal()->operations_ != ops)
       MutableBackdropFilterInternal()->operations_ = ops;
   }
+
+  // background
+  FillLayer& AccessBackgroundLayers() { return MutableBackgroundInternal(); }
+  void AdjustBackgroundLayers() {
+    if (BackgroundInternal().Next()) {
+      AccessBackgroundLayers().CullEmptyLayers();
+      AccessBackgroundLayers().FillUnsetProperties();
+    }
+  }
+  void ClearBackgroundImage();
 
   // clip
   void SetClip(const LengthBox& box) {
@@ -2895,6 +2898,15 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     }
   }
 
+  // mask
+  FillLayer& AccessMaskLayers() { return MutableMaskInternal(); }
+  void AdjustMaskLayers() {
+    if (MaskInternal().Next()) {
+      AccessMaskLayers().CullEmptyLayers();
+      AccessMaskLayers().FillUnsetProperties();
+    }
+  }
+
   // opacity
   void SetOpacity(float f) {
     float v = ClampTo<float>(f, 0, 1);
@@ -2981,6 +2993,18 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void SetTransformOriginZ(float f) {
     SetTransformOrigin(
         TransformOrigin(GetTransformOrigin().X(), GetTransformOrigin().Y(), f));
+  }
+
+  // transitions
+  const CSSTransitionData* Transitions() const {
+    return TransitionsInternal().get();
+  }
+  CORE_EXPORT CSSTransitionData& AccessTransitions() {
+    std::unique_ptr<CSSTransitionData>& transitions =
+        MutableTransitionsInternal();
+    if (!transitions)
+      transitions = std::make_unique<CSSTransitionData>();
+    return *transitions;
   }
 
   // -webkit-box-ordinal-group

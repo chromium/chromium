@@ -356,6 +356,7 @@
       default_value: "FillLayer(EFillLayerType::kBackground, true)",
       field_group: "background",
       computed_style_custom_functions: ["getter", "setter"],
+      readonly: true,
     },
     {
       name: "HasClipPath",
@@ -546,6 +547,7 @@
       field_group: "*",
       default_value: "FillLayer(EFillLayerType::kMask, true)",
       computed_style_custom_functions: ["getter", "setter"],
+      readonly: true,
     },
     {
       name: "CounterDirectives",
@@ -566,6 +568,7 @@
       wrapper_pointer_name: "std::unique_ptr",
       include_paths: ["third_party/blink/renderer/core/animation/css/css_animation_data.h"],
       computed_style_custom_functions: ["getter", "setter"],
+      readonly: true,
     },
     {
       name: "Transitions",
@@ -576,6 +579,7 @@
       wrapper_pointer_name: "std::unique_ptr",
       include_paths: ["third_party/blink/renderer/core/animation/css/css_transition_data.h"],
       computed_style_custom_functions: ["getter", "setter"],
+      readonly: true,
     },
     {
       name: "MaskBoxImage",

@@ -1353,36 +1353,40 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
 // Verify that cloned ComputedStyle is independent from source, i.e.
 // copy-on-write works as expected.
 TEST_F(ComputedStyleTest, ClonedStyleAnimationsAreIndependent) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
 
-  auto& animations = style->AccessAnimations();
+  auto& animations = builder.AccessAnimations();
   animations.DelayList().clear();
   animations.DelayList().push_back(CSSAnimationData::InitialDelay());
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_EQ(1u, style->Animations()->DelayList().size());
 
-  scoped_refptr<ComputedStyle> cloned_style = ComputedStyle::Clone(*style);
-  auto& cloned_style_animations = cloned_style->AccessAnimations();
+  builder = ComputedStyleBuilder(*style);
+  auto& cloned_style_animations = builder.AccessAnimations();
   EXPECT_EQ(1u, cloned_style_animations.DelayList().size());
   cloned_style_animations.DelayList().push_back(
       CSSAnimationData::InitialDelay());
+  scoped_refptr<const ComputedStyle> cloned_style = builder.TakeStyle();
 
   EXPECT_EQ(2u, cloned_style->Animations()->DelayList().size());
   EXPECT_EQ(1u, style->Animations()->DelayList().size());
 }
 
 TEST_F(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
 
-  auto& transitions = style->AccessTransitions();
+  auto& transitions = builder.AccessTransitions();
   transitions.PropertyList().clear();
   transitions.PropertyList().push_back(CSSTransitionData::InitialProperty());
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_EQ(1u, style->Transitions()->PropertyList().size());
 
-  scoped_refptr<ComputedStyle> cloned_style = ComputedStyle::Clone(*style);
-  auto& cloned_style_transitions = cloned_style->AccessTransitions();
+  builder = ComputedStyleBuilder(*style);
+  auto& cloned_style_transitions = builder.AccessTransitions();
   EXPECT_EQ(1u, cloned_style_transitions.PropertyList().size());
   cloned_style_transitions.PropertyList().push_back(
       CSSTransitionData::InitialProperty());
+  scoped_refptr<const ComputedStyle> cloned_style = builder.TakeStyle();
 
   EXPECT_EQ(2u, cloned_style->Transitions()->PropertyList().size());
   EXPECT_EQ(1u, style->Transitions()->PropertyList().size());

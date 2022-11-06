@@ -16,7 +16,7 @@
 
 namespace blink {
 
-class CSSAnimationData final : public CSSTimingData {
+class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
  public:
   CSSAnimationData();
   explicit CSSAnimationData(const CSSAnimationData&);

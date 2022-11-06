@@ -179,7 +179,7 @@ void CSSImageListInterpolationType::ApplyStandardPropertyValue(
         CssProperty(), *interpolable_list.Get(i), non_interpolable_list.Get(i),
         state);
   }
-  ImageListPropertyFunctions::SetImageList(CssProperty(), *state.Style(),
+  ImageListPropertyFunctions::SetImageList(CssProperty(), state.StyleBuilder(),
                                            image_list);
 }
 

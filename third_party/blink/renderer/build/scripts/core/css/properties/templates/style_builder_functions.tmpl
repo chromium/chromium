@@ -202,9 +202,9 @@ state.GetFontBuilder().{{property.setter}}
     {% set animation = 'Animation' if property.style_builder_template == 'animation' else 'Transition' %}
     {% set vector = attribute + "List()" %}
     {% call(property) apply_initial(property) %}
-  if (!state.Style()->{{animation}}s())
+  if (!state.StyleBuilder().{{animation}}s())
     return;
-  CSS{{animation}}Data& data = state.Style()->Access{{animation}}s();
+  CSS{{animation}}Data& data = state.StyleBuilder().Access{{animation}}s();
   data.{{vector}}.clear();
   data.{{vector}}.push_back(CSS{{animation}}Data::Initial{{attribute}}());
     {% endcall %}
@@ -214,11 +214,11 @@ state.GetFontBuilder().{{property.setter}}
   if (!parent_data)
     ApplyInitial{{property_id}}(state);
   else
-    state.Style()->Access{{animation}}s().{{vector}} = parent_data->{{vector}};
+    state.StyleBuilder().Access{{animation}}s().{{vector}} = parent_data->{{vector}};
     {% endcall %}
 
     {% call(property) apply_value(property) %}
-  CSS{{animation}}Data& data = state.Style()->Access{{animation}}s();
+  CSS{{animation}}Data& data = state.StyleBuilder().Access{{animation}}s();
   data.{{vector}}.clear();
   for (auto& listValue : To<CSSValueList>(value))
     data.{{vector}}.push_back(CSSToStyleMap::MapAnimation{{attribute}}(*listValue));
@@ -228,14 +228,14 @@ state.GetFontBuilder().{{property.setter}}
     {% set fill_type = property.style_builder_template_args['fill_type'] %}
     {% set fill_type_getter = property.style_builder_template_args['fill_type_getter'] or fill_type %}
     {% call(property) apply_initial(property) %}
-  FillLayer* curr_child = &state.Style()->Access{{layer_type}}Layers();
+  FillLayer* curr_child = &state.StyleBuilder().Access{{layer_type}}Layers();
   curr_child->Set{{fill_type}}(FillLayer::InitialFill{{fill_type}}(EFillLayerType::k{{layer_type}}));
   for (curr_child = curr_child->Next(); curr_child; curr_child = curr_child->Next())
     curr_child->Clear{{fill_type}}();
     {% endcall %}
 
     {% call(property) apply_inherit(property) %}
-  FillLayer* curr_child = &state.Style()->Access{{layer_type}}Layers();
+  FillLayer* curr_child = &state.StyleBuilder().Access{{layer_type}}Layers();
   FillLayer* prev_child = 0;
   const FillLayer* curr_parent = &state.ParentStyle()->{{layer_type}}Layers();
   while (curr_parent && curr_parent->Is{{fill_type}}Set()) {
@@ -263,7 +263,7 @@ state.GetFontBuilder().{{property.setter}}
     {% endcall %}
 
     {% call(property) apply_value(property) %}
-  FillLayer* curr_child = &state.Style()->Access{{layer_type}}Layers();
+  FillLayer* curr_child = &state.StyleBuilder().Access{{layer_type}}Layers();
   FillLayer* prev_child = 0;
   const auto* value_list = DynamicTo<CSSValueList>(value);
   if (value_list && !value.IsImageSetValue()) {

@@ -812,7 +812,7 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style,
   if (style.ShouldForceColor(style.AccentColor()))
     builder.SetAccentColor(ComputedStyleInitialValues::InitialAccentColor());
   if (!style.HasUrlBackgroundImage())
-    style.ClearBackgroundImage();
+    builder.ClearBackgroundImage();
 }
 
 void StyleAdjuster::AdjustForSVGTextElement(ComputedStyleBuilder& builder) {
@@ -968,8 +968,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   // Cull out any useless layers and also repeat patterns into additional
   // layers.
-  style.AdjustBackgroundLayers();
-  style.AdjustMaskLayers();
+  builder.AdjustBackgroundLayers();
+  builder.AdjustMaskLayers();
 
   // A subset of CSS properties should be forced at computed value time:
   // https://drafts.csswg.org/css-color-adjust-1/#forced-colors-properties.
@@ -1067,7 +1067,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   if (is_media_control && !style.HasEffectiveAppearance()) {
     // For compatibility reasons if the element is a media control and the
     // -webkit-appearance is none then we should clear the background image.
-    style.MutableBackgroundInternal().ClearImage();
+    builder.MutableBackgroundInternal().ClearImage();
   }
 
   if (element && style.TextOverflow() == ETextOverflow::kEllipsis) {

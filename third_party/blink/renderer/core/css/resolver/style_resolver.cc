@@ -2351,8 +2351,6 @@ void StyleResolver::PropagateStyleToViewport() {
   const ComputedStyle& viewport_style =
       GetDocument().GetLayoutView()->StyleRef();
   ComputedStyleBuilder new_viewport_style_builder(viewport_style);
-  ComputedStyle* new_viewport_style =
-      new_viewport_style_builder.MutableInternalStyle();
   bool changed = false;
   bool update_scrollbar_style = false;
 
@@ -2408,7 +2406,7 @@ void StyleResolver::PropagateStyleToViewport() {
       changed = true;
       new_viewport_style_builder.SetBackgroundColor(
           StyleColor(background_color));
-      new_viewport_style->AccessBackgroundLayers() = background_layers;
+      new_viewport_style_builder.AccessBackgroundLayers() = background_layers;
       new_viewport_style_builder.SetImageRendering(image_rendering);
     }
   }
@@ -2526,6 +2524,8 @@ void StyleResolver::PropagateStyleToViewport() {
       GetDocument(), document_element_style, new_viewport_style_builder);
 
   if (changed) {
+    ComputedStyle* new_viewport_style =
+        new_viewport_style_builder.MutableInternalStyle();
     new_viewport_style->UpdateFontOrientation();
     FontBuilder(&GetDocument()).CreateInitialFont(*new_viewport_style);
   }

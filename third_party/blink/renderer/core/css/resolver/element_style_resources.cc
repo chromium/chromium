@@ -324,7 +324,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
   for (CSSPropertyID property : pending_image_properties_) {
     switch (property) {
       case CSSPropertyID::kBackgroundImage: {
-        for (FillLayer* background_layer = &style.AccessBackgroundLayers();
+        for (FillLayer* background_layer = &builder.AccessBackgroundLayers();
              background_layer; background_layer = background_layer->Next()) {
           if (auto* pending_value =
                   PendingCssValue(background_layer->GetImage())) {
@@ -393,7 +393,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
         break;
       }
       case CSSPropertyID::kWebkitMaskImage: {
-        for (FillLayer* mask_layer = &style.AccessMaskLayers(); mask_layer;
+        for (FillLayer* mask_layer = &builder.AccessMaskLayers(); mask_layer;
              mask_layer = mask_layer->Next()) {
           if (auto* pending_value = PendingCssValue(mask_layer->GetImage())) {
             mask_layer->SetImage(loader.Load(
