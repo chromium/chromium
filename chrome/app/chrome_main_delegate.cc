@@ -48,6 +48,7 @@
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -579,8 +580,14 @@ void InitLogging(const std::string& process_type) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   logging::InitChromeLogging(command_line, file_state);
+  // Log the Chrome version for information. Do so at WARNING level as that's
+  // the min level on ChromeOS.
+  if (process_type.empty()) {
+    LOG(WARNING) << "This is Chrome version " << chrome::kChromeVersion
+                 << " (not a warning)";
+  }
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
   const base::TimeTicks now = base::TimeTicks::Now();
