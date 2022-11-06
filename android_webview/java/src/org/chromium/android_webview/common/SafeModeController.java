@@ -10,12 +10,14 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
 
 import java.util.HashSet;
@@ -41,6 +43,17 @@ public class SafeModeController {
 
     private static class LazyHolder {
         static final SafeModeController INSTANCE = new SafeModeController();
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({SafeModeExecutionResult.SUCCESS, SafeModeExecutionResult.UNKNOWN_ERROR,
+            SafeModeExecutionResult.ACTION_FAILED, SafeModeExecutionResult.COUNT})
+    public static @interface SafeModeExecutionResult {
+        int SUCCESS = 0;
+        int UNKNOWN_ERROR = 1;
+        int ACTION_FAILED = 2;
+        int COUNT = 3;
     }
 
     /**
@@ -121,29 +134,42 @@ public class SafeModeController {
      * @return {@code true} if <b>all</b> actions succeeded, {@code false} otherwise.
      * @throws IllegalStateException if this is called before {@link registerActions}.
      */
-    public boolean executeActions(Set<String> actionsToExecute) {
+    public @SafeModeExecutionResult int executeActions(Set<String> actionsToExecute)
+            throws Throwable {
         // Execute SafeModeActions in a deterministic order.
         if (mRegisteredActions == null) {
             throw new IllegalStateException(
                     "Must registerActions() before calling executeActions()");
         }
-        boolean overallStatus = true;
-        for (SafeModeAction action : mRegisteredActions) {
-            if (actionsToExecute.contains(action.getId())) {
-                // Allow SafeModeActions in general to perform disk reads and writes.
-                try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                    Log.i(TAG, "Starting to execute %s", action.getId());
-                    boolean status = action.execute();
-                    overallStatus &= status;
-                    if (status) {
-                        Log.i(TAG, "Finished executing %s (%s)", action.getId(), "success");
-                    } else {
-                        Log.e(TAG, "Finished executing %s (%s)", action.getId(), "failure");
+
+        try {
+            @SafeModeExecutionResult
+            int overallStatus = SafeModeExecutionResult.SUCCESS;
+            for (SafeModeAction action : mRegisteredActions) {
+                if (actionsToExecute.contains(action.getId())) {
+                    // Allow SafeModeActions in general to perform disk reads and writes.
+                    try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+                        Log.i(TAG, "Starting to execute %s", action.getId());
+                        if (action.execute()) {
+                            Log.i(TAG, "Finished executing %s (%s)", action.getId(), "success");
+                        } else {
+                            overallStatus = SafeModeExecutionResult.ACTION_FAILED;
+                            Log.e(TAG, "Finished executing %s (%s)", action.getId(), "failure");
+                        }
                     }
                 }
             }
+            logSafeModeExecutionResult(overallStatus);
+            return overallStatus;
+        } catch (Throwable t) {
+            logSafeModeExecutionResult(SafeModeController.SafeModeExecutionResult.UNKNOWN_ERROR);
+            throw new Throwable(t);
         }
-        return overallStatus;
+    }
+
+    private static void logSafeModeExecutionResult(@SafeModeExecutionResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.SafeMode.ExecutionResult", result, SafeModeExecutionResult.COUNT);
     }
 
     /**

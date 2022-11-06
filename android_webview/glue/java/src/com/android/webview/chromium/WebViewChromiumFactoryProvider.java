@@ -31,7 +31,6 @@ import android.webkit.WebViewFactory;
 import android.webkit.WebViewFactoryProvider;
 import android.webkit.WebViewProvider;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.ApkType;
@@ -483,20 +482,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             actions.size());
                     RecordHistogram.recordCount100Histogram(
                             "Android.WebView.SafeMode.ActionsCount", actions.size());
-                    boolean success = controller.executeActions(actions);
+                    controller.executeActions(actions);
                     long safeModeQueryExecuteEnd = SystemClock.elapsedRealtime();
                     RecordHistogram.recordTimesHistogram(
                             "Android.WebView.SafeMode.QueryAndExecuteBlockingTime",
                             safeModeQueryExecuteEnd - safeModeQueryExecuteStart);
-                    if (success) {
-                        logSafeModeExecutionResult(SafeModeExecutionResult.SUCCESS);
-                    } else {
-                        logSafeModeExecutionResult(SafeModeExecutionResult.ACTION_FAILED);
-                    }
                 } catch (Throwable t) {
                     // Don't let SafeMode crash WebView. Instead just log the error.
                     Log.e(TAG, "WebViewSafeMode threw exception: ", t);
-                    logSafeModeExecutionResult(SafeModeExecutionResult.UNKNOWN_ERROR);
                 }
             }
 
@@ -523,22 +516,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     "Android.WebView.Startup.CreationTime.TotalFactoryInitTime",
                     SystemClock.uptimeMillis() - webviewLoadStart);
         }
-    }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({SafeModeExecutionResult.SUCCESS, SafeModeExecutionResult.UNKNOWN_ERROR,
-            SafeModeExecutionResult.ACTION_FAILED})
-    private @interface SafeModeExecutionResult {
-        int SUCCESS = 0;
-        int UNKNOWN_ERROR = 1;
-        int ACTION_FAILED = 2;
-        int COUNT = 3;
-    }
-
-    private static void logSafeModeExecutionResult(@SafeModeExecutionResult int result) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.SafeMode.ExecutionResult", result, SafeModeExecutionResult.COUNT);
     }
 
     /* package */ static void checkStorageIsNotDeviceProtected(Context context) {

@@ -34,6 +34,7 @@ import org.chromium.android_webview.test.services.ServiceConnectionHelper;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.android_webview.variations.VariationsSeedSafeModeAction;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.BuildConfig;
 
@@ -490,13 +491,20 @@ public class SafeModeTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeModeAction_doesNotExecuteUnregisteredActions() throws Throwable {
-        TestSafeModeAction testAction = new TestSafeModeAction("test");
+        TestSafeModeAction testAction = new TestSafeModeAction("test", false);
         SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
 
         Set<String> actions = asSet("test", "unregistered1", "unregistered2");
-        SafeModeController.getInstance().executeActions(actions);
+        @SafeModeController.SafeModeExecutionResult
+        int success = SafeModeController.getInstance().executeActions(actions);
         Assert.assertEquals("TestSafeModeAction should have been executed exactly 1 time", 1,
                 testAction.getCallCount());
+        Assert.assertEquals("Overall status should be failure if at least one action fails",
+                success, SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
+        Assert.assertEquals("Unregistered safemode actions should be logged", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.SafeMode.ExecutionResult",
+                        SafeModeController.SafeModeExecutionResult.ACTION_FAILED));
         // If we got this far without crashing, we assume SafeModeController correctly ignored the
         // unregistered actions.
     }
@@ -561,9 +569,14 @@ public class SafeModeTest {
         Set<String> allSuccessful = asSet(successAction1.getId(), successAction2.getId());
         SafeModeController.getInstance().registerActions(
                 new SafeModeAction[] {successAction1, successAction2});
-        boolean success = SafeModeController.getInstance().executeActions(allSuccessful);
-        Assert.assertTrue(
-                "Overall status should be successful if all actions are successful", success);
+        @SafeModeController.SafeModeExecutionResult
+        int success = SafeModeController.getInstance().executeActions(allSuccessful);
+        Assert.assertEquals("Overall status should be successful if all actions are successful",
+                success, SafeModeController.SafeModeExecutionResult.SUCCESS);
+        Assert.assertEquals("Overall status should be successful if all actions are successful", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.SafeMode.ExecutionResult",
+                        SafeModeController.SafeModeExecutionResult.SUCCESS));
         Assert.assertEquals("successAction1 should have been executed exactly 1 time", 1,
                 successAction1.getCallCount());
         Assert.assertEquals("successAction2 should have been executed exactly 1 time", 1,
@@ -577,8 +590,12 @@ public class SafeModeTest {
         SafeModeController.getInstance().registerActions(
                 new SafeModeAction[] {successAction1, failAction, successAction2});
         success = SafeModeController.getInstance().executeActions(oneFailure);
-        Assert.assertFalse(
-                "Overall status should be failure if at least one action fails", success);
+        Assert.assertEquals("Overall status should be failure if at least one action fails", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.SafeMode.ExecutionResult",
+                        SafeModeController.SafeModeExecutionResult.ACTION_FAILED));
+        Assert.assertEquals("Overall status should be failure if at least one action fails",
+                success, SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
         // One step failing should not block subsequent steps from executing.
         Assert.assertEquals(
                 "successAction1 should have been executed again", 2, successAction1.getCallCount());
