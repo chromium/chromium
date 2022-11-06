@@ -28,9 +28,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -258,7 +258,8 @@ url::Origin DeserializePotentiallyTrustworthyOrigin(const std::string& string) {
   return origin;
 }
 
-std::string SerializeFilterData(const AttributionFilterData& filter_data) {
+std::string SerializeFilterData(
+    const attribution_reporting::FilterData& filter_data) {
   proto::AttributionFilterData msg;
 
   for (const auto& [filter, values] : filter_data.filter_values()) {
@@ -276,21 +277,23 @@ std::string SerializeFilterData(const AttributionFilterData& filter_data) {
   return string;
 }
 
-absl::optional<AttributionFilterData> DeserializeFilterData(
+absl::optional<attribution_reporting::FilterData> DeserializeFilterData(
     const std::string& string) {
   proto::AttributionFilterData msg;
   if (!msg.ParseFromString(string))
     return absl::nullopt;
 
-  AttributionFilterValues::container_type filter_values;
+  attribution_reporting::FilterValues::container_type filter_values;
   filter_values.reserve(msg.filter_values().size());
 
   for (google::protobuf::MapPair<std::string, proto::AttributionFilterValues>&
            entry : *msg.mutable_filter_values()) {
     // Serialized source filter data can only contain this key due to DB
     // corruption or deliberate modification.
-    if (entry.first == AttributionFilterData::kSourceTypeFilterKey)
+    if (entry.first ==
+        attribution_reporting::FilterData::kSourceTypeFilterKey) {
       continue;
+    }
 
     google::protobuf::RepeatedPtrField<std::string>* values =
         entry.second.mutable_values();
@@ -301,7 +304,7 @@ absl::optional<AttributionFilterData> DeserializeFilterData(
                                  std::make_move_iterator(values->end())));
   }
 
-  return AttributionFilterData::Create(std::move(filter_values));
+  return attribution_reporting::FilterData::Create(std::move(filter_values));
 }
 
 std::string SerializeAggregationKeys(
@@ -417,7 +420,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
     return absl::nullopt;
   }
 
-  absl::optional<AttributionFilterData> filter_data =
+  absl::optional<attribution_reporting::FilterData> filter_data =
       DeserializeFilterData(statement.ColumnString(col++));
   if (!filter_data)
     return absl::nullopt;
@@ -2159,8 +2162,8 @@ bool AttributionStorageSql::CreateSchema() {
   // |StoredSource::AttributionLogic| enum.
   // |source_site| is used to optimize the lookup of sources;
   // |CommonSourceInfo::SourceSite| is always derived from the origin.
-  // |filter_data| is a serialized `AttributionFilterData` used for source
-  // matching.
+  // |filter_data| is a serialized `attribution_reporting::FilterData` used for
+  // source matching.
   //
   // |source_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.

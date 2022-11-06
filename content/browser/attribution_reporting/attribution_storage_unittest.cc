@@ -26,10 +26,10 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -62,6 +62,9 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
+
+using AttributionFilterData = ::attribution_reporting::FilterData;
+using AttributionFilters = ::attribution_reporting::Filters;
 
 // Default max number of conversions for a single impression for testing.
 const int kMaxConversions = 3;

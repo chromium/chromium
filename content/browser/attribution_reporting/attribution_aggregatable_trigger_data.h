@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,14 +20,14 @@ class CONTENT_EXPORT AttributionAggregatableTriggerData {
   static absl::optional<AttributionAggregatableTriggerData> Create(
       absl::uint128 key_piece,
       base::flat_set<std::string> source_keys,
-      AttributionFilters filters,
-      AttributionFilters not_filters);
+      attribution_reporting::Filters filters,
+      attribution_reporting::Filters not_filters);
 
   static AttributionAggregatableTriggerData CreateForTesting(
       absl::uint128 key_piece,
       base::flat_set<std::string> source_keys,
-      AttributionFilters filters,
-      AttributionFilters not_filters);
+      attribution_reporting::Filters filters,
+      attribution_reporting::Filters not_filters);
 
   ~AttributionAggregatableTriggerData();
 
@@ -45,20 +45,23 @@ class CONTENT_EXPORT AttributionAggregatableTriggerData {
     return source_keys_;
   }
 
-  const AttributionFilters& filters() const { return filters_; }
+  const attribution_reporting::Filters& filters() const { return filters_; }
 
-  const AttributionFilters& not_filters() const { return not_filters_; }
+  const attribution_reporting::Filters& not_filters() const {
+    return not_filters_;
+  }
 
  private:
-  AttributionAggregatableTriggerData(absl::uint128 key_piece,
-                                     base::flat_set<std::string> source_keys,
-                                     AttributionFilters filters,
-                                     AttributionFilters not_filters);
+  AttributionAggregatableTriggerData(
+      absl::uint128 key_piece,
+      base::flat_set<std::string> source_keys,
+      attribution_reporting::Filters filters,
+      attribution_reporting::Filters not_filters);
 
   absl::uint128 key_piece_;
   base::flat_set<std::string> source_keys_;
-  AttributionFilters filters_;
-  AttributionFilters not_filters_;
+  attribution_reporting::Filters filters_;
+  attribution_reporting::Filters not_filters_;
 };
 
 }  // namespace content

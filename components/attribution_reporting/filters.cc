@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "components/attribution_reporting/filters.h"
 
 #include <string>
 #include <utility>
@@ -14,13 +14,13 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 
-namespace content {
+namespace attribution_reporting {
 
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
-bool IsValidForSourceOrTrigger(const AttributionFilterValues& filter_values) {
+bool IsValidForSourceOrTrigger(const FilterValues& filter_values) {
   if (filter_values.size() > attribution_reporting::kMaxFiltersPerSource)
     return false;
 
@@ -40,28 +40,27 @@ bool IsValidForSourceOrTrigger(const AttributionFilterValues& filter_values) {
   return true;
 }
 
-bool IsValidForSource(const AttributionFilterValues& filter_values) {
-  return !filter_values.contains(AttributionFilterData::kSourceTypeFilterKey) &&
+bool IsValidForSource(const FilterValues& filter_values) {
+  return !filter_values.contains(FilterData::kSourceTypeFilterKey) &&
          IsValidForSourceOrTrigger(filter_values);
 }
 
 }  // namespace
 
 // static
-absl::optional<AttributionFilterData> AttributionFilterData::Create(
-    AttributionFilterValues filter_values) {
+absl::optional<FilterData> FilterData::Create(FilterValues filter_values) {
   if (!IsValidForSource(filter_values))
     return absl::nullopt;
 
-  return AttributionFilterData(std::move(filter_values));
+  return FilterData(std::move(filter_values));
 }
 
 // static
-base::expected<AttributionFilterData, SourceRegistrationError>
-AttributionFilterData::FromJSON(base::Value* input_value) {
+base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
+    base::Value* input_value) {
   // TODO(johnidel): Consider logging registration JSON metrics here.
   if (!input_value)
-    return AttributionFilterData();
+    return FilterData();
 
   base::Value::Dict* dict = input_value->GetIfDict();
   if (!dict)
@@ -76,7 +75,7 @@ AttributionFilterData::FromJSON(base::Value* input_value) {
         SourceRegistrationError::kFilterDataHasSourceTypeKey);
   }
 
-  AttributionFilterValues::container_type filter_values;
+  FilterValues::container_type filter_values;
   filter_values.reserve(dict->size());
 
   for (auto [filter, value] : *dict) {
@@ -114,57 +113,50 @@ AttributionFilterData::FromJSON(base::Value* input_value) {
     filter_values.emplace_back(filter, std::move(values));
   }
 
-  return AttributionFilterData(
-      AttributionFilterValues(base::sorted_unique, std::move(filter_values)));
+  return FilterData(
+      FilterValues(base::sorted_unique, std::move(filter_values)));
 }
 
-AttributionFilterData::AttributionFilterData() = default;
+FilterData::FilterData() = default;
 
-AttributionFilterData::AttributionFilterData(
-    AttributionFilterValues filter_values)
+FilterData::FilterData(FilterValues filter_values)
     : filter_values_(std::move(filter_values)) {
   DCHECK(IsValidForSource(filter_values_));
 }
 
-AttributionFilterData::~AttributionFilterData() = default;
+FilterData::~FilterData() = default;
 
-AttributionFilterData::AttributionFilterData(const AttributionFilterData&) =
-    default;
+FilterData::FilterData(const FilterData&) = default;
 
-AttributionFilterData::AttributionFilterData(AttributionFilterData&&) = default;
+FilterData::FilterData(FilterData&&) = default;
 
-AttributionFilterData& AttributionFilterData::operator=(
-    const AttributionFilterData&) = default;
+FilterData& FilterData::operator=(const FilterData&) = default;
 
-AttributionFilterData& AttributionFilterData::operator=(
-    AttributionFilterData&&) = default;
+FilterData& FilterData::operator=(FilterData&&) = default;
 
 // static
-absl::optional<AttributionFilters> AttributionFilters::Create(
-    AttributionFilterValues filter_values) {
+absl::optional<Filters> Filters::Create(FilterValues filter_values) {
   if (!IsValidForSourceOrTrigger(filter_values))
     return absl::nullopt;
 
-  return AttributionFilters(std::move(filter_values));
+  return Filters(std::move(filter_values));
 }
 
-AttributionFilters::AttributionFilters() = default;
+Filters::Filters() = default;
 
-AttributionFilters::AttributionFilters(AttributionFilterValues filter_values)
+Filters::Filters(FilterValues filter_values)
     : filter_values_(std::move(filter_values)) {
   DCHECK(IsValidForSourceOrTrigger(filter_values_));
 }
 
-AttributionFilters::~AttributionFilters() = default;
+Filters::~Filters() = default;
 
-AttributionFilters::AttributionFilters(const AttributionFilters&) = default;
+Filters::Filters(const Filters&) = default;
 
-AttributionFilters::AttributionFilters(AttributionFilters&&) = default;
+Filters::Filters(Filters&&) = default;
 
-AttributionFilters& AttributionFilters::operator=(const AttributionFilters&) =
-    default;
+Filters& Filters::operator=(const Filters&) = default;
 
-AttributionFilters& AttributionFilters::operator=(AttributionFilters&&) =
-    default;
+Filters& Filters::operator=(Filters&&) = default;
 
-}  // namespace content
+}  // namespace attribution_reporting

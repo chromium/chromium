@@ -24,13 +24,13 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -450,7 +450,7 @@ class SourceBuilder {
   SourceBuilder& SetAttributionLogic(
       StoredSource::AttributionLogic attribution_logic);
 
-  SourceBuilder& SetFilterData(AttributionFilterData filter_data);
+  SourceBuilder& SetFilterData(attribution_reporting::FilterData filter_data);
 
   SourceBuilder& SetActiveState(StoredSource::ActiveState active_state);
 
@@ -492,7 +492,7 @@ class SourceBuilder {
   int64_t priority_ = 0;
   StoredSource::AttributionLogic attribution_logic_ =
       StoredSource::AttributionLogic::kTruthfully;
-  AttributionFilterData filter_data_;
+  attribution_reporting::FilterData filter_data_;
   StoredSource::ActiveState active_state_ = StoredSource::ActiveState::kActive;
   absl::optional<uint64_t> debug_key_;
   // `base::StrongAlias` does not automatically initialize the value here.
@@ -628,10 +628,6 @@ bool operator==(const AttributionTrigger::EventTriggerData& a,
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
 
-bool operator==(const AttributionFilterData& a, const AttributionFilterData& b);
-
-bool operator==(const AttributionFilters& a, const AttributionFilters& b);
-
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
 
 bool operator==(const AttributionInfo& a, const AttributionInfo& b);
@@ -679,11 +675,6 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionTrigger& conversion);
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionFilterData& filter_data);
-
-std::ostream& operator<<(std::ostream& out, const AttributionFilters& filters);
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
 
@@ -905,16 +896,18 @@ struct EventTriggerDataMatcherConfig {
   ::testing::Matcher<uint64_t> data;
   ::testing::Matcher<int64_t> priority;
   ::testing::Matcher<absl::optional<uint64_t>> dedup_key;
-  ::testing::Matcher<const AttributionFilters&> filters;
-  ::testing::Matcher<const AttributionFilters&> not_filters;
+  ::testing::Matcher<const attribution_reporting::Filters&> filters;
+  ::testing::Matcher<const attribution_reporting::Filters&> not_filters;
 
   EventTriggerDataMatcherConfig() = delete;
   EventTriggerDataMatcherConfig(
       ::testing::Matcher<uint64_t> data = ::testing::_,
       ::testing::Matcher<int64_t> priority = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> dedup_key = ::testing::_,
-      ::testing::Matcher<const AttributionFilters&> filters = ::testing::_,
-      ::testing::Matcher<const AttributionFilters&> not_filters = ::testing::_);
+      ::testing::Matcher<const attribution_reporting::Filters&> filters =
+          ::testing::_,
+      ::testing::Matcher<const attribution_reporting::Filters&> not_filters =
+          ::testing::_);
   ~EventTriggerDataMatcherConfig();
 };
 
@@ -924,7 +917,8 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig&);
 struct AttributionTriggerMatcherConfig {
   ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_;
   ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_;
-  ::testing::Matcher<const AttributionFilters&> filters = ::testing::_;
+  ::testing::Matcher<const attribution_reporting::Filters&> filters =
+      ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
   ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
       event_triggers = ::testing::_;
@@ -935,7 +929,8 @@ struct AttributionTriggerMatcherConfig {
   AttributionTriggerMatcherConfig(
       ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_,
       ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_,
-      ::testing::Matcher<const AttributionFilters&> filters = ::testing::_,
+      ::testing::Matcher<const attribution_reporting::Filters&> filters =
+          ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
       ::testing::Matcher<const std::vector<
           AttributionTrigger::EventTriggerData>&> event_triggers = ::testing::_,
@@ -998,7 +993,8 @@ DefaultAggregatableHistogramContributions(
     const std::vector<uint32_t>& histogram_values = {1});
 
 // Returns filters that match only the given source type.
-AttributionFilters AttributionFiltersForSourceType(AttributionSourceType);
+attribution_reporting::Filters AttributionFiltersForSourceType(
+    AttributionSourceType);
 
 }  // namespace content
 

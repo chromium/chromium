@@ -17,11 +17,11 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -50,7 +50,7 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
 }  // namespace
 
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
-    const AttributionFilterData& source_filter_data,
+    const attribution_reporting::FilterData& source_filter_data,
     AttributionSourceType source_type,
     const attribution_reporting::AggregationKeys& keys,
     const std::vector<AttributionAggregatableTriggerData>&

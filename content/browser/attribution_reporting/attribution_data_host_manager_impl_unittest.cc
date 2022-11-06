@@ -45,6 +45,8 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
+using AttributionFilters = ::attribution_reporting::Filters;
+
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -516,7 +518,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
     trigger_data->debug_key = 789;
 
     trigger_data->filters = blink::mojom::AttributionFilterData::New(
-        AttributionFilterValues({{"a", {"b"}}}));
+        attribution_reporting::FilterValues({{"a", {"b"}}}));
     trigger_data->not_filters = blink::mojom::AttributionFilterData::New();
 
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
@@ -524,10 +526,10 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
         /*priority=*/2, /*dedup_key=*/3,
         /*filters=*/
         blink::mojom::AttributionFilterData::New(
-            AttributionFilterValues({{"c", {"d"}}})),
+            attribution_reporting::FilterValues({{"c", {"d"}}})),
         /*not_filters=*/
         blink::mojom::AttributionFilterData::New(
-            AttributionFilterValues({{"e", {"f"}}}))));
+            attribution_reporting::FilterValues({{"e", {"f"}}}))));
 
     trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
         /*data=*/4,

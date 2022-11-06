@@ -21,8 +21,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -67,7 +67,7 @@ struct AggregatableContributionRecord {
 };
 
 std::string CreateSerializedFilterData(
-    const AttributionFilterValues& filter_values) {
+    const attribution_reporting::FilterValues& filter_values) {
   proto::AttributionFilterData msg;
 
   for (const auto& [filter, values] : filter_values) {

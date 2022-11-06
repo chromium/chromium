@@ -15,8 +15,8 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -116,8 +116,9 @@ SourceRegistration::Parse(base::Value::Dict registration,
 
   result.debug_key = ParseUint64(registration, "debug_key");
 
-  base::expected<AttributionFilterData, SourceRegistrationError> filter_data =
-      AttributionFilterData::FromJSON(registration.Find("filter_data"));
+  base::expected<attribution_reporting::FilterData, SourceRegistrationError>
+      filter_data = attribution_reporting::FilterData::FromJSON(
+          registration.Find("filter_data"));
   if (!filter_data.has_value())
     return base::unexpected(filter_data.error());
 

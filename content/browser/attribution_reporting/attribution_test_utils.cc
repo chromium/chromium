@@ -22,8 +22,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
@@ -506,7 +506,8 @@ SourceBuilder& SourceBuilder::SetPriority(int64_t priority) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetFilterData(AttributionFilterData filter_data) {
+SourceBuilder& SourceBuilder::SetFilterData(
+    attribution_reporting::FilterData filter_data) {
   filter_data_ = std::move(filter_data);
   return *this;
 }
@@ -681,19 +682,20 @@ AttributionTrigger TriggerBuilder::Build(
         trigger_data_, priority_, dedup_key_,
         /*filters=*/
         AttributionFiltersForSourceType(AttributionSourceType::kNavigation),
-        /*not_filters=*/AttributionFilters());
+        /*not_filters=*/attribution_reporting::Filters());
 
     event_triggers.emplace_back(
         event_source_trigger_data_, priority_, dedup_key_,
         /*filters=*/
         AttributionFiltersForSourceType(AttributionSourceType::kEvent),
-        /*not_filters=*/AttributionFilters());
+        /*not_filters=*/attribution_reporting::Filters());
   }
 
   return AttributionTrigger(destination_origin_, reporting_origin_,
-                            /*filters=*/AttributionFilters(),
-                            /*not_filters=*/AttributionFilters(), debug_key_,
-                            aggregatable_dedup_key_, std::move(event_triggers),
+                            /*filters=*/attribution_reporting::Filters(),
+                            /*not_filters=*/attribution_reporting::Filters(),
+                            debug_key_, aggregatable_dedup_key_,
+                            std::move(event_triggers),
                             aggregatable_trigger_data_, aggregatable_values_);
 }
 
@@ -801,15 +803,6 @@ bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
                            t.aggregatable_values(), t.aggregatable_dedup_key());
   };
   return tie(a) == tie(b);
-}
-
-bool operator==(const AttributionFilterData& a,
-                const AttributionFilterData& b) {
-  return a.filter_values() == b.filter_values();
-}
-
-bool operator==(const AttributionFilters& a, const AttributionFilters& b) {
-  return a.filter_values() == b.filter_values();
 }
 
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
@@ -1123,41 +1116,6 @@ std::ostream& operator<<(std::ostream& out,
   return out << "}";
 }
 
-namespace {
-
-std::ostream& WriteAttributionFilterValues(
-    std::ostream& out,
-    const AttributionFilterValues& filter_values) {
-  out << "{";
-
-  const char* outer_separator = "";
-  for (const auto& [filter, values] : filter_values) {
-    out << outer_separator << filter << "=[";
-
-    const char* inner_separator = "";
-    for (const auto& value : values) {
-      out << inner_separator << value;
-      inner_separator = ", ";
-    }
-
-    out << "]";
-    outer_separator = ", ";
-  }
-
-  return out << "}";
-}
-
-}  // namespace
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionFilterData& filter_data) {
-  return WriteAttributionFilterValues(out, filter_data.filter_values());
-}
-
-std::ostream& operator<<(std::ostream& out, const AttributionFilters& filters) {
-  return WriteAttributionFilterValues(out, filters.filter_values());
-}
-
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
   return out << "{source_event_id=" << source.source_event_id()
              << ",source_origin=" << source.source_origin()
@@ -1378,8 +1336,8 @@ EventTriggerDataMatcherConfig::EventTriggerDataMatcherConfig(
     ::testing::Matcher<uint64_t> data,
     ::testing::Matcher<int64_t> priority,
     ::testing::Matcher<absl::optional<uint64_t>> dedup_key,
-    ::testing::Matcher<const AttributionFilters&> filters,
-    ::testing::Matcher<const AttributionFilters&> not_filters)
+    ::testing::Matcher<const attribution_reporting::Filters&> filters,
+    ::testing::Matcher<const attribution_reporting::Filters&> not_filters)
     : data(std::move(data)),
       priority(std::move(priority)),
       dedup_key(std::move(dedup_key)),
@@ -1405,7 +1363,7 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
 AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
     ::testing::Matcher<const url::Origin&> destination_origin,
     ::testing::Matcher<const url::Origin&> reporting_origin,
-    ::testing::Matcher<const AttributionFilters&> filters,
+    ::testing::Matcher<const attribution_reporting::Filters&> filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
     ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
         event_triggers,
@@ -1489,8 +1447,8 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
         AttributionAggregatableTriggerData::CreateForTesting(
             absl::MakeUint128(/*high=*/i, /*low=*/0),
             /*source_keys=*/base::flat_set<std::string>{key_id},
-            /*filters=*/AttributionFilters(),
-            /*not_filters=*/AttributionFilters()));
+            /*filters=*/attribution_reporting::Filters(),
+            /*not_filters=*/attribution_reporting::Filters()));
     aggregatable_values.emplace(std::move(key_id), histogram_values[i]);
   }
 
@@ -1510,18 +1468,18 @@ DefaultAggregatableHistogramContributions(
   return contributions;
 }
 
-AttributionFilters AttributionFiltersForSourceType(
+attribution_reporting::Filters AttributionFiltersForSourceType(
     AttributionSourceType source_type) {
   std::vector<std::string> values;
   values.reserve(1);
   values.push_back(AttributionSourceTypeToString(source_type));
 
-  AttributionFilterValues filter_values;
+  attribution_reporting::FilterValues filter_values;
   filter_values.reserve(1);
-  filter_values.emplace(AttributionFilterData::kSourceTypeFilterKey,
+  filter_values.emplace(attribution_reporting::FilterData::kSourceTypeFilterKey,
                         std::move(values));
 
-  return *AttributionFilters::Create(std::move(filter_values));
+  return *attribution_reporting::Filters::Create(std::move(filter_values));
 }
 
 }  // namespace content

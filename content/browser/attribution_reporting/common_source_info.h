@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,7 +41,7 @@ class CONTENT_EXPORT CommonSourceInfo {
                    absl::optional<base::Time> aggregatable_report_window_time,
                    AttributionSourceType source_type,
                    int64_t priority,
-                   AttributionFilterData filter_data,
+                   attribution_reporting::FilterData filter_data,
                    absl::optional<uint64_t> debug_key,
                    attribution_reporting::AggregationKeys aggregation_keys);
 
@@ -77,7 +77,9 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   int64_t priority() const { return priority_; }
 
-  const AttributionFilterData& filter_data() const { return filter_data_; }
+  const attribution_reporting::FilterData& filter_data() const {
+    return filter_data_;
+  }
 
   absl::optional<uint64_t> debug_key() const { return debug_key_; }
 
@@ -110,7 +112,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   base::Time aggregatable_report_window_time_;
   AttributionSourceType source_type_;
   int64_t priority_;
-  AttributionFilterData filter_data_;
+  attribution_reporting::FilterData filter_data_;
   absl::optional<uint64_t> debug_key_;
   attribution_reporting::AggregationKeys aggregation_keys_;
 

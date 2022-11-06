@@ -424,8 +424,6 @@ source_set("browser") {
     "attribution_reporting/attribution_debug_report.h",
     "attribution_reporting/attribution_default_random_generator.cc",
     "attribution_reporting/attribution_default_random_generator.h",
-    "attribution_reporting/attribution_filter_data.cc",
-    "attribution_reporting/attribution_filter_data.h",
     "attribution_reporting/attribution_header_utils.cc",
     "attribution_reporting/attribution_header_utils.h",
     "attribution_reporting/attribution_host.cc",

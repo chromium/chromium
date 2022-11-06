@@ -15,10 +15,10 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -32,7 +32,7 @@ namespace {
 
 using ::testing::ElementsAre;
 
-using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
+using AttributionFilters = ::attribution_reporting::Filters;
 
 }  // namespace
 
@@ -76,8 +76,8 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
           /*not_filters=*/
           *AttributionFilters::Create({{"filter", {"value"}}}))};
 
-  absl::optional<AttributionFilterData> source_filter_data =
-      AttributionFilterData::Create({{"filter", {"value"}}});
+  absl::optional<attribution_reporting::FilterData> source_filter_data =
+      attribution_reporting::FilterData::Create({{"filter", {"value"}}});
   ASSERT_TRUE(source_filter_data.has_value());
 
   auto aggregatable_values = AttributionAggregatableValues::CreateForTesting(
@@ -135,7 +135,8 @@ TEST(AggregatableAttributionUtilsTest,
 
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
-          AttributionFilterData(), AttributionSourceType::kNavigation, *source,
+          attribution_reporting::FilterData(),
+          AttributionSourceType::kNavigation, *source,
           /*aggregatable_trigger_data=*/{},
           /*aggregatable_values=*/
           AttributionAggregatableValues::CreateForTesting({{"key2", 32768}}));

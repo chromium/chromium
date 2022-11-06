@@ -16,8 +16,8 @@ AttributionTrigger::EventTriggerData::EventTriggerData(
     uint64_t data,
     int64_t priority,
     absl::optional<uint64_t> dedup_key,
-    AttributionFilters filters,
-    AttributionFilters not_filters)
+    attribution_reporting::Filters filters,
+    attribution_reporting::Filters not_filters)
     : data(data),
       priority(priority),
       dedup_key(dedup_key),
@@ -27,8 +27,8 @@ AttributionTrigger::EventTriggerData::EventTriggerData(
 AttributionTrigger::AttributionTrigger(
     url::Origin destination_origin,
     url::Origin reporting_origin,
-    AttributionFilters filters,
-    AttributionFilters not_filters,
+    attribution_reporting::Filters filters,
+    attribution_reporting::Filters not_filters,
     absl::optional<uint64_t> debug_key,
     absl::optional<uint64_t> aggregatable_dedup_key,
     std::vector<EventTriggerData> event_triggers,

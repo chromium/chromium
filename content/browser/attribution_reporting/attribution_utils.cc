@@ -12,7 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 
@@ -125,9 +125,9 @@ std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
   return output_json;
 }
 
-bool AttributionFilterDataMatch(const AttributionFilterData& source,
+bool AttributionFilterDataMatch(const attribution_reporting::FilterData& source,
                                 AttributionSourceType source_type,
-                                const AttributionFilters& trigger,
+                                const attribution_reporting::Filters& trigger,
                                 bool negated) {
   // A filter is considered matched if the filter key is only present either on
   // the source or trigger, or the intersection of the filter values is
@@ -140,7 +140,7 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
   return base::ranges::all_of(
       trigger.filter_values(), [&](const auto& trigger_filter) {
         if (trigger_filter.first ==
-            AttributionFilterData::kSourceTypeFilterKey) {
+            attribution_reporting::FilterData::kSourceTypeFilterKey) {
           bool has_intersection = base::ranges::any_of(
               trigger_filter.second, [&](const std::string& value) {
                 return value == AttributionSourceTypeToString(source_type);
@@ -170,10 +170,11 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
       });
 }
 
-bool AttributionFiltersMatch(const AttributionFilterData& source_filter_data,
-                             AttributionSourceType source_type,
-                             const AttributionFilters& trigger_filters,
-                             const AttributionFilters& trigger_not_filters) {
+bool AttributionFiltersMatch(
+    const attribution_reporting::FilterData& source_filter_data,
+    AttributionSourceType source_type,
+    const attribution_reporting::Filters& trigger_filters,
+    const attribution_reporting::Filters& trigger_not_filters) {
   return AttributionFilterDataMatch(source_filter_data, source_type,
                                     trigger_filters) &&
          AttributionFilterDataMatch(source_filter_data, source_type,

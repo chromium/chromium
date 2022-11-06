@@ -15,6 +15,8 @@ component("attribution_reporting") {
     "aggregation_keys.cc",
     "aggregation_keys.h",
     "constants.h",
+    "filters.cc",
+    "filters.h",
     "parse.cc",
     "parse.h",
   ]
@@ -36,7 +38,10 @@ component("attribution_reporting") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "parse_unittest.cc" ]
+  sources = [
+    "filters_unittest.cc",
+    "parse_unittest.cc",
+  ]
 
   deps = [
     ":attribution_reporting",

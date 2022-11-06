@@ -17,8 +17,8 @@ absl::optional<AttributionAggregatableTriggerData>
 AttributionAggregatableTriggerData::Create(
     absl::uint128 key_piece,
     base::flat_set<std::string> source_keys,
-    AttributionFilters filters,
-    AttributionFilters not_filters) {
+    attribution_reporting::Filters filters,
+    attribution_reporting::Filters not_filters) {
   if (source_keys.size() >
       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger) {
     return absl::nullopt;
@@ -40,8 +40,8 @@ AttributionAggregatableTriggerData
 AttributionAggregatableTriggerData::CreateForTesting(
     absl::uint128 key_piece,
     base::flat_set<std::string> source_keys,
-    AttributionFilters filters_values,
-    AttributionFilters not_filters_values) {
+    attribution_reporting::Filters filters_values,
+    attribution_reporting::Filters not_filters_values) {
   return AttributionAggregatableTriggerData(key_piece, std::move(source_keys),
                                             std::move(filters_values),
                                             std::move(not_filters_values));
@@ -50,8 +50,8 @@ AttributionAggregatableTriggerData::CreateForTesting(
 AttributionAggregatableTriggerData::AttributionAggregatableTriggerData(
     absl::uint128 key_piece,
     base::flat_set<std::string> source_keys,
-    AttributionFilters filters,
-    AttributionFilters not_filters)
+    attribution_reporting::Filters filters,
+    attribution_reporting::Filters not_filters)
     : key_piece_(key_piece),
       source_keys_(std::move(source_keys)),
       filters_(std::move(filters)),

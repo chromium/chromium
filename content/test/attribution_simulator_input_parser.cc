@@ -23,10 +23,10 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -284,8 +284,8 @@ class AttributionSimulatorInputParser {
         ParseOrigin(trigger_dict, "destination_origin");
 
     absl::optional<uint64_t> debug_key;
-    AttributionFilters filters;
-    AttributionFilters not_filters;
+    attribution_reporting::Filters filters;
+    attribution_reporting::Filters not_filters;
     std::vector<AttributionTrigger::EventTriggerData> event_triggers;
     std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
     AttributionAggregatableValues aggregatable_values;
@@ -355,9 +355,11 @@ class AttributionSimulatorInputParser {
           absl::optional<uint64_t> dedup_key =
               ParseOptionalUint64(dict, "deduplication_key");
 
-          AttributionFilters filters = ParseFilters(dict, "filters");
+          attribution_reporting::Filters filters =
+              ParseFilters(dict, "filters");
 
-          AttributionFilters not_filters = ParseFilters(dict, "not_filters");
+          attribution_reporting::Filters not_filters =
+              ParseFilters(dict, "not_filters");
 
           if (has_error())
             return;
@@ -492,18 +494,18 @@ class AttributionSimulatorInputParser {
     return true;
   }
 
-  AttributionFilters ParseFilters(const base::Value::Dict& dict,
-                                  base::StringPiece key) {
+  attribution_reporting::Filters ParseFilters(const base::Value::Dict& dict,
+                                              base::StringPiece key) {
     auto context = PushContext(key);
 
     const base::Value* value = dict.Find(key);
     if (!value)
-      return AttributionFilters();
+      return attribution_reporting::Filters();
 
     if (!EnsureDictionary(*value))
-      return AttributionFilters();
+      return attribution_reporting::Filters();
 
-    AttributionFilterValues::container_type container;
+    attribution_reporting::FilterValues::container_type container;
     for (auto [filter, values_list] : value->GetDict()) {
       auto filter_context = PushContext(filter);
       std::vector<std::string> values;
@@ -520,13 +522,13 @@ class AttributionSimulatorInputParser {
       container.emplace_back(filter, std::move(values));
     }
 
-    absl::optional<AttributionFilters> filters =
-        AttributionFilters::Create(std::move(container));
+    absl::optional<attribution_reporting::Filters> filters =
+        attribution_reporting::Filters::Create(std::move(container));
     // TODO(apaseltiner): Provide more detailed information.
     if (!filters)
       *Error() << "invalid";
 
-    return std::move(filters).value_or(AttributionFilters());
+    return std::move(filters).value_or(attribution_reporting::Filters());
   }
 
   absl::uint128 ParseAggregationKey(const base::Value& key_value) {
@@ -604,10 +606,10 @@ class AttributionSimulatorInputParser {
                 }
               }
 
-              AttributionFilters filters =
+              attribution_reporting::Filters filters =
                   ParseFilters(trigger_dict, "filters");
 
-              AttributionFilters not_filters =
+              attribution_reporting::Filters not_filters =
                   ParseFilters(trigger_dict, "not_filters");
 
               auto trigger_data = AttributionAggregatableTriggerData::Create(

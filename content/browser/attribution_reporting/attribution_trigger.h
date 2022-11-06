@@ -9,9 +9,9 @@
 
 #include <vector>
 
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -86,17 +86,17 @@ class CONTENT_EXPORT AttributionTrigger {
 
     // The filters used to determine whether this `EventTriggerData'`s fields
     // are used.
-    AttributionFilters filters;
+    attribution_reporting::Filters filters;
 
     // The negated filters used to determine whether this `EventTriggerData'`s
     // fields are used.
-    AttributionFilters not_filters;
+    attribution_reporting::Filters not_filters;
 
     EventTriggerData(uint64_t data,
                      int64_t priority,
                      absl::optional<uint64_t> dedup_key,
-                     AttributionFilters filters,
-                     AttributionFilters not_filters);
+                     attribution_reporting::Filters filters,
+                     attribution_reporting::Filters not_filters);
   };
 
   // Should only be created with values that the browser process has already
@@ -105,8 +105,8 @@ class CONTENT_EXPORT AttributionTrigger {
   AttributionTrigger(
       url::Origin destination_origin,
       url::Origin reporting_origin,
-      AttributionFilters filters,
-      AttributionFilters not_filters,
+      attribution_reporting::Filters filters,
+      attribution_reporting::Filters not_filters,
       absl::optional<uint64_t> debug_key,
       absl::optional<uint64_t> aggregatable_dedup_key,
       std::vector<EventTriggerData> event_triggers,
@@ -123,9 +123,11 @@ class CONTENT_EXPORT AttributionTrigger {
 
   const url::Origin& reporting_origin() const { return reporting_origin_; }
 
-  const AttributionFilters& filters() const { return filters_; }
+  const attribution_reporting::Filters& filters() const { return filters_; }
 
-  const AttributionFilters& not_filters() const { return not_filters_; }
+  const attribution_reporting::Filters& not_filters() const {
+    return not_filters_;
+  }
 
   absl::optional<uint64_t> debug_key() const { return debug_key_; }
 
@@ -156,9 +158,9 @@ class CONTENT_EXPORT AttributionTrigger {
   // reports.
   url::Origin reporting_origin_;
 
-  AttributionFilters filters_;
+  attribution_reporting::Filters filters_;
 
-  AttributionFilters not_filters_;
+  attribution_reporting::Filters not_filters_;
 
   absl::optional<uint64_t> debug_key_;
 

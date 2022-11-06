@@ -15,10 +15,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -47,6 +47,8 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
+
+using AttributionFilters = ::attribution_reporting::Filters;
 
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -271,8 +273,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetPriority(std::numeric_limits<int64_t>::max())
                .SetDedupKeys({13, 17})
                .SetAggregatableBudgetConsumed(1300)
-               .SetFilterData(
-                   *AttributionFilterData::Create({{"a", {"b", "c"}}}))
+               .SetFilterData(*attribution_reporting::FilterData::Create(
+                   {{"a", {"b", "c"}}}))
                .SetAggregationKeys(
                    *attribution_reporting::AggregationKeys::FromKeys(
                        {{"a", 1}}))

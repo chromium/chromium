@@ -14,9 +14,9 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -88,6 +88,8 @@ using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::SizeIs;
+
+using AttributionFilters = ::attribution_reporting::Filters;
 
 // Pick an arbitrary offset time to test correct handling.
 constexpr base::Time kOffsetTime = base::Time::UnixEpoch() + base::Days(5);
@@ -229,7 +231,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetPriority(0)      // default
                   .SetDebugKey(absl::nullopt)  // default
                   .SetDebugReporting(false)    // default
-                  .SetFilterData(*AttributionFilterData::Create({
+                  .SetFilterData(*attribution_reporting::FilterData::Create({
                       {"a", {}},
                       {"b", {"c", "d"}},
                   }))

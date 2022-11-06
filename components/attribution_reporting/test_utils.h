@@ -10,10 +10,20 @@
 namespace attribution_reporting {
 
 class AggregationKeys;
+class FilterData;
+class Filters;
 
 bool operator==(const AggregationKeys&, const AggregationKeys&);
 
 std::ostream& operator<<(std::ostream&, const AggregationKeys&);
+
+bool operator==(const FilterData&, const FilterData&);
+
+std::ostream& operator<<(std::ostream&, const FilterData&);
+
+bool operator==(const Filters&, const Filters&);
+
+std::ostream& operator<<(std::ostream&, const Filters&);
 
 }  // namespace attribution_reporting
 

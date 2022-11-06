@@ -17,8 +17,8 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -35,6 +35,7 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 using AttributionAggregationKeys = ::attribution_reporting::AggregationKeys;
+using AttributionFilterData = ::attribution_reporting::FilterData;
 
 TEST(AttributionRegistrationParsingTest, ParseAggregationKeys) {
   const struct {

@@ -6,13 +6,17 @@
 
 #include <string>
 
-#include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 namespace {
+
+using AttributionFilterData = ::attribution_reporting::FilterData;
+using AttributionFilters = ::attribution_reporting::Filters;
+using AttributionFilterValues = ::attribution_reporting::FilterValues;
 
 TEST(AttributionUtilsTest, EmptyOrMissingAttributionFilters) {
   const auto empty_filter = AttributionFilterValues();

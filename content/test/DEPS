@@ -47,11 +47,13 @@ include_rules = [
 specific_include_rules = {
   "attribution_simulator_input_parser.cc": [
     "+components/attribution_reporting/constants.h",
+    "+components/attribution_reporting/filters.h",
     "+components/attribution_reporting/source_registration_error.mojom.h",
   ],
   "attribution_simulator_input_parser_unittest.cc": [
     "+components/attribution_reporting/aggregation_keys.h",
     "+components/attribution_reporting/constants.h",
+    "+components/attribution_reporting/filters.h",
   ],
   "gpu_browsertest_helpers.cc": [
     "+services/viz/public/cpp/gpu/command_buffer_metrics.h",

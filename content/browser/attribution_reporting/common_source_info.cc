@@ -44,7 +44,7 @@ CommonSourceInfo::CommonSourceInfo(
     absl::optional<base::Time> aggregatable_report_window_time,
     AttributionSourceType source_type,
     int64_t priority,
-    AttributionFilterData filter_data,
+    attribution_reporting::FilterData filter_data,
     absl::optional<uint64_t> debug_key,
     attribution_reporting::AggregationKeys aggregation_keys)
     : source_event_id_(source_event_id),
