@@ -39,6 +39,7 @@
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -768,14 +769,26 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
     data.link_text = anchor->innerText().Utf8();
 
-    if (anchor->FastHasAttribute(html_names::kAttributionsrcAttr)) {
-      const AtomicString& attribution_src_value =
-          anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
-      if (!attribution_src_value.IsNull()) {
+    if (const AtomicString& attribution_src_value =
+            anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
+        !attribution_src_value.IsNull()) {
+      // TODO(crbug.com/1381123): The background request should be sent at
+      // navigation, not context-menu creation.
+      if (!attribution_src_value.empty()) {
         data.impression =
             selected_frame->GetAttributionSrcLoader()->RegisterNavigation(
                 selected_frame->GetDocument()->CompleteURL(
-                    attribution_src_value));
+                    attribution_src_value),
+                /*element=*/anchor);
+      }
+
+      // An impression should be attached to the navigation regardless of
+      // whether a background request would have been allowed or attempted.
+      if (!data.impression &&
+          selected_frame->GetAttributionSrcLoader()->CanRegister(
+              result.AbsoluteLinkURL(), /*element=*/anchor,
+              /*request_id=*/absl::nullopt)) {
+        data.impression = blink::Impression();
       }
     }
   }

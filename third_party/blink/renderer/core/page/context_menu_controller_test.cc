@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
+#include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/weburl_loader_mock.h"
@@ -1964,6 +1966,117 @@ TEST_P(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
     EXPECT_EQ(context_menu_data.field_renderer_id.has_value(),
               is_field_renderer_id_present);
     EXPECT_EQ(context_menu_data.input_field_type, input_field_type);
+  }
+}
+
+TEST_P(ContextMenuControllerTest, AttributionSrc) {
+  // The context must be secure for attributionsrc to work at all.
+  frame_test_helpers::LoadHTMLString(
+      LocalMainFrame(), R"(<html><body>)",
+      url_test_helpers::ToKURL("https://test.com/"));
+
+  static constexpr char kSecureURL[] = "https://a.com/";
+  static constexpr char kInsecureURL[] = "http://b.com/";
+
+  const struct {
+    const char* href;
+    const char* attributionsrc;
+    bool impression_expected;
+  } kTestCases[] = {
+      {
+          .href = nullptr,
+          .attributionsrc = nullptr,
+          .impression_expected = false,
+      },
+      {
+          .href = nullptr,
+          .attributionsrc = "",
+          .impression_expected = false,
+      },
+      {
+          .href = nullptr,
+          .attributionsrc = kInsecureURL,
+          .impression_expected = false,
+      },
+      {
+          .href = nullptr,
+          .attributionsrc = kSecureURL,
+          .impression_expected = false,
+      },
+      {
+          .href = kInsecureURL,
+          .attributionsrc = nullptr,
+          .impression_expected = false,
+      },
+      {
+          .href = kInsecureURL,
+          .attributionsrc = "",
+          .impression_expected = false,
+      },
+      {
+          .href = kInsecureURL,
+          .attributionsrc = kInsecureURL,
+          .impression_expected = false,
+      },
+      {
+          .href = kInsecureURL,
+          .attributionsrc = kSecureURL,
+          // TODO(crbug.com/1381123): This should be false.
+          .impression_expected = true,
+      },
+      {
+          .href = kSecureURL,
+          .attributionsrc = nullptr,
+          .impression_expected = false,
+      },
+      {
+          .href = kSecureURL,
+          .attributionsrc = "",
+          .impression_expected = true,
+      },
+      {
+          .href = kSecureURL,
+          .attributionsrc = kInsecureURL,
+          .impression_expected = true,
+      },
+      {
+          .href = kSecureURL,
+          .attributionsrc = kSecureURL,
+          .impression_expected = true,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    absl::optional<blink::test::ScopedMockedURLLoad> load;
+    if (test_case.attributionsrc == kSecureURL) {
+      // TODO(crbug.com/1381123): Remove this once the background attributionsrc
+      // request is made on the navigation, not context-menu creation.
+      load.emplace(url_test_helpers::ToKURL(kSecureURL),
+                   test::CoreTestDataPath("foo.html"));
+    }
+
+    Persistent<HTMLAnchorElement> anchor =
+        MakeGarbageCollected<HTMLAnchorElement>(*GetDocument());
+    anchor->setInnerText("abc");
+
+    if (test_case.href)
+      anchor->SetHref(test_case.href);
+
+    if (test_case.attributionsrc) {
+      anchor->setAttribute(html_names::kAttributionsrcAttr,
+                           test_case.attributionsrc);
+    }
+
+    GetDocument()->body()->AppendChild(anchor);
+    ASSERT_TRUE(ShowContextMenuForElement(anchor, kMenuSourceMouse));
+
+    url_test_helpers::ServeAsynchronousRequests();
+
+    ContextMenuData context_menu_data =
+        GetWebFrameClient().GetContextMenuData();
+
+    EXPECT_EQ(context_menu_data.impression.has_value(),
+              test_case.impression_expected);
   }
 }
 
