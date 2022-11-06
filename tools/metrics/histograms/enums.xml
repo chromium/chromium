@@ -63578,6 +63578,7 @@ from previous Chrome versions.
   <int value="1526574513" label="HoldingSpaceRefresh:enabled"/>
   <int value="1526718531"
       label="DarkenWebsitesCheckboxInThemesSetting:enabled"/>
+  <int value="1527072723" label="PdfUseSkiaRenderer:enabled"/>
   <int value="1527172748" label="disable-http2-grease-settings"/>
   <int value="1527292264" label="DisplayChangeModal:enabled"/>
   <int value="1529979182" label="EnablePasswordSelection:enabled"/>
@@ -63603,6 +63604,7 @@ from previous Chrome versions.
   <int value="1543027970" label="EnableDisplayZoomSetting:disabled"/>
   <int value="1543349770" label="CastUseBlocklistForRemotingQuery:disabled"/>
   <int value="1544413751" label="PasswordStrengthIndicator:enabled"/>
+  <int value="1544561349" label="PdfUseSkiaRenderer:disabled"/>
   <int value="1546652609" label="SharingHubDesktopOmnibox:disabled"/>
   <int value="1548776701" label="AllBookmarks:disabled"/>
   <int value="1548942246" label="PassiveDocumentEventListeners:disabled"/>

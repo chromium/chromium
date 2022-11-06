@@ -5556,6 +5556,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "pdf-use-skia-renderer",
+    "owners": [ "nigi", "//pdf/OWNERS" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "pdf-xfa-forms",
     "owners": [ "thestig", "//pdf/OWNERS" ],
     "expiry_milestone": 115

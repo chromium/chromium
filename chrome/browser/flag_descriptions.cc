@@ -36,6 +36,9 @@ const char kAcceleratedVideoEncodeDescription[] =
 const char kAccessiblePDFFormName[] = "Accessible PDF Forms";
 const char kAccessiblePDFFormDescription[] =
     "Enables accessibility support for PDF forms.";
+
+const char kPdfUseSkiaRendererName[] = "Use Skia Renderer";
+const char kPdfUseSkiaRendererDescription[] = "Use Skia as the PDF renderer.";
 #endif
 
 const char kAccountIdMigrationName[] = "Account ID migration";

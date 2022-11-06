@@ -52,6 +52,9 @@ extern const char kAcceleratedVideoEncodeDescription[];
 #if BUILDFLAG(ENABLE_PDF)
 extern const char kAccessiblePDFFormName[];
 extern const char kAccessiblePDFFormDescription[];
+
+extern const char kPdfUseSkiaRendererName[];
+extern const char kPdfUseSkiaRendererDescription[];
 #endif
 
 extern const char kAccountIdMigrationName[];

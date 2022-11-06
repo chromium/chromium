@@ -23,6 +23,10 @@ BASE_FEATURE(kPdfPartialLoading,
              "PdfPartialLoading",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPdfUseSkiaRenderer,
+             "PdfUseSkiaRenderer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature has no effect if Chrome is built with no XFA support.
 BASE_FEATURE(kPdfXfaSupport,
              "PdfXfaSupport",
