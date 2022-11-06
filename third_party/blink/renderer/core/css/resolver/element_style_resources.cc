@@ -371,7 +371,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
       }
       case CSSPropertyID::kBorderImageSource: {
         if (auto* pending_value = PendingCssValue(style.BorderImageSource()))
-          style.SetBorderImageSource(loader.Load(*pending_value));
+          builder.SetBorderImageSource(loader.Load(*pending_value));
         break;
       }
       case CSSPropertyID::kWebkitBoxReflect: {
@@ -389,7 +389,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
       }
       case CSSPropertyID::kWebkitMaskBoxImageSource: {
         if (auto* pending_value = PendingCssValue(style.MaskBoxImageSource()))
-          style.SetMaskBoxImageSource(loader.Load(*pending_value));
+          builder.SetMaskBoxImageSource(loader.Load(*pending_value));
         break;
       }
       case CSSPropertyID::kWebkitMaskImage: {

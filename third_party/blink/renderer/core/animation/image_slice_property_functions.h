@@ -46,16 +46,16 @@ class ImageSlicePropertyFunctions {
   }
 
   static void SetImageSlice(const CSSProperty& property,
-                            ComputedStyle& style,
+                            ComputedStyleBuilder& builder,
                             const ImageSlice& slice) {
     switch (property.PropertyID()) {
       case CSSPropertyID::kBorderImageSlice:
-        style.SetBorderImageSlices(slice.slices);
-        style.SetBorderImageSlicesFill(slice.fill);
+        builder.SetBorderImageSlices(slice.slices);
+        builder.SetBorderImageSlicesFill(slice.fill);
         break;
       case CSSPropertyID::kWebkitMaskBoxImageSlice:
-        style.SetMaskBoxImageSlices(slice.slices);
-        style.SetMaskBoxImageSlicesFill(slice.fill);
+        builder.SetMaskBoxImageSlices(slice.slices);
+        builder.SetMaskBoxImageSlicesFill(slice.fill);
         break;
       default:
         NOTREACHED();

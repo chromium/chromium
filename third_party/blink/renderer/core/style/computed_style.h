@@ -546,23 +546,19 @@ class ComputedStyle : public ComputedStyleBase,
   const LengthBox& BorderImageSlices() const {
     return BorderImage().ImageSlices();
   }
-  void SetBorderImageSlices(const LengthBox&);
 
   // border-image-source
   StyleImage* BorderImageSource() const { return BorderImage().GetImage(); }
-  CORE_EXPORT void SetBorderImageSource(StyleImage*);
 
   // border-image-width
   const BorderImageLengthBox& BorderImageWidth() const {
     return BorderImage().BorderSlices();
   }
-  void SetBorderImageWidth(const BorderImageLengthBox&);
 
   // border-image-outset
   const BorderImageLengthBox& BorderImageOutset() const {
     return BorderImage().Outset();
   }
-  void SetBorderImageOutset(const BorderImageLengthBox&);
 
   // Border width properties.
   LayoutUnit BorderTopWidth() const {
@@ -764,32 +760,20 @@ class ComputedStyle : public ComputedStyleBase,
   const BorderImageLengthBox& MaskBoxImageOutset() const {
     return MaskBoxImageInternal().Outset();
   }
-  void SetMaskBoxImageOutset(const BorderImageLengthBox& outset) {
-    MutableMaskBoxImageInternal().SetOutset(outset);
-  }
 
   // -webkit-mask-box-image-slice
   const LengthBox& MaskBoxImageSlices() const {
     return MaskBoxImageInternal().ImageSlices();
-  }
-  void SetMaskBoxImageSlices(const LengthBox& slices) {
-    MutableMaskBoxImageInternal().SetImageSlices(slices);
   }
 
   // -webkit-mask-box-image-source
   StyleImage* MaskBoxImageSource() const {
     return MaskBoxImageInternal().GetImage();
   }
-  void SetMaskBoxImageSource(StyleImage* v) {
-    MutableMaskBoxImageInternal().SetImage(v);
-  }
 
   // -webkit-mask-box-image-width
   const BorderImageLengthBox& MaskBoxImageWidth() const {
     return MaskBoxImageInternal().BorderSlices();
-  }
-  void SetMaskBoxImageWidth(const BorderImageLengthBox& slices) {
-    MutableMaskBoxImageInternal().SetBorderSlices(slices);
   }
 
   // Inherited properties.
@@ -1087,10 +1071,6 @@ class ComputedStyle : public ComputedStyleBase,
   const FillLayer& MaskLayers() const { return MaskInternal(); }
   const NinePieceImage& MaskBoxImage() const { return MaskBoxImageInternal(); }
   bool MaskBoxImageSlicesFill() const { return MaskBoxImageInternal().Fill(); }
-  void SetMaskBoxImage(const NinePieceImage& b) { SetMaskBoxImageInternal(b); }
-  void SetMaskBoxImageSlicesFill(bool fill) {
-    MutableMaskBoxImageInternal().SetFill(fill);
-  }
 
   // Text-combine utility functions.
   bool HasTextCombine() const { return TextCombine() != ETextCombine::kNone; }
@@ -1282,7 +1262,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool BorderImageSlicesFill() const { return BorderImage().Fill(); }
 
-  void SetBorderImageSlicesFill(bool);
   const BorderValue BorderLeft() const {
     return BorderValue(BorderLeftStyle(), BorderLeftColor(),
                        BorderLeftWidthInternal());
@@ -2801,6 +2780,33 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
   void ClearBackgroundImage();
 
+  // border-image-*
+  void SetBorderImageOutset(const BorderImageLengthBox& outset) {
+    if (BorderImage().Outset() == outset)
+      return;
+    MutableBorderImageInternal().SetOutset(outset);
+  }
+  void SetBorderImageSlices(const LengthBox& slices) {
+    if (BorderImage().ImageSlices() == slices)
+      return;
+    MutableBorderImageInternal().SetImageSlices(slices);
+  }
+  void SetBorderImageSlicesFill(bool fill) {
+    if (BorderImage().Fill() == fill)
+      return;
+    MutableBorderImageInternal().SetFill(fill);
+  }
+  void SetBorderImageSource(StyleImage* image) {
+    if (BorderImage().GetImage() == image)
+      return;
+    MutableBorderImageInternal().SetImage(image);
+  }
+  void SetBorderImageWidth(const BorderImageLengthBox& slices) {
+    if (BorderImage().BorderSlices() == slices)
+      return;
+    MutableBorderImageInternal().SetBorderSlices(slices);
+  }
+
   // clip
   void SetClip(const LengthBox& box) {
     SetHasAutoClipInternal(false);
@@ -2905,6 +2911,25 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
       AccessMaskLayers().CullEmptyLayers();
       AccessMaskLayers().FillUnsetProperties();
     }
+  }
+
+  // mask-box-image-*
+  const NinePieceImage& MaskBoxImage() const { return MaskBoxImageInternal(); }
+  void SetMaskBoxImage(const NinePieceImage& b) { SetMaskBoxImageInternal(b); }
+  void SetMaskBoxImageOutset(const BorderImageLengthBox& outset) {
+    MutableMaskBoxImageInternal().SetOutset(outset);
+  }
+  void SetMaskBoxImageSlices(const LengthBox& slices) {
+    MutableMaskBoxImageInternal().SetImageSlices(slices);
+  }
+  void SetMaskBoxImageSlicesFill(bool fill) {
+    MutableMaskBoxImageInternal().SetFill(fill);
+  }
+  void SetMaskBoxImageSource(StyleImage* v) {
+    MutableMaskBoxImageInternal().SetImage(v);
+  }
+  void SetMaskBoxImageWidth(const BorderImageLengthBox& slices) {
+    MutableMaskBoxImageInternal().SetBorderSlices(slices);
   }
 
   // opacity

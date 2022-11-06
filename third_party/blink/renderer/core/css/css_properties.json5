@@ -1895,6 +1895,7 @@
       is_border: true,
       // Overlaps with -webkit-border-image.
       overlapping: true,
+      readonly: true,
     },
     {
       name: "border-image-width",
@@ -5328,6 +5329,7 @@
       affected_by_all: false,
       // Overlaps with border-image.
       legacy_overlapping: true,
+      readonly: true,
     },
     {
       name: "-webkit-border-vertical-spacing",
@@ -5625,6 +5627,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       style_builder_custom_functions: ["value"],
+      readonly: true,
     },
     {
       name: "-webkit-mask-box-image-width",

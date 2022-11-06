@@ -276,19 +276,20 @@ void CSSImageSliceInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  ComputedStyle& style = *state.Style();
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   const auto& list = To<InterpolableList>(interpolable_value);
   const auto& types =
       To<CSSImageSliceNonInterpolableValue>(non_interpolable_value)->Types();
-  const auto& convert_side = [&types, &list, &style](wtf_size_t index) {
+  const auto& convert_side = [&types, &list, &builder](wtf_size_t index) {
     float value =
         ClampTo<float>(To<InterpolableNumber>(list.Get(index))->Value(), 0);
-    return types.is_number[index] ? Length::Fixed(value * style.EffectiveZoom())
-                                  : Length::Percent(value);
+    return types.is_number[index]
+               ? Length::Fixed(value * builder.EffectiveZoom())
+               : Length::Percent(value);
   };
   LengthBox box(convert_side(kSideTop), convert_side(kSideRight),
                 convert_side(kSideBottom), convert_side(kSideLeft));
-  ImageSlicePropertyFunctions::SetImageSlice(CssProperty(), style,
+  ImageSlicePropertyFunctions::SetImageSlice(CssProperty(), builder,
                                              ImageSlice(box, types.fill));
 }
 

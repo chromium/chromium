@@ -347,6 +347,7 @@
       type_name: "NinePieceImage",
       field_group: "surround",
       default_value: "NinePieceImage()",
+      readonly: true,
     },
     {
       name: "Background",
@@ -589,6 +590,7 @@
       default_value: "NinePieceImage::MaskDefaults()",
       include_paths: ["third_party/blink/renderer/core/style/nine_piece_image.h"],
       computed_style_custom_functions: ["getter", "setter"],
+      readonly: true,
     },
     {
       name: "PageSize",

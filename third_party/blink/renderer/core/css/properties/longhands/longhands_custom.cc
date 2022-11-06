@@ -1066,7 +1066,7 @@ const CSSValue* BorderImageSource::InitialValue() const {
 
 void BorderImageSource::ApplyValue(StyleResolverState& state,
                                    const CSSValue& value) const {
-  state.Style()->SetBorderImageSource(
+  state.StyleBuilder().SetBorderImageSource(
       state.GetStyleImage(CSSPropertyID::kBorderImageSource, value));
 }
 
@@ -8051,7 +8051,7 @@ void WebkitBorderImage::ApplyValue(StyleResolverState& state,
   NinePieceImage image;
   CSSToStyleMap::MapNinePieceImage(state, CSSPropertyID::kWebkitBorderImage,
                                    value, image);
-  state.Style()->SetBorderImage(image);
+  state.StyleBuilder().SetBorderImage(image);
 }
 
 const CSSValue* WebkitBorderVerticalSpacing::ParseSingleValue(
@@ -8357,7 +8357,7 @@ const CSSValue* WebkitMaskBoxImageSource::CSSValueFromComputedStyleInternal(
 
 void WebkitMaskBoxImageSource::ApplyValue(StyleResolverState& state,
                                           const CSSValue& value) const {
-  state.Style()->SetMaskBoxImageSource(
+  state.StyleBuilder().SetMaskBoxImageSource(
       state.GetStyleImage(CSSPropertyID::kWebkitMaskBoxImageSource, value));
 }
 

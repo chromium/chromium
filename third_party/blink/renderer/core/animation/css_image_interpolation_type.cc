@@ -271,13 +271,13 @@ void CSSImageInterpolationType::ApplyStandardPropertyValue(
                                         non_interpolable_value, state);
   switch (CssProperty().PropertyID()) {
     case CSSPropertyID::kBorderImageSource:
-      state.Style()->SetBorderImageSource(image);
+      state.StyleBuilder().SetBorderImageSource(image);
       break;
     case CSSPropertyID::kListStyleImage:
       state.StyleBuilder().SetListStyleImage(image);
       break;
     case CSSPropertyID::kWebkitMaskBoxImageSource:
-      state.Style()->SetMaskBoxImageSource(image);
+      state.StyleBuilder().SetMaskBoxImageSource(image);
       break;
     default:
       NOTREACHED();

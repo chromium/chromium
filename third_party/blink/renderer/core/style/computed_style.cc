@@ -2471,36 +2471,6 @@ LayoutRectOutsets ComputedStyle::ImageOutsets(
                                     BorderLeftWidth().ToInt()));
 }
 
-void ComputedStyle::SetBorderImageSource(StyleImage* image) {
-  if (BorderImage().GetImage() == image)
-    return;
-  MutableBorderImageInternal().SetImage(image);
-}
-
-void ComputedStyle::SetBorderImageSlices(const LengthBox& slices) {
-  if (BorderImage().ImageSlices() == slices)
-    return;
-  MutableBorderImageInternal().SetImageSlices(slices);
-}
-
-void ComputedStyle::SetBorderImageSlicesFill(bool fill) {
-  if (BorderImage().Fill() == fill)
-    return;
-  MutableBorderImageInternal().SetFill(fill);
-}
-
-void ComputedStyle::SetBorderImageWidth(const BorderImageLengthBox& slices) {
-  if (BorderImage().BorderSlices() == slices)
-    return;
-  MutableBorderImageInternal().SetBorderSlices(slices);
-}
-
-void ComputedStyle::SetBorderImageOutset(const BorderImageLengthBox& outset) {
-  if (BorderImage().Outset() == outset)
-    return;
-  MutableBorderImageInternal().SetOutset(outset);
-}
-
 bool ComputedStyle::BorderObscuresBackground() const {
   if (!HasBorder())
     return false;

@@ -123,7 +123,7 @@ state.GetFontBuilder().{{property.setter}}
     {% set getter = 'MaskBoxImage' if is_mask_box else 'BorderImage' %}
     {% set setter = 'Set' + getter %}
     {% call(property) apply_initial(property) %}
-  const NinePieceImage& current_image = state.Style()->{{getter}}();
+  const NinePieceImage& current_image = state.StyleBuilder().{{getter}}();
   {# Check for equality in case we can bail out before creating a new NinePieceImage. #}
       {% if modifier_type == 'Outset' %}
   if (style_building_utils::BorderImageLengthMatchesAllSides(current_image.Outset(),
@@ -169,10 +169,10 @@ state.GetFontBuilder().{{property.setter}}
       {% elif modifier_type == 'Width' %}
   image.SetBorderSlices({{ 'Length::Auto()' if is_mask_box else '1.0' }});
       {% endif %}
-  state.Style()->{{setter}}(image);
+  state.StyleBuilder().{{setter}}(image);
     {% endcall %}
     {% call(property) apply_inherit(property) %}
-  NinePieceImage image(state.Style()->{{getter}}());
+  NinePieceImage image(state.StyleBuilder().{{getter}}());
       {% if modifier_type == 'Outset' %}
   image.CopyOutsetFrom(state.ParentStyle()->{{getter}}());
       {% elif modifier_type == 'Repeat' %}
@@ -182,10 +182,10 @@ state.GetFontBuilder().{{property.setter}}
       {% elif modifier_type == 'Width' %}
   image.CopyBorderSlicesFrom(state.ParentStyle()->{{getter}}());
       {% endif %}
-  state.Style()->{{setter}}(image);
+  state.StyleBuilder().{{setter}}(image);
     {% endcall %}
     {% call(property) apply_value(property) %}
-  NinePieceImage image(state.Style()->{{getter}}());
+  NinePieceImage image(state.StyleBuilder().{{getter}}());
       {% if modifier_type == 'Outset' %}
   image.SetOutset(CSSToStyleMap::MapNinePieceImageQuad(state, value));
       {% elif modifier_type == 'Repeat' %}
@@ -195,7 +195,7 @@ state.GetFontBuilder().{{property.setter}}
       {% elif modifier_type == 'Width' %}
   image.SetBorderSlices(CSSToStyleMap::MapNinePieceImageQuad(state, value));
       {% endif %}
-  state.Style()->{{setter}}(image);
+  state.StyleBuilder().{{setter}}(image);
     {% endcall %}
   {% elif property.style_builder_template in ['animation', 'transition'] %}
     {% set attribute = property.style_builder_template_args['attribute'] %}

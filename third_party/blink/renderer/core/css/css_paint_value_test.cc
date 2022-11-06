@@ -134,12 +134,14 @@ TEST_P(CSSPaintValueTest, ReportingNonCompositedUMA) {
 
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   StyleGeneratedImage* style_image = MakeGarbageCollected<StyleGeneratedImage>(
       *paint_value, StyleGeneratedImage::ContainerSizes());
-  style->SetBorderImageSource(style_image);
+
+  auto builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+  builder.SetBorderImageSource(style_image);
+  auto style = builder.TakeStyle();
 
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
   EXPECT_CALL(*mock_generator, Paint(_, _, _))
