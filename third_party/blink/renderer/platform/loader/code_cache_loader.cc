@@ -64,7 +64,13 @@ void CodeCacheLoader::FetchFromCodeCacheSynchronously(
 void CodeCacheLoader::FetchFromCodeCache(mojom::CodeCacheType cache_type,
                                          const WebURL& url,
                                          FetchCodeCacheCallback callback) {
+  // https://linear.app/replay/issue/RUN-749
+  recordreplay::Assert("CodeCacheLoader::FetchFromCodeCache Start");
+
   FetchFromCodeCacheImpl(cache_type, url, std::move(callback), nullptr);
+
+  // https://linear.app/replay/issue/RUN-749
+  recordreplay::Assert("CodeCacheLoader::FetchFromCodeCache Done");
 }
 
 void CodeCacheLoader::FetchFromCodeCacheImpl(mojom::CodeCacheType cache_type,
