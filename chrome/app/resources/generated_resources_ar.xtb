@@ -536,6 +536,7 @@
 <translation id="1495677929897281669">الرجوع إلى علامة التبويب</translation>
 <translation id="1500297251995790841">جهاز غير معروف [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">‏مزيد من المعلومات حول "تطبيقات Chrome" التي تم إيقافها نهائيًا</translation>
+<translation id="1503392482221435031">‏يتيح هذا الخيار إمكانية إرسال إحصاءات الاستخدام إلى Google تلقائيًا. يمكنك تفعيل ميزة تقارير الأعطال أو إيقافها من خلال إعدادات جهازك.</translation>
 <translation id="150411034776756821">إزالة <ph name="SITE" /></translation>
 <translation id="1504551620756424144">‏تتوفّر المجلّدات المشترَكة في Windows على <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">تصدير كلمات المرور</translation>
@@ -2688,6 +2689,7 @@
 <translation id="3461766685318630278">يمكنك إنشاء حاويات إضافية وحذفها.</translation>
 <translation id="3462311546193741693">‏يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. وسيستمر تسجيل دخولك إلى حسابك على Google بحيث يمكن محو بياناتك التي تمت مزامنتها.</translation>
 <translation id="3462413494201477527">هل تريد إلغاء إنشاء الحساب؟</translation>
+<translation id="3462958980772249646">{COUNT,plural, =1{تم حفظ كلمة مرور واحدة ({COUNT}) على هذا الجهاز.}zero{تم حفظ {COUNT} كلمة مرور على هذا الجهاز.}two{تم حفظ كلمتَي مرور ({COUNT}) على هذا الجهاز.}few{تم حفظ {COUNT} كلمات مرور على هذا الجهاز.}many{تم حفظ {COUNT} كلمة مرور على هذا الجهاز.}other{تم حفظ {COUNT} كلمة مرور على هذا الجهاز.}}</translation>
 <translation id="346298925039590474">ستكون شبكة الجوّال هذه متاحة لجميع المستخدمين على هذا الجهاز.</translation>
 <translation id="3464145797867108663">إضافة ملف شخصي للعمل</translation>
 <translation id="346431825526753">هذا هو حساب للأطفال يديره <ph name="CUSTODIAN_EMAIL" />.</translation>
@@ -2985,6 +2987,7 @@
 <translation id="3743842571276656710">أدخِل رقم التعريف الشخصي للإقران مع الجهاز <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">‏لإزالة التطبيقات، انتقِل إلى "الإعدادات" &gt; "متجر Google Play" &gt; إدارة إعدادات Android المفضّلة &gt; "التطبيقات" أو "مدير التطبيقات". ثم انقر على التطبيق الذي تريد إلغاء تثبيته (عليك التمرير السريع لليمين أو اليسار للعثور على التطبيق)، ثم انقر على "إلغاء التثبيت" أو "إيقاف".</translation>
 <translation id="3747603683749989726">هل تريد تفعيل ميزة الأمان المُحسّن؟</translation>
+<translation id="3748424433435232460">هناك كلمة مرور لهذا الحساب محفوظة حاليًا على هذا الجهاز.</translation>
 <translation id="3748706263662799310">الإبلاغ عن خطأ</translation>
 <translation id="3750562496035670393">‏حفظ متصفّح Chrome كلمة مرورك على هذا الجهاز، ويمكنك حفظها في حسابك على Google بدلاً من ذلك. وبعدها، ستكون جميع كلمات المرور في حسابك على Google متوفّرة أيضًا طالما أنّك مسجّلٌ الدخول إلى الحساب.</translation>
 <translation id="3752253558646317685">اطلب من طفلك مواصلة رفع إصبعه لحفظ بصمة الإصبع.</translation>
@@ -3165,6 +3168,7 @@
 <translation id="3897746662269329507">إنّ جهاز <ph name="DEVICE_TYPE" /> الخاص بك مُصمّم لتشغيل الألعاب. سيتم فتح تطبيق "استكشاف" بعد ذلك ليتيح لك الوصول إلى مئات الألعاب الجديدة والاطّلاع على عروض الألعاب والتعرُّف على ميزات الألعاب المتوفّرة على جهازك.</translation>
 <translation id="3898233949376129212">لغة الجهاز</translation>
 <translation id="3898327728850887246">يحتاج <ph name="SITE_NAME" /> إلى الإذنَين: <ph name="FIRST_PERMISSION" /> و<ph name="SECOND_PERMISSION" />.</translation>
+<translation id="3898743717925399322">‏تم حفظ كلمة مرور <ph name="WEBSITE" /> على هذا الجهاز وفي حسابك على Google. مِن أيّهما تريد حذف كلمة المرور هذه؟</translation>
 <translation id="389901847090970821">تحديد لوحة مفاتيح</translation>
 <translation id="3900966090527141178">تصدير كلمات المرور</translation>
 <translation id="3902789559055749153">اختَر الطريقة التي تريد من خلالها إنشاء مفتاح مرور لتسجيل الدخول إلى "<ph name="APP_NAME" />".</translation>
@@ -5887,6 +5891,7 @@
 <translation id="6508261954199872201">التطبيق: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">ترخيص الوسائط</translation>
 <translation id="6511827214781912955">ننصحك بحذف الملف "<ph name="FILENAME" />"، حتى لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
+<translation id="6512808201725371249">‏هناك كلمة مرور لهذا الحساب محفوظة حاليًا في "مدير كلمات المرور في Google" (<ph name="USER_EMAIL" />).</translation>
 <translation id="6513247462497316522">‏سيستخدم Google Chrome بيانات الجوال إذا لم تكن متصلاً بشبكة أخرى.</translation>
 <translation id="6514010653036109809">الجهاز المتاح:</translation>
 <translation id="6514565641373682518">أوقفت هذه الصفحة مؤشر الماوس.</translation>
@@ -6313,6 +6318,7 @@
 <translation id="6896758677409633944">نسخ</translation>
 <translation id="6897363604023044284">اختيار المواقع الإلكترونية لمحوها</translation>
 <translation id="6897688156970667447">يفيد استخدام هذا الوضع في الإضاءة المنخفضة ولتوفير شحن البطارية.</translation>
+<translation id="6897972855231767338">مزيد من المعلومات حول التصفُّح في وضع الضيف</translation>
 <translation id="6898440773573063262">الآن، يمكن إعداد تطبيقات الكشك للبدء التلقائي على هذا الجهاز.</translation>
 <translation id="6900284862687837908">تطبيق الخلفية: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">حماية مُحسّنة</translation>
@@ -8620,6 +8626,7 @@
 <translation id="9057007989365783744">هناك طلب من <ph name="SUPERVISED_USER_NAME" /> بالوصول إلى المحتوى التالي:</translation>
 <translation id="9057354806206861646">تعديل الجدول الزمني</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{إشعار واحد تقريبًا في اليوم}zero{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}two{إشعاران ({NUM_NOTIFICATION}) تقريبًا في اليوم}few{{NUM_NOTIFICATION} إشعارات تقريبًا في اليوم}many{{NUM_NOTIFICATION} إشعارًا تقريبًا في اليوم}other{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}}</translation>
+<translation id="9061383912634843744">تتيح لك هذه الميزة إمكانية تسجيل الدخول تلقائيًا إلى المواقع الإلكترونية والتطبيقات باستخدام بيانات الاعتماد المحفوظة. وعندما تكون هذه الميزة غير مفعّلة، سيُطلَب منك تأكيد بيانات الاعتماد في كل مرة قبل تسجيل الدخول إلى موقع إلكتروني أو تطبيق.</translation>
 <translation id="9062468308252555888">14 ضعفًا</translation>
 <translation id="9063208415146866933">خطأ من السطر رقم <ph name="ERROR_LINE_START" /> إلى <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">تفعيل الملء التلقائي لملء النماذج بنقرة واحدة</translation>

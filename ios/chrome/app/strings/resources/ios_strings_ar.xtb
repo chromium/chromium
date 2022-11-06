@@ -103,6 +103,7 @@
 <translation id="1657641691196698092">ملفات تعريف الارتباط المحظورة</translation>
 <translation id="165877110639533037">لا توجد علامات تبويب مفتوحة</translation>
 <translation id="1674504678466460478">من <ph name="SOURCE_LANGUAGE" /> إلى <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1683483432843341018">طلب عرض الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة</translation>
 <translation id="168715261339224929">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تفعيل المزامنة.</translation>
 <translation id="1687475363370981210">وضع العلامة كمقروءة على الكل</translation>
 <translation id="1689333818294560261">اللقب</translation>
@@ -241,6 +242,7 @@
 <translation id="288655811176831528">إغلاق علامة التبويب</translation>
 <translation id="2890171748217283516">‏تم حفظ المواقع الإلكترونية التي تُتابعها في حسابك على Google. يمكنك إدارة هذه المواقع الإلكترونية من خلال إعدادات القسم "اقتراحات".</translation>
 <translation id="2898963176829412617">مجلد جديد...</translation>
+<translation id="2902684821701498619">الإضافة إلى قائمة القراءة</translation>
 <translation id="2916171785467530738">‏الإكمال التلقائي لعناوين URL وعمليات البحث</translation>
 <translation id="291754862089661335">ضَع رمز الاستجابة السريعة أو الرمز الشريطي في هذا الإطار</translation>
 <translation id="2920866371965792875">للاطّلاع على التحديثات في هذا الموقع الإلكتروني، يُرجى النقر هنا.</translation>
@@ -318,6 +320,7 @@
 <translation id="3478058380795961209">شهر انتهاء الصلاحية</translation>
 <translation id="3482959374254649722">جارٍ مزامنة علامات التبويب الخاصة بك ...</translation>
 <translation id="3484946776651937681">فتح في الملف الخاصّ بعمليات التنزيل</translation>
+<translation id="3485558910355485767">نافذة جديدة للتصفُّح المتخفي</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول المحتوى المقترح</translation>
 <translation id="3494788280727468875">تأكيد محو بيانات التصفّح</translation>
 <translation id="35083190962747987">‏فتح عنوان ${url}</translation>
@@ -359,6 +362,7 @@
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3861486700625780712">إلغاء المتابعة</translation>
+<translation id="3863769054730344136">إرسال إلى أجهزتك</translation>
 <translation id="3892144330757387737">سيظهر لك السجلّ هنا</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3904829425754749514">أوقفت مؤسستك ميزة المزامنة. سيظل بإمكانك الاطّلاع على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى على هذا الجهاز. وفي حال إجراء أي تغييرات، لن تتم مزامنتها مع حسابك.</translation>
@@ -579,6 +583,7 @@
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
 <translation id="5669335982068190158">‏تم تسجيل خروجك كجزء من عملية إعادة ضبط هاتف iPhone. انقر على زر المتابعة أدناه لتسجيل الدخول.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5669617676038747374">إنشاء رمز استجابة سريعة</translation>
 <translation id="567881659373499783">الإصدار <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{‏يتم الآن عرض نافذة Chrome واحدة.}zero{‏يتم الآن عرض {count} نافذة Chrome.}two{‏يتم الآن عرض نافذتَي Chrome.({count})}few{‏يتم الآن عرض {count} نوافذ Chrome.}many{‏يتم الآن عرض {count} نافذة Chrome.}other{‏يتم الآن عرض {count} نافذة Chrome.}}</translation>
 <translation id="5701270923492462699">الوصول إلى الكاميرا مسموح به.</translation>
@@ -660,6 +665,7 @@
 <translation id="6219550825416862075">مرحبًا بك من جديد</translation>
 <translation id="6219688215832490856">عدم الترجمة مطلقًا</translation>
 <translation id="6223816392543092032">يمكنك الحصول على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
+<translation id="6229318421047648685">طلب عرض الموقع الإلكتروني المتوافق مع أجهزة الكمبيوتر المكتبي</translation>
 <translation id="6231782223312638214">مقترح</translation>
 <translation id="6232329973559504466">البحث في وضع التصفُّح المتخفي</translation>
 <translation id="6232736989810857397">‏يسمح هذا الإجراء بإنشاء أحداث في التقويم بسهولة باستخدام "عدسة Google".</translation>
