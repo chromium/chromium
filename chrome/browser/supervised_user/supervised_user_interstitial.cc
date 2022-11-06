@@ -134,7 +134,6 @@ void CleanUpInfoBar(content::WebContents* web_contents) {
       details.previous_main_frame_url =
           controller.GetLastCommittedEntry()->GetURL();
     }
-    details.type = content::NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
     for (int i = manager->infobar_count() - 1; i >= 0; --i) {
       infobars::InfoBar* infobar = manager->infobar_at(i);
       if (infobar->delegate()->ShouldExpire(
