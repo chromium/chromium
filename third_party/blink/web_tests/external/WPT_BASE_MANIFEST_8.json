@@ -328346,6 +328346,14 @@
      "891983b2b381cdbc824a473568f3fdd2b7fe3317",
      []
     ],
+    "FileSystemWritableFileStream-write.https.any-expected.txt": [
+     "f7dfa88c0c3b181c2b225f988d4a13bbf221190f",
+     []
+    ],
+    "FileSystemWritableFileStream-write.https.any.worker-expected.txt": [
+     "f7dfa88c0c3b181c2b225f988d4a13bbf221190f",
+     []
+    ],
     "META.yml": [
      "23d7765cdfa39689ef72ae6a0beb15b8b4292ecd",
      []
@@ -328510,7 +328518,7 @@
       []
      ],
      "FileSystemWritableFileStream-write.js": [
-      "70ba72f2245d39b414ecd5eac3e59b6ee9efddde",
+      "f40ce77c36d022e3347df0c349e3f64a36ec0eb2",
       []
      ],
      "FileSystemWritableFileStream.js": [
@@ -373711,7 +373719,7 @@
      []
     ],
     "supported-stats-expected.txt": [
-     "0081ee1940acf5e92626d3e338016d2c9cdbc99d",
+     "fa2ca102cc6e78578627aa8c32a678505fec6e6e",
      []
     ],
     "supported-stats.html.ini": [
@@ -605371,7 +605379,7 @@
      ]
     ],
     "supported-stats.html": [
-     "7370306c519de59d9574c87796457bad4f28fe0a",
+     "02c24ba5d2c9043c6dd8393465a2b9a510636b33",
      [
       null,
       {

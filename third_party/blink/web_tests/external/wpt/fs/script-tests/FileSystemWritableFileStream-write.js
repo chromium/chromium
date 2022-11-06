@@ -356,7 +356,7 @@ directory_test(async (t, root) => {
   const handle = await createEmptyFile(t, 'invalid_blob_test', root);
   const stream = await handle.createWritable();
   await promise_rejects_dom(t, "NotFoundError", stream.write(source_blob));
-  await promise_rejects_js(t, TypeError, stream.close());
+  await stream.close();
 
   assert_equals(await getFileContents(handle), '');
   assert_equals(await getFileSize(handle), 0);
