@@ -801,6 +801,10 @@ class MockKeyboardControllerObserver : public ash::KeyboardControllerObserver {
 
   // KeyboardControllerObserver:
   MOCK_METHOD(void, OnKeyboardEnabledChanged, (bool is_enabled), (override));
+  MOCK_METHOD(void,
+              OnKeyboardConfigChanged,
+              (const keyboard::KeyboardConfig& config),
+              (override));
 };
 
 TEST_F(KeyboardUIControllerTest, OnKeyboardEnabledChangedToEnabled) {
@@ -840,6 +844,24 @@ TEST_F(KeyboardUIControllerTest, OnKeyboardEnabledChangedToDisabled) {
   SetTouchKeyboardEnabled(false);
 
   controller().RemoveObserver(&mock_observer);
+}
+
+TEST_F(KeyboardUIControllerTest, OnFlagChangeObserverIsCalled) {
+  MockKeyboardControllerObserver mock_observer;
+  controller().AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer,
+              OnKeyboardConfigChanged(keyboard::KeyboardConfig()))
+      .WillOnce(testing::InvokeWithoutArgs([]() {
+        auto* controller = KeyboardUIController::Get();
+        ASSERT_TRUE(controller);
+        EXPECT_TRUE(controller->IsEnableFlagSet(
+            keyboard::KeyboardEnableFlag::kAccessibilityEnabled));
+      }));
+
+  controller().SetEnableFlag(KeyboardEnableFlag::kAccessibilityEnabled);
+  controller().RemoveObserver(&mock_observer);
+  controller().Shutdown();
 }
 
 }  // namespace keyboard

@@ -493,6 +493,7 @@ bool KeyboardUIController::IsKeyboardEnableRequested() const {
 
 void KeyboardUIController::UpdateKeyboardAsRequestedBy(
     KeyboardEnableFlag flag) {
+  this->NotifyKeyboardConfigChanged();
   if (IsKeyboardEnableRequested()) {
     // Note that there are two versions of the on-screen keyboard. A full layout
     // is provided for accessibility, which includes sticky modifier keys to
