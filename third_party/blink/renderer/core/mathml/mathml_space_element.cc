@@ -12,11 +12,11 @@ MathMLSpaceElement::MathMLSpaceElement(Document& doc)
     : MathMLElement(mathml_names::kMspaceTag, doc) {}
 
 void MathMLSpaceElement::AddMathBaselineIfNeeded(
-    ComputedStyle& style,
+    ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
           conversion_data, mathml_names::kHeightAttr))
-    style.SetMathBaseline(std::move(*length_or_percentage_value));
+    builder.SetMathBaseline(std::move(*length_or_percentage_value));
 }
 
 bool MathMLSpaceElement::IsPresentationAttribute(

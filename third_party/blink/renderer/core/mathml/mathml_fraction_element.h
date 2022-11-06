@@ -9,14 +9,14 @@
 
 namespace blink {
 
-class ComputedStyle;
+class ComputedStyleBuilder;
 class CSSToLengthConversionData;
 
 class MathMLFractionElement final : public MathMLElement {
  public:
   explicit MathMLFractionElement(Document&);
 
-  void AddMathFractionBarThicknessIfNeeded(ComputedStyle&,
+  void AddMathFractionBarThicknessIfNeeded(ComputedStyleBuilder&,
                                            const CSSToLengthConversionData&);
 
  private:

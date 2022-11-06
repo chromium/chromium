@@ -1025,7 +1025,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
                baseline == EDominantBaseline::kResetSize) {
       baseline = layout_parent_style.CssDominantBaseline();
     }
-    style.SetCssDominantBaseline(baseline);
+    builder.SetCssDominantBaseline(baseline);
 
   } else if (is_mathml_element) {
     if (style.Display() == EDisplay::kContents) {

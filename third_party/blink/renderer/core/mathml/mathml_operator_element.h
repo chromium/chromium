@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class ComputedStyle;
+class ComputedStyleBuilder;
 class CSSToLengthConversionData;
 class Document;
 
@@ -33,10 +33,14 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLTokenElement {
   // Query whether given flag is set in the operator dictionary.
   bool HasBooleanProperty(OperatorPropertyFlag);
 
-  void AddMathLSpaceIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
-  void AddMathRSpaceIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
-  void AddMathMinSizeIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
-  void AddMathMaxSizeIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
+  void AddMathLSpaceIfNeeded(ComputedStyleBuilder&,
+                             const CSSToLengthConversionData&);
+  void AddMathRSpaceIfNeeded(ComputedStyleBuilder&,
+                             const CSSToLengthConversionData&);
+  void AddMathMinSizeIfNeeded(ComputedStyleBuilder&,
+                              const CSSToLengthConversionData&);
+  void AddMathMaxSizeIfNeeded(ComputedStyleBuilder&,
+                              const CSSToLengthConversionData&);
   bool IsVertical();
 
   double DefaultLeadingSpace();

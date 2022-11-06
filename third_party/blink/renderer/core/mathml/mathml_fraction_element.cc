@@ -14,11 +14,11 @@ MathMLFractionElement::MathMLFractionElement(Document& doc)
     : MathMLElement(mathml_names::kMfracTag, doc) {}
 
 void MathMLFractionElement::AddMathFractionBarThicknessIfNeeded(
-    ComputedStyle& style,
+    ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
           conversion_data, mathml_names::kLinethicknessAttr))
-    style.SetMathFractionBarThickness(std::move(*length_or_percentage_value));
+    builder.SetMathFractionBarThickness(std::move(*length_or_percentage_value));
 }
 
 void MathMLFractionElement::ParseAttribute(

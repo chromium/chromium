@@ -13,35 +13,35 @@ MathMLPaddedElement::MathMLPaddedElement(Document& document)
     : MathMLRowElement(mathml_names::kMpaddedTag, document) {}
 
 void MathMLPaddedElement::AddMathBaselineIfNeeded(
-    ComputedStyle& style,
+    ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
           conversion_data, mathml_names::kHeightAttr, AllowPercentages::kNo))
-    style.SetMathBaseline(std::move(*length_or_percentage_value));
+    builder.SetMathBaseline(std::move(*length_or_percentage_value));
 }
 
 void MathMLPaddedElement::AddMathPaddedDepthIfNeeded(
-    ComputedStyle& style,
+    ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
           conversion_data, mathml_names::kDepthAttr, AllowPercentages::kNo))
-    style.SetMathPaddedDepth(std::move(*length_or_percentage_value));
+    builder.SetMathPaddedDepth(std::move(*length_or_percentage_value));
 }
 
 void MathMLPaddedElement::AddMathPaddedLSpaceIfNeeded(
-    ComputedStyle& style,
+    ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
           conversion_data, mathml_names::kLspaceAttr))
-    style.SetMathLSpace(std::move(*length_or_percentage_value));
+    builder.SetMathLSpace(std::move(*length_or_percentage_value));
 }
 
 void MathMLPaddedElement::AddMathPaddedVOffsetIfNeeded(
-    ComputedStyle& style,
+    ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
           conversion_data, mathml_names::kVoffsetAttr))
-    style.SetMathPaddedVOffset(std::move(*length_or_percentage_value));
+    builder.SetMathPaddedVOffset(std::move(*length_or_percentage_value));
 }
 
 void MathMLPaddedElement::ParseAttribute(

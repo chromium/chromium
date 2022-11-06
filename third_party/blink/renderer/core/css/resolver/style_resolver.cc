@@ -1109,29 +1109,29 @@ void StyleResolver::ApplyMathMLCustomStyleProperties(
     StyleResolverState& state) {
   DCHECK(RuntimeEnabledFeatures::MathMLCoreEnabled() &&
          IsA<MathMLElement>(element));
-  ComputedStyle& style = state.StyleRef();
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   if (auto* space = DynamicTo<MathMLSpaceElement>(*element)) {
-    space->AddMathBaselineIfNeeded(style, state.CssToLengthConversionData());
+    space->AddMathBaselineIfNeeded(builder, state.CssToLengthConversionData());
   } else if (auto* padded = DynamicTo<MathMLPaddedElement>(*element)) {
-    padded->AddMathBaselineIfNeeded(style, state.CssToLengthConversionData());
-    padded->AddMathPaddedDepthIfNeeded(style,
+    padded->AddMathBaselineIfNeeded(builder, state.CssToLengthConversionData());
+    padded->AddMathPaddedDepthIfNeeded(builder,
                                        state.CssToLengthConversionData());
-    padded->AddMathPaddedLSpaceIfNeeded(style,
+    padded->AddMathPaddedLSpaceIfNeeded(builder,
                                         state.CssToLengthConversionData());
-    padded->AddMathPaddedVOffsetIfNeeded(style,
+    padded->AddMathPaddedVOffsetIfNeeded(builder,
                                          state.CssToLengthConversionData());
   } else if (auto* fraction = DynamicTo<MathMLFractionElement>(*element)) {
     fraction->AddMathFractionBarThicknessIfNeeded(
-        style, state.CssToLengthConversionData());
+        builder, state.CssToLengthConversionData());
   } else if (auto* operator_element =
                  DynamicTo<MathMLOperatorElement>(*element)) {
-    operator_element->AddMathLSpaceIfNeeded(style,
+    operator_element->AddMathLSpaceIfNeeded(builder,
                                             state.CssToLengthConversionData());
-    operator_element->AddMathRSpaceIfNeeded(style,
+    operator_element->AddMathRSpaceIfNeeded(builder,
                                             state.CssToLengthConversionData());
-    operator_element->AddMathMinSizeIfNeeded(style,
+    operator_element->AddMathMinSizeIfNeeded(builder,
                                              state.CssToLengthConversionData());
-    operator_element->AddMathMaxSizeIfNeeded(style,
+    operator_element->AddMathMaxSizeIfNeeded(builder,
                                              state.CssToLengthConversionData());
   }
 }

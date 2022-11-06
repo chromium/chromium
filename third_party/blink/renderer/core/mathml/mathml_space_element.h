@@ -9,14 +9,14 @@
 
 namespace blink {
 
-class ComputedStyle;
+class ComputedStyleBuilder;
 class CSSToLengthConversionData;
 
 class MathMLSpaceElement final : public MathMLElement {
  public:
   explicit MathMLSpaceElement(Document&);
 
-  void AddMathBaselineIfNeeded(ComputedStyle&,
+  void AddMathBaselineIfNeeded(ComputedStyleBuilder&,
                                const CSSToLengthConversionData&);
 
  private:

@@ -3552,29 +3552,30 @@ const CSSValue* GridTemplateAreas::CSSValueFromComputedStyleInternal(
 }
 
 void GridTemplateAreas::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetImplicitNamedGridColumnLines(
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetImplicitNamedGridColumnLines(
       ComputedStyleInitialValues::InitialImplicitNamedGridColumnLines());
-  state.Style()->SetImplicitNamedGridRowLines(
+  builder.SetImplicitNamedGridRowLines(
       ComputedStyleInitialValues::InitialImplicitNamedGridRowLines());
 
-  state.Style()->SetNamedGridArea(
-      ComputedStyleInitialValues::InitialNamedGridArea());
-  state.Style()->SetNamedGridAreaRowCount(
+  builder.SetNamedGridArea(ComputedStyleInitialValues::InitialNamedGridArea());
+  builder.SetNamedGridAreaRowCount(
       ComputedStyleInitialValues::InitialNamedGridAreaRowCount());
-  state.Style()->SetNamedGridAreaColumnCount(
+  builder.SetNamedGridAreaColumnCount(
       ComputedStyleInitialValues::InitialNamedGridAreaColumnCount());
 }
 
 void GridTemplateAreas::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetImplicitNamedGridColumnLines(
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetImplicitNamedGridColumnLines(
       state.ParentStyle()->ImplicitNamedGridColumnLines());
-  state.Style()->SetImplicitNamedGridRowLines(
+  builder.SetImplicitNamedGridRowLines(
       state.ParentStyle()->ImplicitNamedGridRowLines());
 
-  state.Style()->SetNamedGridArea(state.ParentStyle()->NamedGridArea());
-  state.Style()->SetNamedGridAreaRowCount(
+  builder.SetNamedGridArea(state.ParentStyle()->NamedGridArea());
+  builder.SetNamedGridAreaRowCount(
       state.ParentStyle()->NamedGridAreaRowCount());
-  state.Style()->SetNamedGridAreaColumnCount(
+  builder.SetNamedGridAreaColumnCount(
       state.ParentStyle()->NamedGridAreaColumnCount());
 }
 
@@ -3597,14 +3598,14 @@ void GridTemplateAreas::ApplyValue(StyleResolverState& state,
       new_named_grid_areas, implicit_named_grid_column_lines, kForColumns);
   StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
       new_named_grid_areas, implicit_named_grid_row_lines, kForRows);
-  state.Style()->SetImplicitNamedGridColumnLines(
-      implicit_named_grid_column_lines);
-  state.Style()->SetImplicitNamedGridRowLines(implicit_named_grid_row_lines);
 
-  state.Style()->SetNamedGridArea(new_named_grid_areas);
-  state.Style()->SetNamedGridAreaRowCount(grid_template_areas_value.RowCount());
-  state.Style()->SetNamedGridAreaColumnCount(
-      grid_template_areas_value.ColumnCount());
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetImplicitNamedGridColumnLines(implicit_named_grid_column_lines);
+  builder.SetImplicitNamedGridRowLines(implicit_named_grid_row_lines);
+
+  builder.SetNamedGridArea(new_named_grid_areas);
+  builder.SetNamedGridAreaRowCount(grid_template_areas_value.RowCount());
+  builder.SetNamedGridAreaColumnCount(grid_template_areas_value.ColumnCount());
 }
 
 const CSSValue* GridTemplateAreas::InitialValue() const {
