@@ -6,6 +6,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/shelf/shelf.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"

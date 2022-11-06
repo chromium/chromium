@@ -19,6 +19,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -1060,5 +1061,19 @@ class ASH_EXPORT Shell : public SessionObserver,
 };
 
 }  // namespace ash
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::Shell, ash::ShellObserver> {
+  static void AddObserver(ash::Shell* source, ash::ShellObserver* observer) {
+    source->AddShellObserver(observer);
+  }
+  static void RemoveObserver(ash::Shell* source, ash::ShellObserver* observer) {
+    source->RemoveShellObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // ASH_SHELL_H_

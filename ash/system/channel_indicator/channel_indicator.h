@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/memory/weak_ptr.h"
@@ -17,9 +16,11 @@
 
 namespace views {
 class BoxLayout;
-}
+}  // namespace views
 
 namespace ash {
+
+class Shell;
 
 // A view that resides in the system tray, to make it obvious to the user when a
 // device is running on a release track other than "stable."
@@ -80,11 +81,7 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
 
   ScopedSessionObserver session_observer_;
 
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      shell_observer_{this};
+  base::ScopedObservation<Shell, ShellObserver> shell_observer_{this};
 
   base::WeakPtrFactory<ChannelIndicatorView> weak_factory_{this};
 };

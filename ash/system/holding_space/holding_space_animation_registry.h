@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ANIMATION_REGISTRY_H_
 
 #include "ash/ash_export.h"
-#include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "base/callback.h"
@@ -14,6 +13,8 @@
 #include "base/scoped_observation.h"
 
 namespace ash {
+
+class Shell;
 
 // A lazily initialized singleton registry for holding space animations.
 //
@@ -52,11 +53,7 @@ class ASH_EXPORT HoldingSpaceAnimationRegistry
   std::unique_ptr<ProgressIndicatorAnimationDelegate>
       progress_indicator_animation_delegate_;
 
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      shell_observation_{this};
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };
 
 }  // namespace ash

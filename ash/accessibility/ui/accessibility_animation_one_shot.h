@@ -8,9 +8,12 @@
 #include "base/callback.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace ui {
+class Compositor;
+}  // namespace ui
 
 namespace ash {
 
@@ -38,10 +41,7 @@ class AccessibilityAnimationOneShot : public ui::CompositorAnimationObserver {
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
   base::RepeatingCallback<bool(base::TimeTicks)> callback_;
-  base::ScopedObservation<ui::Compositor,
-                          ui::CompositorAnimationObserver,
-                          &ui::Compositor::AddAnimationObserver,
-                          &ui::Compositor::RemoveAnimationObserver>
+  base::ScopedObservation<ui::Compositor, ui::CompositorAnimationObserver>
       animation_observation_{this};
 };
 

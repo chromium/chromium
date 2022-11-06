@@ -5,6 +5,7 @@
 #include "ash/accessibility/ui/accessibility_animation_one_shot.h"
 
 #include "ash/shell.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

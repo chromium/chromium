@@ -5,8 +5,7 @@
 #include "ash/drag_drop/scoped_drag_drop_observer.h"
 
 #include "ash/shell.h"
-#include "ash/shell_observer.h"
-#include "base/scoped_observation.h"
+#include "ui/aura/client/drag_drop_client.h"
 
 namespace ui {
 class DropTargetEvent;

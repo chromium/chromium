@@ -9,19 +9,25 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace ash {
 
+class Shell;
+class TabletModeController;
 class WorkspaceEventHandler;
 
 // This controller allows windows to be on top of all app windows, but below
@@ -175,11 +181,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
       desks_controller_observation_{this};
 
   absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      shell_observation_{this};
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };
 
 }  // namespace ash

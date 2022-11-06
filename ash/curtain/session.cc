@@ -35,11 +35,7 @@ class Session::RootWindowsObserver : public ShellObserver {
 
   raw_ptr<Session> parent_;
 
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      shell_observation_{this};
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };
 
 Session::RootWindowsObserver::RootWindowsObserver(Session* parent, Shell* shell)

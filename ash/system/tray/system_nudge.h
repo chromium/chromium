@@ -10,9 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
-#include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/system_nudge_label.h"
@@ -32,10 +30,13 @@ class View;
 
 namespace ash {
 
+class Shelf;
+class Shell;
+
 // Creates and manages the nudge widget and its contents view for a contextual
 // system nudge. The nudge displays an icon and a label view in a shelf-colored
 // system bubble with rounded corners.
-class ASH_EXPORT SystemNudge : public ShelfObserver, ShellObserver {
+class ASH_EXPORT SystemNudge : public ShelfObserver, public ShellObserver {
  public:
   SystemNudge(const std::string& name,
               NudgeCatalogName catalog_name,
@@ -112,11 +113,7 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, ShellObserver {
   SystemNudgeParams params_;
 
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      shell_observation_{this};
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 
   base::WeakPtrFactory<SystemNudge> weak_factory_{this};
 };

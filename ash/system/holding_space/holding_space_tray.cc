@@ -38,6 +38,7 @@
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"

@@ -9,13 +9,11 @@
 #include "ash/controls/contextual_nudge.h"
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shell.h"
 #include "ash/shell_observer.h"
-#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -24,6 +22,9 @@
 #include "ui/views/view_targeter_delegate.h"
 
 namespace ash {
+
+class OverviewController;
+class Shell;
 
 class ASH_EXPORT DragHandle : public views::Button,
                               public views::ViewTargeterDelegate,
@@ -185,11 +186,7 @@ class ASH_EXPORT DragHandle : public views::Button,
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_observation_{this};
 
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      shell_observation_{this};
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 
   base::WeakPtrFactory<DragHandle> weak_factory_{this};
 };

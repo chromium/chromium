@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "ash/system/holding_space/holding_space_ash_test_base.h"

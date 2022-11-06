@@ -8,25 +8,18 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
-#include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/gtest_prod_util.h"
 #include "base/timer/timer.h"
-#include "components/session_manager/session_manager_types.h"
 #include "ui/events/event_handler.h"
-#include "ui/events/event_target.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
@@ -49,13 +42,20 @@ class Image;
 class Size;
 }  // namespace gfx
 
+namespace keyboard {
+class KeyboardUIController;
+}  // namespace keyboard
+
 namespace ash {
 
-class Shelf;
-class TrayBubbleView;
-class TrayBubbleWrapper;
 class AshWebView;
 class PhoneHubTray;
+class TabletModeController;
+class TrayBubbleView;
+class TrayBubbleWrapper;
+class SessionControllerImpl;
+class Shelf;
+class Shell;
 
 // This class represents the Eche tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
@@ -65,7 +65,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
                             public ShelfObserver,
                             public TabletModeObserver,
                             public KeyboardControllerObserver,
-                            ShellObserver {
+                            public ShellObserver {
  public:
   METADATA_HEADER(EcheTray);
 
@@ -187,7 +187,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // process the accelerator keys.
   class EventInterceptor : public ui::EventHandler {
    public:
-    EventInterceptor(EcheTray* eche_tray);
+    explicit EventInterceptor(EcheTray* eche_tray);
 
     EventInterceptor(const EventInterceptor&) = delete;
     EventInterceptor& operator=(const EventInterceptor&) = delete;
@@ -284,13 +284,9 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      shell_observer_{this};
+  base::ScopedObservation<Shell, ShellObserver> shell_observer_{this};
   base::ScopedObservation<keyboard::KeyboardUIController,
-                          ash::KeyboardControllerObserver>
+                          KeyboardControllerObserver>
       keyboard_observation_{this};
 
   base::WeakPtrFactory<EcheTray> weak_factory_{this};

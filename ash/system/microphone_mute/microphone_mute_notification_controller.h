@@ -15,7 +15,7 @@
 
 namespace message_center {
 class Notification;
-}
+}  // namespace message_center
 
 namespace ash {
 
@@ -87,9 +87,7 @@ class ASH_EXPORT MicrophoneMuteNotificationController
       current_notification_priority_;
 
   base::ScopedObservation<ash::CrasAudioHandler,
-                          AudioObserver,
-                          &ash::CrasAudioHandler::AddAudioObserver,
-                          &ash::CrasAudioHandler::RemoveAudioObserver>
+                          ash::CrasAudioHandler::AudioObserver>
       audio_observation_{this};
 
   base::WeakPtrFactory<MicrophoneMuteNotificationController> weak_ptr_factory_{

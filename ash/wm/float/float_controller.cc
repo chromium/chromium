@@ -17,6 +17,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/scoped_window_tucker.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -27,7 +28,9 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/aura/window_observer.h"
 #include "ui/display/screen.h"
 
 namespace ash {
