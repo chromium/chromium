@@ -27,11 +27,11 @@ using Callback =
 class COMPONENT_EXPORT(COLOR) ColorTransform {
  public:
   // Allows simple conversion from a Callback to a ColorTransform.
-  ColorTransform(Callback callback);
+  ColorTransform(Callback callback);  // NOLINT
   // Creates a transform that returns the supplied |color|.
-  ColorTransform(SkColor color);
+  ColorTransform(SkColor color);  // NOLINT
   // Creates a transform that returns the result color for the supplied |id|.
-  ColorTransform(ColorId id);
+  ColorTransform(ColorId id);  // NOLINT
   ColorTransform(const ColorTransform&);
   ColorTransform& operator=(const ColorTransform&);
   ~ColorTransform();

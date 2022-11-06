@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(COLOR) ColorRecipe {
   ColorRecipe();
   // This constructor acts as a shorthand initialization of a recipe with a
   // transform which is by far the most common means of recipe initialization.
-  ColorRecipe(const ColorTransform& transform);
+  ColorRecipe(const ColorTransform& transform);  // NOLINT
   ColorRecipe(const ColorRecipe&);
   ColorRecipe& operator=(const ColorRecipe&);
   ColorRecipe(ColorRecipe&&) noexcept;
