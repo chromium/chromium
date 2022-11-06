@@ -1069,7 +1069,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
       DCHECK((IsShadowHost(element.parentNode()) ||
               IsA<HTMLSlotElement>(element.parentNode())) &&
              !LayoutTreeBuilderTraversal::ParentElement(element));
-      state.Style()->SetIsEnsuredOutsideFlatTree();
+      state.StyleBuilder().SetIsEnsuredOutsideFlatTree();
     }
   }
   state.StyleBuilder().SetStyleType(style_request.pseudo_id);
@@ -1391,7 +1391,7 @@ void StyleResolver::ApplyBaseStyle(
 #endif
 
     state.SetStyle(ComputedStyle::Clone(*animation_base_computed_style));
-    state.StyleRef().SetBaseData(
+    state.StyleBuilder().SetBaseData(
         scoped_refptr<StyleBaseData>(GetBaseData(state)));
     state.StyleBuilder().SetStyleType(style_request.pseudo_id);
     if (!state.ParentStyle()) {
@@ -1749,7 +1749,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   if (!IsAnimationStyleChange(*animating_element) ||
       !state.StyleRef().BaseData()) {
-    state.StyleRef().SetBaseData(StyleBaseData::Create(
+    state.StyleBuilder().SetBaseData(StyleBaseData::Create(
         ComputedStyle::Clone(state.StyleRef()), cascade.GetImportantSet()));
   }
 
@@ -2165,7 +2165,7 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
 
   // NOTE: This flag needs to be set before the entry is added to the
   // matched properties cache, or it will be wrong on cache hits.
-  state.Style()->SetInlineStyleLostCascade(cascade.InlineStyleLost());
+  state.StyleBuilder().SetInlineStyleLostCascade(cascade.InlineStyleLost());
 
   MaybeAddToMatchedPropertiesCache(state, cache_success, result);
 

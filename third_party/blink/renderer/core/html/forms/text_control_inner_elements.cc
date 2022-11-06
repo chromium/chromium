@@ -155,7 +155,8 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
           : EUserModify::kReadWritePlaintextOnly);
   text_block_style_builder.SetDisplay(EDisplay::kBlock);
   text_block_style_builder.SetHasLineIfEmpty(true);
-  text_block_style->SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  text_block_style_builder
+      .SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
   if (!IsA<HTMLTextAreaElement>(host)) {
     text_block_style_builder.SetWhiteSpace(EWhiteSpace::kPre);

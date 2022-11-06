@@ -899,6 +899,7 @@
       field_group: "*",
       default_value: "true",
       computed_style_custom_functions: ["setter"],
+      readonly: true,
     },
     {
       name: "HasAutoColumnCount",
@@ -907,6 +908,7 @@
       field_group: "*",
       default_value: "true",
       computed_style_custom_functions: ["setter"],
+      readonly: true,
     },
     {
       name: "ImplicitNamedGridColumnLines",
@@ -966,6 +968,7 @@
       field_group: "surround",
       default_value: "false",
       custom_compare: true,
+      readonly: true,
     },
     {
       name: "MayHavePadding",
@@ -973,6 +976,7 @@
       field_group: "surround",
       default_value: "false",
       custom_compare: true,
+      readonly: true,
     },
     {
       name: "DarkColorScheme",
@@ -995,18 +999,21 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      readonly: true,
     },
     {
       name: "IsFlexOrGridOrCustomItem",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      readonly: true,
     },
     {
       name: "IsFlexOrGridItem",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      readonly: true,
     },
     {
       name: "IsEnsuredOutsideFlatTree",
@@ -1014,6 +1021,7 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
+      readonly: true,
     },
     {
       name: "IsInsideListElement",
@@ -1021,6 +1029,7 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
+      readonly: true,
     },
 
     // This field disables the 'overflow' check in |LayoutBlock::
@@ -1032,6 +1041,7 @@
       field_template: "monotonic_flag",
       default_value: "false",
       inherited: false,
+      readonly: true,
     },
     {
       name: "MathBaseline",
@@ -1119,6 +1129,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      readonly: true,
     },
     {
       name: "BaselineShiftType",
@@ -1178,6 +1189,7 @@
       wrapper_pointer_name: "scoped_refptr",
       custom_compare: true,
       custom_copy: true,
+      readonly: true,
     },
     {
       // https://drafts.csswg.org/css-contain-2/#skips-its-contents
@@ -1193,6 +1205,7 @@
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",
+      readonly: true,
     },
     {
       // We need to go through LayoutObject::SetStyle with
@@ -1205,6 +1218,7 @@
       field_template: "monotonic_flag",
       default_value: "false",
       field_group: "*",
+      readonly: true,
     },
     {
       name: "InlineStyleLostCascade",
@@ -1213,6 +1227,7 @@
       field_group: "*",
       default_value: "false",
       custom_compare: true,
+      readonly: true,
     },
     {
       name: "HasExplicitOverflowXVisible",
@@ -1220,6 +1235,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      readonly: true,
     },
     {
       name: "HasExplicitOverflowYVisible",
@@ -1227,6 +1243,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      readonly: true,
     }
   ],
 }

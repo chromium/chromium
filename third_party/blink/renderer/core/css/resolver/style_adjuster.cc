@@ -533,7 +533,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   }
 
   if (IsA<HTMLUListElement>(element) || IsA<HTMLOListElement>(element)) {
-    style.SetIsInsideListElement();
+    builder.SetIsInsideListElement();
     return;
   }
 
@@ -551,7 +551,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
 
   if (IsA<HTMLBodyElement>(element) &&
       element.GetDocument().FirstBodyElement() != element) {
-    style.SetIsSecondaryBodyElement();
+    builder.SetIsSecondaryBodyElement();
   }
 }
 
@@ -612,14 +612,14 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
                                   Document* document) {
   // Blockify the children of flex, grid or LayoutCustom containers.
   if (layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) {
-    style.SetIsInBlockifyingDisplay();
+    builder.SetIsInBlockifyingDisplay();
     if (style.Display() != EDisplay::kContents) {
       builder.SetDisplay(EquivalentBlockDisplay(style.Display()));
       if (!style.HasOutOfFlowPosition())
-        style.SetIsFlexOrGridOrCustomItem();
+        builder.SetIsFlexOrGridOrCustomItem();
     }
     if (layout_parent_style.IsDisplayFlexibleOrGridBox())
-      style.SetIsFlexOrGridItem();
+      builder.SetIsFlexOrGridItem();
   }
 
   if (style.Display() == EDisplay::kBlock)
@@ -773,13 +773,14 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   }
 }
 
-static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
+static void AdjustStyleForInert(ComputedStyleBuilder& builder,
+                                Element* element) {
   if (!element)
     return;
 
   if (element->IsInertRoot()) {
-    style.SetIsInert(true);
-    style.SetIsInertIsInherited(false);
+    builder.SetIsInert(true);
+    builder.SetIsInertIsInherited(false);
     return;
   }
 
@@ -788,13 +789,13 @@ static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
   if (!modal_element)
     modal_element = Fullscreen::FullscreenElementFrom(document);
   if (modal_element == element) {
-    style.SetIsInert(false);
-    style.SetIsInertIsInherited(false);
+    builder.SetIsInert(false);
+    builder.SetIsInertIsInherited(false);
     return;
   }
   if (modal_element && element == document.documentElement()) {
-    style.SetIsInert(true);
-    style.SetIsInertIsInherited(false);
+    builder.SetIsInert(true);
+    builder.SetIsInertIsInherited(false);
     return;
   }
 }
@@ -928,7 +929,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
           layout_parent_style)) {
     style.SetIsStackingContextWithoutContainment(false);
     if (!style.HasAutoZIndex())
-      style.SetEffectiveZIndexZero(true);
+      builder.SetEffectiveZIndexZero(true);
   } else if (!style.HasAutoZIndex()) {
     style.SetIsStackingContextWithoutContainment(true);
   }
@@ -977,7 +978,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // Let the theme also have a crack at adjusting the style.
   LayoutTheme::GetTheme().AdjustStyle(element, style, builder);
 
-  AdjustStyleForInert(style, element);
+  AdjustStyleForInert(builder, element);
 
   AdjustStyleForEditing(builder);
 
