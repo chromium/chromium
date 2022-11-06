@@ -1320,17 +1320,27 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   CascadeAndApplyMatchedProperties(state, cascade);
 
-  if (collector.MatchedResult().DependsOnSizeContainerQueries())
+  const MatchResult& match_result = collector.MatchedResult();
+
+  if (match_result.HasFlag(MatchFlag::kAffectedByDrag))
+    state.Style()->SetAffectedByDrag();
+  if (match_result.HasFlag(MatchFlag::kAffectedByFocusWithin))
+    state.Style()->SetAffectedByFocusWithin();
+  if (match_result.HasFlag(MatchFlag::kAffectedByHover))
+    state.Style()->SetAffectedByHover();
+  if (match_result.HasFlag(MatchFlag::kAffectedByActive))
+    state.Style()->SetAffectedByActive();
+  if (match_result.DependsOnSizeContainerQueries())
     state.Style()->SetDependsOnSizeContainerQueries(true);
-  if (collector.MatchedResult().DependsOnStyleContainerQueries())
+  if (match_result.DependsOnStyleContainerQueries())
     state.Style()->SetDependsOnStyleContainerQueries(true);
-  if (collector.MatchedResult().DependsOnStaticViewportUnits())
+  if (match_result.DependsOnStaticViewportUnits())
     state.Style()->SetHasStaticViewportUnits();
-  if (collector.MatchedResult().DependsOnDynamicViewportUnits())
+  if (match_result.DependsOnDynamicViewportUnits())
     state.Style()->SetHasDynamicViewportUnits();
-  if (collector.MatchedResult().DependsOnRemContainerQueries())
+  if (match_result.DependsOnRemContainerQueries())
     state.Style()->SetHasRemUnits();
-  if (collector.MatchedResult().ConditionallyAffectsAnimations())
+  if (match_result.ConditionallyAffectsAnimations())
     state.SetCanAffectAnimations();
 
   ApplyCallbackSelectors(state);

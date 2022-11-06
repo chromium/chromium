@@ -398,9 +398,10 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
         rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
     DCHECK(!context.is_inside_visited_link ||
            inside_link_ != EInsideLink::kNotInsideLink);
-    if (!checker.Match(context, result)) {
+    bool match = checker.Match(context, result);
+    result_.AddFlags(result.flags);
+    if (!match)
       continue;
-    }
     if (pseudo_style_request_.pseudo_id != kPseudoIdNone &&
         pseudo_style_request_.pseudo_id != result.dynamic_pseudo) {
       continue;
@@ -511,7 +512,7 @@ void ElementRuleCollector::CollectMatchingRules(
     const MatchRequest& match_request) {
   DCHECK(!match_request.IsEmpty());
 
-  SelectorChecker checker(style_.get(), nullptr, pseudo_style_request_, mode_,
+  SelectorChecker checker(nullptr, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
   Element& element = context_.GetElement();
@@ -710,7 +711,7 @@ void ElementRuleCollector::CollectMatchingRules(
 
 void ElementRuleCollector::CollectMatchingShadowHostRules(
     const MatchRequest& match_request) {
-  SelectorChecker checker(style_.get(), nullptr, pseudo_style_request_, mode_,
+  SelectorChecker checker(nullptr, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
   for (const auto bundle : match_request.AllRuleSets()) {
@@ -722,7 +723,7 @@ void ElementRuleCollector::CollectMatchingShadowHostRules(
 
 void ElementRuleCollector::CollectMatchingSlottedRules(
     const MatchRequest& match_request) {
-  SelectorChecker checker(style_.get(), nullptr, pseudo_style_request_, mode_,
+  SelectorChecker checker(nullptr, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
   for (const auto bundle : match_request.AllRuleSets()) {
@@ -737,8 +738,8 @@ void ElementRuleCollector::CollectMatchingPartPseudoRules(
     PartNames& part_names,
     bool for_shadow_pseudo) {
   PartRequest request{part_names, for_shadow_pseudo};
-  SelectorChecker checker(style_.get(), &part_names, pseudo_style_request_,
-                          mode_, matching_ua_rules_);
+  SelectorChecker checker(&part_names, pseudo_style_request_, mode_,
+                          matching_ua_rules_);
 
   for (const auto bundle : match_request.AllRuleSets()) {
     CollectMatchingRulesForList(

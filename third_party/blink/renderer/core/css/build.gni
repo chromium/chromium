@@ -581,6 +581,7 @@ blink_core_sources_css = [
   "resolver/font_style_resolver.cc",
   "resolver/font_style_resolver.h",
   "resolver/match_request.h",
+  "resolver/match_flags.h",
   "resolver/match_result.cc",
   "resolver/match_result.h",
   "resolver/matched_properties_cache.cc",

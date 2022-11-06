@@ -34,6 +34,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/resolver/match_flags.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -49,7 +50,6 @@ namespace blink {
 class CSSSelector;
 class ContainerNode;
 class CustomScrollbar;
-class ComputedStyle;
 class Element;
 class PartNames;
 
@@ -84,20 +84,17 @@ class CORE_EXPORT SelectorChecker {
   };
 
   explicit inline SelectorChecker(const Mode& mode)
-      : element_style_(nullptr),
-        scrollbar_(nullptr),
+      : scrollbar_(nullptr),
         part_names_(nullptr),
         pseudo_argument_(g_null_atom),
         scrollbar_part_(kNoPart),
         mode_(mode),
         is_ua_rule_(false) {}
-  inline SelectorChecker(ComputedStyle* element_style,
-                         PartNames* part_names,
+  inline SelectorChecker(PartNames* part_names,
                          const StyleRequest& style_request,
                          const Mode& mode,
                          const bool& is_ua_rule)
-      : element_style_(element_style),
-        scrollbar_(style_request.scrollbar),
+      : scrollbar_(style_request.scrollbar),
         part_names_(part_names),
         pseudo_argument_(style_request.pseudo_argument),
         scrollbar_part_(style_request.scrollbar_part),
@@ -190,6 +187,11 @@ class CORE_EXPORT SelectorChecker {
     STACK_ALLOCATED();
 
    public:
+    void SetFlag(MatchFlag flag) { flags |= static_cast<MatchFlags>(flag); }
+    bool HasFlag(MatchFlag flag) const {
+      return flags & static_cast<MatchFlags>(flag);
+    }
+
     PseudoId dynamic_pseudo{kPseudoIdNone};
 
     // Comes from an AtomicString, but not stored as one to avoid
@@ -244,6 +246,21 @@ class CORE_EXPORT SelectorChecker {
     HeapVector<Member<Element>>* has_argument_leftmost_compound_matches{
         nullptr};
     unsigned proximity{std::numeric_limits<unsigned>::max()};
+    MatchFlags flags{0};
+  };
+
+  // Used for situations where we have "inner" selector matching, such as
+  // :is(...). Ensures that MatchFlags found for the inner selector are
+  //  propagated to the outer MatchResult.
+  class SubResult : public MatchResult {
+    STACK_ALLOCATED();
+
+   public:
+    explicit SubResult(MatchResult& parent) : parent_(parent) {}
+    ~SubResult() { parent_.flags |= flags; }
+
+   private:
+    MatchResult& parent_;
   };
 
   bool Match(const SelectorCheckingContext& context, MatchResult& result) const;
@@ -327,7 +344,6 @@ class CORE_EXPORT SelectorChecker {
   bool CheckInStyleScope(const SelectorCheckingContext&, MatchResult&) const;
   bool MatchesWithScope(Element&, const CSSSelectorList&, Element* scope) const;
 
-  ComputedStyle* element_style_;
   CustomScrollbar* scrollbar_;
   PartNames* part_names_;
   const String pseudo_argument_;

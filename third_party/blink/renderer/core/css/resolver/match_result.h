@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_origin.h"
+#include "third_party/blink/renderer/core/css/resolver/match_flags.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -184,6 +185,11 @@ class CORE_EXPORT MatchResult {
     return conditionally_affects_animations_;
   }
 
+  bool HasFlag(MatchFlag flag) const {
+    return flags_ & static_cast<MatchFlags>(flag);
+  }
+  void AddFlags(MatchFlags flags) { flags_ |= flags; }
+
   const MatchedPropertiesVector& GetMatchedProperties() const {
     return matched_properties_;
   }
@@ -206,6 +212,7 @@ class CORE_EXPORT MatchResult {
   bool depends_on_dynamic_viewport_units_{false};
   bool depends_on_rem_container_queries_{false};
   bool conditionally_affects_animations_{false};
+  MatchFlags flags_{0};
   CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};
   uint16_t current_tree_order_{0};
 };

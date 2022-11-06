@@ -239,7 +239,7 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
 SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     const SelectorCheckingContext& context,
     MatchResult& result) const {
-  MatchResult sub_result;
+  SubResult sub_result(result);
   if (!CheckOne(context, sub_result))
     return kSelectorFailsLocally;
 
@@ -653,7 +653,7 @@ bool SelectorChecker::CheckPseudoNot(const SelectorCheckingContext& context,
   for (sub_context.selector = selector.SelectorList()->First();
        sub_context.selector;
        sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
-    MatchResult sub_result;
+    SubResult sub_result(result);
     if (MatchSelector(sub_context, sub_result) == kSelectorMatches)
       return false;
   }
@@ -1124,7 +1124,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 
       sub_context.element = iterator.CurrentElement();
       HeapVector<Member<Element>> has_argument_leftmost_compound_matches;
-      MatchResult sub_result;
+      SubResult sub_result(result);
       sub_result.has_argument_leftmost_compound_matches =
           &has_argument_leftmost_compound_matches;
 
@@ -1320,7 +1320,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       for (sub_context.selector = selector.SelectorListOrParent();
            sub_context.selector; sub_context.selector = CSSSelectorList::Next(
                                      *sub_context.selector)) {
-        MatchResult sub_result;
+        SubResult sub_result(result);
         if (MatchSelector(sub_context, sub_result) == kSelectorMatches)
           return true;
       }
@@ -1349,11 +1349,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.IsLink() && context.is_inside_visited_link;
     case CSSSelector::kPseudoDrag:
       if (mode_ == kResolvingStyle) {
-        if (context.in_rightmost_compound)
-          element_style_->SetAffectedByDrag();
-        else
+        if (!context.in_rightmost_compound)
           element.SetChildrenOrSiblingsAffectedByDrag();
       }
+      if (context.in_rightmost_compound)
+        result.SetFlag(MatchFlag::kAffectedByDrag);
       return element.IsDragged();
     case CSSSelector::kPseudoFocus:
       if (mode_ == kResolvingStyle) {
@@ -1379,13 +1379,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByFocusInHas();
-        } else {
-          if (context.in_rightmost_compound)
-            element_style_->SetAffectedByFocusWithin();
-          else
-            element.SetChildrenOrSiblingsAffectedByFocusWithin();
+        } else if (!context.in_rightmost_compound) {
+          element.SetChildrenOrSiblingsAffectedByFocusWithin();
         }
       }
+      if (context.in_rightmost_compound)
+        result.SetFlag(MatchFlag::kAffectedByFocusWithin);
       probe::ForcePseudoState(&element, CSSSelector::kPseudoFocusWithin,
                               &force_pseudo_state);
       if (force_pseudo_state)
@@ -1395,13 +1394,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByHoverInHas();
-        } else {
-          if (context.in_rightmost_compound)
-            element_style_->SetAffectedByHover();
-          else
-            element.SetChildrenOrSiblingsAffectedByHover();
+        } else if (!context.in_rightmost_compound) {
+          element.SetChildrenOrSiblingsAffectedByHover();
         }
       }
+      if (context.in_rightmost_compound)
+        result.SetFlag(MatchFlag::kAffectedByHover);
       if (!ShouldMatchHoverOrActive(context))
         return false;
       probe::ForcePseudoState(&element, CSSSelector::kPseudoHover,
@@ -1413,13 +1411,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByActiveInHas();
-        } else {
-          if (context.in_rightmost_compound)
-            element_style_->SetAffectedByActive();
-          else
-            element.SetChildrenOrSiblingsAffectedByActive();
+        } else if (!context.in_rightmost_compound) {
+          element.SetChildrenOrSiblingsAffectedByActive();
         }
       }
+      if (context.in_rightmost_compound)
+        result.SetFlag(MatchFlag::kAffectedByActive);
       if (!ShouldMatchHoverOrActive(context))
         return false;
       probe::ForcePseudoState(&element, CSSSelector::kPseudoActive,
@@ -1710,7 +1707,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       for (sub_context.selector = selector.SelectorList()->First();
            sub_context.selector; sub_context.selector = CSSSelectorList::Next(
                                      *sub_context.selector)) {
-        MatchResult sub_result;
+        SubResult sub_result(result);
         if (MatchSelector(sub_context, sub_result) == kSelectorMatches)
           return true;
       }
@@ -1744,7 +1741,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       DCHECK(selector.SelectorList()->First());
       DCHECK(!CSSSelectorList::Next(*selector.SelectorList()->First()));
       sub_context.selector = selector.SelectorList()->First();
-      MatchResult sub_result;
+      SubResult sub_result(result);
       if (MatchSelector(sub_context, sub_result) != kSelectorMatches)
         return false;
       return true;
@@ -1820,7 +1817,7 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
   Element* next_element = &element;
   SelectorCheckingContext host_context(sub_context);
   do {
-    MatchResult sub_result;
+    SubResult sub_result(result);
     host_context.element = next_element;
     if (MatchSelector(host_context, sub_result) == kSelectorMatches)
       return true;
