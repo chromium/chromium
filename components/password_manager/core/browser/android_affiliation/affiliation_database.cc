@@ -188,8 +188,7 @@ bool AffiliationDatabase::GetAffiliationsAndBrandingForFacetURI(
          FacetBrandingInfo{
              statement.ColumnString(1), GURL(statement.ColumnString(2)),
          }});
-    result->last_update_time =
-        base::Time::FromInternalValue(statement.ColumnInt64(3));
+    result->last_update_time = statement.ColumnTime(3);
   }
 
   return !result->facets.empty();
@@ -304,8 +303,7 @@ bool AffiliationDatabase::Store(
   if (!transaction.Begin())
     return false;
 
-  statement_parent.BindInt64(
-      0, affiliated_facets.last_update_time.ToInternalValue());
+  statement_parent.BindTime(0, affiliated_facets.last_update_time);
   statement_parent.BindString(1, group.branding_info.name);
   statement_parent.BindString(
       2, group.branding_info.icon_url.possibly_invalid_spec());
