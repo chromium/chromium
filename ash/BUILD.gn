@@ -1837,8 +1837,6 @@ component("ash") {
     "system/unified/quick_settings_header.h",
     "system/unified/quick_settings_metrics_util.cc",
     "system/unified/quick_settings_metrics_util.h",
-    "system/unified/quick_settings_slider.cc",
-    "system/unified/quick_settings_slider.h",
     "system/unified/quick_settings_view.cc",
     "system/unified/quick_settings_view.h",
     "system/unified/quiet_mode_feature_pod_controller.cc",
