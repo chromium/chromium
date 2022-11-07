@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.autofill_assistant;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -524,6 +525,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1381634")
     public void testChipsAreHiddenOnKeyboardAppering() throws Exception {
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
         mHelper.addDummyCreditCard(profileId);
