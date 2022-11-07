@@ -23,7 +23,6 @@ class DebugOverlayHandler : public BaseWebUIHandler {
   void DeclareJSCallbacks() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
 
  private:
   // JS callbacks.

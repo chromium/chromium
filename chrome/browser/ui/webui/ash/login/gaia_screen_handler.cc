@@ -629,7 +629,7 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_SUBTITLE);
 }
 
-void GaiaScreenHandler::InitializeDeprecated() {
+void GaiaScreenHandler::InitAfterJavascriptAllowed() {
   initialized_ = true;
   if (show_on_init_) {
     show_on_init_ = false;

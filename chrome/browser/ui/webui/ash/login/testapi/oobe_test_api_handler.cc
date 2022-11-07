@@ -59,8 +59,6 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::EmulateDevicesConnectedForTesting);
 }
 
-void OobeTestAPIHandler::InitializeDeprecated() {}
-
 void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   login::NetworkStateHelper helper_;
   dict->Set("testapi_shouldSkipNetworkFirstShow",

@@ -39,9 +39,7 @@ void BaseWebUIHandler::RegisterMessages() {
 
 void BaseWebUIHandler::GetAdditionalParameters(base::Value::Dict* dict) {}
 
-void BaseWebUIHandler::InitAfterJavascriptAllowed() {
-  InitializeDeprecated();
-}
+void BaseWebUIHandler::InitAfterJavascriptAllowed() {}
 
 void BaseWebUIHandler::ShowScreenDeprecated(OobeScreenId screen) {
   if (!GetOobeUI())

@@ -24,23 +24,12 @@ constexpr char kUserActedCallback[] = ".userActed";
 BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen)
     : oobe_screen_(oobe_screen) {
   DCHECK_NE(oobe_screen_.name, OOBE_SCREEN_UNKNOWN.name);
-  if (!oobe_screen_.external_api_prefix.empty()) {
-    user_acted_method_path_ = base::StrCat(
-        {kLoginPrefix, oobe_screen_.external_api_prefix, kUserActedCallback});
-  }
+  DCHECK(!oobe_screen_.external_api_prefix.empty());
+  user_acted_method_path_ = base::StrCat(
+      {kLoginPrefix, oobe_screen_.external_api_prefix, kUserActedCallback});
 }
 
 BaseScreenHandler::~BaseScreenHandler() = default;
-
-void BaseScreenHandler::SetBaseScreenDeprecated(BaseScreen* base_screen) {
-#if DCHECK_IS_ON()
-  base_screen_ = base_screen;
-  if (!base_screen) {
-    // TODO(rsorokin): Insert check if LDH is finalizing here.
-    return;
-  }
-#endif
-}
 
 void BaseScreenHandler::ShowInWebUI(absl::optional<base::Value::Dict> data) {
   if (!GetOobeUI())
@@ -67,15 +56,6 @@ void BaseScreenHandler::HandleUserAction(const base::Value::List& args) {
 bool BaseScreenHandler::HandleUserActionImpl(const base::Value::List& args) {
   if (!LoginDisplayHost::default_host())
     return false;
-
-#if DCHECK_IS_ON()
-  if (base_screen_) {
-    DCHECK_EQ(
-        LoginDisplayHost::default_host()->GetWizardController()->GetScreen(
-            oobe_screen_),
-        base_screen_);
-  }
-#endif
 
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   if (!host) {

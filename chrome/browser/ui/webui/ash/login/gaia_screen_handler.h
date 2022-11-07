@@ -185,7 +185,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
+  void InitAfterJavascriptAllowed() override;
 
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;

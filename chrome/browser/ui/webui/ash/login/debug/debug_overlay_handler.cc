@@ -110,8 +110,6 @@ void DebugOverlayHandler::DeclareJSCallbacks() {
 void DebugOverlayHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
-void DebugOverlayHandler::InitializeDeprecated() {}
-
 // DebugOverlayHandler, private: ----------------------------------------------
 
 void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {

@@ -59,8 +59,8 @@ void EnableAdbSideloadingScreen::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kEnableAdbSideloadingRequested, false);
 }
 
-void EnableAdbSideloadingScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void EnableAdbSideloadingScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelPressed) {
     OnCancel();
   } else if (action_id == kUserActionEnablePressed) {
@@ -68,7 +68,7 @@ void EnableAdbSideloadingScreen::OnUserActionDeprecated(
   } else if (action_id == kUserActionLearnMorePressed) {
     OnLearnMore();
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 

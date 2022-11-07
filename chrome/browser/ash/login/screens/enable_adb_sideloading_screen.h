@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_ENABLE_ADB_SIDELOADING_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_ENABLE_ADB_SIDELOADING_SCREEN_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
@@ -39,7 +37,7 @@ class EnableAdbSideloadingScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   base::RepeatingClosure* exit_callback() { return &exit_callback_; }
 

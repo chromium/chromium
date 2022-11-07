@@ -31,8 +31,6 @@ NetworkDropdownHandler::~NetworkDropdownHandler() = default;
 void NetworkDropdownHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
-void NetworkDropdownHandler::InitializeDeprecated() {}
-
 void NetworkDropdownHandler::RegisterMessages() {
   AddCallback(kJsApiLaunchInternetDetailDialog,
               &NetworkDropdownHandler::HandleLaunchInternetDetailDialog);

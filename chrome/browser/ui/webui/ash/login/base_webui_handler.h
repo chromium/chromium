@@ -106,10 +106,6 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
     web_ui()->RegisterHandlerCallback(function_name, callback);
   }
 
-  // Called when the page is ready and handler can do initialization.
-  // DEPRECATED: Use InitAfterJavascriptAllowed if required.
-  virtual void InitializeDeprecated() {}
-
   // Show selected WebUI `screen`.
   void ShowScreenDeprecated(OobeScreenId screen);
 
