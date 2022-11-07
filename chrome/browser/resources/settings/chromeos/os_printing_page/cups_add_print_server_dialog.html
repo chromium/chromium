@@ -1,26 +1,28 @@
 <style include="cups-printer-shared">
-  [slot=dialog-body] {
+  [slot='dialog-body'] {
     height: 90px;
   }
-  [slot=dialog-buttons] {
+  [slot='dialog-buttons'] {
     width: auto;
   }
 </style>
 <add-printer-dialog id="printServerDialog">
   <div slot="dialog-title">
     $i18n{addPrintServerTitle}
-    <printer-dialog-error id="server-dialog-error"
-        error-text="[[errorText_]]">
+    <printer-dialog-error id="server-dialog-error" error-text="[[errorText_]]">
     </printer-dialog-error>
   </div>
   <div slot="dialog-body">
     <div class="settings-box first two-line">
-      <cr-input id="printServerAddressInput"
-          label="$i18n{printServerAddress}"
-          value="{{printServerAddress_}}"
-          error-message="$i18n{printServerInvalidUrlAddress}"
-          on-keypress="onKeypress_"
-          maxlength=63 autofocus>
+      <cr-input
+        id="printServerAddressInput"
+        label="$i18n{printServerAddress}"
+        value="{{printServerAddress_}}"
+        error-message="$i18n{printServerInvalidUrlAddress}"
+        on-keypress="onKeypress"
+        maxlength="63"
+        autofocus
+      >
       </cr-input>
     </div>
   </div>
@@ -28,9 +30,11 @@
     <cr-button class="cancel-button" on-click="onCancelTap_">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button"
-        on-click="onAddPrintServerTap_"
-        disabled="[[inProgress_]]">
+    <cr-button
+      class="action-button"
+      on-click="onAddPrintServerTap_"
+      disabled="[[inProgress_]]"
+    >
       $i18n{addPrinterButtonText}
     </cr-button>
   </div>

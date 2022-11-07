@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,51 +7,48 @@
  * Nearby Printers.
  */
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import './cups_printers_entry.js';
 import '../../settings_shared.css.js';
+import './cups_printer_types.js';
+import './cups_printers_browser_proxy.js';
+import './cups_printers_entry.js';
+import './cups_printers_entry_list_behavior.js';
 
-import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/ash/common/list_property_update_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
 
+import {getTemplate} from './cups_nearby_printers.html.js';
 import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
 import {PrinterListEntry} from './cups_printer_types.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListBehavior, CupsPrintersEntryListBehaviorInterface} from './cups_printers_entry_list_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CupsPrintersEntryListBehaviorInterface}
- * @implements {ListPropertyUpdateBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsCupsNearbyPrintersElementBase = mixinBehaviors(
-    [
-      CupsPrintersEntryListBehavior,
-      ListPropertyUpdateBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+const SettingsCupsNearbyPrintersElementBase =
+    mixinBehaviors(
+        [
+          CupsPrintersEntryListBehavior,
+        ],
+        WebUiListenerMixin(ListPropertyUpdateMixin(PolymerElement))) as {
+      new (): PolymerElement & CupsPrintersEntryListBehaviorInterface &
+          ListPropertyUpdateMixinInterface & WebUiListenerMixinInterface,
+    };
 
-/** @polymer */
-class SettingsCupsNearbyPrintersElement extends
+export class SettingsCupsNearbyPrintersElement extends
     SettingsCupsNearbyPrintersElementBase {
   static get is() {
     return 'settings-cups-nearby-printers';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * Search term for filtering |nearbyPrinters|.
-       * @type {string}
        */
       searchTerm: {
         type: String,
@@ -66,7 +63,6 @@ class SettingsCupsNearbyPrintersElement extends
         value: false,
       },
 
-      /** @type {?CupsPrinterInfo} */
       activePrinter: {
         type: Object,
         notify: true,
@@ -78,10 +74,6 @@ class SettingsCupsNearbyPrintersElement extends
         notify: true,
       },
 
-      /**
-       * @type {number}
-       * @private
-       */
       activePrinterListEntryIndex_: {
         type: Number,
         value: -1,
@@ -89,8 +81,6 @@ class SettingsCupsNearbyPrintersElement extends
 
       /**
        * List of printers filtered through a search term.
-       * @type {!Array<!PrinterListEntry>}
-       * @private
        */
       filteredPrinters_: {
         type: Array,
@@ -99,21 +89,17 @@ class SettingsCupsNearbyPrintersElement extends
 
       /**
        * Used by FocusRowBehavior to track the last focused element on a row.
-       * @private
        */
       lastFocused_: Object,
 
       /**
        * Used by FocusRowBehavior to track if the list has been blurred.
-       * @private
        */
       listBlurred_: Boolean,
 
       /**
        * This is set to true while waiting for a response during a printer
        * setup.
-       * @type {boolean}
-       * @private
        */
       savingPrinter_: {
         type: Boolean,
@@ -126,29 +112,42 @@ class SettingsCupsNearbyPrintersElement extends
     return ['onSearchOrPrintersChanged_(nearbyPrinters.*, searchTerm)'];
   }
 
-  ready() {
+  activePrinter: CupsPrinterInfo;
+  printersCount: number;
+  searchTerm: string;
+  userPrintersAllowed: boolean;
+
+  private activePrinterListEntryIndex_: number;
+  private filteredPrinters_: PrinterListEntry[];
+  private lastFocused_: Object;
+  private listBlurred_: boolean;
+  private savingPrinter_: boolean;
+
+  override ready(): void {
     super.ready();
-    this.addEventListener('add-automatic-printer', (event) => {
-      this.onAddAutomaticPrinter_(
-          /** @type {!CustomEvent<{item: !PrinterListEntry}>} */ (event));
-    });
+    this.addEventListener(
+        'add-automatic-printer',
+        (event: CustomEvent<{item: PrinterListEntry}>) => {
+          this.onAddAutomaticPrinter_(event);
+        });
 
-    this.addEventListener('add-print-server-printer', (event) => {
-      this.onAddPrintServerPrinter_(
-          /** @type {!CustomEvent<{item: !PrinterListEntry}>} */ (event));
-    });
+    this.addEventListener(
+        'add-print-server-printer',
+        (event: CustomEvent<{item: PrinterListEntry}>) => {
+          this.onAddPrintServerPrinter_(event);
+        });
 
-    this.addEventListener('query-discovered-printer', (event) => {
-      this.onQueryDiscoveredPrinter_(
-          /** @type {!CustomEvent<{item: !PrinterListEntry}>} */ (event));
-    });
+    this.addEventListener(
+        'query-discovered-printer',
+        (event: CustomEvent<{item: PrinterListEntry}>) => {
+          this.onQueryDiscoveredPrinter_(event);
+        });
   }
 
   /**
    * Redoes the search whenever |searchTerm| or |nearbyPrinters| changes.
-   * @private
    */
-  onSearchOrPrintersChanged_() {
+  private onSearchOrPrintersChanged_(): void {
     if (!this.nearbyPrinters) {
       return;
     }
@@ -156,21 +155,20 @@ class SettingsCupsNearbyPrintersElement extends
     // |filteredPrinters_| is just |nearbyPrinters|.
     const updatedPrinters = this.searchTerm ?
         this.nearbyPrinters.filter(
-            item => matchesSearchTerm(item.printerInfo, this.searchTerm)) :
+            (item: PrinterListEntry) =>
+                matchesSearchTerm(item.printerInfo, this.searchTerm)) :
         this.nearbyPrinters.slice();
 
     updatedPrinters.sort(sortPrinters);
 
     this.updateList(
-        'filteredPrinters_', printer => printer.printerInfo.printerId,
+        'filteredPrinters_',
+        (printer: PrinterListEntry) => printer.printerInfo.printerId,
         updatedPrinters);
   }
 
-  /**
-   * @param {!CustomEvent<{item: !PrinterListEntry}>} e
-   * @private
-   */
-  onAddAutomaticPrinter_(e) {
+  private onAddAutomaticPrinter_(e: CustomEvent<{item: PrinterListEntry}>):
+      void {
     const item = e.detail.item;
     this.setActivePrinter_(item);
     this.savingPrinter_ = true;
@@ -184,11 +182,8 @@ class SettingsCupsNearbyPrintersElement extends
     recordSettingChange();
   }
 
-  /**
-   * @param {!CustomEvent<{item: !PrinterListEntry}>} e
-   * @private
-   */
-  onAddPrintServerPrinter_(e) {
+  private onAddPrintServerPrinter_(e: CustomEvent<{item: PrinterListEntry}>):
+      void {
     const item = e.detail.item;
     this.setActivePrinter_(item);
     this.savingPrinter_ = true;
@@ -201,11 +196,8 @@ class SettingsCupsNearbyPrintersElement extends
             this.onAddNearbyPrinterFailed_.bind(this));
   }
 
-  /**
-   * @param {!CustomEvent<{item: !PrinterListEntry}>} e
-   * @private
-   */
-  onQueryDiscoveredPrinter_(e) {
+  private onQueryDiscoveredPrinter_(e: CustomEvent<{item: PrinterListEntry}>):
+      void {
     const item = e.detail.item;
     this.setActivePrinter_(item);
     this.savingPrinter_ = true;
@@ -213,8 +205,8 @@ class SettingsCupsNearbyPrintersElement extends
     // This is a workaround to ensure type safety on the params of the casted
     // function. We do this because the closure compiler does not work well with
     // rejected js promises.
-    const queryDiscoveredPrinterFailed = /** @type {!Function}) */ (
-        this.onQueryDiscoveredPrinterFailed_.bind(this));
+    const queryDiscoveredPrinterFailed: (printer: CupsPrinterInfo) => void =
+        this.onQueryDiscoveredPrinterFailed_.bind(this);
     CupsPrintersBrowserProxyImpl.getInstance()
         .addDiscoveredPrinter(item.printerInfo.printerId)
         .then(
@@ -227,12 +219,10 @@ class SettingsCupsNearbyPrintersElement extends
   /**
    * Retrieves the index of |item| in |nearbyPrinters_| and sets that printer as
    * the active printer.
-   * @param {!PrinterListEntry} item
-   * @private
    */
-  setActivePrinter_(item) {
+  private setActivePrinter_(item: PrinterListEntry): void {
     this.activePrinterListEntryIndex_ = this.nearbyPrinters.findIndex(
-        printer =>
+        (printer: PrinterListEntry) =>
             printer.printerInfo.printerId === item.printerInfo.printerId);
 
     this.activePrinter =
@@ -240,12 +230,8 @@ class SettingsCupsNearbyPrintersElement extends
             .printerInfo;
   }
 
-  /**
-   * @param {!PrinterSetupResult} resultCode
-   * @param {string} printerName
-   * @private
-   */
-  showCupsPrinterToast_(resultCode, printerName) {
+  private showCupsPrinterToast_(
+      resultCode: PrinterSetupResult, printerName: string): void {
     const event = new CustomEvent('show-cups-printer-toast', {
       bubbles: true,
       composed: true,
@@ -259,21 +245,17 @@ class SettingsCupsNearbyPrintersElement extends
 
   /**
    * Handler for addDiscoveredPrinter success.
-   * @param {string} printerName
-   * @param {!PrinterSetupResult} result
-   * @private
    */
-  onAddNearbyPrintersSucceeded_(printerName, result) {
+  private onAddNearbyPrintersSucceeded_(
+      printerName: string, result: PrinterSetupResult): void {
     this.savingPrinter_ = false;
     this.showCupsPrinterToast_(result, printerName);
   }
 
   /**
    * Handler for addDiscoveredPrinter failure.
-   * @param {*} printer
-   * @private
    */
-  onAddNearbyPrinterFailed_(printer) {
+  private onAddNearbyPrinterFailed_(printer: CupsPrinterInfo): void {
     this.savingPrinter_ = false;
     this.showCupsPrinterToast_(
         PrinterSetupResult.PRINTER_UNREACHABLE, printer.printerName);
@@ -281,45 +263,47 @@ class SettingsCupsNearbyPrintersElement extends
 
   /**
    * Handler for queryDiscoveredPrinter success.
-   * @param {string} printerName
-   * @param {!PrinterSetupResult} result
-   * @private
    */
-  onQueryDiscoveredPrinterSucceeded_(printerName, result) {
+  private onQueryDiscoveredPrinterSucceeded_(
+      printerName: string, result: PrinterSetupResult): void {
     this.savingPrinter_ = false;
     this.showCupsPrinterToast_(result, printerName);
   }
 
   /**
    * Handler for queryDiscoveredPrinter failure.
-   * @param {!CupsPrinterInfo} printer
-   * @private
    */
-  onQueryDiscoveredPrinterFailed_(printer) {
+  private onQueryDiscoveredPrinterFailed_(printer: CupsPrinterInfo): void {
     this.savingPrinter_ = false;
     const openManufacturerDialogEvent = new CustomEvent(
         'open-manufacturer-model-dialog-for-specified-printer', {
           bubbles: true,
           composed: true,
-          detail: {item: /** @type {CupsPrinterInfo} */ (printer)},
+          detail: {item: printer},
         });
     this.dispatchEvent(openManufacturerDialogEvent);
   }
 
   /**
-   * @return {boolean} Returns true if the no search message should be visible.
-   * @private
+   * @return Returns true if the no search message should be visible.
    */
-  showNoSearchResultsMessage_() {
+  private showNoSearchResultsMessage_(): boolean {
     return !!this.searchTerm && !this.filteredPrinters_.length;
   }
 
-  /**
-   * @private
-   * @return {number} Length of |filteredPrinters_|.
-   */
-  getFilteredPrintersLength_() {
+  private getFilteredPrintersLength_(): number {
     return this.filteredPrinters_.length;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-cups-nearby-printers': SettingsCupsNearbyPrintersElement;
+  }
+  interface HTMLElementEventMap {
+    'add-automatic-printer': CustomEvent<{item: PrinterListEntry}>;
+    'add-print-server-printer': CustomEvent<{item: PrinterListEntry}>;
+    'query-discovered-printer': CustomEvent<{item: PrinterListEntry}>;
   }
 }
 

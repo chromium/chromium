@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,27 +19,27 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './cups_add_print_server_dialog.js';
 import './cups_add_printer_manually_dialog.js';
 import './cups_add_printer_manufacturer_model_dialog.js';
-import './cups_printer_shared_css.js';
+import './cups_printer_shared.css.js';
+import './cups_printers_browser_proxy.js';
 
-import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CupsPrinterInfo} from './cups_printers_browser_proxy.js';
+import {getTemplate} from './cups_settings_add_printer_dialog.html.js';
 
 /**
  * Different dialogs in add printer flow.
- * @enum {string}
  */
-const AddPrinterDialogs = {
-  MANUALLY: 'add-printer-manually-dialog',
-  MANUFACTURER: 'add-printer-manufacturer-model-dialog',
-  PRINTSERVER: 'add-print-server-dialog',
-};
+enum AddPrinterDialogs {
+  MANUALLY = 'add-printer-manually-dialog',
+  MANUFACTURER = 'add-printer-manufacturer-model-dialog',
+  PRINTSERVER = 'add-print-server-dialog',
+}
 
 /**
  * Return a reset CupsPrinterInfo object.
- *  @return {!CupsPrinterInfo}
  */
-function getEmptyPrinter_() {
+function getEmptyPrinter(): CupsPrinterInfo {
   return {
     isManaged: false,
     ppdManufacturer: '',
@@ -62,42 +62,35 @@ function getEmptyPrinter_() {
   };
 }
 
-/** @polymer */
-class SettingsCupsAddPrinterDialogElement extends PolymerElement {
-  static get is() {
+export class SettingsCupsAddPrinterDialogElement extends PolymerElement {
+  static get is(): string {
     return 'settings-cups-add-printer-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {!CupsPrinterInfo} */
       newPrinter: {
         type: Object,
       },
 
-      /** @private {string} */
       previousDialog_: String,
 
-      /** @private {string} */
       currentDialog_: String,
 
-      /** @private {boolean} */
       showManuallyAddDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       showManufacturerDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       showAddPrintServerDialog_: {
         type: Boolean,
         value: false,
@@ -105,7 +98,15 @@ class SettingsCupsAddPrinterDialogElement extends PolymerElement {
     };
   }
 
-  ready() {
+  newPrinter: CupsPrinterInfo;
+
+  private currentDialog_: string;
+  private previousDialog_: string;
+  private showAddPrintServerDialog_: boolean;
+  private showManuallyAddDialog_: boolean;
+  private showManufacturerDialog_: boolean;
+
+  override ready(): void {
     super.ready();
 
     this.addEventListener(
@@ -117,8 +118,10 @@ class SettingsCupsAddPrinterDialogElement extends PolymerElement {
         'open-add-print-server-dialog', this.openPrintServerDialog_);
   }
 
-  /** Opens the Add manual printer dialog. */
-  open() {
+  /**
+   * Opens the Add manual printer dialog.
+   */
+  open(): void {
     this.resetData_();
     this.switchDialog_(
         '', AddPrinterDialogs.MANUALLY, 'showManuallyAddDialog_');
@@ -126,37 +129,33 @@ class SettingsCupsAddPrinterDialogElement extends PolymerElement {
 
   /**
    * Reset all the printer data in the Add printer flow.
-   * @private
    */
-  resetData_() {
+  private resetData_(): void {
     if (this.newPrinter) {
-      this.newPrinter = getEmptyPrinter_();
+      this.newPrinter = getEmptyPrinter();
     }
   }
 
-  /** @private */
-  openManuallyAddPrinterDialog_() {
+  private openManuallyAddPrinterDialog_(): void {
     this.switchDialog_(
         this.currentDialog_, AddPrinterDialogs.MANUALLY,
         'showManuallyAddDialog_');
   }
 
-  /** @private */
-  openManufacturerModelDialogForCurrentPrinter_() {
+  private openManufacturerModelDialogForCurrentPrinter_(): void {
     this.switchDialog_(
         this.currentDialog_, AddPrinterDialogs.MANUFACTURER,
         'showManufacturerDialog_');
   }
 
-  /** @param {!CupsPrinterInfo} printer */
-  openManufacturerModelDialogForSpecifiedPrinter(printer) {
+  openManufacturerModelDialogForSpecifiedPrinter(printer: CupsPrinterInfo):
+      void {
     this.newPrinter = printer;
     this.switchDialog_(
         '', AddPrinterDialogs.MANUFACTURER, 'showManufacturerDialog_');
   }
 
-  /** @private */
-  openPrintServerDialog_() {
+  private openPrintServerDialog_(): void {
     this.switchDialog_(
         this.currentDialog_, AddPrinterDialogs.PRINTSERVER,
         'showAddPrintServerDialog_');
@@ -164,23 +163,34 @@ class SettingsCupsAddPrinterDialogElement extends PolymerElement {
 
   /**
    * Switch dialog from |fromDialog| to |toDialog|.
-   * @param {string} fromDialog
-   * @param {string} toDialog
-   * @param {string} domIfBooleanName The name of the boolean variable
+   * @param domIfBooleanName The name of the boolean variable
    *     corresponding to the |toDialog|.
-   * @private
    */
-  switchDialog_(fromDialog, toDialog, domIfBooleanName) {
+  private switchDialog_(
+      fromDialog: string, toDialog: string, domIfBooleanName: string): void {
     this.previousDialog_ = fromDialog;
     this.currentDialog_ = toDialog;
 
     this.set(domIfBooleanName, true);
+
     microTask.run(() => {
-      const dialog = this.shadowRoot.querySelector(toDialog);
-      dialog.addEventListener('close', () => {
+      const dialog = this.shadowRoot!.querySelector(toDialog);
+      dialog!.addEventListener('close', () => {
         this.set(domIfBooleanName, false);
       });
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-cups-add-printer-dialog': SettingsCupsAddPrinterDialogElement;
+  }
+  interface HTMLElementEventMap {
+    'open-manually-add-printer-dialog': CustomEvent;
+    'open-manufacturer-model-dialog': CustomEvent;
+    'open-add-print-server-dialog': CustomEvent;
+    'close': CustomEvent;
   }
 }
 

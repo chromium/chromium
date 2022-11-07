@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,55 +6,55 @@ import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 import './cups_printers.js';
+import './cups_printers_browser_proxy.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
+import {getTemplate} from './os_printing_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const OsSettingsPrintingPageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      RouteObserverBehavior,
-    ],
-    PolymerElement);
+const OsSettingsPrintingPageElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+        ],
+        RouteObserverMixin(PolymerElement)) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          RouteObserverMixinInterface,
+    };
 
-/** @polymer */
 class OsSettingsPrintingPageElement extends OsSettingsPrintingPageElementBase {
-  static get is() {
+  static get is(): string {
     return 'os-settings-printing-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** Preferences state. */
+      /**
+       * Preferences state.
+       * */
       prefs: {
         type: Object,
         notify: true,
       },
 
-      /** Printer search string. */
+      /**
+       * Printer search string.
+       * */
       searchTerm: {
         type: String,
       },
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -68,7 +68,6 @@ class OsSettingsPrintingPageElement extends OsSettingsPrintingPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -77,18 +76,19 @@ class OsSettingsPrintingPageElement extends OsSettingsPrintingPageElementBase {
     };
   }
 
+  prefs: object;
+  searchTerm: string;
+
+  private browserProxy_: CupsPrintersBrowserProxy;
+  private focusConfig_: Map<string, string>;
+
   constructor() {
     super();
 
-    /** @private {!CupsPrintersBrowserProxy} */
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.OS_PRINTING) {
       return;
@@ -97,20 +97,23 @@ class OsSettingsPrintingPageElement extends OsSettingsPrintingPageElementBase {
     this.attemptDeepLink();
   }
 
-  /** @private */
-  onTapCupsPrinters_() {
+  private onTapCupsPrinters_(): void {
     Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
   }
 
-  /** @private */
-  onOpenPrintManagement_() {
+  private onOpenPrintManagement_(): void {
     this.browserProxy_.openPrintManagementApp();
   }
 
-  /** @private */
-  onOpenScanningApp_() {
+  private onOpenScanningApp_(): void {
     this.browserProxy_.openScanningApp();
     recordSettingChange(Setting.kScanningApp);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-printing-page': OsSettingsPrintingPageElement;
   }
 }
 
