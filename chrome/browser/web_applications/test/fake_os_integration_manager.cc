@@ -134,6 +134,11 @@ void FakeOsIntegrationManager::SetUrlHandlerManager(
   set_url_handler_manager(std::move(url_handler_manager));
 }
 
+void FakeOsIntegrationManager::SetShortcutManager(
+    std::unique_ptr<WebAppShortcutManager> shortcut_manager) {
+  set_shortcut_manager(std::move(shortcut_manager));
+}
+
 FakeOsIntegrationManager*
 FakeOsIntegrationManager::AsTestOsIntegrationManager() {
   return this;

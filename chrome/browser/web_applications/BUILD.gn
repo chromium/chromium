@@ -613,6 +613,7 @@ source_set("web_applications_unit_tests") {
       "os_integration/icns_encoder_unittest.cc",
       "os_integration/web_app_run_on_os_login_mac_unittest.mm",
       "os_integration/web_app_shortcut_mac_unittest.mm",
+      "os_integration/web_app_shortcut_manager_mac_unittest.cc",
     ]
   }
 

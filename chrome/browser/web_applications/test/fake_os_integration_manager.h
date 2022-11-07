@@ -92,6 +92,9 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
   void SetUrlHandlerManager(
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
 
+  void SetShortcutManager(
+      std::unique_ptr<WebAppShortcutManager> shortcut_manager);
+
   FakeOsIntegrationManager* AsTestOsIntegrationManager() override;
 
  private:

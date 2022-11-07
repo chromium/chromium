@@ -178,6 +178,8 @@ class OsIntegrationManager : public AppRegistrarObserver {
     return *file_handler_manager_;
   }
 
+  WebAppShortcutManager& shortcut_manager_for_testing();
+
   UrlHandlerManager& url_handler_manager_for_testing();
 
   WebAppProtocolHandlerManager& protocol_handler_manager_for_testing();

@@ -396,6 +396,11 @@ OsIntegrationManager::GetDisallowedHandlersForProtocol(
   return protocol_handler_manager_->GetDisallowedHandlersForProtocol(protocol);
 }
 
+WebAppShortcutManager& OsIntegrationManager::shortcut_manager_for_testing() {
+  DCHECK(shortcut_manager_);
+  return *shortcut_manager_;
+}
+
 UrlHandlerManager& OsIntegrationManager::url_handler_manager_for_testing() {
   DCHECK(url_handler_manager_);
   return *url_handler_manager_;

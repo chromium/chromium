@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -489,6 +490,12 @@ void WebAppShortcutManager::UpdateShortcutsForAllAppsIfNeeded() {
 
   if (last_version == kCurrentAppShortcutsVersion &&
       last_arch == CurrentAppShortcutsArch()) {
+    // This either means this is a profile where installed shortcuts already
+    // match the expected version and arch, or this could be a fresh profile.
+    // For the latter, make sure to actually store version and arch in prefs,
+    // as otherwise this code would always just read the defaults for these
+    // prefs, and not actually ever detect a version change.
+    SetCurrentAppShortcutsVersion();
     return;
   }
 
@@ -504,17 +511,22 @@ void WebAppShortcutManager::UpdateShortcutsForAllAppsNow() {
   if (suppress_shortcuts_for_testing_)
     return;
 
-  // TODO(https://crbug.com/1380711): Also update shortcuts for web apps.
+  std::vector<AppId> app_ids = registrar_->GetAppIds();
+  auto done_callback = base::BarrierClosure(
+      app_ids.size() + 1,
+      base::BindOnce(&WebAppShortcutManager::SetCurrentAppShortcutsVersion,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  for (const auto& app_id : app_ids) {
+    UpdateShortcuts(app_id, /*old_name=*/{}, done_callback);
+  }
 
   UpdateShortcutsForAllAppsCallback update_callback =
       GetUpdateShortcutsForAllAppsCallback();
   if (update_callback) {
-    update_callback.Run(
-        profile_,
-        base::BindOnce(&WebAppShortcutManager::SetCurrentAppShortcutsVersion,
-                       weak_ptr_factory_.GetWeakPtr()));
+    update_callback.Run(profile_, done_callback);
   } else {
-    SetCurrentAppShortcutsVersion();
+    done_callback.Run();
   }
 }
 
