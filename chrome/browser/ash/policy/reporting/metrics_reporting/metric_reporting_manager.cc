@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_info_sampler.h"
@@ -32,6 +33,7 @@
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_event_observer_manager.h"
 #include "components/reporting/metrics/metric_report_queue.h"
+#include "components/reporting/metrics/periodic_event_collector.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/user.h"
@@ -359,7 +361,7 @@ void MetricReportingManager::InitPeriodicCollector(
 
 void MetricReportingManager::InitPeriodicEventCollector(
     const std::string& sampler_name,
-    std::unique_ptr<EventDetector> event_detector,
+    std::unique_ptr<PeriodicEventCollector::EventDetector> event_detector,
     MetricReportQueue* metric_report_queue,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
@@ -373,12 +375,13 @@ void MetricReportingManager::InitPeriodicEventCollector(
 
   auto* const configured_sampler =
       telemetry_sampler_map_.at(sampler_name).get();
-  periodic_collectors_.emplace_back(delegate_->CreatePeriodicEventCollector(
+  auto periodic_event_collector = std::make_unique<PeriodicEventCollector>(
       configured_sampler->GetSampler(), std::move(event_detector),
-      /*sampler_pool=*/this, metric_report_queue, &reporting_settings_,
-      configured_sampler->GetEnableSettingPath(),
-      configured_sampler->GetSettingEnabledDefaultValue(), rate_setting_path,
-      default_rate, rate_unit_to_ms));
+      &reporting_settings_, rate_setting_path, default_rate, rate_unit_to_ms);
+  InitEventObserverManager(std::move(periodic_event_collector),
+                           metric_report_queue,
+                           configured_sampler->GetEnableSettingPath(),
+                           configured_sampler->GetSettingEnabledDefaultValue());
 }
 
 void MetricReportingManager::InitEventObserverManager(

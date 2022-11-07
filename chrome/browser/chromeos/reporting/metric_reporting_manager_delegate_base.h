@@ -70,21 +70,6 @@ class MetricReportingManagerDelegateBase {
       const std::string& enable_setting_path,
       bool setting_enabled_default_value);
 
-  // Creates a new event collector for periodic event data collection. The rate
-  // is controlled by the specified setting and we fall back to the defaults
-  // specified if none set by policy.
-  virtual std::unique_ptr<CollectorBase> CreatePeriodicEventCollector(
-      Sampler* sampler,
-      std::unique_ptr<EventDetector> event_detector,
-      EventDrivenTelemetrySamplerPool* sampler_pool,
-      MetricReportQueue* metric_report_queue,
-      ReportingSettings* reporting_settings,
-      const std::string& enable_setting_path,
-      bool setting_enabled_default_value,
-      const std::string& rate_setting_path,
-      base::TimeDelta default_rate,
-      int rate_unit_to_ms);
-
   // Creates a new event observer manager to manage events reporting. The rate
   // is controlled by the specified setting and we fall back to the defaults
   // specified if none set by policy.

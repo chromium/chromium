@@ -11,15 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "components/reporting/metrics/metric_data_collector.h"
 #include "components/reporting/metrics/sampler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
-
-class MetricData;
 
 // `HttpsLatencySampler` collects a sample of the current network latency by
 // running https latency test of `NetworkDiagnosticsRoutines` parsing its
@@ -70,21 +66,6 @@ class HttpsLatencySampler : public Sampler {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<HttpsLatencySampler> weak_ptr_factory_{this};
-};
-
-class HttpsLatencyEventDetector : public EventDetector {
- public:
-  HttpsLatencyEventDetector() = default;
-
-  HttpsLatencyEventDetector(const HttpsLatencyEventDetector&) = delete;
-  HttpsLatencyEventDetector& operator=(const HttpsLatencyEventDetector&) =
-      delete;
-
-  ~HttpsLatencyEventDetector() override = default;
-
-  absl::optional<MetricEventType> DetectEvent(
-      const MetricData& previous_metric_data,
-      const MetricData& current_metric_data) override;
 };
 }  // namespace reporting
 

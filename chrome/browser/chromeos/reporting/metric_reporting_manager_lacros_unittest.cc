@@ -37,7 +37,7 @@ constexpr char kUserId[] = "123";
 class FakeCollector : public CollectorBase {
  public:
   explicit FakeCollector(int* collector_count)
-      : CollectorBase(nullptr, nullptr), collector_count_(collector_count) {
+      : CollectorBase(nullptr), collector_count_(collector_count) {
     ++(*collector_count_);
   }
 

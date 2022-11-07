@@ -88,24 +88,6 @@ MetricReportingManagerDelegateBase::CreateOneShotCollector(
       setting_enabled_default_value);
 }
 
-std::unique_ptr<CollectorBase>
-MetricReportingManagerDelegateBase::CreatePeriodicEventCollector(
-    Sampler* sampler,
-    std::unique_ptr<EventDetector> event_detector,
-    EventDrivenTelemetrySamplerPool* sampler_pool,
-    MetricReportQueue* metric_report_queue,
-    ReportingSettings* reporting_settings,
-    const std::string& enable_setting_path,
-    bool setting_enabled_default_value,
-    const std::string& rate_setting_path,
-    base::TimeDelta default_rate,
-    int rate_unit_to_ms) {
-  return std::make_unique<PeriodicEventCollector>(
-      sampler, std::move(event_detector), sampler_pool, metric_report_queue,
-      reporting_settings, enable_setting_path, setting_enabled_default_value,
-      rate_setting_path, default_rate, rate_unit_to_ms);
-}
-
 std::unique_ptr<MetricEventObserverManager>
 MetricReportingManagerDelegateBase::CreateEventObserverManager(
     std::unique_ptr<MetricEventObserver> event_observer,

@@ -22,11 +22,11 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/periodic_event_collector.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 
 namespace reporting {
 
-class EventDetector;
 class MetricEventObserver;
 class MetricEventObserverManager;
 class MetricReportQueue;
@@ -116,12 +116,13 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
                              base::TimeDelta default_rate,
                              int rate_unit_to_ms = 1);
 
-  void InitPeriodicEventCollector(const std::string& sampler_name,
-                                  std::unique_ptr<EventDetector> event_detector,
-                                  MetricReportQueue* metric_report_queue,
-                                  const std::string& rate_setting_path,
-                                  base::TimeDelta default_rate,
-                                  int rate_unit_to_ms = 1);
+  void InitPeriodicEventCollector(
+      const std::string& sampler_name,
+      std::unique_ptr<PeriodicEventCollector::EventDetector> event_detector,
+      MetricReportQueue* metric_report_queue,
+      const std::string& rate_setting_path,
+      base::TimeDelta default_rate,
+      int rate_unit_to_ms = 1);
 
   void InitEventObserverManager(
       std::unique_ptr<MetricEventObserver> event_observer,
