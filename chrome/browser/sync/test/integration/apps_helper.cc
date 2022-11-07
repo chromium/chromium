@@ -252,7 +252,7 @@ web_app::AppId InstallWebApp(Profile* profile, const WebAppInstallInfo& info) {
   auto* provider = web_app::WebAppProvider::GetForTest(profile);
   provider->command_manager().ScheduleCommand(
       std::make_unique<web_app::InstallFromInfoCommand>(
-          std::make_unique<WebAppInstallInfo>(info),
+          std::make_unique<WebAppInstallInfo>(info.Clone()),
           &provider->install_finalizer(),
           /*overwrite_existing_manifest_fields=*/true,
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,

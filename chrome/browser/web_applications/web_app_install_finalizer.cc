@@ -334,7 +334,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
       GetWebAppRegistrar().GetAppShortName(app_id),
-      GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info);
+      GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info.Clone());
 
   // Prepare copy-on-write to update existing app.
   SetWebAppManifestFieldsAndWriteData(
@@ -391,7 +391,7 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 
   auto write_translations_callback = base::BindOnce(
       &WebAppInstallFinalizer::WriteTranslations,
-      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(web_app_info));
+      weak_ptr_factory_.GetWeakPtr(), app_id, web_app_info.translations);
   auto commit_to_sync_bridge_callback =
       base::BindOnce(&WebAppInstallFinalizer::CommitToSyncBridge,
                      weak_ptr_factory_.GetWeakPtr(), std::move(web_app));
@@ -406,7 +406,8 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 
 void WebAppInstallFinalizer::WriteTranslations(
     const AppId& app_id,
-    const WebAppInstallInfo& web_app_info,
+    const base::flat_map<std::string, blink::Manifest::TranslationItem>&
+        translations,
     CommitCallback commit_callback,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -415,7 +416,7 @@ void WebAppInstallFinalizer::WriteTranslations(
     return;
   }
 
-  translation_manager_->WriteTranslations(app_id, web_app_info.translations,
+  translation_manager_->WriteTranslations(app_id, translations,
                                           std::move(commit_callback));
 }
 

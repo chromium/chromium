@@ -29,7 +29,7 @@ class Profile;
 namespace webapps {
 enum class UninstallResultCode;
 enum class WebappUninstallSource;
-}
+}  // namespace webapps
 
 namespace web_app {
 
@@ -183,10 +183,12 @@ class WebAppInstallFinalizer {
       std::unique_ptr<WebApp> web_app,
       CommitCallback commit_callback);
 
-  void WriteTranslations(const AppId& app_id,
-                         const WebAppInstallInfo& web_app_info,
-                         CommitCallback commit_callback,
-                         bool success);
+  void WriteTranslations(
+      const AppId& app_id,
+      const base::flat_map<std::string, blink::Manifest::TranslationItem>&
+          translations,
+      CommitCallback commit_callback,
+      bool success);
 
   void CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
                           CommitCallback commit_callback,

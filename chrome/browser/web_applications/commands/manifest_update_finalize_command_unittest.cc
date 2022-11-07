@@ -51,7 +51,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
         profile(), ProfileKeepAliveOrigin::kWebAppUpdate);
     return std::make_unique<ManifestUpdateFinalizeCommand>(
-        url, app_id, install_info, app_identity_update_allowed,
+        url, app_id, std::move(install_info), app_identity_update_allowed,
         std::move(callback), std::move(keep_alive),
         std::move(profile_keep_alive), &provider().registrar(),
         &provider().install_finalizer(), &provider().os_integration_manager(),
@@ -66,7 +66,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     ManifestUpdateResult output_result;
     base::RunLoop loop;
     provider().command_manager().ScheduleCommand(CreateCommand(
-        url, app_id, install_info, app_identity_update_allowed,
+        url, app_id, std::move(install_info), app_identity_update_allowed,
         base::BindLambdaForTesting([&](const GURL& url,
                                        const AppId& output_app_id,
                                        ManifestUpdateResult result) {

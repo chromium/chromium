@@ -275,14 +275,14 @@ void ManifestUpdateManager::OnManifestDataFetchAwaitAppWindowClose(
   if (BypassWindowCloseWaitingForTesting()) {
     StartManifestWriteAfterWindowsClosed(
         url, app_id, std::move(keep_alive), std::move(profile_keep_alive),
-        install_info.value(), app_identity_update_allowed);
+        std::move(install_info.value()), app_identity_update_allowed);
   } else {
     ui_manager_->NotifyOnAllAppWindowsClosed(
         app_id,
         base::BindOnce(
             &ManifestUpdateManager::StartManifestWriteAfterWindowsClosed,
             base::Unretained(this), url, app_id, std::move(keep_alive),
-            std::move(profile_keep_alive), install_info.value(),
+            std::move(profile_keep_alive), std::move(install_info.value()),
             app_identity_update_allowed));
     UpdatePendingCallback* callback =
         GetUpdatePendingCallbackMutableForTesting();  // IN-TEST
@@ -309,7 +309,7 @@ void ManifestUpdateManager::StartManifestWriteAfterWindowsClosed(
   DCHECK_EQ(update_stage.stage, UpdateStage::Stage::kPendingAppWindowClose);
 
   command_scheduler_->ScheduleManifestUpdateFinalize(
-      url, app_id, install_info, app_identity_update_allowed,
+      url, app_id, std::move(install_info), app_identity_update_allowed,
       std::move(keep_alive), std::move(profile_keep_alive),
       base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
                      base::Unretained(this)));

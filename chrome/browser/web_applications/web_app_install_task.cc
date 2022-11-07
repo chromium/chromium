@@ -687,7 +687,7 @@ void WebAppInstallTask::OnDialogCompleted(
     return;
   }
 
-  WebAppInstallInfo web_app_info_copy = *web_app_info;
+  WebAppInstallInfo web_app_info_copy = web_app_info->Clone();
 
   // This metric is recorded regardless of the installation result.
   RecordInstallEvent();

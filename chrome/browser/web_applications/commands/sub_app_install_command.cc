@@ -365,18 +365,18 @@ void SubAppInstallCommand::OnDialogCompleted(
     return;
   }
 
-  WebAppInstallInfo web_app_info_copy = *web_app_info;
-  web_app_info_copy.user_display_mode = UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+
   install_finalizer_->FinalizeInstall(
-      web_app_info_copy, GetFinalizerOptionsForSubApps(parent_app_id_),
+      *web_app_info, GetFinalizerOptionsForSubApps(parent_app_id_),
       base::BindOnce(&SubAppInstallCommand::OnInstallFinalized,
                      weak_ptr_factory_.GetWeakPtr(), unhashed_app_id,
-                     std::move(web_app_info)));
+                     web_app_info->start_url));
 }
 
 void SubAppInstallCommand::OnInstallFinalized(
     const UnhashedAppId& unhashed_app_id,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    const GURL& start_url,
     const AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
@@ -387,7 +387,7 @@ void SubAppInstallCommand::OnInstallFinalized(
 
   RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                     webapps::WebappInstallSource::SUB_APP);
-  RecordAppBanner(shared_web_contents(), web_app_info->start_url);
+  RecordAppBanner(shared_web_contents(), start_url);
   MaybeFinishInstall(unhashed_app_id,
                      webapps::InstallResultCode::kSuccessNewInstall);
 }

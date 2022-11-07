@@ -131,7 +131,7 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
         FROM_HERE,
         base::BindOnce(&WebAppCommandScheduler::ScheduleManifestUpdateFinalize,
                        weak_ptr_factory_.GetWeakPtr(), url, app_id,
-                       install_info, app_identity_update_allowed,
+                       std::move(install_info), app_identity_update_allowed,
                        std::move(keep_alive), std::move(profile_keep_alive),
                        std::move(callback)));
     return;
@@ -139,7 +139,7 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestUpdateFinalizeCommand>(
-          url, app_id, install_info, app_identity_update_allowed,
+          url, app_id, std::move(install_info), app_identity_update_allowed,
           std::move(callback), std::move(keep_alive),
           std::move(profile_keep_alive), &provider_->registrar(),
           &provider_->install_finalizer(), &provider_->os_integration_manager(),

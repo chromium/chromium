@@ -96,7 +96,7 @@ class SubAppInstallCommand : public WebAppCommand {
                          bool user_accepted,
                          std::unique_ptr<WebAppInstallInfo> web_app_info);
   void OnInstallFinalized(const UnhashedAppId& unhashed_app_id,
-                          std::unique_ptr<WebAppInstallInfo> web_app_info,
+                          const GURL& start_url,
                           const AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);

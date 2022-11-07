@@ -44,7 +44,7 @@ ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
               {app_id})),
       url_(url),
       app_id_(app_id),
-      install_info_(install_info),
+      install_info_(std::move(install_info)),
       app_identity_update_allowed_(app_identity_update_allowed),
       write_callback_(std::move(write_callback)),
       keep_alive_(std::move(keep_alive)),

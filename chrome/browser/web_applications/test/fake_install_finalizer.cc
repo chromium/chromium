@@ -151,7 +151,8 @@ void FakeInstallFinalizer::Finalize(const WebAppInstallInfo& web_app_info,
   OsHooksErrors os_hooks_errors;
 
   // Store input data copies for inspecting in tests.
-  web_app_info_copy_ = std::make_unique<WebAppInstallInfo>(web_app_info);
+  web_app_info_copy_ =
+      std::make_unique<WebAppInstallInfo>(web_app_info.Clone());
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,

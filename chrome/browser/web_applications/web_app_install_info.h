@@ -182,9 +182,6 @@ struct WebAppInstallInfo {
 
   WebAppInstallInfo();
 
-  // TODO(b/227755254): Delete copy constructors and migrate to move assignment.
-  WebAppInstallInfo(const WebAppInstallInfo& other);
-
   // Deleted to prevent accidental copying. Use Clone() to deep copy explicitly.
   WebAppInstallInfo& operator=(const WebAppInstallInfo&) = delete;
 
@@ -337,6 +334,10 @@ struct WebAppInstallInfo {
   // Customisations to the tab strip. This field is only used when the
   // display mode is set to 'tabbed'.
   absl::optional<blink::Manifest::TabStrip> tab_strip;
+
+ private:
+  // Used this method in Clone() method. Use Clone() to deep copy explicitly.
+  WebAppInstallInfo(const WebAppInstallInfo& other);
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);

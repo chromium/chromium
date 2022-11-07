@@ -149,7 +149,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     DCHECK(
         base::Contains(next_finalize_install_results_, web_app_info.start_url));
 
-    web_app_info_list_.push_back(web_app_info);
+    web_app_info_list_.push_back(web_app_info.Clone());
     finalize_options_list_.push_back(options);
 
     AppId app_id;

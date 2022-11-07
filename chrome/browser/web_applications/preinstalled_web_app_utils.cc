@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -626,7 +627,9 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
   }
 
   return base::BindRepeating(
-      &std::make_unique<WebAppInstallInfo, const WebAppInstallInfo&>,
+      [](const WebAppInstallInfo& original) {
+        return std::make_unique<WebAppInstallInfo>(original.Clone());
+      },
       std::move(app_info));
 }
 

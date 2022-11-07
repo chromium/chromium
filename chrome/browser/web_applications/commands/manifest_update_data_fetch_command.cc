@@ -607,8 +607,8 @@ void ManifestUpdateDataFetchCommand::CompleteCommand(
     command_result = CommandResult::kFailure;
   SignalCompletionAndSelfDestruct(
       command_result,
-      base::BindOnce(std::move(fetch_callback_), result, install_info_,
-                     app_identity_update_allowed_));
+      base::BindOnce(std::move(fetch_callback_), result,
+                     std::move(install_info_), app_identity_update_allowed_));
 }
 
 }  // namespace web_app
