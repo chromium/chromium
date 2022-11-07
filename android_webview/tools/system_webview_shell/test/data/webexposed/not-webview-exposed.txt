@@ -121,6 +121,7 @@ interface MediaStreamTrack : EventTarget
   method getCaptureHandle
 interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
 interface CropTarget
+interface CaptureController
 
 # WebAuthN API should not be exposed in WebView, crbug.com/828168
 interface AuthenticatorAssertionResponse : AuthenticatorResponse
