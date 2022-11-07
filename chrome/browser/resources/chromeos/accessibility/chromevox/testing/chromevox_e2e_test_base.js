@@ -49,6 +49,8 @@ ChromeVoxE2ETest = class extends E2ETestBase {
     // Alphabetical based on file path.
     await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule(
         'BrailleInterface', '/chromevox/common/braille/braille_interface.js');
     await importModule(
         'NavBraille', '/chromevox/common/braille/nav_braille.js');
@@ -56,6 +58,8 @@ ChromeVoxE2ETest = class extends E2ETestBase {
         ['AbstractEarcons', 'Earcon'], '/chromevox/common/abstract_earcons.js');
     await importModule(
         ['QueueMode', 'TtsInterface'], '/chromevox/common/tts_interface.js');
+
+    await ChromeVoxState.ready();
   }
 };
 

@@ -144,6 +144,8 @@ export class Background extends ChromeVoxState {
     // Set the darkScreen state to false, since the display will be on whenever
     // ChromeVox starts.
     sessionStorage.setItem('darkScreen', 'false');
+
+    ChromeVoxState.resolveReadyPromise_();
   }
 
   /** @override */

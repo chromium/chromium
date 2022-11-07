@@ -43,6 +43,11 @@ export class ChromeVoxState {
     }
   }
 
+  /** @return {!Promise} */
+  static ready() {
+    return ChromeVoxState.readyPromise_;
+  }
+
   /** Can be overridden to initialize values and state when first created. */
   init() {}
 
@@ -142,6 +147,12 @@ ChromeVoxState.instance;
 
 /** @type {!Array<ChromeVoxStateObserver>} */
 ChromeVoxState.observers = [];
+
+/** @protected {function()} */
+ChromeVoxState.resolveReadyPromise_;
+/** @private {!Promise} */
+ChromeVoxState.readyPromise_ =
+    new Promise(resolve => ChromeVoxState.resolveReadyPromise_ = resolve);
 
 BridgeHelper.registerHandler(
     BridgeConstants.ChromeVoxState.TARGET,
