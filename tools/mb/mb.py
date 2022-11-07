@@ -1369,10 +1369,12 @@ class MetaBuildWrapper:
 
     filter_exists = self.Exists(abs_filter_file_path)
     if filter_exists:
-      command.append('--test-launcher-filter-file=%s' % filter_file_path)
+      filtered_command = command.copy()
+      filtered_command.append('--test-launcher-filter-file=%s' %
+                              filter_file_path)
       self.Print('added RTS filter file to command: %s' % filter_file)
-
-    return filter_exists
+      return filtered_command
+    return None
 
   def PossibleRuntimeDepsPaths(self, vals, ninja_targets, isolate_map):
     """Returns a map of targets to possible .runtime_deps paths.
@@ -1583,17 +1585,19 @@ class MetaBuildWrapper:
     if self.args.rts:
       if target in self.banned_from_rts:
         self.Print('%s is banned for RTS on this builder' % target)
-        isolate['variables']['command'] = command
       else:
-        inverted_command = command.copy()
-        self.AddFilterFileArg(target, build_dir, command, inverted=False)
-        isolate['variables']['command'] = command
+        rts_command = self.AddFilterFileArg(target,
+                                            build_dir,
+                                            command,
+                                            inverted=False)
+        if rts_command:
+          isolate['variables']['rts_command'] = rts_command
 
-        inverted_filter_exists = self.AddFilterFileArg(target,
-                                                       build_dir,
-                                                       inverted_command,
-                                                       inverted=True)
-        if inverted_filter_exists:
+        inverted_command = self.AddFilterFileArg(target,
+                                                 build_dir,
+                                                 command,
+                                                 inverted=True)
+        if inverted_command:
           isolate['variables']['inverted_command'] = inverted_command
 
     self.WriteFile(isolate_path, json.dumps(isolate, sort_keys=True) + '\n')
