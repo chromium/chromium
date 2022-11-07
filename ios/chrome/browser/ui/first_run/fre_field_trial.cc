@@ -30,17 +30,17 @@ const char kTrialGroupMICeAndDefaultBrowserVersionPrefName[] =
 // enrolled in the experiment.
 const int kPlaceholderTrialVersion = -1;
 // The current trial version; should be updated when the experiment is modified.
-const int kCurrentTrialVersion = 3;
+const int kCurrentTrialVersion = 4;
 
 // Group names for the FRE redesign permissions trial.
 const char kDefaultGroup[] = "Default";
 // Group name for the FRE control group.
-const char kControlGroup[] = "Control-V3";
+const char kControlGroup[] = "Control-V4";
 // Group names for the MICe FRE and TangibleSync FRE trial.
-const char kTangibleSyncAFREGroup[] = "kTangibleSyncA-V3";
-const char kTangibleSyncBFREGroup[] = "kTangibleSyncB-V3";
-const char kTangibleSyncCFREGroup[] = "kTangibleSyncC-V3";
-const char kTwoStepsMICEFREGroup[] = "kTwoStepsMICEFRE-V3";
+const char kTangibleSyncDFREGroup[] = "kTangibleSyncD-V4";
+const char kTangibleSyncEFREGroup[] = "kTangibleSyncE-V4";
+const char kTangibleSyncFFREGroup[] = "kTangibleSyncF-V4";
+const char kTwoStepsMICEFREGroup[] = "kTwoStepsMICEFRE-V4";
 
 // Options for kkNewMobileIdentityConsistencyFREParam.
 constexpr base::FeatureParam<NewMobileIdentityConsistencyFRE>::Option
@@ -53,6 +53,12 @@ constexpr base::FeatureParam<NewMobileIdentityConsistencyFRE>::Option
          kNewMobileIdentityConsistencyFREParamTangibleSyncC},
         {NewMobileIdentityConsistencyFRE::kTwoSteps,
          kNewMobileIdentityConsistencyFREParamTwoSteps},
+        {NewMobileIdentityConsistencyFRE::kTangibleSyncD,
+         kNewMobileIdentityConsistencyFREParamTangibleSyncD},
+        {NewMobileIdentityConsistencyFRE::kTangibleSyncE,
+         kNewMobileIdentityConsistencyFREParamTangibleSyncE},
+        {NewMobileIdentityConsistencyFRE::kTangibleSyncF,
+         kNewMobileIdentityConsistencyFREParamTangibleSyncF},
 };
 
 // Parameter for signin::kNewMobileIdentityConsistencyFRE feature.
@@ -109,8 +115,8 @@ NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE() {
 std::map<variations::VariationID, int> GetGroupWeightsForFREVariations() {
   // It would probably be more efficient to use a fixed_flat_map.
   std::map<variations::VariationID, int> weight_by_id = {
-      {kControlTrialID, 0},          {kTangibleSyncAFRETrialID, 0},
-      {kTangibleSyncBFRETrialID, 0}, {kTangibleSyncCFRETrialID, 0},
+      {kControlTrialID, 0},          {kTangibleSyncDFRETrialID, 0},
+      {kTangibleSyncEFRETrialID, 0}, {kTangibleSyncFFRETrialID, 0},
       {kTwoStepsMICEFRETrialID, 0},
   };
   switch (GetChannel()) {
@@ -149,25 +155,25 @@ int CreateNewMICeFRETrial(
   // Control group.
   AddGroupToConfig(kControlGroup, kControlTrialID, weight_by_id, config);
   // MICe FRE and TangibleSync FRE groups.
-  AddGroupToConfig(kTangibleSyncAFREGroup, kTangibleSyncAFRETrialID,
+  AddGroupToConfig(kTangibleSyncDFREGroup, kTangibleSyncDFRETrialID,
                    weight_by_id, config);
-  AddGroupToConfig(kTangibleSyncBFREGroup, kTangibleSyncBFRETrialID,
+  AddGroupToConfig(kTangibleSyncEFREGroup, kTangibleSyncEFRETrialID,
                    weight_by_id, config);
-  AddGroupToConfig(kTangibleSyncCFREGroup, kTangibleSyncCFRETrialID,
+  AddGroupToConfig(kTangibleSyncFFREGroup, kTangibleSyncFFRETrialID,
                    weight_by_id, config);
   AddGroupToConfig(kTwoStepsMICEFREGroup, kTwoStepsMICEFRETrialID, weight_by_id,
                    config);
 
   // Associate field trial params to each group.
   AssociateFieldTrialParamsForNewMobileIdentityConsistency(
-      kTangibleSyncAFREGroup,
-      kNewMobileIdentityConsistencyFREParamTangibleSyncA);
+      kTangibleSyncDFREGroup,
+      kNewMobileIdentityConsistencyFREParamTangibleSyncD);
   AssociateFieldTrialParamsForNewMobileIdentityConsistency(
-      kTangibleSyncBFREGroup,
-      kNewMobileIdentityConsistencyFREParamTangibleSyncB);
+      kTangibleSyncEFREGroup,
+      kNewMobileIdentityConsistencyFREParamTangibleSyncE);
   AssociateFieldTrialParamsForNewMobileIdentityConsistency(
-      kTangibleSyncCFREGroup,
-      kNewMobileIdentityConsistencyFREParamTangibleSyncC);
+      kTangibleSyncFFREGroup,
+      kNewMobileIdentityConsistencyFREParamTangibleSyncF);
   AssociateFieldTrialParamsForNewMobileIdentityConsistency(
       kTwoStepsMICEFREGroup, kNewMobileIdentityConsistencyFREParamTwoSteps);
 

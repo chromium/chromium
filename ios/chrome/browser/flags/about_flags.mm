@@ -492,6 +492,15 @@ const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncC[] = {
 const FeatureEntry::FeatureParam kNewMICEFREWithTwoSteps[] = {
     {kNewMobileIdentityConsistencyFREParam,
      kNewMobileIdentityConsistencyFREParamTwoSteps}};
+const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncD[] = {
+    {kNewMobileIdentityConsistencyFREParam,
+     kNewMobileIdentityConsistencyFREParamTangibleSyncD}};
+const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncE[] = {
+    {kNewMobileIdentityConsistencyFREParam,
+     kNewMobileIdentityConsistencyFREParamTangibleSyncE}};
+const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncF[] = {
+    {kNewMobileIdentityConsistencyFREParam,
+     kNewMobileIdentityConsistencyFREParamTangibleSyncF}};
 const FeatureEntry::FeatureVariation
     kNewMobileIdentityConsistencyFREVariations[] = {
         {"new FRE with tangible sync A", kNewMICEFREWithTangibleSyncA,
@@ -500,6 +509,12 @@ const FeatureEntry::FeatureVariation
          std::size(kNewMICEFREWithTangibleSyncB), nullptr},
         {"new FRE with tangible sync C", kNewMICEFREWithTangibleSyncC,
          std::size(kNewMICEFREWithTangibleSyncC), nullptr},
+        {"new FRE with tangible sync D", kNewMICEFREWithTangibleSyncD,
+         std::size(kNewMICEFREWithTangibleSyncD), nullptr},
+        {"new FRE with tangible sync E", kNewMICEFREWithTangibleSyncE,
+         std::size(kNewMICEFREWithTangibleSyncE), nullptr},
+        {"new FRE with tangible sync F", kNewMICEFREWithTangibleSyncF,
+         std::size(kNewMICEFREWithTangibleSyncF), nullptr},
         {"new FRE with 2 steps", kNewMICEFREWithTwoSteps,
          std::size(kNewMICEFREWithTwoSteps), nullptr}};
 

@@ -309,6 +309,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE" desc="Title of the screen suggesting to the user to sign in. [iOS only]">
         Make Chromium Your Own
       </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_TANGIBLE_SYNC_D" desc="This string appears as a heading on a full-page screen that tells users the benefits of signing in to Chrome. It appears when the user launches Chrome for the first time. The tone should be inviting and alluring. [CHAR_LIMIT=35][iOS only]">
+        Do More with Chromium
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_TANGIBLE_SYNC_E" desc="This string appears as a heading on a full-page screen that welcomes users to Chrome. It appears when the user launches Chrome for the first time. The tone should be inviting and motivating. [CHAR_LIMIT=35][iOS only]">
+        Welcome to Chromium
+      </message>
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX" desc="Checkbox to accept the metrics reporting consent. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
         Help Improve Chromium's Features and Performance
         </message>

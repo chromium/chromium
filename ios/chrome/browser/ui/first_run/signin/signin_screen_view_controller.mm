@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/commands/tos_commands.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
+#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -70,7 +71,27 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
   // Set `self.titleText` and `self.subtitleText`.
   switch (self.signinStatus) {
     case SigninScreenConsumerSigninStatusAvailable: {
-      self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
+        case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
+        case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
+        case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
+        case NewMobileIdentityConsistencyFRE::kTangibleSyncF:
+        case NewMobileIdentityConsistencyFRE::kTwoSteps:
+          self.titleText =
+              l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+          break;
+        case NewMobileIdentityConsistencyFRE::kTangibleSyncD:
+          self.titleText = l10n_util::GetNSString(
+              IDS_IOS_FIRST_RUN_SIGNIN_TITLE_TANGIBLE_SYNC_D);
+          break;
+        case NewMobileIdentityConsistencyFRE::kTangibleSyncE:
+          self.titleText = l10n_util::GetNSString(
+              IDS_IOS_FIRST_RUN_SIGNIN_TITLE_TANGIBLE_SYNC_E);
+          break;
+        case NewMobileIdentityConsistencyFRE::kOld:
+          NOTREACHED();
+          break;
+      }
       self.subtitleText =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
       break;

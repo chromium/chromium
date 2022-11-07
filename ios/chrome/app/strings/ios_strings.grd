@@ -3398,6 +3398,9 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TANGIBLE_SYNC_SUBTITLE_SYNC" desc="This string appears as a subheading a full-page screen that asks users if they want to turn on sync. This string explains to users that they can get their Chrome data on all their computers, phones, and other devices; a user's Chrome data includes their bookmarks, passwords, history, settings, and more. Maintain the level of formality that your language generally uses in the Chrome app. The tone should be informative and inviting. [iOS only][CHAR_LIMIT=100]">
         Sync your data on all devices
       </message>
+      <message name="IDS_IOS_TANGIBLE_SYNC_TURN_ON_SYNC" desc="This string appears as the primary button on a full-page screen that asks users if they want to turn on sync. It appears when the user launches Chrome for the first time, after they have signed in. When the user chooses this button, they opt in to the sync feature. The tone should be straightforward. [CHAR_LIMIT=15][iOS only]">
+        Turn On
+      </message>
       <message name="IDS_IOS_TERMS_OF_SERVICE" desc="The label to access the terms of service, displayed in the application settings, with no product name. [Length: 30em] [iOS only]">
         Terms of Service
       </message>

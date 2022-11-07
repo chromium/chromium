@@ -28,6 +28,9 @@ extern const char kNewMobileIdentityConsistencyFREParam[];
 extern const char kNewMobileIdentityConsistencyFREParamTangibleSyncA[];
 extern const char kNewMobileIdentityConsistencyFREParamTangibleSyncB[];
 extern const char kNewMobileIdentityConsistencyFREParamTangibleSyncC[];
+extern const char kNewMobileIdentityConsistencyFREParamTangibleSyncD[];
+extern const char kNewMobileIdentityConsistencyFREParamTangibleSyncE[];
+extern const char kNewMobileIdentityConsistencyFREParamTangibleSyncF[];
 extern const char kNewMobileIdentityConsistencyFREParamTwoSteps[];
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIELD_TRIAL_CONSTANTS_H_

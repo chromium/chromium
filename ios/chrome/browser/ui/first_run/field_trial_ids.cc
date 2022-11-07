@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/field_trial_ids.h"
 
 const variations::VariationID kControlTrialID = 3355546;
-const variations::VariationID kTangibleSyncAFRETrialID = 3355547;
-const variations::VariationID kTangibleSyncBFRETrialID = 3355548;
-const variations::VariationID kTangibleSyncCFRETrialID = 3355549;
-const variations::VariationID kTwoStepsMICEFRETrialID = 3355550;
+const variations::VariationID kTangibleSyncDFRETrialID = 3357599;
+const variations::VariationID kTangibleSyncEFRETrialID = 3357600;
+const variations::VariationID kTangibleSyncFFRETrialID = 3357601;
+const variations::VariationID kTwoStepsMICEFRETrialID = 3357602;

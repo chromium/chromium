@@ -35,8 +35,8 @@ class FREFieldTrialTest : public PlatformTest {
  protected:
   void SetUp() override {
     weight_by_id_ = {
-        {kControlTrialID, 0},          {kTangibleSyncAFRETrialID, 0},
-        {kTangibleSyncBFRETrialID, 0}, {kTangibleSyncCFRETrialID, 0},
+        {kControlTrialID, 0},          {kTangibleSyncDFRETrialID, 0},
+        {kTangibleSyncEFRETrialID, 0}, {kTangibleSyncFFRETrialID, 0},
         {kTwoStepsMICEFRETrialID, 0},
     };
   }
@@ -88,7 +88,7 @@ TEST_F(FREFieldTrialTest, TestFREControl) {
 TEST_F(FREFieldTrialTest, TestTangibleSyncA) {
   // Create the FRE trial with an empty feature list.
   auto feature_list = std::make_unique<FeatureList>();
-  weight_by_id_[kTangibleSyncAFRETrialID] = 100;
+  weight_by_id_[kTangibleSyncDFRETrialID] = 100;
   CreateNewMICeAndDefaultBrowserFRETrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
@@ -97,7 +97,7 @@ TEST_F(FREFieldTrialTest, TestTangibleSyncA) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
-  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncA,
+  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncD,
             GetNewMobileIdentityConsistencyFRE());
 }
 
@@ -105,7 +105,7 @@ TEST_F(FREFieldTrialTest, TestTangibleSyncA) {
 TEST_F(FREFieldTrialTest, TestTangibleSyncB) {
   // Create the FRE trial with an empty feature list.
   auto feature_list = std::make_unique<FeatureList>();
-  weight_by_id_[kTangibleSyncBFRETrialID] = 100;
+  weight_by_id_[kTangibleSyncEFRETrialID] = 100;
   CreateNewMICeAndDefaultBrowserFRETrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
@@ -114,7 +114,7 @@ TEST_F(FREFieldTrialTest, TestTangibleSyncB) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
-  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncB,
+  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncE,
             GetNewMobileIdentityConsistencyFRE());
 }
 
@@ -122,7 +122,7 @@ TEST_F(FREFieldTrialTest, TestTangibleSyncB) {
 TEST_F(FREFieldTrialTest, TestTangibleSyncC) {
   // Create the FRE trial with an empty feature list.
   auto feature_list = std::make_unique<FeatureList>();
-  weight_by_id_[kTangibleSyncCFRETrialID] = 100;
+  weight_by_id_[kTangibleSyncFFRETrialID] = 100;
   CreateNewMICeAndDefaultBrowserFRETrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
@@ -131,7 +131,7 @@ TEST_F(FREFieldTrialTest, TestTangibleSyncC) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
-  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncC,
+  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncF,
             GetNewMobileIdentityConsistencyFRE());
 }
 

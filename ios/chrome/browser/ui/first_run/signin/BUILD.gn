@@ -52,6 +52,7 @@ source_set("signin_ui") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/first_run/resources:signin_banner",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",

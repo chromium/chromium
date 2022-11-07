@@ -21,6 +21,9 @@
     case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
     case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
     case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncD:
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncE:
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncF:
       [screens addObject:@(kSignIn)];
       break;
     case NewMobileIdentityConsistencyFRE::kOld:

@@ -82,14 +82,32 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
     case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
       titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
       subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
+      _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
       break;
     case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
       titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_SYNC;
       subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
+      _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
       break;
     case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
       titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
       subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_SYNC;
+      _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
+      break;
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncD:
+      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
+      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
+      _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
+      break;
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncE:
+      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
+      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
+      _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
+      break;
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncF:
+      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
+      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
+      _activateSyncButtonID = IDS_IOS_TANGIBLE_SYNC_TURN_ON_SYNC;
       break;
     case NewMobileIdentityConsistencyFRE::kTwoSteps:
     case NewMobileIdentityConsistencyFRE::kOld:
@@ -102,7 +120,6 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
   self.titleText = l10n_util::GetNSString(titleStringID);
   [self.delegate addConsentStringID:subtitleStringID];
   self.subtitleText = l10n_util::GetNSString(subtitleStringID);
-  _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
   [self.delegate addConsentStringID:_activateSyncButtonID];
   self.primaryActionString = l10n_util::GetNSString(_activateSyncButtonID);
   [self.delegate addConsentStringID:

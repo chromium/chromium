@@ -24,4 +24,10 @@ const char kNewMobileIdentityConsistencyFREParamTangibleSyncB[] =
     "tangiblesyncB";
 const char kNewMobileIdentityConsistencyFREParamTangibleSyncC[] =
     "tangiblesyncC";
+const char kNewMobileIdentityConsistencyFREParamTangibleSyncD[] =
+    "tangiblesyncD";
+const char kNewMobileIdentityConsistencyFREParamTangibleSyncE[] =
+    "tangiblesyncE";
+const char kNewMobileIdentityConsistencyFREParamTangibleSyncF[] =
+    "tangiblesyncF";
 const char kNewMobileIdentityConsistencyFREParamTwoSteps[] = "2steps";
