@@ -32,36 +32,32 @@ suite('CategoryDefaultSetting', function() {
     document.body.appendChild(testElement);
   });
 
-  test('browserProxy APIs used on startup', function() {
+  test('browserProxy APIs used on startup', async function() {
     const category = ContentSettingsTypes.JAVASCRIPT;
     testElement.category = category;
-    return Promise
-        .all([
-          browserProxy.whenCalled('getDefaultValueForContentType'),
-          browserProxy.whenCalled('setDefaultValueForContentType'),
-        ])
-        .then(args => {
-          // Test |getDefaultValueForContentType| args.
-          assertEquals(category, args[0]);
+    const args = await Promise.all([
+      browserProxy.whenCalled('getDefaultValueForContentType'),
+      browserProxy.whenCalled('setDefaultValueForContentType'),
+    ]);
+    // Test |getDefaultValueForContentType| args.
+    assertEquals(category, args[0]);
 
-          // Test |setDefaultValueForContentType| args. Ensure that on
-          // initialization the same value returned from
-          // |getDefaultValueForContentType| is passed to
-          // |setDefaultValueForContentType|.
-          // TODO(dpapad): Ideally 'category-default-setting' should not call
-          // |setDefaultValueForContentType| on startup. Until that is fixed, at
-          // least ensure that it does not accidentally change the default
-          // value, crbug.com/897236.
-          assertEquals(category, args[1][0]);
-          assertEquals(ContentSetting.ALLOW, args[1][1]);
-          assertEquals(
-              1, browserProxy.getCallCount('setDefaultValueForContentType'));
-        });
+    // Test |setDefaultValueForContentType| args. Ensure that on
+    // initialization the same value returned from
+    // |getDefaultValueForContentType| is passed to
+    // |setDefaultValueForContentType|.
+    // TODO(dpapad): Ideally 'category-default-setting' should not call
+    // |setDefaultValueForContentType| on startup. Until that is fixed, at
+    // least ensure that it does not accidentally change the default
+    // value, crbug.com/897236.
+    assertEquals(category, args[1][0]);
+    assertEquals(ContentSetting.ALLOW, args[1][1]);
+    assertEquals(1, browserProxy.getCallCount('setDefaultValueForContentType'));
   });
 
   // Verifies that the widget works as expected for a given |category|, initial
   // |prefs|, and given expectations.
-  function testCategoryEnabled(
+  async function testCategoryEnabled(
       testElement: CategoryDefaultSettingElement,
       category: ContentSettingsTypes, prefs: SiteSettingsPref,
       expectedEnabled: boolean, expectedEnabledContentSetting: ContentSetting) {
@@ -69,100 +65,96 @@ suite('CategoryDefaultSetting', function() {
     browserProxy.reset();
     browserProxy.setPrefs(prefs);
 
-    return browserProxy.whenCalled('getDefaultValueForContentType')
-        .then(function(contentType: ContentSettingsTypes) {
-          assertEquals(category, contentType);
-          assertEquals(expectedEnabled, testElement.categoryEnabled);
-          browserProxy.resetResolver('setDefaultValueForContentType');
-          testElement.$.toggle.click();
-          return browserProxy.whenCalled('setDefaultValueForContentType');
-        })
-        .then(function(args: ContentSettingsTypes[]) {
-          assertEquals(category, args[0]);
-          const oppositeSetting = expectedEnabled ?
-              ContentSetting.BLOCK :
-              expectedEnabledContentSetting;
-          assertEquals(oppositeSetting, args[1]);
-          assertNotEquals(expectedEnabled, testElement.categoryEnabled);
-        });
+    const contentType =
+        await browserProxy.whenCalled('getDefaultValueForContentType');
+    assertEquals(category, contentType);
+    assertEquals(expectedEnabled, testElement.categoryEnabled);
+    browserProxy.resetResolver('setDefaultValueForContentType');
+    testElement.$.toggle.click();
+    const args = await browserProxy.whenCalled('setDefaultValueForContentType');
+    assertEquals(category, args[0]);
+    const oppositeSetting =
+        expectedEnabled ? ContentSetting.BLOCK : expectedEnabledContentSetting;
+    assertEquals(oppositeSetting, args[1]);
+    assertNotEquals(expectedEnabled, testElement.categoryEnabled);
   }
 
-  test('categoryEnabled correctly represents prefs (enabled)', function() {
-    /**
-     * An example pref where the location category is enabled.
-     */
-    const prefsLocationEnabled: SiteSettingsPref = createSiteSettingsPrefs(
-        [
-          createContentSettingTypeToValuePair(
-              ContentSettingsTypes.GEOLOCATION, createDefaultContentSetting({
-                setting: ContentSetting.ALLOW,
-              })),
-        ],
-        []);
+  test(
+      'categoryEnabled correctly represents prefs (enabled)', async function() {
+        /**
+         * An example pref where the location category is enabled.
+         */
+        const prefsLocationEnabled: SiteSettingsPref = createSiteSettingsPrefs(
+            [
+              createContentSettingTypeToValuePair(
+                  ContentSettingsTypes.GEOLOCATION,
+                  createDefaultContentSetting({
+                    setting: ContentSetting.ALLOW,
+                  })),
+            ],
+            []);
 
-    return testCategoryEnabled(
-        testElement, ContentSettingsTypes.GEOLOCATION, prefsLocationEnabled,
-        true, ContentSetting.ASK);
-  });
+        await testCategoryEnabled(
+            testElement, ContentSettingsTypes.GEOLOCATION, prefsLocationEnabled,
+            true, ContentSetting.ASK);
+      });
 
-  test('categoryEnabled correctly represents prefs (disabled)', function() {
-    /**
-     * An example pref where the location category is disabled.
-     */
-    const prefsLocationDisabled: SiteSettingsPref = createSiteSettingsPrefs(
+  test(
+      'categoryEnabled correctly represents prefs (disabled)',
+      async function() {
+        /**
+         * An example pref where the location category is disabled.
+         */
+        const prefsLocationDisabled: SiteSettingsPref = createSiteSettingsPrefs(
+            [createContentSettingTypeToValuePair(
+                ContentSettingsTypes.GEOLOCATION, createDefaultContentSetting({
+                  setting: ContentSetting.BLOCK,
+                }))],
+            []);
+
+        await testCategoryEnabled(
+            testElement, ContentSettingsTypes.GEOLOCATION,
+            prefsLocationDisabled, false, ContentSetting.ASK);
+      });
+
+
+  test('test content setting from extension', async function() {
+    testElement.category = ContentSettingsTypes.MIC;
+    const defaultValue =
+        await browserProxy.getDefaultValueForContentType(testElement.category);
+    // Sanity check - make sure the default content setting is not the
+    // value the extension is about to set.
+    assertEquals(ContentSetting.ASK, defaultValue.setting);
+    browserProxy.resetResolver('getDefaultValueForContentType');
+
+    const prefs = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(
-            ContentSettingsTypes.GEOLOCATION, createDefaultContentSetting({
+            ContentSettingsTypes.MIC, createDefaultContentSetting({
               setting: ContentSetting.BLOCK,
+              source: ContentSettingProvider.EXTENSION,
             }))],
         []);
+    browserProxy.reset();
+    browserProxy.setPrefs(prefs);
 
-    return testCategoryEnabled(
-        testElement, ContentSettingsTypes.GEOLOCATION, prefsLocationDisabled,
-        false, ContentSetting.ASK);
+    // Test that extension-enforced content settings don't override
+    // user-set content settings.
+    browserProxy.whenCalled('setDefaultValueForContentType').then(() => {
+      assertNotReached();
+    });
+    await browserProxy.whenCalled('getDefaultValueForContentType');
+    assertEquals(false, testElement.categoryEnabled);
   });
 
-
-  test('test content setting from extension', function() {
-    testElement.category = ContentSettingsTypes.MIC;
-    return browserProxy.getDefaultValueForContentType(testElement.category)
-        .then((defaultValue) => {
-          // Sanity check - make sure the default content setting is not the
-          // value the extension is about to set.
-          assertEquals(ContentSetting.ASK, defaultValue.setting);
-          browserProxy.resetResolver('getDefaultValueForContentType');
-
-          const prefs = createSiteSettingsPrefs(
-              [createContentSettingTypeToValuePair(
-                  ContentSettingsTypes.MIC, createDefaultContentSetting({
-                    setting: ContentSetting.BLOCK,
-                    source: ContentSettingProvider.EXTENSION,
-                  }))],
-              []);
-          browserProxy.reset();
-          browserProxy.setPrefs(prefs);
-
-          // Test that extension-enforced content settings don't override
-          // user-set content settings.
-          browserProxy.whenCalled('setDefaultValueForContentType').then(() => {
-            assertNotReached();
-          });
-          return browserProxy.whenCalled('getDefaultValueForContentType');
-        })
-        .then(() => {
-          assertEquals(false, testElement.categoryEnabled);
-        });
-  });
-
-  test('test popups content setting default value', function() {
+  test('test popups content setting default value', async function() {
     testElement.category = ContentSettingsTypes.POPUPS;
-    return browserProxy.getDefaultValueForContentType(testElement.category)
-        .then((defaultValue) => {
-          assertEquals(ContentSetting.BLOCK, defaultValue.setting);
-          browserProxy.resetResolver('getDefaultValueForContentType');
-        });
+    const defaultValue =
+        await browserProxy.getDefaultValueForContentType(testElement.category);
+    assertEquals(ContentSetting.BLOCK, defaultValue.setting);
+    browserProxy.resetResolver('getDefaultValueForContentType');
   });
 
-  test('test popups content setting in BLOCKED state', function() {
+  test('test popups content setting in BLOCKED state', async function() {
     const prefs: SiteSettingsPref = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(
             ContentSettingsTypes.POPUPS, createDefaultContentSetting({
@@ -170,12 +162,12 @@ suite('CategoryDefaultSetting', function() {
             }))],
         []);
 
-    return testCategoryEnabled(
+    await testCategoryEnabled(
         testElement, ContentSettingsTypes.POPUPS, prefs, false,
         ContentSetting.ALLOW);
   });
 
-  test('test popups content setting in ALLOWED state', function() {
+  test('test popups content setting in ALLOWED state', async function() {
     const prefs: SiteSettingsPref = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(
             ContentSettingsTypes.POPUPS, createDefaultContentSetting({
@@ -183,7 +175,7 @@ suite('CategoryDefaultSetting', function() {
             }))],
         []);
 
-    return testCategoryEnabled(
+    await testCategoryEnabled(
         testElement, ContentSettingsTypes.POPUPS, prefs, true,
         ContentSetting.ALLOW);
   });

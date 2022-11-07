@@ -123,7 +123,7 @@ suite('settings-fingerprint-list', function() {
     addAnotherButton = dialog.shadowRoot.querySelector('#addAnotherButton');
   }
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestFingerprintBrowserProxy();
     FingerprintBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
@@ -131,233 +131,204 @@ suite('settings-fingerprint-list', function() {
     fingerprintList = document.createElement('settings-fingerprint-list');
     document.body.appendChild(fingerprintList);
     flush();
-    return Promise.all([browserProxy.whenCalled('getFingerprintsList')])
-        .then(function() {
-          assertEquals(0, fingerprintList.fingerprints_.length);
-          browserProxy.resetResolver('getFingerprintsList');
-        });
+    await browserProxy.whenCalled('getFingerprintsList');
+    assertEquals(0, fingerprintList.fingerprints_.length);
+    browserProxy.resetResolver('getFingerprintsList');
   });
 
-  test('EnrollingFingerprintLottieAnimation', function() {
+  test('EnrollingFingerprintLottieAnimation', async function() {
     loadTimeData.overrideValues({fingerprintUnlockEnabled: true});
     openDialog();
-    return browserProxy.whenCalled('startEnroll').then(function() {
-      assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
-      assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
-      assertFalse(
-          dialog.shadowRoot.querySelector('#scannerLocationLottie').hidden);
-    });
+    await browserProxy.whenCalled('startEnroll');
+    assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+    assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+    assertFalse(
+        dialog.shadowRoot.querySelector('#scannerLocationLottie').hidden);
   });
 
   // Verify running through the enroll session workflow
   // (settings-setup-fingerprint-dialog) works as expected.
-  test('EnrollingFingerprint', function() {
+  test('EnrollingFingerprint', async function() {
     loadTimeData.overrideValues({fingerprintUnlockEnabled: true});
     openDialog();
-    return browserProxy.whenCalled('startEnroll').then(function() {
-      assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
-      assertEquals(0, dialog.percentComplete_);
-      assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
-      assertFalse(
-          dialog.shadowRoot.querySelector('#scannerLocationLottie').hidden);
-      assertTrue(dialog.shadowRoot.querySelector('#arc').hidden);
-      // Message should be shown for LOCATE_SCANNER step.
-      assertEquals(
-          'visible',
-          window
-              .getComputedStyle(dialog.shadowRoot.querySelector('#messageDiv'))
-              .visibility);
+    await browserProxy.whenCalled('startEnroll');
+    assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+    assertEquals(0, dialog.percentComplete_);
+    assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+    assertFalse(
+        dialog.shadowRoot.querySelector('#scannerLocationLottie').hidden);
+    assertTrue(dialog.shadowRoot.querySelector('#arc').hidden);
+    // Message should be shown for LOCATE_SCANNER step.
+    assertEquals(
+        'visible',
+        window.getComputedStyle(dialog.shadowRoot.querySelector('#messageDiv'))
+            .visibility);
 
-      // First tap on the sensor to start fingerprint enrollment.
-      browserProxy.scanReceived(
-          FingerprintResultType.SUCCESS, false, 20 /* percent */);
-      assertEquals(20, dialog.percentComplete_);
-      assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
-      assertTrue(
-          dialog.shadowRoot.querySelector('#scannerLocationLottie').hidden);
-      assertFalse(dialog.shadowRoot.querySelector('#arc').hidden);
+    // First tap on the sensor to start fingerprint enrollment.
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 20 /* percent */);
+    assertEquals(20, dialog.percentComplete_);
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+    assertTrue(
+        dialog.shadowRoot.querySelector('#scannerLocationLottie').hidden);
+    assertFalse(dialog.shadowRoot.querySelector('#arc').hidden);
 
-      // Verify that by sending a scan problem, the div that contains the
-      // problem message should be visible.
-      browserProxy.scanReceived(
-          FingerprintResultType.TOO_FAST, false, 20 /* percent */);
-      assertEquals(20, dialog.percentComplete_);
-      assertEquals(
-          'visible',
-          window
-              .getComputedStyle(dialog.shadowRoot.querySelector('#messageDiv'))
-              .visibility);
-      browserProxy.scanReceived(
-          FingerprintResultType.SUCCESS, false, 50 /* percent */);
-      assertEquals(
-          'hidden',
-          window
-              .getComputedStyle(dialog.shadowRoot.querySelector('#messageDiv'))
-              .visibility);
-      assertEquals(50, dialog.percentComplete_);
-      browserProxy.scanReceived(
-          FingerprintResultType.SUCCESS, false, 70 /* percent */);
-      browserProxy.scanReceived(
-          FingerprintResultType.SUCCESS, true, 100 /* percent */);
-      assertEquals(FingerprintSetupStep.READY, dialog.step_);
-      // Message should be shown for READY step.
-      assertEquals(
-          'visible',
-          window
-              .getComputedStyle(dialog.shadowRoot.querySelector('#messageDiv'))
-              .visibility);
+    // Verify that by sending a scan problem, the div that contains the
+    // problem message should be visible.
+    browserProxy.scanReceived(
+        FingerprintResultType.TOO_FAST, false, 20 /* percent */);
+    assertEquals(20, dialog.percentComplete_);
+    assertEquals(
+        'visible',
+        window.getComputedStyle(dialog.shadowRoot.querySelector('#messageDiv'))
+            .visibility);
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 50 /* percent */);
+    assertEquals(
+        'hidden',
+        window.getComputedStyle(dialog.shadowRoot.querySelector('#messageDiv'))
+            .visibility);
+    assertEquals(50, dialog.percentComplete_);
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 70 /* percent */);
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, true, 100 /* percent */);
+    assertEquals(FingerprintSetupStep.READY, dialog.step_);
+    // Message should be shown for READY step.
+    assertEquals(
+        'visible',
+        window.getComputedStyle(dialog.shadowRoot.querySelector('#messageDiv'))
+            .visibility);
 
-      // Verify that by tapping the continue button we should exit the dialog
-      // and the fingerprint list should have one fingerprint registered.
-      dialog.shadowRoot.querySelector('#closeButton').click();
-      return flushTasks().then(function() {
-        Promise.all([browserProxy.whenCalled('getFingerprintsList')])
-            .then(function() {
-              assertEquals(1, fingerprintList.fingerprints_.length);
-            });
-      });
-    });
+    // Verify that by tapping the continue button we should exit the dialog
+    // and the fingerprint list should have one fingerprint registered.
+    dialog.shadowRoot.querySelector('#closeButton').click();
+    await flushTasks();
+    await browserProxy.whenCalled('getFingerprintsList');
+    assertEquals(1, fingerprintList.fingerprints_.length);
   });
 
   // Verify enrolling a fingerprint, then enrolling another without closing the
   // dialog works as intended.
-  test('EnrollingAnotherFingerprint', function() {
+  test('EnrollingAnotherFingerprint', async function() {
     loadTimeData.overrideValues({fingerprintUnlockEnabled: true});
     openDialog();
-    return browserProxy.whenCalled('startEnroll')
-        .then(function() {
-          browserProxy.resetResolver('startEnroll');
+    await browserProxy.whenCalled('startEnroll');
+    browserProxy.resetResolver('startEnroll');
 
-          assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
-          assertEquals(0, dialog.percentComplete_);
-          assertFalse(isVisible(addAnotherButton));
-          assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+    assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+    assertEquals(0, dialog.percentComplete_);
+    assertFalse(isVisible(addAnotherButton));
+    assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
 
-          // First tap on the sensor to start fingerprint enrollment.
-          browserProxy.scanReceived(
-              FingerprintResultType.SUCCESS, false, 20 /* percent */);
-          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+    // First tap on the sensor to start fingerprint enrollment.
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 20 /* percent */);
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
 
-          browserProxy.scanReceived(
-              FingerprintResultType.SUCCESS, true, 100 /* percent */);
-          assertEquals(FingerprintSetupStep.READY, dialog.step_);
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, true, 100 /* percent */);
+    assertEquals(FingerprintSetupStep.READY, dialog.step_);
 
-          assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
-          assertTrue(isVisible(addAnotherButton));
-          addAnotherButton.click();
+    assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+    assertTrue(isVisible(addAnotherButton));
+    addAnotherButton.click();
 
-          // Once the first fingerprint is enrolled, verify that enrolling the
-          // second fingerprint without closing the dialog works as expected.
-          return Promise.all([
-            browserProxy.whenCalled('startEnroll'),
-            browserProxy.whenCalled('getFingerprintsList'),
-          ]);
-        })
-        .then(function() {
-          browserProxy.resetResolver('getFingerprintsList');
+    // Once the first fingerprint is enrolled, verify that enrolling the
+    // second fingerprint without closing the dialog works as expected.
+    await Promise.all([
+      browserProxy.whenCalled('startEnroll'),
+      browserProxy.whenCalled('getFingerprintsList'),
+    ]);
+    browserProxy.resetResolver('getFingerprintsList');
 
-          assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
-          assertFalse(isVisible(addAnotherButton));
-          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
-          assertTrue(
-              dialog.shadowRoot.querySelector('#scannerLocationLottie').hidden);
-          assertFalse(dialog.shadowRoot.querySelector('#arc').hidden);
+    assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+    assertFalse(isVisible(addAnotherButton));
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+    assertTrue(
+        dialog.shadowRoot.querySelector('#scannerLocationLottie').hidden);
+    assertFalse(dialog.shadowRoot.querySelector('#arc').hidden);
 
-          browserProxy.scanReceived(
-              FingerprintResultType.SUCCESS, true, 100 /* percent */);
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, true, 100 /* percent */);
 
-          // Verify that by tapping the continue button we should exit the
-          // dialog and the fingerprint list should have two fingerprints
-          // registered.
-          dialog.shadowRoot.querySelector('#closeButton').click();
-          return browserProxy.whenCalled('getFingerprintsList');
-        })
-        .then(function() {
-          assertEquals(2, fingerprintList.fingerprints_.length);
-        });
+    // Verify that by tapping the continue button we should exit the
+    // dialog and the fingerprint list should have two fingerprints
+    // registered.
+    dialog.shadowRoot.querySelector('#closeButton').click();
+    await browserProxy.whenCalled('getFingerprintsList');
+    assertEquals(2, fingerprintList.fingerprints_.length);
   });
 
   // Verify after third fingerprint is enrolled, add another button in the
   // setup dialog is hidden.
-  test('EnrollingThirdFingerprint', function() {
+  test('EnrollingThirdFingerprint', async function() {
     browserProxy.setFingerprints(['1', '2']);
     fingerprintList.updateFingerprintsList_();
 
     openDialog();
-    return browserProxy.whenCalled('startEnroll')
-        .then(function() {
-          browserProxy.resetResolver('startEnroll');
+    await browserProxy.whenCalled('startEnroll');
+    browserProxy.resetResolver('startEnroll');
 
-          assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
-          assertEquals(0, dialog.percentComplete_);
-          assertFalse(isVisible(addAnotherButton));
-          assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+    assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+    assertEquals(0, dialog.percentComplete_);
+    assertFalse(isVisible(addAnotherButton));
+    assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
 
-          // First tap on the sensor to start fingerprint enrollment.
-          browserProxy.scanReceived(
-              FingerprintResultType.SUCCESS, false, 20 /* percent */);
-          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+    // First tap on the sensor to start fingerprint enrollment.
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 20 /* percent */);
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
 
-          browserProxy.scanReceived(
-              FingerprintResultType.SUCCESS, true, 100 /* percent */);
-          assertEquals(FingerprintSetupStep.READY, dialog.step_);
-          return browserProxy.whenCalled('getFingerprintsList');
-        })
-        .then(function() {
-          browserProxy.resetResolver('getFingerprintsList');
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, true, 100 /* percent */);
+    assertEquals(FingerprintSetupStep.READY, dialog.step_);
+    await browserProxy.whenCalled('getFingerprintsList');
+    browserProxy.resetResolver('getFingerprintsList');
 
-          // Add another is hidden after third fingerprint is enrolled.
-          assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
-          assertFalse(isVisible(addAnotherButton));
-          assertEquals(3, fingerprintList.fingerprints_.length);
-        });
+    // Add another is hidden after third fingerprint is enrolled.
+    assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+    assertFalse(isVisible(addAnotherButton));
+    assertEquals(3, fingerprintList.fingerprints_.length);
   });
 
-  test('CancelEnrollingFingerprint', function() {
+  test('CancelEnrollingFingerprint', async function() {
     openDialog();
-    return browserProxy.whenCalled('startEnroll')
-        .then(function() {
-          assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
-          assertEquals(0, dialog.percentComplete_);
-          assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
-          // First tap on the sensor to start fingerprint enrollment.
-          browserProxy.scanReceived(
-              FingerprintResultType.SUCCESS, false, 20 /* percent */);
-          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+    await browserProxy.whenCalled('startEnroll');
+    assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+    assertEquals(0, dialog.percentComplete_);
+    assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+    // First tap on the sensor to start fingerprint enrollment.
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 20 /* percent */);
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
 
-          browserProxy.scanReceived(
-              FingerprintResultType.SUCCESS, false, 30 /* percent */);
-          assertEquals(30, dialog.percentComplete_);
-          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 30 /* percent */);
+    assertEquals(30, dialog.percentComplete_);
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
 
-          // Verify that by tapping the exit button we should exit the dialog
-          // and the fingerprint list should have zero fingerprints registered.
-          dialog.shadowRoot.querySelector('#closeButton').click();
-          return Promise.all([browserProxy.whenCalled('cancelCurrentEnroll')]);
-        })
-        .then(function() {
-          assertEquals(0, fingerprintList.fingerprints_.length);
-        });
+    // Verify that by tapping the exit button we should exit the dialog
+    // and the fingerprint list should have zero fingerprints registered.
+    dialog.shadowRoot.querySelector('#closeButton').click();
+    await browserProxy.whenCalled('cancelCurrentEnroll');
+    assertEquals(0, fingerprintList.fingerprints_.length);
   });
 
-  test('RemoveFingerprint', function() {
+  test('RemoveFingerprint', async function() {
     browserProxy.setFingerprints(['Label 1', 'Label 2']);
     fingerprintList.updateFingerprintsList_();
 
-    return browserProxy.whenCalled('getFingerprintsList')
-        .then(function() {
-          browserProxy.resetResolver('getFingerprintsList');
-          assertEquals(2, fingerprintList.fingerprints_.length);
-          fingerprintList.onFingerprintDeleteTapped_(createFakeEvent(0));
+    await browserProxy.whenCalled('getFingerprintsList');
+    browserProxy.resetResolver('getFingerprintsList');
+    assertEquals(2, fingerprintList.fingerprints_.length);
+    fingerprintList.onFingerprintDeleteTapped_(createFakeEvent(0));
 
-          return Promise.all([
-            browserProxy.whenCalled('removeEnrollment'),
-            browserProxy.whenCalled('getFingerprintsList'),
-          ]);
-        })
-        .then(function() {
-          assertEquals(1, fingerprintList.fingerprints_.length);
-        });
+    await Promise.all([
+      browserProxy.whenCalled('removeEnrollment'),
+      browserProxy.whenCalled('getFingerprintsList'),
+    ]);
+    assertEquals(1, fingerprintList.fingerprints_.length);
   });
 
   test('Deep link to add fingerprint', async () => {
@@ -402,53 +373,45 @@ suite('settings-fingerprint-list', function() {
         'Trash can button should be focused for settingId=' + settingId);
   });
 
-  test('ChangeFingerprintLabel', function() {
+  test('ChangeFingerprintLabel', async function() {
     browserProxy.setFingerprints(['Label 1']);
     fingerprintList.updateFingerprintsList_();
 
-    return browserProxy.whenCalled('getFingerprintsList')
-        .then(function() {
-          assertEquals(1, fingerprintList.fingerprints_.length);
-          assertEquals('Label 1', fingerprintList.fingerprints_[0]);
+    await browserProxy.whenCalled('getFingerprintsList');
+    assertEquals(1, fingerprintList.fingerprints_.length);
+    assertEquals('Label 1', fingerprintList.fingerprints_[0]);
 
-          // Verify that by sending a fingerprint input change event, the new
-          // label gets changed as expected.
-          fingerprintList.onFingerprintLabelChanged_(
-              createFakeEvent(0, 'New Label 1'));
+    // Verify that by sending a fingerprint input change event, the new
+    // label gets changed as expected.
+    fingerprintList.onFingerprintLabelChanged_(
+        createFakeEvent(0, 'New Label 1'));
 
-          return Promise.all([
-            browserProxy.whenCalled('changeEnrollmentLabel'),
-            browserProxy.whenCalled('getFingerprintsList'),
-          ]);
-        })
-        .then(function() {
-          assertEquals('New Label 1', fingerprintList.fingerprints_[0]);
-        });
+    await Promise.all([
+      browserProxy.whenCalled('changeEnrollmentLabel'),
+      browserProxy.whenCalled('getFingerprintsList'),
+    ]);
+    assertEquals('New Label 1', fingerprintList.fingerprints_[0]);
   });
 
-  test('AddingNewFingerprint', function() {
+  test('AddingNewFingerprint', async function() {
     browserProxy.setFingerprints(['1', '2', '3']);
     fingerprintList.updateFingerprintsList_();
 
     // Verify that new fingerprints cannot be added when there are already three
     // registered fingerprints.
-    return browserProxy.whenCalled('getFingerprintsList')
-        .then(function() {
-          browserProxy.resetResolver('getFingerprintsList');
-          assertEquals(3, fingerprintList.fingerprints_.length);
-          assertTrue(fingerprintList.shadowRoot.querySelector('.action-button')
-                         .disabled);
-          fingerprintList.onFingerprintDeleteTapped_(createFakeEvent(0));
+    await browserProxy.whenCalled('getFingerprintsList');
+    browserProxy.resetResolver('getFingerprintsList');
+    assertEquals(3, fingerprintList.fingerprints_.length);
+    assertTrue(
+        fingerprintList.shadowRoot.querySelector('.action-button').disabled);
+    fingerprintList.onFingerprintDeleteTapped_(createFakeEvent(0));
 
-          return Promise.all([
-            browserProxy.whenCalled('removeEnrollment'),
-            browserProxy.whenCalled('getFingerprintsList'),
-          ]);
-        })
-        .then(function() {
-          assertEquals(2, fingerprintList.fingerprints_.length);
-          assertFalse(fingerprintList.shadowRoot.querySelector('.action-button')
-                          .disabled);
-        });
+    await Promise.all([
+      browserProxy.whenCalled('removeEnrollment'),
+      browserProxy.whenCalled('getFingerprintsList'),
+    ]);
+    assertEquals(2, fingerprintList.fingerprints_.length);
+    assertFalse(
+        fingerprintList.shadowRoot.querySelector('.action-button').disabled);
   });
 });

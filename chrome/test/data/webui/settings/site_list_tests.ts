@@ -1083,7 +1083,7 @@ suite('EditExceptionDialog', function() {
     dialog.remove();
   });
 
-  test('invalid input', function() {
+  test('invalid input', async function() {
     const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     assertFalse(input!.invalid);
@@ -1107,17 +1107,14 @@ suite('EditExceptionDialog', function() {
     input!.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 
-    return browserProxy.whenCalled('isPatternValidForType').then(function([
-      pattern,
-      _category,
-    ]) {
-      assertEquals(expectedPattern, pattern);
-      assertTrue(actionButton.disabled);
-      assertTrue(input!.invalid);
-    });
+    const [pattern, _category] =
+        await browserProxy.whenCalled('isPatternValidForType');
+    assertEquals(expectedPattern, pattern);
+    assertTrue(actionButton.disabled);
+    assertTrue(input!.invalid);
   });
 
-  test('action button calls proxy', function() {
+  test('action button calls proxy', async function() {
     const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     // Simulate user edit.
@@ -1129,24 +1126,22 @@ suite('EditExceptionDialog', function() {
     assertFalse(actionButton.disabled);
 
     actionButton.click();
-    return browserProxy.whenCalled('resetCategoryPermissionForPattern')
-        .then(function(args) {
-          assertEquals(cookieException.origin, args[0]);
-          assertEquals(cookieException.embeddingOrigin, args[1]);
-          assertEquals(ContentSettingsTypes.COOKIES, args[2]);
-          assertEquals(cookieException.incognito, args[3]);
+    const args1 =
+        await browserProxy.whenCalled('resetCategoryPermissionForPattern');
+    assertEquals(cookieException.origin, args1[0]);
+    assertEquals(cookieException.embeddingOrigin, args1[1]);
+    assertEquals(ContentSettingsTypes.COOKIES, args1[2]);
+    assertEquals(cookieException.incognito, args1[3]);
 
-          return browserProxy.whenCalled('setCategoryPermissionForPattern');
-        })
-        .then(function(args) {
-          assertEquals(newValue, args[0]);
-          assertEquals(SITE_EXCEPTION_WILDCARD, args[1]);
-          assertEquals(ContentSettingsTypes.COOKIES, args[2]);
-          assertEquals(cookieException.setting, args[3]);
-          assertEquals(cookieException.incognito, args[4]);
+    const args2 =
+        await browserProxy.whenCalled('setCategoryPermissionForPattern');
+    assertEquals(newValue, args2[0]);
+    assertEquals(SITE_EXCEPTION_WILDCARD, args2[1]);
+    assertEquals(ContentSettingsTypes.COOKIES, args2[2]);
+    assertEquals(cookieException.setting, args2[3]);
+    assertEquals(cookieException.incognito, args2[4]);
 
-          assertFalse(dialog.$.dialog.open);
-        });
+    assertFalse(dialog.$.dialog.open);
   });
 });
 
@@ -1182,7 +1177,7 @@ suite('AddExceptionDialog', function() {
     assertFalse(dialog.$.incognito.checked);
   });
 
-  test('invalid input', function() {
+  test('invalid input', async function() {
     // Initially the action button should be disabled, but the error warning
     // should not be shown for an empty input.
     const input = dialog.shadowRoot!.querySelector('cr-input');
@@ -1200,13 +1195,10 @@ suite('AddExceptionDialog', function() {
     input!.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 
-    return browserProxy.whenCalled('isPatternValidForType').then(function([
-      pattern,
-      _category,
-    ]) {
-      assertEquals(expectedPattern, pattern);
-      assertTrue(actionButton.disabled);
-      assertTrue(input!.invalid);
-    });
+    const [pattern, _category] =
+        await browserProxy.whenCalled('isPatternValidForType');
+    assertEquals(expectedPattern, pattern);
+    assertTrue(actionButton.disabled);
+    assertTrue(input!.invalid);
   });
 });

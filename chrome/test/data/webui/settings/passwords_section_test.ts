@@ -925,9 +925,8 @@ suite('PasswordsSection', function() {
     const PasswordViewPageRequestedEvent =
         eventToPromise('password-view-page-requested', passwordListItem);
     subpageButton.click();
-    await PasswordViewPageRequestedEvent.then((event) => {
-      assertDeepEquals(passwordListItem, event.detail);
-    });
+    const event = await PasswordViewPageRequestedEvent;
+    assertDeepEquals(passwordListItem, event.detail);
   });
 
   // Tests that pressing 'Edit password' sets the corresponding password.
@@ -987,11 +986,10 @@ suite('PasswordsSection', function() {
     getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
     passwordsSection.$.passwordsListHandler.$.menuCopyPassword.click();
 
-    return passwordManager.whenCalled('requestPlaintextPassword')
-        .then(({id, reason}) => {
-          assertEquals(1, id);
-          assertEquals('COPY', reason);
-        });
+    const {id, reason} =
+        await passwordManager.whenCalled('requestPlaintextPassword');
+    assertEquals(1, id);
+    assertEquals('COPY', reason);
   });
 
   test('onEditPasswordListItem', async function() {
@@ -1003,11 +1001,10 @@ suite('PasswordsSection', function() {
     getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
     passwordsSection.$.passwordsListHandler.$.menuEditPassword.click();
 
-    return passwordManager.whenCalled('requestPlaintextPassword')
-        .then(({id, reason}) => {
-          assertEquals(1, id);
-          assertEquals('EDIT', reason);
-        });
+    const {id, reason} =
+        await passwordManager.whenCalled('requestPlaintextPassword');
+    assertEquals(1, id);
+    assertEquals('EDIT', reason);
   });
 
   test('closingPasswordsSectionHidesUndoToast', async function() {
@@ -1362,14 +1359,13 @@ suite('PasswordsSection', function() {
         ];
         const passwordsSection = await createPasswordsSection(
             elementFactory, passwordManager, passwordList, []);
-        return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
-          simulateSyncStatus(
-              {signedIn: true, statusAction: StatusAction.NO_ACTION});
-          flush();
-          assertFalse(passwordsSection.$.checkPasswordsBannerContainer.hidden);
-          assertFalse(passwordsSection.$.checkPasswordsButtonRow.hidden);
-          assertTrue(passwordsSection.$.checkPasswordsLinkRow.hidden);
-        });
+        await passwordManager.whenCalled('getPasswordCheckStatus');
+        simulateSyncStatus(
+            {signedIn: true, statusAction: StatusAction.NO_ACTION});
+        flush();
+        assertFalse(passwordsSection.$.checkPasswordsBannerContainer.hidden);
+        assertFalse(passwordsSection.$.checkPasswordsButtonRow.hidden);
+        assertTrue(passwordsSection.$.checkPasswordsLinkRow.hidden);
       });
 
   test(
@@ -1424,12 +1420,11 @@ suite('PasswordsSection', function() {
             elementFactory, passwordManager, passwordList, []);
         simulateSyncStatus(
             {signedIn: false, statusAction: StatusAction.NO_ACTION});
-        return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
-          flush();
-          assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
-          assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
-          assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
-        });
+        await passwordManager.whenCalled('getPasswordCheckStatus');
+        flush();
+        assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
+        assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
+        assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
       });
 
   test(
@@ -1442,12 +1437,11 @@ suite('PasswordsSection', function() {
             undefined);
         const passwordsSection = await createPasswordsSection(
             elementFactory, passwordManager, [], []);
-        return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
-          flush();
-          assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
-          assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
-          assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
-        });
+        await passwordManager.whenCalled('getPasswordCheckStatus');
+        flush();
+        assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
+        assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
+        assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
       });
 
   test(
@@ -1462,15 +1456,14 @@ suite('PasswordsSection', function() {
         ];
         const passwordsSection = await createPasswordsSection(
             elementFactory, passwordManager, passwordList, []);
-        return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
-          flush();
-          assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
-          assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
-          assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
-          assertFalse(passwordsSection.$.checkPasswordLeakDescription.hidden);
-          assertTrue(passwordsSection.$.checkPasswordWarningIcon.hidden);
-          assertTrue(passwordsSection.$.checkPasswordLeakCount.hidden);
-        });
+        await passwordManager.whenCalled('getPasswordCheckStatus');
+        flush();
+        assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
+        assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
+        assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
+        assertFalse(passwordsSection.$.checkPasswordLeakDescription.hidden);
+        assertTrue(passwordsSection.$.checkPasswordWarningIcon.hidden);
+        assertTrue(passwordsSection.$.checkPasswordLeakCount.hidden);
       });
 
   test(
@@ -1492,15 +1485,14 @@ suite('PasswordsSection', function() {
         ];
         const passwordsSection = await createPasswordsSection(
             elementFactory, passwordManager, passwordList, []);
-        return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
-          flush();
-          assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
-          assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
-          assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
-          assertTrue(passwordsSection.$.checkPasswordLeakDescription.hidden);
-          assertFalse(passwordsSection.$.checkPasswordWarningIcon.hidden);
-          assertFalse(passwordsSection.$.checkPasswordLeakCount.hidden);
-        });
+        await passwordManager.whenCalled('getPasswordCheckStatus');
+        flush();
+        assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
+        assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
+        assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
+        assertTrue(passwordsSection.$.checkPasswordLeakDescription.hidden);
+        assertFalse(passwordsSection.$.checkPasswordWarningIcon.hidden);
+        assertFalse(passwordsSection.$.checkPasswordLeakCount.hidden);
       });
 
   test('makeWarningAppearWhenLeaksDetected', async function() {
@@ -1516,43 +1508,40 @@ suite('PasswordsSection', function() {
     ];
     const passwordsSection = await createPasswordsSection(
         elementFactory, passwordManager, passwordList, []);
-    return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
-      flush();
-      assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
-      assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
-      assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
-      assertFalse(passwordsSection.$.checkPasswordLeakDescription.hidden);
-      assertTrue(passwordsSection.$.checkPasswordWarningIcon.hidden);
-      assertTrue(passwordsSection.$.checkPasswordLeakCount.hidden);
-      // Suppose two newly detected leaks come in.
-      const insecureCredentials = [
-        makeInsecureCredential(
-            'one.com', 'test4',
-            [chrome.passwordsPrivate.CompromiseType.LEAKED]),
-        makeInsecureCredential(
-            'two.com', 'test3',
-            [chrome.passwordsPrivate.CompromiseType.PHISHED]),
-      ];
-      const elapsedTimeSinceLastCheck = 'just now';
-      passwordManager.data.insecureCredentials = insecureCredentials;
-      passwordManager.data.checkStatus.elapsedTimeSinceLastCheck =
-          elapsedTimeSinceLastCheck;
-      passwordManager.lastCallback.addInsecureCredentialsListener!
-          (insecureCredentials);
-      passwordManager.lastCallback.addPasswordCheckStatusListener!
-          (makePasswordCheckStatus(
-              /*state=*/ PasswordCheckState.RUNNING,
-              /*checked=*/ 2,
-              /*remaining=*/ 0,
-              /*elapsedTime=*/ elapsedTimeSinceLastCheck));
-      flush();
-      assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
-      assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
-      assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
-      assertTrue(passwordsSection.$.checkPasswordLeakDescription.hidden);
-      assertFalse(passwordsSection.$.checkPasswordWarningIcon.hidden);
-      assertFalse(passwordsSection.$.checkPasswordLeakCount.hidden);
-    });
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    flush();
+    assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
+    assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
+    assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
+    assertFalse(passwordsSection.$.checkPasswordLeakDescription.hidden);
+    assertTrue(passwordsSection.$.checkPasswordWarningIcon.hidden);
+    assertTrue(passwordsSection.$.checkPasswordLeakCount.hidden);
+    // Suppose two newly detected leaks come in.
+    const insecureCredentials = [
+      makeInsecureCredential(
+          'one.com', 'test4', [chrome.passwordsPrivate.CompromiseType.LEAKED]),
+      makeInsecureCredential(
+          'two.com', 'test3', [chrome.passwordsPrivate.CompromiseType.PHISHED]),
+    ];
+    const elapsedTimeSinceLastCheck = 'just now';
+    passwordManager.data.insecureCredentials = insecureCredentials;
+    passwordManager.data.checkStatus.elapsedTimeSinceLastCheck =
+        elapsedTimeSinceLastCheck;
+    passwordManager.lastCallback.addInsecureCredentialsListener!
+        (insecureCredentials);
+    passwordManager.lastCallback.addPasswordCheckStatusListener!
+        (makePasswordCheckStatus(
+            /*state=*/ PasswordCheckState.RUNNING,
+            /*checked=*/ 2,
+            /*remaining=*/ 0,
+            /*elapsedTime=*/ elapsedTimeSinceLastCheck));
+    flush();
+    assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
+    assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
+    assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
+    assertTrue(passwordsSection.$.checkPasswordLeakDescription.hidden);
+    assertFalse(passwordsSection.$.checkPasswordWarningIcon.hidden);
+    assertFalse(passwordsSection.$.checkPasswordLeakCount.hidden);
   });
 
   test('makeBannerDisappearWhenSignedOut', async function() {
@@ -1564,20 +1553,17 @@ suite('PasswordsSection', function() {
     ];
     const passwordsSection = await createPasswordsSection(
         elementFactory, passwordManager, passwordList, []);
-    return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
-      simulateSyncStatus(
-          {signedIn: true, statusAction: StatusAction.NO_ACTION});
-      flush();
-      assertFalse(passwordsSection.$.checkPasswordsBannerContainer.hidden);
-      assertFalse(passwordsSection.$.checkPasswordsButtonRow.hidden);
-      assertTrue(passwordsSection.$.checkPasswordsLinkRow.hidden);
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    simulateSyncStatus({signedIn: true, statusAction: StatusAction.NO_ACTION});
+    flush();
+    assertFalse(passwordsSection.$.checkPasswordsBannerContainer.hidden);
+    assertFalse(passwordsSection.$.checkPasswordsButtonRow.hidden);
+    assertTrue(passwordsSection.$.checkPasswordsLinkRow.hidden);
 
-      simulateSyncStatus(
-          {signedIn: false, statusAction: StatusAction.NO_ACTION});
-      assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
-      assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
-      assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
-    });
+    simulateSyncStatus({signedIn: false, statusAction: StatusAction.NO_ACTION});
+    assertTrue(passwordsSection.$.checkPasswordsBannerContainer.hidden);
+    assertTrue(passwordsSection.$.checkPasswordsButtonRow.hidden);
+    assertFalse(passwordsSection.$.checkPasswordsLinkRow.hidden);
   });
 
   test('clickingCheckPasswordsButtonStartsCheck', async function() {
