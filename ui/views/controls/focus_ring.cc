@@ -346,8 +346,8 @@ void FocusRing::RefreshLayer() {
 bool FocusRing::ShouldPaint() {
   // TODO(pbos): Reevaluate if this can turn into a DCHECK, e.g. we should
   // never paint if there's no parent focus.
-  return (has_focus_predicate_ && (*has_focus_predicate_)(parent())) ||
-         parent()->HasFocus();
+  return (!has_focus_predicate_ || (*has_focus_predicate_)(parent())) &&
+         (has_focus_predicate_ || parent()->HasFocus());
 }
 
 SkRRect FocusRing::RingRectFromPathRect(const SkRect& rect) const {
