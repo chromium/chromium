@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prerender/prerender_commit_deferring_condition.h"
 #include "content/common/content_export.h"
@@ -134,7 +135,7 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
 
   // This class is owned by its delegate (the NavigationRequest) so it's safe
   // to keep a reference to it.
-  Delegate& delegate_;
+  const raw_ref<Delegate> delegate_;
 
   // Used for distiguishing prerendered page activation from other navigations.
   // This is needed as IsPageActivation() and IsPrerenderedPageActivation() on

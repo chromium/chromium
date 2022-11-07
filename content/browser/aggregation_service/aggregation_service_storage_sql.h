@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
@@ -199,7 +200,7 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   // This is an empty FilePath if the database is being stored in-memory.
   const base::FilePath path_to_database_;
 
-  const base::Clock& clock_;
+  const raw_ref<const base::Clock> clock_;
 
   // No more report requests with the same reporting origin can be stored in the
   // database than this. Any additional requests attempted to be stored will

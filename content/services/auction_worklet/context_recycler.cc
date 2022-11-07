@@ -98,11 +98,11 @@ void ContextRecycler::ResetForReuse() {
 
 ContextRecyclerScope::ContextRecyclerScope(ContextRecycler& context_recycler)
     : context_recycler_(context_recycler),
-      context_(context_recycler_.GetContext()),
+      context_(context_recycler_->GetContext()),
       context_scope_(context_) {}
 
 ContextRecyclerScope::~ContextRecyclerScope() {
-  context_recycler_.ResetForReuse();
+  context_recycler_->ResetForReuse();
 }
 
 v8::Local<v8::Context> ContextRecyclerScope::GetContext() {

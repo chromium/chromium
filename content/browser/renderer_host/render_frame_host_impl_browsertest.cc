@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -6152,7 +6153,7 @@ class DestructorLifetimeDocumentService
         was_destroyed_(was_destroyed) {}
 
   ~DestructorLifetimeDocumentService() override {
-    was_destroyed_ = true;
+    *was_destroyed_ = true;
     // The destructor should run before SafeRef<RenderFrameHost> is invalidated.
     EXPECT_TRUE(render_frame_host_);
     EXPECT_TRUE(page_);
@@ -6164,7 +6165,7 @@ class DestructorLifetimeDocumentService
   // This should be a SafeRef but that is not yet exposed publicly.
   const base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   const base::WeakPtr<Page> page_;
-  bool& was_destroyed_;
+  const raw_ref<bool> was_destroyed_;
 };
 
 class DestructorLifetimeDocumentUserData
@@ -6180,7 +6181,7 @@ class DestructorLifetimeDocumentUserData
         was_destroyed_(was_destroyed) {}
 
   ~DestructorLifetimeDocumentUserData() override {
-    was_destroyed_ = true;
+    *was_destroyed_ = true;
     // The destructor should run before SafeRef<RenderFrameHost> is invalidated.
     EXPECT_TRUE(render_frame_host_);
     EXPECT_TRUE(page_);
@@ -6193,7 +6194,7 @@ class DestructorLifetimeDocumentUserData
   // This should be a SafeRef or use render_frame_host().
   const base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   const base::WeakPtr<Page> page_;
-  bool& was_destroyed_;
+  const raw_ref<bool> was_destroyed_;
 };
 
 DOCUMENT_USER_DATA_KEY_IMPL(DestructorLifetimeDocumentUserData);

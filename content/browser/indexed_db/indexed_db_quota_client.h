@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_QUOTA_CLIENT_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_QUOTA_CLIENT_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -48,7 +49,7 @@ class IndexedDBQuotaClient : public storage::mojom::QuotaClient {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Raw pointer use is safe here because the IndexedDBContextImpl owns this.
-  IndexedDBContextImpl& indexed_db_context_
+  const raw_ref<IndexedDBContextImpl> indexed_db_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<IndexedDBQuotaClient> weak_ptr_factory_

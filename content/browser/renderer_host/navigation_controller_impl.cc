@@ -1010,7 +1010,7 @@ NavigationEntryImpl* NavigationControllerImpl::GetLastCommittedEntry() {
 
 bool NavigationControllerImpl::CanViewSource() {
   const std::string& mime_type =
-      frame_tree_.root()->current_frame_host()->GetPage().contents_mime_type();
+      frame_tree_->root()->current_frame_host()->GetPage().contents_mime_type();
   bool is_viewable_mime_type = blink::IsSupportedNonImageMimeType(mime_type) &&
                                !media::IsSupportedMediaMimeType(mime_type);
   NavigationEntry* visible_entry = GetVisibleEntry();
@@ -1657,7 +1657,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // state and title updates from RenderFrames to apply to the latest relevant
   // NavigationEntry.
   int nav_entry_id = active_entry->GetUniqueID();
-  for (FrameTreeNode* node : frame_tree_.Nodes())
+  for (FrameTreeNode* node : frame_tree_->Nodes())
     node->current_frame_host()->set_nav_entry_id(nav_entry_id);
 
   if (navigation_request->IsPrerenderedPageActivation()) {
@@ -1915,7 +1915,7 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
 
 void NavigationControllerImpl::CreateInitialEntry() {
   DCHECK_EQ(entries_.size(), 0u);
-  RenderFrameHostImpl* rfh = frame_tree_.root()->current_frame_host();
+  RenderFrameHostImpl* rfh = frame_tree_->root()->current_frame_host();
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   // The initial NavigationEntry's URL is the empty URL. This preserves the old
   // behavior of WebContent's GetLastCommittedURL() and GetVisibleURL() from
@@ -1991,7 +1991,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
             previous_frame_entry->protect_url_in_navigation_api());
 
     new_entry = GetLastCommittedEntry()->CloneAndReplace(
-        frame_entry, true, request->frame_tree_node(), frame_tree_.root());
+        frame_entry, true, request->frame_tree_node(), frame_tree_->root());
     if (new_entry->GetURL().DeprecatedGetOriginAsURL() !=
         params.url.DeprecatedGetOriginAsURL()) {
       // TODO(jam): we had one report of this with a URL that was redirecting to
@@ -2309,7 +2309,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   std::unique_ptr<NavigationEntryImpl> new_entry =
       GetLastCommittedEntry()->CloneAndReplace(
           std::move(frame_entry), is_same_document, rfh->frame_tree_node(),
-          frame_tree_.root());
+          frame_tree_->root());
 
   SetShouldSkipOnBackForwardUIIfNeeded(
       replace_entry, previous_document_was_activated,
@@ -2581,7 +2581,7 @@ void NavigationControllerImpl::DiscardPendingEntry(bool was_failure) {
   // progress, since this will cause a use-after-free.  (We only allow this
   // when the tab is being destroyed for shutdown, since it won't return to
   // NavigateToEntry in that case.)  http://crbug.com/347742.
-  CHECK(!in_navigate_to_pending_entry_ || frame_tree_.IsBeingDestroyed());
+  CHECK(!in_navigate_to_pending_entry_ || frame_tree_->IsBeingDestroyed());
 
   if (was_failure && pending_entry_) {
     failed_pending_entry_id_ = pending_entry_->GetUniqueID();
@@ -2912,7 +2912,7 @@ bool NavigationControllerImpl::IsUnmodifiedBlankTab() {
   return IsInitialNavigation() &&
          (!GetLastCommittedEntry() ||
           GetLastCommittedEntry()->IsInitialEntry()) &&
-         !frame_tree_.has_accessed_initial_main_document();
+         !frame_tree_->has_accessed_initial_main_document();
 }
 
 SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
@@ -3107,7 +3107,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   DCHECK(!blink::IsRendererDebugURL(pending_entry_->GetURL()));
   bool is_forced_reload = needs_reload_;
   needs_reload_ = false;
-  FrameTreeNode* root = frame_tree_.root();
+  FrameTreeNode* root = frame_tree_->root();
   int nav_entry_id = pending_entry_->GetUniqueID();
   bool is_browser_initiated = !initiator_rfh;
 
@@ -3120,7 +3120,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   if (pending_entry_index_ == last_committed_entry_index_ &&
       !pending_entry_->IsRestored() &&
       pending_entry_->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK) {
-    frame_tree_.StopLoading();
+    frame_tree_->StopLoading();
 
     DiscardNonCommittedEntries();
     return;
@@ -3481,14 +3481,14 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   if (params.frame_tree_node_id != RenderFrameHost::kNoFrameTreeNodeId ||
       !params.frame_name.empty()) {
     node = params.frame_tree_node_id != RenderFrameHost::kNoFrameTreeNodeId
-               ? frame_tree_.FindByID(params.frame_tree_node_id)
-               : frame_tree_.FindByName(params.frame_name);
-    DCHECK(!node || node->frame_tree() == &frame_tree_);
+               ? frame_tree_->FindByID(params.frame_tree_node_id)
+               : frame_tree_->FindByName(params.frame_name);
+    DCHECK(!node || node->frame_tree() == &*frame_tree_);
   }
 
   // If no FrameTreeNode was specified, navigate the main frame.
   if (!node)
-    node = frame_tree_.root();
+    node = frame_tree_->root();
 
   // Compute overrides to the LoadURLParams for |override_user_agent|,
   // |should_replace_current_entry| and |has_user_gesture| that will be used
@@ -4418,14 +4418,14 @@ void NavigationControllerImpl::BroadcastHistoryOffsetAndLength() {
         }
       },
       GetLastCommittedEntryIndex(), GetEntryCount());
-  frame_tree_.root()->render_manager()->ExecutePageBroadcastMethod(callback);
+  frame_tree_->root()->render_manager()->ExecutePageBroadcastMethod(callback);
 }
 
 void NavigationControllerImpl::DidAccessInitialMainDocument() {
   // We may have left a failed browser-initiated navigation in the address bar
   // to let the user edit it and try again.  Clear it now that content might
   // show up underneath it.
-  if (!frame_tree_.IsLoadingIncludingInnerFrameTrees() && GetPendingEntry())
+  if (!frame_tree_->IsLoadingIncludingInnerFrameTrees() && GetPendingEntry())
     DiscardPendingEntry(false);
 
   // Update the URL display.
@@ -4697,7 +4697,7 @@ bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(
   // TODO(https://crbug.com/1197384): We may have to add portals in addition to
   // prerender and fenced frames. This should be kept in sync with
   // LocalFrame version, LocalFrame::ShouldMaintainTrivialSessionHistory.
-  return frame_tree_.is_prerendering() ||
+  return frame_tree_->is_prerendering() ||
          frame_tree_node->IsInFencedFrameTree();
 }
 

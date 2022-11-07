@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,7 +52,7 @@ class PressureServiceImplSync {
   blink::mojom::PressureStatus BindObserver(
       mojo::PendingRemote<blink::mojom::PressureObserver> observer) {
     base::test::TestFuture<blink::mojom::PressureStatus> future;
-    service_.BindObserver(std::move(observer), future.GetCallback());
+    service_->BindObserver(std::move(observer), future.GetCallback());
     return future.Get();
   }
 
@@ -59,7 +60,7 @@ class PressureServiceImplSync {
   // The reference is immutable, so accessing it is thread-safe. The referenced
   // blink::mojom::PressureService implementation is called synchronously,
   // so it's acceptable to rely on its own thread-safety checks.
-  blink::mojom::PressureService& service_;
+  const raw_ref<blink::mojom::PressureService> service_;
 };
 
 // Test double for PressureObserver that records all updates.

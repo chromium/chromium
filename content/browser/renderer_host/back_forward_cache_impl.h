@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -533,7 +534,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // Root document of the tree.
     const raw_ptr<RenderFrameHostImpl> root_rfh_;
     // BackForwardCacheImpl instance to access eligibility check functions.
-    BackForwardCacheImpl& bfcache_;
+    const raw_ref<BackForwardCacheImpl> bfcache_;
     // Flattened list of NotRestoredReasons for the tree. This is empty at the
     // start and has to be merged using |GetFlattenedResult()|.
     BackForwardCacheCanStoreDocumentResult flattened_result_;

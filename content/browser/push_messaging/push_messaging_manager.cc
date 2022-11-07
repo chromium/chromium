@@ -152,7 +152,8 @@ PushMessagingManager::PushMessagingManager(
     : render_process_host_(render_process_host),
       render_frame_id_(render_frame_id),
       service_worker_context_(std::move(service_worker_context)),
-      is_incognito_(render_process_host_.GetBrowserContext()->IsOffTheRecord()),
+      is_incognito_(
+          render_process_host_->GetBrowserContext()->IsOffTheRecord()),
       service_available_(!!GetService()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
@@ -198,7 +199,7 @@ void PushMessagingManager::Subscribe(
   // if the renderer if the renderer side check didn't happen for some reason.
   if (service_worker_registration->ancestor_frame_type() ==
       blink::mojom::AncestorFrameType::kFencedFrame) {
-    bad_message::ReceivedBadMessage(render_process_host_.GetID(),
+    bad_message::ReceivedBadMessage(render_process_host_->GetID(),
                                     bad_message::PMM_SUBSCRIBE_IN_FENCED_FRAME);
     return;
   }
@@ -206,8 +207,8 @@ void PushMessagingManager::Subscribe(
   const url::Origin& origin = service_worker_registration->key().origin();
 
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-          render_process_host_.GetID(), origin)) {
-    bad_message::ReceivedBadMessage(&render_process_host_,
+          render_process_host_->GetID(), origin)) {
+    bad_message::ReceivedBadMessage(&*render_process_host_,
                                     bad_message::PMM_SUBSCRIBE_INVALID_ORIGIN);
     return;
   }
@@ -328,7 +329,7 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
             blink::mojom::PushRegistrationStatus::INCOGNITO_PERMISSION_DENIED);
       } else {
         RenderFrameHost* render_frame_host = RenderFrameHost::FromID(
-            render_process_host_.GetID(), render_frame_id_);
+            render_process_host_->GetID(), render_frame_id_);
         if (render_frame_host) {
           render_frame_host->AddMessageToConsole(
               blink::mojom::ConsoleMessageLevel::kError,
@@ -365,14 +366,14 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
   if (IsRequestFromDocument(render_frame_id_)) {
     push_service->SubscribeFromDocument(
         requesting_origin.GetURL(), registration_id,
-        render_process_host_.GetID(), render_frame_id_, std::move(options),
+        render_process_host_->GetID(), render_frame_id_, std::move(options),
         user_gesture,
         base::BindOnce(&PushMessagingManager::DidRegister, AsWeakPtr(),
                        std::move(data)));
   } else {
     push_service->SubscribeFromWorker(
         requesting_origin.GetURL(), registration_id,
-        render_process_host_.GetID(), std::move(options),
+        render_process_host_->GetID(), std::move(options),
         base::BindOnce(&PushMessagingManager::DidRegister, AsWeakPtr(),
                        std::move(data)));
   }
@@ -520,9 +521,9 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
   const url::Origin& origin = service_worker_registration->key().origin();
 
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-          render_process_host_.GetID(), origin)) {
+          render_process_host_->GetID(), origin)) {
     bad_message::ReceivedBadMessage(
-        &render_process_host_, bad_message::PMM_UNSUBSCRIBE_INVALID_ORIGIN);
+        &*render_process_host_, bad_message::PMM_UNSUBSCRIBE_INVALID_ORIGIN);
     return;
   }
 
@@ -610,9 +611,9 @@ void PushMessagingManager::GetSubscription(
           service_worker_registration_id);
   if (registration) {
     if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-            render_process_host_.GetID(), registration->key().origin())) {
+            render_process_host_->GetID(), registration->key().origin())) {
       bad_message::ReceivedBadMessage(
-          &render_process_host_,
+          &*render_process_host_,
           bad_message::PMM_GET_SUBSCRIPTION_INVALID_ORIGIN);
       return;
     }
@@ -801,7 +802,7 @@ void PushMessagingManager::GetSubscriptionInfo(
 }
 
 PushMessagingService* PushMessagingManager::GetService() {
-  return render_process_host_.GetBrowserContext()->GetPushMessagingService();
+  return render_process_host_->GetBrowserContext()->GetPushMessagingService();
 }
 
 }  // namespace content

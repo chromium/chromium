@@ -15,7 +15,7 @@ WebTestCookieManager::WebTestCookieManager(
     network::mojom::CookieManager* const cookie_manager,
     const GURL& url)
     : cookie_manager_(cookie_manager), url_(url) {
-  DCHECK(url_.is_valid());
+  DCHECK(url_->is_valid());
 }
 
 void WebTestCookieManager::DeleteAllCookies(
@@ -23,7 +23,7 @@ void WebTestCookieManager::DeleteAllCookies(
         callback) {
   network::mojom::CookieDeletionFilterPtr deletion_filter =
       network::mojom::CookieDeletionFilter::New();
-  deletion_filter->url = url_;
+  deletion_filter->url = *url_;
   cookie_manager_->DeleteCookies(
       std::move(deletion_filter),
       base::BindOnce(
@@ -40,7 +40,7 @@ void WebTestCookieManager::GetAllCookies(
     blink::test::mojom::CookieManagerAutomation::GetAllCookiesCallback
         callback) {
   cookie_manager_->GetCookieList(
-      url_, net::CookieOptions::MakeAllInclusive(),
+      *url_, net::CookieOptions::MakeAllInclusive(),
       net::CookiePartitionKeyCollection(),
       base::BindOnce(
           [](blink::test::mojom::CookieManagerAutomation::GetAllCookiesCallback
@@ -57,7 +57,7 @@ void WebTestCookieManager::GetNamedCookie(
     blink::test::mojom::CookieManagerAutomation::GetNamedCookieCallback
         callback) {
   cookie_manager_->GetCookieList(
-      url_, net::CookieOptions::MakeAllInclusive(),
+      *url_, net::CookieOptions::MakeAllInclusive(),
       net::CookiePartitionKeyCollection(),
       base::BindOnce(
           [](const std::string& name,

@@ -1024,10 +1024,10 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasons(
     }
   } else {
     // Populate |result_for_rfh| by checking the bfcache eligibility of |rfh|.
-    bfcache_.PopulateReasonsForDocument(result_for_rfh, rfh,
-                                        include_non_sticky_);
+    bfcache_->PopulateReasonsForDocument(result_for_rfh, rfh,
+                                         include_non_sticky_);
   }
-  bfcache_.UpdateCanStoreToIncludeCacheControlNoStore(result_for_rfh, rfh);
+  bfcache_->UpdateCanStoreToIncludeCacheControlNoStore(result_for_rfh, rfh);
   flattened_result_.AddReasonsFrom(result_for_rfh);
 
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree(

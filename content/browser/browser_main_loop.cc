@@ -589,7 +589,7 @@ int BrowserMainLoop::EarlyInitialization() {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (!parsed_command_line_.HasSwitch(switches::kSingleProcess) &&
+  if (!parsed_command_line_->HasSwitch(switches::kSingleProcess) &&
       base::FeatureList::IsEnabled(kBrowserDynamicCodeDisabled) &&
       parameters_.sandbox_info && parameters_.sandbox_info->broker_services) {
     parameters_.sandbox_info->broker_services->RatchetDownSecurityMitigations(
@@ -597,8 +597,8 @@ int BrowserMainLoop::EarlyInitialization() {
   }
 #endif
 
-  if (parsed_command_line_.HasSwitch(switches::kRendererProcessLimit)) {
-    std::string limit_string = parsed_command_line_.GetSwitchValueASCII(
+  if (parsed_command_line_->HasSwitch(switches::kRendererProcessLimit)) {
+    std::string limit_string = parsed_command_line_->GetSwitchValueASCII(
         switches::kRendererProcessLimit);
     size_t process_limit;
     if (base::StringToSizeT(limit_string, &process_limit)) {
@@ -683,7 +683,7 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
 
   // TODO(boliu): kSingleProcess check is a temporary workaround for
   // in-process Android WebView. crbug.com/503724 tracks proper fix.
-  if (!parsed_command_line_.HasSwitch(switches::kSingleProcess)) {
+  if (!parsed_command_line_->HasSwitch(switches::kSingleProcess)) {
     base::DiscardableMemoryAllocator::SetInstance(
         discardable_memory::DiscardableSharedMemoryManager::Get());
   }
@@ -701,7 +701,7 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
     }
   }
 
-  if (!parsed_command_line_.HasSwitch(
+  if (!parsed_command_line_->HasSwitch(
           switches::kDisableScreenOrientationLock)) {
     TRACE_EVENT0("startup",
                  "BrowserMainLoop::Subsystem:ScreenOrientationProvider");
@@ -796,7 +796,7 @@ int BrowserMainLoop::PreCreateThreads() {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_ANDROID)
   // Single-process is an unsupported and not fully tested mode, so
   // don't enable it for official Chrome builds (except on Android).
-  if (parsed_command_line_.HasSwitch(switches::kSingleProcess))
+  if (parsed_command_line_->HasSwitch(switches::kSingleProcess))
     RenderProcessHost::SetRunRendererInProcess(true);
 #endif
 
@@ -1286,9 +1286,9 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   BrowserGpuChannelHostFactory::Initialize(established_gpu_channel);
 #else
   established_gpu_channel = true;
-  if (parsed_command_line_.HasSwitch(switches::kDisableGpu) ||
-      parsed_command_line_.HasSwitch(switches::kDisableGpuCompositing) ||
-      parsed_command_line_.HasSwitch(switches::kDisableGpuEarlyInit)) {
+  if (parsed_command_line_->HasSwitch(switches::kDisableGpu) ||
+      parsed_command_line_->HasSwitch(switches::kDisableGpuCompositing) ||
+      parsed_command_line_->HasSwitch(switches::kDisableGpuEarlyInit)) {
     established_gpu_channel = always_uses_gpu = false;
   }
 
@@ -1423,12 +1423,12 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
 }
 
 bool BrowserMainLoop::UsingInProcessGpu() const {
-  return parsed_command_line_.HasSwitch(switches::kSingleProcess) ||
-         parsed_command_line_.HasSwitch(switches::kInProcessGPU);
+  return parsed_command_line_->HasSwitch(switches::kSingleProcess) ||
+         parsed_command_line_->HasSwitch(switches::kInProcessGPU);
 }
 
 void BrowserMainLoop::InitializeMemoryManagementComponent() {
-  memory_pressure_monitor_ = CreateMemoryPressureMonitor(parsed_command_line_);
+  memory_pressure_monitor_ = CreateMemoryPressureMonitor(*parsed_command_line_);
 }
 
 bool BrowserMainLoop::InitializeToolkit() {
@@ -1464,7 +1464,7 @@ bool BrowserMainLoop::InitializeToolkit() {
 }
 
 void BrowserMainLoop::InitializeMojo() {
-  if (!parsed_command_line_.HasSwitch(switches::kSingleProcess)) {
+  if (!parsed_command_line_->HasSwitch(switches::kSingleProcess)) {
     // Disallow mojo sync calls in the browser process. Note that we allow sync
     // calls in single-process mode since renderer IPCs are made from a browser
     // thread.

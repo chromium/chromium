@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece_forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -45,7 +46,7 @@ class AttributionParserErrorManager {
     ScopedContext& operator=(ScopedContext&&) = delete;
 
    private:
-    ContextPath& path_;
+    const raw_ref<ContextPath> path_;
   };
 
   // Writes a newline on destruction.
@@ -80,7 +81,7 @@ class AttributionParserErrorManager {
   void ResetErrorState() { has_error_ = false; }
 
  private:
-  std::ostream& error_stream_;
+  const raw_ref<std::ostream> error_stream_;
 
   ContextPath context_path_;
   bool has_error_ = false;

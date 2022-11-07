@@ -42,8 +42,8 @@ void UnnamedOperationHandler::RunOperation(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
     mojom::SharedStorageWorkletService::RunOperationCallback callback) {
-  auto it = operation_definition_map_.find(name);
-  if (it == operation_definition_map_.end()) {
+  auto it = operation_definition_map_->find(name);
+  if (it == operation_definition_map_->end()) {
     std::move(callback).Run(/*success=*/false, "Cannot find operation name.");
     return;
   }

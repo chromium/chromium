@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -116,7 +117,7 @@ class ObjectNavigationFallbackBodyLoader
   void OnDataAvailable(const void* data, size_t num_bytes) override;
   void OnDataComplete() override;
 
-  NavigationRequest& navigation_request_;
+  const raw_ref<NavigationRequest> navigation_request_;
   // `url_loader_` must be kept alive while reading the response body.
   mojo::Remote<network::mojom::URLLoader> url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_client_receiver_;

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ref.h"
 #include "content/common/shared_storage_worklet_service.mojom.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -40,7 +41,7 @@ class UrlSelectionOperationHandler {
   void OnPromiseRejected(PendingRequest* request, gin::Arguments* args);
 
  private:
-  const std::map<std::string, v8::Global<v8::Function>>&
+  const raw_ref<const std::map<std::string, v8::Global<v8::Function>>>
       operation_definition_map_;
 
   std::map<PendingRequest*, std::unique_ptr<PendingRequest>> pending_requests_;

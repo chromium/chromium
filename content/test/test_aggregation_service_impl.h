@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/public/test/test_aggregation_service.h"
@@ -58,7 +59,7 @@ class TestAggregationServiceImpl : public AggregationServiceStorageContext,
       base::OnceCallback<void(std::vector<PublicKey>)> callback) const;
 
  private:
-  const base::Clock& clock_;
+  const raw_ref<const base::Clock> clock_;
 
   base::SequenceBound<AggregationServiceStorage> storage_;
   std::unique_ptr<AggregatableReportSender> sender_;

@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -17276,15 +17277,15 @@ class NavigationStarterBeforeDidCommitNavigation
       mojom::DidCommitProvisionalLoadParamsPtr* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
-    if ((**params).url == url_to_intercept_) {
-      shell_->LoadURL(url_to_start_);
+    if ((**params).url == *url_to_intercept_) {
+      shell_->LoadURL(*url_to_start_);
     }
     return true;
   }
 
   raw_ptr<Shell> shell_;
-  const GURL& url_to_intercept_;
-  const GURL& url_to_start_;
+  const raw_ref<const GURL> url_to_intercept_;
+  const raw_ref<const GURL> url_to_start_;
 };
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,

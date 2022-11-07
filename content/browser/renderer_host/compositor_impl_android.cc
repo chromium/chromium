@@ -23,6 +23,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
@@ -272,13 +273,13 @@ class CompositorImpl::HostBeginFrameObserver
 
   // This may be deleted as part of `CallObservers`.
   void CallObservers(const viz::BeginFrameArgs& args) {
-    auto observers_copy = simple_begin_frame_observers_;
+    auto observers_copy = *simple_begin_frame_observers_;
     for (auto* simple_observer : observers_copy) {
       simple_observer->OnBeginFrame(args.frame_time);
     }
   }
 
-  const base::flat_set<SimpleBeginFrameObserver*>&
+  const raw_ref<const base::flat_set<SimpleBeginFrameObserver*>>
       simple_begin_frame_observers_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

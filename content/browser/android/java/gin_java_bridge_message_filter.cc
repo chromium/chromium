@@ -99,7 +99,7 @@ void GinJavaBridgeMessageFilter::RenderProcessExited(
   {
     scoped_refptr<GinJavaBridgeMessageFilter> filter =
         base::UserDataAdapter<GinJavaBridgeMessageFilter>::Get(
-            &agent_scheduling_group_, kGinJavaBridgeMessageFilterKey);
+            &*agent_scheduling_group_, kGinJavaBridgeMessageFilterKey);
     DCHECK_EQ(this, filter.get());
   }
 #endif
@@ -118,7 +118,7 @@ void GinJavaBridgeMessageFilter::RenderProcessExited(
   // restarted and new frames are created, a new `GinJavaBridgeMessageFilter`
   // will be created and installed on the IPC channel associated with
   // `agent_scheduling_group_`.
-  agent_scheduling_group_.RemoveUserData(kGinJavaBridgeMessageFilterKey);
+  agent_scheduling_group_->RemoveUserData(kGinJavaBridgeMessageFilterKey);
 
   // DO NOT use `this` from here on, as the object has been destroyed.
 }

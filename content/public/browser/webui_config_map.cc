@@ -5,6 +5,7 @@
 #include "content/public/browser/webui_config_map.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "content/public/browser/web_contents.h"
@@ -29,7 +30,7 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
   WebUI::TypeID GetWebUIType(BrowserContext* browser_context,
                              const GURL& url) override {
     auto* config =
-        config_map_.GetConfig(browser_context, url::Origin::Create(url));
+        config_map_->GetConfig(browser_context, url::Origin::Create(url));
     if (!config)
       return WebUI::kNoWebUI;
 
@@ -38,7 +39,7 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
 
   bool UseWebUIForURL(BrowserContext* browser_context,
                       const GURL& url) override {
-    return config_map_.GetConfig(browser_context, url::Origin::Create(url));
+    return config_map_->GetConfig(browser_context, url::Origin::Create(url));
   }
 
   std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
@@ -46,7 +47,7 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
       const GURL& url) override {
     auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
     auto* config =
-        config_map_.GetConfig(browser_context, url::Origin::Create(url));
+        config_map_->GetConfig(browser_context, url::Origin::Create(url));
     if (!config)
       return nullptr;
 
@@ -56,7 +57,7 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
  private:
   // Keeping a reference should be safe since this class is owned by
   // WebUIConfigMap.
-  WebUIConfigMap& config_map_;
+  const raw_ref<WebUIConfigMap> config_map_;
 };
 
 }  // namespace

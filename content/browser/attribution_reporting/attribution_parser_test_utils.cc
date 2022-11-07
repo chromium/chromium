@@ -20,11 +20,11 @@ AttributionParserErrorManager::~AttributionParserErrorManager() = default;
 AttributionParserErrorManager::ScopedContext::ScopedContext(ContextPath& path,
                                                             Context context)
     : path_(path) {
-  path_.push_back(context);
+  path_->push_back(context);
 }
 
 AttributionParserErrorManager::ScopedContext::~ScopedContext() {
-  path_.pop_back();
+  path_->pop_back();
 }
 
 AttributionParserErrorManager::ErrorWriter::ErrorWriter(std::ostream& stream)
@@ -57,14 +57,14 @@ AttributionParserErrorManager::Error() {
   has_error_ = true;
 
   if (context_path_.empty())
-    error_stream_ << "input root";
+    *error_stream_ << "input root";
 
-  ErrorWriter writer(error_stream_);
+  ErrorWriter writer(*error_stream_);
   for (Context context : context_path_) {
     absl::visit(writer, context);
   }
 
-  error_stream_ << ": ";
+  *error_stream_ << ": ";
   return writer;
 }
 

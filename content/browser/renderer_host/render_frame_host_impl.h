@@ -25,6 +25,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
@@ -3674,7 +3675,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // crashed, since using
   // SiteInstance::GetProcess()/GetOrCreateAgentSchedulingGroupHost() has the
   // side effect of creating the process again if it is gone.
-  AgentSchedulingGroupHost& agent_scheduling_group_;
+  const raw_ref<AgentSchedulingGroupHost> agent_scheduling_group_;
 
   // Reference to the whole frame tree that this RenderFrameHost belongs to.
   // Allows this RenderFrameHost to add and remove nodes in response to

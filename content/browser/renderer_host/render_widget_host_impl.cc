@@ -452,7 +452,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 #endif
           frame_token_message_queue_.get()),
       frame_sink_id_(base::checked_cast<uint32_t>(
-                         agent_scheduling_group_.GetProcess()->GetID()),
+                         agent_scheduling_group_->GetProcess()->GetID()),
                      base::checked_cast<uint32_t>(routing_id_)),
       power_mode_input_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
@@ -476,7 +476,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 
   std::pair<RoutingIDWidgetMap::iterator, bool> result =
       g_routing_id_widget_map.Get().insert(std::make_pair(
-          RenderWidgetHostID(agent_scheduling_group_.GetProcess()->GetID(),
+          RenderWidgetHostID(agent_scheduling_group_->GetProcess()->GetID(),
                              routing_id_),
           this));
   CHECK(result.second) << "Inserting a duplicate item!";
@@ -485,14 +485,14 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
   // To avoid leaking any instance. They self-delete when their renderer process
   // is gone.
   if (self_owned_)
-    agent_scheduling_group_.GetProcess()->AddObserver(this);
+    agent_scheduling_group_->GetProcess()->AddObserver(this);
 
   render_process_blocked_state_changed_subscription_ =
-      agent_scheduling_group_.GetProcess()->RegisterBlockStateChangedCallback(
+      agent_scheduling_group_->GetProcess()->RegisterBlockStateChangedCallback(
           base::BindRepeating(
               &RenderWidgetHostImpl::RenderProcessBlockedStateChanged,
               base::Unretained(this)));
-  agent_scheduling_group_.GetProcess()->AddPriorityClient(this);
+  agent_scheduling_group_->GetProcess()->AddPriorityClient(this);
 
   SetupInputRouter();
 
@@ -602,7 +602,7 @@ const base::TimeDelta RenderWidgetHostImpl::kActivationNotificationExpireTime =
     base::Milliseconds(300);
 
 RenderProcessHost* RenderWidgetHostImpl::GetProcess() {
-  return agent_scheduling_group_.GetProcess();
+  return agent_scheduling_group_->GetProcess();
 }
 
 int RenderWidgetHostImpl::GetRoutingID() {
@@ -3351,7 +3351,7 @@ void RenderWidgetHostImpl::OnTouchEventAck(
 }
 
 bool RenderWidgetHostImpl::IsIgnoringInputEvents() const {
-  return agent_scheduling_group_.GetProcess()->IsBlocked() || !delegate_ ||
+  return agent_scheduling_group_->GetProcess()->IsBlocked() || !delegate_ ||
          delegate_->ShouldIgnoreInputEvents();
 }
 

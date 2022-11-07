@@ -186,7 +186,7 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
   sql::Statement get_url_id_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kGetUrlIdSql));
   get_url_id_statement.BindString(0, url.spec());
-  get_url_id_statement.BindTime(1, clock_.Now());
+  get_url_id_statement.BindTime(1, clock_->Now());
   if (!get_url_id_statement.Step())
     return {};
 
@@ -529,7 +529,7 @@ void AggregationServiceStorageSql::StoreRequest(
       db_.GetCachedStatement(SQL_FROM_HERE, kStoreRequestSql));
 
   store_request_statement.BindTime(0, shared_info.scheduled_report_time);
-  store_request_statement.BindTime(1, clock_.Now());
+  store_request_statement.BindTime(1, clock_->Now());
   store_request_statement.BindString(2, serialized_reporting_origin);
 
   std::vector<uint8_t> serialized_request = request.Serialize();

@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
@@ -145,8 +146,8 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   void OnPreloadComplete(const GURL& url, const PreloadedResource& result);
 
-  BrowserContext& browser_context_;
-  StoragePartition& storage_partition_;
+  const raw_ref<BrowserContext> browser_context_;
+  const raw_ref<StoragePartition> storage_partition_;
   const int frame_tree_node_id_;
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory_;
   // This needs to be declared last because it holds a pointer on

@@ -10,6 +10,7 @@
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -100,12 +101,12 @@ void AttributionInsecureRandomGenerator::RandomShuffle(
     static constexpr result_type max() {
       return std::numeric_limits<uint64_t>::max();
     }
-    result_type operator()() const { return gen.RandUint64(); }
+    result_type operator()() const { return gen->RandUint64(); }
 
-    AttributionInsecureRandomGenerator& gen;
+    const raw_ref<AttributionInsecureRandomGenerator> gen;
   };
 
-  base::ranges::shuffle(reports, RandomBitGenerator{.gen = *this});
+  base::ranges::shuffle(reports, RandomBitGenerator{.gen = raw_ref(*this)});
 }
 
 }  // namespace content

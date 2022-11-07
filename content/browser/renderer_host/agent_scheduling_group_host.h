@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/safe_ref.h"
 #include "base/state_transitions.h"
 #include "base/supports_user_data.h"
@@ -155,7 +156,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   static int32_t GetNextID();
 
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
-  RenderProcessHost& process_;
+  const raw_ref<RenderProcessHost> process_;
 
   int32_t id_for_debugging_{GetNextID()};
 

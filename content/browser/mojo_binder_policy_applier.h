@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ref.h"
 #include "content/browser/mojo_binder_policy_map_impl.h"
 #include "content/common/content_export.h"
 
@@ -109,7 +110,7 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   const MojoBinderNonAssociatedPolicy default_policy_ =
       MojoBinderNonAssociatedPolicy::kDefer;
   // Maps Mojo interface name to its policy.
-  const MojoBinderPolicyMapImpl& policy_map_;
+  const raw_ref<const MojoBinderPolicyMapImpl> policy_map_;
   // Will be executed upon a request for a kCancel interface.
   base::OnceCallback<void(const std::string& interface_name)> cancel_callback_;
   Mode mode_ = Mode::kEnforce;

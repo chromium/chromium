@@ -161,7 +161,7 @@ void CommitDeferringConditionRunner::ProcessConditions() {
 
   // All checks are completed, proceed with the commit in the
   // NavigationRequest.
-  delegate_.OnCommitDeferringConditionChecksComplete(
+  delegate_->OnCommitDeferringConditionChecksComplete(
       navigation_type_, candidate_prerender_frame_tree_node_id_);
 }
 

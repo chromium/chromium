@@ -108,7 +108,7 @@ void TestAggregationServiceImpl::SetPublicKeys(
     base::OnceCallback<void(bool)> callback) {
   std::string error_msg;
   absl::optional<PublicKeyset> keyset =
-      aggregation_service::ReadAndParsePublicKeys(json_file, clock_.Now(),
+      aggregation_service::ReadAndParsePublicKeys(json_file, clock_->Now(),
                                                   &error_msg);
   if (!keyset) {
     LOG(ERROR) << error_msg;

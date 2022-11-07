@@ -81,7 +81,7 @@ ServiceWorkerNewScriptFetcher::~ServiceWorkerNewScriptFetcher() = default;
 void ServiceWorkerNewScriptFetcher::Start(StartCallback callback) {
   callback_ = std::move(callback);
 
-  context_.GetStorageControl()->GetNewResourceId(base::BindOnce(
+  context_->GetStorageControl()->GetNewResourceId(base::BindOnce(
       &ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID,
       weak_factory_.GetWeakPtr()));
 }
@@ -89,7 +89,7 @@ void ServiceWorkerNewScriptFetcher::Start(StartCallback callback) {
 void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
     int64_t resource_id) {
   BrowserContext* browser_context =
-      context_.process_manager()->browser_context();
+      context_->process_manager()->browser_context();
   if (!browser_context) {
     std::move(callback_).Run(/*main_script_load_params=*/nullptr);
     return;
@@ -107,7 +107,7 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
   // Notify to DevTools that the request for fetching the service worker script
   // is about to start. It fires `Network.onRequestWillBeSent` event.
   devtools_instrumentation::OnServiceWorkerMainScriptRequestWillBeSent(
-      requesting_frame_id_, context_.wrapper(), version_->version_id(),
+      requesting_frame_id_, context_->wrapper(), version_->version_id(),
       request);
 
   mojo::MakeSelfOwnedReceiver(

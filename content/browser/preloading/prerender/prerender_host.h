@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
@@ -315,7 +316,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // WebContents where this prerenderer is embedded. Keeping a reference is safe
   // as WebContentsImpl owns PrerenderHostRegistry, which in turn owns
   // PrerenderHost.
-  WebContentsImpl& web_contents_;
+  const raw_ref<WebContentsImpl> web_contents_;
 
   // Used for testing, this closure is only set when waiting a page to be either
   // loaded for prerendering. |frame_tree_| provides us with a trigger for when

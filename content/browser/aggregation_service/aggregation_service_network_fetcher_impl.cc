@@ -178,7 +178,7 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
   base::Time response_time;
   // `expiry_time` will be null if the freshness lifetime is zero.
   base::Time expiry_time;
-  base::Time current_time = clock_.Now();
+  base::Time current_time = clock_->Now();
   if (const network::mojom::URLResponseHead* response_info =
           loader->ResponseInfo()) {
     response_time = response_info->response_time;

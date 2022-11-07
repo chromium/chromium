@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -116,7 +117,7 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
   void GetNextReportTime(
       base::OnceCallback<void(absl::optional<base::Time>)> callback,
       base::Time now) override {
-    attribution_storage_.AsyncCall(&AttributionStorage::GetNextReportTime)
+    attribution_storage_->AsyncCall(&AttributionStorage::GetNextReportTime)
         .WithArgs(now)
         .Then(std::move(callback));
   }
@@ -129,12 +130,12 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
     // avoid pulling an unbounded number of reports into memory, only to
     // immediately issue async storage calls to modify their report times.
     attribution_storage_
-        .AsyncCall(&AttributionStorage::AdjustOfflineReportTimes)
+        ->AsyncCall(&AttributionStorage::AdjustOfflineReportTimes)
         .Then(std::move(maybe_set_timer_cb));
   }
 
   base::RepeatingClosure send_reports_;
-  base::SequenceBound<AttributionStorage>& attribution_storage_;
+  const raw_ref<base::SequenceBound<AttributionStorage>> attribution_storage_;
 };
 
 // The shared-task runner for all attribution storage operations. Note that

@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -334,7 +335,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Random data ---------------------------------------------------------------
 
-  FrameTree& frame_tree() { return frame_tree_; }
+  FrameTree& frame_tree() { return *frame_tree_; }
 
   SSLManager* ssl_manager() { return &ssl_manager_; }
 
@@ -813,7 +814,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // The FrameTree this instance belongs to. Each FrameTree gets its own
   // NavigationController.
-  FrameTree& frame_tree_;
+  const raw_ref<FrameTree> frame_tree_;
 
   // The user browser context associated with this controller.
   const raw_ptr<BrowserContext> browser_context_;

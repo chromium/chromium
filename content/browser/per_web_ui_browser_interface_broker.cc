@@ -34,9 +34,9 @@ PerWebUIBrowserInterfaceBroker::~PerWebUIBrowserInterfaceBroker() = default;
 void PerWebUIBrowserInterfaceBroker::GetInterface(
     mojo::GenericPendingReceiver receiver) {
   auto name = receiver.interface_name().value();
-  if (!binder_map_.TryBind(&controller_, &receiver)) {
+  if (!binder_map_.TryBind(&*controller_, &receiver)) {
     // WebUI page requested an interface that's not registered
-    ShutdownWebUIRenderer(controller_);
+    ShutdownWebUIRenderer(*controller_);
   }
 }
 

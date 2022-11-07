@@ -29,6 +29,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -8509,11 +8510,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       // incoming messages and learn about the renderer's cancellation
       // before the browser process dispatches a CommitNavigation() to the
       // renderer.
-      ExecuteScriptAsync(&requesting_rfh_, "window.stop()");
+      ExecuteScriptAsync(&*requesting_rfh_, "window.stop()");
     }
 
    private:
-    RenderFrameHost& requesting_rfh_;
+    const raw_ref<RenderFrameHost> requesting_rfh_;
   };
 
   // Set up a test page with a same-site child frame.

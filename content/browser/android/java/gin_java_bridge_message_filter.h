@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -90,7 +91,7 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
 
   // The `AgentSchedulingGroupHost` that this object is associated with. This
   // filter is installed on the host's channel.
-  AgentSchedulingGroupHost& agent_scheduling_group_;
+  const raw_ref<AgentSchedulingGroupHost> agent_scheduling_group_;
 
   // The routing id of the RenderFrameHost whose request we are processing.
   // Used on the background thread.

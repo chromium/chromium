@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -2549,14 +2550,14 @@ class InjectIsolationRequestingNavigation
     // Performa a navigation of `tab2_` to `url_`. `url_` should request
     // isolation.
     test_framework_->SetHeaderValue("?1");
-    EXPECT_TRUE(NavigateToURL(tab2_, url_));
+    EXPECT_TRUE(NavigateToURL(tab2_, *url_));
 
     return true;
   }
 
   raw_ptr<OriginIsolationOptInHeaderTest> test_framework_;
   raw_ptr<Shell, DanglingUntriaged> tab2_;
-  const GURL& url_;
+  const raw_ref<const GURL> url_;
   bool was_called_ = false;
 };
 

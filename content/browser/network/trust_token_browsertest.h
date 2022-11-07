@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_NETWORK_TRUST_TOKEN_BROWSERTEST_H_
 #define CONTENT_BROWSER_NETWORK_TRUST_TOKEN_BROWSERTEST_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/common/trust_tokens.mojom.h"
@@ -92,7 +93,7 @@ class HandlerWrappingLocalTrustTokenFulfiller final
  private:
   void Bind(mojo::ScopedMessagePipeHandle handle);
 
-  TrustTokenRequestHandler& handler_;
+  const raw_ref<TrustTokenRequestHandler> handler_;
   service_manager::InterfaceProvider::TestApi interface_overrider_{
       content::GetGlobalJavaInterfaces()};
   mojo::Receiver<content::mojom::LocalTrustTokenFulfiller> receiver_{this};

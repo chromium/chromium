@@ -162,13 +162,13 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
   // prerendering page.
   frame_tree_->controller().SetSessionStorageNamespace(
       site_instance->GetStoragePartitionConfig(),
-      web_contents_.GetPrimaryFrameTree()
+      web_contents_->GetPrimaryFrameTree()
           .controller()
           .GetSessionStorageNamespace(
               site_instance->GetStoragePartitionConfig()));
 
   // TODO(https://crbug.com/1199679): This should be moved to FrameTree::Init
-  web_contents_.NotifySwappedFromRenderManager(
+  web_contents_->NotifySwappedFromRenderManager(
       /*old_frame=*/nullptr,
       frame_tree_->root()->render_manager()->current_frame_host());
 
@@ -239,7 +239,7 @@ bool PrerenderHost::ShouldPreserveAbortedURLs() {
 }
 
 WebContents* PrerenderHost::DeprecatedGetWebContents() {
-  return &web_contents_;
+  return &*web_contents_;
 }
 
 // TODO(https://crbug.com/1132746): Inspect diffs from the current
@@ -361,7 +361,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   DCHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;
 
-  FrameTree& target_frame_tree = web_contents_.GetPrimaryFrameTree();
+  FrameTree& target_frame_tree = web_contents_->GetPrimaryFrameTree();
 
   // There should be no ongoing main-frame navigation during activation.
   // TODO(https://crbug.com/1190644): Make sure sub-frame navigations are
@@ -462,7 +462,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
         // updates the visibility state using the PageVisibilityState of
         // |web_contents|.
         rfh->render_view_host()->SetFrameTreeVisibility(
-            web_contents_.GetPageVisibilityState());
+            web_contents_->GetPageVisibilityState());
       });
 
   frame_tree_->Shutdown();
@@ -513,7 +513,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
 // parent document sets a policy on the child iframe.
 bool PrerenderHost::IsFramePolicyCompatibleWithPrimaryFrameTree() {
   FrameTreeNode* prerender_root_ftn = frame_tree_->root();
-  FrameTreeNode* primary_root_ftn = web_contents_.GetPrimaryFrameTree().root();
+  FrameTreeNode* primary_root_ftn = web_contents_->GetPrimaryFrameTree().root();
 
   // Ensure that the pending frame policy is not set on the main frames, as it
   // is usually set on frames by their parent frames.

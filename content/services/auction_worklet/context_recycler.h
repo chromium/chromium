@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "v8/include/v8-forward.h"
@@ -119,7 +120,7 @@ class CONTENT_EXPORT ContextRecyclerScope {
   v8::Local<v8::Context> GetContext();
 
  private:
-  ContextRecycler& context_recycler_;
+  const raw_ref<ContextRecycler> context_recycler_;
   v8::Local<v8::Context> context_;
   v8::Context::Scope context_scope_;
 };

@@ -5,6 +5,7 @@
 #include "content/browser/loader/navigation_early_hints_manager.h"
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -392,11 +393,11 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
       }
 
       // Delete `this`.
-      owner_.OnPreloadComplete(url_, result_);
+      owner_->OnPreloadComplete(url_, result_);
     }
   }
 
-  NavigationEarlyHintsManager& owner_;
+  const raw_ref<NavigationEarlyHintsManager> owner_;
   const GURL url_;
   const network::mojom::RequestDestination request_destination_;
 
@@ -484,7 +485,7 @@ NavigationEarlyHintsManager::GetNetworkContext() {
   if (network_context_for_testing_)
     return network_context_for_testing_;
 
-  return storage_partition_.GetNetworkContext();
+  return storage_partition_->GetNetworkContext();
 }
 
 void NavigationEarlyHintsManager::MaybePreconnect(
@@ -559,7 +560,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(
-          request, &browser_context_,
+          request, &*browser_context_,
           base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                               frame_tree_node_id_),
           /*navigation_ui_data=*/nullptr, frame_tree_node_id_);

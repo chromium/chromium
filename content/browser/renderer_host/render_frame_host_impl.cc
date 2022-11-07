@@ -1698,7 +1698,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       waiting_for_init_(renderer_initiated_creation_of_main_frame),
       frame_token_(frame_token),
       keep_alive_handle_factory_(
-          agent_scheduling_group_.GetProcess(),
+          agent_scheduling_group_->GetProcess(),
           RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout),
       subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       media_device_id_salt_base_(
@@ -2246,11 +2246,11 @@ SiteInstanceImpl* RenderFrameHostImpl::GetSiteInstance() const {
 }
 
 RenderProcessHost* RenderFrameHostImpl::GetProcess() const {
-  return agent_scheduling_group_.GetProcess();
+  return agent_scheduling_group_->GetProcess();
 }
 
 AgentSchedulingGroupHost& RenderFrameHostImpl::GetAgentSchedulingGroup() {
-  return agent_scheduling_group_;
+  return *agent_scheduling_group_;
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParent() const {

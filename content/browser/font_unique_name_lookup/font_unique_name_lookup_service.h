@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_SERVICE_H_
 #define CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_SERVICE_H_
 
+#include "base/memory/raw_ref.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/font_unique_name_lookup/font_unique_name_lookup.mojom.h"
 
@@ -33,7 +34,7 @@ class FontUniqueNameLookupService : public blink::mojom::FontUniqueNameLookup {
       GetUniqueNameLookupTableIfAvailableCallback callback) override;
 
  private:
-  ::content::FontUniqueNameLookup& font_unique_name_lookup_;
+  const raw_ref<::content::FontUniqueNameLookup> font_unique_name_lookup_;
 };
 
 }  // namespace content

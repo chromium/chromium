@@ -261,7 +261,7 @@ void ObjectNavigationFallbackBodyLoader::MaybeComplete() {
   timing_info_->decoded_body_size = status_->decoded_body_length;
 
   RenderFrameHostManager* render_manager =
-      navigation_request_.frame_tree_node()->render_manager();
+      navigation_request_->frame_tree_node()->render_manager();
   if (RenderFrameProxyHost* proxy = render_manager->GetProxyToParent()) {
     if (proxy->is_render_frame_proxy_live()) {
       proxy->GetAssociatedRemoteFrame()
@@ -286,7 +286,7 @@ void ObjectNavigationFallbackBodyLoader::BodyLoadFailed() {
   // The endpoint for the URL loader client was closed before the body load
   // completed. This is considered failure, so trigger the fallback content, but
   // without any timing info, since it can't be calculated.
-  navigation_request_.RenderFallbackContentForObjectTag();
+  navigation_request_->RenderFallbackContentForObjectTag();
 }
 
 void ObjectNavigationFallbackBodyLoader::OnReceiveEarlyHints(
