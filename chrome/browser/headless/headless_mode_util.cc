@@ -23,7 +23,6 @@ namespace headless {
 
 namespace {
 const char kNewHeadlessModeSwitchValue[] = "new";
-const char kNewHeadlessModeSwitchValueDeprecated[] = "chrome";
 const char kOldHeadlessModeSwitchValue[] = "old";
 
 enum HeadlessMode {
@@ -42,8 +41,7 @@ HeadlessMode GetHeadlessMode() {
       command_line->GetSwitchValueASCII(switches::kHeadless);
   if (switch_value == kOldHeadlessModeSwitchValue)
     return kOldHeadlessMode;
-  if (switch_value == kNewHeadlessModeSwitchValue ||
-      switch_value == kNewHeadlessModeSwitchValueDeprecated)
+  if (switch_value == kNewHeadlessModeSwitchValue)
     return kNewHeadlessMode;
 
   return kDefaultHeadlessMode;

@@ -13,14 +13,6 @@ namespace headless {
 // is Chrome browser running without any visible UI.
 bool IsHeadlessMode();
 
-// DEPRECATED: New headless mode used to be called Native Headless mode, so
-// this function helps landing the renaming CLs by limiting the review scope.
-// Remove it when the last reference to headless::IsChromeNativeHeadless()
-// is gone.
-inline bool IsChromeNativeHeadless() {
-  return IsHeadlessMode();
-}
-
 // Returns positive if old headless mode is in effect. The old headless mode
 // is a minimalistic browser implementation found in //headless which lacks
 // most of the full fledged Chrome browser functionality.

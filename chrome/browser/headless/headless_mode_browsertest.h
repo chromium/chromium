@@ -12,7 +12,7 @@
 
 class HeadlessModeBrowserTest : public InProcessBrowserTest {
  public:
-  static constexpr char kHeadlessSwitchValue[] = "chrome";
+  static constexpr char kHeadlessSwitchValue[] = "new";
 
   HeadlessModeBrowserTest() = default;
 
