@@ -1182,13 +1182,6 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
   }
 }
 
-void ComputedStyle::AddPaintImage(StyleImage* image) {
-  if (!MutablePaintImagesInternal()) {
-    SetPaintImagesInternal(std::make_unique<PaintImages>());
-  }
-  MutablePaintImagesInternal()->push_back(image);
-}
-
 bool ComputedStyle::HasCSSPaintImagesUsingCustomProperty(
     const AtomicString& custom_property_name,
     const Document& document) const {
@@ -1271,11 +1264,6 @@ void ComputedStyle::UpdateIsStackingContextWithoutContainment(
       ShouldCompositeForCurrentAnimations()) {
     SetIsStackingContextWithoutContainment(true);
   }
-}
-
-void ComputedStyle::AddCallbackSelector(const String& selector) {
-  if (!CallbackSelectors().Contains(selector))
-    MutableCallbackSelectorsInternal().push_back(selector);
 }
 
 static bool IsWillChangeTransformHintProperty(CSSPropertyID property) {

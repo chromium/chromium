@@ -74,11 +74,11 @@ class StyleImageLoader {
   using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
 
   StyleImageLoader(Document& document,
-                   ComputedStyle& style,
+                   ComputedStyleBuilder& builder,
                    const PreCachedContainerSizes& pre_cached_container_sizes,
                    float device_scale_factor)
       : document_(document),
-        style_(style),
+        builder_(builder),
         pre_cached_container_sizes_(pre_cached_container_sizes),
         device_scale_factor_(device_scale_factor) {}
 
@@ -91,7 +91,7 @@ class StyleImageLoader {
   StyleImage* CrossfadeArgument(CSSValue&, CrossOriginAttributeValue);
 
   Document& document_;
-  ComputedStyle& style_;
+  ComputedStyleBuilder& builder_;
   const PreCachedContainerSizes& pre_cached_container_sizes_;
   const float device_scale_factor_;
 };
@@ -112,7 +112,7 @@ StyleImage* StyleImageLoader::Load(
   if (auto* paint_value = DynamicTo<CSSPaintValue>(value)) {
     auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value,
                                                             container_sizes);
-    style_.AddPaintImage(image);
+    builder_.AddPaintImage(image);
     return image;
   }
 
@@ -301,7 +301,7 @@ static CSSValue* PendingCssValue(StyleImage* style_image) {
 }
 
 void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
-  ComputedStyle& style = *builder.MutableInternalStyle();
+  const ComputedStyle& style = *builder.InternalStyle();
   // We must loop over the properties and then look at the style to see if
   // a pending image exists, and only load that image. For example:
   //
@@ -319,7 +319,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
   // If we eagerly loaded the images we'd fetch a.png, even though it's not
   // used. If we didn't null check below we'd crash since the none actually
   // removed all background images.
-  StyleImageLoader loader(element_.GetDocument(), style,
+  StyleImageLoader loader(element_.GetDocument(), builder,
                           pre_cached_container_sizes_, device_scale_factor_);
   for (CSSPropertyID property : pending_image_properties_) {
     switch (property) {

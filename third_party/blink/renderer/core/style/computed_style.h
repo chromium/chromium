@@ -993,9 +993,6 @@ class ComputedStyle : public ComputedStyleBase,
     return TransitionsInternal().get();
   }
 
-  // Callback selectors.
-  void AddCallbackSelector(const String& selector);
-
   // Non-property flags.
   CORE_EXPORT void SetTextAutosizingMultiplier(float);
 
@@ -2089,9 +2086,6 @@ class ComputedStyle : public ComputedStyleBase,
     return HasFilter() || HasClipPath() || MaskerResource();
   }
 
-  // Paint utility functions.
-  CORE_EXPORT void AddPaintImage(StyleImage*);
-
   // Returns true if any property has an <image> value that is a CSS paint
   // function that is using a given custom property.
   bool HasCSSPaintImagesUsingCustomProperty(
@@ -3076,6 +3070,19 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // zoom
   CORE_EXPORT bool SetEffectiveZoom(float);
+
+  /// CallbackSelector
+  void AddCallbackSelector(const String& selector) {
+    if (!CallbackSelectors().Contains(selector))
+      MutableCallbackSelectorsInternal().push_back(selector);
+  }
+
+  // PaintImage
+  void AddPaintImage(StyleImage* image) {
+    if (!PaintImagesInternal())
+      SetPaintImagesInternal(std::make_unique<PaintImages>());
+    MutablePaintImagesInternal()->push_back(image);
+  }
 
   bool ShouldPreserveParentColor() const {
     return InForcedColorsMode() &&

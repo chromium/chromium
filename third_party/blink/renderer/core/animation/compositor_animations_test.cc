@@ -710,8 +710,11 @@ TEST_P(AnimationCompositorAnimationsTest,
   paint_value->CreateGeneratorForTesting(GetDocument());
   StyleGeneratedImage* style_image = MakeGarbageCollected<StyleGeneratedImage>(
       *paint_value, StyleGeneratedImage::ContainerSizes());
-  style->AddPaintImage(style_image);
-  element_->GetLayoutObject()->SetStyle(style);
+
+  ComputedStyleBuilder builder(*style);
+  builder.AddPaintImage(style_image);
+  element_->GetLayoutObject()->SetStyle(builder.TakeStyle());
+
   // The image is added for testing off-thread paint worklet supporting
   // custom property animation case. The style doesn't have a real
   // PaintImage, so we cannot call UpdateAllLifecyclePhasesForTest. But the

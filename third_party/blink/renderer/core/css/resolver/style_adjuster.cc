@@ -525,7 +525,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   }
 
   if (auto* html_plugin_element = DynamicTo<HTMLPlugInElement>(element)) {
-    style.SetRequiresAcceleratedCompositingForExternalReasons(
+    builder.SetRequiresAcceleratedCompositingForExternalReasons(
         html_plugin_element->ShouldAccelerate());
     if (style.Display() == EDisplay::kContents)
       builder.SetDisplay(EDisplay::kNone);

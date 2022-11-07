@@ -619,6 +619,7 @@
       include_paths: ["third_party/blink/renderer/platform/wtf/vector.h",
                       "third_party/blink/renderer/platform/wtf/text/wtf_string.h"],
       computed_style_custom_functions: ["setter"],
+      readonly: true,
     },
     {
       name: "PaintImages",
@@ -630,6 +631,7 @@
       custom_compare: true,
       include_paths: ["third_party/blink/renderer/core/style/paint_images.h"],
       computed_style_custom_functions: ["getter", "setter"],
+      readonly: true,
     },
     {
       name: "NonInheritedVariables",
@@ -649,6 +651,7 @@
       field_size: 2,
       default_value: "PageSizeType::kAuto",
       include_paths: ["third_party/blink/public/common/css/page_size_type.h"],
+      readonly: true,
     },
     {
       name: "HasCurrentOpacityAnimation",
@@ -728,6 +731,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      readonly: true,
     },
     {
       name: "IsRunningOpacityAnimationOnCompositor",
@@ -829,22 +833,26 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      readonly: true,
     },
     // Style adjustment for appearance is disabled when certain properties are set.
     {
       name: "HasAuthorBackground",
       field_template: "monotonic_flag",
       default_value: "false",
+      readonly: true,
     },
     {
       name: "HasAuthorBorder",
       field_template: "monotonic_flag",
       default_value: "false",
+      readonly: true,
     },
     {
       name: "HasAuthorBorderRadius",
       field_template: "monotonic_flag",
       default_value: "false",
+      readonly: true,
     },
     // Paired cascade: in highlight pseudo styles, the presence of any highlight
     // colors affects whether all other highlight color properties default to
@@ -854,6 +862,7 @@
       name: "HasAuthorHighlightColors",
       field_template: "monotonic_flag",
       default_value: "false",
+      readonly: true,
     },
     {
       name: "ColorIsCurrentColor",
@@ -863,6 +872,7 @@
       default_value: "true",
       inherited: true,
       computed_style_custom_functions: ["getter"],
+      readonly: true,
     },
     {
       name: "InternalVisitedColorIsCurrentColor",
@@ -872,6 +882,7 @@
       default_value: "true",
       inherited: true,
       computed_style_custom_functions: ["getter"],
+      readonly: true,
     },
     {
       name: "WillChangeProperties",

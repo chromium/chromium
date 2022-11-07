@@ -218,17 +218,17 @@ void StyleCascade::Apply(CascadeFilter filter) {
   // but we compute them nevertheless, to avoid suddenly having to compute them
   // after-the-fact if inline style is updated incrementally.
   if (resolver.AuthorFlags() & CSSProperty::kBackground)
-    state_.Style()->SetHasAuthorBackground();
+    state_.StyleBuilder().SetHasAuthorBackground();
   if (resolver.AuthorFlags() & CSSProperty::kBorder)
-    state_.Style()->SetHasAuthorBorder();
+    state_.StyleBuilder().SetHasAuthorBorder();
   if (resolver.AuthorFlags() & CSSProperty::kBorderRadius)
-    state_.Style()->SetHasAuthorBorderRadius();
+    state_.StyleBuilder().SetHasAuthorBorderRadius();
 
   if ((state_.Style()->InsideLink() != EInsideLink::kInsideVisitedLink &&
        (resolver.AuthorFlags() & CSSProperty::kHighlightColors)) ||
       (state_.Style()->InsideLink() == EInsideLink::kInsideVisitedLink &&
        (resolver.AuthorFlags() & CSSProperty::kVisitedHighlightColors))) {
-    state_.Style()->SetHasAuthorHighlightColors();
+    state_.StyleBuilder().SetHasAuthorHighlightColors();
   }
 
   if (resolver.Flags() & CSSProperty::kAnimation)
