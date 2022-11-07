@@ -28,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_http_handler.h"
 #include "content/browser/devtools/devtools_manager.h"
@@ -85,6 +86,14 @@ const char kTargetDevtoolsFrontendUrlField[] = "devtoolsFrontendUrl";
 
 const int32_t kSendBufferSizeForDevTools = 256 * 1024 * 1024;  // 256Mb
 const int32_t kReceiveBufferSizeForDevTools = 100 * 1024 * 1024;  // 100Mb
+
+const char kRemoteUrlPattern[] =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "https://chrome-devtools-frontend.appspot.com/serve_internal_file/%s/"
+    "%s.html";
+#else
+    "https://chrome-devtools-frontend.appspot.com/serve_rev/%s/%s.html";
+#endif
 
 constexpr net::NetworkTrafficAnnotationTag
     kDevtoolsHttpHandlerTrafficAnnotation =
@@ -514,10 +523,9 @@ std::string DevToolsHttpHandler::GetFrontendURLInternal(
     std::string type = agent_host->GetType();
     bool is_worker = type == DevToolsAgentHost::kTypeServiceWorker ||
                      type == DevToolsAgentHost::kTypeSharedWorker;
-    frontend_url = base::StringPrintf(
-        "https://chrome-devtools-frontend.appspot.com/serve_rev/%s/%s.html",
-        GetChromiumGitRevision().c_str(),
-        is_worker ? "worker_app" : "inspector");
+    frontend_url =
+        base::StringPrintf(kRemoteUrlPattern, GetChromiumGitRevision().c_str(),
+                           is_worker ? "worker_app" : "inspector");
   }
   return base::StringPrintf("%s?ws=%s%s%s", frontend_url.c_str(), host.c_str(),
                             kPageUrlPrefix, id.c_str());
