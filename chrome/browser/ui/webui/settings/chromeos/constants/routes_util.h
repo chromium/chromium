@@ -9,9 +9,6 @@
 
 namespace chromeos::settings {
 
-// TODO(khorimoto): Remove this path, since it's no longer used.
-extern const char kOsSignOutSubPage[];
-
 // Returns true if the sub-page is one of the above.
 bool IsOSSettingsSubPage(const std::string& sub_page);
 

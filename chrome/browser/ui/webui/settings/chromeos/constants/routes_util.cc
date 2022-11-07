@@ -24,8 +24,6 @@ std::string RemoveQuery(std::string path) {
 
 }  // namespace
 
-const char kOsSignOutSubPage[] = "osSignOut";
-
 bool IsOSSettingsSubPage(const std::string& sub_page) {
   // Sub-pages may have query parameters, e.g. networkDetail?guid=123456.
   std::string sub_page_without_query = RemoveQuery(sub_page);
@@ -35,10 +33,6 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
     if (sub_page_without_query == path_without_query)
       return true;
   }
-
-  // Special case - sign-out dialog:
-  if (sub_page_without_query == kOsSignOutSubPage)
-    return true;
 
   return false;
 }
