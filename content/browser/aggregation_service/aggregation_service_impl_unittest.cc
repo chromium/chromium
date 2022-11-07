@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
@@ -292,10 +293,43 @@ class AggregationServiceImplTest : public testing::Test {
         .WithArgs(std::move(request));
   }
 
+  void VerifyNoHistograms() {
+    // As `count` is 0, the other arguments have no impact.
+    VerifyHistograms(/*was_scheduled=*/false,
+                     AggregationServiceObserver::ReportStatus::kSent,
+                     /*count=*/0);
+  }
+
+  // Helper for the simple case of a single status and type of report. Only
+  // verifies the count for the number of retries before success histogram.
+  // Separate calls are needed to verify the buckets (if count is non-zero).
+  void VerifyHistograms(bool was_scheduled,
+                        AggregationServiceObserver::ReportStatus final_status,
+                        int count = 1) {
+    int scheduled_count = was_scheduled ? count : 0;
+    int scheduled_successes =
+        final_status == AggregationServiceObserver::ReportStatus::kSent
+            ? scheduled_count
+            : 0;
+    int unscheduled_count = was_scheduled ? 0 : count;
+
+    histogram_tester_.ExpectUniqueSample(
+        "PrivacySandbox.AggregationService.ScheduledRequests.Status",
+        final_status, scheduled_count);
+    histogram_tester_.ExpectTotalCount(
+        "PrivacySandbox.AggregationService.ScheduledRequests."
+        "NumRetriesBeforeSuccess",
+        scheduled_successes);
+    histogram_tester_.ExpectUniqueSample(
+        "PrivacySandbox.AggregationService.UnscheduledRequests.Status",
+        final_status, unscheduled_count);
+  }
+
   AggregationServiceImpl* service() { return service_impl_.get(); }
   TestAggregatableReportAssembler* assembler() { return test_assembler_; }
   TestAggregatableReportSender* sender() { return test_sender_; }
   TestAggregatableReportScheduler* scheduler() { return test_scheduler_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   // Returns `absl::nullopt` if no report callback has been run or if the last
   // assembly had an error.
@@ -325,6 +359,8 @@ class AggregationServiceImplTest : public testing::Test {
   raw_ptr<TestAggregatableReportSender> test_sender_ = nullptr;
   raw_ptr<TestAggregatableReportScheduler> test_scheduler_ = nullptr;
 
+  base::HistogramTester histogram_tester_;
+
   absl::optional<AggregatableReport> last_assembled_report_;
   absl::optional<AggregationService::AssemblyStatus> last_assembly_status_;
 
@@ -352,6 +388,8 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Succeed) {
   ASSERT_TRUE(last_assembly_status().has_value());
   EXPECT_EQ(last_assembly_status().value(),
             AggregationService::AssemblyStatus::kOk);
+
+  VerifyNoHistograms();
 }
 
 TEST_F(AggregationServiceImplTest, AssembleReport_Fail) {
@@ -368,6 +406,8 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Fail) {
   ASSERT_TRUE(last_assembly_status().has_value());
   EXPECT_EQ(last_assembly_status().value(),
             AggregationService::AssemblyStatus::kPublicKeyFetchFailed);
+
+  VerifyNoHistograms();
 }
 
 TEST_F(AggregationServiceImplTest, SendReport) {
@@ -386,6 +426,8 @@ TEST_F(AggregationServiceImplTest, SendReport) {
 
   ASSERT_TRUE(last_send_status().has_value());
   EXPECT_EQ(last_send_status().value(), AggregationService::SendStatus::kOk);
+
+  VerifyNoHistograms();
 }
 
 TEST_F(AggregationServiceImplTest, ScheduleReport_Success) {
@@ -420,6 +462,13 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_Success) {
       scheduler()
           ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
           .value());
+
+  VerifyHistograms(/*was_scheduled=*/true,
+                   AggregationServiceObserver::ReportStatus::kSent);
+  histogram_tester().ExpectUniqueSample(
+      "PrivacySandbox.AggregationService.ScheduledRequests."
+      "NumRetriesBeforeSuccess",
+      /*sample=*/0, 1);
 }
 
 TEST_F(AggregationServiceImplTest, ScheduleReport_FailedAssembly) {
@@ -459,6 +508,9 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedAssembly) {
   ASSERT_TRUE(scheduler()->WasRequestSuccessful(request_id).has_value());
   EXPECT_FALSE(scheduler()->WasRequestSuccessful(request_id).value());
   EXPECT_EQ(scheduler()->FailedAttempts(request_id), 3);
+
+  VerifyHistograms(/*was_scheduled=*/true,
+                   AggregationServiceObserver::ReportStatus::kFailedToAssemble);
 }
 
 TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
@@ -503,6 +555,8 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
   ASSERT_TRUE(scheduler()->WasRequestSuccessful(request_id).has_value());
   EXPECT_FALSE(scheduler()->WasRequestSuccessful(request_id).value());
   EXPECT_EQ(scheduler()->FailedAttempts(request_id), 1);
+
+  VerifyNoHistograms();
 }
 
 TEST_F(AggregationServiceImplTest,
@@ -510,7 +564,9 @@ TEST_F(AggregationServiceImplTest,
   AggregatableReportRequest request_1 =
       aggregation_service::CreateExampleRequest();
   AggregatableReportRequest request_2 =
-      aggregation_service::CreateExampleRequest();
+      aggregation_service::CreateExampleRequest(
+          /*aggregation_mode=*/mojom::AggregationServiceMode::kDefault,
+          /*failed_send_attempts=*/2);
 
   ScheduleReport(std::move(request_1));
   ScheduleReport(std::move(request_2));
@@ -558,6 +614,20 @@ TEST_F(AggregationServiceImplTest,
       scheduler()
           ->WasRequestSuccessful(AggregationServiceStorage::RequestId(2))
           .value());
+
+  VerifyHistograms(/*was_scheduled=*/true,
+                   AggregationServiceObserver::ReportStatus::kSent,
+                   /*count=*/2);
+
+  histogram_tester().ExpectBucketCount(
+      "PrivacySandbox.AggregationService.ScheduledRequests."
+      "NumRetriesBeforeSuccess",
+      /*sample=*/0, 1);
+
+  histogram_tester().ExpectBucketCount(
+      "PrivacySandbox.AggregationService.ScheduledRequests."
+      "NumRetriesBeforeSuccess",
+      /*sample=*/2, 1);
 }
 
 TEST_F(AggregationServiceImplTest, AssembleAndSendReport_Success) {
@@ -594,6 +664,9 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_Success) {
       scheduler()
           ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
           .has_value());
+
+  VerifyHistograms(/*was_scheduled=*/false,
+                   AggregationServiceObserver::ReportStatus::kSent);
 }
 
 TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedAssembly) {
@@ -621,6 +694,9 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedAssembly) {
       scheduler()
           ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
           .has_value());
+
+  VerifyHistograms(/*was_scheduled=*/false,
+                   AggregationServiceObserver::ReportStatus::kFailedToAssemble);
 }
 
 TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedSender) {
@@ -658,6 +734,9 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedSender) {
       scheduler()
           ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
           .has_value());
+
+  VerifyHistograms(/*was_scheduled=*/false,
+                   AggregationServiceObserver::ReportStatus::kFailedToSend);
 }
 
 TEST_F(AggregationServiceImplTest, GetPendingReportRequestsForWebUI) {

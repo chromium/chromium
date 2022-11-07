@@ -18,6 +18,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/time/default_clock.h"
@@ -325,6 +327,26 @@ void AggregationServiceImpl::NotifyReportHandled(
     absl::optional<AggregationServiceStorage::RequestId> request_id,
     const absl::optional<AggregatableReport>& report,
     AggregationServiceObserver::ReportStatus status) {
+  bool is_scheduled_request = request_id.has_value();
+  bool did_request_succeed =
+      status == AggregationServiceObserver::ReportStatus::kSent;
+
+  if (is_scheduled_request) {
+    base::UmaHistogramEnumeration(
+        "PrivacySandbox.AggregationService.ScheduledRequests.Status", status);
+  } else {
+    base::UmaHistogramEnumeration(
+        "PrivacySandbox.AggregationService.UnscheduledRequests.Status", status);
+  }
+
+  if (is_scheduled_request && did_request_succeed) {
+    base::UmaHistogramExactLinear(
+        "PrivacySandbox.AggregationService.ScheduledRequests."
+        "NumRetriesBeforeSuccess",
+        request.failed_send_attempts(),
+        /*exclusive_max=*/AggregatableReportScheduler::kMaxRetries + 1);
+  }
+
   base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
     observer.OnReportHandled(request, request_id, report,

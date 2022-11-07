@@ -194,11 +194,6 @@ void AggregationServiceInternalsHandlerImpl::OnReportHandled(
       web_report_status =
           aggregation_service_internals::mojom::ReportStatus::kFailedToSend;
       break;
-    case AggregationServiceObserver::ReportStatus::kPending:
-      NOTREACHED();
-      web_report_status =
-          aggregation_service_internals::mojom::ReportStatus::kPending;
-      break;
   }
 
   auto web_report = CreateWebUIAggregatableReport(

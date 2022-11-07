@@ -22,11 +22,13 @@ class AggregatableReportRequest;
 // `AggregationService`.
 class AggregationServiceObserver : public base::CheckedObserver {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ReportStatus {
-    kPending,
-    kSent,
-    kFailedToAssemble,
-    kFailedToSend,
+    kSent = 0,
+    kFailedToAssemble = 1,
+    kFailedToSend = 2,
+    kMaxValue = kFailedToSend,
   };
 
   ~AggregationServiceObserver() override = default;

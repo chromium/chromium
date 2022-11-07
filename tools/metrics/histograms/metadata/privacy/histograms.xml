@@ -410,6 +410,29 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.AggregationService.ScheduledRequests.NumRetriesBeforeSuccess"
+    units="retries" expires_after="M117">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Among scheduled report requests that succeeded (eventually), records the
+    number of retries needed, i.e. how many send attempts failed. For example, 2
+    if the attempts were: fail, fail, success.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.ScheduledRequests.Status"
+    enum="AggregationServiceObserverReportStatus" expires_after="M117">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the final status of a scheduled report request, i.e. whether it
+    succeeded eventually, including after retries (if any). In case of failure,
+    records the type of failure in the final retry attempt.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.ClearDataTaskDelay"
     units="ms" expires_after="2023-02-04">
   <owner>alexmt@chromium.org</owner>
@@ -467,6 +490,17 @@ reviewer.
     Records whether there was sufficient capacity to store the request, i.e.
     that the per-reporting origin limit had not been reached. Recorded for each
     StoreRequest attempt.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.UnscheduledRequests.Status"
+    enum="AggregationServiceObserverReportStatus" expires_after="M117">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the final status of an *unscheduled* report request, i.e. whether it
+    was successfully sent and, if not, the type of failure. These are typically
+    debug reports.
   </summary>
 </histogram>
 
