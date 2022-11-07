@@ -53,6 +53,7 @@ export function createIceCandidateGrid(peerConnectionElement) {
   appendChildWithText(tableHeader, 'th',
       'STUN requests received / responses sent');
   appendChildWithText(tableHeader, 'th', 'RTT');
+  appendChildWithText(tableHeader, 'th', 'Last data sent / received');
   appendChildWithText(tableHeader, 'th', 'Last update');
 
   peerConnectionElement.appendChild(container);
@@ -71,7 +72,7 @@ function findOrCreateGridRow(peerConnectionElementId, statId, type) {
   if (!row) {
     row = document.createElement('tr');
     row.id = elementId;
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 12; i++) {
       row.appendChild(document.createElement('td'));
     }
     $('grid-' + peerConnectionElementId).appendChild(row);
@@ -109,7 +110,14 @@ function appendRow(peerConnectionElement, active, candidatePair, stats) {
   pairRow.children[9].innerText =
     candidatePair.currentRoundTripTime !== undefined ?
         candidatePair.currentRoundTripTime + 's' : '';
-  pairRow.children[10].innerText = (new Date()).toLocaleTimeString();
+  if (candidatePair.lastPacketSentTimestamp) {
+    pairRow.children[10].innerText =
+      (new Date(candidatePair.lastPacketSentTimestamp))
+        .toLocaleTimeString() + ' / ' +
+      (new Date(candidatePair.lastPacketReceivedTimestamp))
+        .toLocaleTimeString();
+  }
+  pairRow.children[11].innerText = (new Date()).toLocaleTimeString();
 
   // Local candidate.
   const localRow = findOrCreateGridRow(peerConnectionElement.id,
