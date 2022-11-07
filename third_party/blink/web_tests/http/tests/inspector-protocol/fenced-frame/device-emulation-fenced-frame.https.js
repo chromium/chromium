@@ -20,6 +20,9 @@
   let ffSession = session.createChild(sessionId);
   let ffdp = ffSession.protocol;
 
+  // Disable MockScreenOrientation.
+  await ffSession.evaluate('testRunner.disableMockScreenOrientation()');
+
   // Wait for FF to finish loading.
   await ffdp.Page.enable();
   ffdp.Page.setLifecycleEventsEnabled({enabled: true});

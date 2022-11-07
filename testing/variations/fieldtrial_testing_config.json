@@ -9045,6 +9045,25 @@
             ]
         }
     ],
+    "ProcessIsolationForFencedFrames": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IsolateFencedFrames"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProductivityLauncherStudy": [
         {
             "platforms": [
