@@ -614,6 +614,8 @@ void DemoSession::OnSessionStateChanged() {
 
       // Download/update the Demo app component during session startup
       if (chromeos::features::IsDemoModeSWAEnabled()) {
+        if (!components_)
+          components_ = std::make_unique<DemoComponents>(GetDemoConfig());
         components_->LoadAppComponent(
             base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
                            weak_ptr_factory_.GetWeakPtr()));

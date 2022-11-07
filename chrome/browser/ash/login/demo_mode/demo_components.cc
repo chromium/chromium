@@ -127,6 +127,7 @@ void DemoComponents::SetCrOSComponentLoadedForTesting(
     const base::FilePath& path,
     component_updater::CrOSComponentManager::Error error) {
   InstalledComponentLoaded(error, path);
+  OnAppComponentLoaded(base::DoNothing(), error, path);
 }
 
 void DemoComponents::SetPreinstalledOfflineResourcesLoadedForTesting(
