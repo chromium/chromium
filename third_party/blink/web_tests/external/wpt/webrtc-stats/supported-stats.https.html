@@ -72,6 +72,10 @@ function isPropertyTestable(type, property) {
     'outbound-rtp': [
       'rid', // requires simulcast.
     ],
+    'media-source': [
+      'echoReturnLoss', // requires gUM with an audio input device.
+      'echoReturnLossEnhancement', // requires gUM with an audio input device.
+    ]
   };
   if (!untestablePropertiesByType[type]) {
     return true;
@@ -153,7 +157,10 @@ promise_test(async t => {
 
   const dc1 = pc1.createDataChannel("dummy", {negotiated: true, id: 0});
   const dc2 = pc2.createDataChannel("dummy", {negotiated: true, id: 0});
-  const stream = await getNoiseStream({video: true, audio:true});
+  // Use a real gUM to ensure that all stats exposing hardware capabilities are
+  // also exposed.
+  const stream = await navigator.mediaDevices.getUserMedia(
+    {video: true, audio: true});
   for (const track of stream.getTracks()) {
     pc1.addTrack(track, stream);
     pc2.addTrack(track, stream);
