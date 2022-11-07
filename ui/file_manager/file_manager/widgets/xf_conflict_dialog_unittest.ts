@@ -2,26 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
 
 import {ConflictResolveType, XfConflictDialog} from './xf_conflict_dialog.js';
-
-/**
- * Mock LoadTimeData strings.
- */
-export function setUpPage() {
-  loadTimeData.getString = (id: string) => {
-    switch (id) {
-      case 'CONFLICT_DIALOG_MESSAGE':
-        return 'File name $1 exists. What would you like to do?';
-      default:
-        return id;
-    }
-  };
-}
 
 /**
  * Creates new <xf-conflict-dialog> for each test.
