@@ -223,6 +223,12 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // has webapp activity enabled, and is allowed by enterprise policy.
   virtual bool IsShoppingListEligible();
 
+  // Check whether a product (based on cluster ID) is explicitly price tracked
+  // by the user.
+  virtual void IsClusterIdTrackedByUser(
+      uint64_t cluster_id,
+      base::OnceCallback<void(bool)> callback);
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 

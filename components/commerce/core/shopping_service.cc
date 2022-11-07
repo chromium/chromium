@@ -108,16 +108,16 @@ ShoppingService::ShoppingService(
         account_checker_.get());
   }
 
-  if (bookmark_model) {
+  if (bookmark_model_) {
     shopping_bookmark_observer_ =
         std::make_unique<ShoppingBookmarkModelObserver>(
             bookmark_model, this, subscriptions_manager_.get());
-  }
 
-  if (power_bookmark_service_ && IsProductInfoApiEnabled()) {
-    shopping_power_bookmark_data_provider_ =
-        std::make_unique<ShoppingPowerBookmarkDataProvider>(
-            power_bookmark_service_, this);
+    if (power_bookmark_service_ && IsProductInfoApiEnabled()) {
+      shopping_power_bookmark_data_provider_ =
+          std::make_unique<ShoppingPowerBookmarkDataProvider>(
+              bookmark_model_, power_bookmark_service_, this);
+    }
   }
 
   bookmark_update_manager_ = std::make_unique<BookmarkUpdateManager>(
@@ -697,6 +697,21 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
   }
 
   return true;
+}
+
+void ShoppingService::IsClusterIdTrackedByUser(
+    uint64_t cluster_id,
+    base::OnceCallback<void(bool)> callback) {
+  if (!subscriptions_manager_) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  CommerceSubscription sub(
+      SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+      base::NumberToString(cluster_id), ManagementType::kUserManaged);
+  subscriptions_manager_->IsSubscribed(std::move(sub), std::move(callback));
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {

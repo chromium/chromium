@@ -110,4 +110,15 @@ void MockShoppingService::SetIsShoppingListEligible(bool eligible) {
   is_shopping_list_eligible_ = eligible;
 }
 
+void MockShoppingService::IsClusterIdTrackedByUser(
+    uint64_t cluster_id,
+    base::OnceCallback<void(bool)> callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), is_cluster_id_tracked_));
+}
+
+void MockShoppingService::SetIsClusterIdTrackedByUserResponse(bool is_tracked) {
+  is_cluster_id_tracked_ = is_tracked;
+}
+
 }  // namespace commerce

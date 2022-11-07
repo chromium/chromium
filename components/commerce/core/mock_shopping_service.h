@@ -40,6 +40,9 @@ class MockShoppingService : public commerce::ShoppingService {
       base::OnceCallback<void(bool)> callback) override;
   void ScheduleSavedProductUpdate() override;
   bool IsShoppingListEligible() override;
+  void IsClusterIdTrackedByUser(
+      uint64_t cluster_id,
+      base::OnceCallback<void(bool)> callback) override;
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
@@ -50,6 +53,7 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetSubscribeCallbackValue(bool subscribe_should_succeed);
   void SetUnsubscribeCallbackValue(bool unsubscribe_should_succeed);
   void SetIsShoppingListEligible(bool enabled);
+  void SetIsClusterIdTrackedByUserResponse(bool is_tracked);
 
  private:
   absl::optional<commerce::ProductInfo> product_info_;
@@ -58,6 +62,7 @@ class MockShoppingService : public commerce::ShoppingService {
   bool subscribe_callback_value_{true};
   bool unsubscribe_callback_value_{true};
   bool is_shopping_list_eligible_{true};
+  bool is_cluster_id_tracked_{true};
 };
 
 }  // namespace commerce

@@ -276,6 +276,12 @@ void SubscriptionsManager::VerifyIfSubscriptionExists(
           weak_ptr_factory_.GetWeakPtr(), should_exist));
 }
 
+void SubscriptionsManager::IsSubscribed(
+    CommerceSubscription subscription,
+    base::OnceCallback<void(bool)> callback) {
+  storage_->IsSubscribed(std::move(subscription), std::move(callback));
+}
+
 void SubscriptionsManager::HandleCheckLocalSubscriptionResponse(
     bool should_exist,
     bool is_subscribed) {

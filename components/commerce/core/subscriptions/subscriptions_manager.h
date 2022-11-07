@@ -91,6 +91,10 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   void VerifyIfSubscriptionExists(CommerceSubscription subscription,
                                   bool should_exist);
 
+  // Check if a |subscription| exists in the local database.
+  void IsSubscribed(CommerceSubscription subscription,
+                    base::OnceCallback<void(bool)> callback);
+
   // For tests only, return last_sync_succeeded_.
   bool GetLastSyncSucceededForTesting();
 

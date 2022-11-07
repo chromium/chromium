@@ -272,6 +272,7 @@ source_set("shopping_service_unit_tests") {
     "metrics/scheduled_metrics_manager_unittest.cc",
     "pdp_metrics_unittest.cc",
     "price_tracking_utils_unittest.cc",
+    "shopping_power_bookmark_data_provider_unittest.cc",
     "shopping_service_metrics_unittest.cc",
     "shopping_service_unittest.cc",
   ]

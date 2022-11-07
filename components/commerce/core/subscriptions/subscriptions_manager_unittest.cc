@@ -715,4 +715,24 @@ TEST_F(SubscriptionsManagerTest,
                                                      true);
 }
 
+TEST_F(SubscriptionsManagerTest, TestIsSubscribed) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(true);
+  mock_storage_->MockIsSubscribedResponses(true);
+
+  CreateManagerAndVerify(true);
+
+  base::RunLoop run_loop;
+  subscriptions_manager_->IsSubscribed(
+      BuildSubscription("111"),
+      base::BindOnce(
+          [](base::RunLoop* looper, bool is_subscribed) {
+            EXPECT_TRUE(is_subscribed);
+            looper->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
 }  // namespace commerce
