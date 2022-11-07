@@ -54,12 +54,14 @@ const char* DIPSCookieModeToString(DIPSCookieMode mode);
 std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode);
 
 // DIPSEventRemovalType:
-// NOTE: We use this type as a bitfield don't change the values.
+// NOTE: We use this type as a bitfield don't change existing values other than
+// kAll, which should be updated to include any new fields.
 enum class DIPSEventRemovalType {
   kNone = 0,
-  kHistory = 1,
-  kStorage = 2,
-  kAll = 3
+  kHistory = 1 << 0,
+  kStorage = 1 << 1,
+  // kAll is intended to cover all the above fields.
+  kAll = kHistory | kStorage
 };
 
 constexpr DIPSEventRemovalType operator|(DIPSEventRemovalType lhs,
@@ -72,6 +74,16 @@ constexpr DIPSEventRemovalType operator&(DIPSEventRemovalType lhs,
                                          DIPSEventRemovalType rhs) {
   return static_cast<DIPSEventRemovalType>(static_cast<int>(lhs) &
                                            static_cast<int>(rhs));
+}
+
+constexpr DIPSEventRemovalType& operator|=(DIPSEventRemovalType& lhs,
+                                           DIPSEventRemovalType rhs) {
+  return lhs = lhs | rhs;
+}
+
+constexpr DIPSEventRemovalType& operator&=(DIPSEventRemovalType& lhs,
+                                           DIPSEventRemovalType rhs) {
+  return lhs = lhs & rhs;
 }
 
 // DIPSRedirectType:

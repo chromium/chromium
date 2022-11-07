@@ -9,6 +9,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -524,4 +527,47 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, PrepopulateTest) {
   auto state = GetDIPSState(GURL("http://a.test"));
   ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state->user_interaction_times.first.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+                       PRE_ChromeBrowsingDataRemover_Basic) {
+  // Simulate the user typing the URL to visit the page, which will record site
+  // engagement.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+                       ChromeBrowsingDataRemover_Basic) {
+  base::Time time = base::Time::Now();
+  uint64_t remove_mask = chrome_browsing_data_remover::DATA_TYPE_HISTORY |
+                         chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
+  std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder(
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kPreserve));
+  content::BrowsingDataRemover* remover =
+      GetActiveWebContents()->GetBrowserContext()->GetBrowsingDataRemover();
+
+  // Since there was previous site engagement, the DIPS DB should be
+  // prepopulated with a user interaction timestamp.
+  absl::optional<StateValue> state_initial =
+      GetDIPSState(GURL("http://a.test"));
+  ASSERT_TRUE(state_initial.has_value());
+  ASSERT_TRUE(state_initial->user_interaction_times.first.has_value());
+  EXPECT_LE(state_initial->user_interaction_times.first.value(), time);
+  EXPECT_GT(state_initial->user_interaction_times.first.value(),
+            time - base::Days(1));
+
+  base::RunLoop run_loop;
+  base::OnceCallback<void(uint64_t)> callback =
+      (base::BindLambdaForTesting([&](uint64_t) { run_loop.Quit(); }));
+  browsing_data_important_sites_util::Remove(
+      remove_mask, content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      browsing_data::TimePeriod::LAST_DAY, std::move(filter_builder), remover,
+      std::move(callback));
+  run_loop.Run();
+
+  // Verify that the user interaction has been cleared from the DIPS DB.
+  absl::optional<StateValue> state_final = GetDIPSState(GURL("http://a.test"));
+  EXPECT_FALSE(state_final.has_value());
 }

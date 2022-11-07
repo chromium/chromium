@@ -46,6 +46,9 @@ source_set("browser_tests") {
   } else {
     # TODO(rtarpine): make DIPSTabHelperBrowserTest run on Android.
     sources += [ "dips_helper_browsertest.cc" ]
-    deps += [ "//chrome/test:test_support_ui" ]
+    deps += [
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/test:test_support_ui",
+    ]
   }
 }
