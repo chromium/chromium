@@ -1273,6 +1273,12 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyToolbarMenuItemState("Group tabs", /*enabled=*/true)
                 .verifyToolbarMenuItemWithContentDescription("Group tabs", "Group 2 selected tabs");
         Espresso.pressBack();
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0).clickToolbarMenuButton();
+        assertEquals("Close 1 selected tab", close.getContentDescription());
+        mRobot.resultRobot.verifyToolbarMenuItemState("Group tab", /*enabled=*/false)
+                .verifyToolbarMenuItemWithContentDescription("Group tab", null);
+        Espresso.pressBack();
     }
 
     // This is a regression test for crbug.com/1132478.

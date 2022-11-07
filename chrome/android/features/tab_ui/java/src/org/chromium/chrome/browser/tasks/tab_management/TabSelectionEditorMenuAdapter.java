@@ -136,9 +136,6 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
         ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);
         if (propertyKey == TabSelectionEditorActionProperties.TITLE) {
             textView.setText(model.get(TabSelectionEditorActionProperties.TITLE));
-        } else if (propertyKey == TabSelectionEditorActionProperties.CONTENT_DESCRIPTION) {
-            textView.setContentDescription(
-                    model.get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION));
         } else if (propertyKey == TabSelectionEditorActionProperties.ICON) {
             startIcon.setImageDrawable(model.get(TabSelectionEditorActionProperties.ICON));
             textView.setPaddingRelative(
@@ -147,11 +144,24 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
                     textView.getPaddingBottom());
             startIcon.setVisibility(View.VISIBLE);
             endIcon.setVisibility(View.GONE);
-        } else if (propertyKey == TabSelectionEditorActionProperties.ENABLED) {
-            view.setEnabled(model.get(TabSelectionEditorActionProperties.ENABLED));
-            textView.setEnabled(model.get(TabSelectionEditorActionProperties.ENABLED));
-            startIcon.setEnabled(model.get(TabSelectionEditorActionProperties.ENABLED));
-            endIcon.setEnabled(model.get(TabSelectionEditorActionProperties.ENABLED));
+        } else if (propertyKey == TabSelectionEditorActionProperties.ENABLED
+                || propertyKey == TabSelectionEditorActionProperties.CONTENT_DESCRIPTION) {
+            // Content description changes don't affect enabled state; however, enabled state
+            // changes do affect content description. Updating enabled state is low-cost so
+            // it can be updated regardless to minimize complexity.
+            final boolean enabled = model.get(TabSelectionEditorActionProperties.ENABLED);
+            view.setEnabled(enabled);
+            textView.setEnabled(enabled);
+            startIcon.setEnabled(enabled);
+            endIcon.setEnabled(enabled);
+
+            // Disabled state should just read out the text rather than the plural string details.
+            if (enabled) {
+                textView.setContentDescription(
+                        model.get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION));
+            } else {
+                textView.setContentDescription(null);
+            }
         } else if (propertyKey == TabSelectionEditorActionProperties.ICON_TINT) {
             ColorStateList colorStateList = model.get(TabSelectionEditorActionProperties.ICON_TINT);
             if (colorStateList != null) {
