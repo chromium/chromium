@@ -720,6 +720,10 @@ extern const char kEnableLensInKeyboardDescription[];
 extern const char kEnableLensInNTPName[];
 extern const char kEnableLensInNTPDescription[];
 
+// Title and description for the flag to sort the tab by recency in the TabGrid.
+extern const char kTabGridRecencySortName[];
+extern const char kTabGridRecencySortDescription[];
+
 // Title and description for the flag to enable using the
 // loadSimulatedRequest:responseHTMLString: API for displaying error pages in
 // CRWWKNavigationHandler.

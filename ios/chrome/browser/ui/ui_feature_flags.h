@@ -118,4 +118,10 @@ BASE_DECLARE_FEATURE(kMapsExperienceKit);
 // Feature flag to enable Mini Map in experience kit.
 BASE_DECLARE_FEATURE(kEnableMiniMap);
 
+// When enabled sort tab by last usage in the TabGrid.
+BASE_DECLARE_FEATURE(kTabGridRecencySort);
+
+// Whether the tab grid tabs should be sorted by recency.
+bool IsTabGridSortedByRecency();
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

@@ -816,6 +816,10 @@ const char kEnableLensInNTPDescription[] =
     "menu when Google is the selected search engine, accessible from the"
     "new tab page.";
 
+const char kTabGridRecencySortName[] = "Sort tabs by recency";
+const char kTabGridRecencySortDescription[] =
+    "When enabled, the tabs in the Tab Grid are sorted by last time used.";
+
 const char kUseLoadSimulatedRequestForOfflinePageName[] =
     "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
     "pages";

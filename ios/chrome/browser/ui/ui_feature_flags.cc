@@ -117,3 +117,11 @@ BASE_FEATURE(kMapsExperienceKit,
 BASE_FEATURE(kEnableMiniMap,
              "EnableMiniMap",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabGridRecencySort,
+             "TabGridRecencySort",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabGridSortedByRecency() {
+  return base::FeatureList::IsEnabled(kTabGridRecencySort);
+}

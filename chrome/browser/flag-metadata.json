@@ -6521,6 +6521,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "tab-grid-recency-sort",
+    "owners": [ "gambard", "bling-flags@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "tab-groups-new-badge-promo",
     "owners": [ "chrome-desktop-ui-sea@google.com", "dfried" ],
     "expiry_milestone": 110
