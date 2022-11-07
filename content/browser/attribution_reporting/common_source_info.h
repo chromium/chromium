@@ -70,7 +70,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   }
 
   base::Time aggregatable_report_window_time() const {
-    return event_report_window_time_;
+    return aggregatable_report_window_time_;
   }
 
   AttributionSourceType source_type() const { return source_type_; }
