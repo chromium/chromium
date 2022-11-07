@@ -45,18 +45,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.CreateOrUpdateShortcuts.Result"
-    enum="CreateOrUpdateShortcutsResult" expires_after="2022-11-26">
-  <owner>davidbienvenu@chromium.org</owner>
-  <owner>jessemckenna@google.com</owner>
-  <summary>
-    The result of creating or updating a Windows shortcut out of process.
-    Recorded when Chrome creates or updates a Windows shortcut using
-    shell_integration::win::CreateOrUpdateShortcuts, e.g., when a profile is
-    added.
-  </summary>
-</histogram>
-
 <histogram name="Windows.DragEventsAfterPress" units="events"
     expires_after="2022-08-01">
   <obsolete>

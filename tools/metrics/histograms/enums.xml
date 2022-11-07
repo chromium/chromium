@@ -21665,13 +21665,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="4" label="Error: Adding stream failed."/>
 </enum>
 
-<enum name="CreateOrUpdateShortcutsResult">
-  <int value="0" label="Success: Shortcuts created or updated."/>
-  <int value="1"
-      label="Error: Process disconnected creating/updating shortcut."/>
-  <int value="2" label="Error: One or more shortcut operations failed."/>
-</enum>
-
 <enum name="CreatePersistentHistogramResult">
   <int value="0" label="Success: Histogram created in persistent space."/>
   <int value="1" label="Error: Invalid metadata pointer. (coding error)"/>

@@ -606,20 +606,6 @@ class CreateOrUpdateShortcutsHelper {
       win::CreateOrUpdateShortcutsResultCallback);
 
  private:
-  // Possible results of DoCreateOrUpdateShortcuts().
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. These correspond to
-  // CreateOrUpdateShortcutsResult in enums.xml.
-  enum class CreateOrUpdateShortcutsResult {
-    kSuccess = 0,
-    kErrorProcessDisconnected = 1,
-    kErrorShortcutOperationFailed = 2,
-    kMaxValue = kErrorShortcutOperationFailed
-  };
-
-  static void RecordCreateOrUpdateShortcutsResult(
-      CreateOrUpdateShortcutsResult result);
-
   CreateOrUpdateShortcutsHelper(
       const std::vector<base::FilePath>& shortcuts,
       const std::vector<base::win::ShortcutProperties>& properties,
@@ -635,13 +621,6 @@ class CreateOrUpdateShortcutsHelper {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-// static
-void CreateOrUpdateShortcutsHelper::RecordCreateOrUpdateShortcutsResult(
-    CreateOrUpdateShortcutsResult result) {
-  base::UmaHistogramEnumeration("Windows.CreateOrUpdateShortcuts.Result",
-                                result);
-}
 
 // static
 void CreateOrUpdateShortcutsHelper::DoCreateOrUpdateShortcuts(
@@ -677,8 +656,6 @@ CreateOrUpdateShortcutsHelper::CreateOrUpdateShortcutsHelper(
 
 void CreateOrUpdateShortcutsHelper::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RecordCreateOrUpdateShortcutsResult(
-      CreateOrUpdateShortcutsResult::kErrorProcessDisconnected);
   std::move(completion_callback_).Run(false);
   delete this;
 }
@@ -686,10 +663,6 @@ void CreateOrUpdateShortcutsHelper::OnConnectionError() {
 void CreateOrUpdateShortcutsHelper::OnCreateOrUpdateShortcutResult(
     bool succeeded) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordCreateOrUpdateShortcutsResult(
-      succeeded ? CreateOrUpdateShortcutsResult::kSuccess
-                : CreateOrUpdateShortcutsResult::kErrorShortcutOperationFailed);
   std::move(completion_callback_).Run(succeeded);
   delete this;
 }
