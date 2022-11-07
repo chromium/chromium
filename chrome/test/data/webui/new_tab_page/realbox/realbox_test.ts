@@ -12,6 +12,7 @@ import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle} from '../test_support.js';
@@ -217,6 +218,21 @@ suite('NewTabPageRealboxTest', () => {
     loadTimeData.overrideValues({
       realboxDefaultIcon: 'search.svg',
     });
+  });
+
+  test('realbox themed voice search icon exists', async () => {
+    // Arrange.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('ntp-realbox');
+    realbox.themedIcons = true;
+    document.body.appendChild(realbox);
+
+    // Assert.
+    await waitAfterNextRender(realbox);
+    const voiceSearchIcon = realbox.$.voiceSearchButton.querySelector(
+        '.' +
+        'realbox-icon-button-icon');
+    assertTrue(!!voiceSearchIcon);
   });
 
   //============================================================================

@@ -57,6 +57,8 @@ struct Theme {
   bool is_custom_background;
   // True if the theme is dark (e.g. NTP background color is dark).
   bool is_dark;
+  // True if the realbox icons should be themed based on the background color.
+  bool theme_realbox_icons;
   // Color of Google logo. If not set show the logo multi-colored.
   skia.mojom.SkColor? logo_color;
   // Selected collection for daily refresh.
@@ -68,7 +70,6 @@ struct Theme {
   string? background_image_attribution_2;
   // URL associated with the background image. Used for href.
   url.mojom.Url? background_image_attribution_url;
-
   // Theme settings for the NTP MV tiles.
   most_visited.mojom.MostVisitedTheme most_visited;
 };

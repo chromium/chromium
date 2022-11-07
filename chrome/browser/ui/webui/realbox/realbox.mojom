@@ -91,29 +91,6 @@ struct AutocompleteResult {
   array<AutocompleteMatch> matches;
 };
 
-// Theme settings for the NTP realbox.
-struct SearchBoxTheme {
-  skia.mojom.SkColor bg;
-  skia.mojom.SkColor bg_hovered;
-  skia.mojom.SkColor border_color;
-  skia.mojom.SkColor icon;
-  skia.mojom.SkColor icon_selected;
-  // True if the theme is dark (i.e. NTP background color is dark).
-  bool is_dark;
-  skia.mojom.SkColor ntp_bg;
-  skia.mojom.SkColor placeholder;
-  skia.mojom.SkColor results_bg;
-  skia.mojom.SkColor results_bg_hovered;
-  skia.mojom.SkColor results_bg_selected;
-  skia.mojom.SkColor results_dim;
-  skia.mojom.SkColor results_dim_selected;
-  skia.mojom.SkColor results_text;
-  skia.mojom.SkColor results_text_selected;
-  skia.mojom.SkColor results_url;
-  skia.mojom.SkColor results_url_selected;
-  skia.mojom.SkColor text;
-};
-
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // The RealboxBrowserProxy singleton calls this when it's first initialized.

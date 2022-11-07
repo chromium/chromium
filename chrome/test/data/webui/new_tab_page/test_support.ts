@@ -105,6 +105,7 @@ export function createTheme(isDark: boolean = false): Theme {
     logoColor: undefined,
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},
+    themeRealboxIcons: false,
     isCustomBackground: true,
   };
 }

@@ -31,7 +31,6 @@ import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
 import {WindowProxy} from './window_proxy.js';
 
-
 interface ExecutePromoBrowserCommandData {
   commandId: Command;
   clickInfo: ClickInfo;
@@ -183,7 +182,7 @@ export class AppElement extends PolymerElement {
 
       realboxShown_: {
         type: Boolean,
-        computed: 'computeRealboxShown_(showLensUploadDialog_)',
+        computed: 'computeRealboxShown_(theme_, showLensUploadDialog_)',
       },
 
       logoEnabled_: {
@@ -446,9 +445,10 @@ export class AppElement extends PolymerElement {
         '';
   }
 
-  private computeRealboxShown_(showLensUploadDialog: boolean): boolean {
+  private computeRealboxShown_(theme: Theme, showLensUploadDialog: boolean):
+      boolean {
     // Do not show the realbox if the upload dialog is showing.
-    return !showLensUploadDialog;
+    return theme && !showLensUploadDialog;
   }
 
   private computePromoAndModulesLoaded_(): boolean {
