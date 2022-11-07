@@ -20,11 +20,6 @@ class ThreadWithCustomScheduler : public MainThread {
 
   ThreadScheduler* Scheduler() override { return scheduler_; }
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
-      const override {
-    return task_runner_;
-  }
-
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       MainThreadTaskRunnerRestricted) const override {
     return task_runner_;

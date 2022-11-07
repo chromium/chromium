@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace base {
-class SingleThreadTaskRunner;
 class TimeTicks;
 namespace sequence_manager {
 class TaskTimeObserver;
@@ -109,17 +108,6 @@ class PLATFORM_EXPORT Thread {
 
   // Must be called immediately after the construction.
   virtual void Init() {}
-
-  // DEPRECATED: Returns a task runner bound to the underlying scheduler's
-  // default task queue.
-  //
-  // Default scheduler task queue does not give scheduler enough freedom to
-  // manage task priorities and should not be used.
-  // Use ExecutionContext::GetTaskRunner instead (crbug.com/624696).
-  virtual scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
-      const {
-    return nullptr;
-  }
 
   bool IsCurrentThread() const;
 

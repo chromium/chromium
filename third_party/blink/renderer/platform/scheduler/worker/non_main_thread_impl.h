@@ -39,8 +39,6 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
   // Thread implementation.
   void Init() override;
   ThreadScheduler* Scheduler() override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
-      const override;
 
   // NonMainThread implementation.
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override;

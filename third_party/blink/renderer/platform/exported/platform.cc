@@ -164,17 +164,13 @@ class SimpleMainThread : public MainThread {
   // and Platform::UnsetMainThreadTaskRunnerForTesting().
 
   ThreadScheduler* Scheduler() override { return &scheduler_; }
-  scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
-      const override {
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+      MainThreadTaskRunnerRestricted) const override {
     if (main_thread_task_runner_for_testing_)
       return main_thread_task_runner_for_testing_;
     DCHECK(WTF::IsMainThread());
     return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
-      MainThreadTaskRunnerRestricted) const override {
-    return GetDeprecatedTaskRunner();
   }
 
   void SetMainThreadTaskRunnerForTesting(
