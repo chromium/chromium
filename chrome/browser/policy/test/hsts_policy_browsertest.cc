@@ -6,9 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/network_service_instance.h"
@@ -23,6 +21,7 @@
 namespace policy {
 
 class HSTSPolicyTest : public PolicyTest {
+ public:
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
     PolicyMap policies;
@@ -45,9 +44,9 @@ IN_PROC_BROWSER_TEST_F(HSTSPolicyTest, HSTSPolicyBypassList) {
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url("http://example/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToUrl(url, this));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
   // If the policy didn't take effect, the request to http://example would be
   // upgraded to https://example. This checks that the HSTS upgrade to https
   // didn't happen.
