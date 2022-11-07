@@ -179,8 +179,6 @@ using base::UserMetricsAction;
   }
   if (sel_isEqual(action, @selector(keyCommand_openLocation)) ||
       sel_isEqual(action, @selector(keyCommand_closeTab)) ||
-      sel_isEqual(action, @selector(keyCommand_showNextTab)) ||
-      sel_isEqual(action, @selector(keyCommand_showPreviousTab)) ||
       sel_isEqual(action, @selector(keyCommand_showBookmarks)) ||
       sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
       sel_isEqual(action, @selector(keyCommand_reload)) ||
@@ -207,6 +205,13 @@ using base::UserMetricsAction;
   }
   if (sel_isEqual(action, @selector(keyCommand_close))) {
     return self.canDismissModals;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_showNextTab)) ||
+      sel_isEqual(action, @selector(keyCommand_showPreviousTab))) {
+    WebStateList* webStateList = self.browser->GetWebStateList();
+    return webStateList &&
+           webStateList->active_index() != WebStateList::kInvalidIndex &&
+           self.tabsCount > 1;
   }
   return [super canPerformAction:action withSender:sender];
 }
