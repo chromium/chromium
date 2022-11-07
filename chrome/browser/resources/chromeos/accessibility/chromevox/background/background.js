@@ -25,7 +25,6 @@ import {ChromeVoxState} from './chromevox_state.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {CommandHandler} from './command_handler.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
-import {ConsoleTts} from './console_tts.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {DownloadHandler} from './download_handler.js';
@@ -61,9 +60,6 @@ export class Background extends ChromeVoxState {
   constructor() {
     super();
 
-    /** @private {!TtsBackground} */
-    this.backgroundTts_ = new TtsBackground();
-
     /** @private {CursorRange} */
     this.currentRange_ = null;
 
@@ -84,16 +80,12 @@ export class Background extends ChromeVoxState {
 
     /** @private {boolean} */
     this.talkBackEnabled_ = false;
-
-    /** @private {TtsInterface} */
-    this.tts_ = new CompositeTts()
-                    .add(this.backgroundTts)
-                    .add(ConsoleTts.getInstance());
   }
 
   /** @override */
   init() {
-    // Initialize legacy background page first.
+    // Initialize TTS and legacy background page first.
+    TtsBackground.init();
     ChromeVoxBackground.init();
 
     chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
@@ -101,7 +93,6 @@ export class Background extends ChromeVoxState {
 
     // Export globals on ChromeVox.
     ChromeVox.braille = BrailleBackground.instance;
-    ChromeVox.tts = this.tts_;
     // Read-only earcons.
     Object.defineProperty(ChromeVox, 'earcons', {
       get: () => this.earcons_,
@@ -116,7 +107,6 @@ export class Background extends ChromeVoxState {
 
     AutoScrollHandler.init();
     BackgroundKeyboardHandler.init();
-    ConsoleTts.init();
     DesktopAutomationHandler.init();
     DownloadHandler.init();
     EventStreamLogger.init();
@@ -154,11 +144,6 @@ export class Background extends ChromeVoxState {
       return this.currentRange_;
     }
     return null;
-  }
-
-  /** @override */
-  get backgroundTts() {
-    return this.backgroundTts_;
   }
 
   /** @override */

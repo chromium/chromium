@@ -16,6 +16,7 @@ import {ConsoleTts} from './console_tts.js';
 import {EventStreamLogger} from './logging/event_stream_logger.js';
 import {LogUrlWatcher} from './logging/log_url_watcher.js';
 import {Output} from './output/output.js';
+import {TtsBackground} from './tts_background.js';
 
 /**
  * This object has default values of preferences and contains the common
@@ -83,7 +84,7 @@ export class ChromeVoxPrefs {
   setLoggingPrefs(key, value) {
     localStorage[key] = value;
     if (key === 'enableSpeechLogging') {
-      ConsoleTts.getInstance().setEnabled(value);
+      TtsBackground.console.setEnabled(value);
     } else if (key === 'enableEventStreamLogging') {
       EventStreamLogger.instance.notifyEventStreamFilterChangedAll(value);
     }

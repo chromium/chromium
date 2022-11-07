@@ -30,8 +30,6 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'TextEditHandler', '/chromevox/background/editing/editing.js');
     await importModule(
-        'TtsBackground', '/chromevox/background/tts_background.js');
-    await importModule(
         ['BrailleKeyEvent', 'BrailleKeyCommand'],
         '/chromevox/common/braille/braille_key_types.js');
     await importModule('EventGenerator', '/common/event_generator.js');
@@ -2210,7 +2208,7 @@ AX_TEST_F('ChromeVoxEditingTest', 'TablesWithEmptyCells', async function() {
       .call(() => textField.setSelection(0, 1))
       .expectSpeech('A', 'selected')
 
-      // Non-breaking spaces (\u00a0) get preprocessed later by TtsBackground
+      // Non-breaking spaces (\u00a0) get preprocessed later by PrimaryTts
       // to ' '. This comes as part of speak line output in
       // AutomationRichEditableText.
       .call(doCmd('nativeNextCharacter'))

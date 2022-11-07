@@ -9,13 +9,76 @@
 
 import {constants} from '../../common/constants.js';
 import {AbstractTts} from '../common/abstract_tts.js';
+import {BridgeConstants} from '../common/bridge_constants.js';
+import {BridgeHelper} from '../common/bridge_helper.js';
+import {CompositeTts} from '../common/composite_tts.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {ChromeTtsBase} from '../common/tts_base.js';
 import {QueueMode, TtsCapturingEventListener, TtsInterface, TtsSpeechProperties} from '../common/tts_interface.js';
 
 import {ChromeVox} from './chromevox.js';
+import {ConsoleTts} from './console_tts.js';
 import {PhoneticData} from './phonetic_data.js';
+
+/** This class broadly handles TTS within the background context. */
+export class TtsBackground {
+  static init() {
+    TtsBackground.consoleTts_ = new ConsoleTts();
+    TtsBackground.primaryTts_ = new PrimaryTts();
+    TtsBackground.compositeTts_ = new CompositeTts()
+                                      .add(TtsBackground.primary)
+                                      .add(TtsBackground.console);
+
+    ChromeVox.tts = TtsBackground.composite;
+
+    BridgeHelper.registerHandler(
+        BridgeConstants.TtsBackground.TARGET,
+        BridgeConstants.TtsBackground.Action.UPDATE_PUNCTUATION_ECHO,
+        echo => TtsBackground.primary.updatePunctuationEcho(echo));
+    BridgeHelper.registerHandler(
+        BridgeConstants.TtsBackground.TARGET,
+        BridgeConstants.TtsBackground.Action.GET_CURRENT_VOICE,
+        () => TtsBackground.primary.currentVoice);
+  }
+
+  /** @return {!CompositeTts} */
+  static get composite() {
+    if (!TtsBackground.compositeTts_) {
+      throw new Error(
+          'Cannot access composite TTS before TtsBackground has been ' +
+          'initialized.');
+    }
+    return TtsBackground.compositeTts_;
+  }
+
+  /** @return {!ConsoleTts} */
+  static get console() {
+    if (!TtsBackground.consoleTts_) {
+      throw new Error(
+          'Cannot access console TTS before TtsBackground has been ' +
+          'initialized.');
+    }
+    return TtsBackground.consoleTts_;
+  }
+
+  /** @return {!PrimaryTts} */
+  static get primary() {
+    if (!TtsBackground.primaryTts_) {
+      throw new Error(
+          'Cannot access primary TTS before TtsBackground has been ' +
+          'initialized.');
+    }
+    return TtsBackground.primaryTts_;
+  }
+}
+
+/** @private {CompositeTts} */
+TtsBackground.compositeTts_;
+/** @private {ConsoleTts} */
+TtsBackground.consoleTts_;
+/** @private {PrimaryTts} */
+TtsBackground.primaryTts_;
 
 const Utterance = class {
   /**
@@ -37,7 +100,10 @@ const Utterance = class {
  */
 Utterance.nextUtteranceId_ = 1;
 
-export class TtsBackground extends ChromeTtsBase {
+/**
+ * This class is the default implementation for TTS in the background context.
+ */
+export class PrimaryTts extends ChromeTtsBase {
   constructor() {
     super();
 
@@ -147,16 +213,16 @@ export class TtsBackground extends ChromeTtsBase {
   /**
    * @param {string} textString The string of text to be spoken.
    * @param {QueueMode} queueMode The queue mode to use for speaking.
-   * @param {TtsSpeechProperties=} properties Speech properties to use for this
-   *     utterance.
+   * @param {TtsSpeechProperties=} properties Speech properties to use for
+   *     this utterance.
    * @return {TtsInterface} A tts object useful for chaining speak calls.
    * @override
    */
   speak(textString, queueMode, properties) {
     super.speak(textString, queueMode, properties);
 
-    // |textString| gets manipulated throughout this function. Save the original
-    // value for functions that may need it.
+    // |textString| gets manipulated throughout this function. Save the
+    // original value for functions that may need it.
     const originalTextString = textString;
 
     if (this.ttsProperties[AbstractTts.VOLUME] === 0) {
@@ -168,8 +234,8 @@ export class TtsBackground extends ChromeTtsBase {
     }
 
     if (textString.length > constants.OBJECT_MAX_CHARCOUNT) {
-      // The text is too long. Try to split the text into multiple chunks based
-      // on line breaks.
+      // The text is too long. Try to split the text into multiple chunks
+      // based on line breaks.
       this.speakSplittingText_(textString, queueMode, properties);
       return this;
     }
@@ -182,9 +248,9 @@ export class TtsBackground extends ChromeTtsBase {
     }
 
     // TODO(dtseng): some TTS engines don't handle strings that don't produce
-    // any speech very well. Handle empty and whitespace only strings (including
-    // non-breaking space) here to mitigate the issue somewhat.
-    if (TtsBackground.SKIP_WHITESPACE_.test(textString)) {
+    // any speech very well. Handle empty and whitespace only strings
+    // (including non-breaking space) here to mitigate the issue somewhat.
+    if (PrimaryTts.SKIP_WHITESPACE_.test(textString)) {
       // Explicitly call start and end callbacks before skipping this text.
       if (properties.startCallback) {
         try {
@@ -228,12 +294,12 @@ export class TtsBackground extends ChromeTtsBase {
    * each chunks.
    * @param {string} textString The string of text to be spoken.
    * @param {QueueMode} queueMode The queue mode to use for speaking.
-   * @param {TtsSpeechProperties=} properties Speech properties to use for this
-   *     utterance.
+   * @param {TtsSpeechProperties=} properties Speech properties to use for
+   *     this utterance.
    * @private
    */
   speakSplittingText_(textString, queueMode, properties) {
-    const chunks = TtsBackground.splitUntilSmall(textString, '\n\r ');
+    const chunks = PrimaryTts.splitUntilSmall(textString, '\n\r ');
     for (const chunk of chunks) {
       this.speak(chunk, queueMode, properties);
       queueMode = QueueMode.QUEUE;
@@ -258,9 +324,8 @@ export class TtsBackground extends ChromeTtsBase {
 
     const midIndex = text.length / 2;
     if (!delimiters) {
-      return TtsBackground
-          .splitUntilSmall(text.substring(0, midIndex), delimiters)
-          .concat(TtsBackground.splitUntilSmall(
+      return PrimaryTts.splitUntilSmall(text.substring(0, midIndex), delimiters)
+          .concat(PrimaryTts.splitUntilSmall(
               text.substring(midIndex, text.length), delimiters));
     }
 
@@ -272,12 +337,11 @@ export class TtsBackground extends ChromeTtsBase {
 
     if (splitIndex === -1) {
       delimiters = delimiters.slice(1);
-      return TtsBackground.splitUntilSmall(text, delimiters);
+      return PrimaryTts.splitUntilSmall(text, delimiters);
     }
 
-    return TtsBackground
-        .splitUntilSmall(text.substring(0, splitIndex), delimiters)
-        .concat(TtsBackground.splitUntilSmall(
+    return PrimaryTts.splitUntilSmall(text.substring(0, splitIndex), delimiters)
+        .concat(PrimaryTts.splitUntilSmall(
             text.substring(splitIndex + 1, text.length), delimiters));
   }
 
@@ -330,8 +394,8 @@ export class TtsBackground extends ChromeTtsBase {
         this.currentUtterance_ = null;
       }
 
-      // Restore the interrupted utterances after allowing all other utterances
-      // in this callstack to process.
+      // Restore the interrupted utterances after allowing all other
+      // utterances in this callstack to process.
       setTimeout(() => {
         // Utterances on the current queue are now also interjections.
         for (let i = 0; i < this.utteranceQueue_.length; i++) {
@@ -380,7 +444,7 @@ export class TtsBackground extends ChromeTtsBase {
       delete this.utteranceQueue_[0].properties['delay'];
       this.timeoutId_ = setTimeout(
           () => this.startSpeakingNextItemInQueue_(),
-          TtsBackground.hint_delay_ms_);
+          PrimaryTts.hint_delay_ms_);
 
       return;
     }
@@ -394,8 +458,8 @@ export class TtsBackground extends ChromeTtsBase {
     };
 
     const validatedProperties = /** @type {!chrome.tts.TtsOptions} */ ({});
-    for (let i = 0; i < TtsBackground.ALLOWED_PROPERTIES_.length; i++) {
-      const p = TtsBackground.ALLOWED_PROPERTIES_[i];
+    for (let i = 0; i < PrimaryTts.ALLOWED_PROPERTIES_.length; i++) {
+      const p = PrimaryTts.ALLOWED_PROPERTIES_[i];
       if (utterance.properties[p]) {
         validatedProperties[p] = utterance.properties[p];
       }
@@ -633,11 +697,11 @@ export class TtsBackground extends ChromeTtsBase {
 
     // Look for the pattern [number + lowercase letter], such as in "5g
     // network". We want to capitalize the letter to prevent it from being
-    // substituted with a unit in the TTS engine; in the above case, the string
-    // would get spoken as "5 grams network", which we want to avoid. We do not
-    // match against the letter "a" in the regular expression because it is a
-    // word and we do not want to capitalize it just because it comes after a
-    // number.
+    // substituted with a unit in the TTS engine; in the above case, the
+    // string would get spoken as "5 grams network", which we want to avoid.
+    // We do not match against the letter "a" in the regular expression
+    // because it is a word and we do not want to capitalize it just because
+    // it comes after a number.
     text = text.replace(
         /(\d)(\s*)([b-z])\b/g,
         (unused, num, whitespace, letter) =>
@@ -709,7 +773,8 @@ export class TtsBackground extends ChromeTtsBase {
   /**
    * Constructs a function for string.replace that handles description of a
    *  punctuation character.
-   * @param {boolean} clear Whether we want to use whitespace in place of match.
+   * @param {boolean} clear Whether we want to use whitespace in place of
+   *     match.
    * @return {function(string): string} The replacement function.
    * @private
    */
@@ -729,8 +794,8 @@ export class TtsBackground extends ChromeTtsBase {
   /**
    * Queues phonetic disambiguation for characters if disambiguation is found.
    * @param {string} text The text for which we want to get phonetic data.
-   * @param {!TtsSpeechProperties} properties Speech properties to use for this
-   *     utterance.
+   * @param {!TtsSpeechProperties} properties Speech properties to use for
+   *     this utterance.
    * @private
    */
   pronouncePhonetically_(text, properties) {
@@ -773,7 +838,8 @@ export class TtsBackground extends ChromeTtsBase {
 
   /**
    * Update the current voice used to speak based upon values in storage. If
-   * that does not succeed, fallback to use system locale when picking a voice.
+   * that does not succeed, fallback to use system locale when picking a
+   * voice.
    * @param {string} voiceName Voice name to set.
    * @param {function(string) : void=} opt_callback Called when the voice is
    * determined.
@@ -869,13 +935,13 @@ export class TtsBackground extends ChromeTtsBase {
 
   /**
    * Sets |hint_delay_ms_| given the speech rate.
-   * We want an inverse relationship between the speech rate and the hint delay;
-   * the faster the speech rate, the shorter the delay should be.
+   * We want an inverse relationship between the speech rate and the hint
+   * delay; the faster the speech rate, the shorter the delay should be.
    * Default speech rate (value of 1) should map to a delay of 1000 MS.
    * @param {number} rate
    */
   setHintDelayMS(rate) {
-    TtsBackground.hint_delay_ms_ = 1000 / rate;
+    PrimaryTts.hint_delay_ms_ = 1000 / rate;
   }
 }
 
@@ -885,7 +951,7 @@ export class TtsBackground extends ChromeTtsBase {
  * @type {number}
  * @private
  */
-TtsBackground.hint_delay_ms_ = 1000;
+PrimaryTts.hint_delay_ms_ = 1000;
 
 /**
  * The list of properties allowed to be passed to the chrome.tts.speak API.
@@ -894,7 +960,7 @@ TtsBackground.hint_delay_ms_ = 1000;
  * @private
  * @const
  */
-TtsBackground.ALLOWED_PROPERTIES_ = [
+PrimaryTts.ALLOWED_PROPERTIES_ = [
   'desiredEventTypes',
   'enqueue',
   'extensionId',
@@ -908,6 +974,5 @@ TtsBackground.ALLOWED_PROPERTIES_ = [
   'volume',
 ];
 
-
 /** @private {RegExp} */
-TtsBackground.SKIP_WHITESPACE_ = /^[\s\u00a0]*$/;
+PrimaryTts.SKIP_WHITESPACE_ = /^[\s\u00a0]*$/;

@@ -14,7 +14,6 @@ import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {TtsSpeechProperties} from '../common/tts_interface.js';
 
-import {TtsBackground} from './tts_background.js';
 import {UserActionMonitor} from './user_action_monitor.js';
 
 /**
@@ -61,11 +60,6 @@ export class ChromeVoxState {
    * @protected
    */
   getCurrentRange() {
-    return null;
-  }
-
-  /** @return {TtsBackground} */
-  get backgroundTts() {
     return null;
   }
 
@@ -158,7 +152,3 @@ BridgeHelper.registerHandler(
     BridgeConstants.ChromeVoxState.TARGET,
     BridgeConstants.ChromeVoxState.Action.CLEAR_CURRENT_RANGE,
     () => ChromeVoxState.instance.setCurrentRange(null));
-BridgeHelper.registerHandler(
-    BridgeConstants.ChromeVoxState.TARGET,
-    BridgeConstants.ChromeVoxState.Action.UPDATE_PUNCTUATION_ECHO,
-    echo => ChromeVoxState.instance.backgroundTts.updatePunctuationEcho(echo));

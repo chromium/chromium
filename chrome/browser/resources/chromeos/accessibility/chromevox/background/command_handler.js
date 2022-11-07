@@ -47,6 +47,7 @@ import {OutputCustomEvent} from './output/output_types.js';
 import {PhoneticData} from './phonetic_data.js';
 import {ChromeVoxPrefs} from './prefs.js';
 import {SmartStickyMode} from './smart_sticky_mode.js';
+import {TtsBackground} from './tts_background.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
@@ -162,8 +163,7 @@ export class CommandHandler extends CommandHandlerInterface {
         return false;
       case Command.CYCLE_PUNCTUATION_ECHO:
         ChromeVox.tts.speak(
-            Msgs.getMsg(
-                ChromeVoxState.instance.backgroundTts.cyclePunctuationEcho()),
+            Msgs.getMsg(TtsBackground.base.cyclePunctuationEcho()),
             QueueMode.FLUSH);
         return false;
       case Command.REPORT_ISSUE:

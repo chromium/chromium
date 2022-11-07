@@ -11,31 +11,16 @@ import {QueueMode, TtsCategory, TtsInterface} from '../common/tts_interface.js';
 import {LogStore} from './logging/log_store.js';
 import {ChromeVoxPrefs} from './prefs.js';
 
-/**
- * @implements {TtsInterface}
- */
+/** @implements {TtsInterface} */
 export class ConsoleTts {
   constructor() {
     /**
      * True if the console TTS is enabled by the user.
-     * @type {boolean}
-     * @private
+     * @private {boolean}
      */
-    this.enabled_ = false;
-  }
-
-  static init() {
-    const consoleTts = ConsoleTts.getInstance();
-    consoleTts.setEnabled(
-        ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging'] === 'true');
-  }
-
-  /** @return {!ConsoleTts} */
-  static getInstance() {
-    if (!ConsoleTts.instance_) {
-      ConsoleTts.instance_ = new ConsoleTts();
-    }
-    return ConsoleTts.instance_;
+    this.enabled_ =
+        ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging'] ===
+        String(true);
   }
 
   /**
@@ -113,9 +98,3 @@ export class ConsoleTts {
 
 /** @private {!ConsoleTts} */
 ConsoleTts.instance_;
-
-chrome.runtime.onMessage.addListener((message, sender, respond) => {
-  if (message.target === 'ConsoleTts' && message.action === 'getInstance') {
-    respond(ConsoleTts.getInstance());
-  }
-});

@@ -24,7 +24,6 @@ import {ChromeVoxEditableTextBase, TypingEcho} from './editing/editable_text_bas
 import {InjectedScriptLoader} from './injected_script_loader.js';
 import {Output} from './output/output.js';
 import {ChromeVoxPrefs} from './prefs.js';
-import {TtsBackground} from './tts_background.js';
 
 /**
  * This is the legacy ChromeVox background object.
