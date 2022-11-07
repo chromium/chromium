@@ -135,6 +135,9 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         if (mResultCallbackForTesting != null) {
             mResultCallbackForTesting.onResult(Pair.create(url, result));
         }
+
+        RecordHistogram.recordEnumeratedHistogram("Android.Intent.ShouldIgnoreNewTabResult",
+                result.getResultType(), OverrideUrlLoadingResultType.NUM_ENTRIES);
         return result.getResultType()
                 != ExternalNavigationHandler.OverrideUrlLoadingResultType.NO_OVERRIDE;
     }

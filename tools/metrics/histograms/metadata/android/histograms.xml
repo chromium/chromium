@@ -1967,6 +1967,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Intent.ShouldIgnoreNewTabResult"
+    enum="NavigationInterceptResult" expires_after="2023-11-07">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the result of Navigation Interception for popup navigations from
+    Tabs.
+  </summary>
+</histogram>
+
 <histogram name="Android.IsLastSharedAppInfoRetrieved"
     enum="BooleanIsLastSharedAppInfoRetrieved" expires_after="M77">
   <owner>tedchoc@chromium.org</owner>
