@@ -727,7 +727,6 @@ public class TabModelImpl extends TabModelJniBridge {
                 tabLaunchType = TabLaunchType.FROM_LONGPRESS_BACKGROUND;
                 break;
             case WindowOpenDisposition.OFF_THE_RECORD:
-                assert incognito;
                 incognito = true;
                 break;
             default:

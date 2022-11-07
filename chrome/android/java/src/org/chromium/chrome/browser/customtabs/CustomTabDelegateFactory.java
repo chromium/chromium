@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQuali
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -18,11 +17,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -46,14 +43,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
-import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -63,10 +56,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -197,33 +187,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         @Override
         protected boolean shouldEnableEmbeddedMediaExperience() {
             return mShouldEnableEmbeddedMediaExperience;
-        }
-
-        @Override
-        public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
-                int disposition, boolean isRendererInitiated) {
-            // If attempting to open an incognito tab, always send the user to tabbed mode.
-            if (disposition == WindowOpenDisposition.OFF_THE_RECORD) {
-                if (isRendererInitiated) {
-                    throw new IllegalStateException(
-                            "Invalid attempt to open an incognito tab from the renderer");
-                }
-                LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-                loadUrlParams.setVerbatimHeaders(extraHeaders);
-                loadUrlParams.setPostData(postData);
-                loadUrlParams.setIsRendererInitiated(isRendererInitiated);
-
-                Class<? extends ChromeTabbedActivity> tabbedClass =
-                        mMultiWindowUtils.getTabbedActivityForIntent(
-                                null, ContextUtils.getApplicationContext());
-                AsyncTabCreationParams tabParams = new AsyncTabCreationParams(loadUrlParams,
-                        new ComponentName(ContextUtils.getApplicationContext(), tabbedClass));
-                new TabDelegate(true).createNewTab(tabParams,
-                        TabLaunchType.FROM_LONGPRESS_FOREGROUND, TabModel.INVALID_TAB_INDEX);
-                return;
-            }
-
-            super.openNewTab(url, extraHeaders, postData, disposition, isRendererInitiated);
         }
 
         @Override

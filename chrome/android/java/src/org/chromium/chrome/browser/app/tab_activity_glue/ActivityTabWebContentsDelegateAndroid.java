@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -114,6 +115,14 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 tab.removeObserver(this);
             }
         });
+    }
+
+    @Override
+    public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
+            int disposition, boolean isRendererInitiated) {
+        // New tabs are handled by the tab model (see
+        // TabWebContentsDelegateAndroid::OpenURLFromTab().
+        assert false;
     }
 
     @Override
