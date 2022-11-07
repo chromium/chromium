@@ -2599,9 +2599,12 @@ TEST_F(RendererErrorPageTest, RegularError) {
   common_params->navigation_type =
       blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->url = GURL("http://example.com/error-page");
+  auto commit_params = DummyCommitNavigationParams();
+  commit_params->origin_to_commit =
+      url::Origin::Create(common_params->url).DeriveNewOpaqueOrigin();
   TestRenderFrame* main_frame = static_cast<TestRenderFrame*>(frame());
   main_frame->NavigateWithError(
-      std::move(common_params), DummyCommitNavigationParams(),
+      std::move(common_params), std::move(commit_params),
       net::ERR_FILE_NOT_FOUND, net::ResolveErrorInfo(net::OK),
       "A suffusion of yellow.");
 

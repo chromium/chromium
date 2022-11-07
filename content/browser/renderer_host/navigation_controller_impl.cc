@@ -244,37 +244,6 @@ bool ShouldTreatNavigationAsReload(FrameTreeNode* node,
   return true;
 }
 
-bool DoesURLMatchOriginForNavigation(
-    const GURL& destination_url,
-    const absl::optional<url::Origin>& origin,
-    SubresourceWebBundleNavigationInfo* subresource_web_bundle_navigation_info,
-    NavigationEntry* entry,
-    bool is_main_frame) {
-  // If there is no origin supplied there is nothing to match. This can happen
-  // for navigations to a pending entry and therefore it should be allowed.
-  if (!origin)
-    return true;
-
-  // For a history navigation to a document loaded with loadDataWithBaseURL,
-  // compare the origin to the entry's base URL instead of the data: URL used to
-  // commit.
-  const GURL& base_url_for_data_url = entry->GetBaseURLForDataURL();
-  bool check_origin_against_base_url =
-      is_main_frame && !base_url_for_data_url.is_empty();
-
-  const GURL& url_for_origin =
-      check_origin_against_base_url ? base_url_for_data_url : destination_url;
-  // Uuid-in-package: subframe from WebBundle has an opaque origin derived from
-  // the Bundle's origin.
-  if (url_for_origin.SchemeIs(url::kUuidInPackageScheme) &&
-      subresource_web_bundle_navigation_info) {
-    return origin->CanBeDerivedFrom(
-        subresource_web_bundle_navigation_info->bundle_url());
-  }
-
-  return origin->CanBeDerivedFrom(url_for_origin);
-}
-
 absl::optional<url::Origin> GetCommittedOriginForFrameEntry(
     const mojom::DidCommitProvisionalLoadParams& params,
     NavigationRequest* request) {
@@ -3826,8 +3795,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   GURL url_to_load;
   GURL virtual_url;
-  absl::optional<url::Origin> origin_to_commit =
-      frame_entry ? frame_entry->committed_origin() : absl::nullopt;
 
   // For main frames, rewrite the URL if necessary and compute the virtual URL
   // that should be shown in the address bar.
@@ -3874,15 +3841,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
                                url_to_load))
     return nullptr;
 
-  if (!DoesURLMatchOriginForNavigation(
-          url_to_load, origin_to_commit,
-          frame_entry->subresource_web_bundle_navigation_info(), entry,
-          node->IsOutermostMainFrame())) {
-    DCHECK(false) << " url:" << url_to_load
-                  << " origin:" << origin_to_commit.value();
-    return nullptr;
-  }
-
   // Look for a pending commit that is to another document in this
   // FrameTreeNode. If one exists, then the last committed URL will not be the
   // current URL by the time this navigation commits.
@@ -3927,7 +3885,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          frame_entry->committed_origin(),
+          absl::nullopt,
           // The correct storage key will be computed before committing the
           // navigation.
           blink::StorageKey(), override_user_agent, params.redirect_chain,
@@ -4021,8 +3979,6 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   // document won't result in a navigation.
   // See also https://crbug.com/1277414.
   DCHECK(!entry->IsInitialEntryNotForSynchronousAboutBlank());
-  absl::optional<url::Origin> origin_to_commit =
-      frame_entry->committed_origin();
 
   Referrer dest_referrer = frame_entry->referrer();
   if (reload_type == ReloadType::ORIGINAL_REQUEST_URL &&
@@ -4033,7 +3989,6 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     // case avoids issues with sending data to the wrong page.
     dest_url = entry->GetOriginalRequestURL();
     dest_referrer = Referrer();
-    origin_to_commit.reset();
   }
 
   if (frame_tree_node->render_manager()->is_attaching_inner_delegate()) {
@@ -4044,16 +3999,6 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
 
   if (!IsValidURLForNavigation(frame_tree_node->IsOutermostMainFrame(),
                                entry->GetVirtualURL(), dest_url)) {
-    return nullptr;
-  }
-
-  if (!DoesURLMatchOriginForNavigation(
-          dest_url, origin_to_commit,
-          frame_entry->subresource_web_bundle_navigation_info(), entry,
-          frame_tree_node->IsOutermostMainFrame())) {
-    DCHECK(false) << " url:" << dest_url
-                  << " base_url_for_data_url: " << entry->GetBaseURLForDataURL()
-                  << " origin:" << origin_to_commit.value();
     return nullptr;
   }
 
@@ -4112,8 +4057,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   // of index -1.
   blink::mojom::CommitNavigationParamsPtr commit_params =
       entry->ConstructCommitNavigationParams(
-          *frame_entry, common_params->url, origin_to_commit,
-          common_params->method, entry->GetSubframeUniqueNames(frame_tree_node),
+          *frame_entry, common_params->url, common_params->method,
+          entry->GetSubframeUniqueNames(frame_tree_node),
           GetPendingEntryIndex() == -1 /* intended_as_new_entry */,
           GetIndexOfEntry(entry), GetLastCommittedEntryIndex(), GetEntryCount(),
           frame_tree_node->pending_frame_policy(),
@@ -4613,11 +4558,9 @@ blink::mojom::NavigationApiHistoryEntryArraysPtr
 NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
     FrameTreeNode* node,
     NavigationRequest* request) {
-  url::Origin pending_origin =
-      request ? request->commit_params().origin_to_commit
-                    ? *request->commit_params().origin_to_commit
-                    : url::Origin::Create(request->common_params().url)
-              : url::Origin::Create(node->current_url());
+  url::Origin pending_origin = request
+                                   ? request->GetOriginToCommit()
+                                   : url::Origin::Create(node->current_url());
 
   scoped_refptr<SiteInstance> site_instance =
       node->current_frame_host()->GetSiteInstance();

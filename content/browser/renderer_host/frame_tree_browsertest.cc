@@ -616,7 +616,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToDataUrl) {
             url::SchemeHostPort(main_url));
 
   // Navigate the grandchild frame again cross-process to foo.com, then
-  // go back in session history. The origin for the data: URL must be preserved.
+  // go back in session history. The frame should commit a new opaque origin,
+  // but it will still have the same precursor origin (the main frame origin).
   {
     TestFrameNavigationObserver observer(target);
     EXPECT_TRUE(ExecJs(target, JsReplace("window.location = $1",
@@ -634,10 +635,12 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToDataUrl) {
 
   url::Origin target_origin =
       target->current_frame_host()->GetLastCommittedOrigin();
+  EXPECT_NE(target_origin, original_target_origin);
   EXPECT_TRUE(target_origin.opaque());
   EXPECT_EQ(target_origin.GetTupleOrPrecursorTupleIfOpaque(),
+            original_target_origin.GetTupleOrPrecursorTupleIfOpaque());
+  EXPECT_EQ(target_origin.GetTupleOrPrecursorTupleIfOpaque(),
             url::SchemeHostPort(main_url));
-  EXPECT_EQ(target_origin, original_target_origin);
 }
 
 // Ensures that iframe with srcdoc is always put in the same origin as its
@@ -1231,6 +1234,8 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   EXPECT_TRUE(blob_origin.opaque());
   EXPECT_EQ(root->current_origin().GetTupleOrPrecursorTupleIfOpaque(),
             blob_origin.GetTupleOrPrecursorTupleIfOpaque());
+  EXPECT_FALSE(
+      child->current_origin().GetTupleOrPrecursorTupleIfOpaque().IsValid());
 
   // Navigate the frame away to any web URL.
   {
@@ -1251,7 +1256,9 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   EXPECT_EQ(blob_url, GURL(EvalJs(root, "blob_url;").ExtractString()));
 
   // Now navigate back in session history. It should successfully go back to
-  // the blob: URL.
+  // the blob: URL. The child frame won't be reusing the exact same origin it
+  // used before, but it will commit a new opaque origin which will still have
+  // no precursor information.
   {
     TestFrameNavigationObserver observer(child);
     shell()->web_contents()->GetController().GoBack();
@@ -1259,9 +1266,11 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   }
   EXPECT_EQ(blob_url, child->current_frame_host()->GetLastCommittedURL());
   EXPECT_TRUE(child->current_origin().opaque());
-  EXPECT_EQ(blob_origin, child->current_origin());
+  EXPECT_NE(blob_origin, child->current_origin());
   EXPECT_EQ(root->current_origin().GetTupleOrPrecursorTupleIfOpaque(),
             child->current_origin().GetTupleOrPrecursorTupleIfOpaque());
+  EXPECT_FALSE(
+      child->current_origin().GetTupleOrPrecursorTupleIfOpaque().IsValid());
 }
 
 // Test to verify that about:blank iframe, which is a child of a sandboxed

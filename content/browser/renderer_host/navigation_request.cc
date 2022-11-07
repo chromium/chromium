@@ -1344,7 +1344,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   // not used by the browser after commit.
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          origin,
+          absl::nullopt,
           // The correct storage key is computed right after creating the
           // NavigationRequest below.
           blink::StorageKey(), is_overriding_user_agent, redirects,
@@ -2615,11 +2615,6 @@ void NavigationRequest::ResetStateForSiteInstanceChange() {
     commit_params_->page_state =
         blink::PageState::CreateFromURL(GetURL()).ToEncodedData();
 
-  // Any previously computed origin to commit is no longer valid (e.g., an
-  // opaque origin for an error page).
-  if (commit_params_->origin_to_commit)
-    commit_params_->origin_to_commit.reset();
-
   // ISNs and DSNs are process-specific.
   frame_entry_item_sequence_number_ = -1;
   frame_entry_document_sequence_number_ = -1;
@@ -2869,11 +2864,6 @@ void NavigationRequest::OnRequestRedirected(
 
   commit_params_->redirect_response.push_back(response_head_.Clone());
   commit_params_->redirect_infos.push_back(redirect_info);
-
-  // On redirects, the initial origin_to_commit is no longer correct, so it
-  // must be cleared to avoid sending incorrect value to the renderer process.
-  if (commit_params_->origin_to_commit)
-    commit_params_->origin_to_commit.reset();
 
   const bool is_same_origin_redirect =
       url::Origin::Create(common_params_->url)
@@ -4870,9 +4860,10 @@ void NavigationRequest::CommitErrorPage(
 
   // Set |origin_to_commit| for the renderer; error pages should always commit
   // in an opaque origin (with the precursor reflecting the destination URL).
-  commit_params_->origin_to_commit.reset();
+  DCHECK(!commit_params_->origin_to_commit);
   commit_params_->origin_to_commit = GetOriginToCommit();
   DCHECK(commit_params_->origin_to_commit->opaque());
+
   if (request_navigation_client_.is_bound()) {
     if (render_frame_host_ == frame_tree_node()->current_frame_host()) {
       // Reuse the request NavigationClient for commit.
@@ -6590,31 +6581,6 @@ url::Origin NavigationRequest::GetOriginToCommit() {
 
 std::pair<url::Origin, std::string>
 NavigationRequest::GetOriginToCommitWithDebugInfo() {
-  if (!IsSameDocument() && !IsPageActivation() &&
-      commit_params_->origin_to_commit) {
-    // `origin_to_commit` is set when there is an origin saved in the
-    // FrameNavigationEntry and it hasn't been reset yet due to redirects etc.
-    // Always try to use it, because this is what the renderer does in
-    // `DocumentLoader::CalculateOrigin()`. However this might not be the
-    // final origin, as the callers of this function might also consider sandbox
-    // flags too, which may require an opaque origin.
-    /// Note that this is handled here instead of in
-    // GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo() as that
-    // function is used for more than just browser-vs-renderer origin
-    // verification, to avoid changing the behavior of existing browser-side
-    // code that don't expect `origin_to_commit` to be used before commit.
-    // TODO(https://crbug.com/1359351): Stop using `origin_to_commit` in the
-    // renderer and remove this special handling.
-    std::pair<url::Origin, std::string> origin_and_debug_info =
-        std::make_pair(*commit_params_->origin_to_commit, "origin_to_commit");
-    if ((SandboxFlagsToCommit() & network::mojom::WebSandboxFlags::kOrigin) ==
-        network::mojom::WebSandboxFlags::kOrigin) {
-      origin_and_debug_info =
-          std::make_pair(origin_and_debug_info.first.DeriveNewOpaqueOrigin(),
-                         origin_and_debug_info.second + ", sandbox_flags");
-    }
-    return origin_and_debug_info;
-  }
   return GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo();
 }
 
@@ -6894,7 +6860,6 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForBFCacheRestore() {
 
   // Add bfcache-specific provisional load params:
   params->did_create_new_entry = false;
-  DCHECK_EQ(params->origin, commit_params().origin_to_commit.value());
   params->page_state =
       blink::PageState::CreateFromEncodedData(commit_params().page_state);
   return params;

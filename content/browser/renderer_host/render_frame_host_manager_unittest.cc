@@ -417,8 +417,7 @@ class RenderFrameHostManagerTest
             navigate_type, base::TimeTicks::Now(), base::TimeTicks::Now());
     blink::mojom::CommitNavigationParamsPtr commit_params =
         entry->ConstructCommitNavigationParams(
-            *frame_entry, common_params->url, frame_entry->committed_origin(),
-            common_params->method,
+            *frame_entry, common_params->url, common_params->method,
             entry->GetSubframeUniqueNames(frame_tree_node),
             controller.GetPendingEntryIndex() == -1 /* intended_as_new_entry */,
             controller.GetIndexOfEntry(entry),
@@ -3162,8 +3161,8 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
           base::TimeTicks::Now(), base::TimeTicks::Now());
   blink::mojom::CommitNavigationParamsPtr commit_params =
       entry.ConstructCommitNavigationParams(
-          *frame_entry, common_params->url, frame_entry->committed_origin(),
-          common_params->method, entry.GetSubframeUniqueNames(frame_tree_node),
+          *frame_entry, common_params->url, common_params->method,
+          entry.GetSubframeUniqueNames(frame_tree_node),
           controller().GetPendingEntryIndex() == -1 /* intended_as_new_entry */,
           static_cast<NavigationControllerImpl&>(controller())
               .GetIndexOfEntry(&entry),

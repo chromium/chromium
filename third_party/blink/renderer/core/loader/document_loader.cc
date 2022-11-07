@@ -455,17 +455,6 @@ DocumentLoader::DocumentLoader(
       is_error_page_for_failed_navigation_(
           SchemeRegistry::ShouldTreatURLSchemeAsError(
               response_.ResponseUrl().Protocol())),
-      // Loading the document was blocked by the CSP check. Pretend that this
-      // was an empty document instead and don't reuse the original URL. More
-      // details in: https://crbug.com/622385.
-      // TODO(https://crbug.com/555418) Remove this once XFO moves to the
-      // browser.
-
-      // Update |origin_to_commit_| to contain an opaque origin with precursor
-      // information that is consistent with the final request URL.
-      // Note: this doesn't use |url_| for the origin calculation, because
-      // redirects are not yet accounted for (this happens later in
-      // StartLoadingInternal).
       origin_to_commit_(params_->origin_to_commit.IsNull()
                             ? nullptr
                             : params_->origin_to_commit.Get()->IsolatedCopy()),
@@ -626,11 +615,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // All the security properties of the document must be preserved. Note that
   // sandbox flags and various policies are copied separately during commit in
   // CommitNavigation() and CalculateSandboxFlags().
-  // TODO(dcheng): Is it a problem that origin_to_commit_ is copied with
-  // isolated copy? This probably has observable side effects (e.g. executing a
-  // javascript: URL in an about:blank frame that inherited an origin will cause
-  // the origin to no longer be aliased).
-  params->origin_to_commit = window->GetSecurityOrigin();
   params->storage_key = window->GetStorageKey();
   params->origin_agent_cluster = origin_agent_cluster_;
   params->origin_agent_cluster_left_as_default =
@@ -2052,9 +2036,9 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
   scoped_refptr<SecurityOrigin> origin;
   if (origin_to_commit_) {
     // Origin to commit is specified by the browser process, it must be taken
-    // and used directly. It is currently supplied only for session history
-    // navigations, where the origin was already calculated previously and
-    // stored on the session history entry.
+    // and used directly. It is currently supplied only for failed navigations.
+    CHECK(is_error_page_for_failed_navigation_);
+    CHECK(origin_to_commit_->IsOpaque());
     origin = origin_to_commit_;
     origin_calculation_debug_info_ = "use_origin_to_commit";
   } else if (IsPagePopupRunningInWebTest(frame_)) {
@@ -2276,13 +2260,25 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   ContentSecurityPolicy* csp = CreateCSP();
 
-  // Provisional frames shouldn't be doing anything other than act as a
-  // placeholder. Enforce a strict sandbox and ensure a unique opaque origin.
-  // TODO(dcheng): Actually enforce strict sandbox flags for provisional frame.
-  // For some reason, doing so breaks some random devtools tests.
-  auto security_origin = frame_->IsProvisional()
-                             ? SecurityOrigin::CreateUniqueOpaque()
-                             : CalculateOrigin(owner_document);
+  scoped_refptr<SecurityOrigin> security_origin;
+  if (frame_->IsProvisional()) {
+    // Provisional frames shouldn't be doing anything other than act as a
+    // placeholder. Enforce a strict sandbox and ensure a unique opaque origin.
+    // TODO(dcheng): Actually enforce strict sandbox flags for provisional
+    // frame. For some reason, doing so breaks some random devtools tests.
+    security_origin = SecurityOrigin::CreateUniqueOpaque();
+  } else if (commit_reason_ == CommitReason::kJavascriptUrl ||
+             commit_reason_ == CommitReason::kXSLT) {
+    // For javascript: URL and XSLT commits, which don't go through the browser
+    // process and reuses the same DocumentLoader, reuse the previous origin.
+    // TODO(dcheng): Is it a problem that the previous origin is copied with
+    // isolated copy? This probably has observable side effects (e.g. executing
+    // a javascript: URL in an about:blank frame that inherited an origin will
+    // cause the origin to no longer be aliased).
+    security_origin = frame_->DomWindow()->GetSecurityOrigin()->IsolatedCopy();
+  } else {
+    security_origin = CalculateOrigin(owner_document);
+  }
 
   bool origin_agent_cluster = origin_agent_cluster_;
   // Note: this code must be kept in sync with
