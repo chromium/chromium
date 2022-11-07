@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 
 // Declares the possible actions from key commands.
+// Implementors of these actions are advised to record a UMA when their action
+// is called, named after the action: "MobileKeyCommandXxx" for keyCommand_xxx.
 @protocol KeyCommandActions <NSObject>
 
 @optional

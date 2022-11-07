@@ -2529,14 +2529,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)keyCommand_openNewTab {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandOpenNewTab"));
   [self openNewTabInCurrentPageForKeyboardCommand];
 }
 
 - (void)keyCommand_openNewRegularTab {
+  base::RecordAction(
+      base::UserMetricsAction("MobileKeyCommandOpenNewRegularTab"));
   [self openNewRegularTabForKeyboardCommand];
 }
 
 - (void)keyCommand_openNewIncognitoTab {
+  base::RecordAction(
+      base::UserMetricsAction("MobileKeyCommandOpenNewIncognitoTab"));
   [self openNewIncognitoTabForKeyboardCommand];
 }
 

@@ -171,6 +171,7 @@ source_set("unit_tests") {
   sources = [
     "tab_grid_coordinator_unittest.mm",
     "tab_grid_mediator_unittest.mm",
+    "tab_grid_view_controller_unittest.mm",
   ]
   deps = [
     ":tab_grid",

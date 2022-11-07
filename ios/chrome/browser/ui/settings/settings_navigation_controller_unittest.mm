@@ -178,4 +178,22 @@ TEST_F(SettingsNavigationControllerTest,
   }
 }
 
+// Checks that metrics are correctly reported.
+TEST_F(SettingsNavigationControllerTest, Metrics) {
+  base::UserActionTester user_action_tester;
+  @autoreleasepool {
+    SettingsNavigationController* settingsController =
+        [SettingsNavigationController
+            mainSettingsControllerForBrowser:browser_.get()
+                                    delegate:mockDelegate_];
+    std::string user_action = "MobileKeyCommandClose";
+    ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);
+
+    [settingsController keyCommand_close];
+
+    EXPECT_EQ(user_action_tester.GetActionCount(user_action), 1);
+    [settingsController cleanUpSettings];
+  }
+}
+
 }  // namespace

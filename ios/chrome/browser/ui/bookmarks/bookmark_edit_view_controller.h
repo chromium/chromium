@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @class BookmarkEditViewController;
@@ -44,7 +45,8 @@ class BookmarkNode;
 // accordingly depending on whether the bookmark and folder it is editing
 // changes underneath it.
 @interface BookmarkEditViewController
-    : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
+    : ChromeTableViewController <KeyCommandActions,
+                                 UIAdaptivePresentationControllerDelegate>
 
 @property(nonatomic, weak) id<BookmarkEditViewControllerDelegate> delegate;
 

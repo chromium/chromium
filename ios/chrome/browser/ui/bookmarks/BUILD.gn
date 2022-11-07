@@ -213,6 +213,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "bookmark_edit_view_controller_unittest.mm",
     "bookmark_home_view_controller_unittest.mm",
     "bookmark_model_bridge_observer_unittest.mm",
     "bookmark_path_cache_unittest.mm",

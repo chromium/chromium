@@ -11,8 +11,9 @@
 #import "base/check_op.h"
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
-
 #import "base/mac/scoped_cftyperef.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/url_formatter/url_fixer.h"
@@ -32,7 +33,6 @@
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -82,8 +82,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 @interface BookmarkEditViewController () <BookmarkFolderViewControllerDelegate,
                                           BookmarkModelBridgeObserver,
-                                          BookmarkTextFieldItemDelegate,
-                                          KeyCommandActions> {
+                                          BookmarkTextFieldItemDelegate> {
   // Flag to ignore bookmark model changes notifications.
   BOOL _ignoresBookmarkModelChanges;
 
@@ -699,6 +698,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
   [self dismissBookmarkEditView];
 }
 
