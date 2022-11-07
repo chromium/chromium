@@ -114,6 +114,7 @@ iron-list {
   display: flex;
   flex-flow: row wrap;
   height: 100%;
+  justify-content: center;
   /* stop img and gradient-mask from ignoring above border-radius. */
   overflow: hidden;
   position: relative;

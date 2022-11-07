@@ -35,41 +35,42 @@ const kGooglePhotosCollectionId = 'google_photos_';
 const kLocalCollectionId = 'local_';
 
 enum TileType {
-  LOADING = 'loading',
   IMAGE_GOOGLE_PHOTOS = 'image_google_photos',
   IMAGE_LOCAL = 'image_local',
   IMAGE_ONLINE = 'image_online',
-  FAILURE = 'failure',
+  LOADING = 'loading',
 }
 
 interface LoadingTile {
   type: TileType.LOADING;
 }
 
-/**
- * Type that represents a collection that failed to load. The preview image
- * is still displayed, but is grayed out and unclickable.
- */
-interface FailureTile {
-  type: TileType.FAILURE;
-  id: string;
+interface GooglePhotosTile {
+  disabled: boolean;
+  id: typeof kGooglePhotosCollectionId;
   name: string;
-  preview: [];
+  type: TileType.IMAGE_GOOGLE_PHOTOS;
 }
 
-/**
- * A displayable type constructed from up to three LocalImages or a
- * WallpaperCollection.
- */
-interface ImageTile {
-  type: TileType.IMAGE_GOOGLE_PHOTOS|TileType.IMAGE_LOCAL|TileType.IMAGE_ONLINE;
-  id: string;
+interface LocalTile {
+  count: string;
+  disabled: boolean;
+  id: typeof kLocalCollectionId;
   name: string;
-  count?: string;
   preview: Url[];
+  type: TileType.IMAGE_LOCAL;
 }
 
-type Tile = LoadingTile|FailureTile|ImageTile;
+interface OnlineTile {
+  count: string;
+  disabled: boolean;
+  id: string;
+  name: string;
+  preview: Url[];
+  type: TileType.IMAGE_ONLINE;
+}
+
+type Tile = LoadingTile|GooglePhotosTile|LocalTile|OnlineTile;
 
 interface RepeaterEvent extends CustomEvent {
   model: {
@@ -98,11 +99,12 @@ function hasError(
 }
 
 /** Returns the tile to display for the Google Photos collection. */
-function getGooglePhotosTile(): ImageTile {
+function getGooglePhotosTile(enablementState: GooglePhotosEnablementState):
+    GooglePhotosTile {
   return {
-    name: loadTimeData.getString('googlePhotosLabel'),
+    disabled: enablementState !== GooglePhotosEnablementState.kEnabled,
     id: kGooglePhotosCollectionId,
-    preview: [],
+    name: loadTimeData.getString('googlePhotosLabel'),
     type: TileType.IMAGE_GOOGLE_PHOTOS,
   };
 }
@@ -133,12 +135,23 @@ function getImages(
  * Get the first displayable image with data from the list of possible images.
  */
 function getLocalTile(
-    localImages: Array<FilePath|DefaultImageSymbol>,
+    localImages: Array<FilePath|DefaultImageSymbol>|null,
     localImagesLoading: boolean,
     localImageData: Record<FilePath['path']|DefaultImageSymbol, Url>):
-    ImageTile|LoadingTile {
+    LocalTile|LoadingTile {
   if (localImagesLoading) {
     return {type: TileType.LOADING};
+  }
+
+  if (!localImages || localImages.length === 0) {
+    return {
+      count: getCountText(0),
+      disabled: true,
+      id: kLocalCollectionId,
+      name: loadTimeData.getString('myImagesLabel'),
+      preview: [{url: 'chrome://personalization/images/no_images.svg'}],
+      type: TileType.IMAGE_LOCAL,
+    };
   }
 
   const isMoreToLoad = localImages.some(
@@ -158,11 +171,13 @@ function getLocalTile(
     return !isImageDataUrl(next) ? result + 1 : result;
   }, 0);
 
+  const successCount = localImages.length - failureCount;
+
   return {
-    name: loadTimeData.getString('myImagesLabel'),
+    count: getCountText(successCount),
+    disabled: successCount <= 0,
     id: kLocalCollectionId,
-    count: getCountText(
-        Array.isArray(localImages) ? localImages.length - failureCount : 0),
+    name: loadTimeData.getString('myImagesLabel'),
     preview: imagesToDisplay,
     type: TileType.IMAGE_LOCAL,
   };
@@ -216,7 +231,10 @@ export class WallpaperCollections extends WithPersonalizationStore {
       /**
        * Stores a mapping of local image id to thumbnail data.
        */
-      localImageData_: Object,
+      localImageData_: {
+        type: Object,
+        value: {},
+      },
 
       /**
        * List of tiles to be displayed to the user.
@@ -226,7 +244,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
         value() {
           // Fill the view with loading tiles. Will be adjusted to the correct
           // number of tiles when collections are received.
-          return getLoadingPlaceholders(() => ({type: TileType.LOADING}));
+          return getLoadingPlaceholders(
+              (): LoadingTile => ({type: TileType.LOADING}));
         },
       },
 
@@ -336,7 +355,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
         }, {} as Record<string, number|null>);
   }
 
-  getLoadingPlaceholderAnimationDelay(index: number): string {
+  private getLoadingPlaceholderAnimationDelay_(index: number): string {
     return getLoadingPlaceholderAnimationDelay(index);
   }
 
@@ -376,32 +395,31 @@ export class WallpaperCollections extends WithPersonalizationStore {
     collections.forEach((collection, i) => {
       const index = i + offset;
       const tile = this.tiles_[index];
-      // This tile failed to load completely.
-      if (imageCounts[collection.id] === null && !this.isFailureTile_(tile)) {
-        this.set(`tiles_.${index}`, {
-          id: collection.id,
-          name: collection.name,
-          count: '',
-          preview: [],
-          type: TileType.FAILURE,
-        });
+      assert(
+          isNonEmptyArray(collection.previews),
+          `preview images required for collection ${collection.id}`);
+
+      if (imageCounts[collection.id] === undefined) {
         return;
       }
-      // This tile loaded successfully.
-      if (typeof imageCounts[collection.id] === 'number' &&
-          !this.isImageTile_(tile)) {
-        this.set(`tiles_.${index}`, {
+      const count = getCountText(imageCounts[collection.id] || 0);
+      if (tile.type !== TileType.IMAGE_ONLINE || count !== tile.count) {
+        // Return all the previews in D/L mode to display the split view.
+        // Otherwise, only the first preview is needed.
+        const preview = isDarkLightModeEnabled ? collection.previews :
+                                                 [collection.previews[0]];
+
+        const newTile: OnlineTile = {
+          count,
+          // If `imageCounts[collection.id]` is null, this collection failed to
+          // load and the user cannot select it.
+          disabled: imageCounts[collection.id] === null,
           id: collection.id,
           name: collection.name,
-          count: getCountText(imageCounts[collection.id]),
-          // Return all the previews in D/L mode to display the split view.
-          // Otherwise, only the first preview is needed.
-          preview: isNonEmptyArray(collection.previews) ?
-              isDarkLightModeEnabled ? collection.previews :
-                                       [collection.previews[0]] :
-              [],
+          preview,
           type: TileType.IMAGE_ONLINE,
-        });
+        };
+        this.set(`tiles_.${index}`, newTile);
       }
     });
   }
@@ -410,7 +428,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
   private onGooglePhotosEnabledChanged_(
       googlePhotosEnabled: WallpaperCollections['googlePhotosEnabled_']) {
     if (googlePhotosEnabled !== undefined) {
-      const tile = getGooglePhotosTile();
+      const tile = getGooglePhotosTile(googlePhotosEnabled);
       this.set('tiles_.1', tile);
     }
   }
@@ -423,14 +441,25 @@ export class WallpaperCollections extends WithPersonalizationStore {
       localImages: Array<FilePath|DefaultImageSymbol>|null,
       localImagesLoading: boolean,
       localImageData: Record<FilePath['path']|DefaultImageSymbol, Url>) {
-    if (!Array.isArray(localImages) || !localImageData) {
-      return;
-    }
     const tile = getLocalTile(localImages, localImagesLoading, localImageData);
     this.set('tiles_.0', tile);
   }
 
-  private getClassForImagesContainer_(tile: ImageTile): string {
+  private getClassForTile_(tile: LocalTile|OnlineTile|null): string {
+    if (!tile) {
+      return '';
+    }
+    const classes = ['photo-inner-container'];
+    if (tile.disabled) {
+      classes.push('photo-loading-failure');
+    }
+    if (this.isLocalTile_(tile)) {
+      classes.push('local');
+    }
+    return classes.join(' ');
+  }
+
+  private getClassForImagesContainer_(tile: LocalTile|OnlineTile): string {
     if (tile.type === TileType.IMAGE_ONLINE) {
       // Only apply base class for online collections.
       return 'photo-images-container';
@@ -442,7 +471,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
   }
 
   /** Apply custom class for <img> to show a split view. */
-  private getClassForImg_(index: number, tile: ImageTile): string {
+  private getClassForImg_(index: number, tile: OnlineTile|LocalTile): string {
     if (tile.type !== TileType.IMAGE_ONLINE || tile.preview.length < 2) {
       return '';
     }
@@ -454,18 +483,6 @@ export class WallpaperCollections extends WithPersonalizationStore {
       default:
         return '';
     }
-  }
-
-  private getClassForEmptyTile_(tile: ImageTile): string {
-    return `photo-inner-container ${
-        (this.isGooglePhotosTile_(tile) ? 'google-photos-empty' :
-                                          'photo-empty')}`;
-  }
-
-  private getImageUrlForEmptyTile_(tile: ImageTile): string {
-    return `chrome://personalization/images/${
-        (this.isGooglePhotosTile_(tile) ? 'google_photos.svg' :
-                                          'no_images.svg')}`;
   }
 
   /** Navigate to the correct route based on user selection. */
@@ -493,58 +510,34 @@ export class WallpaperCollections extends WithPersonalizationStore {
     }
   }
 
-  /**
-   * Not using I18nBehavior because of chrome-untrusted:// incompatibility.
-   * TODO(b:237323063) switch back to I18nBehavior.
-   */
-  private geti18n_(str: string): string {
-    return loadTimeData.getString(str);
-  }
-
   private isLoadingTile_(item: Tile|null): item is LoadingTile {
     return !!item && item.type === TileType.LOADING;
   }
 
-  private isFailureTile_(item: Tile|null): item is FailureTile {
-    return !!item && item.type === TileType.FAILURE;
+  private isLocalTile_(item: Tile|null): item is LocalTile {
+    return !!item && item.type === TileType.IMAGE_LOCAL;
   }
 
-  private isTileTypeImage_(item: Tile|null): item is ImageTile {
-    return !!item &&
-        (item.type === TileType.IMAGE_GOOGLE_PHOTOS ||
-         item.type === TileType.IMAGE_LOCAL ||
-         item.type === TileType.IMAGE_ONLINE);
+  private isOnlineTile_(item: Tile|null): item is OnlineTile {
+    return !!item && item.type === TileType.IMAGE_ONLINE;
   }
 
-  private isEmptyTile_(item: Tile|null): item is ImageTile {
-    return this.isTileTypeImage_(item) && item.preview.length === 0;
+  private isLocalOrOnlineTile_(item: Tile|null): item is LocalTile {
+    return this.isLocalTile_(item) || this.isOnlineTile_(item);
   }
 
-  private isGooglePhotosTile_(item: Tile|null): item is ImageTile|FailureTile {
-    return !!item && (item.type === TileType.IMAGE_GOOGLE_PHOTOS) &&
-        (item.id === kGooglePhotosCollectionId);
+  private isGooglePhotosTile_(item: Tile|null): item is GooglePhotosTile {
+    return !!item && item.type === TileType.IMAGE_GOOGLE_PHOTOS;
   }
 
-  private isImageTile_(item: Tile|null): item is ImageTile {
-    return this.isTileTypeImage_(item) && !this.isEmptyTile_(item);
-  }
-
-  private isManagedTile_(item: Tile|null): boolean {
-    return this.isGooglePhotosTile_(item) &&
-        this.googlePhotosEnabled_ === GooglePhotosEnablementState.kDisabled;
-  }
-
-  private isSelectableTile_(item: Tile|null): item is ImageTile|FailureTile {
-    return (this.isGooglePhotosTile_(item) && !this.isManagedTile_(item)) ||
-        this.isImageTile_(item);
-  }
-
-  private getTileAriaDisabled_(item: Tile|null): string {
-    return (!this.isSelectableTile_(item)).toString();
+  private isSelectableTile_(item: Tile|null): item is GooglePhotosTile|LocalTile
+      |OnlineTile {
+    return !!item && !this.isLoadingTile_(item) && !item.disabled;
   }
 
   private isPhotoTextHidden_(
-      item: ImageTile, loadedCollectionIdPhotos: Set<string>): boolean {
+      item: OnlineTile|LocalTile,
+      loadedCollectionIdPhotos: Set<string>): boolean {
     // Hide text until the first preview image for this collection has notified
     // that it finished loading.
     return !loadedCollectionIdPhotos.has(item.id);
@@ -569,6 +562,10 @@ export class WallpaperCollections extends WithPersonalizationStore {
       this.loadedCollectionIdPhotos_ =
           new Set([...this.loadedCollectionIdPhotos_, collectionId]);
     }
+  }
+
+  private getAriaDisabled_(item: Tile|null): string {
+    return (!this.isSelectableTile_(item)).toString();
   }
 
   private getAriaIndex_(index: number): number {

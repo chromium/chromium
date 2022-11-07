@@ -72,7 +72,6 @@ suite('WallpaperCollectionsTest', function() {
     await personalizationStore.waitForAction(
         WallpaperActionName.SET_IMAGES_FOR_COLLECTION);
 
-
     assertDeepEquals(
         {
           collections: wallpaperProvider.collections,
@@ -109,5 +108,79 @@ suite('WallpaperCollectionsTest', function() {
         wallpaperCollectionsElement.shadowRoot?.querySelector('main')
             ?.getAttribute('aria-label'),
         'aria label equals expected value');
+  });
+
+  test('displays no_images.svg when no local images', async () => {
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    assertEquals(
+        'chrome://personalization/images/no_images.svg',
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelector<HTMLImageElement>('.local img')
+            ?.src,
+        'no local images present');
+
+    assertEquals(
+        loadTimeData.getString('zeroImages'),
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelector<HTMLParagraphElement>(
+                '.local .photo-text-container p:last-child')
+            ?.textContent,
+        'no images text is displayed');
+  });
+
+  test('displays 1 image when default thumbnail exists', async () => {
+    personalizationStore.data.wallpaper.local.images = [kDefaultImageSymbol];
+    personalizationStore.data.wallpaper.local.data = {
+      [kDefaultImageSymbol]: {url: 'data:image/png;base64,qqqq'},
+    };
+
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    assertEquals(
+        'data:image/png;base64,qqqq',
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelector<HTMLImageElement>('.local img')
+            ?.src,
+        'default image thumbnail present');
+
+    assertEquals(
+        1,
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelectorAll<HTMLImageElement>('.local img')
+            .length,
+        'only 1 local image preview');
+  });
+
+  test('mixes local images in with default image thumbnail', async () => {
+    personalizationStore.data.wallpaper.local.images =
+        [kDefaultImageSymbol, {path: '/asdf'}, {path: '/qwer'}];
+    personalizationStore.data.wallpaper.local.data = {
+      [kDefaultImageSymbol]: {url: 'data:image/png;base64,qqqq'},
+      '/asdf': {url: 'data:image/png;base64,asdf'},
+      '/qwer': {url: 'data:image/png;base64,qwer'},
+    };
+    personalizationStore.data.wallpaper.loading.local.data = {
+      [kDefaultImageSymbol]: false,
+      '/asdf': false,
+      '/qwer': false,
+    };
+
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    assertDeepEquals(
+        [
+          'data:image/png;base64,qqqq',
+          'data:image/png;base64,asdf',
+          'data:image/png;base64,qwer',
+        ],
+        Array
+            .from(wallpaperCollectionsElement.shadowRoot
+                      ?.querySelectorAll<HTMLImageElement>('.local img')!)
+            .map(img => img.src),
+        'all three images are displayed');
   });
 });
