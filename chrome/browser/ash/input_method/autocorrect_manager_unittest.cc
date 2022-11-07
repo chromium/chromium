@@ -90,7 +90,8 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
                                  int reverted,
                                  int accepted,
                                  int cleared_underline,
-                                 int exited_text_field_with_underline=0) {
+                                 int exited_text_field_with_underline = 0,
+                                 int invalid_range = 0) {
   // Window shown metrics.
   histogram_tester.ExpectBucketCount(kCoverageHistogramName,
                                      AssistiveType::kAutocorrectWindowShown,
@@ -169,6 +170,35 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
   histogram_tester.ExpectBucketCount(
       kAutocorrectActionHistogramName,
       AutocorrectActions::kUserActionClearedUnderline, cleared_underline);
+  if (visible_vk) {
+    histogram_tester.ExpectBucketCount(
+        kVKAutocorrectActionHistogramName,
+        AutocorrectActions::kUserActionClearedUnderline, cleared_underline);
+    histogram_tester.ExpectBucketCount(
+        kVKAutocorrectV2ActionHistogramName,
+        AutocorrectActions::kUserActionClearedUnderline, cleared_underline);
+  } else {
+    histogram_tester.ExpectBucketCount(
+        kPKAutocorrectV2ActionHistogramName,
+        AutocorrectActions::kUserActionClearedUnderline, cleared_underline);
+  }
+
+  // Invalid Range metrics.
+  histogram_tester.ExpectBucketCount(kAutocorrectActionHistogramName,
+                                     AutocorrectActions::kInvalidRange,
+                                     invalid_range);
+  if (visible_vk) {
+    histogram_tester.ExpectBucketCount(kVKAutocorrectActionHistogramName,
+                                       AutocorrectActions::kInvalidRange,
+                                       invalid_range);
+    histogram_tester.ExpectBucketCount(kVKAutocorrectV2ActionHistogramName,
+                                       AutocorrectActions::kInvalidRange,
+                                       invalid_range);
+  } else {
+    histogram_tester.ExpectBucketCount(kPKAutocorrectV2ActionHistogramName,
+                                       AutocorrectActions::kInvalidRange,
+                                       invalid_range);
+  }
 
   // Exited text field with underline.
   histogram_tester.ExpectBucketCount(
@@ -191,9 +221,9 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
         exited_text_field_with_underline);
   }
 
-  const int total_actions =
-      window_shown + underlined + reverted + accepted +
-      cleared_underline + exited_text_field_with_underline;
+  const int total_actions = window_shown + underlined + reverted + accepted +
+                            cleared_underline +
+                            exited_text_field_with_underline + invalid_range;
   const int total_coverage = window_shown + underlined + reverted;
 
   // Count total bucket to test side-effects and make the helper robust against
@@ -214,17 +244,18 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
   histogram_tester.ExpectTotalCount(kAutocorrectV2AcceptLatency, accepted);
   histogram_tester.ExpectTotalCount(kAutocorrectV2ExitFieldLatency,
                                     exited_text_field_with_underline);
-  histogram_tester.ExpectTotalCount(kAutocorrectV2RejectLatency,
-                                    reverted + cleared_underline);
+  histogram_tester.ExpectTotalCount(
+      kAutocorrectV2RejectLatency,
+      reverted + cleared_underline + invalid_range);
   histogram_tester.ExpectTotalCount(
       kAutocorrectV2VkPendingLatency,
-      visible_vk ? cleared_underline + reverted + accepted +
+      visible_vk ? cleared_underline + reverted + accepted + invalid_range +
                        exited_text_field_with_underline
                  : 0);
   histogram_tester.ExpectTotalCount(
       kAutocorrectV2PkPendingLatency,
       visible_vk ? 0
-                 : cleared_underline + reverted + accepted +
+                 : cleared_underline + reverted + accepted + invalid_range +
                        exited_text_field_with_underline);
 }
 
@@ -1064,7 +1095,9 @@ TEST_F(AutocorrectManagerTest,
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/1,
                               /*reverted=*/0, /*accepted=*/0,
-                              /*cleared_underline=*/1);
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline*/ 0,
+                              /*invalid_range*/ 1);
 }
 
 TEST_F(AutocorrectManagerTest,
@@ -1279,6 +1312,7 @@ TEST_F(AutocorrectManagerTest,
 
   // Create a pending autocorrect range.
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
 
   // Disable autocorrect.
   mock_ime_input_context_handler_.set_autocorrect_enabled(false);
@@ -1299,6 +1333,7 @@ TEST_F(AutocorrectManagerTest,
        HandleAutocorrectRecordsMetricsWhenClearingPendingAutocorrect) {
   // Create a pending autocorrect range.
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
 
   // Clear the previous autocorrect range.
   mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(),
@@ -1317,24 +1352,29 @@ TEST_F(AutocorrectManagerTest,
        HandleAutocorrectRecordsMetricsCorrectlyForNullInputContext) {
   // Create a pending autocorrect range.
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
 
   // Make Input context null.
   ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
-  // The pending range must be counted as cleared, but `underlined` metric must
+  // The pending range must be counted as invalid, but `underlined` metric must
   // not be incremented with the empty input context.
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/1,
                               /*reverted=*/0, /*accepted=*/0,
-                              /*cleared_underline=*/1);
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline*/ 0,
+                              /*invalid_range*/ 1);
 
   // When there is no pending autocorrect range, nothing is incremented.
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/1,
                               /*reverted=*/0, /*accepted=*/0,
-                              /*cleared_underline=*/1);
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline*/ 0,
+                              /*invalid_range*/ 1);
 }
 
 TEST_F(AutocorrectManagerTest,
@@ -1685,7 +1725,7 @@ TEST_F(AutocorrectManagerTest, InvalidRangeFailsValidationAndClearsRange) {
 }
 
 TEST_F(AutocorrectManagerTest,
-       FourValidationFailuresRecordsMetricsForClearedRange) {
+       FourValidationFailuresRecordsMetricsForInvalidRange) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // Four validation failure.
@@ -1697,8 +1737,9 @@ TEST_F(AutocorrectManagerTest,
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/1,
                               /*reverted=*/0, /*accepted=*/0,
-                              /*cleared_underline=*/1,
-                              /*exited_text_field_with_underline=*/0);
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/0,
+                              /*invalid_range*/ 1);
 }
 
 TEST_F(AutocorrectManagerTest, UndoRecordsMetricsWhenVkIsVisible) {

@@ -31,7 +31,8 @@ enum class AutocorrectActions {
   kUserAcceptedAutocorrect = 3,
   kUserActionClearedUnderline = 4,
   kUserExitedTextFieldWithUnderline = 5,
-  kMaxValue = kUserExitedTextFieldWithUnderline,
+  kInvalidRange = 6,
+  kMaxValue = kInvalidRange,
 };
 
 // Must match with IMEAutocorrectInternalStates in enums.xml

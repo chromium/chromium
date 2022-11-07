@@ -51463,6 +51463,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="USER_ACCEPTED_AUTOCORRECT"/>
   <int value="4" label="USER_CLEARED_UNDERLINE"/>
   <int value="5" label="USER_EXITED_TEXT_FIELD_WITH_UNDERLINE_PRESENT"/>
+  <int value="6" label="INVALID_RANGE"/>
 </enum>
 
 <enum name="IMEAutocorrectInternalStates">

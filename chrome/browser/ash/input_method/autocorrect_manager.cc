@@ -92,6 +92,7 @@ void LogAssistiveAutocorrectActionLatency(AutocorrectActions action,
       break;
     case AutocorrectActions::kReverted:
     case AutocorrectActions::kUserActionClearedUnderline:
+    case AutocorrectActions::kInvalidRange:
       base::UmaHistogramMediumTimes(
           "InputMethod.Assistive.AutocorrectV2.Latency.Reject", time_delta);
       break;
@@ -773,13 +774,15 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
   LogAssistiveAutocorrectInternalState(
       AutocorrectInternalStates::kSuggestionResolved);
 
-  if (!pending_autocorrect_->is_validated) {
+  if (!input_context) {
+    LogAssistiveAutocorrectAction(AutocorrectActions::kInvalidRange);
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kNoInputContext);
+  } else if (!pending_autocorrect_->is_validated) {
+    LogAssistiveAutocorrectAction(AutocorrectActions::kInvalidRange);
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kErrorRangeNotValidated);
-    LogAssistiveAutocorrectAction(
-        AutocorrectActions::kUserActionClearedUnderline);
-  } else if (input_context &&
-             !input_context->GetAutocorrectRange().is_empty()) {
+  } else if (!input_context->GetAutocorrectRange().is_empty()) {
     MeasureAndLogAssistiveAutocorrectQualityBreakdown(
         AutocorrectActions::kUserAcceptedAutocorrect);
     LogAssistiveAutocorrectInternalState(
@@ -790,13 +793,8 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
     LogAssistiveAutocorrectAction(
       AutocorrectActions::kUserAcceptedAutocorrect);
   } else {
-    if (!input_context) {
-      LogAssistiveAutocorrectInternalState(
-          AutocorrectInternalStates::kNoInputContext);
-    } else {
-      MeasureAndLogAssistiveAutocorrectQualityBreakdown(
-          AutocorrectActions::kUserActionClearedUnderline);
-    }
+    MeasureAndLogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectActions::kUserActionClearedUnderline);
     LogAssistiveAutocorrectAction(
       AutocorrectActions::kUserActionClearedUnderline);
   }
