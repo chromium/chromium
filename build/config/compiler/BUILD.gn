@@ -106,7 +106,8 @@ declare_args() {
   chromeos_afdo_platform = "atom"
 
   # Emit debug information for profiling wile building with clang.
-  clang_emit_debug_info_for_profiling = false
+  # Only enable this for ChromeOS official builds for AFDO.
+  clang_emit_debug_info_for_profiling = is_chromeos_device && is_official_build
 
   # Turn this on to have the compiler output extra timing information.
   compiler_timing = false
