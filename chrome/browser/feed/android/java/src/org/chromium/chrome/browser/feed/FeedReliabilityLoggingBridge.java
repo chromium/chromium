@@ -69,6 +69,12 @@ public class FeedReliabilityLoggingBridge {
     }
 
     @CalledByNative
+    public void logSingleWebFeedRequestStart(int requestId, long timestamp) {
+        mLogger.getNetworkRequestReliabilityLogger(requestId).logSingleWebFeedRequestStart(
+                timestamp);
+    }
+
+    @CalledByNative
     public void logActionsUploadRequestStart(int requestId, long timestamp) {
         mLogger.getNetworkRequestReliabilityLogger(requestId).logActionsUploadRequestStart(
                 timestamp);

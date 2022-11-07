@@ -32,11 +32,13 @@ public class FeedUma {
     static final String[] TOTAL_CARDS_HISTOGRAM_NAMES = {
             "ContentSuggestions.Feed.LoadMoreTrigger.TotalCards",
             "ContentSuggestions.Feed.WebFeed.LoadMoreTrigger.TotalCards",
+            "ContentSuggestions.Feed.SingleWebFeed.LoadMoreTrigger.TotalCards",
     };
 
     static final String[] OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES = {
             "ContentSuggestions.Feed.LoadMoreTrigger.OffsetFromEndOfStream",
             "ContentSuggestions.Feed.WebFeed.LoadMoreTrigger.OffsetFromEndOfStream",
+            "ContentSuggestions.Feed.SingleWebFeed.LoadMoreTrigger.OffsetFromEndOfStream",
     };
 
     /**

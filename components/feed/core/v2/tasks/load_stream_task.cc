@@ -290,6 +290,9 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       network_request_id_ = launch_reliability_logger_.LogFeedRequestStart();
     else if (options_.stream_type.IsWebFeed())
       network_request_id_ = launch_reliability_logger_.LogWebFeedRequestStart();
+    else if (options_.stream_type.IsChannelFeed())
+      network_request_id_ =
+          launch_reliability_logger_.LogSingleWebFeedRequestStart();
   }
   RequestMetadata request_metadata =
       stream_.GetRequestMetadata(options_.stream_type,

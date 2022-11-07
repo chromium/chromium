@@ -136,6 +136,16 @@ struct WebFeedListContentsDiscoverApi {
   static bool SendRequestMetadata() { return false; }
 };
 
+struct SingleWebFeedListContentsDiscoverApi {
+  using Request = feedwire::Request;
+  using Response = feedwire::Response;
+  static constexpr NetworkRequestType kRequestType =
+      NetworkRequestType::kSingleWebFeedListContents;
+  static base::StringPiece Method() { return "POST"; }
+  static base::StringPiece RequestPath(const Request&) { return "v1/contents"; }
+  static bool SendRequestMetadata() { return false; }
+};
+
 class FeedNetwork {
  public:
   struct RawResponse {

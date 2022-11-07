@@ -31,6 +31,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".QueryBackgroundFeed" summary="QueryBackgroundFeed"/>
   <variant name=".QueryInteractiveFeed" summary="QueryInteractiveFeed"/>
   <variant name=".QueryNextPage" summary="QueryNextPage"/>
+  <variant name=".SingleWebFeedListContents"
+      summary="SingleWebFeedListContents"/>
   <variant name=".UnfollowWebFeed" summary="UnfollowWebFeed"/>
   <variant name=".UploadActions" summary="UploadActions"/>
   <variant name=".WebFeedListContents" summary="WebFeedListContents"/>
@@ -1684,6 +1686,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Surface">
     <variant name="OpenFeed" summary="For-You Feed"/>
+    <variant name="OpenFeed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="OpenFeed.WebFeed" summary="Web Feed"/>
   </token>
   <token key="Status">
@@ -1867,24 +1870,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.WebFeed.Opened" units="index"
-    expires_after="never">
-<!-- expires-never: key feature metric.  We will need the Opened
-     metric as long as we have a feed, and it will be removed with the
-     feed code if the feed is ever removed. -->
-
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of the WebFeed card on the NTP, that is clicked
-    through to the host website of the content. We track the position the card
-    had in the list when it was first seen by the user. This tracked position
-    can be different from the position observed by the user, e.g. when the user
-    dismissed some suggestions from the list or requested more that got inserted
-    in the middle of the feed.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.WebFeed.PageInformationRequested"
     enum="WebFeedPageInformationRequestReason" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
@@ -1943,25 +1928,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Stale"
         summary="Refresh is triggered because stored subscriptions are stale."/>
   </token>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.WebFeed.Shown" units="index"
-    expires_after="never">
-<!-- expires-never: key feature metric.  We will need the Shown
-       metric as long as we have a feed, and it will be removed with
-       the feed code if the feed is ever removed. -->
-
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a WebFeed card that was shown on the NTP. A card is
-    considered shown when at least 2/3 of its height is visible on the screen.
-    For each card, at most one impression is recorded per NTP instance. We track
-    the position the card had in the list when it was first seen by the user.
-    This tracked position can be different from the position observed by the
-    user, e.g. when the user dismissed some suggestions from the list or
-    requested more that got inserted in the middle of the feed.
-  </summary>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.SortType" enum="FeedSortType"
@@ -2067,6 +2033,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="the For-You Feed"/>
     <variant name="Feed.AllFeeds" summary="all Feeds combined"/>
+    <variant name="Feed.SingleWebFeed" summary="the single web feed"/>
     <variant name="Feed.WebFeed" summary="the Web Feed"/>
   </token>
 </histogram>
@@ -2084,6 +2051,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Feed" summary="the For-You feed"/>
     <variant name="Feed.AllFeeds"
         summary="either the For-You or Following/Web feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="the Following/Web Feed"/>
   </token>
 </histogram>
@@ -2099,6 +2067,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
   <token key="Action">
@@ -2138,12 +2107,13 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
 
 <histogram
-    name="ContentSuggestions.{FeedType}.LoadMoreTrigger.NumCardsRemaining"
+    name="ContentSuggestions.{FeedType}.LoadMoreTrigger.OffsetFromEndOfStream"
     units="cards" expires_after="2023-03-01">
   <owner>rogerm@chromium.org</owner>
   <owner>dewittj@chromium.org</owner>
@@ -2154,6 +2124,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2169,6 +2140,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2187,6 +2159,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2202,6 +2175,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2220,6 +2194,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2234,6 +2209,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2297,6 +2273,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContentSuggestions.{FeedType}.Opened" units="index"
+    expires_after="never">
+<!-- expires-never: key feature metric.  We will need the Opened
+     metric as long as we have a feed, and it will be removed with the
+     feed code if the feed is ever removed. -->
+
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The position of the {FeedType} card on it's surface, that is
+    clicked through to the host website of the content. We track the position
+    the card had in the list when it was first seen by the user. This tracked
+    position can be different from the position observed by the user, e.g. when
+    the user dismissed some suggestions from the list or requested more that got
+    inserted in the middle of the feed.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed.SingleWebFeed" summary="the single Single Web feed"/>
+    <variant name="Feed.WebFeed" summary="the Web Feed"/>
+  </token>
+</histogram>
+
 <histogram name="ContentSuggestions.{FeedType}.ReachedEndOfFeed" units="index"
     expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
@@ -2311,6 +2309,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2326,6 +2325,30 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.Shown" units="index"
+    expires_after="never">
+<!-- expires-never: key feature metric.  We will need the Shown
+       metric as long as we have a feed, and it will be removed with
+       the feed code if the feed is ever removed. -->
+
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The position of a {FeedType} card that was shown on it's surface. A
+    card is considered shown when at least 2/3 of its height is visible on the
+    screen. For each card, at most one impression is recorded per instance. We
+    track the position the card had in the list when it was first seen by the
+    user. This tracked position can be different from the position observed by
+    the user, e.g. when the user dismissed some suggestions from the list or
+    requested more that got inserted in the middle of the feed.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2342,6 +2365,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>

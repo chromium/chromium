@@ -59,16 +59,26 @@ constexpr base::TimeDelta kOpenTimeout = base::Seconds(20);
 constexpr base::TimeDelta kTimeSpentInFeedInteractionTimeout =
     base::Seconds(30);
 
+base::StringPiece HistogramReplacement(const StreamType& stream_type) {
+  switch (stream_type.GetKind()) {
+    case StreamKind::kForYou:
+      return "Feed.";
+    case StreamKind::kFollowing:
+      return "Feed.WebFeed.";
+    case StreamKind::kChannel:
+      return "Feed.SingleWebFeed.";
+    case StreamKind::kUnknown:
+      DCHECK(false) << "unknown feed kind";
+      return "Feed.";
+  }
+}
+
 void ReportEngagementTypeHistogram(const StreamType& stream_type,
                                    FeedEngagementType engagement_type) {
-  if (stream_type.IsForYou()) {
-    base::UmaHistogramEnumeration("ContentSuggestions.Feed.EngagementType",
-                                  engagement_type);
-  } else {
-    DCHECK(stream_type.IsWebFeed());
-    base::UmaHistogramEnumeration(
-        "ContentSuggestions.Feed.WebFeed.EngagementType", engagement_type);
-  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                    "EngagementType"}),
+      engagement_type);
 }
 
 void ReportCombinedEngagementTypeHistogram(FeedEngagementType engagement_type) {
@@ -78,13 +88,23 @@ void ReportCombinedEngagementTypeHistogram(FeedEngagementType engagement_type) {
 
 void ReportContentSuggestionsOpened(const StreamType& stream_type,
                                     int index_in_stream) {
-  if (stream_type.IsForYou()) {
-    base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Opened",
-                                  index_in_stream, kMaxSuggestionsTotal);
-  } else {
-    DCHECK(stream_type.IsWebFeed());
-    base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Opened",
-                                  index_in_stream, kMaxSuggestionsTotal);
+  switch (stream_type.GetKind()) {
+    case StreamKind::kForYou:
+      base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Opened",
+                                    index_in_stream, kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kFollowing:
+      base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Opened",
+                                    index_in_stream, kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kChannel:
+      base::UmaHistogramExactLinear(
+          "ContentSuggestions.Feed.SingleWebFeed.Opened", index_in_stream,
+          kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kUnknown:
+      DCHECK(false) << "unknown feed kind";
+      break;
   }
 }
 
@@ -188,6 +208,8 @@ base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
       return "ListRecommendedWebFeeds";
     case NetworkRequestType::kWebFeedListContents:
       return "WebFeedListContents";
+    case NetworkRequestType::kSingleWebFeedListContents:
+      return "SingleWebFeedListContents";
     case NetworkRequestType::kQueryInteractiveFeed:
       return "QueryInteractiveFeed";
     case NetworkRequestType::kQueryBackgroundFeed:
@@ -195,10 +217,6 @@ base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
     case NetworkRequestType::kQueryNextPage:
       return "QueryNextPage";
   }
-}
-
-base::StringPiece HistogramReplacement(const StreamType& stream_type) {
-  return stream_type.IsWebFeed() ? "Feed.WebFeed." : "Feed.";
 }
 
 std::string InfoCardActionUmaName(const StreamType& stream_type,
@@ -251,15 +269,10 @@ UserSettingsOnStart GetUserSettingsOnStart(
 
 void ReportSubscriptionCountAtEngagementTime(const StreamType& stream_type,
                                              int subscription_count) {
-  if (stream_type.IsForYou()) {
-    base::UmaHistogramSparse("ContentSuggestions.Feed.FollowCount.Engaged2",
-                             subscription_count);
-  } else {
-    DCHECK(stream_type.IsWebFeed());
-    base::UmaHistogramSparse(
-        "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged2",
-        subscription_count);
-  }
+  base::UmaHistogramSparse(
+      base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                    "FollowCount.Engaged2"}),
+      subscription_count);
 }
 
 void ReportCombinedSubscriptionCountAtEngagementTime(int subscription_count) {
@@ -513,13 +526,23 @@ void MetricsReporter::StreamScrolled(const StreamType& stream_type,
 void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
                                          int index_in_stream,
                                          int stream_slice_count) {
-  if (stream_type.IsForYou()) {
-    base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Shown",
-                                  index_in_stream, kMaxSuggestionsTotal);
-  } else {
-    DCHECK(stream_type.IsWebFeed());
-    base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Shown",
-                                  index_in_stream, kMaxSuggestionsTotal);
+  switch (stream_type.GetKind()) {
+    case StreamKind::kForYou:
+      base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Shown",
+                                    index_in_stream, kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kFollowing:
+      base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Shown",
+                                    index_in_stream, kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kChannel:
+      base::UmaHistogramExactLinear(
+          "ContentSuggestions.Feed.SingleWebFeed.Shown", index_in_stream,
+          kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kUnknown:
+      DCHECK(false) << "unknown feed kind";
+      break;
   }
 
   if (index_in_stream == stream_slice_count - 1) {
@@ -789,9 +812,9 @@ void MetricsReporter::ReportOpenFeedIfNeeded(SurfaceId surface_id,
   surfaces_waiting_for_content_.erase(iter);
 
   base::UmaHistogramCustomTimes(
-      base::StrCat({"ContentSuggestions.Feed.UserJourney.OpenFeed",
-                    surface_waiting.stream_type.IsWebFeed() ? ".WebFeed" : "",
-                    success ? ".SuccessDuration" : ".FailureDuration"}),
+      base::StrCat({"ContentSuggestions.Feed.UserJourney.Open",
+                    HistogramReplacement(surface_waiting.stream_type),
+                    success ? "SuccessDuration" : "FailureDuration"}),
       base::TimeTicks::Now() - surface_waiting.wait_start,
       base::Milliseconds(50), kLoadTimeout, 50);
 }
@@ -1105,12 +1128,16 @@ void MetricsReporter::ReportPersistentDataIfDayIsDone() {
 
 MetricsReporter::StreamStats& MetricsReporter::ForStream(
     const StreamType& stream_type) {
-  if (stream_type.IsForYou())
-    return for_you_stats_;
-  if (stream_type.IsWebFeed())
-    return web_feed_stats_;
-  DCHECK(stream_type.IsChannelFeed());
-  return web_feed_stats_;
+  switch (stream_type.GetKind()) {
+    case StreamKind::kForYou:
+      return for_you_stats_;
+    case StreamKind::kFollowing:
+    case StreamKind::kChannel:
+      return web_feed_stats_;
+    case StreamKind::kUnknown:
+      DCHECK(false) << "unknown feed kind";
+      return web_feed_stats_;
+  }
 }
 
 void MetricsReporter::OnFollowAttempt(

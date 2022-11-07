@@ -36,7 +36,7 @@ class StreamType {
   bool IsWebFeed() const { return kind_ == StreamKind::kFollowing; }
   bool IsChannelFeed() const { return kind_ == StreamKind::kChannel; }
   bool IsValid() const { return kind_ != StreamKind::kUnknown; }
-  StreamKind GetType() const { return kind_; }
+  StreamKind GetKind() const { return kind_; }
   std::string GetWebFeedId() const { return web_feed_id_; }
 
   // Returns a human-readable value, for debugging/DCHECK prints.

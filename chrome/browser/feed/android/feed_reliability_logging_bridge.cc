@@ -142,6 +142,14 @@ void FeedReliabilityLoggingBridge::LogWebFeedRequestStart(
       ConvertTimestamp(timestamp));
 }
 
+void FeedReliabilityLoggingBridge::LogSingleWebFeedRequestStart(
+    NetworkRequestId id,
+    base::TimeTicks timestamp) {
+  Java_FeedReliabilityLoggingBridge_logSingleWebFeedRequestStart(
+      base::android::AttachCurrentThread(), java_ref_, id.GetUnsafeValue(),
+      ConvertTimestamp(timestamp));
+}
+
 void FeedReliabilityLoggingBridge::LogRequestSent(NetworkRequestId id,
                                                   base::TimeTicks timestamp) {
   Java_FeedReliabilityLoggingBridge_logRequestSent(

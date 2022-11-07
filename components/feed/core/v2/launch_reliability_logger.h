@@ -31,6 +31,7 @@ class LaunchReliabilityLogger {
   NetworkRequestId LogFeedRequestStart();
   NetworkRequestId LogActionsUploadRequestStart();
   NetworkRequestId LogWebFeedRequestStart();
+  NetworkRequestId LogSingleWebFeedRequestStart();
   void LogRequestSent(NetworkRequestId id, base::TimeTicks timestamp);
   void LogResponseReceived(NetworkRequestId id,
                            int64_t server_receive_timestamp_ns,
