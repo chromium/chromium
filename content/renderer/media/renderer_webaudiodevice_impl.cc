@@ -88,18 +88,6 @@ int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
   return 0;
 }
 
-blink::LocalFrameToken FrameTokenFromCurrentContext() {
-  // TODO(crbug.com/1307461): The assumption here is incorrect;
-  // RendererWebAudioDevice can be created without a valid frame/document. In
-  // that case, FrameForCurrentContext() below will be invalid.
-
-  // We can perform look-ups to determine which `blink::WebView` is starting the
-  // audio device.  The reason for all this is because the creator of the
-  // WebAudio objects might not be the actual source of the audio (e.g.,
-  // an extension creates a object that is passed and used within a page).
-  return blink::WebLocalFrame::FrameForCurrentContext()->GetLocalFrameToken();
-}
-
 media::AudioParameters GetOutputDeviceParameters(
     const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& session_id,
@@ -121,8 +109,7 @@ std::unique_ptr<RendererWebAudioDeviceImpl> RendererWebAudioDeviceImpl::Create(
   return std::unique_ptr<RendererWebAudioDeviceImpl>(
       new RendererWebAudioDeviceImpl(
           sink_descriptor, layout, number_of_output_channels, latency_hint,
-          callback, session_id, base::BindOnce(&GetOutputDeviceParameters),
-          base::BindOnce(&FrameTokenFromCurrentContext)));
+          callback, session_id, base::BindOnce(&GetOutputDeviceParameters)));
 }
 
 RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
@@ -132,13 +119,12 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     const blink::WebAudioLatencyHint& latency_hint,
     WebAudioDevice::RenderCallback* callback,
     const base::UnguessableToken& session_id,
-    OutputDeviceParamsCallback device_params_cb,
-    RenderFrameTokenCallback render_frame_token_cb)
+    OutputDeviceParamsCallback device_params_cb)
     : sink_descriptor_(sink_descriptor),
       latency_hint_(latency_hint),
       client_callback_(callback),
       session_id_(session_id),
-      frame_token_(std::move(render_frame_token_cb).Run()) {
+      frame_token_(sink_descriptor.Token()) {
   DCHECK(client_callback_);
   SendLogMessage(base::StringPrintf("%s", __func__));
 

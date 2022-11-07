@@ -30,10 +30,6 @@ constexpr int kHardwareSampleRate = 44100;
 constexpr int kHardwareBufferSize = 128;
 const blink::LocalFrameToken kFrameToken;
 
-blink::LocalFrameToken MockFrameTokenFromCurrentContext() {
-  return kFrameToken;
-}
-
 media::AudioParameters MockGetOutputDeviceParameters(
     const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& session_id,
@@ -59,8 +55,7 @@ class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
             latency_hint,
             callback,
             session_id,
-            base::BindOnce(&MockGetOutputDeviceParameters),
-            base::BindOnce(&MockFrameTokenFromCurrentContext)) {}
+            base::BindOnce(&MockGetOutputDeviceParameters)) {}
 };
 
 }  // namespace
@@ -83,7 +78,7 @@ class RendererWebAudioDeviceImplTest
 
   void SetupDevice(blink::WebAudioLatencyHint latencyHint) {
     blink::WebAudioSinkDescriptor sink_descriptor(
-        blink::WebString::FromUTF8(std::string()));
+        blink::WebString::FromUTF8(std::string()), kFrameToken);
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
         sink_descriptor, media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
         base::UnguessableToken());
@@ -93,7 +88,7 @@ class RendererWebAudioDeviceImplTest
 
   void SetupDevice(media::ChannelLayout layout, int channels) {
     blink::WebAudioSinkDescriptor sink_descriptor(
-        blink::WebString::FromUTF8(std::string()));
+        blink::WebString::FromUTF8(std::string()), kFrameToken);
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
         sink_descriptor, layout, channels,
         blink::WebAudioLatencyHint(
@@ -238,9 +233,9 @@ TEST_F(RendererWebAudioDeviceImplTest, TestSilent) {
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(1, kHardwareBufferSize);
 
-  // The WebAudioSinkDescriptor constructor with no arguments will construct a
+  // The WebAudioSinkDescriptor constructor with frame token will construct a
   // silent sink.
-  blink::WebAudioSinkDescriptor sink_descriptor;
+  blink::WebAudioSinkDescriptor sink_descriptor(kFrameToken);
   SetupDevice(sink_descriptor);
 
   // Test public interface.

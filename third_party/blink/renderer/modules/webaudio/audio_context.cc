@@ -217,7 +217,8 @@ AudioContext::AudioContext(Document& document,
       media_device_service_receiver_(this, document.GetExecutionContext()) {
   SendLogMessage(GetAudioContextLogString(latency_hint, sample_rate));
 
-  const WebAudioSinkDescriptor default_sink_descriptor(sink_id_);
+  auto frame_token = document.domWindow()->GetLocalFrameToken();
+  const WebAudioSinkDescriptor default_sink_descriptor(sink_id_, frame_token);
   destination_node_ = RealtimeAudioDestinationNode::Create(
       this, default_sink_descriptor, latency_hint, sample_rate);
 

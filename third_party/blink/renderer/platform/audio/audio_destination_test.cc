@@ -18,6 +18,8 @@ namespace blink {
 
 namespace {
 
+const blink::LocalFrameToken kFrameToken;
+
 class MockWebAudioDevice : public WebAudioDevice {
  public:
   explicit MockWebAudioDevice(double sample_rate, int frames_per_buffer)
@@ -72,7 +74,7 @@ void CountWASamplesProcessedForRate(absl::optional<float> sample_rate) {
   const size_t request_frames = Platform::Current()->AudioHardwareBufferSize();
 
   // Assume the default audio device. (i.e. the empty string)
-  WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""));
+  WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""), kFrameToken);
 
   // TODO(https://crbug.com/988121) Replace 128 with the appropriate
   // AudioContextRenderSizeHintCategory.

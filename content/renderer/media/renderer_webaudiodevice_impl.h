@@ -85,9 +85,6 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       const base::UnguessableToken& session_id,
       const std::string& device_id)>;
 
-  // Callback get render frame token for current context (for tests).
-  using RenderFrameTokenCallback = base::OnceCallback<blink::LocalFrameToken()>;
-
   RendererWebAudioDeviceImpl(
       const blink::WebAudioSinkDescriptor& sink_descriptor,
       media::ChannelLayout layout,
@@ -95,8 +92,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       const blink::WebAudioLatencyHint& latency_hint,
       blink::WebAudioDevice::RenderCallback* callback,
       const base::UnguessableToken& session_id,
-      OutputDeviceParamsCallback device_params_cb,
-      RenderFrameTokenCallback render_frame_token_cb);
+      OutputDeviceParamsCallback device_params_cb);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> GetSilentSinkTaskRunner();

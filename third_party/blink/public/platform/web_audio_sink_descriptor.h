@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace blink {
@@ -25,19 +26,21 @@ class WebAudioSinkDescriptor {
     kLastValue = kSilent
   };
 
+  WebAudioSinkDescriptor() = default;
+
   // For an "audible" sink with a user-selected identifier. The empty string
   // on |sink_id| means the system's default audio device.
-  explicit WebAudioSinkDescriptor(const WebString& sink_id)
-      : type_(kAudible), sink_id_(sink_id) {}
+  explicit WebAudioSinkDescriptor(const WebString& sink_id,
+                                  const LocalFrameToken& token)
+      : type_(kAudible), sink_id_(sink_id), token_(token) {}
 
   // For a "silent" sink.
-  explicit WebAudioSinkDescriptor() : type_(kSilent) {}
+  explicit WebAudioSinkDescriptor(const LocalFrameToken& token)
+      : type_(kSilent), token_(token) {}
 
+  const LocalFrameToken& Token() const { return token_; }
   AudioSinkType Type() const { return type_; }
-  WebString SinkId() const {
-    DCHECK_EQ(type_, kAudible);
-    return sink_id_;
-  }
+  WebString SinkId() const { return sink_id_; }
 
   bool operator==(const WebAudioSinkDescriptor& rhs) const {
     return this->Type() == rhs.Type() && this->SinkId() == rhs.SinkId();
@@ -46,6 +49,7 @@ class WebAudioSinkDescriptor {
  private:
   AudioSinkType type_;
   WebString sink_id_;
+  LocalFrameToken token_;
 };
 
 }  // namespace blink
