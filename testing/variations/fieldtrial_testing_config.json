@@ -7757,7 +7757,7 @@
             ]
         }
     ],
-    "OmniboxZeroSuggestPrefetchingOnSRPAndWeb": [
+    "OmniboxZeroSuggestPrefetchingWithInMemoryCaching": [
         {
             "platforms": [
                 "chromeos",
@@ -7769,8 +7769,22 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_InMemoryCaching",
                     "enable_features": [
+                        "ZeroSuggestInMemoryCaching"
+                    ]
+                },
+                {
+                    "name": "Enabled_InMemoryCaching_ZPSPrefetchOnSRP",
+                    "enable_features": [
+                        "ZeroSuggestInMemoryCaching",
+                        "ZeroSuggestPrefetchingOnSRP"
+                    ]
+                },
+                {
+                    "name": "Enabled_InMemoryCaching_ZPSPrefetchOnSRPAndWeb",
+                    "enable_features": [
+                        "ZeroSuggestInMemoryCaching",
                         "ZeroSuggestPrefetchingOnSRP",
                         "ZeroSuggestPrefetchingOnWeb"
                     ]
