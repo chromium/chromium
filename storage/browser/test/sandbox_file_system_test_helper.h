@@ -12,7 +12,7 @@
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
 #include "storage/browser/file_system/file_system_util.h"

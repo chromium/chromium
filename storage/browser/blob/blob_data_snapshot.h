@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "storage/browser/blob/blob_data_item.h"
 

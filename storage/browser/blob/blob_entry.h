@@ -13,7 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/blob/blob_memory_controller.h"
 

@@ -12,7 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"

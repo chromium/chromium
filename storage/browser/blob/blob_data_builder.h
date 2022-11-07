@@ -13,7 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "storage/browser/blob/blob_data_item.h"
