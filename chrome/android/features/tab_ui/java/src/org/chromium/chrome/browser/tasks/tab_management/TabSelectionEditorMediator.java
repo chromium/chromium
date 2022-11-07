@@ -123,7 +123,7 @@ class TabSelectionEditorMediator
 
             @Override
             public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                if (isEditorVisible()) hide();
+                hide();
             }
         };
 
@@ -295,6 +295,8 @@ class TabSelectionEditorMediator
 
     @Override
     public void hide() {
+        if (!isEditorVisible()) return;
+
         if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
             RecordUserAction.record("TabMultiSelectV2.Closed");
         }
