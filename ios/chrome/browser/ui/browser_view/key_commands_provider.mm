@@ -203,7 +203,7 @@ using base::UserMetricsAction;
   if (sel_isEqual(action, @selector(keyCommand_find)) ||
       sel_isEqual(action, @selector(keyCommand_findNext)) ||
       sel_isEqual(action, @selector(keyCommand_findPrevious))) {
-    return self.tabsCount > 0 && self.findInPageAvailable;
+    return self.findInPageAvailable;
   }
   if (sel_isEqual(action, @selector(keyCommand_close))) {
     return self.canDismissModals;
