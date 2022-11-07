@@ -177,7 +177,21 @@ void AddNewTabPageComprehensiveColors(ui::ColorMixer& mixer) {
                                         primary_foreground_color);
     mixer[kColorRealboxPlaceholder] = secondary_foreground_color;
     mixer[kColorRealboxResultsBackground] = background_color;
+    mixer[kColorRealboxResultsBackgroundHovered] = {
+        kColorOmniboxResultsBackgroundHovered};
+    mixer[kColorRealboxResultsControlBackgroundHovered] = ui::SetAlpha(
+        ui::SelectBasedOnDarkInput({kColorRealboxBackground},
+                                   gfx::kGoogleGrey200, gfx::kGoogleGrey900),
+        /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
+    mixer[kColorRealboxResultsDimSelected] = {
+        kColorOmniboxResultsBackgroundSelected};
     mixer[kColorRealboxResultsForeground] = primary_foreground_color;
+    mixer[kColorRealboxResultsForegroundDimmed] = {
+        kColorOmniboxResultsTextDimmed};
+    mixer[kColorRealboxResultsIconSelected] = {
+        kColorOmniboxResultsIconSelected};
+    mixer[kColorRealboxResultsUrl] = {kColorOmniboxResultsUrl};
+    mixer[kColorRealboxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
     mixer[kColorRealboxSearchIconBackground] = secondary_foreground_color;
   }
 }
@@ -261,10 +275,6 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       gfx::kGoogleGrey100};
   mixer[kColorNewTabPageSectionBorder] =
       ui::SetAlpha(kColorNewTabPageHeader, 0x50);
-  mixer[kColorNewTabPageSearchBoxBackground] = {
-      kColorToolbarBackgroundSubtleEmphasis};
-  mixer[kColorNewTabPageSearchBoxBackgroundHovered] = {
-      kColorToolbarBackgroundSubtleEmphasisHovered};
   mixer[kColorNewTabPageTextUnthemed] = {gfx::kGoogleGrey050};
   mixer[kColorNewTabPageTextLight] =
       IncreaseLightness(kColorNewTabPageText, 0.40);
