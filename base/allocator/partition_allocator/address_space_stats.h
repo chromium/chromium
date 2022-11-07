@@ -38,6 +38,9 @@ struct AddressSpaceStats {
   size_t blocklist_hit_count;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
+#if BUILDFLAG(ENABLE_PKEYS)
+  PoolStats pkey_pool_stats;
+#endif
 };
 
 // Interface passed to `AddressPoolManager::DumpStats()` to mediate

@@ -10,11 +10,19 @@
 #if BUILDFLAG(ENABLE_PKEYS)
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 
 #include <cstddef>
 #include <cstdint>
 
+#if !defined(PA_HAS_64_BITS_POINTERS)
+#error "pkey support requires 64 bit pointers"
+#endif
+
 namespace partition_alloc::internal::base {
+
+constexpr int kDefaultPkey = 0;
+constexpr int kInvalidPkey = -1;
 
 // Check if the CPU supports pkeys.
 bool CPUHasPkeySupport();

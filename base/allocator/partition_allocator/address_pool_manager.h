@@ -35,17 +35,17 @@ namespace partition_alloc::internal {
 // AddressPoolManager takes a reserved virtual address space and manages address
 // space allocation.
 //
-// AddressPoolManager (currently) supports up to 3 pools. Each pool manages a
+// AddressPoolManager (currently) supports up to 4 pools. Each pool manages a
 // contiguous reserved address space. Alloc() takes a pool_handle and returns
 // address regions from the specified pool. Free() also takes a pool_handle and
 // returns the address region back to the manager.
 //
 // (32bit version)
 // AddressPoolManager wraps AllocPages and FreePages and remembers allocated
-// address regions using bitmaps. IsManagedByPartitionAllocBRPPool and
-// IsManagedByPartitionAllocRegularPool use the bitmaps to judge whether a given
-// address is in a pool that supports BackupRefPtr or in a pool that doesn't.
-// All PartitionAlloc allocations must be in either of the pools.
+// address regions using bitmaps. IsManagedByPartitionAlloc*Pool use the bitmaps
+// to judge whether a given address is in a pool that supports BackupRefPtr or
+// in a pool that doesn't. All PartitionAlloc allocations must be in either of
+// the pools.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
  public:
   static AddressPoolManager& GetInstance();

@@ -47,6 +47,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/pkey.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
@@ -279,6 +280,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool;
+
+#if BUILDFLAG(ENABLE_PKEYS)
+    int pkey;
+#endif
 
 #if defined(PA_EXTRAS_REQUIRED)
     uint32_t extras_size;
@@ -534,6 +539,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       void* ptr);
 
   PA_ALWAYS_INLINE PageAccessibilityConfiguration GetPageAccessibility() const;
+  PA_ALWAYS_INLINE PageAccessibilityConfiguration
+      PageAccessibilityWithPkeyIfEnabled(
+          PageAccessibilityConfiguration::Permissions) const;
 
   PA_ALWAYS_INLINE size_t
   AllocationCapacityFromSlotStart(uintptr_t slot_start) const;
@@ -635,6 +643,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       PA_DCHECK(IsConfigurablePoolAvailable());
       return internal::kConfigurablePoolHandle;
     }
+#if BUILDFLAG(ENABLE_PKEYS)
+    if (flags.pkey != internal::base::kDefaultPkey) {
+      return internal::kPkeyPoolHandle;
+    }
+#endif
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     return brp_enabled() ? internal::kBRPPoolHandle
                          : internal::kRegularPoolHandle;
@@ -1723,11 +1736,27 @@ PartitionRoot<thread_safe>::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
 template <bool thread_safe>
 PA_ALWAYS_INLINE PageAccessibilityConfiguration
 PartitionRoot<thread_safe>::GetPageAccessibility() const {
+  PageAccessibilityConfiguration::Permissions permissions =
+      PageAccessibilityConfiguration::kReadWrite;
 #if defined(PA_HAS_MEMORY_TAGGING)
   if (IsMemoryTaggingEnabled())
-    return PageAccessibilityConfiguration::kReadWriteTagged;
+    permissions = PageAccessibilityConfiguration::kReadWriteTagged;
 #endif
-  return PageAccessibilityConfiguration::kReadWrite;
+#if BUILDFLAG(ENABLE_PKEYS)
+  return PageAccessibilityConfiguration(permissions, flags.pkey);
+#else
+  return PageAccessibilityConfiguration(permissions);
+#endif
+}
+
+template <bool thread_safe>
+PA_ALWAYS_INLINE PageAccessibilityConfiguration
+PartitionRoot<thread_safe>::PageAccessibilityWithPkeyIfEnabled(
+    PageAccessibilityConfiguration::Permissions permissions) const {
+#if BUILDFLAG(ENABLE_PKEYS)
+  return PageAccessibilityConfiguration(permissions, flags.pkey);
+#endif
+  return PageAccessibilityConfiguration(permissions);
 }
 
 // Return the capacity of the underlying slot (adjusted for extras). This

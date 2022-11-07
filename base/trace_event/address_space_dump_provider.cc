@@ -50,6 +50,13 @@ class AddressSpaceStatsDumperImpl final
         address_space_stats->configurable_pool_stats.usage * kSuperPageSize);
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
+    // Pkey pool usage is applicable with the appropriate buildflag.
+#if BUILDFLAG(ENABLE_PKEYS)
+    dump->AddScalar(
+        "pkey_pool_usage", MemoryAllocatorDump::kUnitsBytes,
+        address_space_stats->pkey_pool_stats.usage * kSuperPageSize);
+#endif  // BUILDFLAG(ENABLE_PKEYS)
+
     // Additionally, largest possible reservation is also available on
     // 64-bit platforms.
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -68,6 +75,12 @@ class AddressSpaceStatsDumperImpl final
                     address_space_stats->configurable_pool_stats
                             .largest_available_reservation *
                         kSuperPageSize);
+#if BUILDFLAG(ENABLE_PKEYS)
+    dump->AddScalar(
+        "pkey_pool_largest_reservation", MemoryAllocatorDump::kUnitsBytes,
+        address_space_stats->pkey_pool_stats.largest_available_reservation *
+            kSuperPageSize);
+#endif  // BUILDFLAG(ENABLE_PKEYS)
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 #if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)

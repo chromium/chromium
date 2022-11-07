@@ -261,7 +261,11 @@ constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 
 // PartitionAlloc's address space is split into pools. See `glossary.md`.
 #if defined(PA_HAS_64_BITS_POINTERS)
+#if BUILDFLAG(ENABLE_PKEYS)
+constexpr size_t kNumPools = 4;
+#else
 constexpr size_t kNumPools = 3;
+#endif
 // Maximum pool size. With exception of Configurable Pool, it is also
 // the actual size, unless PA_DYNAMICALLY_SELECT_POOL_SIZE is set, which
 // allows to choose a different size at initialization time for certain
@@ -284,6 +288,9 @@ constexpr size_t kMaxSuperPagesInPool = kPoolMaxSize / kSuperPageSize;
 static constexpr pool_handle kRegularPoolHandle = 1;
 static constexpr pool_handle kBRPPoolHandle = 2;
 static constexpr pool_handle kConfigurablePoolHandle = 3;
+#if BUILDFLAG(ENABLE_PKEYS)
+static constexpr pool_handle kPkeyPoolHandle = 4;
+#endif
 
 // Slots larger than this size will not receive MTE protection. Pages intended
 // for allocations larger than this constant should not be backed with PROT_MTE

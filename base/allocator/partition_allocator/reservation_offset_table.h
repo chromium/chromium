@@ -169,6 +169,12 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
   bool is_in_regular_pool = IsManagedByPartitionAllocRegularPool(address);
+  bool is_in_configurable_pool =
+      IsManagedByPartitionAllocConfigurablePool(address);
+#if BUILDFLAG(ENABLE_PKEYS)
+  bool is_in_pkey_pool = IsManagedByPartitionAllocPkeyPool(address);
+#endif
+
   // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PA_DCHECK(!is_in_brp_pool);
@@ -197,6 +203,12 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
             IsManagedByPartitionAllocBRPPool(reservation_start + kBRPOffset));
   PA_DCHECK(is_in_regular_pool ==
             IsManagedByPartitionAllocRegularPool(reservation_start));
+  PA_DCHECK(is_in_configurable_pool ==
+            IsManagedByPartitionAllocConfigurablePool(reservation_start));
+#if BUILDFLAG(ENABLE_PKEYS)
+  PA_DCHECK(is_in_pkey_pool ==
+            IsManagedByPartitionAllocPkeyPool(reservation_start));
+#endif
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 

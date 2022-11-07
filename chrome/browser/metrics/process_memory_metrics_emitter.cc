@@ -581,6 +581,17 @@ const Metric kPartitionAllocAddressSpaceMetrics[] = {
         .metric_size = MetricSize::kLarge,
         .metric = "configurable_pool_usage",
     },
+    Metric{
+        .uma_name = "PartitionAlloc.AddressSpace."
+                    "PkeyPoolLargestAvailableReservation",
+        .metric_size = MetricSize::kLarge,
+        .metric = "pkey_pool_largest_reservation",
+    },
+    Metric{
+        .uma_name = "PartitionAlloc.AddressSpace.PkeyPoolUsage",
+        .metric_size = MetricSize::kLarge,
+        .metric = "pkey_pool_usage",
+    },
 };
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

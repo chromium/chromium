@@ -7762,6 +7762,27 @@ chromium-metrics-reviews@google.com.
       label="Used super pages in the configurable pool. Only recorded for
              64-bit with process uptime 24H+."/>
   <suffix
+      name="PartitionAlloc.AddressSpace.PkeyPoolLargestAvailableReservation"
+      label="Longest free chunk in the pkey pool. Only recorded on
+             pkey-supported platforms."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.PkeyPoolLargestAvailableReservation.After1H"
+      label="Longest free chunk in the pkey pool. Only recorded on
+             pkey-supported platforms with process uptime [1,24)H."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.PkeyPoolLargestAvailableReservation.After24H"
+      label="Longest free chunk in the pkey pool. Only recorded on
+             pkey-supported platforms with process uptime 24H+."/>
+  <suffix name="PartitionAlloc.AddressSpace.PkeyPoolUsage"
+      label="Used super pages in the pkey pool. Only recorded on
+             pkey-supported platforms."/>
+  <suffix name="PartitionAlloc.AddressSpace.PkeyPoolUsage.After1H"
+      label="Used super pages in the pkey pool. Only recorded on
+             pkey-supported platforms with process uptime [1,24)H."/>
+  <suffix name="PartitionAlloc.AddressSpace.PkeyPoolUsage.After24H"
+      label="Used super pages in the pkey pool. Only recorded on
+             pkey-supported platforms with process uptime 24H+."/>
+  <suffix
       name="PartitionAlloc.AddressSpace.RegularPoolLargestAvailableReservation"
       label="Longest free chunk in the regular pool. Only recorded for
              64-bit."/>

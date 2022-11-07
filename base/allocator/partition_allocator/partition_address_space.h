@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/pkey.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -65,6 +66,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
       PA_DCHECK(IsConfigurablePoolInitialized());
       pool = kConfigurablePoolHandle;
       base = setup_.configurable_pool_base_address_;
+#if BUILDFLAG(ENABLE_PKEYS)
+    } else if (IsInPkeyPool(address)) {
+      pool = kPkeyPoolHandle;
+      base = setup_.pkey_pool_base_address_;
+#endif
     } else {
       PA_NOTREACHED();
     }
@@ -87,12 +93,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   //
   // This function must only be called from the main thread.
   static void InitConfigurablePool(uintptr_t pool_base, size_t size);
+#if BUILDFLAG(ENABLE_PKEYS)
+  static void InitPkeyPool(int pkey);
+#endif
   static void UninitForTesting();
   static void UninitConfigurablePoolForTesting();
 
   static PA_ALWAYS_INLINE bool IsInitialized() {
     // Either neither or both regular and BRP pool are initialized. The
-    // configurable pool is initialized separately.
+    // configurable and pkey pool are initialized separately.
     if (setup_.regular_pool_base_address_ != kUninitializedPoolBaseAddress) {
       PA_DCHECK(setup_.brp_pool_base_address_ != kUninitializedPoolBaseAddress);
       return true;
@@ -106,6 +115,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return setup_.configurable_pool_base_address_ !=
            kUninitializedPoolBaseAddress;
   }
+
+#if BUILDFLAG(ENABLE_PKEYS)
+  static PA_ALWAYS_INLINE bool IsPkeyPoolInitialized() {
+    return setup_.pkey_pool_base_address_ != kUninitializedPoolBaseAddress;
+  }
+#endif
 
   // Returns false for nullptr.
   static PA_ALWAYS_INLINE bool IsInRegularPool(uintptr_t address) {
@@ -166,6 +181,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return setup_.configurable_pool_base_address_;
   }
 
+#if BUILDFLAG(ENABLE_PKEYS)
+  // Returns false for nullptr.
+  static PA_ALWAYS_INLINE bool IsInPkeyPool(uintptr_t address) {
+    return (address & kPkeyPoolBaseMask) == setup_.pkey_pool_base_address_;
+  }
+#endif
+
 #if defined(PA_ENABLE_SHADOW_METADATA)
   static PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset(pool_handle pool) {
     if (pool == kRegularPoolHandle) {
@@ -202,6 +224,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 
+#if BUILDFLAG(ENABLE_PKEYS)
+  constexpr static PA_ALWAYS_INLINE size_t PkeyPoolSize() {
+    return kPkeyPoolSize;
+  }
+#endif
+
   // On 64-bit systems, PA allocates from several contiguous, mutually disjoint
   // pools. The BRP pool is where all allocations have a BRP ref-count, thus
   // pointers pointing there can use a BRP protection against UaF. Allocations
@@ -225,6 +253,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
   static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize));
   static_assert(base::bits::IsPowerOfTwo(kBRPPoolSize));
+#if BUILDFLAG(ENABLE_PKEYS)
+  static constexpr size_t kPkeyPoolSize = kGiB / 4;
+  static_assert(base::bits::IsPowerOfTwo(kPkeyPoolSize));
+#endif
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   // We can't afford pool sizes as large as kPoolMaxSize on Windows <8.1 (see
   // crbug.com/1101421 and crbug.com/1217759).
@@ -268,6 +300,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
 #endif  // !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 
+#if BUILDFLAG(ENABLE_PKEYS)
+  static constexpr uintptr_t kPkeyPoolOffsetMask =
+      static_cast<uintptr_t>(kPkeyPoolSize) - 1;
+  static constexpr uintptr_t kPkeyPoolBaseMask = ~kPkeyPoolOffsetMask;
+#endif
+
   // This must be set to such a value that IsIn*Pool() always returns false when
   // the pool isn't initialized.
   static constexpr uintptr_t kUninitializedPoolBaseAddress =
@@ -281,6 +319,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         : regular_pool_base_address_(kUninitializedPoolBaseAddress),
           brp_pool_base_address_(kUninitializedPoolBaseAddress),
           configurable_pool_base_address_(kUninitializedPoolBaseAddress),
+#if BUILDFLAG(ENABLE_PKEYS)
+          pkey_pool_base_address_(kUninitializedPoolBaseAddress),
+#endif
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
           regular_pool_base_mask_(0),
           brp_pool_base_mask_(0),
@@ -288,7 +329,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
           core_pools_base_mask_(0),
 #endif
 #endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
-          configurable_pool_base_mask_(0) {
+          configurable_pool_base_mask_(0)
+#if BUILDFLAG(ENABLE_PKEYS)
+          ,
+          pkey_(base::kInvalidPkey)
+#endif
+    {
     }
 
     // Using a union to enforce padding.
@@ -297,6 +343,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         uintptr_t regular_pool_base_address_;
         uintptr_t brp_pool_base_address_;
         uintptr_t configurable_pool_base_address_;
+#if BUILDFLAG(ENABLE_PKEYS)
+        uintptr_t pkey_pool_base_address_;
+#endif
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t regular_pool_base_mask_;
         uintptr_t brp_pool_base_mask_;
@@ -305,6 +354,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
 #endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t configurable_pool_base_mask_;
+#if BUILDFLAG(ENABLE_PKEYS)
+        int pkey_;
+#endif
       };
 
       char one_cacheline_[kPartitionCachelineSize];
@@ -318,7 +370,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // These are write-once fields, frequently accessed thereafter. Make sure they
   // don't share a cacheline with other, potentially writeable data, through
   // alignment and padding.
-  alignas(kPartitionCachelineSize) static PoolSetup setup_;
+  alignas(kPartitionCachelineSize) static PoolSetup setup_ PA_CONSTINIT;
 
 #if defined(PA_ENABLE_SHADOW_METADATA)
   static std::ptrdiff_t regular_pool_shadow_offset_;
@@ -357,6 +409,9 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
          || internal::PartitionAddressSpace::IsInBRPPool(address)
 #endif
+#if BUILDFLAG(ENABLE_PKEYS)
+         || internal::PartitionAddressSpace::IsInPkeyPool(address)
+#endif
          || internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
 
@@ -383,6 +438,13 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
     uintptr_t address) {
   return internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
+
+#if BUILDFLAG(ENABLE_PKEYS)
+// Returns false for nullptr.
+PA_ALWAYS_INLINE bool IsManagedByPartitionAllocPkeyPool(uintptr_t address) {
+  return internal::PartitionAddressSpace::IsInPkeyPool(address);
+}
+#endif
 
 PA_ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
   return internal::PartitionAddressSpace::IsConfigurablePoolInitialized();

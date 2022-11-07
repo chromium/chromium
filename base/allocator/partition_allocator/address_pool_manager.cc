@@ -292,6 +292,9 @@ bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   if (IsConfigurablePoolAvailable()) {
     GetPoolStats(kConfigurablePoolHandle, &stats->configurable_pool_stats);
   }
+#if BUILDFLAG(ENABLE_PKEYS)
+  GetPoolStats(kPkeyPoolHandle, &stats->pkey_pool_stats);
+#endif
   return true;
 }
 

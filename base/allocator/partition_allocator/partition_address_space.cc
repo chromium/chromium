@@ -320,6 +320,35 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
       kConfigurablePoolHandle, setup_.configurable_pool_base_address_, size);
 }
 
+#if BUILDFLAG(ENABLE_PKEYS)
+void PartitionAddressSpace::InitPkeyPool(int pkey) {
+  // The PkeyPool can't be initialized with conflicting pkeys.
+  if (IsPkeyPoolInitialized()) {
+    PA_CHECK(setup_.pkey_ == pkey);
+    return;
+  }
+
+  size_t pool_size = PkeyPoolSize();
+  setup_.pkey_pool_base_address_ = AllocPages(
+      pool_size, pool_size, PageAccessibilityConfiguration::kInaccessible,
+      PageTag::kPartitionAlloc);
+  if (!setup_.pkey_pool_base_address_)
+    HandlePoolAllocFailure();
+
+  PA_DCHECK(!(setup_.pkey_pool_base_address_ & (pool_size - 1)));
+  setup_.pkey_ = pkey;
+  AddressPoolManager::GetInstance().Add(
+      kPkeyPoolHandle, setup_.pkey_pool_base_address_, pool_size);
+
+  PA_DCHECK(!IsInPkeyPool(setup_.pkey_pool_base_address_ - 1));
+  PA_DCHECK(IsInPkeyPool(setup_.pkey_pool_base_address_));
+  PA_DCHECK(IsInPkeyPool(setup_.pkey_pool_base_address_ + pool_size - 1));
+  PA_DCHECK(!IsInPkeyPool(setup_.pkey_pool_base_address_ + pool_size));
+
+  // TODO(1362969): support PA_ENABLE_SHADOW_METADATA
+}
+#endif  // BUILDFLAG(ENABLE_PKEYS)
+
 void PartitionAddressSpace::UninitForTesting() {
 #if defined(PA_GLUE_CORE_POOLS)
   // The core pools (regular & BRP) were allocated using a single allocation of
