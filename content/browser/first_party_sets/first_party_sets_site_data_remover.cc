@@ -23,7 +23,7 @@ class ClearingTask : public BrowsingDataRemover::Observer {
       : remover_(remover),
         sites_(std::move(sites)),
         callback_(std::move(callback)) {
-    scoped_observation_.Observe(&remover_);
+    scoped_observation_.Observe(&*remover_);
   }
   ~ClearingTask() override {
     // This FirstPartySetsSiteDataClearer class is self-owned, and the only way

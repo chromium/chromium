@@ -164,11 +164,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
     return inner_.operator->();
   }
 
-  PA_ALWAYS_INLINE T* operator&() const PA_ATTRIBUTE_RETURNS_NONNULL {
-    PA_RAW_PTR_CHECK(inner_.get());  // Catch use-after-move.
-    return inner_.get();
-  }
-
   friend PA_ALWAYS_INLINE void swap(raw_ref& lhs, raw_ref& rhs) noexcept {
     PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
     PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.

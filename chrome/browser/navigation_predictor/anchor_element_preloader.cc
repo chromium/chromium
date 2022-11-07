@@ -42,7 +42,7 @@ AnchorElementPreloader::AnchorElementPreloader(
 void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   content::PreloadingData* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(
-          content::WebContents::FromRenderFrameHost(&render_frame_host_));
+          content::WebContents::FromRenderFrameHost(&*render_frame_host_));
   url::SchemeHostPort scheme_host_port(target);
   content::PreloadingURLMatchCallback match_callback =
       base::BindRepeating(is_match_for_preconnect, scheme_host_port);

@@ -13,7 +13,7 @@ ChromeFaceMLUserProvider::ChromeFaceMLUserProvider(content::WebUI* web_ui)
 
 mojom::face_ml_app::UserInformation
 ChromeFaceMLUserProvider::GetCurrentUserInformation() {
-  Profile* profile = Profile::FromWebUI(&web_ui_);
+  Profile* profile = Profile::FromWebUI(&*web_ui_);
   return mojom::face_ml_app::UserInformation(
       /*user_name=*/profile->GetProfileUserName(),
       /*is_signed_in=*/false);

@@ -117,7 +117,7 @@ void InstallIsolatedWebAppCommand::Start() {
 
 void InstallIsolatedWebAppCommand::CreateStoragePartition() {
   browser_context_->GetStoragePartition(
-      isolation_info_.storage_partition_config(&browser_context_),
+      isolation_info_.storage_partition_config(&*browser_context_),
       /*can_create=*/true);
 }
 

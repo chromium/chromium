@@ -47,7 +47,7 @@ class WebContentsContainer {
 
   std::unique_ptr<content::WebContents> web_contents_ =
       content::WebContents::Create(
-          content::WebContents::CreateParams(&context_));
+          content::WebContents::CreateParams(&*context_));
 };
 
 class PendingInstallInfoTest : public ::testing::Test {
