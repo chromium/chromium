@@ -34,7 +34,8 @@ bool IsPinnedHomeTabUrl(const WebAppRegistrar& registrar,
   GURL::Replacements replacements;
   replacements.ClearQuery();
   replacements.ClearRef();
-  return launch_url.ReplaceComponents(replacements) == pinned_home_url.value();
+  return launch_url.ReplaceComponents(replacements) ==
+         pinned_home_url.value().ReplaceComponents(replacements);
 }
 
 }  // namespace web_app

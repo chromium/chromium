@@ -608,4 +608,28 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DontCreateThrottleForReload) {
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), target_url);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, QueryParamsInStartUrl) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/get_manifest.html?tab_strip_query_params_in_start_url.json");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect only the home tab was opened.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+
+  // Navigate to start_url without query params.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+
+  // Expect navigation to happen in home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
+            embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+}
+
 }  // namespace web_app
