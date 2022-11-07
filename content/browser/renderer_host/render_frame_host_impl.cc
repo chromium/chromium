@@ -112,6 +112,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/page_factory.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 #include "content/browser/renderer_host/pending_beacon_host.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
@@ -14593,7 +14594,7 @@ RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
   if (!document.GetParent()) {
     PageDelegate* page_delegate = document.frame_tree()->page_delegate();
     DCHECK(page_delegate);
-    owned_page_ = std::make_unique<PageImpl>(document, *page_delegate);
+    owned_page_ = PageFactory::Create(document, *page_delegate);
   }
 }
 

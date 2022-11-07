@@ -107,6 +107,10 @@ TestRenderViewHost* TestRenderFrameHost::GetRenderViewHost() const {
       RenderFrameHostImpl::GetRenderViewHost());
 }
 
+TestPage& TestRenderFrameHost::GetPage() {
+  return static_cast<TestPage&>(RenderFrameHostImpl::GetPage());
+}
+
 MockRenderProcessHost* TestRenderFrameHost::GetProcess() const {
   return static_cast<MockRenderProcessHost*>(RenderFrameHostImpl::GetProcess());
 }
@@ -279,7 +283,6 @@ int TestRenderFrameHost::GetFederatedAuthRequestIssueCount(
 }
 
 void TestRenderFrameHost::SimulateManifestURLUpdate(const GURL& manifest_url) {
-  // TODO(crbug.com/1222510): Add TestPage and use it.
   GetPage().UpdateManifestUrl(manifest_url);
 }
 

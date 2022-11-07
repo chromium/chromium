@@ -51,7 +51,7 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
 
-  void UpdateManifestUrl(const GURL& manifest_url);
+  virtual void UpdateManifestUrl(const GURL& manifest_url);
 
   RenderFrameHostImpl& GetMainDocument() const;
 

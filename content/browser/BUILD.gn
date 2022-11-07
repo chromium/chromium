@@ -1774,6 +1774,8 @@ source_set("browser") {
     "renderer_host/p2p/socket_dispatcher_host.cc",
     "renderer_host/p2p/socket_dispatcher_host.h",
     "renderer_host/page_delegate.h",
+    "renderer_host/page_factory.cc",
+    "renderer_host/page_factory.h",
     "renderer_host/page_impl.cc",
     "renderer_host/page_impl.h",
     "renderer_host/page_lifecycle_state_manager.cc",

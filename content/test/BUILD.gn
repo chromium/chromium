@@ -411,8 +411,12 @@ static_library("test_support") {
     "test_navigation_url_loader_factory.h",
     "test_overscroll_delegate.cc",
     "test_overscroll_delegate.h",
+    "test_page.cc",
+    "test_page.h",
     "test_page_broadcast.cc",
     "test_page_broadcast.h",
+    "test_page_factory.cc",
+    "test_page_factory.h",
     "test_render_frame.cc",
     "test_render_frame.h",
     "test_render_frame_host.cc",
@@ -2525,6 +2529,7 @@ test("content_unittests") {
     "attribution_simulator_input_parser_unittest.cc",
     "navigation_simulator_unittest.cc",
     "test_aggregation_service_impl_unittest.cc",
+    "test_page_unittest.cc",
     "test_render_frame_host_unittest.cc",
   ]
 

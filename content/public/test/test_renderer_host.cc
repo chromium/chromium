@@ -30,6 +30,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/test/content_browser_consistency_checker.h"
 #include "content/test/test_navigation_url_loader_factory.h"
+#include "content/test/test_page_factory.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_frame_host_factory.h"
 #include "content/test/test_render_view_host.h"
@@ -120,6 +121,7 @@ RenderViewHostTestEnabler::RenderViewHostTestEnabler(
     NavigationURLLoaderFactoryType url_loader_factory_type)
     : rph_factory_(new MockRenderProcessHostFactory()),
       asgh_factory_(new MockAgentSchedulingGroupHostFactory()),
+      page_factory_(new TestPageFactory()),
       rvh_factory_(new TestRenderViewHostFactory(rph_factory_.get(),
                                                  asgh_factory_.get())),
       rfh_factory_(new TestRenderFrameHostFactory()),
