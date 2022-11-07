@@ -26,7 +26,7 @@ class Label;
 }
 
 namespace ash {
-
+class SystemShadow;
 class WindowCycleItemView;
 
 // A view that shows a collection of windows the user can cycle through.
@@ -177,6 +177,8 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // Fling handler of the current active fling. Nullptr while a fling is not
   // active.
   std::unique_ptr<WmFlingHandler> fling_handler_;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   // True once `DestroyContents` is called. Used to prevent `Layout` from being
   // called once all the child views have been removed. See

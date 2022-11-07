@@ -421,7 +421,7 @@ void WindowCycleList::Scroll(int offset) {
     // When there is only one window, we should give feedback to the user. If
     // the window is minimized, we should also show it.
     if (windows_.size() == 1)
-      ::wm::AnimateWindow(windows_[0], ::wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+      wm::AnimateWindow(windows_[0], wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     return;
   }
 
