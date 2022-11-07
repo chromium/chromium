@@ -5,7 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_ADVERTISEMENT_MANAGER_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_ADVERTISEMENT_MANAGER_MAC_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_advertisement_mac.h"
 

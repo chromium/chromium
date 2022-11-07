@@ -5,7 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_ADVERTISEMENT_H_
 #define DEVICE_BLUETOOTH_ADVERTISEMENT_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 

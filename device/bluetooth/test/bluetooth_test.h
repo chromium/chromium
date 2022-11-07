@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter.h"

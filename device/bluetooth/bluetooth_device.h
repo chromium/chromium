@@ -19,7 +19,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

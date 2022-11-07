@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"

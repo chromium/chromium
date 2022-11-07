@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_service_record_win.h"

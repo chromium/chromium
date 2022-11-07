@@ -10,7 +10,7 @@
 #include <tuple>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"

@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 
 namespace chromecast {

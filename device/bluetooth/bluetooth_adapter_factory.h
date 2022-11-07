@@ -6,7 +6,7 @@
 #define DEVICE_BLUETOOTH_BLUETOOTH_ADAPTER_FACTORY_H_
 
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
