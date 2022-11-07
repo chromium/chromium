@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
 #include "content/common/private_aggregation_host.mojom.h"
@@ -29,7 +30,6 @@ namespace content {
 
 class AggregatableReportRequest;
 class AggregationService;
-class PrivateAggregationBudgeter;
 class PrivateAggregationHost;
 class StoragePartitionImpl;
 
@@ -80,7 +80,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
   virtual void OnConsumeBudgetReturned(
       AggregatableReportRequest report_request,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
-      bool was_budget_use_approved);
+      PrivateAggregationBudgeter::RequestResult request_result);
 
   std::unique_ptr<PrivateAggregationBudgeter> budgeter_;
   std::unique_ptr<PrivateAggregationHost> host_;

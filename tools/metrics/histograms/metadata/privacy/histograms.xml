@@ -504,6 +504,18 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult"
+    enum="PrivacySandboxPrivateAggregationBudgeterRequestResult"
+    expires_after="2023-04-27">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the result of a request to consume budget for the Private
+    Aggregation API. Recorded for each individual aggregatable report request
+    (but not each individual histogram contribution).
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.InitStatus"
     enum="PrivacySandboxPrivateAggregationBudgetStorageInitStatus"
     expires_after="M117">

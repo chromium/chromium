@@ -82599,6 +82599,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Failed to initialize schema"/>
 </enum>
 
+<enum name="PrivacySandboxPrivateAggregationBudgeterRequestResult">
+  <int value="0" label="Approved"/>
+  <int value="1" label="Insufficient budget"/>
+  <int value="2" label="Requested more than total budget"/>
+  <int value="3" label="Too many pending calls"/>
+  <int value="4" label="Invalid request"/>
+  <int value="5" label="Storage initialization failed"/>
+  <int value="6" label="Bad values on disk"/>
+</enum>
+
 <enum name="PrivacySandboxPrivateAggregationBudgetStorageInitStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to open DB in memory"/>

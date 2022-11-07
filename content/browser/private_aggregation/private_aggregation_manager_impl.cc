@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
@@ -47,6 +48,13 @@ base::LazyThreadPoolSequencedTaskRunner g_storage_task_runner =
         base::TaskTraits(base::TaskPriority::BEST_EFFORT,
                          base::MayBlock(),
                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
+
+void RecordBudgeterResultHistogram(
+    PrivateAggregationBudgeter::RequestResult request_result) {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      request_result);
+}
 
 }  // namespace
 
@@ -115,6 +123,8 @@ void PrivateAggregationManagerImpl::OnReportRequestReceivedFromHost(
       });
 
   if (!budget_needed.IsValid()) {
+    RecordBudgeterResultHistogram(PrivateAggregationBudgeter::RequestResult::
+                                      kRequestedMoreThanTotalBudget);
     return;
   }
 
@@ -136,10 +146,10 @@ AggregationService* PrivateAggregationManagerImpl::GetAggregationService() {
 void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
     AggregatableReportRequest report_request,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
-    bool was_budget_use_approved) {
-  // TODO(alexmt): Consider adding metrics for success and the different errors
-  // here.
-  if (!was_budget_use_approved) {
+    PrivateAggregationBudgeter::RequestResult request_result) {
+  RecordBudgeterResultHistogram(request_result);
+
+  if (request_result != PrivateAggregationBudgeter::RequestResult::kApproved) {
     return;
   }
 

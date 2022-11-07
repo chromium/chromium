@@ -78,10 +78,10 @@ PrivateAggregationBudgeter::~PrivateAggregationBudgeter() {
 void PrivateAggregationBudgeter::ConsumeBudget(
     int budget,
     const PrivateAggregationBudgetKey& budget_key,
-    base::OnceCallback<void(bool)> on_done) {
+    base::OnceCallback<void(RequestResult)> on_done) {
   if (storage_status_ == StorageStatus::kInitializing) {
     if (pending_calls_.size() >= kMaxPendingCalls) {
-      std::move(on_done).Run(false);
+      std::move(on_done).Run(RequestResult::kTooManyPendingCalls);
       return;
     }
 
@@ -141,20 +141,24 @@ void PrivateAggregationBudgeter::ProcessAllPendingCalls() {
 void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     int additional_budget,
     const PrivateAggregationBudgetKey& budget_key,
-    base::OnceCallback<void(bool)> on_done) {
+    base::OnceCallback<void(RequestResult)> on_done) {
   switch (storage_status_) {
     case StorageStatus::kInitializing:
       NOTREACHED();
       break;
     case StorageStatus::kInitializationFailed:
-      std::move(on_done).Run(false);
+      std::move(on_done).Run(RequestResult::kStorageInitializationFailed);
       return;
     case StorageStatus::kOpen:
       break;
   }
 
-  if (additional_budget <= 0 || additional_budget > kMaxBudgetPerScope) {
-    std::move(on_done).Run(false);
+  if (additional_budget <= 0) {
+    std::move(on_done).Run(RequestResult::kInvalidRequest);
+    return;
+  }
+  if (additional_budget > kMaxBudgetPerScope) {
+    std::move(on_done).Run(RequestResult::kRequestedMoreThanTotalBudget);
     return;
   }
 
@@ -193,7 +197,7 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
 
     // Protect against bad values on disk
     if (elem.budget_used() <= 0) {
-      std::move(on_done).Run(false);
+      std::move(on_done).Run(RequestResult::kBadValuesOnDisk);
       return;
     }
 
@@ -202,11 +206,16 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
 
   total_budget_used += additional_budget;
 
-  bool budget_increase_allowed =
-      total_budget_used.IsValid() &&
-      (total_budget_used.ValueOrDie() <= kMaxBudgetPerScope);
+  RequestResult budget_increase_request_result;
+  if (!total_budget_used.IsValid()) {
+    budget_increase_request_result = RequestResult::kBadValuesOnDisk;
+  } else if (total_budget_used.ValueOrDie() > kMaxBudgetPerScope) {
+    budget_increase_request_result = RequestResult::kInsufficientBudget;
+  } else {
+    budget_increase_request_result = RequestResult::kApproved;
+  }
 
-  if (budget_increase_allowed) {
+  if (budget_increase_request_result == RequestResult::kApproved) {
     if (!window_for_key) {
       window_for_key = hourly_budgets->Add();
       window_for_key->set_hour_start_timestamp(window_for_key_begins);
@@ -229,10 +238,11 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     hourly_budgets->erase(new_end, hourly_budgets->end());
   }
 
-  if (budget_increase_allowed || should_clean_up_stale_budgets) {
+  if (budget_increase_request_result == RequestResult::kApproved ||
+      should_clean_up_stale_budgets) {
     storage_->budgets_data()->UpdateData(origin_key, budgets);
   }
-  std::move(on_done).Run(budget_increase_allowed);
+  std::move(on_done).Run(budget_increase_request_result);
 }
 
 void PrivateAggregationBudgeter::ClearDataImpl(

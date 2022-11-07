@@ -40,7 +40,7 @@ class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
               ConsumeBudget,
               (int,
                const PrivateAggregationBudgetKey&,
-               base::OnceCallback<void(bool)>),
+               base::OnceCallback<void(RequestResult)>),
               (override));
 
   MOCK_METHOD(void,

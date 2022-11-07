@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -97,6 +98,8 @@ class PrivateAggregationManagerImplTest : public testing::Test {
 
 TEST_F(PrivateAggregationManagerImplTest,
        BasicReportRequest_FerriedAppropriately) {
+  base::HistogramTester histogram;
+
   const url::Origin example_origin =
       url::Origin::Create(GURL(kExampleOriginUrl));
 
@@ -124,11 +127,15 @@ TEST_F(PrivateAggregationManagerImplTest,
                 ConsumeBudget(
                     expected_request.payload_contents().contributions[0].value,
                     example_key, _))
-        .WillOnce(Invoke([&checkpoint](int, const PrivateAggregationBudgetKey&,
-                                       base::OnceCallback<void(bool)> on_done) {
-          checkpoint.Call(1);
-          std::move(on_done).Run(true);
-        }));
+        .WillOnce(Invoke(
+            [&checkpoint](
+                int, const PrivateAggregationBudgetKey&,
+                base::OnceCallback<void(
+                    PrivateAggregationBudgeter::RequestResult)> on_done) {
+              checkpoint.Call(1);
+              std::move(on_done).Run(
+                  PrivateAggregationBudgeter::RequestResult::kApproved);
+            }));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
         .WillOnce(Invoke(
@@ -142,10 +149,16 @@ TEST_F(PrivateAggregationManagerImplTest,
 
   manager_.OnReportRequestReceivedFromHost(
       aggregation_service::CloneReportRequest(expected_request), example_key);
+
+  histogram.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      PrivateAggregationBudgeter::RequestResult::kApproved, 1);
 }
 
 TEST_F(PrivateAggregationManagerImplTest,
        ReportRequestWithMultipleContributions_CorrectBudgetRequested) {
+  base::HistogramTester histogram;
+
   const url::Origin example_origin =
       url::Origin::Create(GURL(kExampleOriginUrl));
 
@@ -178,11 +191,15 @@ TEST_F(PrivateAggregationManagerImplTest,
 
     EXPECT_CALL(checkpoint, Call(0));
     EXPECT_CALL(*budgeter_, ConsumeBudget(/*budget=*/125, example_key, _))
-        .WillOnce(Invoke([&checkpoint](int, const PrivateAggregationBudgetKey&,
-                                       base::OnceCallback<void(bool)> on_done) {
-          checkpoint.Call(1);
-          std::move(on_done).Run(true);
-        }));
+        .WillOnce(Invoke(
+            [&checkpoint](
+                int, const PrivateAggregationBudgetKey&,
+                base::OnceCallback<void(
+                    PrivateAggregationBudgeter::RequestResult)> on_done) {
+              checkpoint.Call(1);
+              std::move(on_done).Run(
+                  PrivateAggregationBudgeter::RequestResult::kApproved);
+            }));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
         .WillOnce(Invoke(
@@ -196,10 +213,16 @@ TEST_F(PrivateAggregationManagerImplTest,
 
   manager_.OnReportRequestReceivedFromHost(
       aggregation_service::CloneReportRequest(expected_request), example_key);
+
+  histogram.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      PrivateAggregationBudgeter::RequestResult::kApproved, 1);
 }
 
 TEST_F(PrivateAggregationManagerImplTest,
        BudgetRequestRejected_RequestNotScheduled) {
+  base::HistogramTester histogram;
+
   const url::Origin example_origin =
       url::Origin::Create(GURL(kExampleOriginUrl));
 
@@ -222,10 +245,14 @@ TEST_F(PrivateAggregationManagerImplTest,
                 ConsumeBudget(
                     expected_request.payload_contents().contributions[0].value,
                     example_key, _))
-        .WillOnce(Invoke([&checkpoint](int, const PrivateAggregationBudgetKey&,
-                                       base::OnceCallback<void(bool)> on_done) {
+        .WillOnce(Invoke([&checkpoint](
+                             int, const PrivateAggregationBudgetKey&,
+                             base::OnceCallback<void(
+                                 PrivateAggregationBudgeter::RequestResult)>
+                                 on_done) {
           checkpoint.Call(1);
-          std::move(on_done).Run(false);
+          std::move(on_done).Run(
+              PrivateAggregationBudgeter::RequestResult::kInsufficientBudget);
         }));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
@@ -235,10 +262,16 @@ TEST_F(PrivateAggregationManagerImplTest,
 
   manager_.OnReportRequestReceivedFromHost(
       aggregation_service::CloneReportRequest(expected_request), example_key);
+
+  histogram.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      PrivateAggregationBudgeter::RequestResult::kInsufficientBudget, 1);
 }
 
 TEST_F(PrivateAggregationManagerImplTest,
        BudgetExceedsIntegerLimits_BudgetRejectedWithoutRequest) {
+  base::HistogramTester histogram;
+
   const url::Origin example_origin =
       url::Origin::Create(GURL(kExampleOriginUrl));
 
@@ -268,10 +301,17 @@ TEST_F(PrivateAggregationManagerImplTest,
   EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
   manager_.OnReportRequestReceivedFromHost(
       aggregation_service::CloneReportRequest(expected_request), example_key);
+
+  histogram.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      PrivateAggregationBudgeter::RequestResult::kRequestedMoreThanTotalBudget,
+      1);
 }
 
 TEST_F(PrivateAggregationManagerImplTest,
        DebugRequest_ImmediatelySentAfterBudgetRequest) {
+  base::HistogramTester histogram;
+
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
   AggregatableReportSharedInfo shared_info =
@@ -300,10 +340,13 @@ TEST_F(PrivateAggregationManagerImplTest,
       *budgeter_,
       ConsumeBudget(standard_request->payload_contents().contributions[0].value,
                     example_key, _))
-      .WillOnce(Invoke([](int, const PrivateAggregationBudgetKey&,
-                          base::OnceCallback<void(bool)> on_done) {
-        std::move(on_done).Run(true);
-      }));
+      .WillOnce(Invoke(
+          [](int, const PrivateAggregationBudgetKey&,
+             base::OnceCallback<void(PrivateAggregationBudgeter::RequestResult)>
+                 on_done) {
+            std::move(on_done).Run(
+                PrivateAggregationBudgeter::RequestResult::kApproved);
+          }));
   EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
       .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
         EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
@@ -321,9 +364,15 @@ TEST_F(PrivateAggregationManagerImplTest,
   manager_.OnReportRequestReceivedFromHost(
       aggregation_service::CloneReportRequest(standard_request.value()),
       example_key);
+
+  histogram.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      PrivateAggregationBudgeter::RequestResult::kApproved, 1);
 }
 
 TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
+  base::HistogramTester histogram;
+
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
   AggregatableReportSharedInfo shared_info =
@@ -352,10 +401,13 @@ TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
     testing::InSequence seq;
 
     EXPECT_CALL(*budgeter_, ConsumeBudget(_, fledge_key, _))
-        .WillOnce(Invoke([](int, const PrivateAggregationBudgetKey&,
-                            base::OnceCallback<void(bool)> on_done) {
-          std::move(on_done).Run(true);
-        }));
+        .WillOnce(
+            Invoke([](int, const PrivateAggregationBudgetKey&,
+                      base::OnceCallback<void(
+                          PrivateAggregationBudgeter::RequestResult)> on_done) {
+              std::move(on_done).Run(
+                  PrivateAggregationBudgeter::RequestResult::kApproved);
+            }));
     EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
         .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
           EXPECT_EQ(report_request.shared_info().reporting_origin,
@@ -369,10 +421,13 @@ TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
     EXPECT_CALL(checkpoint, Call(1));
 
     EXPECT_CALL(*budgeter_, ConsumeBudget(_, shared_storage_key, _))
-        .WillOnce(Invoke([](int, const PrivateAggregationBudgetKey&,
-                            base::OnceCallback<void(bool)> on_done) {
-          std::move(on_done).Run(true);
-        }));
+        .WillOnce(
+            Invoke([](int, const PrivateAggregationBudgetKey&,
+                      base::OnceCallback<void(
+                          PrivateAggregationBudgeter::RequestResult)> on_done) {
+              std::move(on_done).Run(
+                  PrivateAggregationBudgeter::RequestResult::kApproved);
+            }));
     EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
         .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
           EXPECT_EQ(report_request.shared_info().reporting_origin,
@@ -392,10 +447,16 @@ TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
   manager_.OnReportRequestReceivedFromHost(
       aggregation_service::CloneReportRequest(standard_request.value()),
       shared_storage_key);
+
+  histogram.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      PrivateAggregationBudgeter::RequestResult::kApproved, 2);
 }
 
 TEST_F(PrivateAggregationManagerImplTest,
        BudgetDenied_DebugRequestNotAssembledOrSent) {
+  base::HistogramTester histogram;
+
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
   AggregatableReportSharedInfo shared_info =
@@ -418,16 +479,23 @@ TEST_F(PrivateAggregationManagerImplTest,
       *budgeter_,
       ConsumeBudget(standard_request->payload_contents().contributions[0].value,
                     example_key, _))
-      .WillOnce(Invoke([](int, const PrivateAggregationBudgetKey&,
-                          base::OnceCallback<void(bool)> on_done) {
-        std::move(on_done).Run(false);
-      }));
+      .WillOnce(Invoke(
+          [](int, const PrivateAggregationBudgetKey&,
+             base::OnceCallback<void(PrivateAggregationBudgeter::RequestResult)>
+                 on_done) {
+            std::move(on_done).Run(
+                PrivateAggregationBudgeter::RequestResult::kBadValuesOnDisk);
+          }));
   EXPECT_CALL(*aggregation_service_, AssembleAndSendReport).Times(0);
   EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
 
   manager_.OnReportRequestReceivedFromHost(
       aggregation_service::CloneReportRequest(standard_request.value()),
       example_key);
+
+  histogram.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      PrivateAggregationBudgeter::RequestResult::kBadValuesOnDisk, 1);
 }
 
 TEST_F(PrivateAggregationManagerImplTest,
