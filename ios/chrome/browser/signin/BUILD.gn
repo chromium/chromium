@@ -216,8 +216,6 @@ source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "authentication_service_delegate_fake.h",
-    "authentication_service_delegate_fake.mm",
     "fake_authentication_service_delegate.h",
     "fake_authentication_service_delegate.mm",
   ]
