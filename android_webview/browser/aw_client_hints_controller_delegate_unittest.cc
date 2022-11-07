@@ -6,6 +6,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -14,16 +15,38 @@
 
 namespace android_webview {
 
+namespace {
+class PermissiveAwClientHintsControllerDelegate
+    : public AwClientHintsControllerDelegate {
+ public:
+  explicit PermissiveAwClientHintsControllerDelegate(PrefService* pref_service)
+      : AwClientHintsControllerDelegate(pref_service) {}
+
+  bool IsJavaScriptAllowed(const GURL& url,
+                           content::RenderFrameHost* parent_rfh) override {
+    // We need to be permissive here to test persisting client hints.
+    return true;
+  }
+};
+}  // namespace
+
 class AwClientHintsControllerDelegateTest : public testing::Test {
  protected:
   void SetUp() override {
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
+    prefs_->registry()->RegisterDictionaryPref(
+        prefs::kClientHintsCachedPerOriginMap);
     client_hints_controller_delegate_ =
         std::make_unique<AwClientHintsControllerDelegate>(prefs_.get());
+    permissive_client_hints_controller_delegate_ =
+        std::make_unique<PermissiveAwClientHintsControllerDelegate>(
+            prefs_.get());
   }
 
   std::unique_ptr<content::ClientHintsControllerDelegate>
       client_hints_controller_delegate_;
+  std::unique_ptr<content::ClientHintsControllerDelegate>
+      permissive_client_hints_controller_delegate_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
 };
 
@@ -33,9 +56,43 @@ TEST_F(AwClientHintsControllerDelegateTest, GetNetworkQualityTracker) {
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, GetAllowedClientHintsFromSource) {
-  // TODO(crbug.com/921655): Actually test function once implemented.
-  client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
-      url::Origin(), nullptr);
+  // Verify empty Origin is rejected even if additional hints are set.
+  blink::EnabledClientHints enabled_hints;
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin(), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
+  permissive_client_hints_controller_delegate_->SetAdditionalClientHints(
+      {network::mojom::WebClientHintsType::kDeviceMemory});
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin(), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
+  permissive_client_hints_controller_delegate_->ClearAdditionalClientHints();
+
+  // Verify insecure Origin is rejected even if additional hints are set.
+  enabled_hints = blink::EnabledClientHints();
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("https://example.com")), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
+  permissive_client_hints_controller_delegate_->SetAdditionalClientHints(
+      {network::mojom::WebClientHintsType::kDeviceMemory});
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("http://example.com")), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
+  permissive_client_hints_controller_delegate_->ClearAdditionalClientHints();
+
+  // Verify persisted and additional hints are combined.
+  enabled_hints = blink::EnabledClientHints();
+  permissive_client_hints_controller_delegate_->SetAdditionalClientHints(
+      {network::mojom::WebClientHintsType::kDeviceMemory});
+  permissive_client_hints_controller_delegate_->PersistClientHints(
+      url::Origin::Create(GURL("https://example.com")), nullptr,
+      {network::mojom::WebClientHintsType::kPrefersColorScheme});
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("https://example.com")), &enabled_hints);
+  EXPECT_EQ(
+      enabled_hints.GetEnabledHints(),
+      std::vector({network::mojom::WebClientHintsType::kPrefersColorScheme,
+                   network::mojom::WebClientHintsType::kDeviceMemory}));
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, IsJavaScriptAllowed) {
@@ -60,30 +117,82 @@ TEST_F(AwClientHintsControllerDelegateTest, GetUserAgentMetadata) {
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, PersistClientHints) {
-  client_hints_controller_delegate_->PersistClientHints(url::Origin(), nullptr,
-                                                        {});
-  client_hints_controller_delegate_->PersistClientHints(
-      url::Origin::Create(GURL("https://example.com")), nullptr, {});
-  client_hints_controller_delegate_->PersistClientHints(
+  // Empty origin can't persist hints.
+  blink::EnabledClientHints enabled_hints;
+  permissive_client_hints_controller_delegate_->PersistClientHints(
       url::Origin(), nullptr,
       {network::mojom::WebClientHintsType::kDeviceMemory});
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin(), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
+
+  // Insecure origin can't persist hints.
+  enabled_hints = blink::EnabledClientHints();
+  permissive_client_hints_controller_delegate_->PersistClientHints(
+      url::Origin::Create(GURL("http://example.com")), nullptr,
+      {network::mojom::WebClientHintsType::kDeviceMemory});
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("http://example.com")), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
+
+  // Delegate that bans JavaScript can't persist hints.
+  enabled_hints = blink::EnabledClientHints();
   client_hints_controller_delegate_->PersistClientHints(
       url::Origin::Create(GURL("https://example.com")), nullptr,
       {network::mojom::WebClientHintsType::kDeviceMemory});
-  // TODO(crbug.com/921655): Test with GetAllowedClientHintsFromSource
+  client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("https://example.com")), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
+
+  // Persisting hints for one origin doesnt affect others.
+  enabled_hints = blink::EnabledClientHints();
+  permissive_client_hints_controller_delegate_->PersistClientHints(
+      url::Origin::Create(GURL("https://example.com")), nullptr,
+      {network::mojom::WebClientHintsType::kDeviceMemory});
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("https://example.com")), &enabled_hints);
+  EXPECT_EQ(enabled_hints.GetEnabledHints(),
+            std::vector({network::mojom::WebClientHintsType::kDeviceMemory}));
+  enabled_hints = blink::EnabledClientHints();
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("https://another.example.com")), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
+
+  // Persisted hints can be cleared.
+  enabled_hints = blink::EnabledClientHints();
+  permissive_client_hints_controller_delegate_->PersistClientHints(
+      url::Origin::Create(GURL("https://example.com")), nullptr,
+      {network::mojom::WebClientHintsType::kDeviceMemory});
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("https://example.com")), &enabled_hints);
+  EXPECT_EQ(enabled_hints.GetEnabledHints(),
+            std::vector({network::mojom::WebClientHintsType::kDeviceMemory}));
+  enabled_hints = blink::EnabledClientHints();
+  permissive_client_hints_controller_delegate_->PersistClientHints(
+      url::Origin::Create(GURL("https://example.com")), nullptr, {});
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("https://example.com")), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, SetAdditionalClientHints) {
-  client_hints_controller_delegate_->SetAdditionalClientHints(
+  blink::EnabledClientHints enabled_hints;
+  permissive_client_hints_controller_delegate_->SetAdditionalClientHints(
       {network::mojom::WebClientHintsType::kDeviceMemory});
-  // TODO(crbug.com/921655): Test with GetAllowedClientHintsFromSource
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("https://example.com")), &enabled_hints);
+  EXPECT_EQ(enabled_hints.GetEnabledHints(),
+            std::vector({network::mojom::WebClientHintsType::kDeviceMemory}));
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, ClearAdditionalClientHints) {
-  client_hints_controller_delegate_->SetAdditionalClientHints(
+  blink::EnabledClientHints enabled_hints;
+  permissive_client_hints_controller_delegate_->SetAdditionalClientHints(
       {network::mojom::WebClientHintsType::kDeviceMemory});
-  client_hints_controller_delegate_->ClearAdditionalClientHints();
-  // TODO(crbug.com/921655): Test with GetAllowedClientHintsFromSource
+  permissive_client_hints_controller_delegate_->ClearAdditionalClientHints();
+  permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
+      url::Origin::Create(GURL("https://example.com")), &enabled_hints);
+  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
 }
 
 TEST_F(AwClientHintsControllerDelegateTest,

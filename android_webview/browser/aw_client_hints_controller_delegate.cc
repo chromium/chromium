@@ -41,8 +41,34 @@ AwClientHintsControllerDelegate::GetNetworkQualityTracker() {
 void AwClientHintsControllerDelegate::GetAllowedClientHintsFromSource(
     const url::Origin& origin,
     blink::EnabledClientHints* client_hints) {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
+  // Ensure this origin can have hints stored.
+  const GURL url = origin.GetURL();
+  if (!url.is_valid() || !network::IsUrlPotentiallyTrustworthy(url)) {
+    return;
+  }
+
+  // Add stored hints to the enabled list.
+  if (pref_service_->HasPrefPath(prefs::kClientHintsCachedPerOriginMap)) {
+    auto* const client_hints_list =
+        pref_service_->GetDict(prefs::kClientHintsCachedPerOriginMap)
+            .FindList(origin.Serialize());
+    if (client_hints_list) {
+      for (const auto& client_hint : *client_hints_list) {
+        DCHECK(client_hint.is_int());
+        network::mojom::WebClientHintsType client_hint_mojo =
+            static_cast<network::mojom::WebClientHintsType>(
+                client_hint.GetInt());
+        if (network::mojom::IsKnownEnumValue(client_hint_mojo)) {
+          client_hints->SetIsEnabled(client_hint_mojo, true);
+        }
+      }
+    }
+  }
+
+  // Add additional hints to the enabled list.
+  for (auto hint : additional_hints_) {
+    client_hints->SetIsEnabled(hint, true);
+  }
 }
 
 bool AwClientHintsControllerDelegate::IsJavaScriptAllowed(
