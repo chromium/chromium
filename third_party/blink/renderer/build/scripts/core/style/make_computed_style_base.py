@@ -170,10 +170,10 @@ def _create_groups(properties):
 
 
 def _mark_builder_flags(group):
-    """Mark all fields as builder fields, and unset readonly."""
+    """Mark all fields as builder fields, and set writable."""
     for field in group.fields:
         field.builder = True
-        field.readonly = False
+        field.writable = True
     for subgroup in group.subgroups:
         _mark_builder_flags(subgroup)
 
@@ -319,7 +319,7 @@ def _create_property_field(property_):
         'property',
         name_for_methods,
         property_name=property_['name'].original,
-        readonly=property_['readonly'],
+        writable=property_['writable'],
         inherited=property_['inherited'],
         independent=property_['independent'],
         semi_independent_variable=property_['semi_independent_variable'],
@@ -352,7 +352,7 @@ def _create_inherited_flag_field(property_):
         'inherited_flag',
         name_for_methods,
         property_name=property_['name'].original,
-        readonly=False,  # TODO(crbug.com/1377295): Propagate from json5.
+        writable=False,
         type_name='bool',
         wrapper_pointer_name=None,
         field_template='primitive',

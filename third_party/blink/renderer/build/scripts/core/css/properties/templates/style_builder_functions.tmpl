@@ -33,10 +33,10 @@ void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value
 {% endmacro %}
 
 {% macro style_access(property) %}
-  {%- if property.readonly %}
-state.StyleBuilder().
-  {%- else %}
+  {%- if property.writable %}
 state.Style()->
+  {%- else %}
+state.StyleBuilder().
   {%- endif %}
 {% endmacro %}
 

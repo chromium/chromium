@@ -33,7 +33,6 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
-      readonly: true,
     },
     {
       name: "Display",
@@ -48,7 +47,6 @@
         "layout-custom", "inline-layout-custom", "math", "block math"
       ],
       default_value: "inline",
-      readonly: true,
     },
     {
       name: "DisplayLayoutCustomName",
@@ -57,7 +55,6 @@
       type_name: "AtomicString",
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "g_null_atom",
-      readonly: true,
     },
     {
       name: "DisplayLayoutCustomParentName",
@@ -66,7 +63,6 @@
       type_name: "AtomicString",
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "g_null_atom",
-      readonly: true,
     },
     {
       name: "OriginalDisplay",
@@ -81,7 +77,6 @@
         "layout-custom", "inline-layout-custom", "math", "block math"
       ],
       default_value: "inline",
-      readonly: true,
     },
     {
       name: "InsideLink",
@@ -89,7 +84,6 @@
       default_value: "not-inside-link",
       keywords: ["not-inside-link", "inside-unvisited-link", "inside-visited-link"],
       inherited: true,
-      readonly: true,
     },
     {
       name: "InForcedColorsMode",
@@ -98,7 +92,6 @@
       default_value: "false",
       type_name: "bool",
       inherited: true,
-      readonly: true,
     },
     // Whether we're inside (or at) a block fragmentation context that may
     // switch between legacy and NG layout, depending on the contents.
@@ -110,7 +103,6 @@
       default_value: "false",
       type_name: "bool",
       inherited: true,
-      readonly: true,
     },
     // Style has content property with attr() values.
     {
@@ -119,7 +111,6 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
-      readonly: true,
     },
     // Whether this style is affected by these pseudo-classes.
     {
@@ -128,6 +119,7 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
+      writable: true,
     },
     {
       name: "AffectedByHover",
@@ -135,6 +127,7 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
+      writable: true,
     },
     {
       name: "AffectedByActive",
@@ -142,6 +135,7 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
+      writable: true,
     },
     {
       name: "AffectedByDrag",
@@ -149,6 +143,7 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
+      writable: true,
     },
     // A non-inherited property references a variable or @apply is used
     {
@@ -157,7 +152,6 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
-      readonly: true,
     },
     // A property references a variable that needs to be resolved
     {
@@ -165,7 +159,6 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      readonly: true,
     },
     // A property which value consists of a custom property declaration.
     {
@@ -173,7 +166,6 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      readonly: true,
     },
     // Set on parent style when a child explicitly inherits a
     // non-inherited property
@@ -184,14 +176,12 @@
       custom_copy: true,
       custom_compare: true,
       mutable: true,
-      readonly: true,
     },
     // Explicitly inherits a non-inherited property
     {
       name: "HasExplicitInheritance",
       field_template: "monotonic_flag",
       default_value: "false",
-      readonly: true,
     },
     // These are set if we used viewport or rem units when resolving a length.
     {
@@ -200,18 +190,21 @@
       field_size: 2,
       default_value: "0",
       type_name: "unsigned",
+      writable: true,
     },
     {
       name: "HasRemUnits",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      writable: true,
     },
     {
       name: "HasEmUnits",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      writable: true,
     },
     // Whether we used a length unit that must be resolved against the measure
     // of a certain glyph in some font.
@@ -220,12 +213,14 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      writable: true,
     },
     {
       name: "HasContainerRelativeUnits",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      writable: true,
     },
     {
       name: "HasLineHeightRelativeUnits",
@@ -233,6 +228,7 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      writable: true,
     },
     // True if this ComputedStyle is the result of CustomStyleForLayoutObject()
     // that uses font metrics in its calculation.
@@ -241,7 +237,6 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      readonly: true,
     },
     // These properties only have generated storage, and their methods are handwritten in ComputedStyle.
     {
@@ -252,7 +247,6 @@
       type_name: "PseudoId",
       custom_copy: true,
       custom_compare: true,
-      readonly: true,
     },
     {
       name: "PseudoBits",
@@ -263,6 +257,7 @@
       custom_copy: true,
       custom_compare: true,
       computed_style_custom_functions: ["getter", "setter"],
+      writable: true,
     },
     // Whether any non-universal highlight selectors were found when collecting
     // rules for the originating element. Stored in the *originating* style, and
@@ -275,6 +270,7 @@
       type_name: "bool",
       custom_copy: true,
       custom_compare: true,
+      writable: true,
     },
     // Whether any highlight pseudo selectors were found when collecting non-UA
     // rules for the originating element. Stored in the *originating* style, and
@@ -287,6 +283,7 @@
       type_name: "bool",
       custom_copy: true,
       custom_compare: true,
+      writable: true,
     },
     // Used by ::highlight
     {
@@ -296,7 +293,6 @@
       type_name: "AtomicString",
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "g_null_atom",
-      readonly: true,
     },
     {
       name: "CustomHighlightNames",
@@ -309,6 +305,7 @@
       default_value: "nullptr",
       computed_style_custom_functions: ["setter", "getter"],
       custom_copy: true,
+      writable: true,
     },
     // True if 'underline solid' is the only text decoration on this element.
     {
@@ -318,6 +315,7 @@
       type_name: "bool",
       inherited: true,
       computed_style_custom_functions: ["getter", "setter"],
+      writable: true,
     },
     // FIXME: vertical align is actually a CSS property, but since we don't support union fields
     // which can be either a keyword or Length, this is specified in this file for now. Remove this
@@ -329,6 +327,7 @@
       type_name: "unsigned",
       default_value: "static_cast<unsigned>(EVerticalAlign::kBaseline)",
       computed_style_custom_functions: ["initial", "getter", "setter"],
+      writable: true,
     },
     {
       name: "VerticalAlignLength",
@@ -339,6 +338,7 @@
       field_group: "box",
       getter: "GetVerticalAlignLength",
       computed_style_custom_functions: ["setter"],
+      writable: true,
     },
     {
       name: "border-image",
@@ -347,7 +347,6 @@
       type_name: "NinePieceImage",
       field_group: "surround",
       default_value: "NinePieceImage()",
-      readonly: true,
     },
     {
       name: "Background",
@@ -357,7 +356,6 @@
       default_value: "FillLayer(EFillLayerType::kBackground, true)",
       field_group: "background",
       computed_style_custom_functions: ["getter", "setter"],
-      readonly: true,
     },
     {
       name: "HasClipPath",
@@ -365,7 +363,6 @@
       type_name: "bool",
       default_value: "false",
       field_group: "visual",
-      readonly: true,
     },
     {
       name: "HasAutoClip",
@@ -374,7 +371,6 @@
       default_value: "true",
       field_group: "visual",
       computed_style_custom_functions: ["setter"],
-      readonly: true,
     },
     {
       name: "HasAutoZIndex",
@@ -383,7 +379,6 @@
       field_group: "box",
       default_value: "true",
       computed_style_custom_functions: ["setter"],
-      readonly: true,
     },
     {
       name: "font",
@@ -394,6 +389,7 @@
       inherited: true,
       default_value: "Font()",
       computed_style_custom_functions: ["getter", "setter"],
+      writable: true,
     },
     {
       name: "TextAutosizingMultiplier",
@@ -403,6 +399,7 @@
       field_group: "inherited",
       default_value: "1.0",
       computed_style_custom_functions: ["setter"],
+      writable: true,
     },
     {
       name: "CursorData",
@@ -414,7 +411,6 @@
       wrapper_pointer_name: "Persistent",
       field_group: "*",
       computed_style_custom_functions: ["getter", "setter"],
-      readonly: true,
     },
     {
       name: "EffectiveZoom",
@@ -424,7 +420,6 @@
       default_value: "1.0f",
       field_group: "*",
       computed_style_custom_functions: ["setter"],
-      readonly: true,
     },
     {
       name: "TextEmphasisFill",
@@ -434,6 +429,7 @@
       default_value: "filled",
       keywords: ["filled", "open"],
       field_group: "*",
+      writable: true,
     },
     {
       name: "TextEmphasisMark",
@@ -444,6 +440,7 @@
       keywords: ["none", "auto", "dot", "circle", "double-circle", "triangle", "sesame", "custom"],
       field_group: "*",
       computed_style_custom_functions: ["getter", "setter"],
+      writable: true,
     },
     // Though will-change is not itself an inherited property, the intent
     // expressed by 'will-change: contents' includes descendants.
@@ -454,7 +451,6 @@
       type_name: "bool",
       default_value: "false",
       field_group: "*",
-      readonly: true,
     },
     // Though position: sticky is not itself an inherited property, being a
     // descendent of a sticky element changes some document lifecycle logic.
@@ -465,7 +461,6 @@
       type_name: "bool",
       default_value: "false",
       field_group: "*",
-      readonly: true,
     },
     {
       name: "EffectiveTouchAction",
@@ -476,7 +471,6 @@
       field_size: 8,
       default_value: "TouchAction::kAuto",
       field_group: "*",
-      readonly: true,
     },
     {
       name: "EffectiveAppearance",
@@ -485,7 +479,6 @@
       field_template: "primitive",
       default_value: "kNoControlPart",
       type_name: "ControlPart",
-      readonly: true,
     },
     {
       name: "TextEmphasisCustomMark",
@@ -495,6 +488,7 @@
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "AtomicString()",
       field_group: "*",
+      writable: true,
     },
     {
       name: "AppliedTextDecorations",
@@ -506,6 +500,7 @@
       wrapper_pointer_name: "scoped_refptr",
       field_group: "*",
       computed_style_custom_functions: ["getter", "setter"],
+      writable: true,
     },
     {
       name: "InheritedVariables",
@@ -518,6 +513,7 @@
       wrapper_pointer_name: "scoped_refptr",
       field_group: "inherited",
       computed_style_custom_functions: ["getter", "setter"],
+      writable: true,
     },
     {
       name: "HighlightData",
@@ -529,6 +525,7 @@
       wrapper_pointer_name: "scoped_refptr",
       field_group: "*",
       computed_style_custom_functions: [],
+      writable: true,
     },
     {
       name: "InitialData",
@@ -540,6 +537,7 @@
       wrapper_pointer_name: "scoped_refptr",
       field_group: "*",
       computed_style_custom_functions: ["setter"],
+      writable: true,
     },
     {
       name: "Mask",
@@ -548,7 +546,6 @@
       field_group: "*",
       default_value: "FillLayer(EFillLayerType::kMask, true)",
       computed_style_custom_functions: ["getter", "setter"],
-      readonly: true,
     },
     {
       name: "CounterDirectives",
@@ -559,7 +556,6 @@
       wrapper_pointer_name: "std::unique_ptr",
       include_paths: ["third_party/blink/renderer/core/style/counter_directives.h"],
       computed_style_custom_functions: ["getter", "setter"],
-      readonly: true,
     },
     {
       name: "Animations",
@@ -570,7 +566,6 @@
       wrapper_pointer_name: "std::unique_ptr",
       include_paths: ["third_party/blink/renderer/core/animation/css/css_animation_data.h"],
       computed_style_custom_functions: ["getter", "setter"],
-      readonly: true,
     },
     {
       name: "Transitions",
@@ -581,7 +576,6 @@
       wrapper_pointer_name: "std::unique_ptr",
       include_paths: ["third_party/blink/renderer/core/animation/css/css_transition_data.h"],
       computed_style_custom_functions: ["getter", "setter"],
-      readonly: true,
     },
     {
       name: "MaskBoxImage",
@@ -591,7 +585,6 @@
       default_value: "NinePieceImage::MaskDefaults()",
       include_paths: ["third_party/blink/renderer/core/style/nine_piece_image.h"],
       computed_style_custom_functions: ["getter", "setter"],
-      readonly: true,
     },
     {
       name: "PageSize",
@@ -600,7 +593,6 @@
       field_group: "*",
       default_value: "gfx::SizeF()",
       include_paths: ["ui/gfx/geometry/size_f.h"],
-      readonly: true,
     },
     {
       name: "OutlineStyleIsAuto",
@@ -608,7 +600,6 @@
       type_name: "bool",
       default_value: "false",
       field_group: "*",
-      readonly: true,
     },
     {
       name: "CallbackSelectors",
@@ -619,7 +610,6 @@
       include_paths: ["third_party/blink/renderer/platform/wtf/vector.h",
                       "third_party/blink/renderer/platform/wtf/text/wtf_string.h"],
       computed_style_custom_functions: ["setter"],
-      readonly: true,
     },
     {
       name: "PaintImages",
@@ -631,7 +621,6 @@
       custom_compare: true,
       include_paths: ["third_party/blink/renderer/core/style/paint_images.h"],
       computed_style_custom_functions: ["getter", "setter"],
-      readonly: true,
     },
     {
       name: "NonInheritedVariables",
@@ -642,6 +631,7 @@
       wrapper_pointer_name: "std::unique_ptr",
       include_paths: ["third_party/blink/renderer/core/style/style_non_inherited_variables.h"],
       computed_style_custom_functions: ["getter", "setter"],
+      writable: true,
     },
     {
       name: "PageSizeType",
@@ -651,7 +641,6 @@
       field_size: 2,
       default_value: "PageSizeType::kAuto",
       include_paths: ["third_party/blink/public/common/css/page_size_type.h"],
-      readonly: true,
     },
     {
       name: "HasCurrentOpacityAnimation",
@@ -659,7 +648,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasCurrentTranslateAnimation",
@@ -667,7 +655,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasCurrentRotateAnimation",
@@ -675,7 +662,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasCurrentScaleAnimation",
@@ -683,7 +669,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasCurrentTransformAnimation",
@@ -691,7 +676,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasCurrentFilterAnimation",
@@ -699,7 +683,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasCurrentBackdropFilterAnimation",
@@ -707,7 +690,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasCurrentBackgroundColorAnimation",
@@ -715,7 +697,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasCurrentClipPathAnimation",
@@ -723,7 +704,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "CompositablePaintAnimationChanged",
@@ -731,7 +711,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "IsRunningOpacityAnimationOnCompositor",
@@ -742,7 +721,6 @@
       // so it doesn't contribute to style differences.
       custom_compare: true,
       default_value: "false",
-      readonly: true,
     },
     {
       name: "IsRunningTransformAnimationOnCompositor",
@@ -753,7 +731,6 @@
       // so it doesn't contribute to style differences.
       custom_compare: true,
       default_value: "false",
-      readonly: true,
     },
     {
       name: "IsRunningScaleAnimationOnCompositor",
@@ -764,7 +741,6 @@
       // so it doesn't contribute to style differences.
       custom_compare: true,
       default_value: "false",
-      readonly: true,
     },
     {
       name: "IsRunningRotateAnimationOnCompositor",
@@ -775,7 +751,6 @@
       // so it doesn't contribute to style differences.
       custom_compare: true,
       default_value: "false",
-      readonly: true,
     },
     {
       name: "IsRunningTranslateAnimationOnCompositor",
@@ -786,7 +761,6 @@
       // so it doesn't contribute to style differences.
       custom_compare: true,
       default_value: "false",
-      readonly: true,
     },
     {
       name: "IsRunningFilterAnimationOnCompositor",
@@ -797,7 +771,6 @@
       // so it doesn't contribute to style differences.
       custom_compare: true,
       default_value: "false",
-      readonly: true,
     },
     {
       name: "IsRunningBackdropFilterAnimationOnCompositor",
@@ -808,7 +781,6 @@
       // so it doesn't contribute to style differences.
       custom_compare: true,
       default_value: "false",
-      readonly: true,
     },
     // A stacking context is painted atomically and defines a stacking order,
     // whereas a containing stacking context defines in which order the stacking
@@ -822,6 +794,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      writable: true,
     },
     // Plugins require accelerated compositing for reasons external to blink.
     // In which case, we need to update the ComputedStyle on the
@@ -833,26 +806,22 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     // Style adjustment for appearance is disabled when certain properties are set.
     {
       name: "HasAuthorBackground",
       field_template: "monotonic_flag",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasAuthorBorder",
       field_template: "monotonic_flag",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasAuthorBorderRadius",
       field_template: "monotonic_flag",
       default_value: "false",
-      readonly: true,
     },
     // Paired cascade: in highlight pseudo styles, the presence of any highlight
     // colors affects whether all other highlight color properties default to
@@ -862,7 +831,6 @@
       name: "HasAuthorHighlightColors",
       field_template: "monotonic_flag",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "ColorIsCurrentColor",
@@ -872,7 +840,6 @@
       default_value: "true",
       inherited: true,
       computed_style_custom_functions: ["getter"],
-      readonly: true,
     },
     {
       name: "InternalVisitedColorIsCurrentColor",
@@ -882,7 +849,6 @@
       default_value: "true",
       inherited: true,
       computed_style_custom_functions: ["getter"],
-      readonly: true,
     },
     {
       name: "WillChangeProperties",
@@ -892,7 +858,6 @@
       default_value: "Vector<CSSPropertyID>()",
       include_paths: ["third_party/blink/renderer/platform/wtf/vector.h",
                       "third_party/blink/renderer/core/css/css_property_names.h"],
-      readonly: true,
     },
     {
       name: "WillChangeContents",
@@ -900,7 +865,6 @@
       type_name: "bool",
       field_group: "*->will-change",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "WillChangeScrollPosition",
@@ -908,7 +872,6 @@
       type_name: "bool",
       field_group: "*->will-change",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasAutoColumnWidth",
@@ -917,7 +880,6 @@
       field_group: "*",
       default_value: "true",
       computed_style_custom_functions: ["setter"],
-      readonly: true,
     },
     {
       name: "HasAutoColumnCount",
@@ -926,7 +888,6 @@
       field_group: "*",
       default_value: "true",
       computed_style_custom_functions: ["setter"],
-      readonly: true,
     },
     {
       name: "ImplicitNamedGridColumnLines",
@@ -935,7 +896,6 @@
       field_group: "*->grid",
       default_value: "NamedGridLinesMap()",
       include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-      readonly: true,
     },
     {
       name: "ImplicitNamedGridRowLines",
@@ -944,7 +904,6 @@
       field_group: "*->grid",
       default_value: "NamedGridLinesMap()",
       include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-      readonly: true,
     },
     {
       name: "NamedGridArea",
@@ -953,7 +912,6 @@
       field_group: "*->grid",
       default_value: "NamedGridAreaMap()",
       include_paths: ["third_party/blink/renderer/core/style/grid_area.h"],
-      readonly: true,
     },
     {
       name: "NamedGridAreaRowCount",
@@ -961,7 +919,6 @@
       type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
-      readonly: true,
     },
     {
       name: "NamedGridAreaColumnCount",
@@ -969,7 +926,6 @@
       type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
-      readonly: true,
     },
     // We only create and store ComputedStyle objects for elements in
     // display:none subtrees if we need it for e.g. getComputedStyle. This flag
@@ -979,6 +935,7 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
+      writable: true,
     },
     {
       name: "MayHaveMargin",
@@ -986,7 +943,6 @@
       field_group: "surround",
       default_value: "false",
       custom_compare: true,
-      readonly: true,
     },
     {
       name: "MayHavePadding",
@@ -994,7 +950,6 @@
       field_group: "surround",
       default_value: "false",
       custom_compare: true,
-      readonly: true,
     },
     {
       name: "DarkColorScheme",
@@ -1003,6 +958,7 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
+      writable: true,
     },
     {
       name: "ColorSchemeForced",
@@ -1011,27 +967,25 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
+      writable: true,
     },
     {
       name: "IsInBlockifyingDisplay",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      readonly: true,
     },
     {
       name: "IsFlexOrGridOrCustomItem",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      readonly: true,
     },
     {
       name: "IsFlexOrGridItem",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      readonly: true,
     },
     {
       name: "IsEnsuredOutsideFlatTree",
@@ -1039,7 +993,6 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
-      readonly: true,
     },
     {
       name: "IsInsideListElement",
@@ -1047,7 +1000,6 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
-      readonly: true,
     },
 
     // This field disables the 'overflow' check in |LayoutBlock::
@@ -1059,7 +1011,6 @@
       field_template: "monotonic_flag",
       default_value: "false",
       inherited: false,
-      readonly: true,
     },
     {
       name: "MathBaseline",
@@ -1069,7 +1020,6 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathBaseline",
-      readonly: true,
     },
     {
       name: "MathFractionBarThickness",
@@ -1079,7 +1029,6 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathFractionBarThickness",
-      readonly: true,
     },
     {
       name: "MathLSpace",
@@ -1089,7 +1038,6 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathLSpace",
-      readonly: true,
     },
     {
       name: "MathRSpace",
@@ -1099,7 +1047,6 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathRSpace",
-      readonly: true,
     },
     {
       name: "MathPaddedVOffset",
@@ -1109,7 +1056,6 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathPaddedVOffset",
-      readonly: true,
     },
     {
       name: "MathPaddedDepth",
@@ -1119,7 +1065,6 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathPaddedDepth",
-      readonly: true,
     },
     {
       name: "MathMinSize",
@@ -1129,7 +1074,6 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathMinSize",
-      readonly: true,
     },
     {
       name: "MathMaxSize",
@@ -1139,7 +1083,6 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathMaxSize",
-      readonly: true,
     },
     {
       name: "EffectiveZIndexZero",
@@ -1147,7 +1090,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "BaselineShiftType",
@@ -1157,7 +1099,6 @@
       field_size: 2,
       type_name: "EBaselineShiftType",
       default_value: "EBaselineShiftType::kLength",
-      readonly: true,
     },
     {
       // Represents 'dominant-baseline' defined in the css-inline specification,
@@ -1172,7 +1113,6 @@
       type_name: "EDominantBaseline",
       default_value: "EDominantBaseline::kAuto",
       inherited: true,
-      readonly: true,
     },
     {
       name: "DependsOnSizeContainerQueries",
@@ -1180,6 +1120,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      writable: true,
     },
     {
       name: "DependsOnStyleContainerQueries",
@@ -1187,6 +1128,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      writable: true,
     },
     {
       // Set to true if this ComputedStyle is for an element whose ::first-line
@@ -1196,6 +1138,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      writable: true,
     },
     {
       name: "BaseData",
@@ -1207,13 +1150,13 @@
       wrapper_pointer_name: "scoped_refptr",
       custom_compare: true,
       custom_copy: true,
-      readonly: true,
     },
     {
       // https://drafts.csswg.org/css-contain-2/#skips-its-contents
       name: "SkipsContents",
       field_template: "monotonic_flag",
       default_value: "false",
+      writable: true,
     },
     {
       // https://html.spec.whatwg.org/multipage/interaction.html#inert
@@ -1223,7 +1166,6 @@
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",
-      readonly: true,
     },
     {
       // We need to go through LayoutObject::SetStyle with
@@ -1236,7 +1178,6 @@
       field_template: "monotonic_flag",
       default_value: "false",
       field_group: "*",
-      readonly: true,
     },
     {
       name: "InlineStyleLostCascade",
@@ -1245,7 +1186,6 @@
       field_group: "*",
       default_value: "false",
       custom_compare: true,
-      readonly: true,
     },
     {
       name: "HasExplicitOverflowXVisible",
@@ -1253,7 +1193,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     },
     {
       name: "HasExplicitOverflowYVisible",
@@ -1261,7 +1200,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      readonly: true,
     }
   ],
 }
