@@ -29,8 +29,8 @@ import {DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
+import {TaskController} from './task_controller.js';
 import {TaskHistory} from './task_history.js';
-import {ComboButton} from './ui/combobutton.js';
 import {DefaultTaskDialog} from './ui/default_task_dialog.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
@@ -64,7 +64,8 @@ export class FileTasks {
       private resultingTasks_: chrome.fileManagerPrivate.ResultingTasks,
       private defaultTask_: chrome.fileManagerPrivate.FileTask|null,
       private taskHistory_: TaskHistory,
-      private progressCenter_: ProgressCenter) {
+      private progressCenter_: ProgressCenter,
+      private taskController_: TaskController) {
     this.mutex_ = new AsyncQueue();
   }
 
@@ -77,7 +78,8 @@ export class FileTasks {
       directoryModel: DirectoryModel, ui: FileManagerUI,
       fileTransferController: FileTransferController, entries: Entry[],
       taskHistory: TaskHistory, crostini: Crostini,
-      progressCenter: ProgressCenter): Promise<FileTasks> {
+      progressCenter: ProgressCenter,
+      taskController: TaskController): Promise<FileTasks> {
     let resultingTasks: chrome.fileManagerPrivate.ResultingTasks = {
       tasks: [],
       policyDefaultHandlerStatus: undefined,
@@ -115,11 +117,15 @@ export class FileTasks {
     return new FileTasks(
         volumeManager, metadataModel, directoryModel, ui,
         fileTransferController, entries, resultingTasks, defaultTask,
-        taskHistory, progressCenter);
+        taskHistory, progressCenter, taskController);
   }
 
   get entries(): Entry[] {
     return this.entries_;
+  }
+
+  get defaultTask(): chrome.fileManagerPrivate.FileTask|null {
+    return this.defaultTask_;
   }
 
   /** Gets task items.  */
@@ -891,140 +897,6 @@ export class FileTasks {
   }
 
   /**
-   * Displays the list of tasks in a open task picker combobutton..
-   *
-   * @param openCombobutton The open task picker combobutton.
-   */
-  display(openCombobutton: ComboButton) {
-    this.updateOpenComboButton_(openCombobutton, this.getTaskItems());
-  }
-
-  /**
-   * Setup a task picker combobutton based on the given tasks. The combobutton
-   * is not shown if there are no tasks, or if any entry is a directory.
-   */
-  private updateOpenComboButton_(
-      combobutton: ComboButton, tasks: chrome.fileManagerPrivate.FileTask[]) {
-    combobutton.hidden =
-        tasks.length == 0 || this.entries_.some(e => e.isDirectory);
-    if (tasks.length == 0) {
-      return;
-    }
-
-    combobutton.clear();
-
-    // If there exist defaultTask show it on the combobutton.
-    if (this.defaultTask_) {
-      combobutton.defaultItem =
-          FileTasks.createComboButtonItem_(this.defaultTask_, str('TASK_OPEN'));
-    } else {
-      combobutton.defaultItem = {
-        type: TaskMenuButtonItemType.ShowMenu,
-        label: str('OPEN_WITH_BUTTON_LABEL'),
-      };
-    }
-
-    // If there exist 2 or more available tasks, show them in context menu
-    // (including defaultTask). If only one generic task is available, we
-    // also show it in the context menu.
-    const items = this.createItems_(tasks);
-    if (items.length > 1 || (items.length === 1 && !this.defaultTask_)) {
-      for (const item of items) {
-        combobutton.addDropDownItem(item);
-      }
-
-      // If there exist non generic task (i.e. defaultTask is set), we show
-      // an item to change default task.
-      if (this.defaultTask_) {
-        combobutton.addSeparator();
-        const changeDefaultMenuItem = combobutton.addDropDownItem({
-          type: TaskMenuButtonItemType.ChangeDefaultTask,
-          label: str('CHANGE_DEFAULT_MENU_ITEM'),
-        });
-        changeDefaultMenuItem.classList.add('change-default');
-
-        // Disables CHANGE_DEFAULT button if default has been set by policy.
-        if (this.getPolicyDefaultHandlerStatus()) {
-          // |defaultTask_| exists, thus |policyDefaultHandlerStatus| cannot be
-          // INCORRECT_ASSIGNMENT.
-          assert(
-              this.getPolicyDefaultHandlerStatus() ===
-              chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
-                  .DEFAULT_HANDLER_ASSIGNED_BY_POLICY);
-          changeDefaultMenuItem.disabled = true;
-        }
-      }
-    }
-  }
-
-  /**
-   * Creates sorted array of available task descriptions such as title and icon.
-   *
-   * @param tasks Tasks to create items.
-   * @return Created array can be used to feed combobox, menus and so on.
-   */
-  private createItems_(tasks: chrome.fileManagerPrivate.FileTask[]):
-      ComboButtonItem[] {
-    const items = [];
-
-    // Create items.
-    for (const task of tasks) {
-      if (task === this.defaultTask_) {
-        const title =
-            task.title + ' ' + loadTimeData.getString('DEFAULT_TASK_LABEL');
-        items.push(FileTasks.createComboButtonItem_(task, title, true, true));
-      } else {
-        items.push(FileTasks.createComboButtonItem_(task));
-      }
-    }
-
-    // Sort items (Sort order: isDefault, lastExecutedTime, label).
-    items.sort((a, b) => {
-      // Sort by isDefaultTask.
-      const isDefault = (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0);
-      if (isDefault !== 0) {
-        return isDefault;
-      }
-
-      // Sort by last-executed time.
-      const aTime = this.taskHistory_.getLastExecutedTime(a.task.descriptor);
-      const bTime = this.taskHistory_.getLastExecutedTime(b.task.descriptor);
-      if (aTime != bTime) {
-        return bTime - aTime;
-      }
-
-      // Sort by label.
-      return a.label.localeCompare(b.label);
-    });
-
-    return items;
-  }
-
-  /**
-   * Creates combobutton item based on task.
-   *
-   * @param task Task to convert.
-   * @param bold Make a menu item bold.
-   * @param isDefault Mark the item as default item.
-   * @return Item appendable to combobutton drop-down list.
-   */
-  private static createComboButtonItem_(
-      task: chrome.fileManagerPrivate.FileTask, title?: string, bold?: boolean,
-      isDefault?: boolean): ComboButtonItem {
-    return {
-      type: TaskMenuButtonItemType.RunTask,
-      label: title || task.title,
-      iconUrl: task.iconUrl || '',
-      // iconType is injected by annotate_().
-      iconType: (task as AnnotatedTask).iconType || '',
-      task: task,
-      bold: bold || false,
-      isDefault: isDefault || false,
-      isGenericFileHandler: /** @type {boolean} */ (task.isGenericFileHandler),
-    };
-  }
-
-  /**
    * Shows modal task picker dialog with currently available list of tasks.
    *
    * @param taskDialog Task dialog to show and update.
@@ -1035,7 +907,7 @@ export class FileTasks {
       taskDialog: DefaultTaskDialog, title: string, message: string,
       onSuccess: (task: chrome.fileManagerPrivate.FileTask) => void,
       pickerType: TypeTaskPickerType) {
-    let items = this.createItems_(this.getTaskItems());
+    let items = this.taskController_.createItems(this);
     if (pickerType === TaskPickerType.ChangeDefault) {
       items = items.filter(item => !item.isGenericFileHandler);
     }
@@ -1126,17 +998,6 @@ const INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
   actionId: 'install-linux-package',
 } as const;
 
-/**
- * Available tasks in task menu button.
- * @enum {string}
- */
-export const TaskMenuButtonItemType = {
-  ShowMenu: 'ShowMenu',
-  RunTask: 'RunTask',
-  ChangeDefaultTask: 'ChangeDefaultTask',
-} as const;
-type TypeTaskMenuButtonItemType =
-    typeof TaskMenuButtonItemType[keyof typeof TaskMenuButtonItemType];
 
 /**
  * Dialog types to show a task picker.
@@ -1188,17 +1049,6 @@ export const UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
 /** Office file extensions. */
 const OFFICE_EXTENSIONS =
     new Set(['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx']);
-
-export interface ComboButtonItem {
-  type: TypeTaskMenuButtonItemType;
-  label: string;
-  iconUrl?: string;
-  iconType: string;
-  task: chrome.fileManagerPrivate.FileTask;
-  bold: boolean;
-  isDefault: boolean;
-  isGenericFileHandler?: boolean;
-}
 
 export interface AnnotatedTask extends chrome.fileManagerPrivate.FileTask {
   iconType: string;
