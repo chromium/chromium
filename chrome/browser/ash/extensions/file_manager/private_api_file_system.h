@@ -390,56 +390,6 @@ class FileManagerPrivateGetDialogCallerFunction
   ResponseAction Run() override;
 };
 
-// Implements the chrome.fileManagerPrivate.startCopy method.
-class FileManagerPrivateInternalStartCopyFunction
-    : public LoggedExtensionFunction {
- public:
-  FileManagerPrivateInternalStartCopyFunction();
-
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.startCopy",
-                             FILEMANAGERPRIVATEINTERNAL_STARTCOPY)
-
- protected:
-  ~FileManagerPrivateInternalStartCopyFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void RunAfterGetFileMetadata(base::File::Error result,
-                               const base::File::Info& file_info);
-
-  // Part of RunAsync(). Called after the amount of space on the destination
-  // is known.
-  void RunAfterCheckDiskSpace(int64_t space_needed,
-                              const std::vector<int64_t>& spaces_available);
-
-  // Part of RunAsync(). Called after FreeDiskSpaceIfNeededFor() is completed on
-  // IO thread.
-  void RunAfterFreeDiskSpace(bool available, int64_t space_needed);
-
-  // Part of RunAsync(). Called after Copy() is started on IO thread.
-  void RunAfterStartCopy(int operation_id);
-
-  Profile* profile_ = nullptr;
-
-  storage::FileSystemURL source_url_;
-  storage::FileSystemURL destination_url_;
-};
-
-// Implements the chrome.fileManagerPrivate.cancelCopy method.
-class FileManagerPrivateCancelCopyFunction : public LoggedExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.cancelCopy",
-                             FILEMANAGERPRIVATE_CANCELCOPY)
-
- protected:
-  ~FileManagerPrivateCancelCopyFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 // Implements the chrome.fileManagerPrivateInternal.resolveIsolatedEntries
 // method.
 class FileManagerPrivateInternalResolveIsolatedEntriesFunction

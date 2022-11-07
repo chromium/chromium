@@ -92,9 +92,6 @@ namespace file_manager_private = extensions::api::file_manager_private;
 namespace file_manager {
 namespace {
 
-// Frequency of sending onFileTransferUpdated.
-const int64_t kProgressEventFrequencyInMilliseconds = 1000;
-
 // Whether Files SWA has any open windows.
 bool DoFilesSwaWindowsExist(Profile* profile) {
   return ash::file_manager::FileManagerUI::GetNumInstances() != 0;
@@ -142,28 +139,6 @@ void DispatchEventToExtension(
   extensions::EventRouter::Get(profile)->DispatchEventToExtension(
       extension_id, std::make_unique<extensions::Event>(
                         histogram_value, event_name, std::move(event_args)));
-}
-
-file_manager_private::CopyOrMoveProgressStatusType
-CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(
-    FileManagerCopyOrMoveHookDelegate::ProgressType type) {
-  switch (type) {
-    case FileManagerCopyOrMoveHookDelegate::ProgressType::kBegin:
-      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN;
-    case FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress:
-      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_PROGRESS;
-    case FileManagerCopyOrMoveHookDelegate::ProgressType::kEndCopy:
-      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_COPY;
-    case FileManagerCopyOrMoveHookDelegate::ProgressType::kEndMove:
-      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_MOVE;
-    case FileManagerCopyOrMoveHookDelegate::ProgressType::kEndRemoveSource:
-      return file_manager_private::
-          COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_REMOVE_SOURCE;
-    case FileManagerCopyOrMoveHookDelegate::ProgressType::kError:
-      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_ERROR;
-  }
-  NOTREACHED();
-  return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_NONE;
 }
 
 // Convert the IO Task State enum to the Private API enum.
@@ -243,23 +218,6 @@ std::string FileErrorToErrorName(base::File::Error error_code) {
       return "EncodingError";
     default:
       return "InvalidModificationError";
-  }
-}
-
-// Checks if we should send a progress event or not according to the
-// |last_time| of sending an event. If |always| is true, the function always
-// returns true. If the function returns true, the function also updates
-// |last_time|.
-bool ShouldSendProgressEvent(bool always, base::Time* last_time) {
-  const base::Time now = base::Time::Now();
-  const int64_t delta = (now - *last_time).InMilliseconds();
-  // delta < 0 may rarely happen if system clock is synced and rewinded.
-  // To be conservative, we don't skip in that case.
-  if (!always && 0 <= delta && delta < kProgressEventFrequencyInMilliseconds) {
-    return false;
-  } else {
-    *last_time = now;
-    return true;
   }
 }
 
@@ -790,95 +748,6 @@ void EventRouter::RemoveFileWatch(const base::FilePath& local_path,
   iter->second->RemoveListener(listener_origin);
   if (iter->second->GetListeners().empty())
     file_watchers_.erase(iter);
-}
-
-void EventRouter::OnCopyStarted(int copy_id,
-                                const GURL& source_url,
-                                const GURL& destination_url,
-                                int64_t space_needed) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  file_manager_private::CopyOrMoveProgressStatus status;
-  // Send started event.
-  status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN;
-  status.source_url = source_url.spec();
-  status.destination_url = destination_url.spec();
-  // Use the bytes copied member to store space needed for this event.
-  status.size = space_needed;
-
-  notification_manager_->HandleCopyStart(copy_id, status);
-}
-
-void EventRouter::OnCopyCompleted(int copy_id,
-                                  const GURL& source_url,
-                                  const GURL& destination_url,
-                                  base::File::Error error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  file_manager_private::CopyOrMoveProgressStatus status;
-  if (error == base::File::FILE_OK) {
-    // Send success event.
-    status.type =
-        file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_SUCCESS;
-    status.source_url = source_url.spec();
-    status.destination_url = destination_url.spec();
-  } else {
-    // Send error event.
-    status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_ERROR;
-    status.error = FileErrorToErrorName(error);
-  }
-
-  notification_manager_->HandleCopyEvent(copy_id, status);
-  BroadcastEvent(profile_,
-                 extensions::events::FILE_MANAGER_PRIVATE_ON_COPY_PROGRESS,
-                 file_manager_private::OnCopyProgress::kEventName,
-                 file_manager_private::OnCopyProgress::Create(copy_id, status));
-}
-
-void EventRouter::OnCopyProgress(
-    int copy_id,
-    FileManagerCopyOrMoveHookDelegate::ProgressType type,
-    const GURL& source_url,
-    const GURL& destination_url,
-    int64_t size) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  file_manager_private::CopyOrMoveProgressStatus status;
-  status.type = CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(type);
-  status.source_url = source_url.spec();
-  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kError) {
-    // For cross-filesystems moves, no destination_url is provided when an error
-    // occurs. This translates into to a non-valid destination GURL.
-    // status.destination_url should never be used in this case.
-    status.destination_url = destination_url.possibly_invalid_spec();
-  } else if (type != FileManagerCopyOrMoveHookDelegate::ProgressType::
-                         kEndRemoveSource) {
-    status.destination_url = destination_url.spec();
-  }
-
-  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kError) {
-    status.error = FileErrorToErrorName(base::File::FILE_ERROR_FAILED);
-  }
-  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress)
-    status.size = size;
-
-  // Discard error progress since current JS code cannot handle this properly.
-  // TODO(yawano): Remove this after JS side is implemented correctly.
-  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kError)
-    return;
-
-  // Should not skip events other than TYPE_PROGRESS.
-  const bool always =
-      status.type !=
-      file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_PROGRESS;
-  if (!ShouldSendProgressEvent(always, &last_copy_progress_event_))
-    return;
-
-  notification_manager_->HandleCopyEvent(copy_id, status);
-  BroadcastEvent(profile_,
-                 extensions::events::FILE_MANAGER_PRIVATE_ON_COPY_PROGRESS,
-                 file_manager_private::OnCopyProgress::kEventName,
-                 file_manager_private::OnCopyProgress::Create(copy_id, status));
 }
 
 void EventRouter::OnWatcherManagerNotification(

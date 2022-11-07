@@ -15,6 +15,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/extensions/file_manager/event_router.h"
+#include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -850,6 +852,11 @@ IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, RetainEntry) {
 
 IN_PROC_BROWSER_TEST_F(MultiProfileDriveFileSystemExtensionApiTest,
                        CrossProfileCopy) {
+  // IOTask only sends progress update to JS/renderer when there is a Files app
+  // window open, so we need to force it to send progress in the test.
+  auto* event_router =
+      file_manager::EventRouterFactory::GetForProfile(profile());
+  event_router->ForceBroadcastingForTesting(true);
   EXPECT_TRUE(RunFileSystemExtensionApiTest("file_browser/multi_profile_copy",
                                             FILE_PATH_LITERAL("manifest.json"),
                                             "", FLAGS_NONE))

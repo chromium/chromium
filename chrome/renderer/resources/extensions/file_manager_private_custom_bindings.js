@@ -232,14 +232,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             sourceUrls, callback);
       });
 
-  apiFunctions.setHandleRequest('startCopy', function(
-        entry, parentEntry, newName, callback) {
-    var url = getEntryURL(entry);
-    var parentUrl = getEntryURL(parentEntry);
-    fileManagerPrivateInternal.startCopy(
-        url, parentUrl, newName, callback);
-  });
-
   apiFunctions.setHandleRequest(
       'zipSelection',
       (entries, parentEntry, destName, callback) =>

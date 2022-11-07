@@ -44,7 +44,6 @@ namespace fileManagerPrivateInternal {
       void(EntryDescription[] entries);
   callback GetDlpMetadataCallback =
       void(fileManagerPrivate.DlpMetadata[] entries);
-  callback StartCopyCallback = void(long copyId);
   callback IOTaskIdCallback = void(long taskId);
   callback ZipSelectionCallback = void(long zipId, double totalBytes);
   callback ValidatePathNameLengthCallback = void(boolean result);
@@ -108,10 +107,6 @@ callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
                                        GetDisallowedTransfersCallback callback);
     static void getDlpMetadata(DOMString[] entries,
                                GetDlpMetadataCallback callback);
-    static void startCopy(DOMString url,
-                          DOMString parentUrl,
-                          DOMString newName,
-                          StartCopyCallback callback);
     static void zipSelection(DOMString parentUrl,
                              DOMString[] urls,
                              DOMString destName,

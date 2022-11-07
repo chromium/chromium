@@ -2,7 +2,53 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var kSecondaryDriveMountPointName = "drive-fileBrowserApiTestProfile2";
+const kSecondaryDriveMountPointName = 'drive-fileBrowserApiTestProfile2';
+
+/**
+ * @param {function(...?)} fn
+ * @param {...?} args
+ * @returns {!Promise<?>}
+ */
+async function promisifyWithLastError(fn, ...args) {
+  return new Promise((resolve, reject) => {
+    fn(...args, (result) => {
+      const error = chrome.runtime.lastError;
+      if (error) {
+        reject(new Error(error.message));
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+/**
+ * Get a file entry from the root of the mounted filesystem.
+ *
+ * @param {DirectoryEntry} root
+ * @param {string} path
+ * @param {{create: (boolean|undefined), exclusive: (boolean|undefined)}}
+ *     options
+ * @returns {!Promise<!Entry>}
+ */
+async function getFileEntry(root, path, options) {
+  return new Promise(
+      (resolve, reject) => root.getFile(path, options, resolve, reject));
+}
+
+/**
+ * Get a directory entry from the root of the mounted filesystem.
+ *
+ * @param {DirectoryEntry} root
+ * @param {string} path
+ * @param {{create: (boolean|undefined), exclusive: (boolean|undefined)}}
+ *  options
+ * @returns {!Promise<!DirectoryEntry>}
+ */
+async function getDirectoryEntry(root, path, options) {
+  return new Promise(
+      (resolve, reject) => root.getDirectory(path, options, resolve, reject));
+}
+
 
 /**
  * Returns a callback that works as an error handler in file system API
@@ -21,45 +67,45 @@ function fileErrorCallback(callback, message) {
 /**
  * Copies an entry using chrome.fileManagerPrivate.startCopy().
  *
- * @param {Entry} fromRoot Root entry of the copy source file system.
+ * @param {!Entry} fromRoot Root entry of the copy source file system.
  * @param {string} fromPath Relative path from fromRoot of the source entry.
- * @param {Entry} toRoot Root entry of the copy destination file system.
+ * @param {!Entry} toRoot Root entry of the copy destination file system.
  * @param {string} toPath Relative path from toRoot of the target directory.
- * @param {string} newName Name of the new copied entry.
  * @param {function()} successCallback Callback invoked when copy succeed.
  * @param {function(string)} errorCallback Callback invoked in error case.
  */
-function fileCopy(fromRoot, fromPath, toRoot, toPath, newName,
-                  successCallback, errorCallback) {
-  fromRoot.getFile(fromPath, {create: false}, function(from) {
-    toRoot.getDirectory(toPath, {create: false}, function(to) {
-      var copyId = null;
-      var onProgress = function(id, status) {
-        if (id != copyId) {
-          errorCallback('Unknown copy id.');
-          return;
-        }
-        if (status.type == 'error') {
-          chrome.fileManagerPrivate.onCopyProgress.removeListener(onProgress);
-          errorCallback('Copy failed.');
-          return;
-        }
-        if (status.type == 'success') {
-          chrome.fileManagerPrivate.onCopyProgress.removeListener(onProgress);
-          successCallback();
-        }
-      };
-      chrome.fileManagerPrivate.onCopyProgress.addListener(onProgress);
-      chrome.fileManagerPrivate.startCopy(
-        from, to, newName, function(startCopyId) {
-          if (chrome.runtime.lastError) {
-            errorCallback('Error starting to copy.');
-            return;
-          }
-          copyId = startCopyId;
-        });
-    }, fileErrorCallback(errorCallback, 'Error getting destination entry'));
-  }, fileErrorCallback(errorCallback, 'Error getting source entry'));
+async function fileCopy(
+    fromRoot, fromPath, toRoot, toPath, successCallback, errorCallback) {
+  const from = await getFileEntry(fromRoot, fromPath, {create: false});
+  const to = await getDirectoryEntry(toRoot, toPath, {create: false});
+  let copyId = null;
+  const onProgress = function(event) {
+    const id = event.taskId;
+    if (id !== copyId) {
+      // The first progress update comes before the `copyId` is assigned.
+      // So here we just ignore the first update.
+      return;
+    }
+    switch (event.state) {
+      case chrome.fileManagerPrivate.IOTaskState.ERROR:
+      case chrome.fileManagerPrivate.IOTaskState.CANCELLED:
+        chrome.fileManagerPrivate.onIOTaskProgressStatus.removeListener(
+            onProgress);
+        errorCallback('Copy failed.');
+        return;
+      case chrome.fileManagerPrivate.IOTaskState.SUCCESS:
+        chrome.fileManagerPrivate.onIOTaskProgressStatus.removeListener(
+            onProgress);
+        successCallback();
+    }
+  };
+
+  chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(onProgress);
+
+  copyId = await promisifyWithLastError(
+      chrome.fileManagerPrivate.startIOTask,
+      chrome.fileManagerPrivate.IOTaskType.COPY, [from],
+      {destinationFolder: to});
 }
 
 /**
@@ -79,95 +125,72 @@ function verifyFileExists(root, path, successCallback, errorCallback) {
 /**
  * Collects all tests that should be run for the test volume.
  *
- * @param {Entry} firstRoot Root entry of the first volume.
- * @param {Entry} secondRoot Root entry of the second volume.
- * @return {Array<function()>} The list of tests that should be run.
+ * @param {!Entry} firstRoot Root entry of the first volume.
+ * @param {!Entry} secondRoot Root entry of the second volume.
+ * @return {!Array<function()>} The list of tests that should be run.
  */
 function collectTests(firstRoot, secondRoot) {
-  var testsToRun = [];
+  const testsToRun = [];
 
   testsToRun.push(function crossProfileNormalFileCopyTest() {
-    fileCopy(secondRoot, 'root/test_dir/test_file.tiff',
-             firstRoot, 'root/',
-             'newname.tiff',
-             verifyFileExists.bind(null, firstRoot, 'root/newname.tiff',
-                                   chrome.test.succeed, chrome.test.fail),
-             chrome.test.fail);
+    fileCopy(
+        secondRoot, 'root/test_dir/test_file.tiff', firstRoot, 'root/',
+        verifyFileExists.bind(
+            null, firstRoot, 'root/test_file.tiff', chrome.test.succeed,
+            chrome.test.fail),
+        chrome.test.fail);
   });
 
   testsToRun.push(function crossProfileHostedDocumentCopyTest() {
-    fileCopy(secondRoot, 'root/test_dir/hosted_doc.gdoc',
-             firstRoot, 'root/',
-             'newname.gdoc',
-             verifyFileExists.bind(null, firstRoot, 'root/newname.gdoc',
-                                   chrome.test.succeed, chrome.test.fail),
-             chrome.test.fail);
+    fileCopy(
+        secondRoot, 'root/test_dir/hosted_doc.gdoc', firstRoot, 'root/',
+        verifyFileExists.bind(
+            null, firstRoot, 'root/hosted_doc.gdoc', chrome.test.succeed,
+            chrome.test.fail),
+        chrome.test.fail);
   });
 
   return testsToRun;
 }
 
-/**
- * Initializes testParams.
- * Gets test volume and creates list of tests that should be run for it.
- *
- * @param {function(Array, string)} callback. Called with an array containing
- *     the list of the tests to run and an error message. On error list of tests
- *     to run will be null.
- */
-function initTests(callback) {
-  chrome.fileManagerPrivate.getVolumeMetadataList(function(volumeMetadataList) {
-    var driveVolumes = volumeMetadataList.filter(function(volume) {
-      return volume.volumeType == 'drive';
-    });
+async function main() {
+  const volumeMetadataList = await promisifyWithLastError(
+      chrome.fileManagerPrivate.getVolumeMetadataList);
+  const driveVolumes =
+      volumeMetadataList.filter((volume) => volume.volumeType == 'drive');
 
-    if (driveVolumes.length != 1) {
-      callback(null, 'Unexpected number of Drive volumes.');
-      return;
-    }
-
-    chrome.fileSystem.requestFileSystem(
-        {
-          volumeId: driveVolumes[0].volumeId,
-          writable: true
-        },
-        function(primaryFileSystem) {
-          if (!primaryFileSystem) {
-            callback(null, 'Failed to acquire the testing volume.');
-            return;
-          }
-
-          // Resolving the isolated entry is necessary in order to fetch URL
-          // of an entry from a different profile.
-          chrome.fileManagerPrivate.resolveIsolatedEntries(
-              [primaryFileSystem.root],
-              function(entries) {
-                var url = entries[0].toURL().replace(
-                    /[^\/]*\/?$/, kSecondaryDriveMountPointName);
-                chrome.fileManagerPrivate.grantAccess([url], function() {
-                  webkitResolveLocalFileSystemURL(url, function(entry) {
-                    if (!entry) {
-                      callback(
-                          null,
-                          'Failed to acquire secondary profile\'s volume.');
-                      return;
-                    }
-
-                    callback(collectTests(entries[0], entry), 'Success.');
-                  }, () => {
-                    callback(null, 'Failed to resolve ' + url);
-                  });
-                });
-              });
-        });
-  });
-}
-
-// Trigger the tests.
-initTests(function(testsToRun, errorMessage) {
-  if (!testsToRun) {
-    chrome.test.notifyFail('Failed to initialize tests: ' + errorMessage);
+  if (driveVolumes.length !== 1) {
+    chrome.test.fail('Unexpected number of Drive volumes.');
     return;
   }
-  chrome.test.runTests(testsToRun);
-});
+
+  const primaryFileSystem = await promisifyWithLastError(
+      chrome.fileSystem.requestFileSystem,
+      {volumeId: driveVolumes[0].volumeId, writable: true});
+
+  if (!primaryFileSystem) {
+    chrome.test.fail('Failed to acquire the testing volume.');
+    return;
+  }
+
+  // Resolving the isolated entry is necessary in order to fetch URL of an entry
+  // from a different profile.
+  const entries = await promisifyWithLastError(
+      chrome.fileManagerPrivate.resolveIsolatedEntries,
+      [primaryFileSystem.root]);
+  const secondaryUrl =
+      entries[0].toURL().replace(/[^\/]*\/?$/, kSecondaryDriveMountPointName);
+  await promisifyWithLastError(
+      chrome.fileManagerPrivate.grantAccess, [secondaryUrl]);
+  const secondaryEntry = await promisifyWithLastError(
+      webkitResolveLocalFileSystemURL, secondaryUrl);
+  if (!secondaryEntry) {
+    chrome.test.fail('Failed to acquire secondary profile\'s volume.');
+    return;
+  }
+
+  const tests = collectTests(entries[0], secondaryEntry);
+  chrome.test.runTests(tests);
+}
+
+main();

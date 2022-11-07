@@ -102,43 +102,6 @@ enum FormatFileSystemType { vfat, exfat, ntfs };
 // File transfer progress state.
 enum TransferState { in_progress, completed, failed };
 
-// The type of the progress event for copy or move operations.
-// A copy or a cross-filesystem move happens recursively: these events are
-// expected for each single entry (file or directory) being moved.
-// A local (same-filesystem) move only requires the top-level entries to be
-// renamed: if we move entries 'a.txt', 'b/c.txt', 'b/d.txt' (relative paths),
-// events will be received for only for 'a.txt' and 'b'.
-enum CopyOrMoveProgressStatusType {
-  // "begin" is fired for each entry (file or directory) before
-  // starting the copy or move operation.
-  begin,
-
-  // "progress" is fired periodically to report progress of a file copy or move
-  // (not directory).
-  progress,
-
-  // "end_copy" is fired for each entry (file or directory) that has been
-  // successfully copied to its destination. This event is expected both both
-  // copies and cross-filesystem moves (implemented as copy + delete).
-  end_copy,
-
-  // "end_move" is fired for each entry (file or directory) that has been
-  // successfully moved to its destination, in the case of a "same-filesystem"
-  // move.
-  end_move,
-
-  // "end_remove_source" is fired for each entry (file or directory) that has
-  // been successfully removed from its source location as part of a
-  // "cross-filesystem" move operation.
-  end_remove_source,
-
-  // "success" is fired after all entries have been copied or moved.
-  success,
-
-  // "error" is fired when an error occurs.
-  error
-};
-
 // The response when starting installing a Linux package.
 enum InstallLinuxPackageResponse {
   started,
@@ -742,31 +705,6 @@ dictionary DriveConfirmDialogEvent {
   DOMString fileUrl;
 };
 
-// Payload data for copy or move status progress updates.
-dictionary CopyOrMoveProgressStatus {
-  // The type of the progress event.
-  CopyOrMoveProgressStatusType type;
-
-  // URL for the entry currently being copied. This field is particularly useful
-  // when a directory copy is initiated with startCopy(). The field tells what
-  // file/directory in that directory is now being copied.
-  DOMString? sourceUrl;
-
-  // URL for the entry currently being created. This field is particularly
-  // useful when a directory copy is initiated with startCopy(). The field tells
-  // what file/directory in that directory is being created. Available only for
-  // end_copy_entry and success.
-  DOMString? destinationUrl;
-
-  // Number of processed bytes for the file currently being copied. Available
-  // only for "progress" event. To show the progress bar, a caller needs to
-  // pre-compute the size of files being copied for the file (not directory).
-  double? size;
-
-  // DOMError's name. Available only for ERROR event.
-  DOMString? error;
-};
-
 // Detailed information of change.
 dictionary FileChange {
   // URL of changed file (or directory).
@@ -1191,10 +1129,6 @@ callback GetDlpBlockedComponentsCallback = void(VolumeType[] blockedComponents);
 // the caller that created the dialog (Save As/File Picker).
 callback GetDialogCallerCallback = void(DialogCallerInformation caller);
 
-// |copyId| ID of the copy task. Can be used to identify the progress, and to
-// cancel the task.
-callback StartCopyCallback = void(long copyId);
-
 // |taskId| ID of the task that was started. Can be used to cancel ongoing task.
 callback IOTaskIdCallback = void(long taskId);
 
@@ -1306,10 +1240,6 @@ callback ListMountableGuestsCallback = void(MountableGuest[] guest);
 callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
 
 interface Functions {
-  // Logout the current user for navigating to the re-authentication screen for
-  // the Google account.
-  static void logoutUserForReauthentication();
-
   // Cancels file selection.
   static void cancelDialog();
 
@@ -1507,23 +1437,6 @@ interface Functions {
   // Retrieves the caller that created the dialog (Save As/File Picker).
   // |callback| Result callback.
   static void getDialogCaller(GetDialogCallerCallback callback);
-
-  // Starts to copy an entry. If the source is a directory, the copy is done
-  // recursively.
-  // |entry| Entry of the source entry to be copied.
-  // |parentEntry| Entry for the destination (parent) directory.
-  // |newName| Name of the new entry. It must not contain '/'.
-  // |callback| Completion callback.
-  [nocompile]
-  static void startCopy([instanceof=Entry] object entry,
-                        [instanceof=DirectoryEntry] object parentEntry,
-                        DOMString newName,
-                        StartCopyCallback callback);
-
-  // Cancels the running copy task.
-  // |copyId| ID of the copy task to be cancelled.
-  // |callback| Completion callback of the cancel.
-  static void cancelCopy(long copyId, SimpleCallback callback);
 
   // Retrieves total and remaining size of a mount point.
   // |volumeId| ID of the volume to be checked.
@@ -1879,8 +1792,6 @@ interface Events {
   static void onFileTransfersUpdated(FileTransferStatus event);
 
   static void onPinTransfersUpdated(FileTransferStatus event);
-
-  static void onCopyProgress(long copyId, CopyOrMoveProgressStatus status);
 
   static void onDirectoryChanged(FileWatchEvent event);
 

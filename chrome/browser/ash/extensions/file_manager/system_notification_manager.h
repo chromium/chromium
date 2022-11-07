@@ -177,18 +177,6 @@ class SystemNotificationManager {
   void HandleEvent(const extensions::Event& event);
 
   /**
-   * Called at the start of a copy operation.
-   */
-  void HandleCopyStart(int copy_id,
-                       file_manager_private::CopyOrMoveProgressStatus& status);
-
-  /**
-   * Processes copy progress events and updates the system notification.
-   */
-  void HandleCopyEvent(int copy_id,
-                       file_manager_private::CopyOrMoveProgressStatus& status);
-
-  /**
    * Processes progress event from IOTaskController.
    */
   void HandleIOTaskProgress(
@@ -289,11 +277,6 @@ class SystemNotificationManager {
    * Helper function bound to notification instances that hides notifications.
    */
   void Dismiss(const std::string& notification_id);
-
-  /**
-   * Maps the operation runner copy id to the total size (bytes) for the copy.
-   */
-  std::map<int, double> required_copy_space_;
 
   /**
    * Maps device paths to their mount status.

@@ -43,21 +43,6 @@ class AuthServiceInterface;
 
 namespace extensions {
 
-// Implements the chrome.fileManagerPrivate.logoutUserForReauthentication
-// method.
-class FileManagerPrivateLogoutUserForReauthenticationFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.logoutUserForReauthentication",
-                             FILEMANAGERPRIVATE_LOGOUTUSERFORREAUTHENTICATION)
-
- protected:
-  ~FileManagerPrivateLogoutUserForReauthenticationFunction() override = default;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-};
-
 // Implements the chrome.fileManagerPrivate.getPreferences method.
 // Gets settings for the Files app.
 class FileManagerPrivateGetPreferencesFunction : public ExtensionFunction {

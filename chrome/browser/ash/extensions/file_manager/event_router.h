@@ -111,25 +111,6 @@ class EventRouter
   void RemoveFileWatch(const base::FilePath& local_path,
                        const url::Origin& listener_origin);
 
-  // Called when a copy task is started.
-  void OnCopyStarted(int copy_id,
-                     const GURL& source_url,
-                     const GURL& destination_url,
-                     int64_t space_needed);
-
-  // Called when a copy task is completed.
-  void OnCopyCompleted(int copy_id,
-                       const GURL& source_url,
-                       const GURL& destination_url,
-                       base::File::Error error);
-
-  // Called when a copy task progress is updated.
-  void OnCopyProgress(int copy_id,
-                      FileManagerCopyOrMoveHookDelegate::ProgressType type,
-                      const GURL& source_url,
-                      const GURL& destination_url,
-                      int64_t size);
-
   // Called when a notification from a watcher manager arrives.
   void OnWatcherManagerNotification(
       const storage::FileSystemURL& file_system_url,
@@ -305,8 +286,6 @@ class EventRouter
   // Broadcast the `event_status` to all open SWA windows.
   void BroadcastIOTask(
       const file_manager_private::ProgressStatus& event_status);
-
-  base::Time last_copy_progress_event_;
 
   std::map<base::FilePath, std::unique_ptr<FileWatcher>> file_watchers_;
   std::unique_ptr<plugin_vm::PluginVmPolicySubscription>

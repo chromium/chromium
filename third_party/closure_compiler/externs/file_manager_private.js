@@ -114,17 +114,6 @@ chrome.fileManagerPrivate.TransferState = {
 };
 
 /** @enum {string} */
-chrome.fileManagerPrivate.CopyOrMoveProgressStatusType = {
-  BEGIN: 'begin',
-  PROGRESS: 'progress',
-  END_COPY: 'end_copy',
-  END_MOVE: 'end_move',
-  END_REMOVE_SOURCE: 'end_remove_source',
-  SUCCESS: 'success',
-  ERROR: 'error',
-};
-
-/** @enum {string} */
 chrome.fileManagerPrivate.FileWatchEventType = {
   CHANGED: 'changed',
   ERROR: 'error',
@@ -531,17 +520,6 @@ chrome.fileManagerPrivate.DriveConfirmDialogEvent;
 
 /**
  * @typedef {{
- *   type: !chrome.fileManagerPrivate.CopyOrMoveProgressStatusType,
- *   sourceUrl: (string|undefined),
- *   destinationUrl: (string|undefined),
- *   size: (number|undefined),
- *   error: (string|undefined)
- * }}
- */
-chrome.fileManagerPrivate.CopyOrMoveProgressStatus;
-
-/**
- * @typedef {{
  *   url: string,
  *   changes: !Array<!chrome.fileManagerPrivate.ChangeType>
  * }}
@@ -817,12 +795,6 @@ chrome.fileManagerPrivate.DialogCallerInformation;
 chrome.fileManagerPrivate.ParsedTrashInfoFile;
 
 /**
- * Logout the current user for navigating to the re-authentication screen for
- * the Google account.
- */
-chrome.fileManagerPrivate.logoutUserForReauthentication = function() {};
-
-/**
  * Cancels file selection.
  */
 chrome.fileManagerPrivate.cancelDialog = function() {};
@@ -1071,28 +1043,6 @@ chrome.fileManagerPrivate.getDlpBlockedComponents = function(
  * the caller.
  */
 chrome.fileManagerPrivate.getDialogCaller = function(callback) {};
-
-/**
- * Starts to copy an entry. If the source is a directory, the copy is done
- * recursively. |entry| Entry of the source entry to be copied. |parent| Entry
- * of the destination directory. |newName| Name of the new entry. It must not
- * contain '/'. |callback| Completion callback.
- * @param {!Entry} entry
- * @param {!DirectoryEntry} parentEntry
- * @param {string} newName
- * @param {function((number|undefined))} callback |copyId| ID of the copy task.
- *     Can be used to identify the progress, and to cancel the task.
- */
-chrome.fileManagerPrivate.startCopy = function(entry, parentEntry, newName,
-    callback) {};
-
-/**
- * Cancels the running copy task. |copyId| ID of the copy task to be cancelled.
- * |callback| Completion callback of the cancel.
- * @param {number} copyId
- * @param {function()} callback Callback that does not take arguments.
- */
-chrome.fileManagerPrivate.cancelCopy = function(copyId, callback) {};
 
 /**
  * Retrieves total and remaining size of a mount point. |volumeId| ID of the
@@ -1606,9 +1556,6 @@ chrome.fileManagerPrivate.onFileTransfersUpdated;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onPinTransfersUpdated;
-
-/** @type {!ChromeEvent} */
-chrome.fileManagerPrivate.onCopyProgress;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onDirectoryChanged;

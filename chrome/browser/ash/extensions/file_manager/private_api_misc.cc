@@ -223,19 +223,6 @@ std::string Redact(const base::FilePath& path) {
 }  // namespace
 
 ExtensionFunction::ResponseAction
-FileManagerPrivateLogoutUserForReauthenticationFunction::Run() {
-  const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
-      Profile::FromBrowserContext(browser_context()));
-  if (user) {
-    user_manager::UserManager::Get()->SaveUserOAuthStatus(
-        user->GetAccountId(), user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);
-  }
-
-  chrome::AttemptUserExit();
-  return RespondNow(WithArguments());
-}
-
-ExtensionFunction::ResponseAction
 FileManagerPrivateGetPreferencesFunction::Run() {
   api::file_manager_private::Preferences result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
