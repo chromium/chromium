@@ -17,13 +17,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
+namespace content {
+class StorableSource;
+}  // namespace content
+
 namespace attribution_reporting {
 
-struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
+ public:
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
   Parse(base::Value::Dict, url::Origin reporting_origin);
-
-  SourceRegistration();
 
   ~SourceRegistration();
 
@@ -33,17 +36,24 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   SourceRegistration(SourceRegistration&&);
   SourceRegistration& operator=(SourceRegistration&&);
 
-  uint64_t source_event_id;
-  url::Origin destination;
-  url::Origin reporting_origin;
-  absl::optional<base::TimeDelta> expiry;
-  absl::optional<base::TimeDelta> event_report_window;
-  absl::optional<base::TimeDelta> aggregatable_report_window;
-  int64_t priority;
-  FilterData filter_data;
-  absl::optional<uint64_t> debug_key;
-  AggregationKeys aggregation_keys;
-  bool debug_reporting;
+ private:
+  // Allow efficient moves out of this type's fields without defining extractor
+  // methods for each one.
+  friend ::content::StorableSource;
+
+  SourceRegistration();
+
+  uint64_t source_event_id_;
+  url::Origin destination_;
+  url::Origin reporting_origin_;
+  absl::optional<base::TimeDelta> expiry_;
+  absl::optional<base::TimeDelta> event_report_window_;
+  absl::optional<base::TimeDelta> aggregatable_report_window_;
+  int64_t priority_;
+  FilterData filter_data_;
+  absl::optional<uint64_t> debug_key_;
+  AggregationKeys aggregation_keys_;
+  bool debug_reporting_;
 };
 
 }  // namespace attribution_reporting

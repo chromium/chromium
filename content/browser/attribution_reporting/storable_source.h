@@ -5,8 +5,21 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_SOURCE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_SOURCE_H_
 
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
+
+namespace attribution_reporting {
+class SourceRegistration;
+}  // namespace attribution_reporting
+
+namespace base {
+class Time;
+}  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -31,6 +44,12 @@ class CONTENT_EXPORT StorableSource {
   StorableSource(CommonSourceInfo common_info,
                  bool is_within_fenced_frame,
                  bool debug_reporting);
+
+  StorableSource(attribution_reporting::SourceRegistration,
+                 base::Time source_time,
+                 url::Origin source_origin,
+                 AttributionSourceType,
+                 bool is_within_fenced_frame);
 
   ~StorableSource();
 

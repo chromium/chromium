@@ -92,46 +92,46 @@ SourceRegistration::Parse(base::Value::Dict registration,
     if (!s)
       return base::unexpected(SourceRegistrationError::kDestinationWrongType);
 
-    result.destination = url::Origin::Create(GURL(*s));
-    if (!network::IsOriginPotentiallyTrustworthy(result.destination)) {
+    result.destination_ = url::Origin::Create(GURL(*s));
+    if (!network::IsOriginPotentiallyTrustworthy(result.destination_)) {
       return base::unexpected(
           SourceRegistrationError::kDestinationUntrustworthy);
     }
   }
 
-  result.source_event_id =
+  result.source_event_id_ =
       ParseUint64(registration, "source_event_id").value_or(0);
 
-  result.priority = ParseInt64(registration, "priority").value_or(0);
+  result.priority_ = ParseInt64(registration, "priority").value_or(0);
 
-  result.expiry = ParseTimeDeltaInSeconds(registration, "expiry");
+  result.expiry_ = ParseTimeDeltaInSeconds(registration, "expiry");
 
-  result.event_report_window =
+  result.event_report_window_ =
       ParseTimeDeltaInSeconds(registration, "event_report_window");
 
-  result.aggregatable_report_window =
+  result.aggregatable_report_window_ =
       ParseTimeDeltaInSeconds(registration, "aggregatable_report_window");
 
-  result.debug_key = ParseUint64(registration, "debug_key");
+  result.debug_key_ = ParseUint64(registration, "debug_key");
 
   base::expected<FilterData, SourceRegistrationError> filter_data =
       FilterData::FromJSON(registration.Find("filter_data"));
   if (!filter_data.has_value())
     return base::unexpected(filter_data.error());
 
-  result.filter_data = std::move(*filter_data);
+  result.filter_data_ = std::move(*filter_data);
 
   base::expected<AggregationKeys, SourceRegistrationError> aggregation_keys =
       AggregationKeys::FromJSON(registration.Find("aggregation_keys"));
   if (!aggregation_keys.has_value())
     return base::unexpected(aggregation_keys.error());
 
-  result.aggregation_keys = std::move(*aggregation_keys);
+  result.aggregation_keys_ = std::move(*aggregation_keys);
 
-  result.debug_reporting =
+  result.debug_reporting_ =
       registration.FindBool("debug_reporting").value_or(false);
 
-  result.reporting_origin = std::move(reporting_origin);
+  result.reporting_origin_ = std::move(reporting_origin);
   return result;
 }
 
