@@ -386,6 +386,17 @@ class LocalDeviceInstrumentationTestRun(
                              self._test_instance.fake_modules, permissions,
                              self._test_instance.additional_locales))
 
+      # Execute any custom setup shell commands
+      if self._test_instance.run_setup_commands:
+
+        @trace_event.traced
+        def run_setup_commands(dev):
+          for cmd in self._test_instance.run_setup_commands:
+            logging.info('Running custom setup shell command: %s', cmd)
+            dev.RunShellCommand(cmd, shell=True, check_return=True)
+
+        steps.append(run_setup_commands)
+
       @trace_event.traced
       def set_debug_app(dev):
         # Set debug app in order to enable reading command line flags on user
@@ -540,6 +551,11 @@ class LocalDeviceInstrumentationTestRun(
 
       # Remove package-specific configuration
       dev.RunShellCommand(['am', 'clear-debug-app'], check_return=True)
+
+      # Execute any custom teardown shell commands
+      for cmd in self._test_instance.run_teardown_commands:
+        logging.info('Running custom teardown shell command: %s', cmd)
+        dev.RunShellCommand(cmd, shell=True, check_return=True)
 
       valgrind_tools.SetChromeTimeoutScale(dev, None)
 

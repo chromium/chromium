@@ -548,6 +548,20 @@ def AddInstrumentationTestOptions(parser):
            "on Nougat the provider can't be determined and so "
            'the system will choose the default provider.')
   parser.add_argument(
+      '--run-setup-command',
+      default=[],
+      action='append',
+      dest='run_setup_commands',
+      help='This can be used to run a custom shell command on the device as a '
+      'setup step')
+  parser.add_argument(
+      '--run-teardown-command',
+      default=[],
+      action='append',
+      dest='run_teardown_commands',
+      help='This can be used to run a custom shell command on the device as a '
+      'teardown step')
+  parser.add_argument(
       '--runtime-deps-path',
       dest='runtime_deps_path', type=os.path.realpath,
       help='Runtime data dependency file from GN.')

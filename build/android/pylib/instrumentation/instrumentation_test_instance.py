@@ -616,6 +616,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._test_filters = None
     self._initializeTestFilterAttributes(args)
 
+    self._run_setup_commands = []
+    self._run_teardown_commands = []
+    self._initializeSetupTeardownCommandAttributes(args)
+
     self._flags = None
     self._use_apk_under_test_flags_file = False
     self._initializeFlagAttributes(args)
@@ -821,6 +825,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
           annotation_element(a) for a in _EXCLUDE_UNLESS_REQUESTED_ANNOTATIONS
           if a not in requested_annotations)
 
+  def _initializeSetupTeardownCommandAttributes(self, args):
+    self._run_setup_commands = args.run_setup_commands
+    self._run_teardown_commands = args.run_teardown_commands
+
   def _initializeFlagAttributes(self, args):
     self._use_apk_under_test_flags_file = args.use_apk_under_test_flags_file
     self._flags = ['--enable-test-intents']
@@ -987,6 +995,14 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def replace_system_package(self):
     return self._replace_system_package
+
+  @property
+  def run_setup_commands(self):
+    return self._run_setup_commands
+
+  @property
+  def run_teardown_commands(self):
+    return self._run_teardown_commands
 
   @property
   def use_voice_interaction_service(self):
