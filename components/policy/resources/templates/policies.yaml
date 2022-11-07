@@ -820,7 +820,7 @@ policies:
   819: SSLErrorOverrideAllowedForOrigins
   820: WebXRImmersiveArEnabled
   821: GaiaOfflineSigninTimeLimitDays
-  822: SendDownloadToCloudEnterpriseConnector
+  822: ''
   823: DeviceSystemWideTracingEnabled
   824: WebAppSettings
   825: DevicePciPeripheralDataAccessEnabled

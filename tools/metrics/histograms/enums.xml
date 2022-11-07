@@ -33109,7 +33109,6 @@ Called by update_document_policy_enum.py.-->
   <int value="819" label="SSLErrorOverrideAllowedForOrigins"/>
   <int value="820" label="WebXRImmersiveArEnabled"/>
   <int value="821" label="GaiaOfflineSigninTimeLimitDays"/>
-  <int value="822" label="SendDownloadToCloudEnterpriseConnector"/>
   <int value="823" label="DeviceSystemWideTracingEnabled"/>
   <int value="824" label="WebAppSettings"/>
   <int value="825" label="DevicePciPeripheralDataAccessEnabled"/>
@@ -33316,10 +33315,10 @@ Called by update_document_policy_enum.py.-->
   <int value="1023" label="DeskAPIThirdPartyAllowlist"/>
   <int value="1024" label="VirtualKeyboardResizesLayoutByDefault"/>
   <int value="1025" label="HindiInscriptLayoutEnabled"/>
-  <int value="1026" label="KeyboardBacklightColor"/>
+  <int value="1026" label="DeviceKeyboardBacklightColor"/>
   <int value="1027" label="LensDesktopNTPSearchEnabled"/>
   <int value="1028"
-      label="MatchingWithAccessControlAllowMethodsInCORSPreflightSpecConformant"/>
+      label="AccessControlAllowMethodsInCORSPreflightSpecConformant"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
