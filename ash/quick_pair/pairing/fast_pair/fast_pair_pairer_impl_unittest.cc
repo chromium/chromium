@@ -525,6 +525,84 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
 }
 
+TEST_F(FastPairPairerImplTest,
+       PairByDeviceSuccess_Initial_AlreadyClassicPaired) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(/*fast_pair_v1=*/false,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  CreatePairer();
+  // Mock that the device is already paired.
+  EXPECT_CALL(*fake_bluetooth_device_ptr_, IsBonded()).WillOnce(Return(true));
+
+  EXPECT_CALL(paired_callback_, Run);
+  fake_fast_pair_handshake_->InvokeCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+
+  // For an already classic paired device, we skip right to Account Key writing.
+  EXPECT_CALL(pairing_procedure_complete_, Run);
+  RunWriteAccountKeyCallback();
+  EXPECT_TRUE(IsAccountKeySavedToFootprints());
+}
+
+TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_AlreadyFastPaired) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(/*fast_pair_v1=*/false,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  CreatePairer();
+  // Mock that the device is already fast paired (and saved to Footprints).
+  fast_pair_repository_.SaveMacAddressToAccount(kBluetoothCanonicalizedAddress);
+  EXPECT_CALL(*fake_bluetooth_device_ptr_, IsBonded()).WillOnce(Return(true));
+
+  // For an already fast paired device, we skip the Account Key writing.
+  EXPECT_CALL(paired_callback_, Run);
+  EXPECT_CALL(pairing_procedure_complete_, Run);
+  fake_fast_pair_handshake_->InvokeCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+}
+
+TEST_F(FastPairPairerImplTest,
+       PairByDeviceSuccess_Subsequent_AlreadyClassicPaired) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(/*fast_pair_v1=*/false,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+  CreatePairer();
+  // Mock that the device is already paired.
+  EXPECT_CALL(*fake_bluetooth_device_ptr_, IsBonded()).WillOnce(Return(true));
+
+  EXPECT_CALL(paired_callback_, Run);
+  fake_fast_pair_handshake_->InvokeCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+}
+
+TEST_F(FastPairPairerImplTest,
+       PairByDeviceSuccess_Subsequent_AlreadyFastPaired) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(/*fast_pair_v1=*/false,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+  CreatePairer();
+  // Mock that the device is already fast paired (and saved to Footprints).
+  fast_pair_repository_.SaveMacAddressToAccount(kBluetoothCanonicalizedAddress);
+  EXPECT_CALL(*fake_bluetooth_device_ptr_, IsBonded()).WillOnce(Return(true));
+
+  // For an already fast paired device, we skip the Account Key writing.
+  EXPECT_CALL(paired_callback_, Run);
+  EXPECT_CALL(pairing_procedure_complete_, Run);
+  fake_fast_pair_handshake_->InvokeCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+}
+
 TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Subsequent) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();

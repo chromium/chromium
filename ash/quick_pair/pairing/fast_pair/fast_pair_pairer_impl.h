@@ -125,6 +125,9 @@ class FastPairPairerImpl : public FastPairPairer,
   void OnParseDecryptedPasskey(base::TimeTicks decrypt_start_time,
                                const absl::optional<DecryptedPasskey>& passkey);
 
+  // FastPairRepository::IsDeviceSavedToAccount callback
+  void OnIsDeviceSavedToAccount(bool is_device_saved_to_account);
+
   // FastPairRepository::CheckOptInStatus callback
   void OnCheckOptInStatus(nearby::fastpair::OptInStatus status);
 

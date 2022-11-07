@@ -238,14 +238,24 @@ void FastPairPairerImpl::StartPairing() {
     case Protocol::kFastPairSubsequent:
       // Now that we have validated the decrypted response, we can attempt to
       // retrieve the device from the adapter by the address. If we are able
-      // to retrieve the device in this way, we can pair directly. Often, we
-      // will not be able to find the device this way, and we will have to
-      // connect via address and add ourselves as a pairing delegate.
+      // to get the device, and it's not already paired, we can pair directly.
+      // Often, we will not be able to find the device this way, and we will
+      // have to connect via address and add ourselves as a pairing delegate.
       QP_LOG(VERBOSE) << "Sending pair request to device. Address: "
                       << device_address << ". Found device: "
                       << ((bt_device != nullptr) ? "Yes" : "No") << ".";
 
       if (bt_device) {
+        if (bt_device->IsBonded()) {
+          // TODO(b/256885576): Add metric to capture this case.
+          QP_LOG(INFO) << __func__
+                       << ": Trying to pair to device that is already paired; "
+                          "returning success.";
+          std::move(paired_callback_).Run(device_);
+          AttemptSendAccountKey();
+          return;
+        }
+
         bt_device->Pair(this,
                         base::BindOnce(&FastPairPairerImpl::OnPairConnected,
                                        weak_ptr_factory_.GetWeakPtr()));
@@ -472,7 +482,13 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
     return;
   }
 
-  WriteAccountKey();
+  // It's possible that the user has opted to initial pair to a device that
+  // already has an account key saved. We check to see if this is the case
+  // before writing a new account key.
+  FastPairRepository::Get()->IsDeviceSavedToAccount(
+      device_->classic_address().value(),
+      base::BindOnce(&FastPairPairerImpl::OnIsDeviceSavedToAccount,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FastPairPairerImpl::OnCheckOptInStatus(
@@ -486,6 +502,38 @@ void FastPairPairerImpl::OnCheckOptInStatus(
     return;
   }
 
+  // It's possible that the user has opted to initial pair to a device that
+  // already has an account key saved. We check to see if this is the case
+  // before writing a new account key.
+  FastPairRepository::Get()->IsDeviceSavedToAccount(
+      device_->classic_address().value(),
+      base::BindOnce(&FastPairPairerImpl::OnIsDeviceSavedToAccount,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairPairerImpl::OnIsDeviceSavedToAccount(
+    bool is_device_saved_to_account) {
+  if (is_device_saved_to_account) {
+    // If the device is saved to Footprints, don't write a new account key to
+    // the device, and return that we've finished the pairing procedure
+    // successfully. We could rework some of our APIs here so that we can call
+    // AssociateAccountKeyLocally similar to how we handle Subsequent pairing
+    // above. However, the first time a not discoverable advertisement for this
+    // device is found we'll add the account key to our SavedDeviceRegistry as
+    // expected.
+    QP_LOG(INFO) << __func__
+                 << ": Device is already saved, skipping write account key. "
+                    "Pairing procedure complete.";
+    std::move(pairing_procedure_complete_).Run(device_);
+    return;
+  }
+
+  // If we can't load the user's saved devices for some reason (e.g. offline)
+  // |is_device_saved_to_account| will return false even though we didn't
+  // properly check Footrpints. This will cause us to write a new account key to
+  // the device. This may cause problems since the device will have a different
+  // account key than what is stored in Footprints, causing the not discoverable
+  // advertisement to not be recognized.
   WriteAccountKey();
 }
 
