@@ -108,7 +108,7 @@ BASE_FEATURE(kShoppingList, "ShoppingList", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingListEnableDesyncResolution,
              "ShoppingListEnableDesyncResolution",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingPDPMetrics,
              "ShoppingPDPMetrics",
