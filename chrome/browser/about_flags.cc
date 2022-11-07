@@ -7749,9 +7749,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"page-info-history", flag_descriptions::kPageInfoHistoryName,
-     flag_descriptions::kPageInfoHistoryDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoHistory)},
     {"page-info-store-info", flag_descriptions::kPageInfoStoreInfoName,
      flag_descriptions::kPageInfoStoreInfoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoStoreInfo)},
@@ -7763,11 +7760,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageInfoHistoryDesktopDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(page_info::kPageInfoHistoryDesktop)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-    {"page-info-about-this-site", flag_descriptions::kPageInfoAboutThisSiteName,
-     flag_descriptions::kPageInfoAboutThisSiteDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteEn)},
 
     {"page-info-more-about-this-page",
      flag_descriptions::kPageInfoMoreAboutThisPageName,

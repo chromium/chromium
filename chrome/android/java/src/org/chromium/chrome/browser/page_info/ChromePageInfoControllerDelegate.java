@@ -224,14 +224,15 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             controllers.add(new PageInfoAdPersonalizationController(
                     mainController, adPersonalizationRow, this));
         }
-        if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
-            final Tab tab = TabUtils.fromWebContents(mWebContents);
-            final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);
-            historyRow.setId(PageInfoHistoryController.HISTORY_ROW_ID);
-            rowWrapper.addView(historyRow);
-            controllers.add(new PageInfoHistoryController(
-                    mainController, historyRow, this, () -> { return tab; }));
-        }
+
+        // Add history row.
+        final Tab tab = TabUtils.fromWebContents(mWebContents);
+        final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);
+        historyRow.setId(PageInfoHistoryController.HISTORY_ROW_ID);
+        rowWrapper.addView(historyRow);
+        controllers.add(new PageInfoHistoryController(
+                mainController, historyRow, this, () -> { return tab; }));
+
         if (PageInfoAboutThisSiteController.isFeatureEnabled()) {
             final PageInfoRowView aboutThisSiteRow =
                     new PageInfoRowView(rowWrapper.getContext(), null);

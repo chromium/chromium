@@ -12,9 +12,6 @@
 namespace page_info {
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPageInfoHistory,
-             "PageInfoHistory",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPageInfoStoreInfo,
              "PageInfoStoreInfo",
              base::FEATURE_DISABLED_BY_DEFAULT);

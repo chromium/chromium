@@ -85,7 +85,6 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoController;
-import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -575,7 +574,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_HISTORY_NAME)
     public void testShowHistorySubpage() throws IOException {
         addSomeHistoryEntries();
         loadUrlAndOpenPageInfo(
@@ -787,7 +785,6 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_HISTORY_NAME)
     @ParameterAnnotations.UseMethodParameter(HistorySummaryTestParams.class)
     public void testHistorySummaryText(long timestamp, String expectedSummary) throws IOException {
         StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
@@ -805,7 +802,6 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_HISTORY_NAME)
     public void testHistorySubpageItemClick() throws Exception {
         StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
         historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampJune4));

@@ -5428,11 +5428,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "page-info-about-this-site",
-    "owners": [ "eokoyomon", "dullweber", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "page-info-cookies-subpage",
     "owners": [ "zsalata@google.com", "olesiamarukhno@google.com", "dullweber" ],
     "expiry_milestone": 112
@@ -5444,11 +5439,6 @@
       "olesiamarukhno@google.com"
     ],
     "expiry_milestone": 109
-  },
-  {
-    "name": "page-info-history",
-    "owners": [ "eokoyomon", "dullweber" ],
-    "expiry_milestone": 97
   },
   {
     "name": "page-info-history-desktop",
