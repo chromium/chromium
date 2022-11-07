@@ -8,7 +8,7 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {Accelerator, AcceleratorInfo, AcceleratorSource, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {createEmptyAccelInfoFromAccel} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {areAcceleratorsEqual, createEmptyAccelInfoFromAccel} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('acceleratorLookupManagerTest', function() {
@@ -140,9 +140,8 @@ suite('acceleratorLookupManagerTest', function() {
       // Replacing a default shortcut should not remove the default. Expect
       // a new accelerator to be added instead.
       assertEquals(2, lookup.length);
-      assertEquals(
-          JSON.stringify(expectedNewAccel),
-          JSON.stringify(lookup[1]!.accelerator));
+      assertTrue(
+          areAcceleratorsEqual(expectedNewAccel, lookup[1]!.accelerator));
 
       // Replace the new accelerator with the "ALT + ]" default accelerator.
       const expectedNewDefaultAccel: Accelerator = {
@@ -165,9 +164,8 @@ suite('acceleratorLookupManagerTest', function() {
       // Expect only one accelerator since the previous accelerator has been
       // removed but the default accelerator has been re-enabled.
       assertEquals(1, lookup.length);
-      assertEquals(
-          JSON.stringify(expectedNewDefaultAccel),
-          JSON.stringify(lookup[0]!.accelerator));
+      assertTrue(areAcceleratorsEqual(
+          expectedNewDefaultAccel, lookup[0]!.accelerator));
     });
   });
 
@@ -198,9 +196,8 @@ suite('acceleratorLookupManagerTest', function() {
       const newDeskLookup = getManager().getAcceleratorInfos(
           AcceleratorSource.kAsh, newDeskAction);
       assertEquals(2, newDeskLookup.length);
-      assertEquals(
-          JSON.stringify(overridenAccel),
-          JSON.stringify(newDeskLookup[1]!.accelerator));
+      assertTrue(
+          areAcceleratorsEqual(overridenAccel, newDeskLookup[1]!.accelerator));
 
       // There should still be 1 accelerator for snapWindowRight, but the
       // default should be disabled.
@@ -240,9 +237,8 @@ suite('acceleratorLookupManagerTest', function() {
       const lookup = getManager().getAcceleratorInfos(
           AcceleratorSource.kAsh, expectedAction);
       assertEquals(2, lookup.length);
-      assertEquals(
-          JSON.stringify(expectedNewAccel),
-          JSON.stringify(lookup[1]!.accelerator));
+      assertTrue(
+          areAcceleratorsEqual(expectedNewAccel, lookup[1]!.accelerator));
     });
   });
 
@@ -272,9 +268,8 @@ suite('acceleratorLookupManagerTest', function() {
       const newDeskLookup = getManager().getAcceleratorInfos(
           AcceleratorSource.kAsh, newDeskAction);
       assertEquals(2, newDeskLookup.length);
-      assertEquals(
-          JSON.stringify(overridenAccel),
-          JSON.stringify(newDeskLookup[1]!.accelerator));
+      assertTrue(
+          areAcceleratorsEqual(overridenAccel, newDeskLookup[1]!.accelerator));
 
       // Replacing a default accelerator should not remove it but rather disable
       // it.
@@ -348,9 +343,8 @@ suite('acceleratorLookupManagerTest', function() {
 
       // Check that the accelerator got updated in the lookup.
       assertEquals(2, lookup.length);
-      assertEquals(
-          JSON.stringify(expectedNewAccel),
-          JSON.stringify(lookup[1]!.accelerator));
+      assertTrue(
+          areAcceleratorsEqual(expectedNewAccel, lookup[1]!.accelerator));
 
       // Remove the accelerator.
       const removedAccelerator = lookup[1]!.accelerator;
