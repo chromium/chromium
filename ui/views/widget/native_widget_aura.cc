@@ -638,7 +638,18 @@ void NativeWidgetAura::Close() {
 }
 
 void NativeWidgetAura::CloseNow() {
-  delete window_;
+  // We cannot use `raw_ptr::ClearAndDelete` here:
+  // In `window_` destructor, `OnWindowDestroying` will be called on this
+  // instance and `OnWindowDestroying` contains logic that still needs reference
+  // in `window_`. `ClearAndDelete` would have cleared the value in `window_`
+  // first before deleting `window_` causing problem in `OnWindowDestroying`.
+
+  if (window_)
+    delete window_;
+
+  // `window_` destructor may delete this `NativeWidgetAura` instance. Therefore
+  // we must NOT access anything through `this` after `delete window_`.
+  // Therefore, we should NOT attempt to set `window_` to `nullptr`.
 }
 
 void NativeWidgetAura::Show(ui::WindowShowState show_state,

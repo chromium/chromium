@@ -724,7 +724,11 @@ void Widget::CloseNow() {
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetClosing(this);
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
-  native_widget_->CloseNow();
+
+  DCHECK(native_widget_) << "Native widget is never initialized.";
+
+  if (!native_widget_destroyed_)
+    native_widget_->CloseNow();
 }
 
 bool Widget::IsClosed() const {
@@ -1663,6 +1667,7 @@ void Widget::OnMouseCaptureLost() {
 }
 
 void Widget::OnScrollEvent(ui::ScrollEvent* event) {
+  // b/257997427 NOLINTNEXTLINE
   ui::ScrollEvent event_copy(*event);
   SendEventToSink(&event_copy);
 

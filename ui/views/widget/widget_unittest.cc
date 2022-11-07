@@ -933,6 +933,25 @@ TEST_F(WidgetOwnsNativeWidgetTest, WidgetDelegateView) {
   // use-after-free.
 }
 
+// Widget owns its NativeWidget, part 4: Widget::CloseNow should be idempotent.
+TEST_F(WidgetOwnsNativeWidgetTest, IdempotentCloseNow) {
+  auto widget = std::make_unique<OwnershipTestWidget>(state());
+  Widget::InitParams params = CreateParamsForTestWidget();
+  params.native_widget = CreatePlatformNativeWidgetImpl(
+      widget.get(), kStubCapture, &state()->native_widget_deleted);
+  widget->Init(std::move(params));
+
+  // Now close the Widget, which should delete the NativeWidget.
+  widget->CloseNow();
+
+  RunPendingMessages();
+
+  // Close the widget again should not crash.
+  widget->CloseNow();
+
+  RunPendingMessages();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Test to verify using various Widget methods doesn't crash when the underlying
 // NativeView is destroyed.
