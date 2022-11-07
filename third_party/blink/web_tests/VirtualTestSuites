@@ -1381,6 +1381,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/eyedropper",
+      "external/wpt/idle-detection",
       "external/wpt/web-nfc"
     ],
     "args": ["--disable-features=AbortSignalHandleBasedRemoval"]

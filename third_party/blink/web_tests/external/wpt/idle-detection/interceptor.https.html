@@ -346,6 +346,32 @@ promise_test(async t => {
   assert_equals(detector.userState, "idle");
   assert_equals(detector.screenState, "locked");
 
+  // Abort in a new task and restart the monitor again.
+  const p = new Promise((resolve) => {
+    t.step_timeout(resolve, 1);
+  });
+  await p;
+  controller.abort();
+
+  expect(addMonitor).andReturn(async (monitorPtr) => {
+      return {
+        error: IdleDetectorError.SUCCESS,
+        state: {
+          idleTime: { milliseconds: 0 },
+          screenLocked: false
+        }
+      };
+    });
+
+  // Restarting the monitor.
+  controller = new AbortController();
+
+  initial_state = watcher.wait_for("change");
+  await detector.start({ signal: controller.signal });
+  await initial_state;
+  assert_equals(detector.userState, "idle");
+  assert_equals(detector.screenState, "unlocked");
+
   controller.abort();
 }, 'Calling start() after abort(): re-starting monitor.');
 
