@@ -316,6 +316,10 @@
     return;
   [base::mac::ObjCCast<TabGridViewController>(self.baseViewController)
       prepareForAppearance];
+  if (IsTabGridSortedByRecency()) {
+    [self.incognitoTabsMediator prepareToShowTabGrid];
+    [self.regularTabsMediator prepareToShowTabGrid];
+  }
 }
 
 - (void)showTabGrid {

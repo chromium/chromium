@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url/url_util.h"
@@ -80,14 +81,44 @@ TabSwitcherItem* CreateItem(web::WebState* web_state) {
   return item;
 }
 
-// Constructs an array of TabSwitcherItems from a `web_state_list`.
-NSArray* CreateItems(WebStateList* web_state_list) {
+// Constructs an array of TabSwitcherItems from a `web_state_list` sorted by
+// last active time.
+NSArray* CreateItemsOrderedByLastActiveTime(WebStateList* web_state_list) {
+  DCHECK(IsTabGridSortedByRecency());
+  NSMutableArray* items = [[NSMutableArray alloc] init];
+  std::vector<web::WebState*> web_states;
+  for (int i = 0; i < web_state_list->count(); i++) {
+    web_states.push_back(web_state_list->GetWebStateAt(i));
+  }
+  std::sort(web_states.begin(), web_states.end(),
+            [](web::WebState* a, web::WebState* b) -> bool {
+              return a->GetLastActiveTime() < b->GetLastActiveTime();
+            });
+
+  for (web::WebState* web_state : web_states) {
+    [items addObject:CreateItem(web_state)];
+  }
+  return [items copy];
+}
+
+// Constructs an array of TabSwitcherItems from a `web_state_list` sorted by
+// index.
+NSArray* CreateItemsOrderedByIndex(WebStateList* web_state_list) {
+  DCHECK(!IsTabGridSortedByRecency());
   NSMutableArray* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
     [items addObject:CreateItem(web_state)];
   }
   return [items copy];
+}
+
+// Constructs an array of TabSwitcherItems from a `web_state_list`.
+NSArray* CreateItems(WebStateList* web_state_list) {
+  if (IsTabGridSortedByRecency()) {
+    return CreateItemsOrderedByLastActiveTime(web_state_list);
+  }
+  return CreateItemsOrderedByIndex(web_state_list);
 }
 
 // Returns the ID of the active tab in `web_state_list`.
@@ -216,6 +247,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     _appearanceCache = [[NSMutableDictionary alloc] init];
   }
   return self;
+}
+
+- (void)prepareToShowTabGrid {
+  DCHECK(IsTabGridSortedByRecency());
+  [self resetToAllItems];
 }
 
 #pragma mark - Public properties

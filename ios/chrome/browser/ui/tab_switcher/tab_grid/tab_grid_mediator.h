@@ -62,6 +62,10 @@ class TabRestoreService;
 - (instancetype)initWithConsumer:(id<GridConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
+
+// Called when then tab grid is about to be shown.
+- (void)prepareToShowTabGrid;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_MEDIATOR_H_
