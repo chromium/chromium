@@ -25,31 +25,15 @@ const USER_METRICS_CONSENT_PREF_NAME = 'metrics.user_consent';
 class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'getInitialCameraHardwareToggleState',
       'getInitialMicrophoneHardwareToggleState',
-      'getInitialAvailabilityOfMicrophoneForSimpleUsage',
     ]);
-    this.cameraToggleIsEnabled = false;
     this.microphoneToggleIsEnabled = false;
-    this.microphoneForSimpleUsageAvailable = false;
-  }
-
-  /** override */
-  getInitialCameraHardwareToggleState() {
-    this.methodCalled('getInitialCameraHardwareToggleState');
-    return Promise.resolve(this.cameraToggleIsEnabled);
   }
 
   /** override */
   getInitialMicrophoneHardwareToggleState() {
     this.methodCalled('getInitialMicrophoneHardwareToggleState');
     return Promise.resolve(this.microphoneToggleIsEnabled);
-  }
-
-  /** override */
-  getInitialAvailabilityOfMicrophoneForSimpleUsage() {
-    this.methodCalled('getInitialAvailabilityOfMicrophoneForSimpleUsage');
-    return Promise.resolve(this.microphoneForSimpleUsageAvailable);
   }
 }
 
@@ -103,10 +87,9 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
 
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
-    privacyHubBrowserProxy.resetResolver('getInitialCameraHardwareToggleState');
+
     mediaDevices = new FakeMediaDevices();
     MediaDevicesProxy.setMediaDevicesForTesting(mediaDevices);
-
 
     PolymerTest.clearBody();
     privacyHubSubpage = document.createElement('settings-privacy-hub-page');
@@ -123,9 +106,6 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
   test('Deep link to camera toggle on privacy hub', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '1116');
-
-    await privacyHubBrowserProxy.whenCalled(
-        'getInitialCameraHardwareToggleState');
     Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
 
     flush();
@@ -155,106 +135,39 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
         'Microphone toggle should be focused for settingId=1117.');
   });
 
-
-  test('Update camera setting sub-label', async () => {
-    const params = new URLSearchParams();
-    params.append('settingId', '1116');
-
-    privacyHubBrowserProxy.cameraToggleIsEnabled = false;
-
-    await privacyHubBrowserProxy.whenCalled(
-        'getInitialCameraHardwareToggleState');
-    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
-
-    flush();
-
-    const subLabel = privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
-                         .shadowRoot.querySelector('#sub-label-text');
-
-    await waitAfterNextRender(subLabel);
-
-    chai.assert.match(
-        subLabel.textContent, /^\s*$/,
-        'The sublabel should only consist of whitespace');
-
-    webUIListenerCallback('camera-hardware-toggle-changed', true);
-
-    await waitAfterNextRender(subLabel);
-
-    chai.assert.match(
-        subLabel.textContent,
-        /^\s*Internal camera deactivated by hardware switch\s*$/,
-        'The sublabel should contain the hint about the internal camera');
-
-    webUIListenerCallback('camera-hardware-toggle-changed', false);
-
-    await waitAfterNextRender(subLabel);
-
-    chai.assert.match(
-        subLabel.textContent, /^\s*$/,
-        'The sublabel should only consist of whitespace');
-  });
-
-  test('Update microphone setting sub-label', async () => {
-    const params = new URLSearchParams();
-    params.append('settingId', '1117');
+  test('Microphone toggle disabled when the hw toggle is active', async () => {
+    const getMicrophoneList = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#micList');
+    const getMicrophoneCrToggle = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
+            .shadowRoot.querySelector('cr-toggle');
 
     privacyHubBrowserProxy.microphoneToggleIsEnabled = false;
-    privacyHubBrowserProxy.microphoneForSimpleUsageAvailable = false;
-
     await privacyHubBrowserProxy.whenCalled(
         'getInitialMicrophoneHardwareToggleState');
-    await privacyHubBrowserProxy.whenCalled(
-        'getInitialAvailabilityOfMicrophoneForSimpleUsage');
-    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
 
-    flush();
+    await waitAfterNextRender(privacyHubSubpage);
+    // There should be no MediaDevice connected initially. Microphone toggle
+    // should be disabled as no microphone is connected.
+    assertFalse(!!getMicrophoneList());
+    assertTrue(getMicrophoneCrToggle().disabled);
 
-    const subLabel =
-        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
-            .shadowRoot.querySelector('#sub-label-text');
+    // Add a microphone.
+    mediaDevices.addDevice('audioinput', 'Fake Microphone');
+    await waitAfterNextRender(privacyHubSubpage);
+    assertTrue(!!getMicrophoneList());
+    // Microphone toggle should be enabled to click now as there is a microphone
+    // connected and the hw toggle is inactive.
+    assertFalse(getMicrophoneCrToggle().disabled);
 
-    await waitAfterNextRender(subLabel);
-
-    chai.assert.match(
-        subLabel.textContent, /^\s*No microphone connected\s*$/,
-        'The sublabel should contain the hint about no microphone being ' +
-            'connected.');
-
-    webUIListenerCallback(
-        'availability-of-microphone-for-simple-usage-changed', true);
+    // Activate the hw toggle.
     webUIListenerCallback('microphone-hardware-toggle-changed', true);
+    await waitAfterNextRender(privacyHubSubpage);
+    // Microphone toggle should be disabled again due to the hw switch being
+    // active.
+    assertTrue(getMicrophoneCrToggle().disabled);
 
-    await waitAfterNextRender(subLabel);
-
-    chai.assert.match(
-        subLabel.textContent,
-        /^\s*All microphones disabled by devices hardware switch\s*$/,
-        'The sublabel should contain the hint about the microphone hardware ' +
-            'switch being active.');
-
-
-    webUIListenerCallback(
-        'availability-of-microphone-for-simple-usage-changed', true);
-    webUIListenerCallback('microphone-hardware-toggle-changed', false);
-
-    await waitAfterNextRender(subLabel);
-
-    chai.assert.match(
-        subLabel.textContent, /^\s*$/,
-        'The sublabel should only consist of whitespace');
-
-    webUIListenerCallback(
-        'availability-of-microphone-for-simple-usage-changed', false);
-    webUIListenerCallback('microphone-hardware-toggle-changed', true);
-
-    await waitAfterNextRender(subLabel);
-
-    chai.assert.match(
-        subLabel.textContent,
-        /^\s*All microphones disabled by devices hardware switch\s*$/,
-        'The sublabel should contain the hint about the microphone hardware ' +
-            'switch being active.');
+    mediaDevices.popDevice();
   });
 
   test('Suggested content, pref disabled', async () => {
@@ -296,7 +209,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     const toggleElement =
         privacyHubSubpage.shadowRoot.querySelector('#geolocationToggle');
     if (privacyHubVersion === PrivacyHubVersion.Dogfood) {
-      assertEquals(toggleElement, null);
+      assertEquals(null, toggleElement);
     } else {
       const deepLinkElement =
           toggleElement.shadowRoot.querySelector('cr-toggle');
@@ -307,34 +220,45 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     }
   });
 
-  test('Media device lists in the Privacy Hub subpage', async () => {
+  test('Camera, microphone toggle, their sublabel and their list', async () => {
     const getNoCameraText = () =>
         privacyHubSubpage.shadowRoot.querySelector('#noCamera');
     const getCameraList = () =>
         privacyHubSubpage.shadowRoot.querySelector('#cameraList');
+    const getCameraCrToggle = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    const getCameraToggleSublabel = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
+            .shadowRoot.querySelector('#sub-label-text');
+
 
     const getNoMicrophoneText = () =>
         privacyHubSubpage.shadowRoot.querySelector('#noMic');
     const getMicrophoneList = () =>
         privacyHubSubpage.shadowRoot.querySelector('#micList');
-
-    const getCameraCrToggle = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
+    const getMicrophoneCrToggle = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
             .shadowRoot.querySelector('cr-toggle');
+    const getMicrophoneToggleSublabel = () =>
+        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
+            .shadowRoot.querySelector('#sub-label-text');
 
     // Initially, the lists of media devices should be hidden and `#noMic` and
     // `#noCamera` should be displayed.
     assertFalse(!!getCameraList());
     assertTrue(!!getNoCameraText());
     assertEquals(
-        getNoCameraText().textContent.trim(),
-        privacyHubSubpage.i18n('noCameraConnectedText'));
+        privacyHubSubpage.i18n('noCameraConnectedText'),
+        getNoCameraText().textContent.trim());
+    assertEquals('', getCameraToggleSublabel().textContent.trim());
 
     assertFalse(!!getMicrophoneList());
     assertTrue(!!getNoMicrophoneText());
     assertEquals(
-        getNoMicrophoneText().textContent.trim(),
-        privacyHubSubpage.i18n('noMicrophoneConnectedText'));
+        privacyHubSubpage.i18n('noMicrophoneConnectedText'),
+        getNoMicrophoneText().textContent.trim());
+    assertEquals('', getMicrophoneToggleSublabel().textContent.trim());
 
     const tests = [
       {
@@ -416,18 +340,28 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
 
       if (cams) {
         assertTrue(!!getCameraList());
-        assertEquals(getCameraList().items.length, cams);
+        assertEquals(cams, getCameraList().items.length);
         assertFalse(getCameraCrToggle().disabled);
+        assertEquals(
+            privacyHubSubpage.i18n('cameraToggleSubtext'),
+            getCameraToggleSublabel().textContent.trim());
       } else {
         assertFalse(!!getCameraList());
         assertTrue(getCameraCrToggle().disabled);
+        assertEquals('', getCameraToggleSublabel().textContent.trim());
       }
 
       if (mics) {
         assertTrue(!!getMicrophoneList());
-        assertEquals(getMicrophoneList().items.length, mics);
+        assertEquals(mics, getMicrophoneList().items.length);
+        assertFalse(getMicrophoneCrToggle().disabled);
+        assertEquals(
+            privacyHubSubpage.i18n('microphoneToggleSubtext'),
+            getMicrophoneToggleSublabel().textContent.trim());
       } else {
         assertFalse(!!getMicrophoneList());
+        assertTrue(getMicrophoneCrToggle().disabled);
+        assertEquals('', getMicrophoneToggleSublabel().textContent.trim());
       }
     }
 
@@ -445,18 +379,28 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
 
       if (cams) {
         assertTrue(!!getCameraList());
-        assertEquals(getCameraList().items.length, cams);
+        assertEquals(cams, getCameraList().items.length);
         assertFalse(getCameraCrToggle().disabled);
+        assertEquals(
+            privacyHubSubpage.i18n('cameraToggleSubtext'),
+            getCameraToggleSublabel().textContent.trim());
       } else {
         assertFalse(!!getCameraList());
         assertTrue(getCameraCrToggle().disabled);
+        assertEquals('', getCameraToggleSublabel().textContent.trim());
       }
 
       if (mics) {
         assertTrue(!!getMicrophoneList());
-        assertEquals(getMicrophoneList().items.length, mics);
+        assertEquals(mics, getMicrophoneList().items.length);
+        assertFalse(getMicrophoneCrToggle().disabled);
+        assertEquals(
+            privacyHubSubpage.i18n('microphoneToggleSubtext'),
+            getMicrophoneToggleSublabel().textContent.trim());
       } else {
         assertFalse(!!getMicrophoneList());
+        assertTrue(getMicrophoneCrToggle().disabled);
+        assertEquals('', getMicrophoneToggleSublabel().textContent.trim());
       }
     }
   });
@@ -547,7 +491,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
             settingsPage.shadowRoot.querySelector('#metricsConsentToggle');
 
         assertEquals(
-            element === null, isPrivacyHubVisible,
+            isPrivacyHubVisible, element === null,
             'Send usage toggle should only be visible here when privacy hub' +
                 ' is hidden.');
       });

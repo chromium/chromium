@@ -7,13 +7,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 /** @interface */
 export class PrivacyHubBrowserProxy {
   /** @return {!Promise<boolean>} */
-  getInitialCameraHardwareToggleState() {}
-
-  /** @return {!Promise<boolean>} */
   getInitialMicrophoneHardwareToggleState() {}
-
-  /** @return {!Promise<boolean>} */
-  getInitialAvailabilityOfMicrophoneForSimpleUsage() {}
 }
 
 /**
@@ -21,18 +15,8 @@ export class PrivacyHubBrowserProxy {
  */
 export class PrivacyHubBrowserProxyImpl {
   /** @override */
-  getInitialCameraHardwareToggleState() {
-    return sendWithPromise('getInitialCameraHardwareToggleState');
-  }
-
-  /** @override */
   getInitialMicrophoneHardwareToggleState() {
     return sendWithPromise('getInitialMicrophoneHardwareToggleState');
-  }
-
-  /** @override */
-  getInitialAvailabilityOfMicrophoneForSimpleUsage() {
-    return sendWithPromise('getInitialAvailabilityOfMicrophoneForSimpleUsage');
   }
 
   /** @return {!PrivacyHubBrowserProxy} */
