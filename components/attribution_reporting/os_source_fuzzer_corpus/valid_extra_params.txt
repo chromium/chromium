@@ -1,1 +1,1 @@
-"https://adtech.example/register-android-trigger"; os-destination="a"; web-destination="https://x.test"; foo=1
+"https://adtech.example/register-android-trigger"; foo=1

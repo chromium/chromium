@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
 #include <utility>
 
 #include "components/attribution_reporting/parse.h"
@@ -15,9 +14,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-shared.h"
 #include "url/gurl.h"
-#include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
-#include "url/origin.h"
 
 namespace mojo {
 
@@ -53,16 +50,6 @@ struct BLINK_COMMON_EXPORT
     return os_source.url();
   }
 
-  static const std::string& os_destination(
-      const attribution_reporting::OsSource& os_source) {
-    return os_source.os_destination();
-  }
-
-  static const url::Origin& web_destination(
-      const attribution_reporting::OsSource& os_source) {
-    return os_source.web_destination();
-  }
-
   // TODO(apaseltiner): Define this in a separate .cc file.
   static bool Read(blink::mojom::AttributionOsSourceDataView data,
                    attribution_reporting::OsSource* out) {
@@ -70,18 +57,8 @@ struct BLINK_COMMON_EXPORT
     if (!data.ReadUrl(&url))
       return false;
 
-    std::string os_destination;
-    if (!data.ReadOsDestination(&os_destination))
-      return false;
-
-    url::Origin web_destination;
-    if (!data.ReadWebDestination(&web_destination))
-      return false;
-
     absl::optional<attribution_reporting::OsSource> os_source =
-        attribution_reporting::OsSource::Create(std::move(url),
-                                                std::move(os_destination),
-                                                std::move(web_destination));
+        attribution_reporting::OsSource::Create(std::move(url));
     if (!os_source.has_value())
       return false;
 

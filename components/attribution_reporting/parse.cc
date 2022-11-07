@@ -4,7 +4,6 @@
 
 #include "components/attribution_reporting/parse.h"
 
-#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -14,7 +13,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-#include "url/url_constants.h"
 
 namespace attribution_reporting {
 
@@ -25,82 +23,44 @@ bool IsValidUrl(const GURL& url) {
          network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url));
 }
 
-bool IsValidWebDestination(const url::Origin& origin) {
-  if (origin.scheme() != url::kHttpScheme &&
-      origin.scheme() != url::kHttpsScheme) {
-    return false;
-  }
+GURL ParseURLFromStructuredHeaderItem(base::StringPiece header) {
+  const auto item = net::structured_headers::ParseItem(header);
+  if (!item || !item->item.is_string())
+    return GURL();
 
-  return network::IsOriginPotentiallyTrustworthy(origin);
+  GURL url(item->item.GetString());
+  return IsValidUrl(url) ? url : GURL();
 }
 
 }  // namespace
 
 // static
 absl::optional<OsSource> OsSource::Parse(base::StringPiece header) {
-  auto item = net::structured_headers::ParseItem(header);
-
-  if (!item || !item->item.is_string())
+  GURL url = ParseURLFromStructuredHeaderItem(header);
+  if (!url.is_valid())
     return absl::nullopt;
 
-  GURL url(item->item.GetString());
+  return OsSource(std::move(url));
+}
 
+// static
+absl::optional<OsSource> OsSource::Create(GURL url) {
   if (!IsValidUrl(url))
     return absl::nullopt;
 
-  std::string os_destination;
-  url::Origin web_destination;
-
-  bool has_os = false;
-  bool has_web = false;
-
-  for (auto& it : item->params) {
-    if (it.first == "os-destination") {
-      if (!it.second.is_string())
-        return absl::nullopt;
-
-      os_destination = std::move(it.second).TakeString();
-      has_os = true;
-    } else if (it.first == "web-destination") {
-      if (!it.second.is_string())
-        return absl::nullopt;
-
-      web_destination = url::Origin::Create(GURL(it.second.GetString()));
-
-      if (!IsValidWebDestination(web_destination))
-        return absl::nullopt;
-
-      has_web = true;
-    }
-  }
-
-  // A valid header must specify both destinations.
-  if (!has_os || !has_web)
-    return absl::nullopt;
-
-  return OsSource(std::move(url), std::move(os_destination),
-                  std::move(web_destination));
+  return OsSource(std::move(url));
 }
 
-absl::optional<OsSource> OsSource::Create(GURL url,
-                                          std::string os_destination,
-                                          url::Origin web_destination) {
-  if (!IsValidUrl(url) || !IsValidWebDestination(web_destination))
-    return absl::nullopt;
-
-  return OsSource(std::move(url), std::move(os_destination),
-                  std::move(web_destination));
-}
-
+// static
 absl::optional<OsTrigger> OsTrigger::Parse(base::StringPiece header) {
-  const auto item = net::structured_headers::ParseItem(header);
-
-  if (!item || !item->item.is_string())
+  GURL url = ParseURLFromStructuredHeaderItem(header);
+  if (!url.is_valid())
     return absl::nullopt;
 
-  return Create(GURL(item->item.GetString()));
+  return OsTrigger(std::move(url));
 }
 
+// static
 absl::optional<OsTrigger> OsTrigger::Create(GURL url) {
   if (!IsValidUrl(url))
     return absl::nullopt;
@@ -126,14 +86,8 @@ OsTrigger& OsTrigger::operator=(OsTrigger&&) = default;
 
 OsSource::OsSource() = default;
 
-OsSource::OsSource(GURL url,
-                   std::string os_destination,
-                   url::Origin web_destination)
-    : url_(std::move(url)),
-      os_destination_(std::move(os_destination)),
-      web_destination_(std::move(web_destination)) {
+OsSource::OsSource(GURL url) : url_(std::move(url)) {
   DCHECK(IsValidUrl(url_));
-  DCHECK(IsValidWebDestination(web_destination_));
 }
 
 OsSource::~OsSource() = default;

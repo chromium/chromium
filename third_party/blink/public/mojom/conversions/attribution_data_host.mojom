@@ -142,13 +142,6 @@ struct AttributionOsSource {
   // The URL to which the OS will make a request. Must use HTTP or HTTPS and
   // its origin must be potentially trustworthy.
   url.mojom.Url url;
-
-  // A platform-specific destination on which attribution will occur.
-  string os_destination;
-
-  // Allows the browser to enforce destination matching. Must use HTTP or HTTPS
-  // and be potentially trustworthy.
-  url.mojom.Origin web_destination;
 };
 
 struct AttributionOsTrigger {
