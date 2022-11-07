@@ -386,6 +386,8 @@ class TestDesktopNativeWidgetAura : public DesktopNativeWidgetAura {
   void CloseNow() override { DesktopNativeWidgetAura::CloseNow(); }
 };
 
+// Series of tests that verifies a null NativeWidgetDelegate does not cause
+// a crash.
 class DesktopNativeWidgetAuraWithNoDelegateTest
     : public DesktopNativeWidgetAuraTest {
  public:
@@ -424,9 +426,96 @@ class DesktopNativeWidgetAuraWithNoDelegateTest
   raw_ptr<TestDesktopNativeWidgetAura> desktop_native_widget;
 };
 
-// Verifies having a null NativeWidgetDelegate doesn't crash.
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, GetHitTestMaskTest) {
+  SkPath mask;
+  static_cast<aura::WindowDelegate*>(desktop_native_widget)
+      ->GetHitTestMask(&mask);
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, GetMaximumSizeTest) {
+  static_cast<aura::WindowDelegate*>(desktop_native_widget)->GetMaximumSize();
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, GetMinimumSizeTest) {
+  static_cast<aura::WindowDelegate*>(desktop_native_widget)->GetMinimumSize();
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, GetNonClientComponentTest) {
+  static_cast<aura::WindowDelegate*>(desktop_native_widget)
+      ->GetNonClientComponent(gfx::Point());
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, GetWidgetTest) {
+  static_cast<internal::NativeWidgetPrivate*>(desktop_native_widget)
+      ->GetWidget();
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, HasHitTestMaskTest) {
+  static_cast<aura::WindowDelegate*>(desktop_native_widget)->HasHitTestMask();
+}
+
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {
   static_cast<aura::WindowDelegate*>(desktop_native_widget)->OnCaptureLost();
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnHostMovedInPixelsTest) {
+  static_cast<aura::WindowTreeHostObserver*>(desktop_native_widget)
+      ->OnHostMovedInPixels(nullptr);
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnHostResizedTest) {
+  static_cast<aura::WindowTreeHostObserver*>(desktop_native_widget)
+      ->OnHostResized(nullptr);
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnHostWorkspaceChangedTest) {
+  static_cast<aura::WindowTreeHostObserver*>(desktop_native_widget)
+      ->OnHostWorkspaceChanged(nullptr);
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnKeyEventTest) {
+  ui::KeyEvent key(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE);
+  static_cast<ui::EventHandler*>(desktop_native_widget)->OnKeyEvent(&key);
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnPaintTest) {
+  static_cast<aura::WindowDelegate*>(desktop_native_widget)
+      ->OnPaint(ui::PaintContext(nullptr, 0, gfx::Rect(), false));
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnScrollEventTest) {
+  ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), ui::EventTimeForNow(), 0,
+                         0, 0, 0, 0, 0);
+  static_cast<ui::EventHandler*>(desktop_native_widget)->OnScrollEvent(&scroll);
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnWindowActivatedTest) {
+  static_cast<wm::ActivationChangeObserver*>(desktop_native_widget)
+      ->OnWindowActivated(
+          wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+          static_cast<internal::NativeWidgetPrivate*>(desktop_native_widget)
+              ->GetNativeView(),
+          nullptr);
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnWindowFocusedTest) {
+  static_cast<aura::client::FocusChangeObserver*>(desktop_native_widget)
+      ->OnWindowFocused(nullptr, nullptr);
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, ShouldActivateTest) {
+  static_cast<wm::ActivationDelegate*>(desktop_native_widget)->ShouldActivate();
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest,
+       ShouldDescendIntoChildForEventHandlingTest) {
+  static_cast<aura::WindowDelegate*>(desktop_native_widget)
+      ->ShouldDescendIntoChildForEventHandling(nullptr, gfx::Point());
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, UpdateVisualStateTest) {
+  static_cast<aura::WindowDelegate*>(desktop_native_widget)
+      ->UpdateVisualState();
 }
 
 using DesktopAuraWidgetTest = DesktopWidgetTest;

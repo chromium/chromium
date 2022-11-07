@@ -712,13 +712,13 @@ void DesktopNativeWidgetAura::FrameTypeChanged() {
 }
 
 Widget* DesktopNativeWidgetAura::GetWidget() {
-  DCHECK(native_widget_delegate_);
-  return native_widget_delegate_->AsWidget();
+  return native_widget_delegate_ ? native_widget_delegate_->AsWidget()
+                                 : nullptr;
 }
 
 const Widget* DesktopNativeWidgetAura::GetWidget() const {
-  DCHECK(native_widget_delegate_);
-  return native_widget_delegate_->AsWidget();
+  return native_widget_delegate_ ? native_widget_delegate_->AsWidget()
+                                 : nullptr;
 }
 
 gfx::NativeView DesktopNativeWidgetAura::GetNativeView() const {
@@ -1182,13 +1182,13 @@ std::string DesktopNativeWidgetAura::GetName() const {
 // DesktopNativeWidgetAura, aura::WindowDelegate implementation:
 
 gfx::Size DesktopNativeWidgetAura::GetMinimumSize() const {
-  DCHECK(native_widget_delegate_);
-  return native_widget_delegate_->GetMinimumSize();
+  return native_widget_delegate_ ? native_widget_delegate_->GetMinimumSize()
+                                 : gfx::Size();
 }
 
 gfx::Size DesktopNativeWidgetAura::GetMaximumSize() const {
-  DCHECK(native_widget_delegate_);
-  return native_widget_delegate_->GetMaximumSize();
+  return native_widget_delegate_ ? native_widget_delegate_->GetMaximumSize()
+                                 : gfx::Size();
 }
 
 gfx::NativeCursor DesktopNativeWidgetAura::GetCursor(const gfx::Point& point) {
@@ -1197,15 +1197,18 @@ gfx::NativeCursor DesktopNativeWidgetAura::GetCursor(const gfx::Point& point) {
 
 int DesktopNativeWidgetAura::GetNonClientComponent(
     const gfx::Point& point) const {
-  return native_widget_delegate_->GetNonClientComponent(point);
+  return native_widget_delegate_
+             ? native_widget_delegate_->GetNonClientComponent(point)
+             : 0;
 }
 
 bool DesktopNativeWidgetAura::ShouldDescendIntoChildForEventHandling(
     aura::Window* child,
     const gfx::Point& location) {
-  DCHECK(native_widget_delegate_);
-  return native_widget_delegate_->ShouldDescendIntoChildForEventHandling(
-      content_window_->layer(), child, child->layer(), location);
+  return native_widget_delegate_
+             ? native_widget_delegate_->ShouldDescendIntoChildForEventHandling(
+                   content_window_->layer(), child, child->layer(), location)
+             : false;
 }
 
 bool DesktopNativeWidgetAura::CanFocus() {
@@ -1218,9 +1221,10 @@ void DesktopNativeWidgetAura::OnCaptureLost() {
 }
 
 void DesktopNativeWidgetAura::OnPaint(const ui::PaintContext& context) {
-  DCHECK(native_widget_delegate_);
-  desktop_window_tree_host_->UpdateWindowShapeIfNeeded(context);
-  native_widget_delegate_->OnNativeWidgetPaint(context);
+  if (native_widget_delegate_) {
+    desktop_window_tree_host_->UpdateWindowShapeIfNeeded(context);
+    native_widget_delegate_->OnNativeWidgetPaint(context);
+  }
 }
 
 void DesktopNativeWidgetAura::OnDeviceScaleFactorChanged(
@@ -1243,18 +1247,18 @@ void DesktopNativeWidgetAura::OnWindowDestroyed(aura::Window* window) {
 void DesktopNativeWidgetAura::OnWindowTargetVisibilityChanged(bool visible) {}
 
 bool DesktopNativeWidgetAura::HasHitTestMask() const {
-  DCHECK(native_widget_delegate_);
-  return native_widget_delegate_->HasHitTestMask();
+  return native_widget_delegate_ ? native_widget_delegate_->HasHitTestMask()
+                                 : false;
 }
 
 void DesktopNativeWidgetAura::GetHitTestMask(SkPath* mask) const {
-  DCHECK(native_widget_delegate_);
-  native_widget_delegate_->GetHitTestMask(mask);
+  if (native_widget_delegate_)
+    native_widget_delegate_->GetHitTestMask(mask);
 }
 
 void DesktopNativeWidgetAura::UpdateVisualState() {
-  DCHECK(native_widget_delegate_);
-  native_widget_delegate_->LayoutRootViewIfNecessary();
+  if (native_widget_delegate_)
+    native_widget_delegate_->LayoutRootViewIfNecessary();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1272,22 +1276,24 @@ void DesktopNativeWidgetAura::OnKeyEvent(ui::KeyEvent* event) {
   // and the window may be invisible by that time.
   if (!content_window_->IsVisible())
     return;
-  DCHECK(native_widget_delegate_);
-  native_widget_delegate_->OnKeyEvent(event);
+  if (native_widget_delegate_)
+    native_widget_delegate_->OnKeyEvent(event);
 }
 
 void DesktopNativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
-  DCHECK(native_widget_delegate_);
   DCHECK(content_window_->IsVisible());
   if (tooltip_manager_.get())
     tooltip_manager_->UpdateTooltip();
   TooltipManagerAura::UpdateTooltipManagerForCapture(this);
-  native_widget_delegate_->OnMouseEvent(event);
+  if (native_widget_delegate_)
+    native_widget_delegate_->OnMouseEvent(event);
   // WARNING: we may have been deleted.
 }
 
 void DesktopNativeWidgetAura::OnScrollEvent(ui::ScrollEvent* event) {
-  DCHECK(native_widget_delegate_);
+  if (!native_widget_delegate_)
+    return;
+
   if (event->type() == ui::ET_SCROLL) {
     native_widget_delegate_->OnScrollEvent(event);
     if (event->handled())
@@ -1304,8 +1310,8 @@ void DesktopNativeWidgetAura::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void DesktopNativeWidgetAura::OnGestureEvent(ui::GestureEvent* event) {
-  DCHECK(native_widget_delegate_);
-  native_widget_delegate_->OnGestureEvent(event);
+  if (native_widget_delegate_)
+    native_widget_delegate_->OnGestureEvent(event);
 }
 
 base::StringPiece DesktopNativeWidgetAura::GetLogContext() const {
@@ -1316,9 +1322,8 @@ base::StringPiece DesktopNativeWidgetAura::GetLogContext() const {
 // DesktopNativeWidgetAura, wm::ActivationDelegate implementation:
 
 bool DesktopNativeWidgetAura::ShouldActivate() const {
-  DCHECK(native_widget_delegate_);
   return (!should_activate_.has_value() || should_activate_.value()) &&
-         native_widget_delegate_->CanActivate();
+         (native_widget_delegate_ && native_widget_delegate_->CanActivate());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1329,19 +1334,19 @@ void DesktopNativeWidgetAura::OnWindowActivated(
     aura::Window* gained_active,
     aura::Window* lost_active) {
   DCHECK(content_window_ == gained_active || content_window_ == lost_active);
-  DCHECK(native_widget_delegate_);
   if (gained_active == content_window_ && restore_focus_on_activate_) {
     restore_focus_on_activate_ = false;
     // For OS_LINUX, desktop native widget may not be activated when child
     // widgets gets aura activation changes. Only when desktop native widget is
     // active, we can rely on aura activation to restore focused view.
-    if (GetWidget()->IsActive())
+    if (GetWidget() && GetWidget()->IsActive())
       GetWidget()->GetFocusManager()->RestoreFocusedView();
   } else if (lost_active == content_window_ && GetWidget()->HasFocusManager()) {
     DCHECK(!restore_focus_on_activate_);
     restore_focus_on_activate_ = true;
     // Pass in false so that ClearNativeFocus() isn't invoked.
-    GetWidget()->GetFocusManager()->StoreFocusedView(false);
+    if (GetWidget())
+      GetWidget()->GetFocusManager()->StoreFocusedView(false);
   }
 
   // This widget is considered active when both its window tree host and its
@@ -1363,7 +1368,7 @@ void DesktopNativeWidgetAura::OnWindowActivated(
   const bool tree_host_active = desktop_window_tree_host_->IsActive();
   // TODO(crbug.com/1300567): Update focus rules to avoid focusing the desktop
   // widget's content window if its window tree host is not active.
-  if (!should_activate_.has_value() &&
+  if (native_widget_delegate_ && !should_activate_.has_value() &&
       (tree_host_active || !content_window_activated)) {
     native_widget_delegate_->OnNativeWidgetActivationChanged(
         content_window_activated);
@@ -1378,7 +1383,9 @@ void DesktopNativeWidgetAura::OnWindowActivated(
 
 void DesktopNativeWidgetAura::OnWindowFocused(aura::Window* gained_focus,
                                               aura::Window* lost_focus) {
-  DCHECK(native_widget_delegate_);
+  if (!native_widget_delegate_)
+    return;
+
   if (content_window_ == gained_focus) {
     native_widget_delegate_->OnNativeFocus();
   } else if (content_window_ == lost_focus) {
@@ -1429,11 +1436,13 @@ void DesktopNativeWidgetAura::OnHostCloseRequested(aura::WindowTreeHost* host) {
 }
 
 void DesktopNativeWidgetAura::OnHostResized(aura::WindowTreeHost* host) {
-  DCHECK(native_widget_delegate_);
   // Don't update the bounds of the child layers when animating closed. If we
   // did it would force a paint, which we don't want. We don't want the paint
   // as we can't assume any of the children are valid.
   if (desktop_window_tree_host_->IsAnimatingClosed())
+    return;
+
+  if (!native_widget_delegate_)
     return;
 
   gfx::Rect new_bounds = gfx::Rect(host->window()->bounds().size());
@@ -1443,15 +1452,14 @@ void DesktopNativeWidgetAura::OnHostResized(aura::WindowTreeHost* host) {
 
 void DesktopNativeWidgetAura::OnHostWorkspaceChanged(
     aura::WindowTreeHost* host) {
-  DCHECK(native_widget_delegate_);
-  native_widget_delegate_->OnNativeWidgetWorkspaceChanged();
+  if (native_widget_delegate_)
+    native_widget_delegate_->OnNativeWidgetWorkspaceChanged();
 }
 
 void DesktopNativeWidgetAura::OnHostMovedInPixels(aura::WindowTreeHost* host) {
-  DCHECK(native_widget_delegate_);
   TRACE_EVENT0("views", "DesktopNativeWidgetAura::OnHostMovedInPixels");
-
-  native_widget_delegate_->OnNativeWidgetMove();
+  if (native_widget_delegate_)
+    native_widget_delegate_->OnNativeWidgetMove();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
