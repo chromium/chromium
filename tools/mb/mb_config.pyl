@@ -957,12 +957,12 @@
       'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome_reclient',
       'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome',
       'android-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
-      'android-12-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome',
+      'android-12-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
       'android-12l-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
       'android-arm64-all-targets-dbg': 'android_debug_trybot_compile_only_arm64_fastbuild',
       'android-asan': 'android_clang_asan_release_trybot',
       'android-bfcache-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android-binary-size': 'android_binary_size',
+      'android-binary-size': 'android_binary_size_reclient',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       # TODO(crbug/597596): Switch this back to debug_trybot when cronet's
       # shared library loading is fixed.
@@ -1011,7 +1011,7 @@
       'android_archive_rel_ng': 'android_release_trybot',
       'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
       'android_blink_rel': 'android_release_trybot_reclient',
-      'android_compile_dbg': 'android_debug_trybot_compile_only',
+      'android_compile_dbg': 'android_debug_trybot_compile_only_reclient',
       'android_compile_x64_dbg': 'android_debug_trybot_compile_only_x64',
       'android_compile_x86_dbg': 'android_debug_trybot_compile_only_x86',
       'android_coverage': 'android_debug_trybot_java_coverage',
@@ -1397,11 +1397,6 @@
       'optimize_for_fuzzing', 'shared_release_bot_reclient', 'disable_seed_corpus',
     ],
 
-    'android_binary_size': [
-      'android', 'chrome_with_codecs', 'goma', 'minimal_symbols',
-      'official_optimize', 'stable_channel',
-    ],
-
     'android_binary_size_reclient': [
       'android', 'chrome_with_codecs', 'reclient', 'minimal_symbols',
       'official_optimize', 'stable_channel',
@@ -1584,16 +1579,16 @@
       'android', 'debug_bot_reclient', 'arm64',
     ],
 
-    'android_debug_trybot_compile_only': [
-      'android', 'debug_bot', 'compile_only',
-    ],
-
     'android_debug_trybot_compile_only_arm64_fastbuild': [
       'android', 'debug_bot', 'compile_only', 'arm64', 'android_fastbuild'
     ],
 
     'android_debug_trybot_compile_only_arm64_fastbuild_reclient': [
       'android', 'debug_bot_reclient', 'compile_only', 'arm64', 'android_fastbuild'
+    ],
+
+    'android_debug_trybot_compile_only_reclient': [
+      'android', 'debug_bot_reclient', 'compile_only',
     ],
 
     'android_debug_trybot_compile_only_x64': [
@@ -1754,8 +1749,8 @@
       'android', 'release_trybot_reclient', 'strip_debug_info',
     ],
 
-    'android_release_trybot_x64_fastbuild_webview_trichrome': [
-      'android', 'release_trybot', 'strip_debug_info', 'x64',
+    'android_release_trybot_x64_fastbuild_webview_trichrome_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
       'android_fastbuild', 'webview_trichrome',
       'no_secondary_abi', 'webview_shell',
     ],

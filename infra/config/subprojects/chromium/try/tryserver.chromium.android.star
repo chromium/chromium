@@ -105,7 +105,7 @@ try_.builder(
     # landed
     cores = 16,
     executable = "recipe:binary_size_trybot",
-    goma_jobs = goma.jobs.J150,
+    goma_backend = None,
     main_list_view = "try",
     properties = {
         "$build/binary_size": {
@@ -123,6 +123,7 @@ try_.builder(
             ],
         },
     },
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(),
     ssd = True,
 )
@@ -504,8 +505,9 @@ try_.builder(
         is_compile_only = True,
     ),
     builderless = not settings.is_main,
-    goma_jobs = goma.jobs.J150,
+    goma_backend = None,
     main_list_view = "try",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
 

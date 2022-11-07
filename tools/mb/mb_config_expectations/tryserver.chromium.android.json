@@ -65,7 +65,7 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x64",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-12l-x64-dbg": {
@@ -140,7 +140,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-chrome-pie-x86-wpt-fyi-rel": {
@@ -1028,7 +1028,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android_compile_x64_dbg": {
