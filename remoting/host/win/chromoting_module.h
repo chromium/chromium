@@ -6,7 +6,7 @@
 #define REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
 

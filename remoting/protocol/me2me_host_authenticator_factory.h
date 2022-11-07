@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/third_party_host_authenticator.h"
 #include "remoting/protocol/token_validator.h"

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "remoting/host/input_injector_metadata.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/input_stub.h"

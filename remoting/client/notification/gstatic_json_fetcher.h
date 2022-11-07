@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/client/notification/json_fetcher.h"
 #include "services/network/transitional_url_loader_factory_owner.h"

@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/me2me_desktop_environment.h"
 

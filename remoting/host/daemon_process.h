@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "ipc/ipc_message.h"

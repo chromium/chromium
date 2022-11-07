@@ -14,7 +14,7 @@
 #include <atlcrack.h>
 #include <wrl/client.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
 #include "base/win/atl.h"
 #include "net/base/ip_endpoint.h"

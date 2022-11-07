@@ -10,7 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/host/host_event_logger.h"

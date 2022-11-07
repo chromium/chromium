@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/protocol/channel_authenticator.h"
 

@@ -5,7 +5,7 @@
 #ifndef REMOTING_PROTOCOL_MESSAGE_DECODER_H_
 #define REMOTING_PROTOCOL_MESSAGE_DECODER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/compound_buffer.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"

@@ -8,7 +8,7 @@
 #include <memory>
 #include <set>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "remoting/protocol/port_allocator_factory.h"
 
 namespace remoting::protocol {

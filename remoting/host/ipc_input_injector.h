@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_IPC_INPUT_INJECTOR_H_
 #define REMOTING_HOST_IPC_INPUT_INJECTOR_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/proto/event.pb.h"
 

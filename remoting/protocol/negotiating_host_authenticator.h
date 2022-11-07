@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/negotiating_authenticator_base.h"
 #include "remoting/protocol/pairing_registry.h"

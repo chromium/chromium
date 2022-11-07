@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/host_status_observer.h"
 #include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"

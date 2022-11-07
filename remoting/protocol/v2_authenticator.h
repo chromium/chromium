@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "crypto/p224_spake.h"
 #include "remoting/protocol/authenticator.h"
 

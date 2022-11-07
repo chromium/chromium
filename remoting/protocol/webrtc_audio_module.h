@@ -6,7 +6,7 @@
 #define REMOTING_PROTOCOL_WEBRTC_AUDIO_MODULE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/webrtc/modules/audio_device/include/audio_device.h"
 

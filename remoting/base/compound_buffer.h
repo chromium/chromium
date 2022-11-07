@@ -23,7 +23,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "google/protobuf/io/zero_copy_stream.h"
 
 namespace net {
