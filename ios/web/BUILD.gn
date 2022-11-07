@@ -568,6 +568,7 @@ test("ios_web_inttests") {
     "//ios/testing:embedded_test_server_support",
     "//ios/testing:http_server_bundle_data",
     "//ios/web:resources_grit",
+    "//ios/web/annotations:inttests",
     "//ios/web/common",
     "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",

@@ -30,13 +30,50 @@ source_set("annotations") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+compile_ts("compile_ts") {
+  sources = [ "resources/annotations_constants.ts" ]
+}
+
 optimize_ts("annotations_ts") {
   visibility = [ ":annotations" ]
 
   sources = [ "resources/annotations.ts" ]
 
   deps = [
+    ":compile_ts",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
+}
+
+optimize_ts("annotations_test_ts") {
+  visibility = [ ":inttests" ]
+
+  sources = [ "resources/annotations_test.ts" ]
+
+  deps = [
+    ":compile_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+source_set("inttests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  deps = [
+    ":annotations",
+    ":annotations_test_ts",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/common:features",
+    "//ios/web/js_messaging",
+    "//ios/web/js_messaging:java_script_feature_manager_header",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
+  ]
+  sources = [ "annotations_inttest.mm" ]
 }

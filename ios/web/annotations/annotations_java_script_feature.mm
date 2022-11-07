@@ -119,10 +119,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (*command == "annotations.log") {
-    const std::string* text = response->FindStringKey("text");
-    DLOG(WARNING) << *text;
-  } else if (*command == "annotations.extractedText") {
+  if (*command == "annotations.extractedText") {
     const std::string* text = response->FindStringKey("text");
     if (!text) {
       return;

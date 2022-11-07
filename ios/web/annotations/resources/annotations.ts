@@ -9,16 +9,8 @@
 
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
-
-// Mark: Debug
-
-// TODO(crbug.com/1350973): remove on full launch.
-function log(value: any) {
-  sendWebKitMessage('annotations', {
-    command: 'annotations.log',
-    text: gCrWeb.stringify(value),
-  });
-}
+import {NON_TEXT_NODE_NAMES}
+    from '//ios/web/annotations/resources/annotations_constants.js';
 
 // Mark: Private properties
 
@@ -99,12 +91,6 @@ class MutationsDuringClickTracker {
   }
 }
 
-// Used by the `enumerateTextNodes` function below.
-const NON_TEXT_NODE_NAMES = new Set([
-  'SCRIPT', 'NOSCRIPT', 'STYLE', 'EMBED', 'OBJECT', 'TEXTAREA', 'IFRAME',
-  'INPUT'
-]);
-
 const highlightTextColor = "#000";
 const highlightBackgroundColor = "rgba(20,111,225,0.25)";
 const decorationStyles = 'border-bottom-width: 1px; ' +
@@ -159,7 +145,7 @@ function decorateAnnotations(annotations: Annotation[]): void {
   // Reparse page finding annotations and styling them.
   let annotationIndex = 0;
   enumerateSectionsNodes((node, index, text) => {
-    if (!node.parentNode)
+    if (!node.parentNode || text === '\n')
       return true;
 
     // Skip annotation with end before index. This would happen if some nodes
@@ -169,10 +155,6 @@ function decorateAnnotations(annotations: Annotation[]): void {
       if (!annotation || annotation.end > index) {
         break;
       }
-      log({
-        reason: 'skipping',
-        annotationText: annotation.text,
-      });
       failures++;
       annotationIndex++;
     }
@@ -197,11 +179,6 @@ function decorateAnnotations(annotations: Annotation[]): void {
             annotation.text.substring(annotationLeft, annotationRight);
         // Text has changed, forget the rest of this annotation.
         if (nodeText != annotationText) {
-          log({
-            reason: 'mismatch',
-            nodeText: nodeText,
-            annotationText: annotationText,
-          });
           failures++;
           annotationIndex++;
           continue;
@@ -267,7 +244,7 @@ function removeDecorations(): void {
 /**
  * Removes any highlight on all annotations.
  */
- function removeHighlight(): void {
+function removeHighlight(): void {
   for (let decoration of decorations) {
     for (let replacement of decoration.replacements) {
       if (!(replacement instanceof HTMLElement)) {
@@ -352,7 +329,7 @@ function enumerateTextNodes(
  */
 function enumerateSectionsNodes(process: EnumNodesFunction): void {
   for (let section of sections) {
-    const node: Node|undefined = WeakRef ?
+    const node: Node|undefined = window.WeakRef ?
         (section.node as WeakRef<Node>).deref() :
         section.node as Node;
     if (!node)
@@ -373,7 +350,8 @@ function getPageText(maxChars: number): string {
   const parts: string[] = [];
   sections = [];
   enumerateTextNodes(document.body, function(node, index, text) {
-    sections.push(new Section(WeakRef ? new WeakRef<Node>(node) : node, index));
+    sections.push(new Section(window.WeakRef ?
+        new WeakRef<Node>(node) : node, index));
     if (index + text.length > maxChars) {
       parts.push(text.substring(0, maxChars - index));
     } else {

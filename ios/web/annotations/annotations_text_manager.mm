@@ -41,15 +41,16 @@ void AnnotationsTextManager::RemoveObserver(AnnotationsTextObserver* observer) {
 void AnnotationsTextManager::DecorateAnnotations(WebState* web_state,
                                                  base::Value& annotations) {
   DCHECK_EQ(web_state_, web_state);
-  GetJSFeature()->DecorateAnnotations(web_state_, annotations);
+  AnnotationsJavaScriptFeature::GetInstance()->DecorateAnnotations(web_state_,
+                                                                   annotations);
 }
 
 void AnnotationsTextManager::RemoveDecorations() {
-  GetJSFeature()->RemoveDecorations(web_state_);
+  AnnotationsJavaScriptFeature::GetInstance()->RemoveDecorations(web_state_);
 }
 
 void AnnotationsTextManager::RemoveHighlight() {
-  GetJSFeature()->RemoveHighlight(web_state_);
+  AnnotationsJavaScriptFeature::GetInstance()->RemoveHighlight(web_state_);
 }
 
 void AnnotationsTextManager::StartExtractingText() {
@@ -60,7 +61,8 @@ void AnnotationsTextManager::StartExtractingText() {
     return;
   }
 
-  GetJSFeature()->ExtractText(web_state_, kMaxAnnotationsTextLength);
+  AnnotationsJavaScriptFeature::GetInstance()->ExtractText(
+      web_state_, kMaxAnnotationsTextLength);
 }
 
 #pragma mark - WebStateObserver methods.
@@ -106,18 +108,6 @@ void AnnotationsTextManager::OnClick(WebState* web_state,
   for (auto& observer : observers_) {
     observer.OnClick(web_state, text, rect, data);
   }
-}
-
-AnnotationsJavaScriptFeature* AnnotationsTextManager::GetJSFeature() {
-  return js_feature_for_testing_ ? js_feature_for_testing_
-                                 : AnnotationsJavaScriptFeature::GetInstance();
-}
-
-#pragma mark - Testing Methods
-
-void AnnotationsTextManager::SetJSFeatureForTesting(
-    AnnotationsJavaScriptFeature* feature) {
-  js_feature_for_testing_ = feature;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AnnotationsTextManager)

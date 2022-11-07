@@ -56,8 +56,6 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager>,
                   PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(WebState* web_state) override;
 
-  void SetJSFeatureForTesting(AnnotationsJavaScriptFeature* feature);
-
   WEB_STATE_USER_DATA_KEY_DECL();
 
  private:
@@ -67,13 +65,10 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager>,
 
   void StartExtractingText();
 
-  AnnotationsJavaScriptFeature* GetJSFeature();
-
   // A list of observers. Weak references.
   base::ObserverList<AnnotationsTextObserver, true> observers_;
 
   WebState* web_state_ = nullptr;
-  AnnotationsJavaScriptFeature* js_feature_for_testing_ = nullptr;
 };
 
 }  // namespace web

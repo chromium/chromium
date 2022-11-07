@@ -1,0 +1,70 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Test helpers for the annotations manager.
+ */
+
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {NON_TEXT_NODE_NAMES}
+    from '//ios/web/annotations/resources/annotations_constants.js';
+
+/**
+ * Simulate clicking annotation at given `index`.
+ */
+function clickAnnotation(index: number): boolean {
+  let nodes = document.querySelectorAll("chrome_annotation");
+  let decoration = nodes[index];
+  if (decoration && decoration instanceof HTMLElement) {
+    decoration.click();
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Returns first `maxChars` characters from the page text and tags.
+ * @param maxChars - maximum number of characters to parse out.
+ */
+ function getPageTaggedText(maxChars: number): string {
+  const parts: string[] = [];
+  let length = 0;
+  function traverse(node: Node) {
+    if (length >= maxChars) return;
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      // Reject non-text nodes such as scripts.
+      if (NON_TEXT_NODE_NAMES.has(node.nodeName)) {
+        return;
+      }
+      const element = node as Element;
+      if (element.shadowRoot && element.shadowRoot != node) {
+        traverse(element.shadowRoot);
+        return;
+      }
+
+      let tagName = element.tagName.toLowerCase();
+      parts.push('<' + tagName + '>');
+      length += tagName.length + 2;
+      if (node.hasChildNodes()) {
+        for (let child of node.childNodes) {
+          traverse(child);
+        }
+      }
+      parts.push('</' + tagName + '>');
+      length += tagName.length + 2;
+    } else if (node.nodeType === Node.TEXT_NODE && node.textContent) {
+      parts.push(node.textContent);
+      length += node.textContent.length;
+    }
+  }
+  parts.push('<html>');
+  traverse(document.body);
+  parts.push('</html>');
+  return ''.concat(...parts);
+}
+
+gCrWeb.annotationsTest = {
+  getPageTaggedText,
+  clickAnnotation,
+};
