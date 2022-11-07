@@ -23,7 +23,7 @@ TEST_F(CrossDeviceUserModelTest, ExecuteModelWithInput) {
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
-  std::vector<float> input(4, 0);
+  ModelProvider::Request input(4, 0);
   std::string subsegment_key = GetSubsegmentKey(kCrossDeviceUserKey);
 
   ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(

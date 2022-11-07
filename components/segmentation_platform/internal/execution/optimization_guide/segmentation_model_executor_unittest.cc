@@ -162,20 +162,20 @@ TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
 
   EXPECT_TRUE(opt_guide_model_handler().ModelAvailable());
 
-  std::vector<float> input = {4, 5};
+  ModelProvider::Request input = {4, 5};
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   opt_guide_model_provider_->ExecuteModelWithInput(
-      input,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const absl::optional<float>& output) {
-            EXPECT_TRUE(output.has_value());
-            // 4 + 5 = 9
-            EXPECT_NEAR(9, output.value(), 1e-1);
+      input, base::BindOnce(
+                 [](base::RunLoop* run_loop,
+                    const absl::optional<ModelProvider::Response>& output) {
+                   EXPECT_TRUE(output.has_value());
+                   // 4 + 5 = 9
+                   EXPECT_NEAR(9, output.value().at(0), 1e-1);
 
-            run_loop->Quit();
-          },
-          run_loop.get()));
+                   run_loop->Quit();
+                 },
+                 run_loop.get()));
   run_loop->Run();
 
   ResetModelExecutor();

@@ -93,7 +93,7 @@ class ModelExecutorTest : public testing::Test {
                            std::unique_ptr<ModelExecutionResult> expected,
                            std::unique_ptr<ModelExecutionResult> actual) {
     EXPECT_EQ(expected->status, actual->status);
-    EXPECT_NEAR(expected->score, actual->score, 1e-5);
+    EXPECT_EQ(expected->scores, actual->scores);
     EXPECT_EQ(expected->inputs, actual->inputs);
     std::move(closure).Run();
   }
@@ -204,11 +204,13 @@ TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
   // The input tensor should contain all values flattened to a single vector.
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(true));
   EXPECT_CALL(mock_model_, ExecuteModelWithInput(inputs, _))
-      .WillOnce(RunOnceCallback<1>(absl::make_optional(0.8)));
+      .WillOnce(
+          RunOnceCallback<1>(absl::optional<ModelProvider::Response>({0.8})));
 
-  ExecuteModel(*metadata_writer.FindOrCreateSegment(kSegmentId), &mock_model_,
-               std::make_unique<ModelExecutionResult>(
-                   ModelExecutionResult::Tensor(inputs), 0.8));
+  ExecuteModel(
+      *metadata_writer.FindOrCreateSegment(kSegmentId), &mock_model_,
+      std::make_unique<ModelExecutionResult>(ModelProvider::Request(inputs),
+                                             ModelProvider::Response(1, 0.8)));
 }
 
 }  // namespace segmentation_platform

@@ -175,8 +175,9 @@ TEST_F(ModelExecutionSchedulerTest, OnModelExecutionCompleted) {
   EXPECT_CALL(observer1_, OnModelExecutionCompleted(kTestSegmentId)).Times(1);
   float score = 0.4;
   model_execution_scheduler_->OnModelExecutionCompleted(
-      kTestSegmentId, std::make_unique<ModelExecutionResult>(
-                          ModelExecutionResult::Tensor(), score));
+      kTestSegmentId,
+      std::make_unique<ModelExecutionResult>(
+          ModelProvider::Request(), ModelProvider::Response(1, score)));
 
   // Verify that the results are written to the DB.
   segment_info = segment_database_->FindOrCreateSegment(kTestSegmentId);

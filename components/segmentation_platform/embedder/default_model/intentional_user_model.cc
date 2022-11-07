@@ -92,7 +92,7 @@ void IntentionalUserModel::InitAndFetchModel(
 }
 
 void IntentionalUserModel::ExecuteModelWithInput(
-    const std::vector<float>& inputs,
+    const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != kIntentionalUserUMAFeatures.size()) {
@@ -109,7 +109,8 @@ void IntentionalUserModel::ExecuteModelWithInput(
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
 bool IntentionalUserModel::ModelAvailable() {

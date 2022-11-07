@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/optimization_guide/core/base_model_executor.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 struct TfLiteTensor;
@@ -23,9 +24,9 @@ namespace segmentation_platform {
 // Since the shape of the inputs and outputs across all segmentation models are
 // the same, this class can be re-used across all the segmentation model
 // executors.
-class SegmentationModelExecutor
-    : public optimization_guide::BaseModelExecutor<float,
-                                                   const std::vector<float>&> {
+class SegmentationModelExecutor : public optimization_guide::BaseModelExecutor<
+                                      ModelProvider::Response,
+                                      const ModelProvider::Request&> {
  public:
   SegmentationModelExecutor();
   ~SegmentationModelExecutor() override;
@@ -38,8 +39,8 @@ class SegmentationModelExecutor
  protected:
   // optimization_guide::BaseModelExecutor overrides.
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  const std::vector<float>& input) override;
-  absl::optional<float> Postprocess(
+                  const ModelProvider::Request& input) override;
+  absl::optional<ModelProvider::Response> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 };
 

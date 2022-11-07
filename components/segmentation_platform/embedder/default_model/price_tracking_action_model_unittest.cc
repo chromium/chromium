@@ -21,19 +21,19 @@ TEST_F(PriceTrackingActionModelTest, InitAndFetchModel) {
 
 TEST_F(PriceTrackingActionModelTest, ExecuteModelWithInput) {
   // Input vector empty.
-  std::vector<float> input;
+  ModelProvider::Request input;
   ExpectExecutionWithInput(input, /*expected_error=*/true,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
 
   // Price tracking = 0
   input.assign(1, 0);
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
 
   // Price tracking = 1
   input.assign(1, 1);
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           /*expected_result=*/1);
+                           /*expected_result=*/{1});
 }
 
 }  // namespace segmentation_platform

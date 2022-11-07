@@ -8,6 +8,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -75,13 +76,13 @@ TEST_F(DummyModelProviderFactoryImplTest, ProviderCreated) {
 
   base::RunLoop wait;
   provider->ExecuteModelWithInput(
-      {1, 2.5},
-      base::BindOnce(
-          [](base::OnceClosure quit, const absl::optional<float>& output) {
-            EXPECT_FALSE(output);
-            std::move(quit).Run();
-          },
-          wait.QuitClosure()));
+      {1, 2.5}, base::BindOnce(
+                    [](base::OnceClosure quit,
+                       const absl::optional<ModelProvider::Response>& output) {
+                      EXPECT_FALSE(output);
+                      std::move(quit).Run();
+                    },
+                    wait.QuitClosure()));
   wait.Run();
 }
 

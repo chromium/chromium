@@ -27,7 +27,7 @@ class ChromeStartModelV2 : public ModelProvider {
   // ModelProvider implementation.
   void InitAndFetchModel(
       const ModelUpdatedCallback& model_updated_callback) override;
-  void ExecuteModelWithInput(const std::vector<float>& inputs,
+  void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
   bool ModelAvailable() override;
 };

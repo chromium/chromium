@@ -19,10 +19,13 @@ class SegmentationModelMetadata;
 // single optimization target.
 class ModelProvider {
  public:
+  using Request = std::vector<float>;
+  using Response = std::vector<float>;
+
   using ModelUpdatedCallback = base::RepeatingCallback<
       void(proto::SegmentId, proto::SegmentationModelMetadata, int64_t)>;
   using ExecutionCallback =
-      base::OnceCallback<void(const absl::optional<float>&)>;
+      base::OnceCallback<void(const absl::optional<Response>&)>;
 
   explicit ModelProvider(proto::SegmentId segment_id);
   virtual ~ModelProvider();
@@ -47,7 +50,7 @@ class ModelProvider {
   // of positive result. Also see `discrete_mapping` field in the
   // `SegmentationModelMetadata` for how the score will be used to determine the
   // segment.
-  virtual void ExecuteModelWithInput(const std::vector<float>& inputs,
+  virtual void ExecuteModelWithInput(const Request& inputs,
                                      ExecutionCallback callback) = 0;
 
   // Returns true if a model is available.

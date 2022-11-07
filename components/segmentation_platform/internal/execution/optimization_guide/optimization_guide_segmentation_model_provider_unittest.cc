@@ -118,15 +118,15 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest,
           proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
 
   base::RunLoop run_loop;
-  std::vector<float> input = {4, 5};
+  ModelProvider::Request input = {4, 5};
   provider->ExecuteModelWithInput(
-      input,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const absl::optional<float>& output) {
-            EXPECT_FALSE(output.has_value());
-            run_loop->Quit();
-          },
-          &run_loop));
+      input, base::BindOnce(
+                 [](base::RunLoop* run_loop,
+                    const absl::optional<ModelProvider::Response>& output) {
+                   EXPECT_FALSE(output.has_value());
+                   run_loop->Quit();
+                 },
+                 &run_loop));
   run_loop.Run();
   RunUntilIdle();
 }
@@ -140,18 +140,18 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest, ExecuteModelWithFetch) {
       proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
 
   base::RunLoop run_loop;
-  std::vector<float> input = {4, 5};
+  ModelProvider::Request input = {4, 5};
   provider->ExecuteModelWithInput(
-      input,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const absl::optional<float>& output) {
-            // TODO(ssid): Consider using a mock executor to return results.
-            // This failure is caused by not no TFLite model being loaded in the
-            // opt-guide executor.
-            EXPECT_FALSE(output.has_value());
-            run_loop->Quit();
-          },
-          &run_loop));
+      input, base::BindOnce(
+                 [](base::RunLoop* run_loop,
+                    const absl::optional<ModelProvider::Response>& output) {
+                   // TODO(ssid): Consider using a mock executor to return
+                   // results. This failure is caused by not no TFLite model
+                   // being loaded in the opt-guide executor.
+                   EXPECT_FALSE(output.has_value());
+                   run_loop->Quit();
+                 },
+                 &run_loop));
   run_loop.Run();
   RunUntilIdle();
 }

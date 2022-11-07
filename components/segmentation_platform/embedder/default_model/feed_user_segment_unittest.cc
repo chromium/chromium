@@ -24,7 +24,7 @@ TEST_F(FeedUserModelTest, ExecuteModelWithInput) {
   ASSERT_TRUE(fetched_metadata_);
 
   std::string subsegment_key = GetSubsegmentKey(kFeedUserSegmentationKey);
-  std::vector<float> input(11, 0);
+  ModelProvider::Request input(11, 0);
   ExecuteWithInputAndCheckSubsegmentName<FeedUserSegment>(
       input, subsegment_key, /*sub_segment_name=*/"NoNTPOrHomeOpened");
 

@@ -13,6 +13,7 @@
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_executor.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -48,10 +49,11 @@ class ModelExecutorImpl : public ModelExecutor {
   // Callback method for when the processing of the model metadata's feature
   // list has completed, which either result in an error or a valid input tensor
   // for executing the model.
-  void OnProcessingFeatureListComplete(std::unique_ptr<ExecutionState> state,
-                                       bool error,
-                                       const std::vector<float>& input_tensor,
-                                       const std::vector<float>& output_tensor);
+  void OnProcessingFeatureListComplete(
+      std::unique_ptr<ExecutionState> state,
+      bool error,
+      const ModelProvider::Request& input_tensor,
+      const ModelProvider::Response& output_tensor);
 
   // ExecuteModel takes the current input tensor and passes it to the ML
   // model for execution.
@@ -60,8 +62,9 @@ class ModelExecutorImpl : public ModelExecutor {
   // Callback method for when the model execution has completed which gives
   // the end result to the initial ModelExecutionCallback passed to
   // ExecuteModel(...).
-  void OnModelExecutionComplete(std::unique_ptr<ExecutionState> state,
-                                const absl::optional<float>& result);
+  void OnModelExecutionComplete(
+      std::unique_ptr<ExecutionState> state,
+      const absl::optional<ModelProvider::Response>& result);
 
   // Helper function for synchronously invoking the callback with the given
   // result and status.

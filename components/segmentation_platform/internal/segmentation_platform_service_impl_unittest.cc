@@ -116,7 +116,7 @@ class SegmentationPlatformServiceImplTest
             SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER, metadata,
             1));
     EXPECT_CALL(model_provider, ExecuteModelWithInput(_, _))
-        .WillRepeatedly(RunOnceCallback<1>(1));
+        .WillRepeatedly(RunOnceCallback<1>(ModelProvider::Response(1, 1)));
     EXPECT_CALL(model_provider, ModelAvailable()).WillRepeatedly(Return(true));
   }
 

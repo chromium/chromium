@@ -38,12 +38,13 @@ class DefaultModelTestBase : public testing::Test {
   // hence the model won't have any result.
   // 2. Else `expected_result` is checked against the actual result given by the
   // model after executing.
-  void ExpectExecutionWithInput(const std::vector<float>& inputs,
+  void ExpectExecutionWithInput(const ModelProvider::Request& inputs,
                                 bool expected_error,
-                                float expected_result);
+                                ModelProvider::Response expected_result);
 
   // Executes the model with inputs and return the output.
-  absl::optional<float> ExecuteWithInput(const std::vector<float>& inputs);
+  absl::optional<ModelProvider::Response> ExecuteWithInput(
+      const ModelProvider::Request& inputs);
 
   // `sub_segment_key` is combination of `segmentation_key` +
   // `kSubSegmentDiscreteMappingSuffix`. Use `GetSubsegmentKey()`  from
@@ -51,15 +52,16 @@ class DefaultModelTestBase : public testing::Test {
   // returned as result from model execution. `T` indicates the segment class
   // for which we need to evaluate subsegment based on inputs.
   template <typename T>
-  void ExecuteWithInputAndCheckSubsegmentName(const std::vector<float>& inputs,
-                                              std::string sub_segment_key,
-                                              std::string sub_segment_name) {
-    absl::optional<float> result =
+  void ExecuteWithInputAndCheckSubsegmentName(
+      const ModelProvider::Request& inputs,
+      std::string sub_segment_key,
+      std::string sub_segment_name) {
+    absl::optional<ModelProvider::Response> result =
         DefaultModelTestBase::ExecuteWithInput(inputs);
     ASSERT_TRUE(result);
     EXPECT_EQ(sub_segment_name,
               T::GetSubsegmentName(metadata_utils::ConvertToDiscreteScore(
-                  sub_segment_key, *result, *fetched_metadata_)));
+                  sub_segment_key, result.value()[0], *fetched_metadata_)));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -72,14 +74,16 @@ class DefaultModelTestBase : public testing::Test {
                               proto::SegmentationModelMetadata metadata,
                               int64_t);
 
-  void OnFinishedExpectExecutionWithInput(base::RepeatingClosure closure,
-                                          bool expected_error,
-                                          float expected_result,
-                                          const absl::optional<float>& result);
+  void OnFinishedExpectExecutionWithInput(
+      base::RepeatingClosure closure,
+      bool expected_error,
+      ModelProvider::Response expected_result,
+      const absl::optional<ModelProvider::Response>& result);
 
-  void OnFinishedExecuteWithInput(base::RepeatingClosure closure,
-                                  absl::optional<float>* output,
-                                  const absl::optional<float>& result);
+  void OnFinishedExecuteWithInput(
+      base::RepeatingClosure closure,
+      absl::optional<ModelProvider::Response>* output,
+      const absl::optional<ModelProvider::Response>& result);
 };
 
 }  // namespace segmentation_platform

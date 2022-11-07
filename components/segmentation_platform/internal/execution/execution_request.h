@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 
 namespace segmentation_platform {
@@ -20,9 +21,8 @@ class SegmentInfo;
 class ModelProvider;
 
 struct ModelExecutionResult {
-  using Tensor = std::vector<float>;
-
-  ModelExecutionResult(Tensor inputs, float score);
+  ModelExecutionResult(const ModelProvider::Request& inputs,
+                       const ModelProvider::Response& scores);
   explicit ModelExecutionResult(ModelExecutionStatus status);
   ~ModelExecutionResult();
 
@@ -30,10 +30,12 @@ struct ModelExecutionResult {
   ModelExecutionResult& operator=(ModelExecutionResult&) = delete;
 
   // The float value is only valid when ModelExecutionStatus == kSuccess.
-  float score = 0;
+  // TODO(ritikagup): Change ModelProvider::Response as key value pair in
+  // future.
+  ModelProvider::Response scores;
   ModelExecutionStatus status;
 
-  Tensor inputs;
+  ModelProvider::Request inputs;
 };
 
 // Request for model execution.

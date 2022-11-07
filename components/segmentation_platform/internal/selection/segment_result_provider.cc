@@ -228,8 +228,9 @@ void SegmentResultProviderImpl::GetCachedModelScore(
   float rank = ComputeDiscreteMapping(
       request_state->options->discrete_mapping_key, *db_segment_info);
   auto execution_result = std::make_unique<ModelExecutionResult>(
-      ModelExecutionResult::Tensor(),
-      db_segment_info->prediction_result().result());
+      ModelProvider::Request(),
+      ModelProvider::Response(1,
+                              db_segment_info->prediction_result().result()));
   std::move(callback).Run(
       std::move(request_state),
       std::make_unique<SegmentResult>(ResultState::kSuccessFromDatabase, rank,
@@ -309,7 +310,8 @@ void SegmentResultProviderImpl::OnModelExecuted(
   auto* segment_info =
       FilterSegmentInfoBySource(request_state->available_segments, source);
   if (result->status == ModelExecutionStatus::kSuccess) {
-    segment_info->mutable_prediction_result()->set_result(result->score);
+    // TODO(ritikagup): Change as per MultiOutputModel.
+    segment_info->mutable_prediction_result()->set_result(result->scores[0]);
     float rank = ComputeDiscreteMapping(
         request_state->options->discrete_mapping_key, *segment_info);
     ResultState state =

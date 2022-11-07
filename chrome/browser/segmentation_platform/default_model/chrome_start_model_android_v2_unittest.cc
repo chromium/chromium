@@ -21,15 +21,15 @@ TEST_F(ChromeStartModelV2Test, InitAndFetchModel) {
 
 TEST_F(ChromeStartModelV2Test, ExecuteModelWithInput) {
   // 3 input features defined in `kChromeStartUMAFeatures`, set all to 0.
-  std::vector<float> input = {0, 0, 0};
+  ModelProvider::Request input = {0, 0, 0};
   const float kDefaultReturnTimeSeconds = 28800;
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           kDefaultReturnTimeSeconds);
+                           {kDefaultReturnTimeSeconds});
 
   // Set to higher values, the model returns the same result.
   input = {3, 6, 3};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           kDefaultReturnTimeSeconds);
+                           {kDefaultReturnTimeSeconds});
 }
 
 }  // namespace segmentation_platform

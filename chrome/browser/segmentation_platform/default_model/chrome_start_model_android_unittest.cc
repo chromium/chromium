@@ -22,28 +22,28 @@ TEST_F(ChromeStartModelTest, InitAndFetchModel) {
 TEST_F(ChromeStartModelTest, ExecuteModelWithInput) {
   const unsigned kMvIndex = 3;
 
-  std::vector<float> input = {0.3, 1.4, -2, 4, 1, 6, 7, 8};
+  ModelProvider::Request input = {0.3, 1.4, -2, 4, 1, 6, 7, 8};
 
   input[kMvIndex] = 0;
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
 
   input[kMvIndex] = -3;
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
 
   input[kMvIndex] = 1;
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           /*expected_result=*/1);
+                           /*expected_result=*/{1});
 
   input[kMvIndex] = 4.6;
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           /*expected_result=*/1);
+                           /*expected_result=*/{1});
 
   ExpectExecutionWithInput(/*inputs=*/{}, /*expected_error=*/true,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{1, 2, 3, 4, 5, 6, 7, 8, 9},
-                           /*expected_error=*/true, /*expected_result=*/0);
+                           /*expected_error=*/true, /*expected_result=*/{0});
 }
 
 }  // namespace segmentation_platform

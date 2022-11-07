@@ -141,8 +141,9 @@ void SearchUserModel::InitAndFetchModel(
                      std::move(search_user_metadata), kSearchUserModelVersion));
 }
 
-void SearchUserModel::ExecuteModelWithInput(const std::vector<float>& inputs,
-                                            ExecutionCallback callback) {
+void SearchUserModel::ExecuteModelWithInput(
+    const ModelProvider::Request& inputs,
+    ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != kSearchUserUMAFeatures.size()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -165,7 +166,8 @@ void SearchUserModel::ExecuteModelWithInput(const std::vector<float>& inputs,
 
   float result = RANK(segment);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
 bool SearchUserModel::ModelAvailable() {

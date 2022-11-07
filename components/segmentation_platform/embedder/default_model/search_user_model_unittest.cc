@@ -46,7 +46,7 @@ TEST_F(SearchUserModelTest, ExecuteModelWithInput) {
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
   std::string subsegment_key = GetSubsegmentKey(kSearchUserKey);
-  std::vector<float> input = {0};
+  ModelProvider::Request input = {0};
   ExecuteWithInputAndCheckSubsegmentName<SearchUserModel>(
       input, subsegment_key, /*sub_segment_name=*/"None");
 

@@ -84,7 +84,7 @@ void ResumeHeavyUserModel::InitAndFetchModel(
 }
 
 void ResumeHeavyUserModel::ExecuteModelWithInput(
-    const std::vector<float>& inputs,
+    const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != kUMAFeatures.size()) {
@@ -108,7 +108,8 @@ void ResumeHeavyUserModel::ExecuteModelWithInput(
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
 bool ResumeHeavyUserModel::ModelAvailable() {

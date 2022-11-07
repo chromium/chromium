@@ -17,6 +17,7 @@
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/input_delegate.h"
+#include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
 
@@ -107,8 +108,9 @@ void ExecutionService::RequestModelExecution(
 void ExecutionService::OverwriteModelExecutionResult(
     proto::SegmentId segment_id,
     const std::pair<float, ModelExecutionStatus>& result) {
+  // TODO(ritikagup): Change the use of this according to MultiOutputModel.
   auto execution_result = std::make_unique<ModelExecutionResult>(
-      ModelExecutionResult::Tensor(), result.first);
+      ModelProvider::Request(), ModelProvider::Response(1, result.first));
   model_execution_scheduler_->OnModelExecutionCompleted(
       segment_id, std::move(execution_result));
 }

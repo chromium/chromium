@@ -212,8 +212,9 @@ void FeedUserSegment::InitAndFetchModel(
                           std::move(chrome_start_metadata), kModelVersion));
 }
 
-void FeedUserSegment::ExecuteModelWithInput(const std::vector<float>& inputs,
-                                            ExecutionCallback callback) {
+void FeedUserSegment::ExecuteModelWithInput(
+    const ModelProvider::Request& inputs,
+    ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != kFeedUserUMAFeatures.size()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -261,7 +262,8 @@ void FeedUserSegment::ExecuteModelWithInput(const std::vector<float>& inputs,
 
   float result = RANK(segment);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
 bool FeedUserSegment::ModelAvailable() {

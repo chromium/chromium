@@ -23,13 +23,13 @@ TEST_F(ResumeHeavyUserModelTest, ExecuteModelWithInput) {
   // Input arguments in order: bookmarks_opened, mv_tiles_clicked,
   // opened_ntp_from_tab_groups, opened_item_from_history
   ExpectExecutionWithInput(/*inputs=*/{0, 0, 0, 0, 0}, /*expected_error=*/false,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{1, 0, 0, 0, 0}, /*expected_error=*/false,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{2, 0, 0, 0, 0}, /*expected_error=*/false,
-                           /*expected_result=*/1);
+                           /*expected_result=*/{1});
   ExpectExecutionWithInput(/*inputs=*/{0, 3, 0, 0, 0}, /*expected_error=*/false,
-                           /*expected_result=*/1);
+                           /*expected_result=*/{1});
 }
 
 }  // namespace segmentation_platform

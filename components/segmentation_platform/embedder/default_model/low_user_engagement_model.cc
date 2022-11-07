@@ -60,7 +60,7 @@ void LowUserEngagementModel::InitAndFetchModel(
 }
 
 void LowUserEngagementModel::ExecuteModelWithInput(
-    const std::vector<float>& inputs,
+    const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != 28) {
@@ -79,7 +79,8 @@ void LowUserEngagementModel::ExecuteModelWithInput(
     result = 1;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
 bool LowUserEngagementModel::ModelAvailable() {

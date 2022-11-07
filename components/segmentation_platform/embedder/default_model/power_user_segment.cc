@@ -224,8 +224,9 @@ static void AddToScoreIf(bool usage, int& score) {
     score++;
 }
 
-void PowerUserSegment::ExecuteModelWithInput(const std::vector<float>& inputs,
-                                             ExecutionCallback callback) {
+void PowerUserSegment::ExecuteModelWithInput(
+    const ModelProvider::Request& inputs,
+    ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != kPowerUserUMAFeatures.size()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -274,7 +275,8 @@ void PowerUserSegment::ExecuteModelWithInput(const std::vector<float>& inputs,
 
   float result = RANK(segment);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
 bool PowerUserSegment::ModelAvailable() {

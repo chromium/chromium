@@ -10,6 +10,7 @@
 
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace optimization_guide {
@@ -17,6 +18,7 @@ class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
 namespace segmentation_platform {
+
 namespace proto {
 class SegmentationModelMetadata;
 }  // namespace proto
@@ -27,8 +29,8 @@ class SegmentationModelMetadata;
 // See documentation for SegmentationModelExecutor for details on the
 // requirements for the ML model and the inputs to execution.
 class OptimizationGuideSegmentationModelHandler
-    : public optimization_guide::ModelHandler<float,
-                                              const std::vector<float>&> {
+    : public optimization_guide::ModelHandler<ModelProvider::Response,
+                                              const ModelProvider::Request&> {
  public:
   using ModelUpdatedCallback = base::RepeatingCallback<
       void(proto::SegmentId, proto::SegmentationModelMetadata, int64_t)>;

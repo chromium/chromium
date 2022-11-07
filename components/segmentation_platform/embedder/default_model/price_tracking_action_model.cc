@@ -51,7 +51,7 @@ void PriceTrackingActionModel::InitAndFetchModel(
 }
 
 void PriceTrackingActionModel::ExecuteModelWithInput(
-    const std::vector<float>& inputs,
+    const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != 1) {
@@ -64,7 +64,8 @@ void PriceTrackingActionModel::ExecuteModelWithInput(
   float result = inputs[0];
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
 bool PriceTrackingActionModel::ModelAvailable() {

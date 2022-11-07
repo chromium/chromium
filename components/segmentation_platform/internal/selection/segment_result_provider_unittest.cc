@@ -59,9 +59,9 @@ class TestModelProvider : public ModelProvider {
     model_updated_callback.Run(segment_id_, metadata, kVersion);
   }
 
-  void ExecuteModelWithInput(const std::vector<float>& inputs,
+  void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override {
-    std::move(callback).Run(kTestScore);
+    std::move(callback).Run(ModelProvider::Response(1, kTestScore));
   }
 
   // Returns true if a model is available.

@@ -38,9 +38,9 @@ void DefaultModelTestBase::OnInitFinishedCallback(
 }
 
 void DefaultModelTestBase::ExpectExecutionWithInput(
-    const std::vector<float>& inputs,
+    const ModelProvider::Request& inputs,
     bool expected_error,
-    float expected_result) {
+    ModelProvider::Response expected_result) {
   base::RunLoop loop;
   model_->ExecuteModelWithInput(
       inputs,
@@ -53,8 +53,8 @@ void DefaultModelTestBase::ExpectExecutionWithInput(
 void DefaultModelTestBase::OnFinishedExpectExecutionWithInput(
     base::RepeatingClosure closure,
     bool expected_error,
-    float expected_result,
-    const absl::optional<float>& result) {
+    ModelProvider::Response expected_result,
+    const absl::optional<ModelProvider::Response>& result) {
   if (expected_error) {
     EXPECT_FALSE(result.has_value());
   } else {
@@ -64,9 +64,9 @@ void DefaultModelTestBase::OnFinishedExpectExecutionWithInput(
   std::move(closure).Run();
 }
 
-absl::optional<float> DefaultModelTestBase::ExecuteWithInput(
-    const std::vector<float>& inputs) {
-  absl::optional<float> result;
+absl::optional<ModelProvider::Response> DefaultModelTestBase::ExecuteWithInput(
+    const ModelProvider::Request& inputs) {
+  absl::optional<ModelProvider::Response> result;
   base::RunLoop loop;
   model_->ExecuteModelWithInput(
       inputs,
@@ -78,8 +78,8 @@ absl::optional<float> DefaultModelTestBase::ExecuteWithInput(
 
 void DefaultModelTestBase::OnFinishedExecuteWithInput(
     base::RepeatingClosure closure,
-    absl::optional<float>* output,
-    const absl::optional<float>& result) {
+    absl::optional<ModelProvider::Response>* output,
+    const absl::optional<ModelProvider::Response>& result) {
   *output = result;
   std::move(closure).Run();
 }

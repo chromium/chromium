@@ -20,22 +20,22 @@ TEST_F(LowUserEngagementModelTest, 2) {
 }
 
 TEST_F(LowUserEngagementModelTest, ExecuteModelWithInput) {
-  std::vector<float> input;
+  ModelProvider::Request input;
   ExpectExecutionWithInput(input, /*expected_error=*/true,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
 
   input.assign(27, 0);
   ExpectExecutionWithInput(input, /*expected_error=*/true,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
 
   input.assign(28, 0);
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           /*expected_result=*/1);
+                           /*expected_result=*/{1});
 
   input.assign(21, 0);
   input.insert(input.end(), 7, 1);
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           /*expected_result=*/1);
+                           /*expected_result=*/{1});
 
   input.assign(28, 0);
   input[1] = 2;
@@ -43,7 +43,7 @@ TEST_F(LowUserEngagementModelTest, ExecuteModelWithInput) {
   input[15] = 4;
   input[22] = 2;
   ExpectExecutionWithInput(input, /*expected_error=*/false,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
 }
 
 }  // namespace segmentation_platform

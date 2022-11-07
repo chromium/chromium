@@ -102,8 +102,9 @@ void QueryTilesModel::InitAndFetchModel(
                           std::move(query_tiles_metadata), 2));
 }
 
-void QueryTilesModel::ExecuteModelWithInput(const std::vector<float>& inputs,
-                                            ExecutionCallback callback) {
+void QueryTilesModel::ExecuteModelWithInput(
+    const ModelProvider::Request& inputs,
+    ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != kQueryTilesUMAFeatures.size()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -122,7 +123,8 @@ void QueryTilesModel::ExecuteModelWithInput(const std::vector<float>& inputs,
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
 bool QueryTilesModel::ModelAvailable() {

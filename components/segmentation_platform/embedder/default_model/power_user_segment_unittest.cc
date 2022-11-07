@@ -24,7 +24,7 @@ TEST_F(PowerUserModelTest, ExecuteModelWithInput) {
   ASSERT_TRUE(fetched_metadata_);
 
   std::string subsegment_key = GetSubsegmentKey(kPowerUserKey);
-  std::vector<float> input(27, 0);
+  ModelProvider::Request input(27, 0);
   ExecuteWithInputAndCheckSubsegmentName<PowerUserSegment>(
       input, subsegment_key, /*sub_segment_name=*/"None");
 

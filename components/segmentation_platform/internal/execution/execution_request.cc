@@ -7,8 +7,10 @@
 
 namespace segmentation_platform {
 
-ModelExecutionResult::ModelExecutionResult(Tensor inputs, float score)
-    : score(score),
+ModelExecutionResult::ModelExecutionResult(
+    const ModelProvider::Request& inputs,
+    const ModelProvider::Response& scores)
+    : scores(std::move(scores)),
       status(ModelExecutionStatus::kSuccess),
       inputs(std::move(inputs)) {}
 

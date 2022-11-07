@@ -63,7 +63,7 @@ struct ModelExecutorImpl::ExecutionState {
   raw_ptr<ModelProvider> model_provider = nullptr;
   bool record_metrics_for_default = false;
   ModelExecutionCallback callback;
-  std::vector<float> input_tensor;
+  ModelProvider::Request input_tensor;
   base::Time total_execution_start_time;
   base::Time model_execution_start_time;
   base::TimeDelta signal_storage_length;
@@ -145,8 +145,8 @@ void ModelExecutorImpl::ExecuteModel(
 void ModelExecutorImpl::OnProcessingFeatureListComplete(
     std::unique_ptr<ExecutionState> state,
     bool error,
-    const std::vector<float>& input_tensor,
-    const std::vector<float>& output_tensor) {
+    const ModelProvider::Request& input_tensor,
+    const ModelProvider::Response& output_tensor) {
   if (error) {
     // Validation error occurred on model's metadata.
     RunModelExecutionCallback(
@@ -170,7 +170,7 @@ void ModelExecutorImpl::ExecuteModel(std::unique_ptr<ExecutionState> state) {
     VLOG(1) << "Segmentation model input: " << log_input.str()
             << " for segment " << proto::SegmentId_Name(state->segment_id);
   }
-  const std::vector<float>& const_input_tensor = state->input_tensor;
+  const ModelProvider::Request& const_input_tensor = state->input_tensor;
   stats::RecordModelExecutionZeroValuePercent(state->segment_id,
                                               const_input_tensor);
   state->model_execution_start_time = clock_->Now();
@@ -183,26 +183,27 @@ void ModelExecutorImpl::ExecuteModel(std::unique_ptr<ExecutionState> state) {
 
 void ModelExecutorImpl::OnModelExecutionComplete(
     std::unique_ptr<ExecutionState> state,
-    const absl::optional<float>& result) {
+    const absl::optional<ModelProvider::Response>& result) {
   ModelExecutionTraceEvent trace_event(
       "ModelExecutorImpl::OnModelExecutionComplete", *state);
   stats::RecordModelExecutionDurationModel(
       state->segment_id, result.has_value(),
       clock_->Now() - state->model_execution_start_time);
+  // TODO(ritikagup): Change the use of this according to MultiOutputModel.
   if (result.has_value()) {
-    VLOG(1) << "Segmentation model result: " << *result << " for segment "
-            << proto::SegmentId_Name(state->segment_id);
-    stats::RecordModelExecutionResult(state->segment_id, result.value(),
+    VLOG(0) << "Segmentation model result: " << result.value().at(0)
+            << " for segment " << proto::SegmentId_Name(state->segment_id);
+    stats::RecordModelExecutionResult(state->segment_id, result.value().at(0),
                                       state->return_type);
     if (state->model_version && SegmentationUkmHelper::AllowedToUploadData(
                                     state->signal_storage_length, clock_)) {
       if (state->upload_tensors) {
         SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
             state->segment_id, state->model_version, state->input_tensor,
-            result.value());
+            result.value().at(0));
       }
     }
-    ModelExecutionResult::Tensor input_tensor = state->input_tensor;
+    ModelProvider::Request input_tensor = state->input_tensor;
     RunModelExecutionCallback(std::move(state),
                               std::make_unique<ModelExecutionResult>(
                                   std::move(input_tensor), *result));

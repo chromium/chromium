@@ -97,7 +97,7 @@ void FrequentFeatureUserModel::InitAndFetchModel(
 }
 
 void FrequentFeatureUserModel::ExecuteModelWithInput(
-    const std::vector<float>& inputs,
+    const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != kUMAFeatures.size()) {
@@ -112,8 +112,10 @@ void FrequentFeatureUserModel::ExecuteModelWithInput(
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     (total_non_search_feature > 0 && inputs[9] > 0) ? 1 : 0));
+      base::BindOnce(
+          std::move(callback),
+          ModelProvider::Response(
+              1, (total_non_search_feature > 0 && inputs[9] > 0) ? 1 : 0)));
 }
 
 bool FrequentFeatureUserModel::ModelAvailable() {

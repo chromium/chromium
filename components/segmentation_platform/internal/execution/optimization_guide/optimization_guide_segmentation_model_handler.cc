@@ -24,7 +24,8 @@ OptimizationGuideSegmentationModelHandler::
         optimization_guide::proto::OptimizationTarget segment_id,
         const ModelUpdatedCallback& model_updated_callback,
         absl::optional<optimization_guide::proto::Any>&& model_metadata)
-    : optimization_guide::ModelHandler<float, const std::vector<float>&>(
+    : optimization_guide::ModelHandler<ModelProvider::Response,
+                                       const ModelProvider::Request&>(
           model_provider,
           background_task_runner,
           std::make_unique<SegmentationModelExecutor>(),
@@ -45,7 +46,8 @@ void OptimizationGuideSegmentationModelHandler::OnModelUpdated(
     const optimization_guide::ModelInfo& model_info) {
   // First invoke parent to update internal status.
   optimization_guide::ModelHandler<
-      float, const std::vector<float>&>::OnModelUpdated(segment_id, model_info);
+      ModelProvider::Response,
+      const ModelProvider::Request&>::OnModelUpdated(segment_id, model_info);
   // The parent class should always set the model availability to true after
   // having received an updated model.
   DCHECK(ModelAvailable());

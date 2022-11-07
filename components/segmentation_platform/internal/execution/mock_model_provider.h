@@ -28,11 +28,13 @@ class MockModelProvider : public ModelProvider {
           get_client_callback);
   ~MockModelProvider() override;
 
-  MOCK_METHOD(void,
-              ExecuteModelWithInput,
-              (const std::vector<float>& input,
-               base::OnceCallback<void(const absl::optional<float>&)> callback),
-              (override));
+  MOCK_METHOD(
+      void,
+      ExecuteModelWithInput,
+      (const ModelProvider::Request& input,
+       base::OnceCallback<void(const absl::optional<ModelProvider::Response>&)>
+           callback),
+      (override));
 
   MOCK_METHOD(void,
               InitAndFetchModel,

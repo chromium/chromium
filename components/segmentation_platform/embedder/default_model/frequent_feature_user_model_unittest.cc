@@ -21,23 +21,23 @@ TEST_F(FrequentFeatureUserModelTest, InitAndFetchModel) {
 
 TEST_F(FrequentFeatureUserModelTest, ExecuteModelWithInput) {
   ExpectExecutionWithInput(/*inputs=*/{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                           /*expected_error=*/false, /*expected_result=*/0);
+                           /*expected_error=*/false, /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                           /*expected_error=*/false, /*expected_result=*/0);
+                           /*expected_error=*/false, /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{0, 0, 2, 0, 0, 0, 0, 0, 0, 0},
-                           /*expected_error=*/false, /*expected_result=*/0);
+                           /*expected_error=*/false, /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-                           /*expected_error=*/false, /*expected_result=*/0);
+                           /*expected_error=*/false, /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{0, 0, 0, 0, 0, 0, 3, 0, 1, 0},
-                           /*expected_error=*/false, /*expected_result=*/0);
+                           /*expected_error=*/false, /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                           /*expected_error=*/false, /*expected_result=*/0);
+                           /*expected_error=*/false, /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-                           /*expected_error=*/false, /*expected_result=*/1);
+                           /*expected_error=*/false, /*expected_result=*/{1});
   ExpectExecutionWithInput(/*inputs=*/{0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-                           /*expected_error=*/false, /*expected_result=*/1);
+                           /*expected_error=*/false, /*expected_result=*/{1});
   ExpectExecutionWithInput(/*inputs=*/{0, 0, 1, 0, 2, 0, 0, 0, 0, 1},
-                           /*expected_error=*/false, /*expected_result=*/1);
+                           /*expected_error=*/false, /*expected_result=*/{1});
 }
 
 }  // namespace segmentation_platform

@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,8 +20,8 @@ class SegmentInfoDatabase;
 // Result of a single segment.
 // TODO(shaktisahu, ssid): Modify the result fields as the API evolves.
 struct SegmentScore {
-  // Raw score from the model.
-  absl::optional<float> score;
+  // Raw scores from the model.
+  absl::optional<ModelProvider::Response> scores;
 
   // Constructors.
   SegmentScore();

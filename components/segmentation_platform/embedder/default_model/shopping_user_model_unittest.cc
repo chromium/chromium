@@ -23,26 +23,26 @@ TEST_F(ShoppingUserModelTest, ExecuteModelWithInput) {
   // When shopping related features count is less than or equal to 1,
   // the user shouldn't be considered a shopping user.
   ExpectExecutionWithInput(/*inputs=*/{0, 0}, /*expected_error=*/false,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{1, 0}, /*expected_error=*/false,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{1, 1}, /*expected_error=*/false,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
 
   // When shopping related features count is greater than or equal to 1,
   // the user should be considered shopping user.
   ExpectExecutionWithInput(/*inputs=*/{1, 2}, /*expected_error=*/false,
-                           /*expected_result=*/1);
+                           /*expected_result=*/{1});
   ExpectExecutionWithInput(/*inputs=*/{2, 2}, /*expected_error=*/false,
-                           /*expected_result=*/1);
+                           /*expected_result=*/{1});
 
   // Invalid input
   ExpectExecutionWithInput(/*inputs=*/{1, 1, 1, 1, 1}, /*expected_error=*/true,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{0}, /*expected_error=*/true,
-                           /*expected_result=*/0);
+                           /*expected_result=*/{0});
   ExpectExecutionWithInput(/*inputs=*/{2, 2, 2, 2, 2, 2, 2, 2},
-                           /*expected_error=*/true, /*expected_result=*/0);
+                           /*expected_error=*/true, /*expected_result=*/{0});
 }
 
 }  // namespace segmentation_platform

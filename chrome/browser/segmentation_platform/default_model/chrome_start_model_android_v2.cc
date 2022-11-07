@@ -88,8 +88,9 @@ void ChromeStartModelV2::InitAndFetchModel(
                           std::move(chrome_start_metadata), kModelVersion));
 }
 
-void ChromeStartModelV2::ExecuteModelWithInput(const std::vector<float>& inputs,
-                                               ExecutionCallback callback) {
+void ChromeStartModelV2::ExecuteModelWithInput(
+    const ModelProvider::Request& inputs,
+    ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != kChromeStartUMAFeatures.size()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -103,7 +104,9 @@ void ChromeStartModelV2::ExecuteModelWithInput(const std::vector<float>& inputs,
   // here instead.
   float return_time_in_seconds = 28800;  // 8 hours
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), return_time_in_seconds));
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     ModelProvider::Response(1, return_time_in_seconds)));
 }
 
 bool ChromeStartModelV2::ModelAvailable() {

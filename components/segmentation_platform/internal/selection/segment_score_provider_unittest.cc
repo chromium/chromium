@@ -58,7 +58,7 @@ class SegmentScoreProviderTest : public testing::Test {
   void OnGetSegmentScore(base::RepeatingClosure closure,
                          const SegmentScore& expected,
                          const SegmentScore& actual) {
-    ASSERT_EQ(expected.score, actual.score);
+    ASSERT_EQ(expected.scores, actual.scores);
     std::move(closure).Run();
   }
 
@@ -78,7 +78,7 @@ TEST_F(SegmentScoreProviderTest, GetSegmentScore) {
 
   // Returns results from last session.
   SegmentScore expected;
-  expected.score = 0.6;
+  expected.scores = {0.6};
   GetSegmentScore(kSegmentId, expected);
 
   // Updating the scores in the current session doesn't affect the get call.
