@@ -133,9 +133,6 @@ class WebTestFinderTests(unittest.TestCase):
         expectations = test_expectations.TestExpectations(port)
         tests = finder.skip_tests([], all_tests, expectations)
         self.assertEqual(tests, set())
-        for test in all_tests:
-            self.assertTrue(
-                expectations.get_expectations(test).is_default_pass)
 
         # MSAN/ASAN, with no paths specified explicitly, so should skip both
         # idlharness tests.
@@ -143,12 +140,6 @@ class WebTestFinderTests(unittest.TestCase):
         finder._options.enable_sanitizer = True
         tests = finder.skip_tests([], all_tests, expectations)
         self.assertEqual(tests, set([idlharness_test_1, idlharness_test_2]))
-        self.assertTrue(
-            expectations.get_expectations(non_idlharness_test).is_default_pass)
-        self.assertEquals(
-            expectations.get_expectations(idlharness_test_1).results, {'SKIP'})
-        self.assertEquals(
-            expectations.get_expectations(idlharness_test_2).results, {'SKIP'})
 
         # Disable expectations entirely; we should still skip the idlharness
         # tests but shouldn't touch the expectations parameter.
@@ -161,15 +152,6 @@ class WebTestFinderTests(unittest.TestCase):
         expectations = test_expectations.TestExpectations(port)
         tests = finder.skip_tests([idlharness_test_1], all_tests, expectations)
         self.assertEqual(tests, set([idlharness_test_2]))
-        # Although we will run the test because it was specified explicitly, it
-        # is still *expected* to Skip. This is consistent with how entries in
-        # TestExpectations work.
-        self.assertTrue(
-            expectations.get_expectations(non_idlharness_test).is_default_pass)
-        self.assertEquals(
-            expectations.get_expectations(idlharness_test_1).results, {'SKIP'})
-        self.assertEquals(
-            expectations.get_expectations(idlharness_test_2).results, {'SKIP'})
 
     def test_find_fastest_tests(self):
         host = MockHost()
