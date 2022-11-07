@@ -164,6 +164,11 @@ template("gcc_toolchain") {
     } else {
       toolchain_uses_remoteexec = use_remoteexec
     }
+    if (defined(toolchain_args.use_remoteexec_links)) {
+      toolchain_uses_remoteexec_links = toolchain_args.use_remoteexec_links
+    } else {
+      toolchain_uses_remoteexec_links = use_remoteexec_links
+    }
     if (defined(toolchain_args.use_goma)) {
       toolchain_uses_goma = toolchain_args.use_goma
     } else {
@@ -219,7 +224,15 @@ template("gcc_toolchain") {
       compiler_prefix = "${toolchain_cc_wrapper} "
     }
 
-    if (use_goma_thin_lto && toolchain_uses_goma && use_thin_lto) {
+    if (toolchain_uses_remoteexec_links) {
+      if (defined(toolchain_args.rbe_link_cfg_file)) {
+        toolchain_rbe_link_cfg_file = toolchain_args.rbe_link_cfg_file
+      } else {
+        toolchain_rbe_link_cfg_file = rbe_link_cfg_file
+      }
+      link_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_link_cfg_file} -exec_root=${rbe_exec_root} "
+      not_needed([ "goma_path" ])
+    } else if (use_goma_thin_lto && toolchain_uses_goma && use_thin_lto) {
       # remote_ld.py uses autoninja in an attempt to set a reasonable
       # number of jobs, but this results in too low a value on
       # Chrome OS builders. So we pass in an explicit value.

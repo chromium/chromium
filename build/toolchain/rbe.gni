@@ -13,11 +13,15 @@ declare_args() {
   # Set to true to enable remote compilation using reclient.
   use_remoteexec = false
 
+  # Set to true to enable remote linking using reclient.
+  use_remoteexec_links = false
+
   # The directory where the re-client configuration files are.
   rbe_cfg_dir = rebase_path("//buildtools/reclient_cfgs", root_build_dir)
 
-  # Set to the path of the RBE reclient configuration file.
+  # Set to the path of the RBE reclient configuration files.
   rbe_cc_cfg_file = ""
+  rbe_link_cfg_file = ""
 
   # Set to the path of the RBE recleint wrapper for ChromeOS.
   rbe_cros_cc_wrapper = "${rbe_bin_dir}/rewrapper"
@@ -26,11 +30,23 @@ declare_args() {
 # Configuration file selection based on operating system.
 if (is_linux || is_android || is_chromeos || is_fuchsia) {
   rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux.cfg"
+  rbe_link_cfg_file =
+      "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux_link.cfg"
 }
 if (is_win) {
   rbe_cc_cfg_file =
       "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_windows.cfg"
+
+  if (use_remoteexec_links) {
+    print("For now, remote linking is not available for Windows.")
+    use_remoteexec_links = false
+  }
 }
 if (is_mac || is_ios) {
   rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_mac.cfg"
+
+  if (use_remoteexec_links) {
+    print("For now, remote linking is not available on Macs.")
+    use_remoteexec_links = false
+  }
 }
