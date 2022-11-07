@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.segmentation_platform;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
 
 import android.os.Handler;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -19,9 +21,14 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfoCallback;
@@ -35,6 +42,12 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PriceTrackingActionProviderTest {
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Mock
+    PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
+
     @Mock
     private Tab mMockTab;
 
@@ -44,6 +57,9 @@ public class PriceTrackingActionProviderTest {
     @Mock
     private BookmarkModel mBookmarkModel;
 
+    @Mock
+    private Profile mProfile;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -51,6 +67,8 @@ public class PriceTrackingActionProviderTest {
     }
 
     private void setBookmarkModelReady() {
+        mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
+
         // Setup bookmark model expectations.
         Mockito.doAnswer(invocation -> {
                    Runnable runnable = invocation.getArgument(0);
@@ -73,17 +91,6 @@ public class PriceTrackingActionProviderTest {
                 .getProductInfoForUrl(any(), any());
     }
 
-    private void setPageAlreadyPriceTracked(boolean alreadyPriceTracked) {
-        when(mBookmarkModel.getUserBookmarkIdForTab(any())).thenReturn(null);
-        org.chromium.components.power_bookmarks.PowerBookmarkMeta.Builder builder =
-                org.chromium.components.power_bookmarks.PowerBookmarkMeta.newBuilder();
-        builder.setShoppingSpecifics(
-                org.chromium.components.power_bookmarks.ShoppingSpecifics.newBuilder()
-                        .setIsPriceTracked(alreadyPriceTracked)
-                        .build());
-        when(mBookmarkModel.getPowerBookmarkMeta(any())).thenReturn(builder.build());
-    }
-
     @Test
     public void priceTrackingActionShownSuccessfully() {
         List<ActionProvider> providers = new ArrayList<>();
@@ -103,7 +110,11 @@ public class PriceTrackingActionProviderTest {
                 new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
         providers.add(provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
-        setPageAlreadyPriceTracked(true);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        doReturn(new BookmarkId(1L, 0)).when(mBookmarkModel).getUserBookmarkIdForTab(mMockTab);
+        doReturn(true)
+                .when(mMockPriceTrackingUtilsJni)
+                .isBookmarkPriceTracked(any(Profile.class), anyLong());
         setPriceTrackingBackendResult(true);
         provider.getAction(mMockTab, accumulator);
         Assert.assertFalse(accumulator.hasPriceTracking());

@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -28,8 +29,9 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
         final BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
         bookmarkModel.finishLoadingBookmarkModel(() -> {
             BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
-            boolean isAlreadyPriceTracked =
-                    PowerBookmarkUtils.isBookmarkPriceTracked(bookmarkModel, bookmarkId);
+            boolean isAlreadyPriceTracked = bookmarkId != null
+                    && PriceTrackingUtils.isBookmarkPriceTracked(
+                            Profile.getLastUsedRegularProfile(), bookmarkId.getId());
             if (isAlreadyPriceTracked) {
                 signalAccumulator.setHasPriceTracking(false);
                 signalAccumulator.notifySignalAvailable();

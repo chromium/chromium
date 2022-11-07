@@ -188,14 +188,6 @@ public class PowerBookmarkUtils {
         return bookmarkModel.getPowerBookmarkMeta(bookmarkId);
     }
 
-    /** @return Whether the price tracking flag is set in the bookmark's meta. */
-    public static boolean isBookmarkPriceTracked(BookmarkModel model, BookmarkId id) {
-        PowerBookmarkMeta meta = model.getPowerBookmarkMeta(id);
-        if (meta == null || !meta.hasShoppingSpecifics()) return false;
-
-        return meta.getShoppingSpecifics().getIsPriceTracked();
-    }
-
     private static List<BookmarkId> getBookmarkIdsForClusterId(
             Long clusterId, BookmarkModel bookmarkModel) {
         List<BookmarkId> results = new ArrayList<>();

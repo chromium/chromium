@@ -52,4 +52,21 @@ void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
           ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
+jboolean JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    jlong bookmark_id) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  CHECK(profile);
+
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  CHECK(model);
+
+  const bookmarks::BookmarkNode* node =
+      bookmarks::GetBookmarkNodeByID(model, bookmark_id);
+
+  return IsBookmarkPriceTracked(model, node);
+}
+
 }  // namespace commerce

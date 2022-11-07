@@ -17,7 +17,9 @@ import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -117,7 +119,8 @@ public class BookmarkSaveFlowCoordinator {
         }
 
         if (ShoppingFeatures.isShoppingListEnabled()
-                && PowerBookmarkUtils.isBookmarkPriceTracked(mBookmarkModel, bookmarkId)) {
+                && PriceTrackingUtils.isBookmarkPriceTracked(
+                        Profile.getLastUsedRegularProfile(), bookmarkId.getId())) {
             if (shown) {
                 showShoppingSaveFlowIPH();
             } else {
