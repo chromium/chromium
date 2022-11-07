@@ -59,7 +59,7 @@ class MulticolPartWalker {
     // means that we haven't started yet), but if this happens anywhere else, it
     // means that we're finished. Nothing inside this multicol container left to
     // process.
-    if (IsResumingLayout(parent_break_token_) && !current_.break_token &&
+    if (IsBreakInside(parent_break_token_) && !current_.break_token &&
         parent_break_token_->HasSeenAllChildren())
       is_finished_ = true;
   }
@@ -252,7 +252,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
   // Write the column inline-size and count back to the legacy flow thread if
   // we're at the first fragment. TextAutosizer needs the inline-size, and the
   // legacy fragmentainer group machinery needs the count.
-  if (!IsResumingLayout(BreakToken()))
+  if (!IsBreakInside(BreakToken()))
     node_.StoreColumnSizeAndCount(column_inline_size_, used_column_count_);
 
   // If we know the block-size of the fragmentainers in an outer fragmentation
@@ -279,7 +279,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
         container_builder_.EarlyBreak());
   } else if (break_status == NGBreakStatus::kBrokeBefore) {
     // If we want to break before, make sure that we're actually at the start.
-    DCHECK(!IsResumingLayout(BreakToken()));
+    DCHECK(!IsBreakInside(BreakToken()));
 
     return container_builder_.Abort(NGLayoutResult::kOutOfFragmentainerSpace);
   }
@@ -474,7 +474,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
         }
         // Otherwise we have nothing here, and need to break before the multicol
         // container. No fragment will be produced.
-        DCHECK(!IsResumingLayout(BreakToken()));
+        DCHECK(!IsBreakInside(BreakToken()));
         return NGBreakStatus::kBrokeBefore;
       }
 
@@ -632,7 +632,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
         if (ConstraintSpace().IsInsideBalancedColumns() &&
             !container_builder_.IsInitialColumnBalancingPass())
           container_builder_.PropagateSpaceShortage(-available_outer_space);
-        if (!IsResumingLayout(BreakToken()) && MayAbortOnInsufficientSpace())
+        if (!IsBreakInside(BreakToken()) && MayAbortOnInsufficientSpace())
           return nullptr;
         available_outer_space = LayoutUnit();
       }
@@ -702,8 +702,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
   // be better to push some of the content to the next outer fragmentainer and
   // retry there.
   bool may_have_more_space_in_next_outer_fragmentainer = false;
-  if (may_resume_in_next_outer_fragmentainer &&
-      !IsResumingLayout(BreakToken())) {
+  if (may_resume_in_next_outer_fragmentainer && !IsBreakInside(BreakToken())) {
     if (intrinsic_block_size_)
       may_have_more_space_in_next_outer_fragmentainer = true;
     else if (!ConstraintSpace().IsAtFragmentainerStart())

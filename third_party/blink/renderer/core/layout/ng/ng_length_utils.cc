@@ -1455,7 +1455,7 @@ LayoutUnit CalculateDefaultBlockSize(
     const NGBoxStrut& border_scrollbar_padding) {
   // In quirks mode, html and body elements will completely fill the ICB, block
   // percentages should resolve against this size.
-  if (node.IsQuirkyAndFillsViewport() && !IsResumingLayout(break_token)) {
+  if (node.IsQuirkyAndFillsViewport() && !IsBreakInside(break_token)) {
     LayoutUnit block_size = space.AvailableSize().block_size;
     block_size -= ComputeMarginsForSelf(space, node.Style()).BlockSum();
     return std::max(block_size.ClampNegativeToZero(),
@@ -1695,7 +1695,7 @@ LayoutUnit ClampIntrinsicBlockSize(
     return border_scrollbar_padding.BlockSum();
 
   // Apply the "fills viewport" quirk if needed.
-  if (!IsResumingLayout(break_token) && node.IsQuirkyAndFillsViewport() &&
+  if (!IsBreakInside(break_token) && node.IsQuirkyAndFillsViewport() &&
       style.LogicalHeight().IsAuto() &&
       space.AvailableSize().block_size != kIndefiniteSize) {
     DCHECK_EQ(node.IsBody() && !node.CreatesNewFormattingContext(),

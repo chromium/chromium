@@ -148,7 +148,7 @@ bool IsBreakableAtStartOfResumedContainer(const NGConstraintSpace& space,
                                           const NGBoxFragmentBuilder& builder,
                                           bool is_first_for_node) {
   return space.MinBreakAppeal() != kBreakAppealLastResort &&
-         IsResumingLayout(builder.PreviousBreakToken()) && is_first_for_node;
+         IsBreakInside(builder.PreviousBreakToken()) && is_first_for_node;
 }
 
 NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
@@ -223,7 +223,7 @@ NGBreakAppeal CalculateBreakAppealInside(
     consider_break_inside_avoidance = true;
   } else {
     appeal = layout_result.BreakAppeal();
-    consider_break_inside_avoidance = IsResumingLayout(break_token);
+    consider_break_inside_avoidance = IsBreakInside(break_token);
   }
 
   // We don't let break-inside:avoid affect the child's stored break appeal, but
@@ -914,7 +914,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     // fragments with nothing useful inside, if it's to be resumed in the next
     // fragmentainer.
     must_break_before = !layout_result.ColumnSpannerPath() &&
-                        IsResumingLayout(break_token) &&
+                        IsBreakInside(break_token) &&
                         !break_token->IsAtBlockEnd();
   }
   if (must_break_before) {
@@ -925,7 +925,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
   bool move_past = false;
   NGBreakAppeal appeal_inside =
       CalculateBreakAppealInside(space, layout_result);
-  if (IsResumingLayout(break_token) || appeal_inside < kBreakAppealPerfect) {
+  if (IsBreakInside(break_token) || appeal_inside < kBreakAppealPerfect) {
     // The block child broke inside, either in this fragmentation context, or in
     // an inner one. We now need to decide whether to keep that break, or if it
     // would be better to break before it. Allow breaking inside if it has the
@@ -1009,7 +1009,7 @@ void UpdateEarlyBreakAtBlockChild(
   NGBreakAppeal appeal_inside = kBreakAppealLastResort;
   if (const NGEarlyBreak* breakpoint = layout_result.GetEarlyBreak()) {
     // If the child broke inside, it shouldn't have any early-break.
-    DCHECK(!IsResumingLayout(break_token));
+    DCHECK(!IsBreakInside(break_token));
 
     appeal_inside = CalculateBreakAppealInside(space, layout_result,
                                                breakpoint->BreakAppeal());

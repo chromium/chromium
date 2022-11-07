@@ -490,7 +490,7 @@ bool IsStartRowFragmented(const NGPhysicalBoxFragment& section) {
     if (!child->IsTableNGRow())
       continue;
 
-    return IsResumingLayout(
+    return IsBreakInside(
         FindPreviousBreakToken(To<NGPhysicalBoxFragment>(*child)));
   }
 
@@ -504,7 +504,7 @@ bool IsEndRowFragmented(const NGPhysicalBoxFragment& section) {
     if (!child->IsTableNGRow())
       continue;
     const auto* break_token = To<NGBlockBreakToken>(child->BreakToken());
-    return IsResumingLayout(break_token) && !break_token->IsAtBlockEnd();
+    return IsBreakInside(break_token) && !break_token->IsAtBlockEnd();
   }
   return false;
 }

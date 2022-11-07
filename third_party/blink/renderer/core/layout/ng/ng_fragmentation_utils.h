@@ -59,8 +59,9 @@ bool IsForcedBreakValue(const NGConstraintSpace&, EBreakBetween);
 template <typename Property>
 bool IsAvoidBreakValue(const NGConstraintSpace&, Property);
 
-// Return true if we're resuming layout after a previous break.
-inline bool IsResumingLayout(const NGBlockBreakToken* token) {
+// Return true if this is a break inside a node (i.e. it's not a break *before*
+// something, and also not for repeated content).
+inline bool IsBreakInside(const NGBlockBreakToken* token) {
   return token && !token->IsBreakBefore() && !token->IsRepeated();
 }
 
@@ -72,7 +73,7 @@ inline bool IsResumingLayout(const NGBlockBreakToken* token) {
 // already been fragmented (to resume layout correctly, but not break again).
 inline bool InvolvedInBlockFragmentation(const NGBoxFragmentBuilder& builder) {
   return builder.ConstraintSpace().HasBlockFragmentation() ||
-         IsResumingLayout(builder.PreviousBreakToken());
+         IsBreakInside(builder.PreviousBreakToken());
 }
 
 // Return the fragment index (into the layout results vector in LayoutBox),

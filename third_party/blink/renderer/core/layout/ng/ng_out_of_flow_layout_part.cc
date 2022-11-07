@@ -1526,7 +1526,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
       PaintLayerScrollableArea::FreezeScrollbarsRootScope freezer(
           *node_info.node.GetLayoutBox(), freeze_horizontal, freeze_vertical);
 
-      if (!IsResumingLayout(oof_node_to_layout.break_token)) {
+      if (!IsBreakInside(oof_node_to_layout.break_token)) {
         // The offset itself does not need to be recalculated. However, the
         // |node_dimensions| and |initial_layout_result| may need to be updated,
         // so recompute the OffsetInfo.

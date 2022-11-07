@@ -218,7 +218,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   }
 
   LayoutUnit previous_consumed_row_block_size;
-  if (IsResumingLayout(BreakToken())) {
+  if (IsBreakInside(BreakToken())) {
     const auto* table_row_data =
         To<NGTableRowBreakTokenData>(BreakToken()->TokenData());
     previous_consumed_row_block_size =

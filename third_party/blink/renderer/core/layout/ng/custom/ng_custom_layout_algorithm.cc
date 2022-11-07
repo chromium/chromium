@@ -79,7 +79,7 @@ MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
 }
 
 const NGLayoutResult* NGCustomLayoutAlgorithm::Layout() {
-  DCHECK(!IsResumingLayout(BreakToken()));
+  DCHECK(!IsBreakInside(BreakToken()));
 
   if (!Node().IsCustomLayoutLoaded())
     return FallbackLayout();

@@ -485,7 +485,7 @@ const NGLayoutResult* NGBlockNode::Layout(
 
   if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled() &&
       // Only consider the size of the first container fragment.
-      !IsResumingLayout(break_token) && CanMatchSizeContainerQueries()) {
+      !IsBreakInside(break_token) && CanMatchSizeContainerQueries()) {
     if (auto* element = DynamicTo<Element>(GetDOMNode())) {
       LogicalSize available_size = CalculateChildAvailableSize(
           constraint_space, *this, fragment_geometry->border_box_size,
@@ -587,8 +587,7 @@ const NGLayoutResult* NGBlockNode::Layout(
   NGBoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
   if ((scrollbars_before != scrollbars_after ||
        inline_size_before != fragment_geometry->border_box_size.inline_size) &&
-      !NGDisableSideEffectsScope::IsDisabled() &&
-      !IsResumingLayout(break_token)) {
+      !NGDisableSideEffectsScope::IsDisabled() && !IsBreakInside(break_token)) {
     bool freeze_horizontal = false, freeze_vertical = false;
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
     // quadratic time complexity for deeply nested flexboxes.
@@ -723,7 +722,7 @@ const NGLayoutResult* NGBlockNode::LayoutRepeatableRoot(
   DCHECK(!constraint_space.HasBlockFragmentation());
 
   // We can't both resume and repeat!
-  DCHECK(!IsResumingLayout(break_token));
+  DCHECK(!IsBreakInside(break_token));
 
   bool is_first = !break_token || !break_token->IsRepeated();
   const NGLayoutResult* result;
@@ -859,7 +858,7 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     // This would be really dangerous to do if we're not at the first fragment,
     // though, as it would mean that we'd also clear the first successful
     // result(s).
-    DCHECK(!IsResumingLayout(break_token));
+    DCHECK(!IsBreakInside(break_token));
 
     box_->ClearLayoutResults();
     return;
@@ -1268,7 +1267,7 @@ bool NGBlockNode::CanUseNewLayout() const {
 LayoutUnit NGBlockNode::EmptyLineBlockSize(
     const NGBlockBreakToken* incoming_break_token) const {
   // Only return a line-height for the first fragment.
-  if (IsResumingLayout(incoming_break_token))
+  if (IsBreakInside(incoming_break_token))
     return LayoutUnit();
   return box_->LogicalHeightForEmptyLine();
 }
@@ -1475,7 +1474,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
   bool should_append_fragmentainer_group = false;
   bool should_expand_last_set = false;
 
-  if (IsResumingLayout(previous_container_break_token)) {
+  if (IsBreakInside(previous_container_break_token)) {
     // This multicol container is nested inside another fragmentation context,
     // and this isn't its first fragment. Locate the break token for the
     // previous inner column contents, so that we include the correct amount of

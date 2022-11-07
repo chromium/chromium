@@ -294,7 +294,7 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
         CrossAxisStaticPositionEdge(Style(), child.Style());
 
     // This code block just collects UMA stats.
-    if (!IsResumingLayout(BreakToken())) {
+    if (!IsBreakInside(BreakToken())) {
       const auto& style = Style();
       const auto& child_style = child.Style();
       const PhysicalToLogical<Length> insets_in_flexbox_writing_mode(
@@ -344,7 +344,7 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
 
     // Determine the static-position based off the axis-edge.
     if (block_axis_edge == AxisEdge::kStart) {
-      DCHECK(!IsResumingLayout(BreakToken()));
+      DCHECK(!IsBreakInside(BreakToken()));
       block_edge = BlockEdge::kBlockStart;
     } else if (block_axis_edge == AxisEdge::kCenter) {
       if (!should_process_block_center) {
@@ -1104,7 +1104,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
   ClearCollectionScope<HeapVector<NGFlexLine>> scope(&flex_line_outputs);
 
   bool use_empty_line_block_size;
-  if (IsResumingLayout(BreakToken())) {
+  if (IsBreakInside(BreakToken())) {
     const NGFlexBreakTokenData* flex_data =
         To<NGFlexBreakTokenData>(BreakToken()->TokenData());
     total_intrinsic_block_size_ = flex_data->intrinsic_block_size;
@@ -1127,7 +1127,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
       ConstraintSpace(), Style(), BorderPadding(), total_intrinsic_block_size_,
       container_builder_.InlineSize());
 
-  if (!IsResumingLayout(BreakToken())) {
+  if (!IsBreakInside(BreakToken())) {
     ApplyFinalAlignmentAndReversals(&flex_line_outputs);
     NGLayoutResult::EStatus status = GiveItemsFinalPositionAndSize(
         &flex_line_outputs, &row_break_between_outputs);
@@ -1218,7 +1218,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
   }
 
 #if DCHECK_IS_ON()
-  if (!IsResumingLayout(BreakToken()) && !cross_size_adjustments_)
+  if (!IsBreakInside(BreakToken()) && !cross_size_adjustments_)
     CheckFlexLines(flex_line_outputs);
 #endif
 
@@ -1401,7 +1401,7 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
 NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     HeapVector<NGFlexLine>* flex_line_outputs,
     Vector<EBreakBetween>* row_break_between_outputs) {
-  DCHECK(!IsResumingLayout(BreakToken()));
+  DCHECK(!IsBreakInside(BreakToken()));
   LayoutUnit final_content_cross_size;
   if (is_column_) {
     final_content_cross_size =
@@ -1652,9 +1652,9 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
     }
 
-    if (IsResumingLayout(item_break_token)) {
+    if (IsBreakInside(item_break_token)) {
       offset.block_offset = LayoutUnit();
-    } else if (IsResumingLayout(BreakToken())) {
+    } else if (IsBreakInside(BreakToken())) {
       LayoutUnit offset_adjustment =
           previously_consumed_block_size - line_output.item_offset_adjustment;
       offset.block_offset -= offset_adjustment;

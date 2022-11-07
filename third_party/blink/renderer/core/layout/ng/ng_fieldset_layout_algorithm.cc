@@ -80,7 +80,7 @@ const NGLayoutResult* NGFieldsetLayoutAlgorithm::Layout() {
   // inside the scrollport, padding also needs to be handled by the anonymous
   // child.
   intrinsic_block_size_ =
-      IsResumingLayout(BreakToken()) ? LayoutUnit() : Borders().block_start;
+      IsBreakInside(BreakToken()) ? LayoutUnit() : Borders().block_start;
 
   if (InvolvedInBlockFragmentation(container_builder_)) {
     container_builder_.SetBreakTokenData(
@@ -186,10 +186,10 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutChildren() {
 
   NGBlockNode legend = Node().GetRenderedLegend();
   if (legend) {
-    if (!IsResumingLayout(BreakToken()))
+    if (!IsBreakInside(BreakToken()))
       LayoutLegend(legend);
     LayoutUnit legend_size_contribution;
-    if (IsResumingLayout(BreakToken())) {
+    if (IsBreakInside(BreakToken())) {
       const auto* token_data =
           To<NGFieldsetBreakTokenData>(BreakToken()->TokenData());
       legend_size_contribution = token_data->legend_block_size_contribution;

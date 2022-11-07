@@ -94,7 +94,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
   // If we're resuming layout of this float after a fragmentainer break, the
   // margins of its children may be adjoining with the fragmentainer
   // block-start, in which case they may get truncated.
-  if (IsResumingLayout(unpositioned_float.token))
+  if (IsBreakInside(unpositioned_float.token))
     builder.SetDiscardingMarginStrut();
 
   builder.SetAvailableSize(unpositioned_float.available_size);
@@ -369,7 +369,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
   }
 
   if (parent_space.HasBlockFragmentation() && !need_break_before &&
-      !IsResumingLayout(unpositioned_float->token) &&
+      !IsBreakInside(unpositioned_float->token) &&
       exclusion_space->NeedsBreakBeforeFloat(
           unpositioned_float->ClearType(parent_space.Direction())))
     need_break_before = true;

@@ -218,7 +218,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
 
   // Don't re-accumulate out-of-flow children if we're resuming layout, since
   // that data is stored on the break token.
-  auto grid_sizing_tree = IsResumingLayout(BreakToken())
+  auto grid_sizing_tree = IsBreakInside(BreakToken())
                               ? BuildGridSizingTree()
                               : BuildGridSizingTree(&oof_children);
 
@@ -226,7 +226,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   auto& grid_items = grid_sizing_tree[0].grid_items;
   auto& layout_data = grid_sizing_tree[0].layout_data;
 
-  if (IsResumingLayout(BreakToken())) {
+  if (IsBreakInside(BreakToken())) {
     // TODO(layout-dev): When we support variable inline-size fragments we'll
     // need to re-run |ComputeGridGeometry| for the different inline-size.
     // When doing this, we'll need to make sure that we don't recalculate the
@@ -253,7 +253,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
-    if (IsResumingLayout(BreakToken())) {
+    if (IsBreakInside(BreakToken())) {
       const auto* grid_data =
           To<NGGridBreakTokenData>(BreakToken()->TokenData());
 
@@ -3192,10 +3192,9 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       }
 
       const LayoutUnit fragment_relative_block_offset =
-          IsResumingLayout(break_token)
-              ? LayoutUnit()
-              : item_placement_data.offset.block_offset -
-                    *consumed_grid_block_size;
+          IsBreakInside(break_token) ? LayoutUnit()
+                                     : item_placement_data.offset.block_offset -
+                                           *consumed_grid_block_size;
       const bool min_block_size_should_encompass_intrinsic_size =
           MinBlockSizeShouldEncompassIntrinsicSize(
               grid_item,

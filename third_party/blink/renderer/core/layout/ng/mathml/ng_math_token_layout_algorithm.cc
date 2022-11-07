@@ -21,7 +21,7 @@ NGMathTokenLayoutAlgorithm::NGMathTokenLayoutAlgorithm(
 }
 
 const NGLayoutResult* NGMathTokenLayoutAlgorithm::Layout() {
-  DCHECK(!IsResumingLayout(BreakToken()));
+  DCHECK(!IsBreakInside(BreakToken()));
 
   NGLayoutInputNode child = Node().FirstChild();
   DCHECK(child && child.IsInline());

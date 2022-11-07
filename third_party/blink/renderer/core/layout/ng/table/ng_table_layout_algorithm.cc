@@ -758,7 +758,7 @@ void NGTableLayoutAlgorithm::ComputeRows(
   // NGLayoutResult vector in LayoutBox objects alone, since we're in the middle
   // of building those.
   absl::optional<NGDisableSideEffectsScope> disable_side_effects;
-  if (IsResumingLayout(BreakToken()))
+  if (IsBreakInside(BreakToken()))
     disable_side_effects.emplace();
 
   const bool is_table_block_size_specified = !Style().LogicalHeight().IsAuto();
@@ -1082,7 +1082,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       const NGBlockBreakToken* child_break_token = entry.GetBreakToken();
       // If we've already broken inside the section, it's not going to repeat,
       // but rather perform regular fragmentation.
-      if (IsResumingLayout(child_break_token))
+      if (IsBreakInside(child_break_token))
         continue;
 
       LayoutUnit block_size = sections[entry.GetSectionIndex()].block_size;

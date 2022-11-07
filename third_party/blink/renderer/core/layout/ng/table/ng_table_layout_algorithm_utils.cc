@@ -730,7 +730,7 @@ void NGTableAlgorithmUtils::FinalizeTableCellLayout(
 
   // If we're resuming after a break, there'll be no alignment, since the
   // fragment will start at the block-start edge of the fragmentainer then.
-  if (IsResumingLayout(builder->PreviousBreakToken()))
+  if (IsBreakInside(builder->PreviousBreakToken()))
     return;
 
   switch (node.Style().VerticalAlign()) {

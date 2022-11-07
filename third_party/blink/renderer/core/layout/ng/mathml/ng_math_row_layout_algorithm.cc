@@ -186,7 +186,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
 }
 
 const NGLayoutResult* NGMathRowLayoutAlgorithm::Layout() {
-  DCHECK(!IsResumingLayout(BreakToken()));
+  DCHECK(!IsBreakInside(BreakToken()));
 
   bool is_display_block_math =
       Node().IsMathRoot() && (Style().Display() == EDisplay::kBlockMath);

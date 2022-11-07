@@ -229,7 +229,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   bool are_bfc_offsets_equal;
   bool is_margin_strut_equal;
   bool is_exclusion_space_equal;
-  bool is_fragmented = IsResumingLayout(break_token) ||
+  bool is_fragmented = IsBreakInside(break_token) ||
                        physical_fragment.BreakToken() ||
                        PhysicalFragmentCount() > 1;
 

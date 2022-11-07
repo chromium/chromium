@@ -405,7 +405,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
     return;
 
   const NGBlockBreakToken* token = child_box_fragment->BreakToken();
-  if (IsResumingLayout(token)) {
+  if (IsBreakInside(token)) {
     // Figure out if this child break is in the same flow as this parent. If
     // it's an out-of-flow positioned box, it's not. If it's in a parallel flow,
     // it's also not.
