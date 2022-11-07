@@ -55,7 +55,7 @@
         android:layout_height="@dimen/autofill_assistant_minimum_touch_target_size"
         android:padding="@dimen/autofill_assistant_profile_icon_padding"
         android:contentDescription="@string/settings"
-        app:srcCompat="@drawable/anonymous_account_image"/>
+        app:srcCompat="@drawable/logo_avatar_anonymous"/>
   </LinearLayout>
 
   <LinearLayout

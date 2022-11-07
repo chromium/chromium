@@ -330,7 +330,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
 
     private static Drawable getScaledPlaceholderImage(Context context, int imageSize) {
         Drawable drawable =
-                AppCompatResources.getDrawable(context, R.drawable.anonymous_account_image);
+                AppCompatResources.getDrawable(context, R.drawable.logo_avatar_anonymous);
         assert drawable != null;
         Bitmap output = Bitmap.createBitmap(imageSize, imageSize, Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
