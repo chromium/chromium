@@ -54,11 +54,9 @@ constexpr net::NetworkTrafficAnnotationTag kAnnotation =
     }
     policy {
       cookies_allowed: NO
-      chrome_policy {
-        SigninInterceptionEnabled {
-          SigninInterceptionEnabled: false
-        }
-      }
+      policy_exception_justification:
+          "No policy. The operation is only triggered by a user signing "
+          "into a managed account, and there is no policy to opt out"
     })");
 
 std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(

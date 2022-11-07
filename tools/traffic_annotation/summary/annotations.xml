@@ -401,5 +401,5 @@ Refer to README.md for content description and update process.
  <item id="nearby_share_list_public_certificates" added_in_milestone="108" type="partial" second_id="oauth2_api_call_flow" content_hash_code="01706e8a" os_list="chromeos" semantics_fields="1,2,3,4,5" policy_fields="3,4" file_path="chrome/browser/nearby_sharing/client/nearby_share_client_impl.cc" />
  <item id="k_anonymity_service_join_set" added_in_milestone="108" content_hash_code="02ae88a5" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_service_client.cc" />
  <item id="k_anonymity_service_query_set" added_in_milestone="108" content_hash_code="0411a8c6" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_service_client.cc" />
- <item id="managed_acccount_signin_restrictions_secure_connect_chromeos" added_in_milestone="109" content_hash_code="068bc93d" os_list="chromeos" file_path="chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc" />
+ <item id="managed_acccount_signin_restrictions_secure_connect_chromeos" added_in_milestone="109" content_hash_code="05958d4c" os_list="chromeos" file_path="chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc" />
 </annotations>
