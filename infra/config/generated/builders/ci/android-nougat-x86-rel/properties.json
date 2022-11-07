@@ -48,10 +48,6 @@
         {
           "builder": "android-nougat-x86-rel-inverse-fyi",
           "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-nougat-x86-rel-reclient",
-          "group": "tryserver.chromium.android"
         }
       ]
     }

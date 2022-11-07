@@ -491,9 +491,6 @@ as required builders.
 * [android-nougat-x86-rel-inverse-fyi](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-rel-inverse-fyi) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-rel-inverse-fyi"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-nougat-x86-rel-inverse-fyi""))
   * Experiment percentage: 100.0
 
-* [android-nougat-x86-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-rel-reclient) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-rel-reclient"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-nougat-x86-rel-reclient""))
-  * Experiment percentage: 5.0
-
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-coverage-experimental-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-coverage-experimental-rel""))
   * Experiment percentage: 3.0
 
