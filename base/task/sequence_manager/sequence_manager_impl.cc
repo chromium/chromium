@@ -177,42 +177,6 @@ std::atomic_bool g_no_wake_ups_for_canceled_tasks{false};
 
 }  // namespace
 
-class SequenceManagerImpl::NativeWorkHandleImpl final
-    : public NativeWorkHandle {
- public:
-  NativeWorkHandleImpl(SequenceManagerImpl* sequence_manager,
-                       TaskQueue::QueuePriority priority)
-      : sequence_manager_(sequence_manager->GetWeakPtr()), priority_(priority) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("sequence_manager", "NativeWork", this,
-                                      "priority",
-                                      TaskQueue::PriorityToString(priority_));
-    sequence_manager_->main_thread_only().pending_native_work.insert(priority_);
-  }
-
-  ~NativeWorkHandleImpl() final {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("sequence_manager", "NativeWork", this);
-    if (!sequence_manager_)
-      return;
-    TaskQueue::QueuePriority prev_priority = effective_priority();
-    sequence_manager_->main_thread_only().pending_native_work.erase(priority_);
-    // We should always have at least one instance of pending native work. By
-    // default it is of the lowest priority, which doesn't cause SequenceManager
-    // to yield.
-    DCHECK_GE(sequence_manager_->main_thread_only().pending_native_work.size(),
-              1u);
-    if (prev_priority != effective_priority())
-      sequence_manager_->ScheduleWork();
-  }
-
-  TaskQueue::QueuePriority effective_priority() const {
-    return *sequence_manager_->main_thread_only().pending_native_work.begin();
-  }
-
- private:
-  WeakPtr<SequenceManagerImpl> sequence_manager_;
-  const TaskQueue::QueuePriority priority_;
-};
-
 // static
 SequenceManagerImpl* SequenceManagerImpl::GetCurrent() {
   return GetTLSSequenceManagerImpl()->Get();
@@ -689,13 +653,6 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
       continue;
     }
 
-    if (UNLIKELY(!ShouldRunTaskOfPriority(
-            work_queue->task_queue()->GetQueuePriority()))) {
-      TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
-                   "SequenceManager.YieldToNative");
-      return absl::nullopt;
-    }
-
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_NACL)
     LogTaskDebugInfo(work_queue);
 #endif  // DCHECK_IS_ON() && !BUILDFLAG(IS_NACL)
@@ -717,11 +674,6 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
         executing_task.task_queue->task_execution_trace_logger(),
         executing_task.priority, executing_task.task_queue_name);
   }
-}
-
-bool SequenceManagerImpl::ShouldRunTaskOfPriority(
-    TaskQueue::QueuePriority priority) const {
-  return priority <= *main_thread_only().pending_native_work.begin();
 }
 
 void SequenceManagerImpl::DidRunTask(LazyNow& lazy_now) {
@@ -757,8 +709,6 @@ absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
     // If the selector has non-empty queues we trivially know there is immediate
     // work to be done. However we may want to yield to native work if it is
     // more important.
-    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
-      return AdjustWakeUp(GetNextDelayedWakeUpWithOption(option), lazy_now);
     return WakeUp{};
   }
 
@@ -769,8 +719,6 @@ absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
 
   if (auto priority =
           main_thread_only().selector.GetHighestPendingPriority(option)) {
-    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
-      return AdjustWakeUp(GetNextDelayedWakeUpWithOption(option), lazy_now);
     return WakeUp{};
   }
 
@@ -1054,9 +1002,6 @@ Value::Dict SequenceManagerImpl::AsValueWithSelectorResult(
     state.Set("selected_queue", selected_work_queue->task_queue()->GetName());
     state.Set("work_queue_name", selected_work_queue->name());
   }
-  state.Set("native_work_priority",
-            TaskQueue::PriorityToString(
-                *main_thread_only().pending_native_work.begin()));
   state.Set("time_domain", main_thread_only().time_domain
                                ? main_thread_only().time_domain->AsValue()
                                : Value::Dict());
@@ -1199,11 +1144,6 @@ std::string SequenceManagerImpl::DescribeAllPendingTasks() const {
   std::string result;
   JSONWriter::Write(value, &result);
   return result;
-}
-
-std::unique_ptr<NativeWorkHandle> SequenceManagerImpl::OnNativeWorkPending(
-    TaskQueue::QueuePriority priority) {
-  return std::make_unique<NativeWorkHandleImpl>(this, priority);
 }
 
 void SequenceManagerImpl::PrioritizeYieldingToNative(

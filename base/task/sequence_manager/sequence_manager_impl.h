@@ -141,8 +141,6 @@ class BASE_EXPORT SequenceManagerImpl
   scoped_refptr<TaskQueue> CreateTaskQueue(
       const TaskQueue::Spec& spec) override;
   std::string DescribeAllPendingTasks() const override;
-  std::unique_ptr<NativeWorkHandle> OnNativeWorkPending(
-      TaskQueue::QueuePriority priority) override;
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   void EnablePeriodicYieldingToNative(base::TimeDelta interval) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
@@ -223,8 +221,6 @@ class BASE_EXPORT SequenceManagerImpl
   friend class ::base::sequence_manager::SequenceManagerForTest;
 
  private:
-  class NativeWorkHandleImpl;
-
   // Returns the SequenceManager running the
   // current thread. It must only be used on the thread it was obtained.
   // Only to be used by CurrentThread for the moment
@@ -340,10 +336,6 @@ class BASE_EXPORT SequenceManagerImpl
     // If non-null, invoked the next time OnSystemIdle() completes without
     // scheduling additional work.
     OnceClosure on_next_idle_callback;
-
-    // By default native work is not prioritized at all.
-    std::multiset<TaskQueue::QueuePriority> pending_native_work{
-        TaskQueue::kBestEffortPriority};
   };
 
   void CompleteInitializationOnBoundThread();
@@ -421,10 +413,6 @@ class BASE_EXPORT SequenceManagerImpl
   // in SelectNextTask().
   absl::optional<SelectedTask> SelectNextTaskImpl(LazyNow& lazy_now,
                                                   SelectTaskOption option);
-
-  // Check if a task of priority |priority| should run given the pending set of
-  // native work.
-  bool ShouldRunTaskOfPriority(TaskQueue::QueuePriority priority) const;
 
   // Returns a wake-up for the next delayed task which is not ripe for
   // execution, or nullopt if `option` is `kSkipDelayedTask` or there
