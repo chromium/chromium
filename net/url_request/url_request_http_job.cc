@@ -361,12 +361,7 @@ void URLRequestHttpJob::OnGotFirstPartySetCacheFilterMatchInfo(
     DCHECK(!cookie_partition_key_.has_value());
 
     cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
-        request_->isolation_info().network_isolation_key(),
-        base::OptionalToPtr(
-            first_party_set_metadata_.top_frame_entry().has_value()
-                ? absl::make_optional(
-                      first_party_set_metadata_.top_frame_entry()->primary())
-                : absl::nullopt));
+        request_->isolation_info().network_isolation_key());
     AddCookieHeaderAndStart();
   } else {
     StartTransaction();

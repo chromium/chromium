@@ -340,12 +340,7 @@ RestrictedCookieManager::RestrictedCookieManager(
       cookie_observer_(std::move(cookie_observer)),
       first_party_set_metadata_(std::move(first_party_set_metadata)),
       cookie_partition_key_(net::CookiePartitionKey::FromNetworkIsolationKey(
-          isolation_info.network_isolation_key(),
-          base::OptionalToPtr(
-              first_party_set_metadata_.top_frame_entry().has_value()
-                  ? absl::make_optional(
-                        first_party_set_metadata_.top_frame_entry()->primary())
-                  : absl::nullopt))),
+          isolation_info.network_isolation_key())),
       cookie_partition_key_collection_(
           net::CookiePartitionKeyCollection::FromOptional(
               cookie_partition_key_)),
@@ -384,12 +379,7 @@ void RestrictedCookieManager::OnGotFirstPartySetMetadataForTesting(
     net::FirstPartySetMetadata first_party_set_metadata) {
   first_party_set_metadata_ = std::move(first_party_set_metadata);
   cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
-      isolation_info_.network_isolation_key(),
-      base::OptionalToPtr(
-          first_party_set_metadata_.top_frame_entry().has_value()
-              ? absl::make_optional(
-                    first_party_set_metadata_.top_frame_entry()->primary())
-              : absl::nullopt));
+      isolation_info_.network_isolation_key());
   cookie_partition_key_collection_ =
       net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
   std::move(done_closure).Run();

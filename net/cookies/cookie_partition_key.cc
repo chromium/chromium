@@ -105,28 +105,23 @@ bool CookiePartitionKey::Deserialize(const std::string& in,
 }
 
 absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
-    const NetworkIsolationKey& network_isolation_key,
-    const SchemefulSite* first_party_set_owner_site) {
+    const NetworkIsolationKey& network_isolation_key) {
   absl::optional<base::UnguessableToken> nonce =
       network_isolation_key.GetNonce();
   // If PartitionedCookies is enabled, all partitioned cookies are allowed.
   // If NoncedPartitionedCookies is enabled, only partitioned cookies whose
   // partition key has a nonce are allowed.
-  if (!PartitionedCookiesEnabled(nonce)) {
+  if (!PartitionedCookiesEnabled(nonce))
     return absl::nullopt;
-  }
 
   // TODO(crbug.com/1225444): Check if the top frame site is in a First-Party
   // Set or if it is an extension URL.
-  const SchemefulSite* partition_key_site =
-      first_party_set_owner_site
-          ? first_party_set_owner_site
-          : base::OptionalToPtr(network_isolation_key.GetTopFrameSite());
+  const absl::optional<SchemefulSite>& partition_key_site =
+      network_isolation_key.GetTopFrameSite();
   if (!partition_key_site)
     return absl::nullopt;
 
-  return absl::make_optional(
-      net::CookiePartitionKey(*partition_key_site, nonce));
+  return net::CookiePartitionKey(*partition_key_site, nonce);
 }
 
 // static
