@@ -23,6 +23,9 @@ public class PrivacySandboxDialogController {
     private static WeakReference<Dialog> sDialog;
     private static Boolean sShowNew;
     private static Boolean sDisableAnimations;
+    // TODO(crbug.com/1330704): This variable and its usage can be removed when the PrivacySandbox
+    // promo logic will be decoupled from the NewTabPage.
+    private static boolean sNewNoticeShownInCurrentSession;
 
     /**
      * Launches an appropriate dialog if necessary and returns whether that happened.
@@ -48,6 +51,7 @@ public class PrivacySandboxDialogController {
                     new PrivacySandboxBottomSheetNotice(
                             context, bottomSheetController, settingsLauncher)
                             .showNotice(/*animate = */ sDisableAnimations == null);
+                    sNewNoticeShownInCurrentSession = true;
                 } else if (launchContext == PrivacySandboxDialogLaunchContext.BROWSER_START
                         && !newNotice) {
                     // Invoked at browser start without the new notice; show it.
@@ -76,6 +80,13 @@ public class PrivacySandboxDialogController {
         // TODO(crbug.com/1375230) Remove this code path if the ability to
         // differentiate notice types is no longer required.
         return (sShowNew != null) ? sShowNew : true;
+    }
+
+    /**
+     * Returns true if the new notice has already been shown in the current session.
+     */
+    public static boolean hasNewNoticeBeenShownInCurrentSession() {
+        return sNewNoticeShownInCurrentSession;
     }
 
     @VisibleForTesting

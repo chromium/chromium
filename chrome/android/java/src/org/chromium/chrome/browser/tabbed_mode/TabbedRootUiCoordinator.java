@@ -654,11 +654,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         boolean didTriggerPromo = false;
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
-            didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    PrivacySandboxDialogLaunchContext.BROWSER_START, mActivity,
-                    new SettingsLauncherImpl(),
-                    mTabModelSelectorSupplier.get().isIncognitoSelected(),
-                    /*bottomSheetController = */ null);
+            // hasNewNoticeBeenShownInCurrentSession is needed to assure a PrivacySandbox promo
+            // already ran in this session, outside the initializeIPH promo logic (e.g. in a NTP
+            // page), and thus avoiding other different promos to run in the same session.
+            // NB: This logic holds as long as the Privacy Sandbox promo has the highest priority,
+            // we need to update the logic otherwise.
+            didTriggerPromo = PrivacySandboxDialogController.hasNewNoticeBeenShownInCurrentSession()
+                    || PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                            PrivacySandboxDialogLaunchContext.BROWSER_START, mActivity,
+                            new SettingsLauncherImpl(),
+                            mTabModelSelectorSupplier.get().isIncognitoSelected(),
+                            /*bottomSheetController = */ null);
         }
 
         if (!didTriggerPromo) {
