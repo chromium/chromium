@@ -167,6 +167,8 @@ BrowserLoader::BrowserLoader(
 BrowserLoader::~BrowserLoader() = default;
 
 void BrowserLoader::Load(LoadCompletionCallback callback) {
+  DCHECK(browser_util::IsLacrosEnabled());
+
   lacros_start_load_time_ = base::TimeTicks::Now();
   // TODO(crbug.com/1078607): Remove non-error logging from this class.
   LOG(WARNING) << "Starting lacros component load.";

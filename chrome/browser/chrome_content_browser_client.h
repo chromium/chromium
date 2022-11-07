@@ -448,11 +448,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void GetAdditionalMappedFilesForZygote(
-      base::CommandLine* command_line,
-      content::PosixFileDescriptorInfo* mappings) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_WIN)
   bool PreSpawnChild(sandbox::TargetPolicy* policy,
                      sandbox::mojom::Sandbox sandbox_type,

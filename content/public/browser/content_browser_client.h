@@ -1348,14 +1348,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::PosixFileDescriptorInfo* mappings) {}
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Populates |mappings| with all files that need to be mapped before launching
-  // a Zygote process.
-  virtual void GetAdditionalMappedFilesForZygote(
-      base::CommandLine* command_line,
-      content::PosixFileDescriptorInfo* mappings) {}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_WIN)
   // Defines flags that can be passed to PreSpawnChild.
   enum ChildSpawnFlags {

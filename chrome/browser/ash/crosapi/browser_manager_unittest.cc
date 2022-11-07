@@ -69,9 +69,9 @@ class BrowserManagerFake : public BrowserManager {
   ~BrowserManagerFake() override = default;
 
   // BrowserManager:
-  void Start(bool launching_at_login_screen = false) override {
+  void Start() override {
     ++start_count_;
-    BrowserManager::Start(launching_at_login_screen);
+    BrowserManager::Start();
   }
 
   int start_count() const { return start_count_; }

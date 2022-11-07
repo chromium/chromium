@@ -12,7 +12,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/files/platform_file.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
@@ -435,11 +434,12 @@ InitialBrowserAction& InitialBrowserAction::operator=(InitialBrowserAction&&) =
 
 InitialBrowserAction::~InitialBrowserAction() = default;
 
-void InjectBrowserInitParams(
-    mojom::BrowserInitParams* params,
+mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
+    InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
     absl::optional<browser_util::LacrosSelection> lacros_selection) {
+  auto params = mojom::BrowserInitParams::New();
   params->crosapi_version = crosapi::mojom::Crosapi::Version_;
   params->deprecated_ash_metrics_enabled_has_value = true;
   PrefService* local_state = g_browser_process->local_state();
@@ -450,16 +450,41 @@ void InjectBrowserInitParams(
           ? mojom::MetricsReportingManaged::kManaged
           : mojom::MetricsReportingManaged::kNotManaged;
 
+  params->session_type = environment_provider->GetSessionType();
   params->device_mode = environment_provider->GetDeviceMode();
   params->interface_versions = GetInterfaceVersions();
+  params->default_paths = environment_provider->GetDefaultPaths();
+
+  params->device_account_gaia_id =
+      environment_provider->GetDeviceAccountGaiaId();
+  const absl::optional<account_manager::Account> maybe_device_account =
+      environment_provider->GetDeviceAccount();
+  if (maybe_device_account) {
+    params->device_account =
+        account_manager::ToMojoAccount(maybe_device_account.value());
+  }
 
   // TODO(crbug.com/1093194): This should be updated to a new value when
   // the long term fix is made in ash-chrome, atomically.
   params->exo_ime_support =
       crosapi::mojom::ExoImeSupport::kConsumedByImeWorkaround;
+  params->cros_user_id_hash = ash::ProfileHelper::GetUserIdHashFromProfile(
+      ProfileManager::GetPrimaryUserProfile());
+  params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
+  params->last_policy_fetch_attempt_timestamp =
+      environment_provider->GetLastPolicyFetchAttemptTimestamp().ToTimeT();
   params->idle_info = IdleServiceAsh::ReadIdleInfoFromSystem();
   params->native_theme_info = NativeThemeServiceAsh::GetNativeThemeInfo();
 
+  params->initial_browser_action = initial_browser_action.action;
+  if (initial_browser_action.action ==
+      crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls) {
+    params->startup_urls = std::move(initial_browser_action.urls);
+    params->startup_urls_from = initial_browser_action.from;
+  }
+
+  params->web_apps_enabled = web_app::IsWebAppsCrosapiEnabled();
+  params->standalone_browser_is_primary = IsLacrosPrimaryBrowser();
   params->device_properties = GetDeviceProperties();
   params->device_settings = GetDeviceSettings();
   // |metrics_service| could be nullptr in tests.
@@ -512,6 +537,10 @@ void InjectBrowserInitParams(
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
   params->build_flags = std::move(build_flags);
 
+  params->standalone_browser_is_only_browser = !IsAshWebBrowserEnabled();
+  params->publish_chrome_apps = browser_util::IsLacrosChromeAppsEnabled();
+  params->publish_hosted_apps = crosapi::IsStandaloneBrowserHostedAppsEnabled();
+
   // Keep-alive mojom API is now used by the current ash-chrome.
   params->initial_keep_alive =
       is_keep_alive_enabled
@@ -543,6 +572,8 @@ void InjectBrowserInitParams(
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
   params->device_type = ConvertDeviceType(chromeos::GetDeviceType());
+  params->device_account_component_policy =
+      GetDeviceAccountComponentPolicy(environment_provider);
 
   params->is_ondevice_speech_supported =
       base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
@@ -550,93 +581,21 @@ void InjectBrowserInitParams(
   params->ash_chrome_version = version_info::GetVersionNumber();
   params->use_cups_for_printing = GetUseCupsForPrinting();
   params->use_floss_bluetooth = floss::features::IsFlossEnabled();
-
+  params->is_current_user_device_owner = GetIsCurrentUserOwner();
+  params->do_not_mux_extension_app_ids = !apps::ShouldMuxExtensionIds();
+  params->enable_lacros_tts_support =
+      tts_crosapi_util::ShouldEnableLacrosTtsSupport();
   params->enable_float_window =
       base::FeatureList::IsEnabled(chromeos::wm::features::kFloatWindow);
-
   params->is_cloud_gaming_device =
       chromeos::features::IsCloudGamingDeviceEnabled();
-
   params->gpu_sandbox_start_mode =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kGpuSandboxStartEarly)
           ? crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kEarly
           : crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kNormal;
-
   params->extension_keep_list = extensions::BuildExtensionKeeplistInitParam();
-}
 
-template <typename BrowserParams>
-void InjectBrowserPostLoginParams(BrowserParams* params,
-                                  EnvironmentProvider* environment_provider,
-                                  InitialBrowserAction initial_browser_action) {
-  static_assert(std::is_same<mojom::BrowserInitParams, BrowserParams>() ||
-                std::is_same<mojom::BrowserPostLoginParams, BrowserParams>());
-
-  params->session_type = environment_provider->GetSessionType();
-  params->default_paths = environment_provider->GetDefaultPaths();
-
-  params->device_account_gaia_id =
-      environment_provider->GetDeviceAccountGaiaId();
-  const absl::optional<account_manager::Account> maybe_device_account =
-      environment_provider->GetDeviceAccount();
-  if (maybe_device_account) {
-    params->device_account =
-        account_manager::ToMojoAccount(maybe_device_account.value());
-  }
-
-  params->cros_user_id_hash = ash::ProfileHelper::GetUserIdHashFromProfile(
-      ProfileManager::GetPrimaryUserProfile());
-  params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
-  params->last_policy_fetch_attempt_timestamp =
-      environment_provider->GetLastPolicyFetchAttemptTimestamp().ToTimeT();
-
-  params->initial_browser_action = initial_browser_action.action;
-  if (initial_browser_action.action ==
-      crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls) {
-    params->startup_urls = std::move(initial_browser_action.urls);
-    params->startup_urls_from = initial_browser_action.from;
-  }
-
-  params->web_apps_enabled = web_app::IsWebAppsCrosapiEnabled();
-  params->standalone_browser_is_primary = IsLacrosPrimaryBrowser();
-
-  params->standalone_browser_is_only_browser = !IsAshWebBrowserEnabled();
-  params->publish_chrome_apps = browser_util::IsLacrosChromeAppsEnabled();
-  params->publish_hosted_apps = crosapi::IsStandaloneBrowserHostedAppsEnabled();
-
-  params->device_account_component_policy =
-      GetDeviceAccountComponentPolicy(environment_provider);
-
-  params->is_current_user_device_owner = GetIsCurrentUserOwner();
-  params->do_not_mux_extension_app_ids = !apps::ShouldMuxExtensionIds();
-  params->enable_lacros_tts_support =
-      tts_crosapi_util::ShouldEnableLacrosTtsSupport();
-}
-
-mojom::BrowserInitParamsPtr GetBrowserInitParams(
-    EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled,
-    absl::optional<browser_util::LacrosSelection> lacros_selection,
-    bool include_post_login_params) {
-  mojom::BrowserInitParamsPtr params = mojom::BrowserInitParams::New();
-  InjectBrowserInitParams(params.get(), environment_provider,
-                          is_keep_alive_enabled, lacros_selection);
-  if (include_post_login_params) {
-    InjectBrowserPostLoginParams(params.get(), environment_provider,
-                                 std::move(initial_browser_action));
-  }
-  return params;
-}
-
-mojom::BrowserPostLoginParamsPtr GetBrowserPostLoginParams(
-    EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action) {
-  mojom::BrowserPostLoginParamsPtr params =
-      mojom::BrowserPostLoginParams::New();
-  InjectBrowserPostLoginParams(params.get(), environment_provider,
-                               std::move(initial_browser_action));
   return params;
 }
 
@@ -644,30 +603,12 @@ base::ScopedFD CreateStartupData(
     EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    absl::optional<LacrosSelection> lacros_selection,
-    bool include_post_login_params) {
+    absl::optional<LacrosSelection> lacros_selection) {
   const auto& data = GetBrowserInitParams(
       environment_provider, std::move(initial_browser_action),
-      is_keep_alive_enabled, lacros_selection, include_post_login_params);
+      is_keep_alive_enabled, lacros_selection);
 
   return chromeos::CreateMemFDFromBrowserInitParams(data);
-}
-
-bool WritePostLoginData(base::PlatformFile fd,
-                        EnvironmentProvider* environment_provider,
-                        InitialBrowserAction initial_browser_action) {
-  const auto& data = GetBrowserPostLoginParams(
-      environment_provider, std::move(initial_browser_action));
-
-  std::vector<uint8_t> serialized =
-      crosapi::mojom::BrowserPostLoginParams::Serialize(&data);
-
-  if (!base::WriteFileDescriptor(fd, serialized)) {
-    LOG(ERROR) << "Failed to dump the serialized BrowserPostLoginParams";
-    return false;
-  }
-
-  return true;
 }
 
 bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile) {

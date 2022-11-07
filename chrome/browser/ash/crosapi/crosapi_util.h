@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
 #include "base/token.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -52,32 +51,19 @@ struct InitialBrowserAction {
 
 // Returns the initial parameter to be passed to Crosapi client,
 // such as lacros-chrome.
-// If |include_post_login_params| is true, it fills the structure
-// with all the parameters, including the ones that are only
-// available after login.
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    absl::optional<browser_util::LacrosSelection> lacros_selection,
-    bool include_post_login_params = true);
+    absl::optional<browser_util::LacrosSelection> lacros_selection);
 
 // Creates a memory backed file containing the serialized |params|,
 // and returns its FD.
-// If |include_post_login_params| is true, it creates a file
-// with all the parameters, including the ones that are only
-// available after login.
 base::ScopedFD CreateStartupData(
-    EnvironmentProvider* environment_provider,
+    ::crosapi::EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    absl::optional<browser_util::LacrosSelection> lacros_selection,
-    bool include_post_login_params = true);
-
-// Serializes and writes post-login parameters into the given FD.
-bool WritePostLoginData(base::PlatformFile fd,
-                        EnvironmentProvider* environment_provider,
-                        InitialBrowserAction initial_browser_action);
+    absl::optional<browser_util::LacrosSelection> lacros_selection);
 
 // Returns the device settings needed for Lacros.
 mojom::DeviceSettingsPtr GetDeviceSettings();

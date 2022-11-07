@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_COMMON_CONTENT_DESCRIPTORS_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 // This is a list of global descriptor keys to be used with the
 // base::GlobalDescriptors object (see base/posix/global_descriptors.h)
@@ -18,6 +19,10 @@ enum {
 #if BUILDFLAG(IS_ANDROID)
   kAndroidPropertyDescriptor,
   kAndroidICUDataDescriptor,
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  kCrosStartupDataDescriptor,
 #endif
 
   // Reserves 100 to 199 for dynamically generated IDs.

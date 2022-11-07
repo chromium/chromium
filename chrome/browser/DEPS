@@ -410,7 +410,6 @@ include_rules = [
   "+media/mojo",  # For mojo media services.
   "+media/renderers",
   "+media/webrtc",  # For webrtc media switches.
-  "+mojo/core/embedder",
   "+ppapi/c",  # For various types.
   "+ppapi/host",
   "+ppapi/proxy",
