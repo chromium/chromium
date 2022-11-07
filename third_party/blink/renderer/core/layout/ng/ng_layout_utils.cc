@@ -585,7 +585,10 @@ bool MaySkipLayoutWithinBlockFormattingContext(
 
   // Self collapsing blocks have different "shifting" rules applied to them.
   if (cached_layout_result.IsSelfCollapsing()) {
-    DCHECK(!is_pushed_by_floats);
+    // If a self-collapsing block got pushed by floats due to clearance, all
+    // bets are off.
+    if (is_pushed_by_floats)
+      return false;
 
     // The "expected" BFC block-offset is where adjoining objects will be
     // placed (which may be wrong due to adjoining margins).

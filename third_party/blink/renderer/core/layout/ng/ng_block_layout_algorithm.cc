@@ -1005,6 +1005,11 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
     if (ConstraintSpace().ForcedBfcBlockOffset()) {
       container_builder_.SetBfcBlockOffset(
           *ConstraintSpace().ForcedBfcBlockOffset());
+
+      // Also make sure that this is treated as a valid class C breakpoint (if
+      // it is one).
+      if (ConstraintSpace().IsPushedByFloats())
+        container_builder_.SetIsPushedByFloats();
     }
   }
 
@@ -1788,10 +1793,10 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
 
   bool is_self_collapsing = layout_result->IsSelfCollapsing();
 
-  // Only non self-collapsing children (e.g. "normal children") can be pushed
-  // by floats in this way.
-  bool normal_child_had_clearance = layout_result->IsPushedByFloats();
-  DCHECK(!normal_child_had_clearance || !is_self_collapsing);
+  // "Normal child" here means non-self-collapsing. Even self-collapsing
+  // children may be cleared by floats, if they have a forced BFC block-offset.
+  bool normal_child_had_clearance =
+      layout_result->IsPushedByFloats() && !is_self_collapsing;
 
   // A child may have aborted its layout if it resolved its BFC block-offset.
   // If we don't have a BFC block-offset yet, we need to propagate the abort
