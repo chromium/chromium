@@ -1144,7 +1144,7 @@
       'linux-annotator-rel': 'release_trybot',
       'linux-arm64-castos': 'cast_arm64_release_bot',
       'linux-autofill-assistant': 'autofill_assistant_release_trybot',
-      'linux-bfcache-rel': 'release_bot_blink',
+      'linux-bfcache-rel': 'release_bot_blink_reclient',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification_reclient',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off',
@@ -3403,10 +3403,6 @@
 
     'release_bot': [
       'release_bot',
-    ],
-
-    'release_bot_blink': [
-      'release_bot_blink',
     ],
 
     'release_bot_blink_accessibility_reclient': [

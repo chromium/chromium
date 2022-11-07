@@ -95,6 +95,7 @@ try_.builder(
     mirrors = [
         "ci/linux-bfcache-rel",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
