@@ -47629,6 +47629,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="kUserSelectedThisTab"/>
 </enum>
 
+<enum name="GetDisplayMediaBooleanConstraint">
+  <int value="0" label="Not specified"/>
+  <int value="1" label="True"/>
+  <int value="2" label="False"/>
+</enum>
+
 <enum name="GetDisplayMediaConstraintsDisplaySurface">
   <int value="0" label="Not specified"/>
   <int value="1" label="Tab"/>

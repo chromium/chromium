@@ -2827,7 +2827,8 @@ chromium-metrics-reviews@google.com.
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <summary>
-    Records whether getDisplayMedia was called with displaySurface constraint.
+    Records whether getDisplayMedia was called with the displaySurface
+    constraint.
   </summary>
 </histogram>
 
@@ -2836,8 +2837,18 @@ chromium-metrics-reviews@google.com.
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <summary>
-    Records whether getDisplayMedia was called with selfBrowserSurface
+    Records whether getDisplayMedia was called with the selfBrowserSurface
     constraint.
+  </summary>
+</histogram>
+
+<histogram name="Media.GetDisplayMedia.Constraints.SuppressLocalAudioPlayback"
+    enum="GetDisplayMediaBooleanConstraint" expires_after="2023-05-07">
+  <owner>eladalon@chromium.org</owner>
+  <owner>fbeaufort@chromium.org</owner>
+  <summary>
+    Records whether getDisplayMedia was called with the
+    suppressLocalAudioPlayback constraint.
   </summary>
 </histogram>
 
@@ -2846,7 +2857,8 @@ chromium-metrics-reviews@google.com.
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <summary>
-    Records whether getDisplayMedia was called with surfaceSwitching constraint.
+    Records whether getDisplayMedia was called with the surfaceSwitching
+    constraint.
   </summary>
 </histogram>
 
@@ -2855,7 +2867,7 @@ chromium-metrics-reviews@google.com.
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <summary>
-    Records whether getDisplayMedia was called with systemAudio constraint.
+    Records whether getDisplayMedia was called with the systemAudio constraint.
   </summary>
 </histogram>
 
