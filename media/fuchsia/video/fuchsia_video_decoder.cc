@@ -378,6 +378,11 @@ int FuchsiaVideoDecoder::GetMaxDecodeRequests() const {
   return max_decoder_requests_;
 }
 
+void FuchsiaVideoDecoder::SetClientNativePixmapFactoryForTests(
+    std::unique_ptr<gfx::ClientNativePixmapFactory> factory) {
+  client_native_pixmap_factory_ = std::move(factory);
+}
+
 DecoderStatus FuchsiaVideoDecoder::InitializeSysmemBufferStream(
     bool is_encrypted,
     CdmContext* cdm_context,

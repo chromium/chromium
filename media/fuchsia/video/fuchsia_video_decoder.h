@@ -63,6 +63,9 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   bool CanReadWithoutStalling() const override;
   int GetMaxDecodeRequests() const override;
 
+  void SetClientNativePixmapFactoryForTests(
+      std::unique_ptr<gfx::ClientNativePixmapFactory> factory);
+
  private:
   class OutputMailbox;
 
