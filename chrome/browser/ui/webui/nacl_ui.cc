@@ -117,17 +117,17 @@ class NaClDomHandler : public WebUIMessageHandler {
   bool isPluginEnabled(size_t plugin_index);
 
   // Adds information regarding the operating system and chrome version to list.
-  void AddOperatingSystemInfo(base::ListValue* list);
+  void AddOperatingSystemInfo(base::Value::List* list);
 
   // Adds the list of plugins for NaCl to list.
-  void AddPluginList(base::ListValue* list);
+  void AddPluginList(base::Value::List* list);
 
   // Adds the information relevant to PNaCl (e.g., enablement, paths, version)
   // to the list.
-  void AddPnaclInfo(base::ListValue* list);
+  void AddPnaclInfo(base::Value::List* list);
 
   // Adds the information relevant to NaCl to list.
-  void AddNaClInfo(base::ListValue* list);
+  void AddNaClInfo(base::Value::List* list);
 
   // The callback ID for requested data.
   std::string callback_id_;
@@ -163,17 +163,17 @@ void NaClDomHandler::OnJavascriptDisallowed() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void AddPair(base::ListValue* list,
+void AddPair(base::Value::List* list,
              const std::u16string& key,
              const std::u16string& value) {
   base::Value::Dict results;
   results.Set("key", key);
   results.Set("value", value);
-  list->GetList().Append(std::move(results));
+  list->Append(std::move(results));
 }
 
 // Generate an empty data-pair which acts as a line break.
-void AddLineBreak(base::ListValue* list) {
+void AddLineBreak(base::Value::List* list) {
   AddPair(list, u"", u"");
 }
 
@@ -187,7 +187,7 @@ bool NaClDomHandler::isPluginEnabled(size_t plugin_index) {
           plugin_prefs->IsPluginEnabled(info_array[plugin_index]));
 }
 
-void NaClDomHandler::AddOperatingSystemInfo(base::ListValue* list) {
+void NaClDomHandler::AddOperatingSystemInfo(base::Value::List* list) {
   // Obtain the Chrome version info.
   AddPair(list, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
           ASCIIToUTF16(
@@ -229,7 +229,7 @@ void NaClDomHandler::AddOperatingSystemInfo(base::ListValue* list) {
   AddLineBreak(list);
 }
 
-void NaClDomHandler::AddPluginList(base::ListValue* list) {
+void NaClDomHandler::AddPluginList(base::Value::List* list) {
   // Obtain the version of the NaCl plugin.
   std::vector<content::WebPluginInfo> info_array;
   PluginService::GetInstance()->GetPluginInfoArray(
@@ -262,7 +262,7 @@ void NaClDomHandler::AddPluginList(base::ListValue* list) {
   AddLineBreak(list);
 }
 
-void NaClDomHandler::AddPnaclInfo(base::ListValue* list) {
+void NaClDomHandler::AddPnaclInfo(base::Value::List* list) {
   // Display whether PNaCl is enabled.
   std::u16string pnacl_enabled_string = u"Enabled";
   if (!isPluginEnabled(0)) {
@@ -284,7 +284,7 @@ void NaClDomHandler::AddPnaclInfo(base::ListValue* list) {
   AddLineBreak(list);
 }
 
-void NaClDomHandler::AddNaClInfo(base::ListValue* list) {
+void NaClDomHandler::AddNaClInfo(base::Value::List* list) {
   std::u16string nacl_enabled_string = u"Disabled";
   if (isPluginEnabled(0) &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -322,7 +322,7 @@ void NaClDomHandler::OnGotPlugins(
 
 base::Value::Dict NaClDomHandler::GetPageInformation() {
   // Store Key-Value pairs of about-information.
-  base::ListValue list;
+  base::Value::List list;
   // Display the operating system and chrome version information.
   AddOperatingSystemInfo(&list);
   // Display the list of plugins serving NaCl.
