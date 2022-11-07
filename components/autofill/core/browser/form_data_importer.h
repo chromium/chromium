@@ -36,6 +36,8 @@ class AddressProfileSaveManager;
 // Owned by `ChromeAutofillClient`.
 class FormDataImporter : public PersonalDataManagerObserver {
  public:
+  // TODO(crbug.com/1356057): Rename below RecordType into kNoCard, kLocalCard.
+  //                          See new naming convention from go/c-style.
   // Record type of the credit card imported from the form, if one exists.
   enum ImportedCreditCardRecordType {
     // No card was successfully imported from the form.
@@ -117,15 +119,14 @@ class FormDataImporter : public PersonalDataManagerObserver {
   }
 
  protected:
-  // Exposed for testing.
-  void set_credit_card_save_manager(
+  void set_credit_card_save_manager_for_testing(
       std::unique_ptr<CreditCardSaveManager> credit_card_save_manager) {
     credit_card_save_manager_ = std::move(credit_card_save_manager);
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Exposed for testing.
-  void set_local_card_migration_manager(
+  void set_local_card_migration_manager_for_testing(
       std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager) {
     local_card_migration_manager_ = std::move(local_card_migration_manager);
   }
@@ -173,16 +174,19 @@ class FormDataImporter : public PersonalDataManagerObserver {
     // empty if none of the address profile fulfill import requirements.
     std::vector<AddressProfileImportCandidate>
         address_profile_import_candidates;
+    // IBAN extracted from the form, which is a candidate for importing. Present
+    // if an IBAN is found in the form.
+    absl::optional<IBAN> iban_import_candidate;
     // Present if a UPI (Unified Payment Interface) ID is found in the form.
     absl::optional<std::string> imported_upi_id;
   };
-
-  // This function scans the given |form| for importable Autofill data.
-  // Returns true if one of the conditions meet:
-  // 1) the form includes either sufficient address data for a new profile.
-  // 2) ImportCreditCard() returns true
-  // 3) The form contains UPI data and `payment_methods_autofill_enabled` is
-  // true.
+  // This function scans the given `form` for importable Autofill data.
+  // Returns true if any one of the conditions is met:
+  // 1) The form includes sufficient address data for a new profile.
+  // 2) ImportCreditCard() returns true.
+  // 3) ImportIBAN() returns true.
+  // 4) The form contains UPI data and `payment_methods_autofill_enabled` is
+  //    true.
   bool ImportFormData(const FormStructure& form,
                       bool profile_autofill_enabled,
                       bool payment_methods_autofill_enabled,
@@ -229,6 +233,15 @@ class FormDataImporter : public PersonalDataManagerObserver {
       bool should_return_local_card,
       absl::optional<CreditCard>* credit_card_import_candidate);
 
+  // Returns the extracted IBAN from the `form` if applicable.
+  // This is the case if it is a new IBAN or a local IBAN.
+  //
+  // The function has one side-effect:
+  // - record_type of the returned IBAN is set to
+  //   - LOCAL_IBAN if a local IBAN matches;
+  //   - NEW_IBAN if no local IBAN matches
+  absl::optional<IBAN> ImportIBAN(const FormStructure& form);
+
   // Tries to initiate the saving of the `credit_card_import_candidate`
   // if applicable. `submitted_form` is the form from which the card was
   // imported. If a UPI id was found it is stored in `imported_upi_id`.
@@ -255,6 +268,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // be set as true if there are duplicated field types in the form.
   CreditCard ExtractCreditCardFromForm(const FormStructure& form,
                                        bool* hasDuplicateFieldType);
+
+  // Extracts the IBAN from the form structure.
+  IBAN ExtractIBANFromForm(const FormStructure& form);
 
   // Go through the |form| fields and find a UPI ID to import. The return value
   // will be empty if no UPI ID was found.

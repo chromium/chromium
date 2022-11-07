@@ -17,6 +17,8 @@ namespace autofill {
 class IBAN : public AutofillDataModel {
  public:
   enum RecordType {
+    // A new IBAN which is extracted from the form.
+    NEW_IBAN,
     // An IBAN stored and editable locally.
     // Note: We only have local IBAN for now.
     LOCAL_IBAN,

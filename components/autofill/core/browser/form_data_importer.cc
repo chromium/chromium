@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -212,8 +213,8 @@ void FormDataImporter::ImportFormData(const FormStructure& submitted_form,
       is_credit_card_upstream_enabled);
   fetched_card_instrument_id_.reset();
 
-  // If a prompt for credit cards is potentially shown, do not allow for a
-  // second address profile import dialog.
+  // If a prompt for credit cards or IBANs is potentially shown, do not allow
+  // for a second address profile import dialog.
   ProcessAddressProfileImportCandidates(
       imported_data.address_profile_import_candidates,
       !cc_prompt_potentially_shown);
@@ -301,6 +302,13 @@ bool FormDataImporter::ImportFormData(
   //   at most one import prompt is shown.
   size_t num_complete_address_profiles = 0;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields) &&
+      payment_methods_autofill_enabled) {
+    imported_form_data->iban_import_candidate = ImportIBAN(submitted_form);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   // Only import addresses if enabled.
   if (profile_autofill_enabled &&
       !base::FeatureList::IsEnabled(features::kAutofillDisableAddressImport)) {
@@ -328,7 +336,10 @@ bool FormDataImporter::ImportFormData(
   }
 
   if (cc_import || num_complete_address_profiles > 0 ||
-      imported_form_data->imported_upi_id) {
+      imported_form_data->imported_upi_id ||
+      (imported_form_data->iban_import_candidate &&
+       imported_form_data->iban_import_candidate->record_type() ==
+           IBAN::NEW_IBAN)) {
     return true;
   }
 
@@ -940,6 +951,26 @@ bool FormDataImporter::ImportCreditCard(
   return true;
 }
 
+absl::optional<IBAN> FormDataImporter::ImportIBAN(const FormStructure& form) {
+  IBAN candidate_iban = ExtractIBANFromForm(form);
+  if (candidate_iban.value().empty())
+    return absl::nullopt;
+
+  bool found_existing_iban = base::ranges::any_of(
+      personal_data_manager_->GetIBANs(), [&](const auto& iban) {
+        return iban->value() == candidate_iban.value();
+      });
+
+  if (found_existing_iban) {
+    // Don't offer to update existing local IBANs. Users can go to the payment
+    // methods settings page to update local IBANs if desired.
+    candidate_iban.set_record_type(IBAN::LOCAL_IBAN);
+  } else {
+    candidate_iban.set_record_type(IBAN::NEW_IBAN);
+  }
+  return candidate_iban;
+}
+
 CreditCard FormDataImporter::ExtractCreditCardFromForm(
     const FormStructure& form,
     bool* has_duplicate_field_type) {
@@ -1001,6 +1032,26 @@ CreditCard FormDataImporter::ExtractCreditCardFromForm(
   }
 
   return candidate_credit_card;
+}
+
+IBAN FormDataImporter::ExtractIBANFromForm(const FormStructure& form) {
+  IBAN candidate_iban;
+
+  for (const auto& field : form) {
+    std::u16string value;
+    base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
+
+    if (!field->IsFieldFillable() || value.empty())
+      continue;
+
+    AutofillType field_type = field->Type();
+    if (field_type.GetStorableType() == IBAN_VALUE) {
+      candidate_iban.SetInfo(field_type, value, app_locale_);
+      break;
+    }
+  }
+
+  return candidate_iban;
 }
 
 absl::optional<std::string> FormDataImporter::ImportUpiId(

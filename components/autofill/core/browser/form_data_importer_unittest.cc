@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
@@ -113,6 +112,11 @@ constexpr char kDefaultCreditCardName[] = "Biggie Smalls";
 constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
 constexpr char kDefaultCreditCardExpMonth[] = "01";
 constexpr char kDefaultCreditCardExpYear[] = "2999";
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Define default value for Iban.
+constexpr char kIbanValue[] = "IE12 BOFI 9000 0112 3456 78";
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // For a given ServerFieldType |type| returns a pair of field name and label
 // that should be parsed into this type by our field type parsers.
@@ -475,6 +479,7 @@ class MockVirtualCardEnrollmentManager
 };
 
 class FormDataImporterTestBase {
+ public:
   using ImportFormDataResult = FormDataImporter::ImportFormDataResult;
   using AddressProfileImportCandidate =
       FormDataImporter::AddressProfileImportCandidate;
@@ -592,6 +597,13 @@ class FormDataImporterTestBase {
     }
   }
 
+  void AddIBANForm(FormData* form, const char* value) {
+    FormFieldData field;
+    test::CreateTestFormField("IBAN Value:", "iban_value", value, "text",
+                              &field);
+    form->fields.push_back(field);
+  }
+
   // Helper methods that simply forward the call to the private member (to avoid
   // having to friend every test that needs to access the private
   // PersonalDataManager::ImportAddressProfile or ImportCreditCard).
@@ -652,30 +664,23 @@ class FormDataImporterTestBase {
       bool profile_autofill_enabled,
       bool payment_methods_autofill_enabled,
       bool should_return_local_card,
-      absl::optional<CreditCard>* credit_card_import_candidate,
-      absl::optional<std::string>* imported_upi_id) {
-    ImportFormDataResult imported_data;
+      FormDataImporter::ImportFormDataResult* imported_data) {
     bool has_imported_data = form_data_importer().ImportFormData(
         form, profile_autofill_enabled, payment_methods_autofill_enabled,
-        should_return_local_card, &imported_data);
+        should_return_local_card, imported_data);
 
     form_data_importer().ProcessAddressProfileImportCandidates(
-        imported_data.address_profile_import_candidates);
-
-    *credit_card_import_candidate = imported_data.credit_card_import_candidate;
-    *imported_upi_id = imported_data.imported_upi_id;
+        imported_data->address_profile_import_candidates);
     return has_imported_data;
   }
 
   // Convenience wrapper around `ImportFormDataAndProcessAddressCandidates()`.
   bool ImportFormDataAndProcessAddressCandidates(const FormStructure& form) {
-    absl::optional<CreditCard> unused_credit_card_import_candidate;
-    absl::optional<std::string> unused_imported_upi_id;
+    FormDataImporter::ImportFormDataResult unused_imported_data;
     return ImportFormDataAndProcessAddressCandidates(
         form, /*profile_autofill_enabled=*/true,
         /*payment_methods_autofill_enabled=*/true,
-        /*should_return_local_card=*/true, &unused_credit_card_import_candidate,
-        &unused_imported_upi_id);
+        /*should_return_local_card=*/true, &unused_imported_data);
   }
 
   void ImportAddressProfilesAndVerifyExpectation(
@@ -756,6 +761,7 @@ class FormDataImporterTestBase {
 class FormDataImporterTest : public FormDataImporterTestBase,
                              public testing::Test,
                              public testing::WithParamInterface<bool> {
+ public:
   using ImportFormDataResult = FormDataImporter::ImportFormDataResult;
 
  private:
@@ -915,7 +921,7 @@ TEST_P(FormDataImporterTest, InvalidPhoneNumber) {
 // ImportAddressProfiles tests.
 TEST_P(FormDataImporterTest, ImportStructuredNameProfile) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
@@ -957,7 +963,7 @@ TEST_P(FormDataImporterTest, ImportStructuredNameProfile) {
 TEST_P(FormDataImporterTest,
        ImportStructuredAddressProfile_StreetNameAndHouseNumber) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
@@ -1009,7 +1015,7 @@ TEST_P(
     return;
   }
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
@@ -1057,7 +1063,7 @@ TEST_P(
 TEST_P(FormDataImporterTest,
        ImportStructuredAddressProfile_GermanStreetNameAndHouseNumber) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
@@ -1104,7 +1110,7 @@ TEST_P(FormDataImporterTest,
 // ImportAddressProfiles tests.
 TEST_P(FormDataImporterTest, ImportStructuredNameAddressProfile) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
@@ -1712,7 +1718,7 @@ TEST_P(FormDataImporterTest,
 
   // Simulate a form submission with conflicting info.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "Marion Mitchell",
@@ -1788,7 +1794,7 @@ TEST_P(FormDataImporterTest,
 
   // Simulate a form submission with conflicting info.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "Marion Mitchell",
@@ -1877,7 +1883,7 @@ TEST_P(FormDataImporterTest,
 
   // Simulate a form submission with conflicting info.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "Marion Mitchell",
@@ -1928,7 +1934,7 @@ TEST_P(FormDataImporterTest,
 // Tests that no profile is inferred if the country is not recognized.
 TEST_P(FormDataImporterTest, ImportAddressProfiles_UnrecognizedCountry) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "George", "text",
@@ -1969,7 +1975,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_UnrecognizedCountry) {
 // page language.
 TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   // Create a form with all important fields.
   FormFieldData field;
@@ -2030,7 +2036,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
 TEST_P(FormDataImporterTest,
        ImportAddressProfiles_CompleteComposedCountryName) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "George", "text",
@@ -2073,7 +2079,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        ImportAddressProfiles_IncompleteComposedCountryName) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "George", "text",
@@ -2140,7 +2146,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_Valid) {
 // Tests that an invalid credit card number is not extracted.
 TEST_P(FormDataImporterTest, ImportCreditCard_InvalidCardNumber) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Jim Johansen", "1000000000000000", "02",
                         "2999");
@@ -2168,7 +2174,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_InvalidCardNumber) {
 TEST_P(FormDataImporterTest,
        ImportCreditCard_InvalidExpiryDate_EditableExpirationExpOn) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Smalls Biggie", "4111-1111-1111-1111", "", "");
 
@@ -2188,7 +2194,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        ImportCreditCard_ExpiredExpiryDate_EditableExpirationExpOn) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Smalls Biggie", "4111-1111-1111-1111", "01",
                         "2000");
@@ -2209,7 +2215,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest, ImportCreditCard_MonthSelectInvalidText) {
   // Add a single valid credit card form with an invalid option value.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111-1111-1111-1111",
                         "Feb (2)", "2999");
@@ -2294,7 +2300,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_TwoValidCards) {
 // This form has the expiration year as one field with MM/YY.
 TEST_P(FormDataImporterTest, ImportCreditCard_Month2DigitYearCombination) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "John MMYY",
@@ -2314,7 +2320,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_Month2DigitYearCombination) {
 // This form has the expiration year as one field with MM/YYYY.
 TEST_P(FormDataImporterTest, ImportCreditCard_Month4DigitYearCombination) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "John MMYYYY",
@@ -2334,7 +2340,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_Month4DigitYearCombination) {
 // This form has the expiration year as one field with M/YYYY.
 TEST_P(FormDataImporterTest, ImportCreditCard_1DigitMonth4DigitYear) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "John MYYYY",
@@ -2354,7 +2360,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_1DigitMonth4DigitYear) {
 // This form has the expiration year as a 2-digit field.
 TEST_P(FormDataImporterTest, ImportCreditCard_2DigitYear) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "John Smith",
@@ -2392,7 +2398,7 @@ TEST_P(FormDataImporterTest,
 
   // Type the same data as the masked card into a form.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "John Dillinger", "4111111111111111", "01",
                         "2999");
@@ -2428,7 +2434,7 @@ TEST_P(FormDataImporterTest,
 
   // Type the same data as the unmasked card into a form.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Clyde Barrow", "378282246310005", "04", "2999");
 
@@ -2706,7 +2712,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_MissingInfoInOld) {
   // Add a second different valid credit card where the year is different but
   // the credit card number matches.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111-1111-1111-1111", "01",
                         /* different year */ "2999");
@@ -2750,7 +2756,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_SameCardWithSeparators) {
 
   // Import the same card info, but with different separators in the number.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111-1111-1111-1111", "01",
                         "2999");
@@ -2793,7 +2799,7 @@ TEST_P(FormDataImporterTest,
 
   // Simulate a form submission with conflicting expiration year.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "01",
                         /* different year */ "2999");
@@ -2835,21 +2841,19 @@ TEST_P(FormDataImporterTest,
 
   // Simulate a form submission with the same card.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "01",
                         "2999");
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be LOCAL_CARD because upload was
   // offered and the card is a local card already on the device.
   ASSERT_TRUE(
@@ -2867,13 +2871,12 @@ TEST_P(FormDataImporterTest,
 
   FormStructure form_structure2(form2);
   form_structure2.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate2;
+  ImportFormDataResult imported_data2;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure2, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate2,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate2);
+      /*should_return_local_card=*/true, &imported_data2));
+  ASSERT_TRUE(imported_data2.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be NEW_CARD because the imported
   // card is not already on the device.
   ASSERT_TRUE(
@@ -2909,12 +2912,11 @@ TEST_P(FormDataImporterTest,
   form3.fields.push_back(field);
   FormStructure form_structure3(form3);
   form_structure3.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate3;
+  ImportFormDataResult imported_data3;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure3, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/false,
-      /*should_return_local_card=*/true, &credit_card_import_candidate3,
-      &imported_upi_id));
+      /*should_return_local_card=*/true, &imported_data3));
   // |imported_credit_card_record_type_| should be NO_CARD because no valid card
   // was imported from the form.
   ASSERT_TRUE(
@@ -2928,21 +2930,19 @@ TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_NewCard) {
   // Simulate a form submission with a new credit card.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "01",
                         "2999");
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be NEW_CARD because the imported
   // card is not already on the device.
   ASSERT_TRUE(
@@ -2968,21 +2968,19 @@ TEST_P(FormDataImporterTest,
 
   // Simulate a form submission with the same card.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "01",
                         "2999");
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be LOCAL_CARD because upload was
   // offered and the card is a local card already on the device.
   ASSERT_TRUE(
@@ -3009,21 +3007,19 @@ TEST_P(FormDataImporterTest,
 
   // Simulate a form submission with the same masked server card.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "01",
                         "2999");
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be SERVER_CARD.
   ASSERT_TRUE(
       form_data_importer().imported_credit_card_record_type_for_testing() ==
@@ -3049,21 +3045,19 @@ TEST_P(FormDataImporterTest,
 
   // Simulate a form submission with the same full server card.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "378282246310005", "04",
                         "2999");
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be SERVER_CARD.
   ASSERT_TRUE(
       form_data_importer().imported_credit_card_record_type_for_testing() ==
@@ -3076,21 +3070,19 @@ TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_NoCard_InvalidCardNumber) {
   // Simulate a form submission using a credit card with an invalid card number.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1112", "01",
                         "2999");
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(credit_card_import_candidate);
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_FALSE(imported_data.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be NO_CARD because no valid card
   // was successfully imported from the form.
   ASSERT_TRUE(
@@ -3105,20 +3097,18 @@ TEST_P(FormDataImporterTest,
   // Simulate a form submission using a credit card that is known as a virtual
   // card.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "01",
                         "2999");
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   form_data_importer().CacheFetchedVirtualCard(u"1111");
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(credit_card_import_candidate);
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_FALSE(imported_data.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be NO_CARD because the card
   // imported from the form was a virtual card.
   ASSERT_TRUE(
@@ -3133,21 +3123,19 @@ TEST_P(
     ImportFormData_ImportCreditCardRecordType_NewCard_ExpiredCard_WithExpDateFixFlow) {
   // Simulate a form submission with an expired credit card.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "01",
                         "1999");
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be NEW_CARD because card was
   // successfully imported from the form via the expiration date fix flow.
   ASSERT_TRUE(
@@ -3161,7 +3149,7 @@ TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_NoCard_NoCardOnForm) {
   // Simulate a form submission with no credit card on form.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "George", "text",
@@ -3185,14 +3173,12 @@ TEST_P(FormDataImporterTest,
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(credit_card_import_candidate);
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_FALSE(imported_data.credit_card_import_candidate);
   // |imported_credit_card_record_type_| should be NO_CARD because the form
   // doesn't have credit card section.
   ASSERT_TRUE(
@@ -3206,7 +3192,7 @@ TEST_P(FormDataImporterTest,
 // address and the credit card.
 TEST_P(FormDataImporterTest, ImportFormData_OneAddressOneCreditCard) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   // Address section.
@@ -3237,16 +3223,14 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressOneCreditCard) {
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(
-      *credit_card_import_candidate);
+      *imported_data.credit_card_import_candidate);
 
   WaitForOnPersonalDataChanged();
 
@@ -3274,7 +3258,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressOneCreditCard) {
 // import the address but does import the credit card.
 TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   // Address section 1.
@@ -3318,8 +3302,7 @@ TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
 
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
@@ -3330,13 +3313,12 @@ TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
+      /*should_return_local_card=*/false, &imported_data));
   run_loop.Run();
 
-  ASSERT_TRUE(credit_card_import_candidate);
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(
-      *credit_card_import_candidate);
+      *imported_data.credit_card_import_candidate);
 
   WaitForOnPersonalDataChanged();
 
@@ -3353,11 +3335,149 @@ TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_P(FormDataImporterTest, ImportFormData_ImportIbanRecordType_NoIban) {
+  base::test::ScopedFeatureList multistep_import_feature;
+  multistep_import_feature.InitAndEnableFeature(
+      features::kAutofillParseIBANFields);
+  // Simulate a form submission with no IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  ImportFormDataResult imported_data;
+  EXPECT_FALSE(ImportFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_FALSE(imported_data.iban_import_candidate);
+}
+
+TEST_P(FormDataImporterTest,
+       ImportFormData_ImportIbanRecordType_IbanAutofill_NewIban) {
+  base::test::ScopedFeatureList multistep_import_feature;
+  multistep_import_feature.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillParseIBANFields,
+                            features::kAutofillFillIbanFields},
+      /*disabled_features=*/{});
+  // Simulate a form submission with a new IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddIBANForm(&form, kIbanValue);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  ImportFormDataResult imported_data;
+
+  EXPECT_TRUE(ImportFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_TRUE(imported_data.iban_import_candidate);
+  ASSERT_TRUE(imported_data.iban_import_candidate->record_type() ==
+              IBAN::NEW_IBAN);
+}
+
+TEST_P(
+    FormDataImporterTest,
+    ImportFormData_ImportIbanRecordType_IbanAutofill_NewIban_DoesNotImportIfFlagOff) {
+  base::test::ScopedFeatureList multistep_import_feature;
+  multistep_import_feature.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillParseIBANFields},
+      /*disabled_features=*/{features::kAutofillFillIbanFields});
+  // Simulate a form submission with a new IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddIBANForm(&form, kIbanValue);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  ImportFormDataResult imported_data;
+
+  EXPECT_FALSE(ImportFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_FALSE(imported_data.iban_import_candidate);
+}
+
+TEST_P(FormDataImporterTest, ImportFormData_ImportIbanRecordType_LocalIban) {
+  base::test::ScopedFeatureList multistep_import_feature;
+  multistep_import_feature.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillParseIBANFields,
+                            features::kAutofillFillIbanFields},
+      /*disabled_features=*/{});
+  IBAN iban;
+  iban.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  personal_data_manager_->AddIBAN(iban);
+
+  WaitForOnPersonalDataChanged();
+
+  const std::vector<IBAN*>& results = personal_data_manager_->GetIBANs();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_THAT(*results[0], ComparesEqual(iban));
+
+  // Simulate a form submission with the same IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddIBANForm(&form, kIbanValue);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  ImportFormDataResult imported_data;
+
+  EXPECT_FALSE(ImportFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_TRUE(imported_data.iban_import_candidate);
+  ASSERT_TRUE(imported_data.iban_import_candidate->record_type() ==
+              IBAN::LOCAL_IBAN);
+}
+
+TEST_P(FormDataImporterTest,
+       ImportFormData_ImportIbanRecordType_LocalIban_DoesNotImportIfFlagOff) {
+  base::test::ScopedFeatureList multistep_import_feature;
+  multistep_import_feature.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillParseIBANFields},
+      /*disabled_features=*/{features::kAutofillFillIbanFields});
+  IBAN iban;
+  iban.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  personal_data_manager_->AddIBAN(iban);
+
+  WaitForOnPersonalDataChanged();
+
+  const std::vector<IBAN*>& results = personal_data_manager_->GetIBANs();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_THAT(*results[0], ComparesEqual(iban));
+
+  // Simulate a form submission with the same IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddIBANForm(&form, kIbanValue);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  ImportFormDataResult imported_data;
+
+  EXPECT_FALSE(ImportFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_FALSE(imported_data.iban_import_candidate);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // Test that a form with both address and credit card sections imports only the
 // the credit card if addresses are disabled.
 TEST_P(FormDataImporterTest, ImportFormData_AddressesDisabledOneCreditCard) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   // Address section.
@@ -3386,16 +3506,14 @@ TEST_P(FormDataImporterTest, ImportFormData_AddressesDisabledOneCreditCard) {
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(
-      *credit_card_import_candidate);
+      *imported_data.credit_card_import_candidate);
 
   WaitForOnPersonalDataChanged();
 
@@ -3416,7 +3534,7 @@ TEST_P(FormDataImporterTest, ImportFormData_AddressesDisabledOneCreditCard) {
 // the address if credit cards are disabled.
 TEST_P(FormDataImporterTest, ImportFormData_OneAddressCreditCardDisabled) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   // Address section.
@@ -3447,14 +3565,12 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressCreditCardDisabled) {
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/false,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_FALSE(imported_data.credit_card_import_candidate);
 
   WaitForOnPersonalDataChanged();
 
@@ -3478,7 +3594,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressCreditCardDisabled) {
 // if both addressed and credit cards are disabled.
 TEST_P(FormDataImporterTest, ImportFormData_AddressCreditCardDisabled) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   // Address section.
@@ -3507,14 +3623,12 @@ TEST_P(FormDataImporterTest, ImportFormData_AddressCreditCardDisabled) {
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
       /*payment_methods_autofill_enabled=*/false,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_FALSE(imported_data.credit_card_import_candidate);
 
   // Test that addresses were not saved.
   EXPECT_EQ(0U, personal_data_manager_->GetProfiles().size());
@@ -3547,7 +3661,7 @@ TEST_P(FormDataImporterTest, DuplicateMaskedServerCard) {
   // A valid credit card form. A user re-enters one of their masked cards.
   // We should not offer to save locally.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "John Dillinger",
@@ -3563,21 +3677,19 @@ TEST_P(FormDataImporterTest, DuplicateMaskedServerCard) {
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
 }
 
 // Tests that a credit card form that is hidden after receiving input still
 // imports the card.
 TEST_P(FormDataImporterTest, ImportFormData_HiddenCreditCardFormAfterEntered) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
 
@@ -3602,16 +3714,14 @@ TEST_P(FormDataImporterTest, ImportFormData_HiddenCreditCardFormAfterEntered) {
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(
-      *credit_card_import_candidate);
+      *imported_data.credit_card_import_candidate);
 
   WaitForOnPersonalDataChanged();
 
@@ -3631,14 +3741,12 @@ TEST_P(FormDataImporterTest,
        ImportFormData_DontSetUpiIdWhenOnlyCreditCardExists) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       *form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/true, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(imported_upi_id.has_value());
+      /*should_return_local_card=*/true, &imported_data));
+  ASSERT_FALSE(imported_data.imported_upi_id.has_value());
 }
 
 TEST_P(FormDataImporterTest,
@@ -3679,7 +3787,7 @@ TEST_P(FormDataImporterTest,
   // here, either. Since it's unmasked, we know for certain that it's the same
   // card.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
@@ -3695,17 +3803,15 @@ TEST_P(FormDataImporterTest,
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   // Ensure that we imported the server version of the card, not the local
   // version.
-  ASSERT_TRUE(credit_card_import_candidate->record_type() ==
+  ASSERT_TRUE(imported_data.credit_card_import_candidate->record_type() ==
               CreditCard::FULL_SERVER_CARD);
 
   // Check that both of the local cards we have added were updated.
@@ -3736,7 +3842,7 @@ TEST_P(FormDataImporterTest,
   // A user fills/enters the card's information on a checkout form.  Ensure that
   // an expiration date match is recorded.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
@@ -3753,14 +3859,12 @@ TEST_P(FormDataImporterTest,
   base::HistogramTester histogram_tester;
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   histogram_tester.ExpectUniqueSample(
       "Autofill.SubmittedServerCardExpirationStatus",
       AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED, 1);
@@ -3785,7 +3889,7 @@ TEST_P(FormDataImporterTest,
   // A user fills/enters the card's information on a checkout form with an empty
   // expiration date.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
@@ -3801,14 +3905,12 @@ TEST_P(FormDataImporterTest,
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_FALSE(imported_data.credit_card_import_candidate);
 }
 
 // Ensure that we don't offer to save if we already have same card stored as a
@@ -3830,7 +3932,7 @@ TEST_P(FormDataImporterTest,
   // A user fills/enters the card's information on a checkout form with an empty
   // expiration date.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
@@ -3846,14 +3948,12 @@ TEST_P(FormDataImporterTest,
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_FALSE(imported_data.credit_card_import_candidate);
 }
 
 // Ensure that we still offer to save if we have different cards stored as a
@@ -3876,7 +3976,7 @@ TEST_P(
   // A user fills/enters the card's information on a checkout form with an empty
   // expiration date.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
@@ -3892,14 +3992,12 @@ TEST_P(
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
 }
 
 TEST_P(FormDataImporterTest,
@@ -3920,7 +4018,7 @@ TEST_P(FormDataImporterTest,
   // the expiration date of the card.  Ensure that an expiration date mismatch
   // is recorded.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
@@ -3937,14 +4035,12 @@ TEST_P(FormDataImporterTest,
   base::HistogramTester histogram_tester;
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   histogram_tester.ExpectUniqueSample(
       "Autofill.SubmittedServerCardExpirationStatus",
       AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH, 1);
@@ -3968,7 +4064,7 @@ TEST_P(FormDataImporterTest,
   // A user fills/enters the card's information on a checkout form.  Ensure that
   // an expiration date match is recorded.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
@@ -3985,14 +4081,12 @@ TEST_P(FormDataImporterTest,
   base::HistogramTester histogram_tester;
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   histogram_tester.ExpectUniqueSample(
       "Autofill.SubmittedServerCardExpirationStatus",
       AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED, 1);
@@ -4017,7 +4111,7 @@ TEST_P(FormDataImporterTest,
   // the expiration date of the card.  Ensure that an expiration date mismatch
   // is recorded.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
@@ -4034,14 +4128,12 @@ TEST_P(FormDataImporterTest,
   base::HistogramTester histogram_tester;
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(credit_card_import_candidate);
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.credit_card_import_candidate);
   histogram_tester.ExpectUniqueSample(
       "Autofill.SubmittedServerCardExpirationStatus",
       AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH, 1);
@@ -4049,7 +4141,7 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest, ImportUpiId) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("UPI ID:", "upi_id", "user@indianbank", "text",
@@ -4059,20 +4151,18 @@ TEST_P(FormDataImporterTest, ImportUpiId) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
       /*payment_methods_autofill_enabled=*/true,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_TRUE(imported_upi_id.has_value());
-  EXPECT_EQ(imported_upi_id.value(), "user@indianbank");
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_TRUE(imported_data.imported_upi_id.has_value());
+  EXPECT_EQ(imported_data.imported_upi_id.value(), "user@indianbank");
 }
 
 TEST_P(FormDataImporterTest, ImportUpiIdDisabled) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("UPI ID:", "upi_id", "user@indianbank", "text",
@@ -4082,19 +4172,17 @@ TEST_P(FormDataImporterTest, ImportUpiIdDisabled) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
       /*payment_methods_autofill_enabled=*/false,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(imported_upi_id.has_value());
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_FALSE(imported_data.imported_upi_id.has_value());
 }
 
 TEST_P(FormDataImporterTest, ImportUpiIdIgnoreNonUpiId) {
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("UPI ID:", "upi_id", "user@gmail.com", "text",
@@ -4104,14 +4192,12 @@ TEST_P(FormDataImporterTest, ImportUpiIdIgnoreNonUpiId) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  absl::optional<CreditCard> credit_card_import_candidate;
-  absl::optional<std::string> imported_upi_id;
+  ImportFormDataResult imported_data;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
       /*payment_methods_autofill_enabled=*/false,
-      /*should_return_local_card=*/false, &credit_card_import_candidate,
-      &imported_upi_id));
-  ASSERT_FALSE(imported_upi_id.has_value());
+      /*should_return_local_card=*/false, &imported_data));
+  ASSERT_FALSE(imported_data.imported_upi_id.has_value());
 }
 
 TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
@@ -4142,7 +4228,7 @@ TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
 
   // Simulate a form submission with conflicting info.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "Marion", "text",
@@ -4201,7 +4287,7 @@ TEST_P(
 
   // Simulate a form submission with conflicting info.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "Marion", "text",
@@ -4258,7 +4344,7 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
 
   // Simulate a form submission with conflicting info.
   FormData form;
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
 
   FormFieldData field;
   test::CreateTestFormField("First name:", "first_name", "Marion", "text",
@@ -4457,7 +4543,7 @@ TEST_P(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
       features::kAutofillEnableMultiStepImports);
 
   FormData form = ConstructSplitDefaultFormData(/*part=*/1);
-  form.url = GURL("https://wwww.foo.com");
+  form.url = GURL("https://www.foo.com");
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
   ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
