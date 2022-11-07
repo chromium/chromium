@@ -69,7 +69,6 @@ class CONTENT_EXPORT AXTreeDistiller {
   RenderFrameImpl* render_frame_;
   std::unique_ptr<ui::AXTreeUpdate> snapshot_;
   std::unique_ptr<std::vector<ui::AXNodeID>> content_node_ids_;
-  bool is_distillable_ = true;
 
   // A function  defined in the browser process and passed across the render
   // frame to AXTreeDistiller.

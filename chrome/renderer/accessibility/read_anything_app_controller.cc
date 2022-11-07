@@ -294,10 +294,17 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   has_selection_ = snapshot.has_tree_data &&
                    tree_data.sel_anchor_object_id != ui::kInvalidAXNodeID &&
                    tree_data.sel_focus_object_id != ui::kInvalidAXNodeID;
-  if (has_selection_) {
+  if (!content_node_ids.empty()) {
+    // If there are content_node_ids, this means the AXTree was successfully
+    // distilled. Post-process in preparation to display the distilled content.
+    PostProcessDistillableAXTree();
+  } else if (has_selection_) {
+    // Otherwise, if there is a selection, post-process the AXTree to display
+    // the selected content.
     PostProcessAXTreeWithSelection(tree_data);
   } else {
-    PostProcessAXTreeWithoutSelection();
+    // TODO(crbug.com/1266555): Display a UI giving user instructions if the
+    // tree was not distillable.
   }
 
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
@@ -308,6 +315,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 
 void ReadAnythingAppController::PostProcessAXTreeWithSelection(
     const ui::AXTreeData& tree_data) {
+  DCHECK(has_selection_);
   // Identify the start and end nodes and offsets. The start node comes earlier
   // the end node in the tree order.
   ui::AXNode* anchor_node = GetAXNode(tree_data.sel_anchor_object_id);
@@ -365,10 +373,8 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection(
   }
 }
 
-void ReadAnythingAppController::PostProcessAXTreeWithoutSelection() {
-  // If there are no content node IDs, do nothing.
-  if (content_node_ids_.empty())
-    return;
+void ReadAnythingAppController::PostProcessDistillableAXTree() {
+  DCHECK(!content_node_ids_.empty());
 
   // The display root is the lowest common ancestor between all of the content
   // node IDs. This is the lowest node in the tree which entirely contains the

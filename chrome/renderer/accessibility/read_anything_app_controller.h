@@ -109,7 +109,7 @@ class ReadAnythingAppController
   // 3. Save the display_node_ids_, which is a set of all nodes to be displayed
   //    in Read Anything app.ts.
   void PostProcessAXTreeWithSelection(const ui::AXTreeData& tree_data);
-  void PostProcessAXTreeWithoutSelection();
+  void PostProcessDistillableAXTree();
 
   // The following methods are used for testing ReadAnythingAppTest.
   // Snapshot_lite is a data structure which resembles an AXTreeUpdate. E.g.:

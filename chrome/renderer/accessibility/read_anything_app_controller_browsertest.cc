@@ -154,8 +154,8 @@ TEST_F(ReadAnythingAppControllerTest,
        DisplayRootId_WithSelectionAndContentNodeIds) {
   basic_snapshot_.has_tree_data = true;
   basic_snapshot_.tree_data = basic_tree_data_with_selection_;
-  OnAXTreeDistilled(basic_snapshot_, {2, 4});
-  EXPECT_EQ(basic_snapshot_.root_id, DisplayRootId());
+  OnAXTreeDistilled(basic_snapshot_, {4});
+  EXPECT_EQ(4, DisplayRootId());
 }
 
 TEST_F(ReadAnythingAppControllerTest,

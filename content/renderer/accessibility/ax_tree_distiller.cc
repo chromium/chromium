@@ -172,7 +172,6 @@ void AXTreeDistiller::DistillAXTree() {
   // If this page does not have an article node, this means it is not
   // distillable.
   if (!article_node) {
-    is_distillable_ = false;
     RunCallback();
     return;
   }
@@ -198,7 +197,6 @@ void AXTreeDistiller::ProcessScreen2xResult(
     const std::vector<ui::AXNodeID>& content_node_ids) {
   content_node_ids_ =
       std::make_unique<std::vector<ui::AXNodeID>>(content_node_ids);
-  // TODO(https://crbug.com/1278249): Set |is_distillable_|.
   RunCallback();
 }
 #endif
