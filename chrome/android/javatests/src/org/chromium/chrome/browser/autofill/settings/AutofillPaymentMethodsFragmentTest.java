@@ -9,6 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -28,6 +29,8 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.policy.test.annotations.Policies;
 
 import java.util.concurrent.TimeoutException;
 
@@ -210,6 +213,38 @@ public class AutofillPaymentMethodsFragmentTest {
         Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
         String summary = cardPreference.getSummary().toString();
         assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.nextYear()));
+    }
+
+    @Test
+    @SmallTest
+    @Policies.Add({ @Policies.Item(key = "AutofillCreditCardEnabled", string = "false") })
+    public void testToggleDisabledByPolicy() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference togglePreference =
+                (ChromeSwitchPreference) getPreferenceScreen(activity).getPreference(0);
+        Assert.assertFalse(togglePreference.isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @Policies.Add({ @Policies.Item(key = "AutofillCreditCardEnabled", string = "true") })
+    public void testToggleEnabledByPolicy() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference togglePreference =
+                (ChromeSwitchPreference) getPreferenceScreen(activity).getPreference(0);
+        Assert.assertTrue(togglePreference.isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleEnabledByDefault() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference togglePreference =
+                (ChromeSwitchPreference) getPreferenceScreen(activity).getPreference(0);
+        Assert.assertTrue(togglePreference.isEnabled());
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {
