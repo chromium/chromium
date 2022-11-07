@@ -175,6 +175,10 @@
     padding-inline-start: 24px;
   }
 
+  cr-dialog [slot=body] {
+    white-space: pre-line;
+  }
+
   .scrolling-before {
     padding: 24px 40px 0 40px;
     top: 68px;
@@ -338,7 +342,7 @@
         <div id="bluetoothCheckboxContainer" class="checkbox-field-container"
             hidden="[[!shouldShowBluetoothCheckbox]]">
           <cr-checkbox id="bluetoothLogsCheckbox" aria-labelledby="bluetoothInfoLabel" checked>
-            <div id="bluetoothInfoLabel" class="checkbox-label" 
+            <div id="bluetoothInfoLabel" class="checkbox-label"
                 inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></div>
           </cr-checkbox>
         </div>

@@ -3502,16 +3502,16 @@ Try tapping the mic to ask me anything.
         Send <ph name="BEGIN_LINK1">&lt;a id="performanceTraceLink"&gt;</ph>performance trace data<ph name="END_LINK1">&lt;/a&gt;</ph>
       </message>
       <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach bluetooth logs from the current session.">
-        Attach <ph name="BEGIN_LINK1">&lt;a id="bluetoothLogsInfoLink"&gt;</ph>Bluetooth Logs<ph name="END_LINK1">&lt;/a&gt;</ph> (Google internal)
+        Attach bluetooth history and information. <ph name="BEGIN_LINK1">&lt;a id="bluetoothLogsInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the bluetooth logs hyperlink">
-        To better diagnose Bluetooth issues, Googlers can include additional Bluetooth logs with their feedback reports. When this option is checked, your report will include btsnoop and HCI logs from your current session, sanitized to remove as much PII as possible. Access to these logs will be restricted to managers of the ChromeOS product group in Listnr. Logs will be purged after 90 days.
+        Include bluetooth logs which captures information such as btsnoop and HCI logs from your current session. The logs will be filtered to remove as much personal identifiable information as possible.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
       </message>
       <message name="IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach assistant logs from the current session.">
-        Include recent Assistant history via Sherlog. This may include your identify, location and debug info. <ph name="BEGIN_LINK1">&lt;a id="assistantLogsLink"&gt;</ph>Learn more<ph name="END_LINK1">&lt;/a&gt;</ph>
+      Include recent Google Assistant history and information. <ph name="BEGIN_LINK1">&lt;a id="assistantLogsLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the assistant logs hyperlink">
-        This information helps us better understand your Assistant issue. It's stored for up to 90 days and access is restricted to appropriate engineering and feedback teams.
+        Google Assistance captures recent history and information such as your identity and location to help us better understand your issue.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
       </message>
       <message name="IDS_FEEDBACK_TOOL_PRIVACY_NOTE" desc="Text for the privacy note included in the feedback app">
         Go to the <ph name="BEGIN_LINK1">&lt;a id="legalHelpPageUrl"&gt;</ph>Legal Help page<ph name="END_LINK1">&lt;/a&gt;</ph> to request content changes for legal reasons. Some account and system information may be sent to Google. We will use the information you give us to help address technical issues and to improve our services, subject to our <ph name="BEGIN_LINK2">&lt;a id="privacyPolicyUrl"&gt;</ph>Privacy Policy<ph name="END_LINK2">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK3">&lt;a id="termsOfServiceUrl"&gt;</ph>Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>.
