@@ -7,6 +7,8 @@
 #include <list>
 #include <utility>
 
+#include <string.h>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
@@ -208,7 +210,7 @@ Status Session::OnBidiResponse(base::Value::Dict payload) {
       return Status{kUnknownError, "unexpected blocking BiDi response"};
     }
     awaiting_bidi_response = false;
-    size_t pos = channel->size() - std::strlen(kBlockingChannelSuffix);
+    size_t pos = channel->size() - strlen(kBlockingChannelSuffix);
     // Update the channel value of the payload in-place.
     channel->erase(std::next(channel->begin(), pos), channel->end());
   }
