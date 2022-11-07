@@ -13,5 +13,8 @@ const char kCrosStartupDataFD[] = "cros-startup-data-fd";
 // FD pointing to an anonymous pipe containing the post-login data.
 const char kCrosPostLoginDataFD[] = "cros-postlogin-data-fd";
 
+// The path of the log file that Lacros should use post-login.
+const char kCrosPostLoginLogFile[] = "cros-postlogin-log-file";
+
 }  // namespace switches
 }  // namespace chromeos

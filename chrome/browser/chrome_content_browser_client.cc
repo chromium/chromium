@@ -643,8 +643,14 @@
 #include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
 #include "chrome/browser/speech/tts_lacros.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h"
+#include "chrome/common/chrome_descriptors.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_postlogin_params.h"
+#include "chromeos/startup/startup.h"           // nogncheck
+#include "chromeos/startup/startup_switches.h"  // nogncheck
+#include "mojo/core/embedder/embedder.h"
 #include "ui/base/ui_base_switches.h"
 #endif
 
@@ -2540,6 +2546,23 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Pass startup and post-login parameter FDs to child processes in Lacros.
+  if (process_type != switches::kZygoteProcess) {
+    constexpr int kStartupDataFD =
+        kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
+    command_line->AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
+                                    base::NumberToString(kStartupDataFD));
+
+    if (chromeos::IsLaunchedWithPostLoginParams()) {
+      constexpr int kPostLoginDataFD = kCrosPostLoginDataDescriptor +
+                                       base::GlobalDescriptors::kBaseDescriptor;
+      command_line->AppendSwitchASCII(chromeos::switches::kCrosPostLoginDataFD,
+                                      base::NumberToString(kPostLoginDataFD));
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   static const char* const kCommonSwitchNames[] = {
       embedder_support::kUserAgent,
       switches::kUserDataDir,  // Make logs go to the right file.
@@ -4327,8 +4350,73 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Map startup and post-login parameter files to child processes in Lacros.
+  // The FD numbers are passed via command line switches in
+  // |AppendExtraCommandLineSwitches|.
+  //
+  // NOTE: the Zygote process requires special handling.
+  // It doesn't need the post-login parameters, so it can be fully launched at
+  // login screen. Also, serializing startup data early in the initialization
+  // process requires temporarily initializing Mojo. That's handled in the
+  // |LaunchZygoteHelper| function in |content_main_runner_impl.cc|. Here, we
+  // deal with all other type of processes.
+  std::string process_type =
+      command_line.GetSwitchValueASCII(switches::kProcessType);
+  if (process_type != switches::kZygoteProcess) {
+    base::ScopedFD cros_startup_fd =
+        chromeos::BrowserInitParams::CreateStartupData();
+    if (cros_startup_fd.is_valid()) {
+      constexpr int kStartupDataFD =
+          kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
+      mappings->Transfer(kStartupDataFD, std::move(cros_startup_fd));
+    }
+
+    if (chromeos::IsLaunchedWithPostLoginParams()) {
+      base::ScopedFD cros_postlogin_fd =
+          chromeos::BrowserPostLoginParams::CreatePostLoginData();
+      if (cros_postlogin_fd.is_valid()) {
+        constexpr int kPostLoginDataFD =
+            kCrosPostLoginDataDescriptor +
+            base::GlobalDescriptors::kBaseDescriptor;
+        mappings->Transfer(kPostLoginDataFD, std::move(cros_postlogin_fd));
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ChromeContentBrowserClient::GetAdditionalMappedFilesForZygote(
+    base::CommandLine* command_line,
+    PosixFileDescriptorInfo* mappings) {
+  // Create the file descriptor for Cros startup data and pass it.
+  // This FD will be used to obtain BrowserInitParams in Zygote process.
+  // Note that this requires Mojo, but Mojo cannot be fully initialized this
+  // due to dependencies on base::FeatureList. So we also temporarily initialize
+  // Mojo and then shut it down immediately after preparing the FD. This is
+  // inexpensive, an the features which control Mojo behavior aren't relevant
+  // for this operation.
+  //
+  // TODO(https://crbug.com/1299283): This will need to be changed before
+  // MojoIpcz experimentation can happen on Lacros, as it results in
+  // inconsistent MojoIpcz feature status across Mojo initializations.
+  mojo::core::Init();
+  base::ScopedFD cros_startup_fd =
+      chromeos::BrowserInitParams::CreateStartupData();
+  mojo::core::ShutDown();
+
+  if (cros_startup_fd.is_valid()) {
+    constexpr int kStartupDataFD =
+        kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
+    command_line->AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
+                                    base::NumberToString(kStartupDataFD));
+    mappings->Transfer(kStartupDataFD, std::move(cros_startup_fd));
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN)
 std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(

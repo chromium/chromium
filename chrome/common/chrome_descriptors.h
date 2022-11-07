@@ -6,6 +6,7 @@
 #define CHROME_COMMON_CHROME_DESCRIPTORS_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/common/content_descriptors.h"
 
 enum {
@@ -17,6 +18,10 @@ enum {
   // DFMs with native resources typically do not share file descriptors with
   // child processes. Hence no corresponding *PakDescriptor is defined.
   kAndroidMinidumpDescriptor,
+
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  kCrosStartupDataDescriptor = kContentIPCDescriptorMax + 1,
+  kCrosPostLoginDataDescriptor,
 #endif
 };
 

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/files/file_util.h"
 #include "chromeos/startup/startup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -45,6 +46,13 @@ BrowserPostLoginParams::BrowserPostLoginParams()
 void BrowserPostLoginParams::SetPostLoginParamsForTests(
     crosapi::mojom::BrowserPostLoginParamsPtr postlogin_params) {
   GetInstance()->postlogin_params_ = std::move(postlogin_params);
+}
+
+// static
+base::ScopedFD BrowserPostLoginParams::CreatePostLoginData() {
+  DCHECK(GetInstance()->postlogin_params_);
+  return chromeos::CreateMemFDFromBrowserPostLoginParams(
+      GetInstance()->postlogin_params_);
 }
 
 // static
