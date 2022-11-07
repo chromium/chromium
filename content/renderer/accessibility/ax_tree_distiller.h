@@ -59,6 +59,9 @@ class CONTENT_EXPORT AXTreeDistiller {
   // by a rules-based algorithm in this process.
   void DistillAXTree();
 
+  // Distills the AXTree via a rules-based algorithm.
+  void DistillViaAlgorithm();
+
   // Run the callback, notifying the caller that an AXTree has been distilled.
   // This function is called asynchronously when the AXTree is distilled by
   // Screen2x and synchronously otherwise. It passes |snapshot_| and

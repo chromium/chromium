@@ -159,6 +159,11 @@ void AXTreeDistiller::DistillAXTree() {
 #endif
 
   // Otherwise, distill the AXTree in process using the rules-based algorithm.
+  DistillViaAlgorithm();
+  RunCallback();
+}
+
+void AXTreeDistiller::DistillViaAlgorithm() {
   content_node_ids_ = std::make_unique<std::vector<ui::AXNodeID>>();
   DCHECK(snapshot_);
   ui::AXTree tree;
@@ -171,13 +176,10 @@ void AXTreeDistiller::DistillAXTree() {
   const ui::AXNode* article_node = GetArticleNode(tree.root());
   // If this page does not have an article node, this means it is not
   // distillable.
-  if (!article_node) {
-    RunCallback();
+  if (!article_node)
     return;
-  }
 
   AddContentNodesToVector(article_node, content_node_ids_.get());
-  RunCallback();
 }
 
 void AXTreeDistiller::RunCallback() {
@@ -197,6 +199,12 @@ void AXTreeDistiller::ProcessScreen2xResult(
     const std::vector<ui::AXNodeID>& content_node_ids) {
   content_node_ids_ =
       std::make_unique<std::vector<ui::AXNodeID>>(content_node_ids);
+  // If no content nodes were identified, try the rules-based approach.
+  if (content_node_ids.empty())
+    DistillViaAlgorithm();
+  // TODO(crbug.com/1266555): If still no content nodes were identified, and
+  // there is a selection, try sending Screen2x a partial tree just containing
+  // the selected nodes.
   RunCallback();
 }
 #endif
