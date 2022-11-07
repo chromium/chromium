@@ -2257,7 +2257,7 @@ body.files-ng #list-container li .detail-thumbnail {
 }
 
 body.files-ng #list-container
-    li.pinned:not([renaming]):not(.dim-offline):not(.sync-in-progress):not(.sync-error) .detail-pinned {
+    li.pinned:not([renaming]):not(.dim-offline):not([data-sync-status]) .detail-pinned {
   -webkit-mask-image: url(../images/files/ui/offline.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
@@ -2268,6 +2268,8 @@ body.files-ng #list-container
 }
 
 body.files-ng #list-container li[data-sync-status]:not([renaming]):not(.dim-offline) .detail-pinned {
+  -webkit-mask-image: none;
+  background-color: unset;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 16px 16px;

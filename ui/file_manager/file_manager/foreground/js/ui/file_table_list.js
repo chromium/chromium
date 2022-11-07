@@ -361,6 +361,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
     'isMachineRoot',
     'isExternalMedia',
     'pinned',
+    'syncStatus',
   ])[0];
   filelist.updateListItemExternalProps(
       li, externalProps, util.isTeamDriveRoot(entry));
@@ -472,11 +473,13 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
         'external-media-root', !!externalProps.isExternalMedia);
   }
 
-  if (util.isInlineSyncStatusEnabled()) {
-    li.toggleAttribute(
-        'data-sync-status', externalProps.syncStatus !== 'not_found');
-    li.setAttribute('data-sync-status', externalProps.syncStatus);
-    // TODO(msalomao): set sync status aria-label.
+  if (util.isInlineSyncStatusEnabled() && externalProps.syncStatus) {
+    if (externalProps.syncStatus === 'not_found') {
+      li.removeAttribute('data-sync-status');
+    } else {
+      li.setAttribute('data-sync-status', externalProps.syncStatus);
+    }
+    // TODO(b/255474670): set sync status aria-label.
   }
 };
 

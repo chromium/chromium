@@ -891,7 +891,7 @@ export class FileGrid extends Grid {
         this.metadataModel_.getCache([entry], ['syncStatus'])[0].syncStatus;
     if (frame && syncStatus) {
       frame.setAttribute('data-sync-status', syncStatus);
-      // TODO(msalomao): set sync status aria-label.
+      // TODO(b/255474670): set sync status aria-label.
     }
   }
 

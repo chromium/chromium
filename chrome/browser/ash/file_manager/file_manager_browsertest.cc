@@ -1196,7 +1196,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveWelcomeBanner"),
         TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
         TestCase("driveOfflineInfoBannerWithoutFlag"),
-        TestCase("driveInlineSyncStatus").EnableInlineStatusSync()
+        TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
+        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
         // TODO(b/189173190): Enable
