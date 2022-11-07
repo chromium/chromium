@@ -293,6 +293,10 @@ void SystemWebAppManager::StopBackgroundTasks() {
   }
 }
 
+void SystemWebAppManager::StopBackgroundTasksForTesting() {
+  StopBackgroundTasks();
+}
+
 bool SystemWebAppManager::IsAppEnabled(SystemWebAppType type) const {
   if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
     return true;

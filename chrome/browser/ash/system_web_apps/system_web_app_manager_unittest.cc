@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -16,19 +15,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -36,16 +30,11 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/webapps/browser/install_result_code.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
@@ -169,68 +158,13 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-
-    provider_ = web_app::FakeWebAppProvider::Get(profile());
-
-    auto install_manager =
-        std::make_unique<web_app::WebAppInstallManager>(profile());
-    install_manager_ = install_manager.get();
-    provider_->SetInstallManager(std::move(install_manager));
-
-    auto install_finalizer =
-        std::make_unique<web_app::WebAppInstallFinalizer>(profile());
-    install_finalizer_ = install_finalizer.get();
-    provider_->SetInstallFinalizer(std::move(install_finalizer));
-
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-
-    // This is not a WebAppProvider subsystem, so this can be set
-    // after the WebAppProvider has started.
-    test_system_web_app_manager_ =
-        std::make_unique<TestSystemWebAppManager>(profile());
-
-    web_app_policy_manager().SetSystemWebAppDelegateMap(
-        &test_system_web_app_manager_->system_app_delegates());
-
-    externally_installed_app_prefs_ =
-        std::make_unique<web_app::ExternallyInstalledWebAppPrefs>(
-            profile()->GetPrefs());
   }
-
-  void TearDown() override {
-    DestroyManagers();
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  void DestroyManagers() {
-    provider_->Shutdown();
-    test_system_web_app_manager_.reset();
-    externally_installed_app_prefs_.reset();
-  }
-
-  void DestroyUiManager() { provider_->ShutDownUiManagerForTesting(); }
 
  protected:
-  web_app::WebAppProvider& provider() { return *provider_; }
-
-  web_app::ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
-    return *externally_installed_app_prefs_;
-  }
-
-  web_app::WebAppIconManager& icon_manager() {
-    return provider().icon_manager();
-  }
-
-  web_app::WebAppInstallFinalizer& install_finalizer() {
-    return *install_finalizer_;
-  }
-
-  web_app::WebAppInstallManager& install_manager() {
-    return provider().install_manager();
-  }
-
-  web_app::WebAppCommandManager& command_manager() {
-    return provider().command_manager();
+  web_app::FakeWebAppProvider& provider() {
+    return static_cast<web_app::FakeWebAppProvider&>(
+        *SystemWebAppManager::GetWebAppProvider(profile()));
   }
 
   web_app::FakeExternallyManagedAppManager& externally_managed_app_manager() {
@@ -239,15 +173,8 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   TestSystemWebAppManager& system_web_app_manager() {
-    return *test_system_web_app_manager_;
-  }
-
-  web_app::FakeWebAppUiManager& ui_manager() {
-    return static_cast<web_app::FakeWebAppUiManager&>(provider().ui_manager());
-  }
-
-  web_app::WebAppPolicyManager& web_app_policy_manager() {
-    return provider().policy_manager();
+    return static_cast<TestSystemWebAppManager&>(
+        *SystemWebAppManager::Get(profile()));
   }
 
   bool IsInstalled(const GURL& install_url) {
@@ -269,10 +196,11 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
         update->CreateApp(std::move(web_app));
       }
 
-      externally_installed_app_prefs().Insert(
-          data.url,
-          web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, data.url),
-          data.source);
+      web_app::ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+          .Insert(
+              data.url,
+              web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, data.url),
+              data.source);
     }
   }
 
@@ -281,15 +209,6 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
     system_web_app_manager().Start();
     waiter.Wait();
   }
-
- private:
-  raw_ptr<web_app::FakeWebAppProvider> provider_;
-  raw_ptr<web_app::WebAppInstallFinalizer> install_finalizer_;
-  raw_ptr<web_app::WebAppInstallManager> install_manager_;
-
-  std::unique_ptr<TestSystemWebAppManager> test_system_web_app_manager_;
-  std::unique_ptr<web_app::ExternallyInstalledWebAppPrefs>
-      externally_installed_app_prefs_;
 };
 
 class SystemWebAppManagerTest_PrefMigrationEnabled
@@ -856,7 +775,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstalls) {
   system_web_app_manager().set_current_version(base::Version("3.0.0.0"));
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
-  command_manager().AwaitAllCommandsCompleteForTesting();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
 
   EXPECT_EQ(6u, install_requests.size());
@@ -927,7 +846,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstallsLocaleChange) {
   system_web_app_manager().set_current_locale("fr/fr");
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
-  command_manager().AwaitAllCommandsCompleteForTesting();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
 }
 
@@ -1116,6 +1035,21 @@ class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {
             GetApp1WebAppInfoFactory(), period, open_immediately));
 
     system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
+  }
+
+  void TearDown() override {
+    // Normally, WebContents used to perform background tasks are released
+    // during KeyedService shutdown. In tests, we need to release them before
+    // fixture tear down.
+    //
+    // The parent fixture (RenderViewHostTestHarness::TearDown) expects
+    // us to release WebContents before tearing down (which happens before
+    // KeyedService shutdown because the parent fixture owns TestingProfile).
+    //
+    // If we don't StopBackgroundTasks (and release WebContents) here, the
+    // fixture will complain about leaking RenderWidgetHost.
+    system_web_app_manager().StopBackgroundTasksForTesting();
+    SystemWebAppManagerTest::TearDown();
   }
 };
 
@@ -1494,11 +1428,11 @@ TEST_F(SystemWebAppManagerTest, DestroyUiManager) {
   StartAndWaitForAppsToSynchronize();
 
   base::RunLoop run_loop;
-  TestUiManagerObserver observer{&ui_manager()};
+  TestUiManagerObserver observer{&provider().ui_manager()};
   observer.SetUiManagerDestroyedCallback(run_loop.QuitClosure());
 
   // Should not crash.
-  DestroyUiManager();
+  provider().ShutDownUiManagerForTesting();
   run_loop.Run();
 }
 
@@ -1522,29 +1456,20 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness {
     chromeos::LoginState::Get()->SetLoggedInState(
         chromeos::LoginState::LOGGED_IN_ACTIVE,
         chromeos::LoginState::LOGGED_IN_USER_KIOSK);
-
-    system_web_app_manager_ = std::make_unique<SystemWebAppManager>(profile());
   }
 
   void TearDown() override {
-    system_web_app_manager_.reset();
     chromeos::LoginState::Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
   }
-
- protected:
-  SystemWebAppManager& system_web_app_manager() {
-    return *system_web_app_manager_;
-  }
-
- private:
-  std::unique_ptr<SystemWebAppManager> system_web_app_manager_;
 };
 
 // Checks that SWA delegates are not created in Kiosk sessions.
 TEST_F(SystemWebAppManagerInKioskTest, ShoudNotCreateDelegate) {
-  EXPECT_EQ(system_web_app_manager().GetSystemApp(SystemWebAppType::SETTINGS),
-            nullptr);
+  auto* manager = SystemWebAppManager::Get(profile());
+  EXPECT_TRUE(manager);
+  EXPECT_EQ(manager->system_app_delegates().size(), 0u);
+  EXPECT_EQ(manager->GetSystemApp(SystemWebAppType::SETTINGS), nullptr);
 }
 
 }  // namespace ash

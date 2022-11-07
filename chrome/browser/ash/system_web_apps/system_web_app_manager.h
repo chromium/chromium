@@ -164,12 +164,14 @@ class SystemWebAppManager : public KeyedService,
   // Get the timers. Only use this for testing.
   const std::vector<std::unique_ptr<SystemWebAppBackgroundTask>>&
   GetBackgroundTasksForTesting();
+  void StopBackgroundTasksForTesting();
 
   const Profile* profile() const { return profile_; }
 
  protected:
   virtual const base::Version& CurrentVersion() const;
   virtual const std::string& CurrentLocale() const;
+  void StopBackgroundTasks();
 
  private:
   // Returns the list of origin trials to enable for |url| loaded in System
@@ -178,8 +180,6 @@ class SystemWebAppManager : public KeyedService,
   const std::vector<std::string>* GetEnabledOriginTrials(
       const SystemWebAppDelegate* system_app,
       const GURL& url) const;
-
-  void StopBackgroundTasks();
 
   void OnAppsSynchronized(
       bool did_force_install_apps,
