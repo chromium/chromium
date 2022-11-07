@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -68,9 +69,6 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // at navigation commit time.
   // Most properties are copied over directly from the configuration, but some
   // require some additional processing (e.g. `ad_component_configs`).
-  //
-  // TODO(https://crbug.com/1260472): In order to only report FLEDGE results if
-  // an ad is shown, InterestGroup reporting will also need to be wired up here.
   struct MapInfo {
     MapInfo();
     explicit MapInfo(const GURL& url);
@@ -90,6 +88,9 @@ class CONTENT_EXPORT FencedFrameURLMapping {
     // to fill in `AdAuctionDocumentData` for the fenced frame that navigates
     // to `mapped_url`.
     absl::optional<AdAuctionData> ad_auction_data;
+
+    // Should be invoked whenever the URN is navigated to.
+    base::RepeatingClosure on_navigate_callback;
 
     // Configurations for nested ad components.
     // Currently only used by FLEDGE.
@@ -176,7 +177,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // These `FencedFrameProperties` are stored in the fenced frame root
   // `FrameTreeNode`, and live between embedder-initiated fenced frame
   // navigations.
-  struct FencedFrameProperties {
+  struct CONTENT_EXPORT FencedFrameProperties {
     // The empty constructor is used for:
     // * pre-navigation fenced frames
     // * embedder-initiated non-opaque url navigations
@@ -196,6 +197,10 @@ class CONTENT_EXPORT FencedFrameURLMapping {
     GURL mapped_url;
 
     absl::optional<AdAuctionData> ad_auction_data;
+
+    // Should be invoked when `mapped_url` is navigated to via the passed in
+    // URN.
+    base::RepeatingClosure on_navigate_callback;
 
     // urn/url mappings for ad components. These are inserted into the
     // fenced frame page's urn/url mapping when the urn navigation commits.
@@ -247,17 +252,20 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       const GURL& url,
       const ReportingMetadata& reporting_metadata = ReportingMetadata());
 
-  // Move pending mapped |urn_uuid| from `pending_urn_uuid_to_url_map_` to
+  // Move pending mapped `urn_uuid` from `pending_urn_uuid_to_url_map_` to
   // `urn_uuid_to_url_map_`. Then assign ad auction data as well as an ordered
   // list of ad component URLs, provided by a bidder running an auction, to the
-  // entry associated with the |urn_uuid|. These will to be made available to
+  // entry associated with the `urn_uuid`. These will to be made available to
   // any fenced frame navigated to the returned URN, via the InterestGroup API.
+  //
+  // `on_navigate_callback` should be run on navigation to `urn_uuid`.
   //
   // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
   void AssignFencedFrameURLAndInterestGroupInfo(
       const GURL& urn_uuid,
       const GURL& url,
       AdAuctionData auction_data,
+      base::RepeatingClosure on_navigate_callback,
       std::vector<GURL> ad_component_urls,
       const ReportingMetadata& reporting_metadata = ReportingMetadata());
 

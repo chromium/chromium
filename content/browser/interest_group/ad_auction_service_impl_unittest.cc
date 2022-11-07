@@ -547,6 +547,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
                               blink::features::kAdInterestGroupAPI,
                               blink::features::kFledge},
         /*disabled_features=*/{});
+    fenced_frame_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
     old_content_browser_client_ =
         SetBrowserClientForTesting(&content_browser_client_);
   }
@@ -618,15 +620,34 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     return interest_group->interest_group.priority;
   }
 
-  absl::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
+  // Retrieves the FencedFrameProperties for the specified URN from the main
+  // frame. Returns nullopt if no such URN exists.
+  absl::optional<FencedFrameURLMapping::FencedFrameProperties>
+  GetFencedFramePropertiesForURN(const GURL& urn_url) {
     TestFencedFrameURLMappingResultObserver observer;
     FencedFrameURLMapping& fenced_frame_urls_map =
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->GetPage()
             .fenced_frame_urls_map();
-    absl::optional<FencedFrameURLMapping::PendingAdComponentsMap> ignored;
     fenced_frame_urls_map.ConvertFencedFrameURNToURL(urn_url, &observer);
-    return observer.mapped_url();
+    return observer.fenced_frame_properties();
+  }
+
+  absl::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
+    auto properties = GetFencedFramePropertiesForURN(urn_url);
+    if (properties)
+      return properties->mapped_url;
+    return absl::nullopt;
+  }
+
+  // Invokes the callback for the provided URN in the scope of the main frame,
+  // as would happen if it were navigated to. Doesn't use NavigationSimulator
+  // because it doesn't seem capable of triggering URN swaps. Integration tests
+  // cover actual swap cases.
+  void InvokeCallbackForURN(const GURL& urn_url) {
+    auto properties = GetFencedFramePropertiesForURN(urn_url);
+    ASSERT_TRUE(properties);
+    properties->on_navigate_callback.Run();
   }
 
   // Creates a new AdAuctionServiceImpl and use it to try and join
@@ -736,13 +757,15 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   absl::optional<GURL> RunAdAuctionAndFlushForFrame(
       const blink::AuctionConfig& auction_config,
       RenderFrameHost* rfh) {
-    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    // Use a new service for each call. Keep the service alive as some calls
+    // (e.g., sending reports via the URN callback) require it not be deleted.
+    ad_auction_service_.reset();
     AdAuctionServiceImpl::CreateMojoService(
-        rfh, interest_service.BindNewPipeAndPassReceiver());
+        rfh, ad_auction_service_.BindNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
     absl::optional<GURL> maybe_url;
-    interest_service->RunAdAuction(
+    ad_auction_service_->RunAdAuction(
         auction_config, mojo::NullReceiver(),
         base::BindLambdaForTesting(
             [&run_loop, &maybe_url](bool manually_aborted,
@@ -751,7 +774,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
               maybe_url = result;
               run_loop.Quit();
             }));
-    interest_service.FlushForTesting();
+    ad_auction_service_.FlushForTesting();
     run_loop.Run();
     return maybe_url;
   }
@@ -808,6 +831,9 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     run_loop.Run();
   }
 
+  // Destroy the AdAuctionService, if there is one.
+  void DestroyAdAuctionService() { ad_auction_service_.reset(); }
+
  protected:
   const GURL kUrlA = GURL(kOriginStringA);
   const url::Origin kOriginA = url::Origin::Create(kUrlA);
@@ -830,6 +856,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   const GURL kUpdateUrlNoUpdate = kUrlNoUpdate.Resolve(kDailyUpdateUrlPath);
 
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList fenced_frame_feature_list_;
 
   AllowInterestGroupContentBrowserClient content_browser_client_;
   raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
@@ -839,6 +866,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   // Must be destroyed before RenderViewHostTestHarness::TearDown().
   std::unique_ptr<NetworkResponder> network_responder_{
       std::make_unique<NetworkResponder>()};
+
+  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service_;
 };
 
 // Check basic success case.
@@ -4347,7 +4376,8 @@ TEST_F(AdAuctionServiceImplTest, SendReports) {
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
 
   task_environment()->FastForwardBy(base::Seconds(30) - base::Seconds(1));
   // There should only be the seller report, and the bidder report request is
@@ -4361,6 +4391,11 @@ TEST_F(AdAuctionServiceImplTest, SendReports) {
   EXPECT_FALSE(network_responder_->RemoteIsConnected());
   // Reporting should continue even after the page navigated away.
   NavigateAndCommit(kUrlB);
+  // Navigating away normally deletes the AdAuctionServiceImpl. With this test
+  // fixture, however, the frame doesn't own the service so have to delete it
+  // manually.
+  DestroyAdAuctionService();
+
   task_environment()->FastForwardBy(base::Seconds(1));
   // The next request will not be sent when it's less than 5 seconds after the
   // previous request completed.
@@ -4370,6 +4405,40 @@ TEST_F(AdAuctionServiceImplTest, SendReports) {
   // completed (timed out) and then the bidder's report request was also fetched
   // after 5 seconds since then.
   EXPECT_EQ(network_responder_->ReportCount(), 2u);
+}
+
+// Check that reports aren't sent until the URN to URL callback is invoked.
+TEST_F(AdAuctionServiceImplTest, SendReportsWaitsForCallback) {
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath,
+                                             BasicBiddingReportScript());
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath,
+                                             BasicSellerReportScript());
+  network_responder_->RegisterReportResponse("/report_bidder", /*response=*/"");
+  network_responder_->RegisterReportResponse("/report_seller", /*response=*/"");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, absl::nullopt);
+
+  // Nothing should happen until the URN's callback is invoked.
+  task_environment()->FastForwardBy(base::Days(1));
+  EXPECT_EQ(network_responder_->ReportCount(), 0u);
+
+  InvokeCallbackForURN(*auction_result);
+  network_responder_->WaitForNumReports(2);
 }
 
 // Make sure the report-sending logic can handle two auctions with a delay
@@ -4398,7 +4467,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsWithDelay) {
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
   network_responder_->WaitForNumReports(2u);
 
   // Chrome runs for a day.
@@ -4408,7 +4478,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsWithDelay) {
 
   // Re-running the auction should result in 2 more reports.
   auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
   network_responder_->WaitForNumReports(4u);
 }
 
@@ -4444,6 +4515,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsRespectsReportInterval) {
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   EXPECT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
 
   // First report should be sent immediately.
   network_responder_->WaitForNumReports(1u);
@@ -4461,6 +4533,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsRespectsReportInterval) {
   // Re-running the auction should result in 2 more reports.
   auction_result = RunAdAuctionAndFlush(auction_config);
   EXPECT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
 
   // The third report (first report for the second auction) should be only be
   // sent after the reporting interval has elapsed again, starting from when the
@@ -4471,6 +4544,54 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsRespectsReportInterval) {
   // interval.
   network_responder_->WaitForNumReports(4u);
   EXPECT_EQ(base::Seconds(15), base::Time::Now() - start_time);
+}
+
+// Check that reports are sent (And there's no UAF when invoking the URN
+// callback) if the AdAuctionService is deleted before a URN is navigated to.
+//
+// This isn't a common case, but can happen if an auction runs in an iframe,
+// which is then closed, and then the URN is loaded in a fenced frame.
+//
+// It can also potentially happen when navigating away from a page that run an
+// auction is racing against loading a URN in a frame within the page.
+//
+// It can also happen if a compromised renderer closes the Mojo pipe to its
+// AdAuctionService.
+TEST_F(AdAuctionServiceImplTest, ReportsSentAfterServiceDestruction) {
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath,
+                                             BasicBiddingReportScript());
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath,
+                                             BasicSellerReportScript());
+  network_responder_->RegisterReportResponse("/report_bidder", /*response=*/"");
+  network_responder_->RegisterReportResponse("/report_seller", /*response=*/"");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, absl::nullopt);
+
+  // Destroy the auction service Mojo pipe, and wait for the underlying service
+  // to be destroyed.
+  DestroyAdAuctionService();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(network_responder_->ReportCount(), 0u);
+
+  // Invoking the callback should not crash and should result in two reports
+  // being sent.
+  InvokeCallbackForURN(*auction_result);
+  network_responder_->WaitForNumReports(2);
 }
 
 // Similar to SendReports() above, but with one report request failed instead of
@@ -4502,7 +4623,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsOneReportFailed) {
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
 
   // There should be no report since the seller report failed, and the bidder
   // report request is not fetched yet.
@@ -4587,7 +4709,8 @@ function reportResult(auctionConfig, browserSignals) {
     auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
     auction_config.non_shared_params.interest_group_buyers = {kOriginA};
     absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-    EXPECT_NE(auction_result, absl::nullopt);
+    ASSERT_NE(auction_result, absl::nullopt);
+    InvokeCallbackForURN(*auction_result);
   }
 
   // There should be one report sent already, since there's no delay for the
@@ -4638,7 +4761,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
 
   // Wait for the seller report to be sent.
   network_responder_->WaitForNumReports(1);
@@ -4651,7 +4775,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   auction_config2.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config2.non_shared_params.interest_group_buyers = {kOriginA};
   auction_result = RunAdAuctionAndFlush(auction_config2);
-  EXPECT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
   // Two more reports are enqueued.
   EXPECT_EQ(manager_->report_queue_length_for_testing(), 3u);
 
@@ -4673,7 +4798,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   auction_config3.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config3.non_shared_params.interest_group_buyers = {kOriginA};
   auction_result = RunAdAuctionAndFlush(auction_config3);
-  EXPECT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
 
   task_environment()->FastForwardBy(base::Seconds(20));
   // Two more reports from the third auction are sent.
@@ -5614,7 +5740,7 @@ class AdAuctionServiceImplBiddingAndScoringDebugReportingAPIEnabledTest
 // Allowing sending multiple reports in parallel, instead of only allowing
 // sending one at a time.
 TEST_F(AdAuctionServiceImplBiddingAndScoringDebugReportingAPIEnabledTest,
-       SendReportsMaxiumActive) {
+       SendReportsMaximumActive) {
   // Use interest group name as bid value.
   const std::string kBiddingScript =
       base::StringPrintf(R"(
@@ -5692,7 +5818,8 @@ function reportResult(auctionConfig, browserSignals) {
     auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
     auction_config.non_shared_params.interest_group_buyers = {kOriginA};
     absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-    EXPECT_NE(auction_result, absl::nullopt);
+    ASSERT_NE(auction_result, absl::nullopt);
+    InvokeCallbackForURN(*auction_result);
   }
 
   task_environment()->FastForwardBy(base::Seconds(3));
@@ -5868,7 +5995,8 @@ function scoreAd(
       LogWebFeatureForCurrentPage(
           testing::_, blink::mojom::WebFeature::kPrivateAggregationApiFledge));
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
 }
 
 // TODO(crbug.com/1356654): Update when use counter coverage is improved.

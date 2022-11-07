@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/guid.h"
 #include "base/strings/strcat.h"
@@ -165,6 +166,7 @@ FencedFrameURLMapping::FencedFrameProperties::FencedFrameProperties(
     const MapInfo& map_info)
     : mapped_url(map_info.mapped_url),
       ad_auction_data(map_info.ad_auction_data),
+      on_navigate_callback(map_info.on_navigate_callback),
       pending_ad_components_map(absl::nullopt),
       shared_storage_budget_metadata(absl::nullopt),
       reporting_metadata(map_info.reporting_metadata),
@@ -233,6 +235,7 @@ void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     const GURL& urn_uuid,
     const GURL& url,
     AdAuctionData ad_auction_data,
+    base::RepeatingClosure on_navigate_callback,
     std::vector<GURL> ad_component_urls,
     const ReportingMetadata& reporting_metadata) {
   // Move pending mapped urn::uuid to `urn_uuid_to_url_map_`.
@@ -250,6 +253,7 @@ void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
 
   // Assign interest group info.
   map_info.ad_auction_data = std::move(ad_auction_data);
+  map_info.on_navigate_callback = std::move(on_navigate_callback);
   std::vector<MapInfo> ad_component_configs;
   ad_component_configs.reserve(ad_component_urls.size());
   for (auto& ad_component_url : ad_component_urls) {

@@ -54,6 +54,7 @@ void TestFencedFrameURLMappingResultObserver::OnFencedFrameURLMappingComplete(
     const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
         properties) {
   mapping_complete_observed_ = true;
+  fenced_frame_properties_ = properties;
   if (properties) {
     mapped_url_ = properties->mapped_url;
     ad_auction_data_ = properties->ad_auction_data;

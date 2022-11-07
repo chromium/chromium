@@ -42,6 +42,11 @@ class TestFencedFrameURLMappingResultObserver
 
   bool mapping_complete_observed() const { return mapping_complete_observed_; }
 
+  const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+  fenced_frame_properties() {
+    return fenced_frame_properties_;
+  }
+
   const absl::optional<GURL>& mapped_url() const { return mapped_url_; }
 
   const absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>&
@@ -57,6 +62,8 @@ class TestFencedFrameURLMappingResultObserver
 
  private:
   bool mapping_complete_observed_ = false;
+  absl::optional<FencedFrameURLMapping::FencedFrameProperties>
+      fenced_frame_properties_;
   absl::optional<GURL> mapped_url_;
   absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
       pending_ad_components_map_;

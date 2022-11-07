@@ -2154,6 +2154,8 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   is_deferred_on_fenced_frame_url_mapping_ = false;
 
   if (properties) {
+    if (properties->on_navigate_callback)
+      properties->on_navigate_callback.Run();
     common_params_->url = properties->mapped_url;
     commit_params_->original_url = properties->mapped_url;
     // TODO(crbug/1281643): move into commit_params_->ad_auction_components

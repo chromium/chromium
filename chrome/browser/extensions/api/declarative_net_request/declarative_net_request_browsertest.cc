@@ -6480,8 +6480,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   PrivacySandboxSettingsFactory::GetForProfile(profile())
       ->SetPrivacySandboxEnabled(true);
 
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), https_server()->GetURL("/echo")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("/interest_group/fenced_frame.html")));
 
   GURL bidding_logic_url =
       https_server()->GetURL("/interest_group/bidding_logic.js");
@@ -6489,6 +6489,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
       https_server()->GetURL("/interest_group/decision_logic.js");
   GURL bidder_report_url = https_server()->GetURL("/echo?bidder_report");
   GURL decision_report_url = https_server()->GetURL("/echo?decision_report");
+
+  // URL of the winning ad. Isn't actually tested anywhere in this test, but a
+  // fenced frame is navigated to it, so best to use a URL with known behavior.
+  // A random hostname will end up trying to connect to localhost, which could
+  // end up talking to some other server running locally.
+  GURL ad_url = https_server()->GetURL("/echo");
 
   // Add an interest group.
   EXPECT_EQ("done", content::EvalJs(
@@ -6510,7 +6516,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
                               })();
                             )",
                             url::Origin::Create(bidding_logic_url).Serialize(),
-                            bidding_logic_url.spec())));
+                            bidding_logic_url)));
 
   // Create an extension to add a header to all requests.
   TestRule custom_response_header_rule = CreateModifyHeadersRule(
@@ -6530,20 +6536,22 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   std::string run_auction_command = content::JsReplace(
       R"(
          (async function() {
-           return await navigator.runAdAuction({
+           let url = await navigator.runAdAuction({
              seller: $1,
              decisionLogicUrl: $2,
              interestGroupBuyers: [$1],
            });
+           document.querySelector('fencedframe').src = url;
+           return url;
          })()
       )",
       url::Origin::Create(decision_logic_url).Serialize(),
       decision_logic_url.spec());
 
   // The auction should return a unique URN URL.
-  GURL ad_url(
+  GURL ad_urn(
       content::EvalJs(web_contents(), run_auction_command).ExtractString());
-  EXPECT_TRUE(ad_url.SchemeIs(url::kUrnScheme));
+  EXPECT_TRUE(ad_urn.SchemeIs(url::kUrnScheme));
 
   // Wait to see both the report request of both worklets.
   WaitForRequest(bidder_report_url);
@@ -6572,9 +6580,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
       {block_report_rule}, "test_extension2", {URLPattern::kAllUrlsPattern}));
 
   // Run the auction again.
-  ad_url = GURL(
+  ad_urn = GURL(
       content::EvalJs(web_contents(), run_auction_command).ExtractString());
-  EXPECT_TRUE(ad_url.SchemeIs(url::kUrnScheme));
+  EXPECT_TRUE(ad_urn.SchemeIs(url::kUrnScheme));
 
   // Wait for the decision script's report URL to be requested.
   WaitForRequest(decision_report_url);
