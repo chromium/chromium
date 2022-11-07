@@ -82,13 +82,6 @@ export class OutputInterface {
   /**
    * @param {!OutputFormattingData} data
    * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatDescription_(data, token, options) {}
-
-  /**
-   * @param {!OutputFormattingData} data
-   * @param {string} token
    * @param {!OutputFormatTree} tree
    */
   formatFind_(data, token, tree) {}

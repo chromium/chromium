@@ -684,21 +684,6 @@ export class Output {
   }
 
   /** @override */
-  formatDescription_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    if (node.name === node.description) {
-      return;
-    }
-
-    options.annotation.push(token);
-    this.append_(buff, node.description || '', options);
-    formatLog.writeTokenWithValue(token, node.description);
-  }
-
-  /** @override */
   formatUrlFilename_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;

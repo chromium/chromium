@@ -43,7 +43,7 @@ export class OutputFormatter {
     } else if (token === 'name') {
       this.formatName_(this.params_, token, options);
     } else if (token === 'description') {
-      this.output_.formatDescription_(this.params_, token, options);
+      this.formatDescription_(this.params_, token, options);
     } else if (token === 'urlFilename') {
       this.output_.formatUrlFilename_(this.params_, token, options);
     } else if (token === 'nameFromNode') {
@@ -161,6 +161,25 @@ export class OutputFormatter {
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    * @private
+   */
+  formatDescription_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    if (node.name === node.description) {
+      return;
+    }
+
+    options.annotation.push(token);
+    this.output_.append_(buff, node.description || '', options);
+    formatLog.writeTokenWithValue(token, node.description);
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatName_(data, token, options) {
     const buff = data.outputBuffer;
