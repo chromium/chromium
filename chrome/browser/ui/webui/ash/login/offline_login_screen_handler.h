@@ -8,10 +8,8 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
-class OfflineLoginScreen;
-}
 
-namespace chromeos {
+class OfflineLoginScreen;
 
 class OfflineLoginView : public base::SupportsWeakPtr<OfflineLoginView> {
  public:
@@ -68,13 +66,6 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::OfflineLoginScreenHandler;
-using ::chromeos::OfflineLoginView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OFFLINE_LOGIN_SCREEN_HANDLER_H_

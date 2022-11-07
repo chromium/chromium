@@ -13,10 +13,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/management_transition_screen_handler.h"
-
 namespace ash {
+
+class ManagementTransitionScreenView;
 
 class ManagementTransitionScreen : public BaseScreen {
  public:

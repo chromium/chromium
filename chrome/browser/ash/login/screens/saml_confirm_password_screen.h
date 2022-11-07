@@ -11,13 +11,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chromeos/ash/components/login/auth/public/user_context.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
-#include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/login/base_screen_handler_utils.h"
 
 namespace ash {
+
+class SamlConfirmPasswordView;
 
 // This class represents GAIA screen: login screen that is responsible for
 // GAIA-based sign-in.

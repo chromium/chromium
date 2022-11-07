@@ -23,7 +23,7 @@ const char kJsApiShowNetworkDetails[] = "showNetworkDetails";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 NetworkDropdownHandler::NetworkDropdownHandler() = default;
 NetworkDropdownHandler::~NetworkDropdownHandler() = default;
@@ -84,4 +84,4 @@ void NetworkDropdownHandler::HandleShowNetworkConfig(const std::string& guid) {
       guid, LoginDisplayHost::default_host()->GetNativeWindow());
 }
 
-}  // namespace chromeos
+}  // namespace ash

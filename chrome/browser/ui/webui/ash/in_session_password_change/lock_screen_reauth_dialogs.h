@@ -112,7 +112,7 @@ class LockScreenStartReauthDialog
 
   void OnCaptivePortalDialogReadyForTesting();
 
-  scoped_refptr<chromeos::NetworkStateInformer> network_state_informer_;
+  scoped_refptr<NetworkStateInformer> network_state_informer_;
   bool is_network_dialog_visible_ = false;
   bool is_proxy_auth_in_progress_ = false;
   bool should_reload_gaia_ = false;

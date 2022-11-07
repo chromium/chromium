@@ -7,16 +7,18 @@
 
 #include <memory>
 #include <unordered_set>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace ash {
+
+class MarketingOptInScreenView;
 
 // This is Sync settings screen that is displayed as a part of user first
 // sign-in flow.

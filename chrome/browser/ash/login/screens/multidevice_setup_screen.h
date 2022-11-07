@@ -11,10 +11,10 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/multidevice_setup_screen_handler.h"
 
 namespace ash {
+
+class MultiDeviceSetupScreenView;
 
 namespace multidevice_setup {
 class MultiDeviceSetupClient;

@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthOnUserBoardScreenTest,
   ASSERT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   ProxyAuthDialogWaiter auth_dialog_waiter;
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
-  OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
   OobeScreenWaiter(chromeos::GaiaView::kScreenId).Wait();
   auth_dialog_waiter.Wait();

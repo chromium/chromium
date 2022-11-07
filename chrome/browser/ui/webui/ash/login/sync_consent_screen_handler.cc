@@ -48,7 +48,7 @@ void GetConsentIDs(const std::unordered_map<std::string, int>& known_strings,
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 SyncConsentScreenHandler::SyncConsentScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -159,4 +159,4 @@ void SyncConsentScreenHandler::RetrieveConsentIDs(
                 consent_description_ids, consent_confirmation_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

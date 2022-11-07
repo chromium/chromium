@@ -12,10 +12,11 @@
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 
-namespace chromeos {
+namespace ash {
+
+class CoreOobeView;
+class WelcomeScreen;
 
 // Interface for WelcomeScreenHandler.
 class WelcomeView : public base::SupportsWeakPtr<WelcomeView> {
@@ -100,13 +101,6 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   const base::raw_ptr<CoreOobeView> core_oobe_view_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::WelcomeScreenHandler;
-using ::chromeos::WelcomeView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_WELCOME_SCREEN_HANDLER_H_

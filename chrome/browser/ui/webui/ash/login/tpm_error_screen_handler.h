@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between TpmErrorScreen and its
 // WebUI representation.
@@ -46,13 +46,6 @@ class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::TpmErrorScreenHandler;
-using ::chromeos::TpmErrorView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_TPM_ERROR_SCREEN_HANDLER_H_

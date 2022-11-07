@@ -15,16 +15,14 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
-namespace chromeos {
-class SignInFatalErrorView;
-}
-
 namespace ash {
+
+class SignInFatalErrorView;
 
 // Controller for the gaia fatal error screen.
 class SignInFatalErrorScreen : public BaseScreen {
  public:
-  using TView = chromeos::SignInFatalErrorView;
+  using TView = SignInFatalErrorView;
 
   // Sets the error information to be shown on the screen
   enum class Error {
@@ -35,9 +33,8 @@ class SignInFatalErrorScreen : public BaseScreen {
     CUSTOM = 4,
   };
 
-  explicit SignInFatalErrorScreen(
-      base::WeakPtr<chromeos::SignInFatalErrorView> view,
-      const base::RepeatingClosure& exit_callback);
+  explicit SignInFatalErrorScreen(base::WeakPtr<SignInFatalErrorView> view,
+                                  const base::RepeatingClosure& exit_callback);
   SignInFatalErrorScreen(const SignInFatalErrorScreen&) = delete;
   SignInFatalErrorScreen& operator=(const SignInFatalErrorScreen&) = delete;
   ~SignInFatalErrorScreen() override;
@@ -58,7 +55,7 @@ class SignInFatalErrorScreen : public BaseScreen {
   Error error_state_ = Error::UNKNOWN;
   base::Value::Dict extra_error_info_;
 
-  base::WeakPtr<chromeos::SignInFatalErrorView> view_;
+  base::WeakPtr<SignInFatalErrorView> view_;
   base::RepeatingClosure exit_callback_;
 
   // Help application used for help dialogs.

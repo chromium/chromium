@@ -11,7 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr char kSelectedTheme[] = "selectedTheme";
@@ -45,4 +45,4 @@ void ThemeSelectionScreenHandler::DeclareLocalizedValues(
   builder->Add("autoThemeDescription", IDS_THEME_AUTO_DESCRIPTION);
 }
 
-}  // namespace chromeos
+}  // namespace ash

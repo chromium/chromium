@@ -19,7 +19,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace login {
 namespace {
 
@@ -259,4 +259,4 @@ void OnlineLoginHelper::OnGetCookiesForCompleteAuthentication(
   std::move(complete_login_callback_).Run(std::move(user_context));
 }
 
-}  // namespace chromeos
+}  // namespace ash

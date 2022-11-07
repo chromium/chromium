@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Class for handling network configuration UI events in loggin/oobe WebUI.
 class NetworkDropdownHandler : public BaseWebUIHandler {
@@ -34,11 +34,6 @@ class NetworkDropdownHandler : public BaseWebUIHandler {
   void HandleShowNetworkConfig(const std::string& guid);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::NetworkDropdownHandler;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_NETWORK_DROPDOWN_HANDLER_H_

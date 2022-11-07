@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 class SamlConfirmPasswordView
     : public base::SupportsWeakPtr<SamlConfirmPasswordView> {
@@ -48,12 +48,6 @@ class SamlConfirmPasswordHandler : public BaseScreenHandler,
   void DeclareLocalizedValues(::login::LocalizedValuesBuilder* builder) final;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::SamlConfirmPasswordHandler;
-using ::chromeos::SamlConfirmPasswordView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SAML_CONFIRM_PASSWORD_HANDLER_H_

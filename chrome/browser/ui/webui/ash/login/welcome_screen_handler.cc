@@ -45,10 +45,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
-
-using ::ash::AccessibilityManager;
-using ::ash::MagnificationManager;
+namespace ash {
 
 // WelcomeScreenHandler, public: -----------------------------------------------
 
@@ -304,4 +301,4 @@ base::Value::List WelcomeScreenHandler::GetTimezoneList() {
   return timezone_list;
 }
 
-}  // namespace chromeos
+}  // namespace ash

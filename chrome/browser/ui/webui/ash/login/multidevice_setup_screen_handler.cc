@@ -11,7 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 MultiDeviceSetupScreenHandler::MultiDeviceSetupScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -31,7 +31,7 @@ void MultiDeviceSetupScreenHandler::Show() {
 void MultiDeviceSetupScreenHandler::GetAdditionalParameters(
     base::Value::Dict* dict) {
   dict->Set("wifiSyncEnabled",
-            base::Value(ash::features::IsWifiSyncAndroidEnabled()));
+            base::Value(features::IsWifiSyncAndroidEnabled()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -27,7 +27,7 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 TermsOfServiceScreenHandler::TermsOfServiceScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -73,4 +73,4 @@ bool TermsOfServiceScreenHandler::AreTermsLoaded() {
   return terms_loaded_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

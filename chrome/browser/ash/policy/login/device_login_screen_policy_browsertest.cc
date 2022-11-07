@@ -236,9 +236,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, ResetScreen) {
   EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 0);
 
   // Switch to another (Reset) screen.
-  ash::LoginDisplayHost::default_host()->StartWizard(
-      chromeos::ResetView::kScreenId);
-  ash::OobeScreenWaiter(chromeos::ResetView::kScreenId).Wait();
+  ash::LoginDisplayHost::default_host()->StartWizard(ash::ResetView::kScreenId);
+  ash::OobeScreenWaiter(ash::ResetView::kScreenId).Wait();
 
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
   DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
@@ -254,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, ResetScreen) {
   // Oobe screen should not change.
   EXPECT_EQ(
       ash::LoginDisplayHost::default_host()->GetOobeUI()->current_screen(),
-      chromeos::ResetView::kScreenId);
+      ash::ResetView::kScreenId);
 }
 
 }  // namespace policy

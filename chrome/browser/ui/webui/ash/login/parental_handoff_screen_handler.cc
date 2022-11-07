@@ -10,7 +10,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -40,4 +40,4 @@ void ParentalHandoffScreenHandler::Show(const std::u16string& username) {
   ShowInWebUI(std::move(data));
 }
 
-}  // namespace chromeos
+}  // namespace ash

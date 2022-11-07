@@ -33,7 +33,7 @@ void RecordUmaScreenState(RecommendAppsScreenState state) {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 RecommendAppsScreenHandler::RecommendAppsScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -109,4 +109,4 @@ void RecommendAppsScreenHandler::LoadAppListInUI(base::Value app_list) {
   CallExternalAPI("loadAppList", std::move(app_list));
 }
 
-}  // namespace chromeos
+}  // namespace ash

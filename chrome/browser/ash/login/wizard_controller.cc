@@ -241,27 +241,27 @@ constexpr char kLegacyUpdateScreenName[] = "update";
 
 // Stores the list of all screens that should be shown when resuming OOBE.
 const StaticOobeScreenId kResumableOobeScreens[] = {
-    chromeos::WelcomeView::kScreenId,
-    chromeos::NetworkScreenView::kScreenId,
-    chromeos::UpdateView::kScreenId,
+    WelcomeView::kScreenId,
+    NetworkScreenView::kScreenId,
+    UpdateView::kScreenId,
     EulaView::kScreenId,
     chromeos::EnrollmentScreenView::kScreenId,
     chromeos::AutoEnrollmentCheckScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kResumablePostLoginScreens[] = {
-    chromeos::TermsOfServiceScreenView::kScreenId,
-    chromeos::SyncConsentScreenView::kScreenId,
+    TermsOfServiceScreenView::kScreenId,
+    SyncConsentScreenView::kScreenId,
     HWDataCollectionView::kScreenId,
     FingerprintSetupScreenView::kScreenId,
     GestureNavigationScreenView::kScreenId,
     ArcTermsOfServiceScreenView::kScreenId,
-    chromeos::RecommendAppsScreenView::kScreenId,
-    chromeos::PinSetupScreenView::kScreenId,
-    chromeos::MarketingOptInScreenView::kScreenId,
-    chromeos::MultiDeviceSetupScreenView::kScreenId,
+    RecommendAppsScreenView::kScreenId,
+    PinSetupScreenView::kScreenId,
+    MarketingOptInScreenView::kScreenId,
+    MultiDeviceSetupScreenView::kScreenId,
     ConsolidatedConsentScreenView::kScreenId,
-    chromeos::ThemeSelectionScreenView::kScreenId,
+    ThemeSelectionScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
@@ -269,9 +269,9 @@ const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     EnableDebuggingScreenView::kScreenId,
     KioskAutolaunchScreenView::kScreenId,
     KioskEnableScreenView::kScreenId,
-    chromeos::ManagementTransitionScreenView::kScreenId,
-    chromeos::TpmErrorView::kScreenId,
-    chromeos::WrongHWIDScreenView::kScreenId,
+    ManagementTransitionScreenView::kScreenId,
+    TpmErrorView::kScreenId,
+    WrongHWIDScreenView::kScreenId,
     LocalStateErrorScreenView::kScreenId,
 };
 
@@ -301,8 +301,8 @@ struct Entry {
 constexpr const Entry kLegacyUmaOobeScreenNames[] = {
     {ArcTermsOfServiceScreenView::kScreenId, "arc_tos"},
     {chromeos::EnrollmentScreenView::kScreenId, "enroll"},
-    {chromeos::WelcomeView::kScreenId, "network"},
-    {chromeos::TermsOfServiceScreenView::kScreenId, "tos"}};
+    {WelcomeView::kScreenId, "network"},
+    {TermsOfServiceScreenView::kScreenId, "tos"}};
 
 std::string GetLegacyUmaOobeScreenName(const OobeScreenId& screen_id) {
   // Make sure to use initial UMA name if the name has changed.
@@ -362,7 +362,7 @@ GetSharedURLLoaderFactoryForTesting() {
 
 OobeScreenId PrefToScreenId(const std::string& pref_value) {
   if (pref_value == kLegacyUpdateScreenName)
-    return chromeos::UpdateView::kScreenId;
+    return UpdateView::kScreenId;
   return OobeScreenId(pref_value);
 }
 

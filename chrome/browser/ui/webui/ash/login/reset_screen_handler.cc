@@ -15,7 +15,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 constexpr StaticOobeScreenId ResetView::kScreenId;
 
@@ -148,4 +148,4 @@ void ResetScreenHandler::HandleSetTpmFirmwareUpdateChecked(bool value) {
   is_tpm_firmware_update_checked_ = value;
 }
 
-}  // namespace chromeos
+}  // namespace ash

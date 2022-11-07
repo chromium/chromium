@@ -8,12 +8,13 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 
 namespace ash {
+
+class PackagedLicenseView;
 
 // Screen which is shown before login and enterprise screens.
 // It advertises the packaged license which allows user enroll device.

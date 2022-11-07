@@ -9,7 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 OsTrialScreenHandler::OsTrialScreenHandler() : BaseScreenHandler(kScreenId) {}
 
@@ -35,4 +35,4 @@ void OsTrialScreenHandler::Show() {
   ShowInWebUI();
 }
 
-}  // namespace chromeos
+}  // namespace ash

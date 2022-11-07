@@ -11,7 +11,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 SamlConfirmPasswordHandler::SamlConfirmPasswordHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -49,4 +49,4 @@ void SamlConfirmPasswordHandler::DeclareLocalizedValues(
                IDS_LOGIN_ACCOUNT_SETUP_CANCEL_DIALOG_YES);
 }
 
-}  // namespace chromeos
+}  // namespace ash

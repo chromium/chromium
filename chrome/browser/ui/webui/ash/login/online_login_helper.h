@@ -14,10 +14,6 @@
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chromeos/ash/components/login/auth/cryptohome_authenticator.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/login/auth/public/sync_trusted_vault_keys.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -26,7 +22,11 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
+
+class SyncTrustedVaultKeys;
+class UserContext;
+
 namespace login {
 
 // A class that's used to specify the way how Gaia should be loaded.
@@ -137,19 +137,6 @@ class OnlineLoginHelper : public network::mojom::CookieChangeListener {
   base::WeakPtrFactory<OnlineLoginHelper> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::OnlineLoginHelper;
-namespace login {
-using ::chromeos::login::BuildUserContextForGaiaSignIn;
-using ::chromeos::login::ExtractSamlPasswordAttributesEnabled;
-using ::chromeos::login::GaiaContext;
-using ::chromeos::login::GetStartSigninSession;
-using ::chromeos::login::GetUsertypeFromServicesString;
-using ::chromeos::login::SetCookieForPartition;
-}  // namespace login
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ONLINE_LOGIN_HELPER_H_

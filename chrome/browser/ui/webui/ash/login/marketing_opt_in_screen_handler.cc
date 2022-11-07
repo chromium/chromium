@@ -13,7 +13,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -97,4 +97,4 @@ void MarketingOptInScreenHandler::GetAdditionalParameters(
   BaseScreenHandler::GetAdditionalParameters(parameters);
 }
 
-}  // namespace chromeos
+}  // namespace ash

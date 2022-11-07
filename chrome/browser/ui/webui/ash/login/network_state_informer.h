@@ -24,12 +24,12 @@ namespace base {
 class Value;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Class which observes network state changes and calls registered callbacks.
 // State is considered changed if connection or the active network has been
 // changed. Also, it answers to the requests about current network state.
-class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
+class NetworkStateInformer : public NetworkStateHandlerObserver,
                              public base::RefCounted<NetworkStateInformer> {
  public:
   enum State {
@@ -91,8 +91,7 @@ class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
 
   base::ObserverList<NetworkStateInformerObserver>::Unchecked observers_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::WeakPtrFactory<NetworkStateInformer> weak_ptr_factory_{this};
@@ -101,11 +100,6 @@ class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
 std::ostream& operator<<(std::ostream& stream,
                          const NetworkStateInformer::State& state);
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::NetworkStateInformer;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_NETWORK_STATE_INFORMER_H_

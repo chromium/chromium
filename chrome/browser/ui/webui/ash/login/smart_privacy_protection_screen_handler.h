@@ -10,10 +10,8 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
-class SmartPrivacyProtectionScreen;
-}
 
-namespace chromeos {
+class SmartPrivacyProtectionScreen;
 
 // Interface between SmartPrivacyProtection screen and its representation,
 // either WebUI or Views one.
@@ -53,13 +51,6 @@ class SmartPrivacyProtectionScreenHandler : public SmartPrivacyProtectionView,
   void GetAdditionalParameters(base::Value::Dict* dict) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SmartPrivacyProtectionScreenHandler;
-using ::chromeos::SmartPrivacyProtectionView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SMART_PRIVACY_PROTECTION_SCREEN_HANDLER_H_

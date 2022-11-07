@@ -14,7 +14,7 @@
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 SignInFatalErrorScreenHandler::SignInFatalErrorScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -46,4 +46,4 @@ void SignInFatalErrorScreenHandler::Show(SignInFatalErrorScreen::Error error,
   ShowInWebUI(std::move(screen_data));
 }
 
-}  // namespace chromeos
+}  // namespace ash

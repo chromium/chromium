@@ -319,7 +319,7 @@ class DarkLightEnabledTest : public LoginManagerTest,
 
 // OOBE + login of the first user.
 IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_PRE_OobeLogin) {
-  OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
   EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
 
   LoginScreenTestApi::ClickAddUserButton();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
-  OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   // Oobe is shown - switch to the light mode.
   EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
 
   LoginScreenTestApi::ClickAddUserButton();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
-  OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 
   StartLogin(user2);
   EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());

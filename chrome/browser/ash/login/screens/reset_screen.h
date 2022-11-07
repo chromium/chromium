@@ -15,14 +15,14 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
+
+class ResetView;
 class ScopedGuestButtonBlocker;
 
 // Representation independent class that controls screen showing reset to users.

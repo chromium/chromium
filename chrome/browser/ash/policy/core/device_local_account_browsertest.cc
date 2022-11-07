@@ -1971,7 +1971,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
   profile_prepared.Wait();
 
   // Wait for the Terms of Service screen is being shown.
-  ash::OobeScreenWaiter(chromeos::TermsOfServiceScreenView::kScreenId).Wait();
+  ash::OobeScreenWaiter(ash::TermsOfServiceScreenView::kScreenId).Wait();
 
   // Wait for the Terms of Service to finish downloading.
   ash::test::OobeJS()
@@ -2436,7 +2436,7 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   profile_prepared.Wait();
 
   // Verify that the Terms of Service screen is being shown.
-  ash::OobeScreenWaiter(chromeos::TermsOfServiceScreenView::kScreenId).Wait();
+  ash::OobeScreenWaiter(ash::TermsOfServiceScreenView::kScreenId).Wait();
 
   // Wait for the Terms of Service to finish loading.
 
@@ -2522,7 +2522,7 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, DeclineTermsOfService) {
   profile_prepared.Wait();
 
   // Verify that the Terms of Service screen is being shown.
-  ash::OobeScreenWaiter(chromeos::TermsOfServiceScreenView::kScreenId).Wait();
+  ash::OobeScreenWaiter(ash::TermsOfServiceScreenView::kScreenId).Wait();
 
   if (!UseValidURL()) {
     ash::test::OobeJS()

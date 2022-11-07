@@ -12,10 +12,10 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 
 namespace ash {
+
+class UserCreationView;
 
 // Controller for the user creation screen.
 class UserCreationScreen

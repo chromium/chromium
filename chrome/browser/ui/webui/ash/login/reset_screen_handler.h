@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between ResetScreen and its actual
 // representation, either views based or WebUI.
@@ -89,13 +89,6 @@ class ResetScreenHandler : public ResetView,
   bool is_showing_confirmation_dialog_ = false;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ResetScreenHandler;
-using ::chromeos::ResetView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_RESET_SCREEN_HANDLER_H_

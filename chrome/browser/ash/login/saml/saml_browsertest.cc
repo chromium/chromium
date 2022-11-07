@@ -758,11 +758,11 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
   SigninFrameJS().TypeIntoPath("password1", {"Password1"});
   SigninFrameJS().TapOn("Submit");
   // Lands on confirm password screen.
-  OobeScreenWaiter(chromeos::SamlConfirmPasswordView::kScreenId).Wait();
+  OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
   test::OobeJS().ExpectHiddenPath(kPasswordConfirmInput);
   // Entering an unknown password should go back to the confirm password screen.
   SendConfirmPassword("wrong_password");
-  OobeScreenWaiter(chromeos::SamlConfirmPasswordView::kScreenId).Wait();
+  OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
   test::OobeJS().ExpectHiddenPath(kPasswordConfirmInput);
   // Either scraped password should be able to sign-in.
   SendConfirmPassword("password1");
@@ -838,12 +838,12 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedNone) {
   SigninFrameJS().TapOn("Submit");
 
   // Lands on confirm password screen with manual input state.
-  OobeScreenWaiter(chromeos::SamlConfirmPasswordView::kScreenId).Wait();
+  OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
   test::OobeJS().ExpectTrue("$('saml-confirm-password').isManualInput");
   // Entering passwords that don't match will make us land again in the same
   // page.
   SetManualPasswords("Test1", "Test2");
-  OobeScreenWaiter(chromeos::SamlConfirmPasswordView::kScreenId).Wait();
+  OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
   test::OobeJS().ExpectTrue("$('saml-confirm-password').isManualInput");
 
   // Two matching passwords should let the user to sign in.
@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, PasswordConfirmFlow) {
   SigninFrameJS().TapOn("Submit");
 
   // Lands on confirm password screen with no error message.
-  OobeScreenWaiter(chromeos::SamlConfirmPasswordView::kScreenId).Wait();
+  OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
   test::OobeJS().ExpectHiddenPath(kPasswordConfirmInput);
   test::OobeJS().ExpectTrue(
       "!$('saml-confirm-password').$.passwordInput.invalid");
@@ -939,7 +939,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, PasswordConfirmFlow) {
   // Enter an unknown password for the first time should go back to confirm
   // password screen with error message.
   SendConfirmPassword("wrong_password");
-  OobeScreenWaiter(chromeos::SamlConfirmPasswordView::kScreenId).Wait();
+  OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
   test::OobeJS().ExpectHiddenPath(kPasswordConfirmInput);
   test::OobeJS().ExpectTrue(
       "$('saml-confirm-password').$.passwordInput.invalid");

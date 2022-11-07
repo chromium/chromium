@@ -15,7 +15,7 @@ namespace login {
 class LocalizedValuesBuilder;
 }
 
-namespace chromeos {
+namespace ash {
 
 class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
  public:
@@ -25,7 +25,7 @@ class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
   virtual ~QuickStartView() = default;
 
   virtual void Show() = 0;
-  virtual void SetShapes(const ash::quick_start::ShapeList& shape_list) = 0;
+  virtual void SetShapes(const quick_start::ShapeList& shape_list) = 0;
   virtual void SetQRCode(base::Value::List blob) = 0;
 };
 
@@ -44,7 +44,7 @@ class QuickStartScreenHandler : public QuickStartView,
 
   // QuickStartView:
   void Show() override;
-  void SetShapes(const ash::quick_start::ShapeList& shape_list) override;
+  void SetShapes(const quick_start::ShapeList& shape_list) override;
   void SetQRCode(base::Value::List blob) override;
 
   // BaseScreenHandler:
@@ -52,11 +52,6 @@ class QuickStartScreenHandler : public QuickStartView,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-namespace ash {
-using chromeos::QuickStartScreenHandler;
-using chromeos::QuickStartView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_QUICK_START_SCREEN_HANDLER_H_

@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // A class that handles getIsSshConfigured requests.
 class SshConfiguredHandler : public BaseWebUIHandler {
@@ -40,11 +40,6 @@ class SshConfiguredHandler : public BaseWebUIHandler {
   base::WeakPtrFactory<SshConfiguredHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::SshConfiguredHandler;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SSH_CONFIGURED_HANDLER_H_

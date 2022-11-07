@@ -7,14 +7,13 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 
 namespace ash {
 
+class ThemeSelectionScreenView;
 class WizardContext;
 
 // controller for the OOBE screen with selection of the theme (dark/light)

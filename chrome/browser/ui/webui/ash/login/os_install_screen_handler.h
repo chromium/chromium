@@ -9,10 +9,6 @@
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-class OsInstallScreen;
-}
-
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -21,7 +17,9 @@ namespace login {
 class LocalizedValuesBuilder;
 }  // namespace login
 
-namespace chromeos {
+namespace ash {
+
+class OsInstallScreen;
 
 // Interface for dependency injection between OsInstallScreen and its
 // WebUI representation.
@@ -66,13 +64,6 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   base::WeakPtrFactory<OsInstallScreenHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::OsInstallScreenHandler;
-using ::chromeos::OsInstallScreenView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OS_INSTALL_SCREEN_HANDLER_H_

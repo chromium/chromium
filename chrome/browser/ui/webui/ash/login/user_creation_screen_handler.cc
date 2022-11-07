@@ -12,7 +12,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 UserCreationScreenHandler::UserCreationScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -63,4 +63,4 @@ void UserCreationScreenHandler::SetIsBackButtonVisible(bool value) {
   CallExternalAPI("setIsBackButtonVisible", value);
 }
 
-}  // namespace chromeos
+}  // namespace ash

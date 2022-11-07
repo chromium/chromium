@@ -11,10 +11,8 @@
 #include "components/login/localized_values_builder.h"
 
 namespace ash {
-class ThemeSelectionScreen;
-}
 
-namespace chromeos {
+class ThemeSelectionScreen;
 
 // Interface between ThemeSelection screen and its representation,
 // either WebUI or Views one.
@@ -53,13 +51,7 @@ class ThemeSelectionScreenHandler : public ThemeSelectionScreenView,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
 };
-}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ThemeSelectionScreenHandler;
-using ::chromeos::ThemeSelectionScreenView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_THEME_SELECTION_SCREEN_HANDLER_H_

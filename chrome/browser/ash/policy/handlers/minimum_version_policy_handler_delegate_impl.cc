@@ -77,7 +77,7 @@ bool MinimumVersionPolicyHandlerDelegateImpl::IsLoginInProgress() const {
 void MinimumVersionPolicyHandlerDelegateImpl::ShowUpdateRequiredScreen() {
   if (ash::LoginDisplayHost::default_host()) {
     ash::LoginDisplayHost::default_host()->StartWizard(
-        chromeos::UpdateRequiredView::kScreenId);
+        ash::UpdateRequiredView::kScreenId);
   }
 }
 

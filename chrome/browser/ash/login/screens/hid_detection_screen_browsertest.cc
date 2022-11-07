@@ -789,7 +789,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(HIDDetectionScreenDisabledAfterRestartTest,
                        PRE_SkipToUpdate) {
-  OobeScreenWaiter(chromeos::WelcomeView::kScreenId).Wait();
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 
   EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
   EXPECT_FALSE(WizardController::default_controller()->HasScreen(
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenDisabledAfterRestartTest,
 
 IN_PROC_BROWSER_TEST_P(HIDDetectionScreenDisabledAfterRestartTest,
                        SkipToUpdate) {
-  OobeScreenWaiter(chromeos::WelcomeView::kScreenId).Wait();
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   // The pref should persist restart.
   EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
   EXPECT_FALSE(WizardController::default_controller()->HasScreen(

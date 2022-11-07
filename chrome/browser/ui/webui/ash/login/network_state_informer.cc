@@ -18,7 +18,7 @@
 #include "net/proxy_resolution/proxy_config.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -216,4 +216,4 @@ void NetworkStateInformer::SendStateToObservers(
     observer.UpdateState(reason);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -16,7 +16,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 constexpr const char kInProgressStep[] = "in-progress";
 constexpr const char kFailedStep[] = "failed";
@@ -126,4 +126,4 @@ void OsInstallScreenHandler::UpdateCountdownStringWithTime(
           l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -10,7 +10,7 @@
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
+namespace ash {
 
 OfflineLoginScreenHandler::OfflineLoginScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -59,4 +59,4 @@ void OfflineLoginScreenHandler::ShowPasswordMismatchMessage() {
   CallExternalAPI("showPasswordMismatchMessage");
 }
 
-}  // namespace chromeos
+}  // namespace ash

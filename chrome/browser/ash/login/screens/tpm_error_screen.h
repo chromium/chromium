@@ -7,10 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 
 namespace ash {
+
+class TpmErrorView;
 
 // Controller for the tpm error screen.
 class TpmErrorScreen : public BaseScreen {

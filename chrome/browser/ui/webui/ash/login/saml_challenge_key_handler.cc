@@ -21,7 +21,7 @@
 
 using enterprise_connectors::kContextAwareAccessSignalsAllowlistPref;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -182,4 +182,4 @@ void SamlChallengeKeyHandler::ReturnResult(
   tpm_key_challenger_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

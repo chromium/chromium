@@ -14,7 +14,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -128,4 +128,4 @@ void UpdateScreenHandler::DeclareLocalizedValues(
                IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE);
 }
 
-}  // namespace chromeos
+}  // namespace ash

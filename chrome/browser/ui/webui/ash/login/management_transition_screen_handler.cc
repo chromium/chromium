@@ -12,7 +12,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 ManagementTransitionScreenHandler::ManagementTransitionScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -51,4 +51,4 @@ void ManagementTransitionScreenHandler::ShowError() {
   CallExternalAPI("showStep", "error");
 }
 
-}  // namespace chromeos
+}  // namespace ash

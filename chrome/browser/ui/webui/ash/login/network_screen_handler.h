@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface of network screen. Owned by NetworkScreen.
 class NetworkScreenView : public base::SupportsWeakPtr<NetworkScreenView> {
@@ -57,13 +57,6 @@ class NetworkScreenHandler : public NetworkScreenView,
   void GetAdditionalParameters(base::Value::Dict* dict) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::NetworkScreenHandler;
-using ::chromeos::NetworkScreenView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_NETWORK_SCREEN_HANDLER_H_

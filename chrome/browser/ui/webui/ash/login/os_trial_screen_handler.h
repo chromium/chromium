@@ -9,10 +9,8 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
-class OsTrialScreen;
-}
 
-namespace chromeos {
+class OsTrialScreen;
 
 // Interface for dependency injection between OsTrialScreen and its
 // WebUI representation.
@@ -46,13 +44,6 @@ class OsTrialScreenHandler : public BaseScreenHandler,
   void Show() override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::OsTrialScreenHandler;
-using ::chromeos::OsTrialScreenView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OS_TRIAL_SCREEN_HANDLER_H_

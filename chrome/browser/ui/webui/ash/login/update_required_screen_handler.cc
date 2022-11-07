@@ -17,7 +17,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 UpdateRequiredScreenHandler::UpdateRequiredScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -132,4 +132,4 @@ void UpdateRequiredScreenHandler::SetIsUserDataPresent(bool data_present) {
   CallExternalAPI("setIsUserDataPresent", data_present);
 }
 
-}  // namespace chromeos
+}  // namespace ash

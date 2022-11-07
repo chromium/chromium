@@ -9,7 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 const char kTPMErrorOwnedStep[] = "tpm-owned";
 const char kTPMErrorDbusStep[] = "dbus-error";
@@ -49,4 +49,4 @@ void TpmErrorScreenHandler::SetTPMDbusErrorStep() {
   CallExternalAPI("setStep", std::string(kTPMErrorDbusStep));
 }
 
-}  // namespace chromeos
+}  // namespace ash

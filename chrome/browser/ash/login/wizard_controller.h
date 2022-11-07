@@ -159,10 +159,10 @@ class WizardController : public OobeUI::Observer {
   // Starts Demo Mode setup flow. The flow starts from network screen and reuses
   // some of regular OOBE screens. It consists of the following screens:
   //    ash::DemoPreferencesScreenView::kScreenId
-  //    chromeos::NetworkScreenView::kScreenId
+  //    ash::NetworkScreenView::kScreenId
   //    ash::EulaView::kScreenId
   //    ash::ArcTermsOfServiceScreenView::kScreenId
-  //    chromeos::UpdateView::kScreenId
+  //    ash::UpdateView::kScreenId
   //    ash::DemoSetupScreenView::kScreenId
   void StartDemoModeSetup();
 

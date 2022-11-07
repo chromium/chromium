@@ -10,7 +10,7 @@
 #include "components/login/localized_values_builder.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -93,4 +93,4 @@ void SshConfiguredHandler::ResolveCallbacks() {
   callback_ids_.clear();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -13,10 +13,8 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
-class UpdateScreen;
-}
 
-namespace chromeos {
+class UpdateScreen;
 
 // Interface for dependency injection between WelcomeScreen and its actual
 // representation. Owned by UpdateScreen.
@@ -75,20 +73,13 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   void SetCancelUpdateShortcutEnabled(bool value) override;
 
   void OnAccessibilityStatusChanged(
-      const ash::AccessibilityStatusEventDetails& details);
+      const AccessibilityStatusEventDetails& details);
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::UpdateScreenHandler;
-using ::chromeos::UpdateView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_UPDATE_SCREEN_HANDLER_H_

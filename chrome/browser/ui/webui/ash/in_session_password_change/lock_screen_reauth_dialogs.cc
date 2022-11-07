@@ -279,8 +279,7 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
     : BaseLockDialog(GURL(chrome::kChromeUILockScreenStartReauthURL),
                      CalculateLockScreenReauthDialogSize(
                          features::IsNewLockScreenReauthLayoutEnabled())),
-      network_state_informer_(
-          base::MakeRefCounted<chromeos::NetworkStateInformer>()) {
+      network_state_informer_(base::MakeRefCounted<NetworkStateInformer>()) {
   network_state_informer_->Init();
   scoped_observation_.Observe(network_state_informer_.get());
 

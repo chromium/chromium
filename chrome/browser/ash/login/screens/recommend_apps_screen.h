@@ -15,8 +15,6 @@
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "components/prefs/pref_service.h"
 
 namespace base {
@@ -25,6 +23,7 @@ class Value;
 
 namespace ash {
 class RecommendAppsFetcher;
+class RecommendAppsScreenView;
 
 // This is Recommend Apps screen that is displayed as a part of user first
 // sign-in flow.

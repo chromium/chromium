@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between TermsOfServiceScreen and its
 // WebUI representation.
@@ -67,13 +67,6 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   bool terms_loaded_ = false;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::TermsOfServiceScreenHandler;
-using ::chromeos::TermsOfServiceScreenView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_TERMS_OF_SERVICE_SCREEN_HANDLER_H_

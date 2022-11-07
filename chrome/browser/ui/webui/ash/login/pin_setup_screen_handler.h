@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between PinSetupScreen and its
 // WebUI representation.
@@ -50,13 +50,6 @@ class PinSetupScreenHandler : public BaseScreenHandler,
   void SetLoginSupportAvailable(bool available) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::PinSetupScreenHandler;
-using ::chromeos::PinSetupScreenView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_PIN_SETUP_SCREEN_HANDLER_H_

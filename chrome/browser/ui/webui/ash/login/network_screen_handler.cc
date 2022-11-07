@@ -19,7 +19,7 @@
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 NetworkScreenHandler::NetworkScreenHandler() : BaseScreenHandler(kScreenId) {}
 
@@ -36,7 +36,7 @@ void NetworkScreenHandler::Show() {
     NetworkStateHandler* handler =
         NetworkHandler::Get()->network_state_handler();
     handler->SetTechnologyEnabled(NetworkTypePattern::Physical(), true,
-                                  chromeos::network_handler::ErrorCallback());
+                                  network_handler::ErrorCallback());
   }
 
   base::Value::Dict data;
@@ -68,4 +68,4 @@ void NetworkScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   cellular_setup::AddNonStringLoadTimeDataToDict(dict);
 }
 
-}  // namespace chromeos
+}  // namespace ash

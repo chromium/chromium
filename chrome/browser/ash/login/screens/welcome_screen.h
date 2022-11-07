@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 // TODO(https://crbug.com/1164001): forward declare LanguageSwitchResult
 // after this file is moved to ash.
 #include "chrome/browser/ash/base/locale_util.h"
@@ -23,11 +24,11 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
+
+class WelcomeView;
 
 class WelcomeScreen : public BaseScreen,
                       public input_method::InputMethodManager::Observer,

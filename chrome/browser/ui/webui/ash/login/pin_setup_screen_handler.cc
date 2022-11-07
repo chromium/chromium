@@ -15,7 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 PinSetupScreenHandler::PinSetupScreenHandler() : BaseScreenHandler(kScreenId) {}
 
@@ -84,4 +84,4 @@ void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {
   CallExternalAPI("setHasLoginSupport", available);
 }
 
-}  // namespace chromeos
+}  // namespace ash

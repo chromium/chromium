@@ -8,7 +8,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 PackagedLicenseScreenHandler::PackagedLicenseScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -32,4 +32,4 @@ void PackagedLicenseScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_PACKAGED_LICENSE_DONT_ENROLL_BUTTON_LABEL);
 }
 
-}  // namespace chromeos
+}  // namespace ash

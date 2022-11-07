@@ -6,7 +6,7 @@
 
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 QuickStartScreenHandler::QuickStartScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -17,9 +17,9 @@ void QuickStartScreenHandler::Show() {
   ShowInWebUI();
 }
 
-base::Value ToValue(const ash::quick_start::ShapeList& list) {
+base::Value ToValue(const quick_start::ShapeList& list) {
   base::Value::List result;
-  for (const ash::quick_start::ShapeHolder& shape_holder : list) {
+  for (const quick_start::ShapeHolder& shape_holder : list) {
     base::Value::Dict val;
     val.Set("shape", static_cast<int>(shape_holder.shape));
     val.Set("color", static_cast<int>(shape_holder.color));
@@ -30,7 +30,7 @@ base::Value ToValue(const ash::quick_start::ShapeList& list) {
 }
 
 void QuickStartScreenHandler::SetShapes(
-    const ash::quick_start::ShapeList& shape_list) {
+    const quick_start::ShapeList& shape_list) {
   CallExternalAPI("setFigures", ToValue(shape_list));
 }
 
@@ -41,4 +41,4 @@ void QuickStartScreenHandler::SetQRCode(base::Value::List blob) {
 void QuickStartScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
-}  // namespace chromeos
+}  // namespace ash

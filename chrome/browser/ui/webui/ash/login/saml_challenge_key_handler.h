@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class handles "samlChallengeMachineKey" request for GaiaScreenHandler.
 // It calculates response for a challenge from Verified Access server for remote
@@ -65,12 +65,6 @@ class SamlChallengeKeyHandler final {
   base::WeakPtrFactory<SamlChallengeKeyHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SamlChallengeKeyHandler;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SAML_CHALLENGE_KEY_HANDLER_H_

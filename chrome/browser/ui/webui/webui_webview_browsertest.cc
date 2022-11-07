@@ -134,7 +134,7 @@ class WebUIWebViewBrowserTest : public WebUIBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Wait for the OOBE WebUI to be shown.
-    ash::OobeScreenWaiter(chromeos::WelcomeView::kScreenId).Wait();
+    ash::OobeScreenWaiter(ash::WelcomeView::kScreenId).Wait();
     SetWebUIInstance(
         ash::LoginDisplayHost::default_host()->GetOobeUI()->web_ui());
 #else

@@ -7,11 +7,12 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
 
 namespace ash {
+
+class OsTrialScreenView;
 
 class OsTrialScreen : public BaseScreen {
  public:

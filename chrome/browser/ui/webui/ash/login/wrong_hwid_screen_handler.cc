@@ -9,7 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 WrongHWIDScreenHandler::WrongHWIDScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -31,4 +31,4 @@ void WrongHWIDScreenHandler::DeclareLocalizedValues(
                 IDS_WRONG_HWID_SCREEN_SKIP_LINK);
 }
 
-}  // namespace chromeos
+}  // namespace ash

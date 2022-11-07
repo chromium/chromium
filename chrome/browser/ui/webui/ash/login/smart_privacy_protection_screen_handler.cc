@@ -10,7 +10,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 SmartPrivacyProtectionScreenHandler::SmartPrivacyProtectionScreenHandler()
     : BaseScreenHandler(kScreenId) {}
@@ -40,8 +40,7 @@ void SmartPrivacyProtectionScreenHandler::DeclareLocalizedValues(
 
 void SmartPrivacyProtectionScreenHandler::GetAdditionalParameters(
     base::Value::Dict* dict) {
-  dict->Set("isQuickDimEnabled",
-            base::Value(ash::features::IsQuickDimEnabled()));
+  dict->Set("isQuickDimEnabled", base::Value(features::IsQuickDimEnabled()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

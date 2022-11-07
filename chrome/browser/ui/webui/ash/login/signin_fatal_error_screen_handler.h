@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for dependency injection between SignInFatalErrorScreen and its
 // WebUI representation.
@@ -46,13 +46,6 @@ class SignInFatalErrorScreenHandler : public SignInFatalErrorView,
       ::login::LocalizedValuesBuilder* builder) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SignInFatalErrorScreenHandler;
-using ::chromeos::SignInFatalErrorView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SIGNIN_FATAL_ERROR_SCREEN_HANDLER_H_
