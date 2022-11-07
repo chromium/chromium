@@ -115,26 +115,18 @@ they are generated files, they should **not** be used to suppress lint warnings.
 One of the approaches above should be used instead. Eventually all the errors in
 baseline files should be either fixed or ignored permanently.
 
-The following are some common scenarios where you may need to update baseline
-files.
-
-### I updated `cmdline-tools` and now there are tons of new errors!
-
-This happens every time lint is updated, since lint is provided by
-`cmdline-tools`.
+Most devs do not need to update baseline files and should not need the script
+below. Occasionally when making large build configuration changes it may be
+necessary to update baseline files (e.g. increasing the min_sdk_version).
 
 Baseline files are defined via the `lint_baseline_file` gn variable. It is
-usually defined near a target's `enable_lint` gn variable. To regenerate the
-baseline file, delete it and re-run the lint target. The command will fail, but
-the baseline file will have been generated.
+usually defined near a target's `enable_lint` gn variable. To regenerate all
+baseline files, run:
 
-This may need to be repeated for all targets that have set `enable_lint = true`,
-including downstream targets. Downstream baseline files should be updated and
-first to avoid build breakages. Each target has its own `lint_baseline_file`
-defined and so all these files can be removed and regenerated as needed.
+```
+$ third_party/android_build_tools/lint/rebuild_baselines.py
+```
 
-### I updated `library X` and now there are tons of new errors!
-
-This is usually because `library X`'s aar contains custom lint checks and/or
-custom annotation definition. Follow the same procedure as updates to
-`cmdline-tools`.
+This script will also update baseline files in downstream //clank if needed.
+Since downstream and upstream use separate lint binaries, it is usually safe
+to simply land the update CLs in any order.
