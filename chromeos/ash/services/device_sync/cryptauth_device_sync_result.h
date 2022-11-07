@@ -123,9 +123,4 @@ std::ostream& operator<<(
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::device_sync {
-using ::ash::device_sync::CryptAuthDeviceSyncResult;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_SYNC_RESULT_H_

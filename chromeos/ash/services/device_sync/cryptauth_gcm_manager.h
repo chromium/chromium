@@ -85,9 +85,4 @@ class CryptAuthGCMManager {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::device_sync {
-using ::ash::device_sync::CryptAuthGCMManager;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_H_

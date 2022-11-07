@@ -109,7 +109,7 @@ class TetherService
   // TetherComponent::Observer:
   void OnShutdownComplete() override;
 
-  // chromeos::device_sync::DeviceSyncClient::Observer:
+  // ash::device_sync::DeviceSyncClient::Observer:
   void OnReady() override;
 
   // ash::multidevice_setup::MultiDeviceSetupClient::Observer:

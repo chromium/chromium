@@ -118,9 +118,4 @@ class FakeCryptAuthFeatureStatusSetterFactory
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::device_sync {
-using ::ash::device_sync::FakeCryptAuthFeatureStatusSetter;
-}
-
 #endif  //  CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_FEATURE_STATUS_SETTER_H_

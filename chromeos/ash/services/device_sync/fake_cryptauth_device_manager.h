@@ -133,9 +133,4 @@ class FakeCryptAuthDeviceManager : public CryptAuthDeviceManager {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::device_sync {
-using ::ash::device_sync::FakeCryptAuthDeviceManager;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_DEVICE_MANAGER_H_

@@ -76,9 +76,4 @@ GetAllTestDeviceMetadataPackets();
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::device_sync {
-using ::ash::device_sync::kDefaultLocalDeviceBluetoothAddress;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_DEVICE_SYNC_TEST_DEVICES_H_

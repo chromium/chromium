@@ -203,10 +203,4 @@ class FakeCryptAuthSchedulerDeviceSyncDelegate
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::device_sync {
-using ::ash::device_sync::FakeCryptAuthScheduler;
-using ::ash::device_sync::FakeCryptAuthSchedulerDeviceSyncDelegate;
-}  // namespace chromeos::device_sync
-
 #endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_SCHEDULER_H_

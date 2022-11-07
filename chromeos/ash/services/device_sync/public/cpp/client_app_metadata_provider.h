@@ -43,9 +43,4 @@ class ClientAppMetadataProvider {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::device_sync {
-using ::ash::device_sync::ClientAppMetadataProvider;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_CLIENT_APP_METADATA_PROVIDER_H_
