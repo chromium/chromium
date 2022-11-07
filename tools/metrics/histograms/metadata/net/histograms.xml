@@ -4966,26 +4966,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.TCPClientSocketReadSize" units="bytes"
-    expires_after="2023-05-11">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The amount of bytes written in the IOBuffer passed to
-    TCPClientSocket::Read{IfReady}.
-  </summary>
-</histogram>
-
-<histogram name="Net.TCPClientSocketWriteSize" units="bytes"
-    expires_after="2023-05-11">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The amount of bytes contained in the IOBuffer passed to
-    TCPClientSocket::Write.
-  </summary>
-</histogram>
-
 <histogram name="Net.TcpConnectAttempt.Latency.Error" units="ms"
     expires_after="2023-01-15">
   <owner>bashi@chromium.org</owner>
@@ -5120,25 +5100,6 @@ chromium-metrics-reviews@google.com.
     running TrustTokenRequestHelperFactory to initialize Trust Tokens handling
     logic. This might help debug a surfeit of failed Trust Tokens issuance
     operations observed in live testing.
-  </summary>
-</histogram>
-
-<histogram name="Net.UDPClientSocketReadSize" units="bytes"
-    expires_after="2023-05-11">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The amount of bytes written in the IOBuffer passed to UDPClientSocket::Read.
-  </summary>
-</histogram>
-
-<histogram name="Net.UDPClientSocketWriteSize" units="bytes"
-    expires_after="2023-05-11">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The amount of bytes contained in the IOBuffer passed to
-    UDPClientSocket::Write.
   </summary>
 </histogram>
 

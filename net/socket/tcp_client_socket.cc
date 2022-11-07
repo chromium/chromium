@@ -28,14 +28,6 @@
 
 namespace net {
 
-namespace {
-
-void LogReadSize(int read_size) {
-  UMA_HISTOGRAM_COUNTS_10M("Net.TCPClientSocketReadSize", read_size);
-}
-
-}  // namespace
-
 class NetLogWithSource;
 
 TCPClientSocket::TCPClientSocket(
@@ -208,7 +200,6 @@ int TCPClientSocket::ReadCommon(IOBuffer* buf,
   } else if (result > 0) {
     was_ever_used_ = true;
     total_received_bytes_ += result;
-    LogReadSize(result);
   }
 
   return result;
@@ -442,8 +433,6 @@ int TCPClientSocket::Write(
   if (was_disconnected_on_suspend_)
     return ERR_NETWORK_IO_SUSPENDED;
 
-  UMA_HISTOGRAM_COUNTS_10M("Net.TCPClientSocketWriteSize", buf_len);
-
   // |socket_| is owned by this class and the callback won't be run once
   // |socket_| is gone. Therefore, it is safe to use base::Unretained() here.
   CompletionOnceCallback complete_write_callback = base::BindOnce(
@@ -536,10 +525,8 @@ void TCPClientSocket::DidCompleteConnect(int result) {
 void TCPClientSocket::DidCompleteRead(int result) {
   DCHECK(!read_callback_.is_null());
 
-  if (result > 0) {
+  if (result > 0)
     total_received_bytes_ += result;
-    LogReadSize(result);
-  }
   DidCompleteReadWrite(std::move(read_callback_), result);
 }
 
