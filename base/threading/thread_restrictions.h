@@ -105,11 +105,15 @@
 // that's okay.
 
 class BrowserProcessImpl;
+class BrowserThemePack;
 class ChromeNSSCryptoModuleDelegate;
+class DesktopNotificationBalloon;
+class FirefoxProfileLock;
 class KeyStorageLinux;
 class NativeBackendKWallet;
 class NativeDesktopMediaList;
 class Profile;
+class ProfileImpl;
 class StartupTabProviderImpl;
 class GaiaConfig;
 class WebEngineBrowserMainParts;
@@ -125,6 +129,8 @@ class VizCompositorThreadRunnerWebView;
 namespace ash {
 class MojoUtils;
 class BrowserDataBackMigrator;
+class StartupCustomizationDocument;
+class StartupUtils;
 bool CameraAppUIShouldEnableLocalOverride(const std::string&);
 }  // namespace ash
 namespace audio {
@@ -153,11 +159,20 @@ namespace cc {
 class CompletionEvent;
 class TileTaskManagerImpl;
 }  // namespace cc
+namespace base {
+class File;
+class FilePath;
+}  // namespace base
+namespace chrome {
+bool PathProvider(int, base::FilePath*);
+void SessionEnding();
+}  // namespace chrome
 namespace chromecast {
 class CrashUtil;
 }
 namespace chromeos {
 class BlockingMethodCaller;
+class LoginEventRecorder;
 namespace system {
 class StatisticsProviderImpl;
 bool IsCoreSchedulingAvailable();
@@ -196,6 +211,7 @@ class SynchronousCompositorSyncCallBridge;
 class TextInputClientMac;
 class WebContentsImpl;
 class WebContentsViewMac;
+base::File CreateFileForDrop(base::FilePath*);
 }  // namespace content
 namespace cronet {
 class CronetPrefsManager;
@@ -207,11 +223,11 @@ class LacrosThreadTypeDelegate;
 namespace dbus {
 class Bus;
 }
+namespace drive {
+class FakeDriveService;
+}
 namespace device {
 class UsbContext;
-}
-namespace base {
-class FilePath;
 }
 namespace disk_cache {
 class BackendImpl;
@@ -221,9 +237,19 @@ bool CleanupDirectorySync(const base::FilePath&);
 namespace enterprise_connectors {
 class LinuxKeyRotationCommand;
 }  // namespace enterprise_connectors
+namespace extensions {
+class InstalledLoader;
+class UnpackedInstaller;
+}  // namespace extensions
 namespace functions {
 class ExecScriptScopedAllowBaseSyncPrimitives;
 }
+namespace gl {
+struct GLImplementationParts;
+namespace init {
+bool InitializeStaticGLBindings(GLImplementationParts);
+}
+}  // namespace gl
 namespace history_report {
 class HistoryReportJniBridge;
 }
@@ -286,6 +312,8 @@ class HttpBridge;
 }  // namespace syncer
 namespace ui {
 class DrmThreadProxy;
+class DrmDisplayHostManager;
+class SelectFileDialogLinux;
 }
 namespace value_store {
 class LeveldbValueStore;
@@ -297,10 +325,12 @@ class ProfileImpl;
 class WebLayerPathProvider;
 }  // namespace weblayer
 namespace net {
+class GSSAPISharedLibrary;
 class MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
 class MultiThreadedProxyResolverScopedAllowJoinOnIO;
 class NetworkChangeNotifierMac;
 class NetworkConfigWatcherMacThread;
+class ProxyConfigServiceWin;
 namespace internal {
 class AddressTrackerLinux;
 }
@@ -312,6 +342,7 @@ class ScopedAllowThreadJoinForProxyResolverV8Tracing;
 
 namespace remote_cocoa {
 class DroppedScreenShotCopierMac;
+class SelectFileDialogBridge;
 }  // namespace remote_cocoa
 
 namespace remoting {
@@ -377,11 +408,21 @@ namespace internal {
 class GetAppOutputScopedAllowBaseSyncPrimitives;
 class JobTaskSource;
 class TaskTracker;
+bool ReadProcFile(const FilePath& file, std::string* buffer);
 }  // namespace internal
+
+namespace subtle {
+class PlatformSharedMemoryRegion;
+}
+
+namespace debug {
+class StackTrace;
+}
 
 class AdjustOOMScoreHelper;
 class FileDescriptorWatcher;
 class FilePath;
+class Process;
 class ScopedAllowThreadRecallForStackSamplingProfiler;
 class StackSamplingProfiler;
 class TestCustomDisallow;
@@ -389,8 +430,6 @@ class SimpleThread;
 class Thread;
 
 class BooleanWithStack;
-
-bool PathProviderWin(int, FilePath*);
 
 #if DCHECK_IS_ON()
 // NOT_TAIL_CALLED if dcheck-is-on so it's always evident who irrevocably
@@ -454,15 +493,25 @@ class BASE_EXPORT ScopedAllowBlocking {
 
   // This can only be instantiated by friends. Use ScopedAllowBlockingForTesting
   // in unit tests to avoid the friend requirement.
+  friend class ::BrowserThemePack;  // http://crbug.com/80206
+  friend class ::DesktopNotificationBalloon;
+  friend class ::FirefoxProfileLock;
   friend class ::GaiaConfig;
+  friend class ::ProfileImpl;
   friend class ::StartupTabProviderImpl;
   friend class android_webview::ScopedAllowInitGLBindings;
   friend class ash::MojoUtils;  // http://crbug.com/1055467
   friend class ash::BrowserDataBackMigrator;
+  friend class ash::StartupCustomizationDocument;  // http://crosbug.com/11103
+  friend class ash::StartupUtils;
   friend class base::AdjustOOMScoreHelper;
+  friend class base::Process;
   friend class base::StackSamplingProfiler;
+  friend class base::debug::StackTrace;
+  friend class base::subtle::PlatformSharedMemoryRegion;
   friend class blink::DiskDataAllocator;
   friend class chromecast::CrashUtil;
+  friend class chromeos::LoginEventRecorder;
   friend class content::BrowserProcessIOThread;
   friend class content::DWriteFontProxyImpl;
   friend class content::NetworkServiceInstancePrivate;
@@ -477,6 +526,9 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class cronet::CronetPrefsManager;
   friend class cronet::CronetContext;
   friend class crosapi::LacrosThreadTypeDelegate;
+  friend class drive::FakeDriveService;
+  friend class extensions::InstalledLoader;
+  friend class extensions::UnpackedInstaller;
   friend class ios_web_view::WebViewBrowserState;
   friend class media::FileVideoCaptureDeviceFactory;
   friend class memory_instrumentation::OSMetrics;
@@ -484,6 +536,8 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class metrics::CleanExitBeacon;
   friend class module_installer::ScopedAllowModulePakLoad;
   friend class mojo::CoreLibraryInitializer;
+  friend class net::GSSAPISharedLibrary;    // http://crbug.com/66702
+  friend class net::ProxyConfigServiceWin;  // http://crbug.com/61453
   friend class printing::LocalPrinterHandlerDefault;
 #if BUILDFLAG(IS_MAC)
   friend class printing::PrintBackendServiceImpl;
@@ -492,7 +546,10 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class printing::PrintJobWorker;
   friend class remote_cocoa::
       DroppedScreenShotCopierMac;  // https://crbug.com/1148078
+  friend class remote_cocoa::SelectFileDialogBridge;
   friend class remoting::ScopedBypassIOThreadRestrictions;  // crbug.com/1144161
+  friend class ui::DrmDisplayHostManager;
+  friend class ui::SelectFileDialogLinux;
   friend class web::WebSubThread;
   friend class ::WebEngineBrowserMainParts;
   friend class weblayer::BrowserContextImpl;
@@ -501,10 +558,17 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class weblayer::WebLayerPathProvider;
 
   // Sorting with function name (with namespace), ignoring the return type.
+  friend base::File content::CreateFileForDrop(
+      base::FilePath* file_path);         // http://crbug.com/110709
   friend Profile* ::GetLastProfileMac();  // crbug.com/1176734
+  friend bool gl::init::InitializeStaticGLBindings(gl::GLImplementationParts);
   friend bool ::HasWaylandDisplay(base::Environment* env);  // crbug.com/1246928
-  friend bool PathProviderWin(int, FilePath*);
+  friend bool chrome::PathProvider(int,
+                                   base::FilePath*);  // http://crbug.com/259796
+  friend void chrome::SessionEnding();
   friend bool ash::CameraAppUIShouldEnableLocalOverride(const std::string&);
+  friend bool base::internal::ReadProcFile(const FilePath& file,
+                                           std::string* buffer);
   friend bool chromeos::system::IsCoreSchedulingAvailable();
   friend int chromeos::system::NumberOfPhysicalCores();
   friend bool disk_cache::CleanupDirectorySync(const base::FilePath&);

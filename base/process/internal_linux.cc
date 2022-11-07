@@ -61,7 +61,7 @@ bool ReadProcFile(const FilePath& file, std::string* buffer) {
   DCHECK(FilePath(kProcDir).IsParent(file));
   buffer->clear();
   // Synchronously reading files in /proc is safe.
-  ThreadRestrictions::ScopedAllowIO allow_io;
+  ScopedAllowBlocking scoped_allow_blocking;
 
   if (!ReadFileToString(file, buffer)) {
     DLOG(WARNING) << "Failed to read " << file.MaybeAsASCII();

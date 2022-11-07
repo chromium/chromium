@@ -313,7 +313,7 @@ StartupCustomizationDocument::StartupCustomizationDocument()
   {
     // Loading manifest causes us to do blocking IO on UI thread.
     // Temporarily allow it until we fix http://crosbug.com/11103
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    base::ScopedAllowBlocking allow_blocking;
     base::FilePath startup_customization_manifest;
     base::PathService::Get(FILE_STARTUP_CUSTOMIZATION_MANIFEST,
                            &startup_customization_manifest);

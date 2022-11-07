@@ -191,7 +191,7 @@ bool SelectFileDialogLinux::CheckKDEDialogWorksOnUIThread(
     std::string& kdialog_version) {
   // No choice. UI thread can't continue without an answer here. Fortunately we
   // only do this once, the first time a file dialog is displayed.
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+  base::ScopedAllowBlocking scoped_allow_blocking;
 
   base::CommandLine::StringVector cmd_vector;
   cmd_vector.push_back(kKdialogBinary);

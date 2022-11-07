@@ -194,7 +194,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   // This function theoretically can block on the disk, but realistically
   // the temporary files we create will just go into the buffer cache
   // and be deleted before they ever make it out to disk.
-  ThreadRestrictions::ScopedAllowIO allow_io;
+  ScopedAllowBlocking scoped_allow_blocking;
 
   // We don't use shm_open() API in order to support the --disable-dev-shm-usage
   // flag.

@@ -396,7 +396,7 @@ base::NativeLibrary GSSAPISharedLibrary::LoadSharedLibrary(
 
     // TODO(asanka): Move library loading to a separate thread.
     //               http://crbug.com/66702
-    base::ThreadRestrictions::ScopedAllowIO allow_io_temporarily;
+    base::ScopedAllowBlocking scoped_allow_blocking_temporarily;
     base::NativeLibrary lib = base::LoadNativeLibrary(file_path, &load_error);
     if (lib) {
       if (BindMethods(lib, library_name, net_log)) {

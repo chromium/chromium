@@ -39,7 +39,7 @@ void DesktopNotificationBalloon::DisplayBalloon(
   // IO access won't be required for normal uses.
   Profile* profile;
   {
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    base::ScopedAllowBlocking allow_blocking;
     profile = ProfileManager::GetLastUsedProfile();
   }
 

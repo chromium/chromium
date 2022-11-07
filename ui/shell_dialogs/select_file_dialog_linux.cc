@@ -33,7 +33,7 @@ void SelectFileDialogLinux::ListenerDestroyed() {
 
 bool SelectFileDialogLinux::CallDirectoryExistsOnUIThread(
     const base::FilePath& path) {
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+  base::ScopedAllowBlocking scoped_allow_blocking;
   return base::DirectoryExists(path);
 }
 

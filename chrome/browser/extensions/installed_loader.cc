@@ -386,9 +386,9 @@ void InstalledLoader::LoadAllExtensions() {
       // UI thread because reloads should be very rare, and the complexity
       // added by delaying the time when the extensions service knows about
       // all extensions is significant.  See crbug.com/37548 for details.
-      // |allow_io| disables tests that file operations run on the file
+      // |allow_blocking| disables tests that file operations run on the file
       // thread.
-      base::ThreadRestrictions::ScopedAllowIO allow_io;
+      base::ScopedAllowBlocking allow_blocking;
 
       std::string error;
       scoped_refptr<const Extension> extension(file_util::LoadExtension(

@@ -542,7 +542,7 @@ bool PathProvider(int key, base::FilePath* result) {
   }
 
   // TODO(bauerb): http://crbug.com/259796
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+  base::ScopedAllowBlocking allow_blocking;
   if (create_dir && !base::PathExists(cur) && !base::CreateDirectory(cur))
     return false;
 

@@ -1546,7 +1546,7 @@ GURL ProfileImpl::GetHomePage() {
     // TODO(evanm): clean up usage of DIR_CURRENT.
     //   http://code.google.com/p/chromium/issues/detail?id=60630
     // For now, allow this code to call getcwd().
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    base::ScopedAllowBlocking allow_blocking;
 
     base::FilePath browser_directory;
     base::PathService::Get(base::DIR_CURRENT, &browser_directory);

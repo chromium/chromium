@@ -198,7 +198,7 @@ bool Process::IsProcessBackgrounded() const {
 #if BUILDFLAG(IS_CHROMEOS)
   if (CGroups::Get().enabled) {
     // Used to allow reading the process priority from proc on thread launch.
-    ThreadRestrictions::ScopedAllowIO allow_io;
+    ScopedAllowBlocking scoped_allow_blocking;
     std::string proc;
     if (ReadFileToString(FilePath(StringPrintf(kProcPath, process_)), &proc)) {
       return IsProcessBackgroundedCGroup(proc);
@@ -263,7 +263,7 @@ ProcessId Process::GetPidInNamespace() const {
   std::string status;
   {
     // Synchronously reading files in /proc does not hit the disk.
-    ThreadRestrictions::ScopedAllowIO allow_io;
+    ScopedAllowBlocking scoped_allow_blocking;
     FilePath status_file =
         FilePath("/proc").Append(NumberToString(process_)).Append("status");
     if (!ReadFileToString(status_file, &status)) {

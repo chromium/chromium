@@ -202,7 +202,7 @@ void SessionEnding() {
   // ~ShutdownWatcherHelper uses IO (it joins a thread). We'll only trigger that
   // if Terminate() fails, which leaves us in a weird state, or the OS is going
   // to kill us soon. Either way we don't care about that here.
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+  base::ScopedAllowBlocking allow_blocking;
 
   // Two different types of hang detection cannot attempt to upload crashes at
   // the same time or they would interfere with each other.

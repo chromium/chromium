@@ -273,7 +273,7 @@ void SelectFileDialogBridge::Show(
   if (!default_path.empty()) {
     // The file dialog is going to do a ton of stats anyway. Not much
     // point in eliminating this one.
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    base::ScopedAllowBlocking allow_blocking;
     if (base::DirectoryExists(default_path)) {
       default_dir = base::SysUTF8ToNSString(default_path.value());
     } else {

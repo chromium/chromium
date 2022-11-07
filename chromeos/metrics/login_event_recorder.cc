@@ -193,7 +193,7 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::GetCurrentStats() {
   Stats stats;
   // Callers of this method expect synchronous behavior.
   // It's safe to allow IO here, because only virtual FS are accessed.
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+  base::ScopedAllowBlocking allow_blocking;
   base::ReadFileToString(kProcUptime, &stats.uptime_);
   base::ReadFileToString(kDiskStat, &stats.disk_);
   return stats;

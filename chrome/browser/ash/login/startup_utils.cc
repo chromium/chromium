@@ -192,7 +192,7 @@ bool StartupUtils::IsDeviceRegistered() {
   } else {
     // Pref is not set. For compatibility check flag file. It causes blocking
     // IO on UI thread. But it's required for update from old versions.
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    base::ScopedAllowBlocking allow_blocking;
     const base::FilePath oobe_complete_flag_path = GetOobeCompleteFlagPath();
     bool file_exists = base::PathExists(oobe_complete_flag_path);
     SaveIntegerPreferenceForced(::prefs::kDeviceRegistered,

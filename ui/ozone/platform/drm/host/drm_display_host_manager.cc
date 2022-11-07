@@ -184,7 +184,7 @@ DrmDisplayHostManager::DrmDisplayHostManager(
     // First device needs to be treated specially. We need to open this
     // synchronously since the GPU process will need it to initialize the
     // graphics state.
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    base::ScopedAllowBlocking scoped_allow_blocking;
 
     base::FilePath primary_graphics_card_path_sysfs =
         MapDevPathToSysPath(primary_graphics_card_path_);
@@ -414,7 +414,7 @@ void DrmDisplayHostManager::OnGpuProcessLaunched() {
   std::unique_ptr<DrmDeviceHandle> handle =
       std::move(primary_drm_device_handle_);
   {
-    base::ThreadRestrictions::ScopedAllowIO allow_io;
+    base::ScopedAllowBlocking scoped_allow_blocking;
 
     drm_devices_.clear();
     drm_devices_[primary_graphics_card_path_] =

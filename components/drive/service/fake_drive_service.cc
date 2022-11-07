@@ -758,7 +758,7 @@ CancelCallbackOnce FakeDriveService::DownloadFile(
     DownloadActionCallback download_action_callback,
     const GetContentCallback& get_content_callback,
     ProgressCallback progress_callback) {
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+  base::ScopedAllowBlocking allow_blocking;
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!download_action_callback.is_null());
 

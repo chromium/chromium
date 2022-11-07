@@ -199,7 +199,7 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   // after instituting restrictions on I/O. Going forward they will
   // likely be used in the browser process on most platforms. The
   // one-time initialization cost is small, between 2 and 5 ms.
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+  base::ScopedAllowBlocking allow_blocking;
 
   switch (implementation.gl) {
     case kGLImplementationDesktopGL:

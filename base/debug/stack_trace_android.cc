@@ -98,7 +98,7 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
   // on fatal log messages in debug builds only. If the restriction is enabled
   // then it will recursively trigger fatal failures when this enters on the
   // UI thread.
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+  base::ScopedAllowBlocking scoped_allow_blocking;
   if (!ReadProcMaps(&proc_maps)) {
     __android_log_write(
         ANDROID_LOG_ERROR, "chromium", "Failed to read /proc/self/maps");
