@@ -541,7 +541,7 @@ void AuthPerformer::OnInvalidateAuthSession(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::InvalidateAuthSessionReply> reply) {
   // The auth session is useless even if we failed to invalidate it.
-  context->SetAuthSessionId("");
+  context->ResetAuthSessionId();
 
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET &&
@@ -551,7 +551,6 @@ void AuthPerformer::OnInvalidateAuthSession(
     return;
   }
 
-  context->SetAuthSessionId("");
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 

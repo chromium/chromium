@@ -350,6 +350,9 @@ void InSessionAuthDialogClient::OnAuthVerified(
     bool authenticated_by_password,
     std::unique_ptr<UserContext> user_context,
     absl::optional<AuthenticationError> error) {
+  // Take back ownership of user_context for future auth attempts.
+  user_context_ = std::move(user_context);
+
   if (error.has_value()) {
     LOG(ERROR) << "Failed to authenticate, code "
                << error->get_cryptohome_code();
@@ -357,12 +360,10 @@ void InSessionAuthDialogClient::OnAuthVerified(
   } else {
     // TODO(b:241256423): Tell cryptohome to release WebAuthN secret.
     if (authenticated_by_password)
-      OnPasswordAuthSuccess(*user_context);
+      OnPasswordAuthSuccess(*user_context_);
     std::move(pending_auth_state_->callback).Run(true);
   }
 
-  // Take back ownership of user_context for future auth attempts.
-  user_context_ = std::move(user_context);
   pending_auth_state_.reset();
 }
 
