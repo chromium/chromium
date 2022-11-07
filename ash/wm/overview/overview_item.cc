@@ -1484,9 +1484,10 @@ void OverviewItem::ShowWindowInOverview() {
   // Hide the application window. Also make sure to ignore activation for this
   // application window, so that it remains in overview.
   if (hide_windows->HasWindow(GetWindow())) {
+    const bool ignore_activations = overview_session_->ignore_activations();
     overview_session_->set_ignore_activations(true);
     hide_windows->RemoveWindow(GetWindow());
-    overview_session_->set_ignore_activations(false);
+    overview_session_->set_ignore_activations(ignore_activations);
   }
 
   // Show the overview item window.
