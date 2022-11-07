@@ -126,6 +126,83 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Chaps.Session.Decrypt" enum="ChapsSessionStatus"
+    expires_after="2023-04-25">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the return value of a chaps session decrypt operation. The
+    return code is defined in pkcs11 specification. There is exactly one sample
+    logged for every chaps session decrypt operation.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Chaps.Session.Digest" enum="ChapsSessionStatus"
+    expires_after="2023-04-25">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the return value of a chaps session digest operation. The
+    return code is defined in pkcs11 specification. There is exactly one sample
+    logged for every chaps session digest operation.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Chaps.Session.Encrypt" enum="ChapsSessionStatus"
+    expires_after="2023-04-25">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the return value of a chaps session encrypt operation. The
+    return code is defined in pkcs11 specification. There is exactly one sample
+    logged for every chaps session encrypt operation.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Chaps.Session.Sign" enum="ChapsSessionStatus"
+    expires_after="2023-04-25">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the return value of a chaps session sign operation. The
+    return code is defined in pkcs11 specification. There is exactly one sample
+    logged for every chaps session sign operation.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Chaps.Session.Verify" enum="ChapsSessionStatus"
+    expires_after="2023-04-25">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the return value of a chaps session verify operation. The
+    return code is defined in pkcs11 specification. There is exactly one sample
+    logged for every chaps session verify operation.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Chaps.TokenManager.LoadToken"
+    enum="TokenManagerStatus" expires_after="2023-04-25">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the return value of a chaps token manager load token
+    operation. There is exactly one sample logged for every call to
+    SlotManagerImpl::LoadToken().
+  </summary>
+</histogram>
+
+<histogram name="Platform.Chaps.TokenManager.UnloadToken"
+    enum="TokenManagerStatus" expires_after="2023-04-25">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the return value of a chaps token manager unload token
+    operation. There is exactly one sample logged for every call to
+    SlotManagerImpl::UnloadToken().
+  </summary>
+</histogram>
+
 <histogram name="Platform.Chaps.TPMAvailability" enum="ChapsTPMAvailability"
     expires_after="2023-04-23">
   <owner>chenyian@google.com</owner>

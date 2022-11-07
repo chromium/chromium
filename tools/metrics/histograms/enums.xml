@@ -15275,6 +15275,106 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Failed to validate"/>
 </enum>
 
+<enum name="ChapsSessionStatus">
+  <int value="-951628800" label="Would Block For Private Objects"/>
+  <int value="0" label="OK"/>
+  <int value="1" label="Cancel"/>
+  <int value="2" label="Host Memory"/>
+  <int value="3" label="Slot Id Invalid"/>
+  <int value="5" label="General Error"/>
+  <int value="6" label="Function Failed"/>
+  <int value="7" label="Arguments Bad"/>
+  <int value="8" label="No Event"/>
+  <int value="9" label="Need To Create Threads"/>
+  <int value="10" label="Cant Lock"/>
+  <int value="16" label="Attribute Read Only"/>
+  <int value="17" label="Attribute Sensitive"/>
+  <int value="18" label="Attribute Type Invalid"/>
+  <int value="19" label="Attribute Value Invalid"/>
+  <int value="27" label="Action Prohibited"/>
+  <int value="32" label="Data Invalid"/>
+  <int value="33" label="Data Len Range"/>
+  <int value="48" label="Device Error"/>
+  <int value="49" label="Device Memory"/>
+  <int value="50" label="Device Removed"/>
+  <int value="64" label="Encrypted Data Invalid"/>
+  <int value="65" label="Encrypted Data Len Range"/>
+  <int value="80" label="Function Canceled"/>
+  <int value="81" label="Function Not Parallel"/>
+  <int value="84" label="Function Not Supported"/>
+  <int value="96" label="Key Handle Invalid"/>
+  <int value="98" label="Key Size Range"/>
+  <int value="99" label="Key Type Inconsistent"/>
+  <int value="100" label="Key Not Needed"/>
+  <int value="101" label="Key Changed"/>
+  <int value="102" label="Key Needed"/>
+  <int value="103" label="Key Indigestible"/>
+  <int value="104" label="Key Function Not Permitted"/>
+  <int value="105" label="Key Not Wrappable"/>
+  <int value="106" label="Key Unextractable"/>
+  <int value="112" label="Mechanism Invalid"/>
+  <int value="113" label="Mechanism Param Invalid"/>
+  <int value="130" label="Object Handle Invalid"/>
+  <int value="144" label="Operation Active"/>
+  <int value="145" label="Operation Not Initialized"/>
+  <int value="160" label="Pin Incorrect"/>
+  <int value="161" label="Pin Invalid"/>
+  <int value="162" label="Pin Len Range"/>
+  <int value="163" label="Pin Expired"/>
+  <int value="164" label="Pin Locked"/>
+  <int value="176" label="Session Closed"/>
+  <int value="177" label="Session Count"/>
+  <int value="179" label="Session Handle Invalid"/>
+  <int value="180" label="Session Parallel Not Supported"/>
+  <int value="181" label="Session Read Only"/>
+  <int value="182" label="Session Exists"/>
+  <int value="183" label="Session Read Only Exists"/>
+  <int value="184" label="Session Read Write So Exists"/>
+  <int value="192" label="Signature Invalid"/>
+  <int value="193" label="Signature Len Range"/>
+  <int value="208" label="Template Incomplete"/>
+  <int value="209" label="Template Inconsistent"/>
+  <int value="224" label="Token Not Present"/>
+  <int value="225" label="Token Not Recognized"/>
+  <int value="226" label="Token Write Protected"/>
+  <int value="240" label="Unwrapping Key Handle Invalid"/>
+  <int value="241" label="Unwrapping Key Size Range"/>
+  <int value="242" label="Unwrapping Key Type Inconsistent"/>
+  <int value="256" label="User Already Logged In"/>
+  <int value="257" label="User Not Logged In"/>
+  <int value="258" label="User Pin Not Initialized"/>
+  <int value="259" label="User Type Invalid"/>
+  <int value="260" label="User Another Already Logged In"/>
+  <int value="261" label="User Too Many Types"/>
+  <int value="272" label="Wrapped Key Invalid"/>
+  <int value="274" label="Wrapped Key Len Range"/>
+  <int value="275" label="Wrapping Key Handle Invalid"/>
+  <int value="276" label="Wrapping Key Size Range"/>
+  <int value="277" label="Wrapping Key Type Inconsistent"/>
+  <int value="288" label="Random Seed Not Supported"/>
+  <int value="289" label="Random No Rng"/>
+  <int value="304" label="Domain Params Invalid"/>
+  <int value="320" label="Curve Not Supported"/>
+  <int value="336" label="Buffer Too Small"/>
+  <int value="352" label="Save State Invalid"/>
+  <int value="368" label="Information Sensitive"/>
+  <int value="384" label="State Unsaveable"/>
+  <int value="400" label="Cryptoki Not Initialized"/>
+  <int value="401" label="Cryptoki Already Initialized"/>
+  <int value="416" label="Mutex Bad"/>
+  <int value="417" label="Mutex Not Locked"/>
+  <int value="432" label="New Pin Mode"/>
+  <int value="433" label="Next Otp"/>
+  <int value="437" label="Exceeded Max Iterations"/>
+  <int value="438" label="Fips Self Test Failed"/>
+  <int value="439" label="Library Load Failed"/>
+  <int value="440" label="Pin Too Weak"/>
+  <int value="441" label="Public Key Invalid"/>
+  <int value="512" label="Function Rejected"/>
+  <int value="513" label="Token Resource Exceeded"/>
+  <int value="514" label="Operation Cancel Failed"/>
+</enum>
+
 <enum name="ChapsTPMAvailability">
   <int value="0" label="TPM available"/>
   <int value="1" label="TPM unavailable"/>
@@ -97599,6 +97699,23 @@ would be helpful to identify which type is being sent.
   <int value="1" label="CLIENT_ONLY"/>
   <int value="2" label="CLIENT_AND_SERVER"/>
   <int value="3" label="CLIENT_NO_CHANNEL_ID_SERVICE"/>
+</enum>
+
+<enum name="TokenManagerStatus">
+  <int value="0" label="Command Success"/>
+  <int value="1" label="Init Stage2 Failed"/>
+  <int value="2" label="Invalid Isolate Credential"/>
+  <int value="3" label="Load Existing Token"/>
+  <int value="4" label="Failed To Load Software Token"/>
+  <int value="5" label="Unknown Path"/>
+  <int value="6" label="Incorrect Old Authorization Data"/>
+  <int value="7" label="Failed To Change Auth Data"/>
+  <int value="8" label="Failed To Write Auth Key Blob"/>
+  <int value="9" label="Failed To Write Auth Data Hash Blob"/>
+  <int value="10" label="Token Not Initialized"/>
+  <int value="11" label="Failed To Decrypt Root Key"/>
+  <int value="12" label="Failed To Encrypt Root Key"/>
+  <int value="13" label="Failed To Write Root Key Blob"/>
 </enum>
 
 <enum name="TokenStateOnRegistrationRequest">
