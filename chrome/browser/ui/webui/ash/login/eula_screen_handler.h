@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
@@ -19,8 +18,7 @@ class EulaScreen;
 class HelpAppLauncher;
 
 // Interface between eula screen and its representation, either WebUI
-// or Views one. Note, do not forget to call OnViewDestroyed in the
-// dtor.
+// or Views one.
 class EulaView : public base::SupportsWeakPtr<EulaView> {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"oobe-eula-md",

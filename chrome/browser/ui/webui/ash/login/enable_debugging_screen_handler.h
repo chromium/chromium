@@ -13,7 +13,6 @@ class PrefRegistrySimple;
 namespace ash {
 
 // Interface between enable debugging screen and its representation.
-// Note, do not forget to call OnViewDestroyed in the dtor.
 class EnableDebuggingScreenView
     : public base::SupportsWeakPtr<EnableDebuggingScreenView> {
  public:

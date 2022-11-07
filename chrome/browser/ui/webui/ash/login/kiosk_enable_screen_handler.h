@@ -12,7 +12,6 @@
 namespace ash {
 
 // Interface between enable kiosk screen and its representation.
-// Note, do not forget to call OnViewDestroyed in the dtor.
 class KioskEnableScreenView
     : public base::SupportsWeakPtr<KioskEnableScreenView> {
  public:

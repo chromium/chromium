@@ -8,7 +8,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
-#include "components/login/secure_module_util_chromeos.h"
 
 namespace base {
 class DictionaryValue;
@@ -17,8 +16,7 @@ class DictionaryValue;
 namespace ash {
 
 // Interface between HWDataCollection screen and its representation, either
-// WebUI or Views one. Note, do not forget to call OnViewDestroyed in the
-// dtor.
+// WebUI or Views one.
 class HWDataCollectionView
     : public base::SupportsWeakPtr<HWDataCollectionView> {
  public:

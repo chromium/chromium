@@ -12,7 +12,6 @@
 namespace ash {
 
 // Interface between reset screen and its representation.
-// Note, do not forget to call OnViewDestroyed in the dtor.
 class KioskAutolaunchScreenView
     : public base::SupportsWeakPtr<KioskAutolaunchScreenView> {
  public:

@@ -11,7 +11,6 @@
 namespace ash {
 
 // Interface between wrong HWID screen and its representation.
-// Note, do not forget to call OnViewDestroyed in the dtor.
 class WrongHWIDScreenView : public base::SupportsWeakPtr<WrongHWIDScreenView> {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{

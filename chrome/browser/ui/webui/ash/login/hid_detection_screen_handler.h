@@ -13,8 +13,7 @@
 namespace ash {
 
 // Interface between HID detection screen and its representation, either WebUI
-// or Views one. Note, do not forget to call OnViewDestroyed in the
-// dtor.
+// or Views one.
 class HIDDetectionView : public base::SupportsWeakPtr<HIDDetectionView> {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"hid-detection",
