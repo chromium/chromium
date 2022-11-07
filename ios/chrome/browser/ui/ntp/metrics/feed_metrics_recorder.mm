@@ -111,7 +111,7 @@ using feed::FeedUserActionType;
   // on an article.
   // Calls recordEngagementGoodVisit for a possible non-short click
   // interaction.
-  if (IsGoodVisitsMetricEnabled()) {
+  if (!IsGoodVisitsMetricEnabled()) {
     return;
   }
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -718,7 +718,7 @@ using feed::FeedUserActionType;
   // Check if actionType warrants a Good Explicit Visit
   // If actionType is any of the cases below, trigger a Good Explicit
   // interaction by calling recordEngagementGoodVisit
-  if (IsGoodVisitsMetricEnabled()) {
+  if (!IsGoodVisitsMetricEnabled()) {
     return;
   }
   switch (actionType) {
