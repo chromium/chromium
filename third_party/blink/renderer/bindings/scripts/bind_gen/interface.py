@@ -899,13 +899,10 @@ def make_high_entropy_trace_event(cg_context):
     if get_high_entropy_checked_ext_attrs(cg_context) == None:
         return None
 
-    header_text = "// [HighEntropy]"
-
     text = _format(
-        "{header_text}"
+        "// [HighEntropy]\n"
         "const Dactyloscoper::HighEntropyTracer"
         "  high_entropy_tracer(\"{js_api_id}\", ${info});",
-        header_text=header_text,
         js_api_id=get_js_api_identifier(cg_context))
 
     node = TextNode(text)

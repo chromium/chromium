@@ -28,7 +28,7 @@ class CORE_EXPORT Dactyloscoper {
   // HighEntropyTracer traces calls of HighEntropy APIs to perfetto.
   //
   // NOTE: This class must always be instantiated on the stack.
-  class HighEntropyTracer {
+  class CORE_EXPORT HighEntropyTracer {
    public:
     HighEntropyTracer(const char* called_api,
                       const v8::FunctionCallbackInfo<v8::Value>& info);
