@@ -112,6 +112,11 @@ constexpr base::FeatureParam<bool> kAmbientModeRssPhotosEnabled{
 constexpr base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled{
     &kAmbientModeFeature, "StreetArtAlbumEnabled", false};
 
+// Controls whether to enable AutoEnrollment for Kiosk in OOBE
+BASE_FEATURE(kAutoEnrollmentKioskInOobe,
+             "AutoEnrollmentKioskInOobe",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to allow Dev channel to use Prod server feature.
 BASE_FEATURE(kAmbientModeDevUseProdFeature,
              "ChromeOSAmbientModeDevChannelUseProdServer",
@@ -2192,6 +2197,10 @@ bool AreDesksTrackpadSwipeImprovementsEnabled() {
 
 bool IsAutocompleteExtendedSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kAutocompleteExtendedSuggestions);
+}
+
+bool IsAutoEnrollmentKioskInOobeEnabled() {
+  return base::FeatureList::IsEnabled(kAutoEnrollmentKioskInOobe);
 }
 
 bool IsAvatarsCloudMigrationEnabled() {
